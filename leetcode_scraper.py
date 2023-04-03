@@ -2,6 +2,7 @@ import requests
 from bs4 import BeautifulSoup
 from selenium import webdriver
 from selenium.webdriver.common.by import By
+from selenium.webdriver.chrome.options import Options
 import time
 
 SLEEP_TIME = 2
@@ -16,10 +17,13 @@ for problem in problem_list:
     problem_link = problem.find('a', href=True).get('href')
     solution_list.append('https://leetcode.com' + problem_link + 'solutions/?languageTags=c')
 
-driver = webdriver.Chrome()
+chrome_options = Options()
+chrome_options.add_experimental_option("detach", True)
+
+driver = webdriver.Chrome('drivers/chromedriver.exe', chrome_options=chrome_options)
 driver.get(solution_list[0])
 time.sleep(SLEEP_TIME)
-driver.find_element(By.ID, 'headlessui-popover-button-:r2:').click()
+driver.find_element(By.ID, 'headlessui-popover-button-:R6aa9j9l5t6:').click()
 time.sleep(SLEEP_TIME)
 driver.find_element(By.XPATH, "//span[text()='C']").click()
 sub_soup = BeautifulSoup(driver.page_source,'lxml')
