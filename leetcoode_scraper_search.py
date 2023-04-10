@@ -61,4 +61,4 @@ df['question'] = question_list
 df['link'] = link_list
 df['code'] = code_list
 
-df.to_csv('output.csv')
+df.to_csv('leetcode_output.csv')
