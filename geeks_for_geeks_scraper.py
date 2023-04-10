@@ -15,9 +15,14 @@ url_list = [x for x in url_list if 'c-program-to' in x]
 for url in url_list:
     r = requests.get(url)
     sub_soup = BeautifulSoup(r.content, 'html.parser')
-    table_text = sub_soup.find('table').get_text()
-    code_list.append(table_text)
-    print(url)
+    rows = sub_soup.find('table').find('tbody').find('tr').find('div', {'class': 'container'})
+    res = ''
+    if not rows:
+        continue
+    for row in rows:
+        res += row.get_text().strip() + '\n'
+    print(res)
+    code_list.append(res)
 
 df = pd.DataFrame()
 df['code'] = code_list
