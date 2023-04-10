@@ -1,0 +1,585 @@
+,question,link,code
+0,two-sum,https://leetcode.com/problems/two-sum/solutions/3279247/accepted-o-n-2-java-c-solution/,"class Solution {
+    public int[] twoSum(int[] nums, int target) {
+        final int N = nums.length;
+        int[] A = new int[2];
+        for(int i=0;i<N; i++){  // Valid answer must be there before end of loop
+            for(int j=i+1; j < N; j++){
+                if(nums[i] + nums[j] == target){
+                    A[0] = i; A[1] = j;
+                    return A;
+                }
+            }
+        }
+        return A;
+    }
+}"
+1,two-sum,https://leetcode.com/problems/two-sum/solutions/3279247/accepted-o-n-2-java-c-solution/,"/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* twoSum(int* nums, int  N, int target, int* returnSize){
+    int *arr = malloc(2*sizeof(int));
+    *returnSize = 2;
+    for(int i=0; i < N-1; i++){
+        for(int j=i+1; j < N; j++){
+            if(nums[i] + nums[j] == target){
+                arr[0] = i; arr[1] = j;
+                return arr;
+            }
+        }
+    }
+    return arr;
+}"
+2,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        int n = nums.size();
+        
+        for (int i = 0; i < n; i++) {
+            /* for each element nums[i], go through the whole array
+               again to see if there is an element target - nums[i] at
+               an index other than i
+            */
+            for (int j = 0; j < n; j++) {
+                if (i != j && nums[i] + nums[j] == target) {
+                    // found the pair
+                    return {i, j};
+                }
+            }
+        }
+        
+        return {};
+    }
+};"
+3,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"								 i
+							     |
+                         nums = [3, 4, 6]
+								       |
+									   j"
+4,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"								 j
+							     |
+                         nums = [3, 4, 6]
+								       |
+									   i"
+5,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        int n = nums.size();
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = i+1; j < n; j++) {
+                /* since we start checking from index i+1, we don't
+                   need to do i != j check inside the if condition
+                */
+                if (nums[i] + nums[j] == target) {
+                    return {i, j};
+                }
+            }
+        }
+        
+        return {};
+    }
+};"
+6,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"Question:
+We can find if an element exists in the array by using binary search. But what
+about the indices of the pair of elements? We have to again linearly search for
+the indices of these elements right?
+
+Answer:
+True. But there is an alternative. We can form a nested list in which each element 
+would have two elements. The first one being the element itself and the other the 
+index of this element. We can sort this list before doing binary search. This way, 
+when we find the correct pair, we can just directly return the indices."
+7,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"class Solution {
+public:
+    /* This function returns (true, index) if element is found otherwise
+       it returns (false, -1)
+    */
+    std::pair<bool,int> binary_search(std::vector<std::pair<int,int>>& a, int ind, int key) {
+        int i = 0, j = ind - 1;
+        while (i <= j) {
+            int m = (i + j) / 2;
+            if (a[m].first == key) {
+                return std::make_pair(true, a[m].second);
+            } else if (a[m].first < key) {
+                i = m + 1;
+            } else {
+                j = m - 1;
+            }
+        }
+        return std::make_pair(false, -1);
+    }
+    
+    
+    vector<int> twoSum(vector<int>& nums, int target) {
+        int n = nums.size();
+        
+        // Making the nested list
+        std::vector<std::pair<int,int>> a {};
+        for (int i = 0; i < n; i++) {
+            a.push_back(std::make_pair(nums[i], i));
+        }
+        
+        // Sorting the array so that binary search can be used
+        std::sort(a.begin(), a.end());
+        
+        // Finding the pair using binary search
+        for (int i = 0; i < n; i++) {
+            int key = target - a[i].first;
+            std::pair<bool,int> res = binary_search(a, i, key);
+            
+            // found the pair
+            if (res.first == true) {
+                return {a[i].second, res.second};
+            }
+        }
+        
+        /* This is written to avoid the compiler warning of not returning 
+           anything from the function which has a return type of vector<int>
+        */
+        return {};
+    }
+};"
+8,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"								 i
+							     |
+                         nums = [1, 3, 6, 9, 10]
+											  |
+										      j"
+9,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"								 i
+							     |
+                         nums = [1, 3, 6, 9, 10]
+											  |
+										      j"
+10,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"								    i
+							        |
+                         nums = [1, 3, 6, 9, 10]
+											  |
+										      j"
+11,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"								    i
+							        |
+                         nums = [1, 3, 6, 9, 10]
+										  |
+										  j"
+12,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        int n = nums.size();
+        
+        // making the nested list
+        std::vector<std::pair<int,int>> a {};
+        for (int i = 0; i < n; i++) {
+            a.push_back(std::make_pair(nums[i], i));
+        }
+        
+        // sorting the list
+        std::sort(a.begin(), a.end());
+        
+        // using two pointers approach to find the pair
+        int i = 0, j = n - 1;
+        while (i < j) {
+            int sum = a[i].first + a[j].first;
+            if (sum == target) {
+                // found pair so return answer
+                return {a[i].second, a[j].second};
+            } else if (sum < target) {
+                i++;
+            } else {
+                j--;
+            }
+        }
+        
+        /* This is just to avoid the compiler warning of not returning anything from
+           a function with a return type of vector<int>
+        */
+        return {};
+    }
+};"
+13,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"Question 1:
+But what if target is twice an element in nums[i]. There is a possibility that we 
+end up finding the element at the same index if it occurs only once.
+for eg: nums = [1, 2, 3], target = 4;
+
+Answer 1:
+So, to avoid this issue, we'll only be looking at elements which are already in the 
+unordered_map like we did in binary search. So, for ith element, we'll be 
+checking if target - nums[i] exists in the map. Since we know that a pair is 
+guarenteed to exist, we'll get it when we encounter the second element of that 
+valid pair in the array.
+
+
+Question 2:
+But what if there are multiple occurrences of same element which add up to 
+target? How will we store their indices to get distinct indices? 
+for eg: nums = [2, 2, 3, 4, 5], target = 4
+
+Answer:
+It still wouldn't be a problem. Just update the value of that key to the latest 
+index. If there are multiple occurrences of that element and they add up to 
+target, then we will find the pair when we encounter the first occurrence of 
+that element."
+14,two-sum,https://leetcode.com/problems/two-sum/solutions/2707360/multiple-approaches-explained-with-diagrams-two-sum-c-implementations/,"class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        std::unordered_map<int,int> m;
+        for (int i = 0; i < (int)nums.size(); i++) {
+		    // checking if target - nums[i] already exists in the map
+            if (m.count(target - nums[i])) {
+                return {i, m[target - nums[i]]};
+            }
+			// if it does not, then just update the map with the current element
+            m[nums[i]] = i;
+        }
+        
+		/* This is just to avoid the compiler warning of not returning anything
+		    from a function with a return type of vector<int>
+		*/
+        return {};
+    }
+};"
+15,two-sum,https://leetcode.com/problems/two-sum/solutions/2680899/super-efficient-and-simple-solution-using-hashmap/,"vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int,int> m;
+        for(int i=0; i<nums.size(); i++)
+        {
+            if(m.count(target-nums[i]))
+                return {m[target -nums[i]],i};
+            
+            m[nums[i]] = i;
+        }
+        
+        return {};
+    }
+	```
+	I have submitted the solution several times, it shows different time or % that shows how its better than rest of solutions. But, it's not that important. You should focus more on time complexity in general."
+16,two-sum,https://leetcode.com/problems/two-sum/solutions/1374512/easy-c-solution-using-three-different-appraoches/,"//Ist Approach
+    vector<int> twoSum(vector<int>& nums, int target) {
+        vector<pair<int,int>> v;
+        for(int i=0;i<nums.size();i++)
+            v.push_back({nums[i],i});
+        sort(v.begin(),v.end());
+        int i=0;
+        int j=v.size()-1;
+        int idx1=0;
+        int idx2=0;
+        while(i<j)
+        {
+            if(v[i].first+v[j].first==target)
+            {
+                idx1=v[i].second;
+                idx2=v[j].second;
+                break;
+                
+            }
+            if(v[i].first+v[j].first<target)
+                i++;
+            if(v[i].first+v[j].first>target)
+                j--;
+    }
+        return {idx1,idx2};
+    }
+//Time Complexity:O(nlogn)
+//Time Complexity:O(n)
+
+//Second Approach
+
+   vector<int> twoSum(vector<int>& nums, int target) {
+        vector<int> v;
+        unordered_map<int,int> m;
+        for(int i=0;i<nums.size();i++)
+        {
+            if(m.find(target-nums[i])!=m.end())
+            {
+                v.push_back(m[target-nums[i]]);
+                v.push_back(i);
+                return v;
+            }
+            else
+                m[nums[i]]=i;
+        }
+       return v;
+    }
+
+//Time Complexity:O(n)
+//Space Complexity:O(n)
+
+//Third Approach
+vector<int> twoSum(vector<int>& nums, int target) {
+        vector<int> index;
+        int size=nums.size();
+        for(int i=0;i<size;i++)
+        {
+            int k=target-nums[i];
+            for(int j=i+1;j<size;j++)
+            {
+                if(nums[j]==k)
+                {
+                    index.push_back(i);
+                    index.push_back(j);
+                    break;
+                }
+            }
+            if(index.size()==2)
+                break;
+        }
+        return index;
+    }
+	//Time Complexity: O(n^2)"
+17,two-sum,https://leetcode.com/problems/two-sum/solutions/2665787/simple-clear-c-solution/,"
+#include <unordered_map>
+
+class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        std::unordered_map<int, int> balance;
+        
+        int i;
+        for (i = 0; i < nums.size(); ++i) {
+            if (balance.find(nums[i]) != balance.end())
+                break;
+            
+            balance.insert_or_assign(target - nums[i], i);
+        }
+        
+        return {balance[nums[i]], i};
+    }
+};"
+18,two-sum,https://leetcode.com/problems/two-sum/solutions/3306838/map-short-sweet-easy-to-understand-c/,"class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int k) {
+        unordered_map<int,int> mp;
+        for(int i = 0; i < nums.size(); i++){
+            if(mp.count(k-nums[i])){
+                return {mp[k-nums[i]],i};
+            }
+            mp[nums[i]] = i;
+        }
+        return {-1,-1};
+    }
+};"
+19,two-sum,https://leetcode.com/problems/two-sum/solutions/2674447/my-solutions-in-c/,"class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        vector<int> res;
+        res.push_back(-1);
+        res.push_back(-1);
+        for (int i = 0; i < nums.size(); i++){
+            for (int j = i+1; j < nums.size(); j++){
+                if (nums[i] + nums[j] == target){
+                    res[0] = i;
+                    res[1] = j;
+                    return res;
+                }
+            }
+        }
+        return res;
+    }
+};"
+20,two-sum,https://leetcode.com/problems/two-sum/solutions/2674447/my-solutions-in-c/,"class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        unordered_map<int, int> hash;
+        vector<int> res;
+        res.push_back(-1);
+        res.push_back(-1);
+        for (int i = 0; i < nums.size(); i++){
+            hash[nums[i]] = i;
+        }
+        for (int i = 0; i < nums.size(); i++){
+            if (hash.find(target-nums[i]) != hash.end() &&\
+                hash.find(target - nums[i])->second != i){
+                res[0] = i;
+                res[1] = hash[target-nums[i]];
+                return res;
+            }
+        }
+        return res;
+    }
+};"
+21,two-sum,https://leetcode.com/problems/two-sum/solutions/2674447/my-solutions-in-c/,"class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        vector<int> res = {-1, -1};
+        unordered_map<int, int> hash;
+        for (int i = 0; i < nums.size(); i++){
+            if (hash.find(target-nums[i]) != hash.end()){
+                res[0] = i;
+                res[1] = hash[target-nums[i]];
+                return res;
+            }
+            hash[nums[i]] = i;
+        }
+        return res;
+    }
+};"
+22,two-sum,https://leetcode.com/problems/two-sum/solutions/2660046/easy-solution-in-c-two-sum/,"class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        
+        for(int i=0;i<nums.size()-1;i++)
+        {
+            for(int j=i+1;j<nums.size();j++)
+                if(nums[i]+nums[j]==target) return{i,j};
+        }
+        return {};
+    }
+};****"
+23,two-sum,https://leetcode.com/problems/two-sum/solutions/2725326/python-rust-c-three-fast-concise-solutions-with-detailed-comments/,"class Solution:
+    def twoSum(self, nums: List[int], target: int) -> List[int]:
+        
+        # the idea is to store previously seen numbers with
+        # their corresponding indices in a hashmap/dict
+        seen = dict()
+        
+        for i, n in enumerate(nums):
+            if target-n in seen:
+                return [i,seen[target-n]]
+            else:
+                seen[n] = i
+                
+        # this place is unreachable
+        return [0,0]"
+24,two-sum,https://leetcode.com/problems/two-sum/solutions/2725326/python-rust-c-three-fast-concise-solutions-with-detailed-comments/,"impl Solution 
+{
+    pub fn two_sum(nums: Vec<i32>, target: i32) -> Vec<i32> 
+    {
+        // [1] prepare numbers for binary search by 
+        //     saving original indices and sorting
+        let mut nums: Vec<(usize, i32)> = 
+            nums.into_iter()
+                .enumerate()
+                .collect::<Vec<(usize, i32)>>();
+
+        nums.sort_unstable_by_key(|&(_, n)| n);
+        
+        // [2] we perform linear scan for the first number
+        //     and do binary search for the second number
+        for (k, (i, ni)) in nums.iter().enumerate()
+        {
+            // [3] to prevent duplication, slices start from k+1
+            match nums[k+1..].binary_search_by_key(&(target - *ni), |&(_, nj)| nj)
+            {
+                Ok(jj) => return vec![*i as i32, nums[jj+k+1].0 as i32],
+                Err(_) => {}
+            }
+        }
+
+        unreachable!(""Error: this place should be unreachable"");
+        return vec![0,0];
+    }
+}"
+25,two-sum,https://leetcode.com/problems/two-sum/solutions/2725326/python-rust-c-three-fast-concise-solutions-with-detailed-comments/,"class Solution 
+{
+public:
+    vector<int> twoSum(vector<int>& nums, int target) 
+    {
+        // [1] save original indices into an array of pairs
+        vector<pair<int, int>> pairs(nums.size());
+        for (int i = 0; i < nums.size(); ++i) pairs[i] = make_pair(nums[i], i);
+        
+        // [2] by sorting, we destroy the original indexing scheme
+        //     (it is OK, we save original indices)
+        sort(pairs.begin(), pairs.end());
+        
+        // [3] perform linear scan with two converging pointers
+        int left = 0, right = nums.size() - 1;
+        while (left < right)
+        {
+            int sum = pairs[left].first + pairs[right].first;
+            if (sum == target)
+                return {pairs[left].second, pairs[right].second};
+            else if (sum > target)
+                right -= 1;
+            else
+                left += 1;
+        }
+        
+        // unreachable
+        return {};
+    }
+};"
+26,two-sum,https://leetcode.com/problems/two-sum/solutions/3220639/1-twosum-solution-with-c/,"/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* twoSum(int* nums, int numsSize, int target, int* returnSize){
+    int*    result;
+
+    result = (int*)malloc(sizeof(int) * 2);
+    // nullguard
+    if (!result)
+        return 0;
+    
+    // Initialize result array
+    result[0] = 0;
+    result[1] = 0;
+
+    for (int i = 0; i < numsSize; i++) {
+        for (int j = i + 1; j < numsSize; j++) {
+            if (nums[i] + nums[j] == target) {
+                *returnSize = 2;
+                result[0] = i;
+                result[1] = j;
+                return result;
+            }
+        }
+    }
+    *returnSize = 0;
+    return 0;
+}"
+27,two-sum,https://leetcode.com/problems/two-sum/solutions/2221876/c-fastest-solution/,"            for(int j = i + 1; j < nums.size(); j++){
+                if(nums[i] + nums[j] == target){
+                    std::vector<int> vec;
+                    vec.reserve(2);
+                    vec.emplace_back(i);
+                    vec.emplace_back(j);
+                    return vec;
+                }
+            }
+        }
+        return nums;"
+28,two-sum,https://leetcode.com/problems/two-sum/solutions/2838375/c-simple-solution-in-o-nlogn/,"        vector<int> check=nums;
+        int i=0; int j=nums.size()-1;
+        int i1; int i2;
+        sort(nums.begin(),nums.end());
+        while(i<j){
+        if(nums[i]+nums[j]==target){
+        i1=nums[i]; 
+        i2=nums[j];
+        break;
+        }
+        else if(nums[i]+nums[j]>target){
+        j-- ;  }
+        else{
+                i++; }
+         }
+        for(int i=0; i<check.size(); i++){
+         if(check[i]==i1){
+         output.push_back(i);       
+            }
+            else if(check[i]==i2){
+             output.push_back(i);
+
+            }
+            }
+            sort(output.begin(),output.end());
+            return output;
+            }"
+29,two-sum,https://leetcode.com/problems/two-sum/solutions/2584371/100-best-solution-explained-for-interview-purpose/,"class Solution {
+public:
+    vector<int> twoSum(vector<int>& nums, int target) {
+        // this is the first question on the leetcode lets solve it by the brute force 
+        // can be done by using map
+        vector<int>ans;
+        for(int i=0;i<nums.size()-1;i++)
+        {
+            for(int j=i+1;j<nums.size();j++)
+            {
+                if(nums[i]+nums[j]==target)
+                {
+                    ans.push_back(i);
+                    ans.push_back(j);
+                }
+            }
+        }
+        return ans;
+    }
+};
+"
