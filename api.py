@@ -14,7 +14,6 @@ data = {
     'source': code,
     'options': {
         'filters': {
-            'binary': False,
             "intel": False
         }
     }
