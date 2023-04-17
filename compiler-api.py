@@ -38,21 +38,25 @@ for original_file_name in os.listdir(uncompiled_path):
     if response.ok:
         # start from 68 to skip the "compilation by compiler explorer" message
         asm = response.text[68:]
-        # inputs.append(asm)
-        # labels.append(code)
 
-        # write the assembly for this source code to our data folder, with [ASM] in front
-        with open(assembly_path + '/[ASM] ' + file_name, mode='w') as out:
-            out.write(asm)
+        # check for compilation failure in the asm!
+        if asm[0:20] == '<Compilation failed>':
+            print('ERROR! Compilation failed on the following file: ', original_file_name)
 
-        # write this source code to our data folder
-        with open(c_path + '/' + file_name, mode='w') as out:
-            out.write(code)
+            break
+        else:
+            # write the assembly for this source code to our data folder, with [ASM] in front
+            with open(assembly_path + '/[ASM] ' + file_name, mode='w') as out:
+                out.write(asm)
 
-        # remove this from our uncompiled folder for future uses of this script
-        os.remove(uncompiled_path + '/' + original_file_name)
+            # write this source code to our data folder
+            with open(c_path + '/' + file_name, mode='w') as out:
+                out.write(code)
+
+            # remove this from our uncompiled folder for future uses of this script
+            os.remove(uncompiled_path + '/' + original_file_name)
     else:
-        print('FAILED ON THE FOLLOWING C FILE: ', file_name)
+        print('ERROR! API failed while on the following file: ', original_file_name)
         print(f'Error {response.status_code}: {response.reason}')
         break
 
