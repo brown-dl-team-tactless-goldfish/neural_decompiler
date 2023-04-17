@@ -21,45 +21,36 @@ for question in problem_list:
     problem_link = question.find('a', href=True).get('href')
     solution_list.append('https://leetcode.com' + problem_link + 'solutions/?languageTags=c')
 
-chrome_options = Options()
-chrome_options.add_experimental_option("detach", True)
+for solution_link in solution_list:
 
-driver = webdriver.Chrome('drivers/chromedriver.exe', chrome_options=chrome_options)
-driver.get(solution_list[0])
-time.sleep(SLEEP_TIME)
-search_bar = driver.find_element(By.XPATH, "//input[@type='text']").send_keys('C')
-time.sleep(5)
-sub_soup = BeautifulSoup(driver.page_source,'lxml')
+    chrome_options = Options()
+    chrome_options.add_experimental_option("detach", True)
 
-discussion_list = []
-
-for discussion in sub_soup.find_all('div', {'class': 'overflow-hidden text-ellipsis'}):
-    discussion_list.append('https://leetcode.com' + str(discussion).partition('href="')[2].partition('"')[0])
-
-question_list = []
-link_list = []
-code_list = []
-
-for i, discussion in enumerate(discussion_list):
-    question = discussion.partition('https://leetcode.com/problems/')[2].partition('/solutions/')[0]
-    driver.get(discussion)
+    driver = webdriver.Chrome('drivers/chromedriver.exe', chrome_options=chrome_options)
+    driver.get(solution_link)
     time.sleep(SLEEP_TIME)
-    sub_sub_soup = BeautifulSoup(driver.page_source,'lxml')
-    time.sleep(SLEEP_TIME)
+    search_bar = driver.find_element(By.XPATH, "//input[@type='text']").send_keys('C')
+    time.sleep(5)
+    sub_soup = BeautifulSoup(driver.page_source,'lxml')
 
-    text_list = []
-    if sub_sub_soup.find('body').find('div', {'id': '__next'}).find('div', class_='break-words').find('div', class_='mb-6 rounded-lg px-3 py-2.5 font-menlo text-sm bg-fill-3 dark:bg-dark-fill-3'):
-        for code in sub_sub_soup.find('body').find('div', {'id': '__next'}).find('div', class_='break-words').find_all('div', class_='mb-6 rounded-lg px-3 py-2.5 font-menlo text-sm bg-fill-3 dark:bg-dark-fill-3'):
-            with open(question + '-' + str(i) + '.txt', 'w') as f:
-                f.write(code.text)
+    discussion_list = []
 
-#     for text in text_list:
-#         question_list.append(question)
-#         link_list.append(discussion)
-#         code_list += [text]
+    for discussion in sub_soup.find_all('div', {'class': 'overflow-hidden text-ellipsis'}):
+        discussion_list.append('https://leetcode.com' + str(discussion).partition('href="')[2].partition('"')[0])
 
-# df['question'] = question_list
-# df['link'] = link_list
-# df['code'] = code_list
+    question_list = []
+    link_list = []
+    code_list = []
 
-# df.to_csv('leetcode_output.csv')
+    for i, discussion in enumerate(discussion_list):
+        question = discussion.partition('https://leetcode.com/problems/')[2].partition('/solutions/')[0]
+        driver.get(discussion)
+        time.sleep(SLEEP_TIME)
+        sub_sub_soup = BeautifulSoup(driver.page_source,'lxml')
+        time.sleep(SLEEP_TIME)
+
+        text_list = []
+        if sub_sub_soup.find('body').find('div', {'id': '__next'}).find('div', class_='break-words').find('div', class_='mb-6 rounded-lg px-3 py-2.5 font-menlo text-sm bg-fill-3 dark:bg-dark-fill-3'):
+            for code in sub_sub_soup.find('body').find('div', {'id': '__next'}).find('div', class_='break-words').find_all('div', class_='mb-6 rounded-lg px-3 py-2.5 font-menlo text-sm bg-fill-3 dark:bg-dark-fill-3'):
+                with open(question + '-' + str(i) + '.txt', 'w') as f:
+                    f.write(code.text)
