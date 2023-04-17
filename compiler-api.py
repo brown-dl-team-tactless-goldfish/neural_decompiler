@@ -2,8 +2,9 @@ import os
 import requests
 
 # path to all the source codes
-sources_path = 'sources'
-assembly_path = 'assembly'
+uncompiled_path = 'uncompiled'
+assembly_path = 'data/assembly'
+c_path = 'data/c'
 
 # set up the Compiler Explorer API endpoint using gcc 8.3 for C
 url = 'https://godbolt.org/api/compiler/cg83/compile'
@@ -15,8 +16,9 @@ headers = {'Content-type': 'application/json'}
 # inputs, labels = [], []
 
 # for every source code in our folder
-for source_file in os.listdir(sources_path):
-    f = open(sources_path + "/" + source_file, 'r')
+for original_file_name in os.listdir(uncompiled_path):
+    f = open(uncompiled_path + "/" + original_file_name, 'r')
+    file_name = original_file_name.split('.')[0] + '.txt'
     lines = f.readlines()
     code = ''.join(lines) # C source code
 
@@ -39,11 +41,18 @@ for source_file in os.listdir(sources_path):
         # inputs.append(asm)
         # labels.append(code)
 
-        # write the assembly for this source code to our folder, with [ASM] in front
-        with open(assembly_path + '/[ASM] ' + source_file, mode='w') as out:
+        # write the assembly for this source code to our data folder, with [ASM] in front
+        with open(assembly_path + '/[ASM] ' + file_name, mode='w') as out:
             out.write(asm)
+
+        # write this source code to our data folder
+        with open(c_path + '/' + file_name, mode='w') as out:
+            out.write(code)
+
+        # remove this from our uncompiled folder for future uses of this script
+        os.remove(uncompiled_path + '/' + original_file_name)
     else:
-        print('FAILED ON THE FOLLOWING C FILE: ', source_file)
+        print('FAILED ON THE FOLLOWING C FILE: ', file_name)
         print(f'Error {response.status_code}: {response.reason}')
         break
 
