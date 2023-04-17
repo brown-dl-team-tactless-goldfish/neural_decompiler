@@ -49,16 +49,17 @@ for i, discussion in enumerate(discussion_list):
 
     text_list = []
     if sub_sub_soup.find('body').find('div', {'id': '__next'}).find('div', class_='break-words').find('div', class_='mb-6 rounded-lg px-3 py-2.5 font-menlo text-sm bg-fill-3 dark:bg-dark-fill-3'):
-        for i in sub_sub_soup.find('body').find('div', {'id': '__next'}).find('div', class_='break-words').find_all('div', class_='mb-6 rounded-lg px-3 py-2.5 font-menlo text-sm bg-fill-3 dark:bg-dark-fill-3'):
-            text_list.append(i.text)
+        for code in sub_sub_soup.find('body').find('div', {'id': '__next'}).find('div', class_='break-words').find_all('div', class_='mb-6 rounded-lg px-3 py-2.5 font-menlo text-sm bg-fill-3 dark:bg-dark-fill-3'):
+            with open(question + '-' + str(i) + '.txt', 'w') as f:
+                f.write(code.text)
 
-    for i in text_list:
-        question_list.append(question)
-        link_list.append(discussion)
-        code_list += [i]
+#     for text in text_list:
+#         question_list.append(question)
+#         link_list.append(discussion)
+#         code_list += [text]
 
-df['question'] = question_list
-df['link'] = link_list
-df['code'] = code_list
+# df['question'] = question_list
+# df['link'] = link_list
+# df['code'] = code_list
 
-df.to_csv('leetcode_output.csv')
+# df.to_csv('leetcode_output.csv')
