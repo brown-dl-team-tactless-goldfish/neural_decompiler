@@ -1,8 +1,0 @@
-WITH cte (id) AS (SELECT DISTINCT product_id as id FROM Products),
-cte2 (id,cdate) AS (SELECT product_id , MAX(change_date) FROM Products AS p
-                   WHERE change_date <= '2019-08-16' GROUP BY product_id)
-
-SELECT c.id as product_id, ISNULL(new_price,10) as price
-FROM cte AS c LEFT JOIN cte2 AS c2 ON c.id = c2.id LEFT JOIN 
-(SELECT product_id, new_price,change_date FROM Products AS p WHERE change_date <= '2019-08-16' ) as p ON p.product_id = c2.id AND p.change_date = cdate
-ORDER BY price DESC

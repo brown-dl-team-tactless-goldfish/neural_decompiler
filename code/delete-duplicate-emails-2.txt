@@ -1,5 +1,0 @@
-with counted as (select email, count(*) c from Person group by email),
-     countedjoin as (select a.*, counted.c from Person a join counted on a.email=counted.email),
-	 firstid as (select min(id) id from Person group by email),
-	 deleteids as (select id from countedjoin where c > 1 and id not in (select id from firstid))
-delete from Person where id in (select id from deleteids)
