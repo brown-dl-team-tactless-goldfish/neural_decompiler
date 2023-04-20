@@ -1,0 +1,47 @@
+class StockPrice {
+public:
+    unordered_map<int,int>mp;
+    map<int,int>count;
+    int t;
+    StockPrice() 
+    {
+        t=0;
+    }
+    
+    void update(int time, int price) 
+    {
+        if(mp.find(time)==mp.end())
+        {
+            mp[time]=price;
+            count[price]++;
+        }
+        else
+        {
+            int old=mp[time];
+            count[old]--;
+            count[price]++;
+            mp[time]=price;
+            if(count[old]==0)
+                count.erase(old);
+        }
+        if(time>t)
+            t=time;
+    }
+    
+    int current() 
+    {
+        return mp[t];
+    }
+    
+    int maximum() 
+    {
+        auto it=count.rbegin();
+        return it->first;
+    }
+    
+    int minimum() 
+    {
+        auto it=count.begin();
+        return it->first;
+    }
+};

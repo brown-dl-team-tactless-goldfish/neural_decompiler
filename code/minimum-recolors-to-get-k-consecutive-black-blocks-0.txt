@@ -1,0 +1,31 @@
+int minimumRecolors(char * blocks, int k){
+    int n = strlen(blocks);
+    int* dp = malloc(n * sizeof(int));
+    if(blocks[0] == 'B')
+        dp[0] = 1;
+    else
+        dp[0] = 0;
+    
+    for(int i = 1; i < k; i++){
+        if(blocks[i] == 'B')
+            dp[i] = dp[i-1] + 1;
+        else
+            dp[i] = dp[i-1];
+    }
+    if(dp[k-1] == k)
+        return 0;
+    int min = k - dp[k-1];
+    int cur = dp[k-1];
+    for(int i = k; i < n; i++){
+        if(blocks[i] == 'B')
+            cur++;
+        if(blocks[i-k] == 'B')
+            cur--;
+        if(cur == k)
+            return 0;
+        min = fmin(min, k-cur);
+    }
+    
+    return min;
+
+}

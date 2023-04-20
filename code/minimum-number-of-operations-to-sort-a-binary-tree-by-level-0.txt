@@ -1,0 +1,123 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int coutNode(struct TreeNode* root){
+    if(root == NULL)
+        return 0;
+    return 1 + coutNode(root->left) + coutNode(root->right);
+}
+int cmp(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+int helper(int* sort, int* copy, int n){
+    int ans = 0;
+    int idx = 0;
+    int N = 10 * n;
+    int** hash = calloc(N, sizeof(int*));
+    for(int i = 0; i < n; i++){
+        int val = sort[i];
+        int d = val;
+        while(1){
+            if(hash[d%N] == NULL){
+                hash[d%N] = malloc(2 * sizeof(int));
+                hash[d%N][0] = val;
+                hash[d%N][1] = i;
+                break;
+            }
+            else 
+                d++;
+        }
+    }
+    while(idx < n){
+        if(sort[idx] == copy[idx]){
+            idx++;
+            continue;
+        }
+        ans++;
+        //find position
+        int pos;
+        int val = copy[idx];
+        int d = val;
+        while(1){
+            if(hash[d%N][0] == val){
+                pos = hash[d%N][1];
+                break;
+            }
+            else
+                d++;
+        }    
+        //swap
+        int tmp = copy[idx];
+        copy[idx] = copy[pos];
+        copy[pos] = tmp;
+    }
+    for(int i = 0; i < N; i++){
+        if(hash[i] != NULL)
+            free(hash[i]);
+    }
+    free(hash);
+    return ans;
+}
+int minimumOperations(struct TreeNode* root){
+    int ans = 0;
+    int n = coutNode(root);
+    struct TreeNode** arr1 = malloc((n+1)/2 * sizeof(struct TreeNode*));
+    struct TreeNode** arr2 = malloc((n+1)/2 * sizeof(struct TreeNode*));
+    int* copy = malloc((n+1)/2 * sizeof(int));
+    int* sort = malloc((n+1)/2 * sizeof(int));
+    int id1 = 0, id2 = 0;
+    arr1[id1] = root;
+    id1++;
+    bool flag = true;
+    while(id1 > 0 || id2 > 0){
+        if(flag){
+            for(int i = 0; i < id1; i++){
+                if(arr1[i]->left != NULL){
+                    arr2[id2] = arr1[i]->left ;
+                    copy[id2] = arr2[id2]->val;
+                    id2++;
+                }
+                if(arr1[i]->right){
+                    arr2[id2] = arr1[i]->right ;
+                    copy[id2] = arr2[id2]->val;
+                    id2++;
+                }
+            } 
+            id1 = 0;
+            flag = false;
+            
+            memcpy(sort, copy, id2*sizeof(int));
+            qsort(sort, id2, sizeof(int), cmp);
+            ans += helper(sort, copy, id2);
+        }
+        else{
+            for(int i = 0; i < id2; i++){
+                if(arr2[i]->left){
+                    arr1[id1] = arr2[i]->left ;
+                    copy[id1] = arr1[id1]->val;
+                    id1++;
+                }
+                if(arr2[i]->right){
+                    arr1[id1] = arr2[i]->right ;
+                    copy[id1] = arr1[id1]->val;
+                    id1++;
+                }
+            } 
+            id2 = 0;
+            flag = true;
+            memcpy(sort, copy, id1*sizeof(int));
+            qsort(sort, id1, sizeof(int), cmp);
+            ans += helper(sort, copy, id1);
+        }
+    }
+    free(copy);
+    free(sort);
+    free(arr1);
+    free(arr2);
+    return ans;
+}

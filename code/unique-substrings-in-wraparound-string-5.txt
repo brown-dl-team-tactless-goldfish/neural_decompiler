@@ -1,0 +1,68 @@
+int findSubstringInWraproundString(string p) {
+        
+        // For any continuous streak abcd.....xyzabc..  of length n
+        // no of substrings for ith charater of a streak goes on like
+        // f(i) = i             :: 1 indexed
+        // and the total we get is 1 + 2 + 3 + ... + n  = n(n+1)/2
+        
+        // Now how we handle overlapping cases like
+        // p = "abcdcdef"
+        // Here we have two continous streaks "abcd" and "cdef"
+        // cd is common in both which will result in counting of
+        // substring ["c","d","cd"] twice
+        
+        // We can simply take maximum streak occuring for that particular 
+        // alphabet
+        // Example : For p = "abcdcdef"
+        // Till "abcd" our container will look like
+        // a : 1
+        // b : 2
+        // c : 3
+        // d : 4
+        // e : 0
+        // f : 0
+        
+        // For "abcdc" our container will look like
+        // a : 1
+        // b : 2
+        // c : 3          ::Streak updated from 4 to 1 as we moved from d -> c :: *c = max(3,1)
+        // d : 4
+        // e : 0
+        // f : 0
+        
+        // At the end of "abcdcdef" our container will look like
+        // a : 1
+        // b : 2
+        // c : 3
+        // d : 4
+        // e : 3
+        // f : 4
+        
+        // And we can simple return the overall sum
+        // Note : We only took 3 for e So that ["cde","de","e"] are only considered
+        //        similarly 4 for f
+        
+        int n = p.length();
+        
+        vector<int> v(26,0);
+        
+        int streak = 1;
+        for(int i =0;i<n;i++){
+            
+			int ind = (int)(p[i] - 'a');
+            if(i > 0 && ( (int)(p[i] - 'a') - (int)(p[i-1] - 'a') + 26 ) % 26 == 1 ){
+                streak++;
+            } else {
+                streak = 1;
+            }
+            
+            v[ind] = max(v[ind],streak);
+            
+        }
+        
+        int ans = 0;
+        for(int i = 0;i<26;i++) ans+=v[i];
+        
+        return ans;
+        
+    }

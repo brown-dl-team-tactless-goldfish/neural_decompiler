@@ -1,0 +1,59 @@
+    public bool HasValidPath(char[][] grid) {
+      if (grid[0][0] == ')')
+        return false;
+
+      int rowCount = grid.Length;
+      int colCount = grid[0].Length;
+
+      if (grid[rowCount - 1][colCount - 1] == '(')
+        return false;
+
+      HashSet<int>[][] known = Enumerable
+        .Range(0, rowCount)
+        .Select(r => Enumerable
+          .Range(0, colCount)
+          .Select(c => new HashSet<int>())
+          .ToArray())
+        .ToArray();
+
+      known[0][0].Add(1);
+
+      for (int c = 1; c < colCount; ++c) {
+        if (known[0][c - 1].Count <= 0)
+          break;
+
+        int d = (grid[0][c] == '(' ? 1 : -1) + known[0][c - 1].First();
+
+        if (d < 0)
+          break;
+
+        known[0][c].Add(d);
+      } 
+
+      for (int r = 1; r < rowCount; ++r) {
+        if (known[r - 1][0].Count <= 0)
+          break;
+
+        int d = (grid[r][0] == '(' ? 1 : -1) + known[r - 1][0].First();
+
+        if (d < 0)
+          break;
+
+        known[r][0].Add(d);
+      }
+
+      for (int r = 1; r < rowCount; ++r)
+        for (int c = 1; c < colCount; ++c) {
+          int d = grid[r][c] == '(' ? 1 : -1;
+
+          var data = known[r - 1][c]
+            .Union(known[r][c - 1])
+            .Select(x => x + d)
+            .Where(x => x >= 0)
+            .ToList();
+
+          known[r][c].UnionWith(data);
+        }
+
+      return known[rowCount - 1][colCount - 1].Contains(0);
+    }

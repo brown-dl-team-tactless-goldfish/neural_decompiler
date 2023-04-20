@@ -1,0 +1,42 @@
+public class Solution
+{
+    public int ClosedIsland(int[][] grid)
+    {
+        int totalClosedIslands = 0;
+        int islandNumber = -1; //tagging an island and sinking it with that tag
+        for (int r = 0; r < grid.Length; r++)
+        {
+            for (int c = 0; c < grid[r].Length; c++)
+            {
+                if (grid[r][c] == 0)
+                {
+                    bool breachFound = Sink(grid, r, c, islandNumber);
+                    if (!breachFound)
+                    {
+                        Console.WriteLine($"{r},{c}");
+                        totalClosedIslands++;
+                    }
+                    islandNumber--;
+                }
+            }
+        }
+        return totalClosedIslands;
+    }
+    private bool Sink(int[][] grid, int r, int c,int islandNumber)
+    {
+        if (r < 0 || r >= grid.Length || c < 0 || c >= grid[r].Length)
+        {
+            return true;
+        }
+        if (grid[r][c] == 1 || grid[r][c] == islandNumber)
+        {
+            return false;
+        }
+        grid[r][c] = islandNumber;
+
+        return Sink(grid, r-1, c, islandNumber) ||
+            Sink(grid, r, c+1, islandNumber) ||
+            Sink(grid, r+1, c, islandNumber) ||
+            Sink(grid, r, c-1, islandNumber);
+    }
+}

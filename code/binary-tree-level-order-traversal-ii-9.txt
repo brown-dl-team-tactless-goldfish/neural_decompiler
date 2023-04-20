@@ -1,0 +1,82 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+void getDepth(struct TreeNode* root, int* maxLevel, int currLevel){
+    if(*maxLevel < currLevel) *maxLevel=currLevel;
+    if(root==NULL){
+        return;
+    }
+    getDepth(root->left, maxLevel, currLevel+1);
+    getDepth(root->right, maxLevel, currLevel+1);
+    
+}
+
+void traverse(struct TreeNode* root, int** res, int* resCol, int level){
+    if(root==NULL)return;
+    traverse(root->left, res, resCol, level+1);
+    traverse(root->right, res, resCol, level+1);
+    res[level][resCol[level]++]=root->val;
+}
+
+
+void bottomUpLevel(int** res, int* resCol, int level){
+    
+    int** tmp=malloc(sizeof(int*)*level);
+    int* tmpResCol=malloc(sizeof(int)*level);
+    for(int i=0; i<level; i++){
+        tmp[i]=malloc(sizeof(int)*resCol[level-i-1]);
+        for(int j=0; j<resCol[level-i-1]; j++){
+            tmp[i][j]=res[level-i-1][j];
+            
+        }
+    }
+    
+    for(int i=0; i<level; i++){
+        tmpResCol[i]=resCol[level-i-1];
+    }
+    
+    for(int i=0; i<level; i++){
+        resCol[i]=tmpResCol[i];
+        for(int j=0; j<tmpResCol[i]; j++){
+            res[i][j]=tmp[i][j];
+        }
+    }
+    
+    free(tmp);
+    free(tmpResCol);
+    
+    
+    
+}
+
+int** levelOrderBottom(struct TreeNode* root, int* returnSize, int** returnColumnSizes){
+    
+    *returnSize=0;
+    getDepth(root, returnSize, 0);
+    int level=*returnSize;
+    
+    int** res=malloc(sizeof(int*)*(*returnSize));
+    
+    for(int i=0; i<(*returnSize); i++){
+        res[i]=malloc(sizeof(int)*1000);
+    }
+    
+    *returnColumnSizes=calloc((*returnSize),sizeof(int*));
+    traverse(root, res, *returnColumnSizes, 0);
+    bottomUpLevel(res, *returnColumnSizes, level);
+    
+    return res;
+}
+

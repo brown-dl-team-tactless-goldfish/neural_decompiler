@@ -1,0 +1,83 @@
+enum {
+    NEEDS_COVERAGE = 0,
+    COVERED        = 1,
+    HAS_CAMERA     = 2
+};
+
+int dfs(struct TreeNode* root) {
+    int cameras = 0;
+    
+    /* Node with no children (parent needs a camera).  */
+    if ( root->left == NULL && root->right == NULL ) {
+        root->val = NEEDS_COVERAGE; // Not needed, but added for clarity
+        return 0;
+    }
+    
+    if ( root->left ) {
+        cameras += dfs( root->left );
+        
+        /* If the left child needs coverage, then we add a
+         * camera no matter what.
+         */
+        if ( root->left->val == NEEDS_COVERAGE ) {
+            root->val = HAS_CAMERA;
+        }
+        
+        /* If the left child has a camera, the node is 
+         * covered by the left child's camera, so we don't
+         * need to add one.
+         */
+        if ( root->left->val == HAS_CAMERA ) {
+            root->val = COVERED;
+        }
+    }
+    
+    if ( root->right ) {
+        cameras += dfs( root->right );
+
+        /* If the right child needs coverage, then we add a
+         * camera no matter what.  Doesn't need to check 
+         * what the left child did, because adding the 
+         * camera takes highest priority.
+         */
+        if ( root->right->val == NEEDS_COVERAGE ) {
+            root->val = HAS_CAMERA;
+        }
+        
+        /* If we added a camera already due to the left child
+         * needing it, we don't downgrade the current node 
+         * from "has camera" to "covered by right child".
+         */
+        if ( root->val != HAS_CAMERA ) {
+            if ( root->right->val == HAS_CAMERA ) {
+                root->val = COVERED;
+            }
+        }
+    }
+    
+    /* If we added a camera to the current node, add one
+     * to the camera counters.  We do it here so we can't
+     * add two cameras if both LEFT and RIGHT needs coverage.
+     */
+    if ( root->val == HAS_CAMERA ) {
+        return cameras + 1;
+    }
+    
+    /* Otherwise, the camera count remains the same.  */
+    return cameras;
+}
+
+
+int minCameraCover(struct TreeNode* root) {
+    int cameras = dfs(root);
+    
+    /* If the top most node still needs coverage, add
+     * a camera.
+     */
+    if ( root->val == NEEDS_COVERAGE ) {
+        root->val = HAS_CAMERA; // Not needed, but added for clarity.
+        return cameras + 1;
+    }
+    
+    return cameras;
+}

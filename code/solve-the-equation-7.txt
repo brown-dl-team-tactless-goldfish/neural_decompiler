@@ -1,0 +1,52 @@
+class Solution {
+public:
+    bool isDigit(char c) {
+        return (c >= '0' && c <= '9') || c == 'x';
+    }
+    
+    vector<string> split(string& s) {
+        vector<string> result(1);
+        string opr = "+-";
+        int flag = 0;
+        for (char c : s) {
+            if (isDigit(c)) {
+                result.back() += c;
+            } else {
+                if (!result.back().empty() && isDigit(result.back().back())) {
+                    result.push_back(string());
+                }
+                if (c == '=') flag = 1;
+                if (c == '-') {
+                    result.back() = string(1, opr[1 - flag]);
+                } else {
+                    result.back() = string(1, opr[flag]);
+                }
+            }
+        }
+        return result;
+    }
+    
+    string solveEquation(string equation) {
+        // split the string into symbols:
+        // x+5-3+x=6+x-2
+        // => [+x, +5, -3, +x, -6, -x, +2] (=0)
+        equation = "+" + equation;
+        auto strs = split(equation);
+        
+        int x = 0;
+        int val = 0;
+        for (auto& s : strs) {
+            // cout << s << "|";
+            if (s.back() == 'x') {
+                s.pop_back();
+                if (s.length() == 1) s += '1';
+                x += stoi(s);
+            } else {
+                val -= stoi(s);
+            }
+        }
+        if (!x && !val) return "Infinite solutions";
+        if (!x) return "No solution";
+        return "x=" + to_string(val / x);
+    }
+};

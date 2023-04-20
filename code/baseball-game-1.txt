@@ -1,0 +1,40 @@
+#define OPS_LEN     750
+
+int calPoints(char ** ops, int opsSize){
+    int score[OPS_LEN] = {0}, idx = 0, sum = 0;
+    
+    for(int i = 0; i < opsSize; i++) {
+        if(strlen(ops[i]) == 1 && !isdigit(ops[i][0])) {
+            switch(ops[i][0]) {
+                case 'C':
+                    // invalidate previous score
+                    sum -= score[idx-1];
+                    -- idx;
+                    break;
+                    
+                case 'D':
+                    // record a new score which is double the previous score
+                    score[idx] = score[idx - 1] * 2;
+                    sum += score[idx];
+                    ++ idx;
+                    break;
+                    
+                case '+':
+                    // record a new score which is the sum of the previous two scores
+                    score[idx] = score[idx - 1] + score[idx - 2];
+                    sum += score[idx];
+                    ++ idx;
+                    break;
+                
+                default: 
+                    break;
+            }   
+        } else {    // digit found, include it in the score and total
+            score[idx] = atoi(ops[i]);
+            sum += score[idx];
+            ++idx;
+        }
+    }
+    
+    return sum;   
+}

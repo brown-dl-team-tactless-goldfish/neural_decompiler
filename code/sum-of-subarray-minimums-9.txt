@@ -1,0 +1,29 @@
+public class Solution {
+    public int SumSubarrayMins(int[] A) {
+        int len = A.Length, mod = 1000000007, res = 0;
+
+        int[] bf = new int[len], af = new int[len];
+
+        for (var i = 0; i < len; i++)
+        {
+            var s = i - 1;
+
+            while (s >= 0 && A[s] >= A[i]) s -= bf[s];
+
+            bf[i] = i - s;
+        }
+
+        for (var i = len - 1; i >= 0; i--)
+        {
+            var s = i + 1;
+
+            while (s < len && A[s] > A[i]) s += af[s];
+
+            af[i] = s - i;
+
+            res = (res + bf[i] * af[i] * A[i]) % mod;
+        }
+
+        return res;
+    }
+}

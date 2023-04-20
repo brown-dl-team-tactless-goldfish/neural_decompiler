@@ -1,0 +1,30 @@
+class Solution {
+public:
+  int latestTimeCatchTheBus(vector<int>& nums, vector<int>& swaris, int capacity) {
+        sort(nums.begin(),nums.end());
+        sort(swaris.begin(),swaris.end());
+        
+        int c = 0;
+        int j = 0;
+        vector<int> values;
+        for(auto it:nums){
+            c = 0;
+            while(c < capacity and j<swaris.size() and it >= swaris[j]){
+              c++;
+              values.push_back(swaris[j]);
+              j++;
+            }
+        }
+
+        if(values.size() == 0 or c < capacity and values.back() < nums.back()){
+          return nums.back();
+        }
+
+        int cost = values.back();
+
+        while(binary_search(values.begin(),values.end(),cost)){
+          cost--;
+        }
+        return cost;
+}
+};

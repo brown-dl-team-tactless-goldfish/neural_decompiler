@@ -1,0 +1,62 @@
+/*
+--> Explanation >>>
+--> inside check_balance
+	Here we are interested in the following cases: ), ()), ((*))))
+ 	Alredy in the first steps we can see a 100% incorrect case. Look at this:
+ 	(()))(((((((((((((((((((()))))))))))))))))))) ..
+ 	I see no reason to go to the end when the wrong result is already visible in step 5
+	I consider the sum of char '(' and char '*' against char ')'
+	along the way, making sure that the balance does not go into minus(then return false immediately).
+	After that return balance (but the problem has not yet been solved)
+--> inside checkValidString
+	Sometimes check_balance return balance, like 5. Of course we need to check such options like wrong "*(((("
+ 	and correct "((***"
+ 	In this case we count from the end. Сreate a new variable that will count the balance.
+ 	if we stumble upon '*', increase the balance by 1, if '(' reduce the balance by 1.
+ 	If after the next step the balance goes into minus, we immediately return false
+--> P.S. try to understand for yourself what to do in this case "(*()"
+*/
+
+int check_balance(char *str)
+{
+	int balance = 0;
+	while (*str)
+	{
+		if (*str == ' ')
+			str++;
+		else
+		{
+			(*str == '*' || *str == '(') ? balance++ : balance--;
+			if (balance < 0)
+				return -1;
+			str++;
+		}
+	}
+	return balance;
+}
+
+bool checkValidString(char * s)
+{
+	int balex = 0;       //balance external after f.check_balance
+	int balin = 0;      //new internal balance for check "***(*" or "(*()"
+	int z = 0;         //len
+
+	while (s[z])
+		z++;
+	if ((balex = check_balance(s)) == -1)
+		return false;
+	while (--z >= 0 && balex > 0)
+	{
+		if (s[z] == '*' || s[z] == ')')
+			balin++;
+		if (s[z] == '(')
+			balin--;
+		if (s[z] == '*' || s[z] == '(')
+			balex--;
+		if (s[z] == ')')
+			balex++;
+		if (balin < 0)
+			return false;
+	}
+	return true;
+}

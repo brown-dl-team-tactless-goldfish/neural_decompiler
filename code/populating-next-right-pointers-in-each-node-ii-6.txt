@@ -1,0 +1,21 @@
+struct Node* connect(struct Node* root) {
+	struct Node** stk = (struct Node**)malloc(2*sizeof(struct Node*));
+    int top = -1;
+    if(root)  stk[++top] = root;
+    while(top >= 0){
+        struct Node** temp = (struct Node**)malloc(120 * sizeof(struct Node));
+        stk[top+1] = NULL;
+        
+        top = -1;
+        for(int i=0; stk[i]; i++){
+            stk[i]->next = stk[i+1];
+            if(stk[i]->left)
+                temp[++top] = stk[i]->left;
+            if(stk[i]->right)
+                temp[++top] = stk[i]->right;
+        }
+        free(stk);
+        stk = temp;
+    }
+    return root;
+}

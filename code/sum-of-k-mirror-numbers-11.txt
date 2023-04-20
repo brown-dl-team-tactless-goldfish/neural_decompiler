@@ -1,0 +1,120 @@
+// 2081. Sum of k-Mirror Numbers
+// Idea:
+//  * generate base-10 palindrome numbers x from 1 up, and test whether it's a base-k palindrome
+//  integer.
+// How to generate palindrome numbers?
+// Observations after manually generating some palindromes.
+// * len-1 and len-2 palindromes can be generated from the same core 1~9, if we ignore `0` as the
+//   first palin-number.
+// * len-3 and len-4 palindromes can be generated from the same core 10~99:
+//   len 3: 10-->101    99-->999
+//   len 4: 10-->1001,  99-->9999
+// * len-5 and len-6 palindromes can be generated from the same core 100~999:
+//   len-5: 100-->10001
+//   len-6: 100-->100001
+//
+// How to test if a number is a palindrome number in base k?
+// * straightforward --> see annotated code.
+class Solution {
+    using llong = long long;
+
+    /// \brief Check whether a number is a palindrome number in base k.
+    template<typename T>
+    static inline bool IsBaseKPalindromeNumber(T n, short k) {
+        // this is not thread-safe.
+        // but in Debug Mode, array is much faster than vector.
+        static short v[100];
+        // vector<short>& v = auxVec; // digits
+        // v.clear();
+        auto x = n;
+        int d = 0; // position of the next digit
+        while (x > 0) {
+            // v.emplace_back(x % k);
+            v[d] = x % k;
+            x /= k;
+            ++d;
+        }
+        // check if v is a palindrome
+        for (int i = 0, j = d - 1; i < j; ++i, --j) {
+            if (v[i] != v[j]) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+public:
+    /// \brief the core for generating a series of palindrome numbers in Base 10.
+    struct PalindromeGeneratorCore {
+        /// \brief tells whether the palindrome length is odd or even.
+        /// starts with "odd", then followed by "even" , then "odd"... and so on.
+        bool _isOdd = true;
+        /// the core number for generating palindromes.
+        int _coreNum = 1;
+        /// the magnitude of the core number.
+        /// e.g.
+        /// if _coreNum is 1~9, its magnitude min is 1, and max is 9.
+        /// if _coreNum is 10~99, its magnitude min is 10, and max is 99.
+        /// if _coreNum is 100~999, its magnitude min is 100, and max is 999.
+        int _coreMagnitudeMin = 1; // 10, 100
+        int _coreMagnitudeMax = 9; // 99, 999
+
+        /// \brief Generate the next palindrome number in Base 10
+        llong NextPalindromeNumber() { //
+            // TODO: optimize this logic. we don't have to convert to string every time.
+            auto s = to_string(_coreNum);
+            auto reversed = s; // 123
+            reverse(reversed.begin(), reversed.end()); // 321
+            auto x = _isOdd ? //
+                    s + reversed.substr(1) // 123_21
+                            : s + reversed; // 123_321
+            // prepare for generating the next palindrome number.
+            ++_coreNum;
+            if (_coreNum > _coreMagnitudeMax) {
+                if (_isOdd) { // Odd==>Even. Odd core 9->9 ==> even core 1->11.
+                    _isOdd = false;
+                } else { // already in Even state.
+                    // this time we'll increase the magnitude min/max
+                    _isOdd = true;
+                    _coreMagnitudeMin *= 10;
+                    _coreMagnitudeMax = _coreMagnitudeMax * 10 + 9;
+                }
+                _coreNum = _coreMagnitudeMin; // reset the core to min magnitude.
+            }
+            return stoll(x);
+        }
+    };
+
+public:
+    long long kMirror(int k, int n) {
+        //
+        // IsBaseKPalindromeNumber(100, 3);
+        llong sum = 0;
+        PalindromeGeneratorCore genCore;
+        int count = 0;
+        // vector<short> auxVec(100);
+        while (count < n) {
+            auto x = genCore.NextPalindromeNumber();
+            if (IsBaseKPalindromeNumber(x, (short)k)) {
+                sum += x;
+                ++count;
+            }
+        }
+        return sum;
+    }
+};
+
+void testPalindromeGenerator() {
+    Solution::PalindromeGeneratorCore genCore;
+    for (int i = 0; i < 1000; ++i) {
+        cout << genCore.NextPalindromeNumber() << ", ";
+    }
+    cout << endl;
+}
+
+void testBaseKPalindromeSum() {
+    Solution solver;
+    cout << solver.kMirror(3, 7) << endl;
+    cout << solver.kMirror(7, 17) << endl;
+    cout << solver.kMirror(7, 30) << endl;
+}

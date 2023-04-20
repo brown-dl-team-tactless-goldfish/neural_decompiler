@@ -1,0 +1,32 @@
+char * countAndSay(int n){
+    char** ans = (char**)calloc(2, sizeof(char*));
+    int* idx = (int*)calloc(2, sizeof(int));
+    int pingPongFlag = 0, cnt;
+    char curr;
+    
+    for(int i = 0; i < 2; i++)
+        ans[i] = (char*)calloc(4500, sizeof(char));
+    
+    ans[pingPongFlag][idx[pingPongFlag]++] = '1';
+    for(int i = 1; i < n; i++){
+        cnt = 1;
+        curr = ans[pingPongFlag][0];
+        idx[pingPongFlag ^ 1] = 0;
+
+        for(int j = 1; j < idx[pingPongFlag]; j++){
+            if(curr != ans[pingPongFlag][j]){
+                ans[pingPongFlag ^ 1][idx[pingPongFlag ^ 1]++] = '0' + cnt;
+                ans[pingPongFlag ^ 1][idx[pingPongFlag ^ 1]++] = curr;
+                curr = ans[pingPongFlag][j];
+                cnt = 1;
+            }
+            else
+                cnt++;
+        }
+        ans[pingPongFlag ^ 1][idx[pingPongFlag ^ 1]++] = '0' + cnt;
+        ans[pingPongFlag ^ 1][idx[pingPongFlag ^ 1]++] = curr; 
+        idx[pingPongFlag] = 0;
+        pingPongFlag ^= 1;
+    }
+    return ans[pingPongFlag];
+}

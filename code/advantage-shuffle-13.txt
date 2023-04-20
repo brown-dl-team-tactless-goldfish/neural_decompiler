@@ -1,0 +1,34 @@
+class Solution {
+public:
+    vector<int> advantageCount(vector<int>& A, vector<int>& B) {
+        map<int,int> m; 
+        //multiset also fine 
+        for(auto x : A) {
+            m[x]++;
+        }
+        vector<int> ret(A.size(),-1);
+        for(int i = 0;i<A.size();i++){
+            auto ptr = m.upper_bound(B[i]);
+            if(ptr != m.end()) {
+                ret[i] = ptr->first;
+            }
+            ptr->second--;
+            if(ptr->second == 0) {
+                m.erase(ptr);
+            }
+        }
+        if(m.size()) {
+            for(int i = 0;i<A.size();i++) {
+                if(ret[i] == -1) {
+                    auto ptr = m.begin();
+                    ret[i] = ptr->first; 
+                    ptr->second--;
+                    if(ptr->second == 0) {
+                        m.erase(ptr);
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+};

@@ -1,0 +1,36 @@
+typedef long long ll;
+
+class Solution {
+public:
+    
+    map<pair<ll, ll>, ll> mp;
+    vector<vector<ll> > dp;
+    
+    ll util(ll rows, ll cols){
+        if(rows==0 || cols==0){
+            return 0;
+        }
+        if(dp[rows][cols]!=-1){
+            return dp[rows][cols];
+        }
+        ll ans=0;
+        if(mp.count({rows, cols})){
+            ans=mp[{rows, cols}];
+        }
+        for(ll j=1; j<cols; j++){
+            ans=max(ans, util(rows, j)+util(rows, cols-j));
+        }
+        for(ll i=1; i<rows; i++){
+            ans=max(ans, util(i, cols)+util(rows-i, cols));
+        }
+        return dp[rows][cols]=ans;
+    }
+    
+    long long sellingWood(int n, int m, vector<vector<int>>& prices) {
+        for(auto& itr: prices){
+            mp[{itr[0], itr[1]}]=itr[2];
+        }
+        dp=vector<vector<ll> >(n+1, vector<ll>(m+1, -1));
+        return util(n, m);
+    }
+};

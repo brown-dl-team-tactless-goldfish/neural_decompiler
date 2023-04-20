@@ -1,0 +1,39 @@
+    deque<pair<long, long>> dq;
+    
+    long sum = 0, len = INT_MAX;
+    
+    for(long i=0; i<nums.size(); i++)
+    {
+        sum += nums[i];
+        
+        if(sum >= k)
+        {
+            len = min(len, i+1);
+        }
+        
+        pair<long,long> cur = {INT_MIN,INT_MIN};
+        
+        while(!dq.empty() && (sum - dq.front().second) >= k)
+        {
+            cur = dq.front();
+            
+            dq.pop_front();
+        }
+        
+        if(cur.first != INT_MIN)
+        {
+          len = min(len, i-cur.first);
+            
+        }
+        
+        while(!dq.empty( ) && dq.back().second >= sum)
+        {
+            dq.pop_back( );
+        }
+        
+        dq.push_back({i,sum});
+    }
+    
+    return len == INT_MAX? -1 : len;
+    
+}

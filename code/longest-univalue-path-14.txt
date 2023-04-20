@@ -1,0 +1,12 @@
+int longestUnivaluePath(TreeNode* root) {
+    if (!root)
+        return 0;
+    function<int (TreeNode*)> count = [&] (TreeNode* node) {
+        return node && node->val == root->val
+            ? 1 + max(count(node->left), count(node->right))
+            : 0;
+    };
+    return max(count(root->left) + count(root->right),
+               max(longestUnivaluePath(root->left),
+                   longestUnivaluePath(root->right)));
+}

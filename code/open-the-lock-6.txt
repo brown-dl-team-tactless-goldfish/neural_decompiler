@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int openLock(vector<string>& deadends, string target) {
+        unordered_set<string> seen(deadends.begin(), deadends.end());
+        vector<int> mods = {-1, 1};
+        queue<string> q;
+        int i, qsize, steps = 0;
+        string neighbor;
+        
+        q.push("0000");
+        if (seen.count("0000"))
+            return -1;
+        seen.insert("0000");
+        
+        while (!q.empty()) {
+            qsize = q.size();
+            steps++;
+            for (i = 0; i < qsize; ++i) {
+                auto &combo = q.front();
+                for (auto& mod : mods) {
+                    for (int x = 0; x < 4; ++x) {
+                        neighbor = combo;
+                        char &c = neighbor[x];
+                        c = (((c-'0')+mod+10)%10)+'0';
+                        if (neighbor == target)
+                            return steps;
+                        if (seen.count(neighbor))
+                            continue;
+                        q.push(neighbor);
+                        seen.insert(neighbor);
+                    }
+                }
+                q.pop();
+            }
+        }   
+        return -1;
+    }
+};

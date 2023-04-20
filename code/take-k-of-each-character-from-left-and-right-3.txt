@@ -1,0 +1,32 @@
+public class Solution
+{
+    public int TakeCharacters(string s, int k)
+    {
+        int n = s.Length;
+        //freq of a, b, c
+        int[] freq = new int[3];
+        foreach (char c in s)
+        {
+            freq[c - 'a']++;
+        }
+
+        if (freq[0] < k || freq[1] < k || freq[2] < k)
+            return -1;
+
+        int result = n;
+
+        int left = 0;
+        for (int right = 0; right < n;)
+        {
+            freq[s[right] - 'a']--;
+            right++;
+            while ((freq[0] < k || freq[1] < k || freq[2] < k) && left < right)
+            {
+                freq[s[left] - 'a']++;
+                left++;
+            }
+            result = Math.Min(result, n - (right - left));
+        }
+        return result;
+    }
+}

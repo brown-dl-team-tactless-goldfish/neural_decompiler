@@ -1,0 +1,94 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+struct inner_pair {
+	int first;
+	int second;
+};
+
+struct pair {
+    float fraction;
+    struct inner_pair element;
+};
+
+int cmpfunc(const void* a, const void* b) {
+    return *(int*)a - *(int*)b;
+}
+
+void swapFloat(float *a, float *b) {
+	float temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+void swap(int *a, int *b) {
+	int temp = *a;
+	*a = *b;
+	*b = temp;
+}
+
+void max_heapify(struct pair* pq, int n, int i) {
+	int left = 2 * i + 1, right = 2 * i + 2, smallest = i;
+
+	if (left < n && pq[left].fraction < pq[smallest].fraction) 
+        smallest = left;
+
+	if (right < n && pq[right].fraction < pq[smallest].fraction)
+        smallest = right;
+	
+	if (smallest != i) {
+        swapFloat(&pq[i].fraction, &pq[smallest].fraction);
+        swap(&pq[i].element.first, &pq[smallest].element.first);
+        swap(&pq[i].element.second, &pq[smallest].element.second);
+        max_heapify(pq, n, smallest);
+    }
+}
+
+void buildHeap(struct pair *pq, int n) {
+	int index = (n / 2) - 1;
+    
+    for (int i = index; i >= 0; i--)
+		max_heapify(pq, n, i);	
+}
+
+void deleteRoot(struct pair* pq, int* n) {
+	pq[0].fraction = pq[*n - 1].fraction;
+    pq[0].element.first = pq[*n - 1].element.first;
+    pq[0].element.second = pq[*n - 1].element.second;
+    (*n)--;
+	
+	buildHeap(pq, *n);
+}
+
+int* kthSmallestPrimeFraction(int* arr, int n, int k, int* returnSize){
+    int i, j;
+    *returnSize = 2;
+
+    struct pair* pq = (struct pair*)malloc(sizeof(struct pair) * ((n - 1) * n) / 2) ;
+
+    int x = 0;
+
+    for (i = 0; i < n - 1; i++) {
+        for (j = i + 1; j < n; j++) {
+            pq[x].fraction = ((float)arr[i] / (float)arr[j]);
+            pq[x].element.first = arr[i];
+            pq[x].element.second = arr[j];
+            x++;
+        }
+    }
+
+    buildHeap(pq, x);
+
+    while (k > 1) {
+        deleteRoot(pq, &x);
+        k--;
+    }
+
+    int* res = (int*)malloc(sizeof(int) * 2);
+
+    res[0] = pq[0].element.first;
+    res[1] = pq[0].element.second;
+
+    return res;
+}

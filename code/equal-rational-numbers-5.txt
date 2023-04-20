@@ -1,0 +1,53 @@
+class Solution {
+public:
+  void To_Low_Term(int &a, int &b){
+    if( a == 1 || b == 0) return;
+    if( a == 0 ) {b = 0; return;}
+    
+    map <int,int> mp;
+    
+    int i = 2; 
+    while(a != 1)
+      if(a%i == 0) {mp[i]++;a/=i;}
+      else i++;
+    
+    i = 2;
+    while(b != 1)
+      if(b%i == 0) {mp[i]--;b/=i;}
+      else i++;
+      
+      for(auto it : mp)
+        if(it.second != 0)
+          if(it.second > 0) while(it.second--) a *= it.first;
+          else while(it.second++ != 0) b *= it.first;
+      
+  }
+
+  string proper_fraction(string &s){
+    int a = 0, b = 0, c = 0, i = 0, nb = 1, nc = 1, nc9 = 0;
+    
+    for(; i < s.size() && s[i] != '.'; i++) a = a*10 + s[i] - '0';
+    i++;
+    
+    for(; i < s.size() && s[i] != '('; i++ ,nb *= 10) 
+      b = b*10 + s[i] - '0';
+    i++;
+    
+    for(; i < s.size() && s[i] != ')'; i++, nc *= 10, nc9 = nc9*10 + 9) 
+      c = c*10 + s[i] - '0';
+    
+    int devidend, devider;
+    if(c == 0) devidend = b, devider = nb;
+    else devidend = b*nc + c - b, devider  = nc9*nb; 
+  
+    To_Low_Term(devidend, devider);
+    
+    if(devidend == 1 && devider == 1) devidend = devider = 0, a++;
+    
+    return to_string(a) + '_' + to_string(devidend) + '_' + to_string(devider);
+  }
+  
+  bool isRationalEqual(string s, string t) {
+    return proper_fraction(s) == proper_fraction(t);    
+  }
+};

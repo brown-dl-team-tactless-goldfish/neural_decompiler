@@ -1,0 +1,20 @@
+#define max(A, B) (A > B ? A : B)
+
+int *partitionLabels(char *s, int *returnSize) {
+  int last[26] = {0}, length = 0;
+
+  for (; s[length]; length++)
+    last[s[length] - 'a'] = length;
+
+  *returnSize = 0;
+  int j = 0, anchor = 0;
+  int *ans = (int *)calloc(length, sizeof(int));
+  for (int i = 0; i < length; ++i) {
+    j = max(j, last[s[i] - 'a']);
+    if (i == j) {
+      ans[(*returnSize)++] = i - anchor + 1;
+      anchor = i + 1;
+    }
+  }
+  return ans;
+}

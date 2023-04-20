@@ -1,0 +1,32 @@
+class Solution {
+	// used to store results of subproblems
+    int dp[1<<14];
+    
+    int traverse(vector<int>& nums1, vector<int>& nums2, bitset<14> mask) {
+		// i numbers of elements are already chosen
+        int i = mask.count();
+        if (i >= nums1.size()) return 0;
+
+        auto maskValue = mask.to_ulong();
+		// subproblem is already evaluated
+        if (dp[maskValue] != INT_MAX) return dp[maskValue];
+
+        for(int j = 0; j < nums2.size(); ++j) {
+            if (mask[j]) continue;
+			// set jth bit as choosen for next subproblem
+            mask.flip(j);
+			
+			// calculate the xor value and evaluate the next subproblem
+            dp[maskValue] = min(dp[maskValue], (nums1[i] xor nums2[j]) + traverse(nums1, nums2, mask));
+			
+			// unset jth bit
+            mask.flip(j);
+        }
+        return dp[maskValue];
+    }
+public:
+    int minimumXORSum(vector<int>& nums1, vector<int>& nums2) {
+        fill_n(&dp[0], 1<<14, INT_MAX);
+        return traverse(nums1, nums2, bitset<14>(0));
+    }
+};

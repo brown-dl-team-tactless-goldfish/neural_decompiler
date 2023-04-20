@@ -1,0 +1,44 @@
+class Solution {
+public:
+    int mostBooked(int n, vector<vector<int>>& m) {
+        sort(m.begin(),m.end());
+        set<int> free;                                           // will store free rooms
+        for(int i=0;i<n;i++) free.insert(i);
+        set<pair<long long,int>> used;              // {end time, used room}
+        vector<int> ans(n,0);
+        int k = 0;
+        long long time = 0;
+        while(k<m.size()){
+            while(!used.empty() && (*used.begin()).first <= time){                    
+                free.insert((*used.begin()).second);
+                used.erase(used.begin());
+            }
+            if(free.empty()){
+                time = (*used.begin()).first;
+                continue;
+            }
+            if(time < m[k][0]){
+                time = m[k][0];
+                continue;
+            }
+            
+            int j = *(free.begin());
+            free.erase(free.begin());
+            ans[j]++;
+            long long duration = m[k][1]-m[k][0];
+            used.insert({time + duration,j});
+            k++;
+        }
+        
+        
+        int ind = -1;
+        int maxi = 0;
+        for(int i=0;i<n;i++){
+            if(ans[i]>maxi){
+                maxi = ans[i];
+                ind = i;
+            }
+        }
+        return ind;
+    }
+};

@@ -1,0 +1,37 @@
+class Solution:
+    def findClosestElements(self, arr: List[int], k: int, x: int) -> List[int]:
+        n = len(arr)
+        print ("n = ", n)
+        
+        if (x <= arr[0]):
+            print ("1")
+            return arr[:k]
+        elif (x >= arr[-1]):
+            return arr[-k:]
+        
+        idx = bisect.bisect_left(arr, x)
+        print ("idx = ", idx)
+        
+        l, r = idx-1, idx
+        res = []
+        while len(res) < k:
+            # print ("l = ", l, " r = ", r)
+            # print ("res = ", res)
+            
+            if (l < 0):
+                res.append(arr[r])
+                r += 1
+            elif (r >= n):
+                res.append(arr[l])
+                l -= 1
+            
+            elif (abs(arr[l] - x) <= abs(arr[r] - x)):
+                res.append(arr[l])
+                l -= 1
+            else:
+                res.append(arr[r])
+                r += 1
+                
+        res.sort()
+        print ("res = ", res)
+        return res

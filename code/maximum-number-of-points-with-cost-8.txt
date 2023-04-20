@@ -1,0 +1,37 @@
+class Solution {
+public:
+    long long maxPoints(vector<vector<int>>& points) {
+        int h = points.size();
+        int w = points[0].size();
+        vector<vector<long long>> dp(h, vector<long long>(w, INT_MIN));
+        
+        long long ans = INT_MIN;
+        for (int c = 0; c < w; ++c) {
+            dp[0][c] = points[0][c];
+            
+            if (h == 1) {
+                ans = max(ans, dp[0][c]);
+            }
+        }
+    
+        for (int r = 0; r < h - 1; ++r) {
+            priority_queue<long long> pq_left, pq_right;
+            
+            for (int c = 0; c < w; ++c) {
+                pq_left.push(dp[r][c] + c);
+                dp[r + 1][c] = max(dp[r + 1][c], pq_left.top() - c + points[r + 1][c]);
+                
+                int rhs_idx = w - c - 1;
+                pq_right.push(dp[r][rhs_idx] + c);
+                dp[r + 1][rhs_idx] = max(dp[r + 1][rhs_idx], pq_right.top() - c + points[r + 1][rhs_idx]);
+                
+                if (r + 1 == h - 1) {
+                    ans = max(ans, dp[r + 1][c]);
+                    ans = max(ans, dp[r + 1][rhs_idx]);
+                }
+            }
+        }
+        
+        return ans;
+    }
+};

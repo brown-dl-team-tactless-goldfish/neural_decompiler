@@ -1,0 +1,31 @@
+void DFS(int** isConnected,int isConnectedSize,bool* visited,int currRow){
+    visited[currRow]=true;
+    for(int k=0;k<isConnectedSize;k++){
+        if(!visited[k]&&isConnected[currRow][k]==1){
+            isConnected[currRow][k]=0;
+            visited[k]==true;
+            DFS(isConnected,isConnectedSize,visited,k);
+        }
+    }
+}
+
+int findCircleNum(int** isConnected, int isConnectedSize, int* isConnectedColSize){
+    if(isConnectedSize==1)
+        return 1;
+    
+    int provinceCount=0;
+    bool *visited=calloc(isConnectedSize,sizeof(bool));
+    
+
+    for(int i=0;i<isConnectedSize;i++){
+        if(!visited[i]){
+            provinceCount+=1;
+            visited[i]=true;
+            isConnected[i][i]=0;
+            DFS(isConnected,isConnectedSize,visited,i);
+        }
+    }
+
+    free(visited);
+    return provinceCount;
+}

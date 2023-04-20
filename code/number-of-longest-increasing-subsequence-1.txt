@@ -1,0 +1,24 @@
+int findNumberOfLIS(int* nums, int numsSize){
+    if (numsSize == 0) return 0;
+    int sec_len[numsSize], sec_num[numsSize];
+    int max_len = 0, max_num = 0;
+    for (int i = 0; i < numsSize; ++i) {
+        int num = 1, len = 0;
+        for (int j = 0; j < i; ++j) {
+            if (nums[j] < nums[i]) {
+                if (len < sec_len[j]) {
+                    len = sec_len[j];
+                    num = sec_num[j];
+                }
+                else if (len == sec_len[j]) num += sec_num[j];
+            }
+        }
+        sec_len[i] = ++len;
+        sec_num[i] = num;
+        if (len >= max_len) max_len = len;
+    }
+    for (int i = 0; i < numsSize; ++i) {
+        if (max_len == sec_len[i]) max_num += sec_num[i];
+    }
+    return max_num;
+}

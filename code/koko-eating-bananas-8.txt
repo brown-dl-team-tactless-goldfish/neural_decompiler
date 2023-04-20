@@ -1,0 +1,28 @@
+int cmp(const void * a, const void * b){
+    return *(int *)a - *(int *)b;
+}
+
+int minEatingSpeed(int* piles, int pilesSize, int H){
+    qsort(piles, pilesSize, sizeof(int), cmp);
+    if (H == pilesSize)
+        return piles[pilesSize - 1];
+    int addition = H - pilesSize;
+    int start_num;
+    if (pilesSize - 1 - addition < 0)
+        start_num = 1;
+    else
+        start_num = piles[pilesSize - 1 - addition];
+    int end_num = piles[pilesSize - 1];
+    while (start_num < end_num){
+        int sum = 0;
+        int cur_num = (start_num + end_num) / 2;
+        for (int j = 0; j < pilesSize; j++){
+            sum += (piles[j] - 1) / cur_num;
+        }
+        if (sum > addition)
+            start_num = cur_num + 1;
+        else if (sum <= addition)
+            end_num = cur_num;
+    }
+    return start_num;
+}

@@ -1,0 +1,41 @@
+#define offset 8
+#define mask   0x1f
+
+int strInt(char* s){
+    int d = ((s[0] - '0') * 10 + (s[1] - '0')) << offset;
+    d |= ((s[3] - '0') * 10 + (s[4] - '0'));
+    return d;
+}
+
+int countDaysTogether(char * arriveAlice, char * leaveAlice, char * arriveBob, char * leaveBob){
+    int days[12] = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+    int date[4], start, end;
+    date[0] = strInt(arriveAlice);
+    date[1] = strInt(leaveAlice);
+    date[2] = strInt(arriveBob);
+    date[3] = strInt(leaveBob);
+    
+    if(date[0] > date[2]){
+        /* reverse date for calculating more convenience */
+        start = date[2];  end = date[3];
+        date[2] = date[0]; date[3] = date[1];   
+        date[0] = start; date[1] = end;        
+    }
+    
+    if(date[2] > date[1]) /* no overlap */
+        return 0;
+
+    start = date[2] <= date[0]? date[0] : date[2];
+    end = date[1] < date[3]? date[1] : date[3];
+    
+    if(start>>offset == end>>offset)/* in the same month */
+        return end - start + 1;
+    
+    int m1 = (start>>offset) - 1, m2 = (end>>offset) - 1, ans = 0;
+    ans += days[m1] - (start & mask) + 1;
+    for(int i = m1 + 1; i < m2; i++)
+        ans += days[i];
+    ans += (end & mask);
+
+    return ans;
+}

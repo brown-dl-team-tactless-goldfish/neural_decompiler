@@ -1,0 +1,58 @@
+int findNextRow(int* rowSum, int row, int col){
+    int ret = -1;
+    int min = INT_MAX;
+    for(int i = 0; i < row; i++){
+        if(rowSum[i] > 0 && rowSum[i] < min ){
+            min = rowSum[i];
+            ret = i;
+        }
+    }
+    return ret;
+}
+
+int findNextCol(int* colSum, int row, int col, int** ans){
+    int ret = -1;
+    int min = INT_MAX;
+    for(int i = 0; i < col; i++){
+        if( colSum[i] > 0 && colSum[i] < min && ans[row][i] == 0){
+            min = colSum[i];
+            ret = i;
+        }
+    }
+    return ret;
+}
+
+int** restoreMatrix(int* rowSum, int rowSumSize, int* colSum, int colSumSize, int* returnSize, int** returnColumnSizes){
+    int row = rowSumSize;
+    int col = colSumSize;
+    
+    int** ans   = malloc(row * sizeof(int*));
+    for(int i = 0; i < row; i++){
+        ans[i] = calloc(col , sizeof(int));
+    }
+    
+    int temp;
+    int i = findNextRow(rowSum, row, col); 
+    int j ;
+    while(i >= 0){
+        j = findNextCol(colSum, i, col, ans); 
+        while(j>=0){
+            temp = fmin(rowSum[i], colSum[j]);
+            ans[i][j] = temp;
+            rowSum[i] -= temp;
+            colSum[j] -= temp;
+           
+            if(rowSum[i] == 0)
+                break;
+            j = findNextCol(colSum, i, col, ans); 
+        }
+        i = findNextRow(rowSum, row, col);  
+    }
+    
+    *returnSize = row;
+    *returnColumnSizes = malloc(row * sizeof(int));
+    for(int i = 0; i < row; i++)
+        returnColumnSizes[0][i] = col;
+    
+    return ans;
+}

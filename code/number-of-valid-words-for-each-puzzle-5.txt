@@ -1,0 +1,15 @@
+class Solution {
+public:
+    vector<int> findNumOfValidWords(vector<string>& words, vector<string>& puzzles) {
+        vector<int> ret(puzzles.size(), 0); unordered_map<int, int> wbm; int i = 0;
+        for (auto s : words) { int wb = 0; for (auto c : s) { wb |= (1 << (c - 'a')); } wbm[wb]++; }
+        for (auto s : puzzles) {
+            int pb = 0, fl = 1 << (s[0] - 'a'); /* Gotta check first letter */
+            for (auto c : s) { pb |= (1 << (c - 'a')); }            
+            /* Count occurence of submasks of the puzzle's bitmask in the words bitmap map, wbm */
+            for (int sm = pb; sm > 0; sm = pb & --sm) ret[i] += (sm & fl) ? wbm[sm] : 0;
+            i++;
+        }
+        return ret;
+    }
+};

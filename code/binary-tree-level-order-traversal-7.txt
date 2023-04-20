@@ -1,0 +1,47 @@
+#define MAX_SIZE    256
+
+int findDepth(struct TreeNode* root)
+{
+    int left,right;
+    
+    if(root==NULL)
+        return 0;
+    left = findDepth(root->left);
+    right = findDepth(root->right);
+    
+    return (left>right)?(left+1):(right+1);
+}
+
+void preOrder(struct TreeNode* root, int level, int** result, int* columnSize)
+{
+    if(root==NULL)
+        return;
+    
+    result[level][columnSize[level]] = root->val;
+    columnSize[level]++;
+    
+    preOrder(root->left,level+1,result,columnSize);
+    preOrder(root->right,level+1,result,columnSize);
+}
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** levelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes){
+    int depth = findDepth(root);
+    int** result = (int**)malloc(depth*sizeof(int*));
+    int i;
+    
+    for(i=0;i<depth;i++)
+    {
+        result[i] = (int*)malloc(MAX_SIZE*sizeof(int));
+    }
+    (*returnColumnSizes) = (int*)calloc(depth,sizeof(int));
+    
+    preOrder(root,0,result,(*returnColumnSizes));
+    
+    *returnSize = depth;
+    return result;
+}

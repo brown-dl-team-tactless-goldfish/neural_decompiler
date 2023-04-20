@@ -1,0 +1,78 @@
+class FenWickTree{
+    
+public:
+    vector<int>tree;
+    
+    FenWickTree(){};
+    
+    FenWickTree(int n)
+    {
+        tree.resize(n);
+        fill(tree.begin(),tree.end(),0);
+    }
+    
+    // update the freq from index i to max size forward
+    void update(int i)
+    {
+        while(i<tree.size())
+        {
+            tree[i]++;
+            i+= (i&-i);
+        }
+    }
+    
+    // get freq count from current index until 1 backward
+    int get(int i)
+    {
+        int val = 0;
+        while(i>0)
+        {
+            val+= tree[i];
+            i-= (i&-i);
+        }
+        
+        return val;
+    }          
+};
+
+class Solution {
+public:
+    int createSortedArray(vector<int>& instruct) {
+        
+        int size = instruct.size();
+        
+        int maxVal = *max_element(instruct.begin(),instruct.end());
+        
+        // create FenWick tree with max value size
+        FenWickTree tree(maxVal+2);
+            
+        long long cost  = 0L;
+        long long MOD = 1000000007;
+        int pMax = INT_MIN;     // keep track of previous max value
+        int minC, maxC;
+        
+        for(int i=0;i<size;i++)
+        {
+            // calculate previous min freq only if current value < previous max value
+            if(pMax > instruct[i])
+            {
+                // get freq count for all values less than current value
+                minC = tree.get(instruct[i]);                 
+                
+                // get freq count in range of previous max value and current value
+                maxC = tree.get(pMax+1) - tree.get(instruct[i]+1);
+                
+                // calculate cost
+                cost = (cost + min(minC,maxC))%MOD;
+            }
+            
+            // update previous max value with current value
+            pMax = max(pMax,instruct[i]);  
+            
+            // update current value freq in the BIT
+            tree.update(instruct[i]+1);
+        }
+            
+        return cost;
+    }
+};

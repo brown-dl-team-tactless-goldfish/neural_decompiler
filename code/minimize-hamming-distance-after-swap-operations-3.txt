@@ -1,0 +1,57 @@
+class Solution {
+    
+    int P[100010];
+    int find( int a )
+    {
+        if( P[a] == a )
+            return a ;
+        return P[a] = find( P[a] );
+    }
+    void join( int a,  int b )
+    {
+        P[find(a)] = find(b);
+    }
+public:
+    int minimumHammingDistance(vector<int>& A , vector<int>& B , vector<vector<int>>& C ) {
+        
+        int N = A.size();
+        for( int i = 0 ; i < N ; i++ )
+            P[i] = i ;
+        
+        
+        for( auto x : C )
+        {
+            int a = x[0];
+            int b = x[1];
+            
+            join( a , b );
+        }
+        
+        unordered_map< int , multiset<int> > p , q  ;
+        
+        for( int i = 0 ; i < N ; i++ )
+        {
+            int a = find(i);
+            p[a].insert(A[i]);
+            q[a].insert(B[i]);
+        }
+        
+        int res = 0 ;
+        for( auto x : p )
+        {
+            int a = x.first ; 
+            auto st1 = x.second ;
+            auto st2 = q[a];
+            
+            for( auto i : st1 )
+            {
+                if( st2.find(i) != st2.end() )
+                    st2.erase(st2.find(i));
+            }
+            
+            res += st2.size();
+            
+        }
+        return res; 
+    }
+};

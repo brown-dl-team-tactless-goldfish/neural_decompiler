@@ -1,0 +1,44 @@
+class Solution {
+public:
+    vector<int> countRectangles(vector<vector<int>>& re, vector<vector<int>>& points) {
+        int n = re.size();
+        sort(re.begin(), re.end());
+        vector<vector<int>> freq(n, vector<int> (101));
+        for (int i = n - 1; i >= 0; i--) {
+            for (int p = 1; p <= 100; p++) {
+                if (re[i][1] == p) {
+                    freq[i][p] = (i == n - 1 ? 0 : freq[i + 1][p]) + 1;
+                }
+                else {
+                    freq[i][p] = (i == n - 1 ? 0 : freq[i + 1][p]);
+                }
+            }
+        }
+        auto get = [&] (int val) -> int {
+            int low = 0;
+            int high = n - 1;
+            int pos = n;
+            while (low <= high) {
+                int mid = (low + high) / 2;
+                if (re[mid][0] >= val) {
+                    pos = mid;
+                    high = mid - 1;
+                }
+                else {
+                    low = mid + 1;
+                }
+            }
+            return pos;
+        };
+        int len = points.size();
+        vector<int> sol(len);
+        for (int i = 0; i < len; i++) {
+            int p = get(points[i][0]);
+            if (p == n) continue;
+            for (int j = points[i][1]; j <= 100; j++) {
+                sol[i] += freq[p][j];
+            }
+        }
+        return sol;
+    }
+};

@@ -1,0 +1,47 @@
+void level(struct TreeNode * root,int *sum,int lev,int cur);
+int height(struct TreeNode * root);
+int maxLevelSum(struct TreeNode* root){
+    
+    int h=height(root);
+    int i=0,sum=0,max=INT_MIN,lev=0;
+    printf("%d",h);
+    for(i=1;i<h+1;i++,sum=0)
+    {
+      level(root,&sum,i,1);
+      if(sum>max)
+      {
+          max=sum;
+          lev=i;
+      }
+    }
+    return lev;
+    
+    
+
+}
+int height(struct TreeNode * root)
+{
+    if(!root)
+        return 0;
+    int l=height(root->left);
+    int r=height(root->right);
+    return r>l?r+1:l+1;
+}
+void level(struct TreeNode * root,int *sum,int lev,int cur)
+{
+    if(!root)
+        return ;
+    
+    if(cur==lev)
+    {
+        (*sum)+=root->val;
+    }
+    level(root->left,sum,lev,cur+1);
+    level(root->right,sum,lev,cur+1);
+}
+    
+    
+    
+    
+    
+    

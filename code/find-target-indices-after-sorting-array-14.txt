@@ -1,0 +1,49 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+void Swap(int *x,int *y){
+    int temp=*x;
+    *x=*y;
+    *y=temp;
+}
+
+void Heapify(int nums[],int numsSize,int index){
+    int Largest=index;
+    int L_child=2*index+1;
+    int R_child=2*index+2;
+    if(L_child<numsSize && nums[L_child]>nums[Largest]){
+        Largest=L_child;
+    }
+    if(R_child<numsSize && nums[R_child]>nums[Largest]){
+        Largest=R_child;
+    }
+    if(Largest!=index){
+        Swap(&nums[index],&nums[Largest]);
+        Heapify(nums,numsSize,Largest);
+    }
+}
+
+void Heap_sort(int nums[],int numsSize){
+    for(int i=(numsSize/2)-1; i>=0; i--){
+        Heapify(nums,numsSize,i);
+    }
+    for(int i=numsSize-1; i>=0; i--){
+        Swap(&nums[0],&nums[i]);
+        Heapify(nums,i,0);
+    }
+}
+
+int* targetIndices(int* nums, int numsSize, int target, int* returnSize){
+   Heap_sort(nums,numsSize);
+   int *arr=(int*)malloc(numsSize*sizeof(int));
+   int k=0,count=0;
+   for(int i=0; i<numsSize; i++){
+       if(nums[i]==target){
+           arr[k++]=i;
+           count++;
+       }
+   }
+   *returnSize=count;
+   return arr;
+   return 0;  
+}

@@ -1,0 +1,57 @@
+class Solution {
+public:
+    set<int> Adj[100001];
+     bool solve(int a, int b , int  c, int d)
+    {
+        bool ans1 = true, ans2 = true;
+        for(auto &x : Adj[a])if(x == b)ans1 = false;
+        for(auto &x : Adj[c])if(x == d)ans2 = false;
+        return ans1 & ans2;
+    }
+    bool solve(int a, int b, int n)
+    {
+        bool ans1 = true;
+        if(Adj[a].find(b) == Adj[a].end())return true;
+        for(int i=1;i<=n;i++)
+        {
+            if(((int)Adj[i].size()&1) == 0)
+            {
+                if(Adj[i].find(a) == Adj[i].end() && Adj[i].find(b) == Adj[i].end())return true;
+            }
+        }
+        return false;
+    }
+    bool isPossible(int n, vector<vector<int>>& edges) {
+        vector<int> Indegree(n+1, 0);
+        for(auto &x : edges)
+        {
+            Adj[x[0]].insert(x[1]);
+            Adj[x[1]].insert(x[0]);
+            Indegree[x[0]]++;
+            Indegree[x[1]]++;
+        }
+        
+        vector<int> odd;
+        for(int i=1;i<=n;i++)
+        {
+            if(Indegree[i]&1)
+            {
+                odd.push_back(i);
+            }
+        }
+        if(odd.size()  == 0)return true;
+        if(odd.size() > 4 || odd.size()&1)return false;
+        if(odd.size() == 2)
+        {
+            int x = odd[0], y = odd[1];
+            return solve(x, y, n);
+        }
+        else
+        {
+           int a = odd[0], b = odd[1], c = odd[2], d = odd[3];
+           if(solve(a,b,c,d) || solve(a,c,b,d) || solve(a,d,b,c))return true;
+           return false;
+        }
+        return true;
+    }
+};

@@ -1,0 +1,69 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* canMerge(vector<TreeNode*>& trees) {
+        unordered_map<int,TreeNode*>mp;
+        unordered_map<TreeNode*,pair<int,int>>vals;
+        for(int i=0;i<trees.size();i++){
+            int right=trees[i]->right==NULL?trees[i]->val:trees[i]->right->val;
+            int left=trees[i]->left==NULL?trees[i]->val:trees[i]->left->val;
+            vals[trees[i]]=make_pair(left,right);
+            
+            if(trees[i]->left){
+                mp[trees[i]->left->val]=trees[i];
+            }
+            if(trees[i]->right){
+                mp[trees[i]->right->val]=trees[i];
+            }
+        }
+        bool flag=0;
+        // int count=0;
+        TreeNode* root=NULL;
+        for(int i=0;i<trees.size();i++){
+            // cout<<trees[i]->val<<endl;
+            if(mp.find(trees[i]->val)!=mp.end()){
+                TreeNode* node=mp[trees[i]->val];
+                if(trees[i]->val<node->val){
+                    int check=vals[trees[i]].second;
+                    // cout<<check<<endl;
+                    if(check<node->val){
+                        node->left=trees[i];
+                        vals[node].first=vals[trees[i]].first;
+                    }
+                    else return NULL;
+                }
+                else{
+                   int check=vals[trees[i]].first;
+                    
+                    if(check>node->val){
+                        node->right=trees[i];
+                        vals[node].second=vals[trees[i]].second;
+                    }
+                    else return NULL;
+                }
+                mp.erase(trees[i]->val);
+            }
+            else{
+                if(flag) return NULL;
+                else{
+                    flag=1;
+                    root=trees[i];
+                }
+            }
+            
+            
+        }
+        return root;
+        
+    }
+};

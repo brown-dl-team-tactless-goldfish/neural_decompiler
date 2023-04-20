@@ -1,0 +1,74 @@
+class Solution {
+public:
+   
+    int R, C;   
+    map<pair<int,int>, string> dirMap;  // direction according to coordinates
+    unordered_map<int,vector<pair<int,int>>> moves; //for a cell what next moves/coordinates i can have
+    
+    bool valid(int r, int c){
+        return r >= 0 and c >= 0 and r < R and c < C;
+    }
+    
+    //gives opposite of given direction:
+    string opposite(string s){
+        if(s == "lower") return "upper";
+        if(s == "upper") return "lower";
+        if(s == "left") return "right";
+        if(s == "right") return "left";
+        return "";
+    }
+    
+    bool dfs(int r, int c, vector<vector<int>>& grid, vector<vector<bool>>& seen){
+        if(r == R-1 and c == C-1) return true;
+        
+        seen[r][c] = true;
+        bool ans = false;
+        
+        //from current cell make moves and get its direction
+        //match with nbr's opposite direction.
+        auto curMove = moves[grid[r][c]];
+        for(auto [dr, dc]: curMove){
+            int nr = dr + r;
+            int nc = dc + c;
+            
+            if(valid(nr, nc) and !seen[nr][nc]){
+                
+                //from where current should come w.r.t nbr:
+                string reqNextDir = opposite(dirMap[{dr, dc}]); 
+                auto nextMove = moves[grid[nr][nc]];
+                
+                //valid direction for nbr from which others can come:
+                for(auto [nextdr, nextdc]: nextMove){
+                    string nextDir = dirMap[{nextdr, nextdc}];  
+                    if(nextDir == reqNextDir) ans = ans or dfs(nr, nc, grid, seen);
+                }
+            } 
+        }
+        
+        return ans;
+    }
+    
+    bool hasValidPath(vector<vector<int>>& grid) {
+        R = grid.size();
+        C = grid[0].size();
+        
+        // what possible moves current grid with values (1,2,3,4...) can have:
+        moves.clear();
+        moves[1] = {{0,-1}, {0,1}};
+        moves[2] = {{-1,0}, {1,0}};
+        moves[3] = {{0, -1}, {1, 0}};
+        moves[4] = {{0, 1}, {1, 0}};
+        moves[5] = {{0, -1}, {-1, 0}};
+        moves[6] = {{-1, 0}, {0, 1}};
+        
+        // to get fast access of direction w.r.t. coordinates:
+        dirMap.clear();
+        dirMap[{0,-1}] = "left";
+        dirMap[{0,1}] = "right";
+        dirMap[{-1,0}] = "lower";
+        dirMap[{1,0}] = "upper";
+        
+        vector<vector<bool>> seen(R, vector<bool> (C, false));
+        return dfs(0, 0, grid, seen, Map);
+    }
+};

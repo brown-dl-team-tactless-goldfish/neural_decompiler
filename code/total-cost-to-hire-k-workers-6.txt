@@ -1,0 +1,32 @@
+class Solution {
+public:
+    long long totalCost(vector<int>& costs, int k, int candidates) {
+        long long res = 0;
+        priority_queue<int, vector<int>, greater<>> ql, qr;
+        int n = costs.size(),  l=0, r=n-1;
+        for(; l<candidates; l++) ql.push(costs[l]);
+        for(; r>=l && r >= n-candidates; r--) qr.push(costs[r]);
+        for(; k != 0 && l<r+1; k--){
+            auto x = ql.top(), y = qr.top();
+            if(x<=y){
+                res += x;
+                ql.pop();
+                ql.push(costs[l++]);
+            }
+            else{
+                res += y;
+                qr.pop();
+                qr.push(costs[r--]);
+            }
+        }
+        
+        while(!qr.empty()){
+            ql.push(qr.top());
+            qr.pop();
+        }
+        while(k--){
+            res += ql.top(); ql.pop();
+        }
+        return res;
+    }
+};

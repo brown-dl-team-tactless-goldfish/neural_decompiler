@@ -1,0 +1,62 @@
+
+void generate_happy_string(char *ans, int *counter, int a, int b, int c, int con_a, int con_b, int con_c)
+{
+    if(a == 0 && b == 0 && c == 0)
+        return;
+
+    if (a >= b && a >= c) {
+        
+        if(con_a < 2) {
+            ans[(*counter)++] = 'a';
+            generate_happy_string(ans, counter, a-1, b, c, con_a + 1, 0, 0);
+        } else {
+            if(b > 0) {
+                ans[(*counter)++] = 'b';
+                generate_happy_string(ans, counter, a, b-1, c, 0, 1, 0);
+            } else if(c > 0) {
+                ans[(*counter)++] = 'c';
+                generate_happy_string(ans, counter, a, b, c-1, 0, 0, 1);
+            } 
+        }
+    } else if (b >= a && b >= c) {
+        if(con_b < 2) {
+            ans[(*counter)++] = 'b';
+            generate_happy_string(ans, counter, a, b-1, c, 0, con_b + 1, 0);
+        } else {
+            if(a > 0) {
+                ans[(*counter)++] = 'a';
+                generate_happy_string(ans, counter, a-1, b, c, 1, 0, 0);
+            } else if(c > 0) {
+                ans[(*counter)++] = 'c';
+                generate_happy_string(ans, counter, a, b, c-1, 0, 0, 1);
+            }
+        }
+    } else {
+        if(con_c < 2) {
+            ans[(*counter)++] = 'c';
+            generate_happy_string(ans, counter, a, b, c-1, 0, 0, con_c+1);
+        } else {
+            if(a > 0) {
+                ans[(*counter)++] = 'a';
+                generate_happy_string(ans, counter, a-1, b, c, 1, 0, 0);
+            } else if(b > 0) {
+                ans[(*counter)++] = 'b';
+                generate_happy_string(ans, counter, a, b-1, c, 0, 1, 0);
+            }
+        }
+    }
+}
+
+char * longestDiverseString(int a, int b, int c){
+
+    int counter, max_len = a + b + c;
+    char *answer;
+
+    answer = (char *)malloc(sizeof(char)*(max_len+1));
+    counter = 0;
+
+    generate_happy_string(answer, &counter, a, b, c ,0 ,0, 0);
+    answer[counter] = '\0';
+
+    return answer;
+}

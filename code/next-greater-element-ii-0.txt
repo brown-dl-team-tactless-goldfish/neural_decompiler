@@ -1,0 +1,72 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* nextGreaterElements(int* nums, int numsSize, int* returnSize) {
+    *returnSize=0;
+    int *ret=(int*)calloc(numsSize,sizeof(int));
+    int **array=(int**)malloc(2*sizeof(int*));
+    array[0]=(int*)calloc(numsSize,sizeof(int));
+    array[1]=(int*)calloc(numsSize,sizeof(int));
+    int count=0;
+    int i=0;
+    int temp=0;
+    int j=0;
+    while((*returnSize)<numsSize){
+        if(count==0||((array[0][count-1]>=nums[temp])&&(i<numsSize))){
+            array[0][count]=nums[temp];
+            array[1][count]=temp;
+            count++;
+            i++;
+            temp=i%numsSize;
+        }
+        else if(nums[temp]>array[0][count-1]){
+            (*returnSize)++;
+            ret[array[1][count-1]]=nums[temp];
+            count--;            
+        }
+        else if(temp==array[1][count-1]){
+            (*returnSize)++;
+            ret[array[1][count-1]]=-1;
+            count--; 
+        }
+        else if(i>numsSize&&temp==array[1][j]){
+            while(temp==array[1][j]&&temp<array[1][count-1]){
+                (*returnSize)++;
+                ret[array[1][j]]=-1;
+                j++; 
+                i++;
+                temp=i%numsSize;
+            }
+        }
+        else{
+            i++;
+            temp=i%numsSize;
+        }        
+    } 
+    return ret;
+}
+/*int* nextGreaterElements(int* nums, int numsSize, int* returnSize) {
+    *returnSize=numsSize;
+    int *ret=(int*)calloc(numsSize,sizeof(int));
+    int i=0;
+    int j=0;
+    int flag=0;
+    for(;i<numsSize;i++){
+        flag=0;
+        j=i+1;
+        while(j%numsSize!=i){
+            j=j%numsSize;  
+            if(nums[j]>nums[i]){
+                ret[i]=nums[j];
+                flag=1;
+                break;
+            }
+            j++;
+        }
+        if(flag==0){
+            ret[i]=-1;
+        }
+    }
+    return ret;
+}*/

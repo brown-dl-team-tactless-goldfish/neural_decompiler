@@ -1,0 +1,44 @@
+char * decodeString(char * s){
+    char *result, *p, *r, *r2;
+    int numbers[15] = {0}, num_index = 0, pos_index = 0;
+    char *start[15], *end;
+
+    if (*s == '\0') return "\0";
+
+    result = calloc(300*30, sizeof(char));
+
+    p = s;
+    r = result;
+    while (*p) {
+        if (*p>='0' && *p<='9') {
+            numbers[num_index] *= 10;
+            numbers[num_index] += (*p-'0');
+        }
+        else if (*p>='a' && *p<='z') {
+            *r = *p;
+            r++;
+        }
+        else if (*p=='[') {
+            num_index++;
+            start[pos_index++] = r;
+        }
+        else if (*p==']') {
+            end = r;
+            while (numbers[num_index-1] != 1) {
+                r2 = start[pos_index-1];
+                while (r2<end) {
+                    *r = *r2;
+                    r++;
+                    r2++;
+                }
+                numbers[num_index-1]--;
+            }
+            num_index--;
+            pos_index--;
+            numbers[num_index] = 0;
+        }
+        p++;
+    }
+
+    return result;
+}

@@ -1,0 +1,50 @@
+typedef struct {
+    int numlen;
+    int nums[50000];
+} MedianFinder;
+
+/** initialize your data structure here. */
+int comp(void *a, void *b) {
+    return *(int *)a - *(int *)b;
+}
+MedianFinder* medianFinderCreate() {
+    MedianFinder *medianFinder = (MedianFinder *)malloc(sizeof(MedianFinder));
+    medianFinder->numlen = 0;
+    return medianFinder;
+}
+
+void medianFinderAddNum(MedianFinder* obj, int num) {
+    for(int i = 0; i < obj->numlen; i ++) {
+        if (obj->nums[i] > num) {
+            memmove(&obj->nums[i + 1], &obj->nums[i], sizeof(int) * (obj->numlen - i));
+            obj->nums[i] = num;
+            obj->numlen++;
+            return;
+        }
+    }
+    obj->nums[obj->numlen++] = num;
+
+}
+
+double medianFinderFindMedian(MedianFinder* obj) {
+    if (obj->numlen % 2 == 0) {
+        return (obj->nums[obj->numlen / 2] + obj->nums[obj->numlen / 2 - 1]) / 2.0;
+    }else {
+        return obj->nums[obj->numlen / 2];
+    }
+
+}
+
+void medianFinderFree(MedianFinder* obj) {
+    free(obj);
+}
+
+/**
+ * Your MedianFinder struct will be instantiated and called as such:
+ * MedianFinder* obj = medianFinderCreate();
+ * medianFinderAddNum(obj, num);
+ 
+ * double param_2 = medianFinderFindMedian(obj);
+ 
+ * medianFinderFree(obj);
+*/

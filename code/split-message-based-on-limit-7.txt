@@ -1,0 +1,83 @@
+class Solution {
+public:
+
+    // function to find out how many splits will be made starting from a slice of size "start"
+    int parts(int start, int n){
+        int multiplier = 9;
+        int digcount=0;
+        while(n){
+            if(start*multiplier >= n){
+                digcount += n/start;
+                if(n%start) digcount++;
+                return digcount;
+            }
+            else{
+                digcount += multiplier;
+                n = n-(start*multiplier);
+            }
+            multiplier *= 10;
+            start--;
+            if(start <= 0) return -1;
+        }
+        return digcount;
+    }
+
+    // function to make the splits and insert in answer vector
+    vector<string> getString(int startVal, int totalPart, int limit, string& message){
+        int multiplier = 9;
+        vector<string> ans;
+        string s;
+        int multcount = 0, valcount = 0, splitcount = 0;
+        for(int i=0; i<message.size(); i++){
+            s += message[i];
+            valcount++;
+            if(valcount == startVal){
+                splitcount++; valcount=0; multcount++;
+                s += '<'; s+=to_string(splitcount); s+='/'; s+=to_string(totalPart); s+='>';
+                ans.push_back(s);
+                s.clear();
+            }
+            if(multcount == multiplier){
+                multcount = 0;
+                multiplier *= 10;
+                startVal--;
+            }
+        }
+        if(s.size()){
+            s += '<'; s+=to_string(splitcount+1); s+='/'; s+=to_string(totalPart); s+='>';
+            ans.push_back(s);
+        }
+        return ans;
+    }
+
+    int digits(int p){
+        int count = 0;
+        while(p){
+            p = p/10;
+            count++;
+        }
+        return count;
+    }
+    vector<string> splitMessage(string message, int limit) {
+        int n = message.size();
+        vector<string> ans;
+        if(n < limit-5){
+            ans.push_back(message+"<1/1>");
+        }
+
+        int high = limit-5;
+        // start from last so that we get min no of splits
+        for(int i=high; i>0; i--){
+            // how many parts will be made if we start slicing with i no of alphabets
+            int p = parts(i, n);
+            if(p == -1) continue;  // -1 means no proper splits can be made with that no
+            int nodig = digits(p);  // no of digits 
+            if(nodig+4+i == limit) 
+            {
+                ans = getString(i, p, limit, message);
+                break;
+            }   
+        }
+        return ans;
+}
+};

@@ -1,0 +1,80 @@
+// BF...
+bool check(int** map, int* ans) {
+    int a = map[0][0] + map[0][1] + map[0][2];
+    if (a == 3 || a == -3) {
+        (*ans = a);
+        return true;
+    }
+    int b = map[1][0] + map[1][1] + map[1][2];
+    if (b == 3 || b == -3) {
+        (*ans = b);
+        return true;
+    }
+    int c = map[2][0] + map[2][1] + map[2][2];
+    if (c == 3 || c == -3) {
+        (*ans = c);
+        return true;
+    }
+    int d = map[0][0] + map[1][0] + map[2][0];
+    if (d == 3 || d == -3) {
+        (*ans = d);
+        return true;
+    }
+    int e = map[0][1] + map[1][1] + map[2][1];
+    if (e == 3 || e == -3) {
+        (*ans = e);
+        return true;
+    }
+    int f = map[0][2] + map[1][2] + map[2][2];
+    if (f == 3 || f == -3) {
+        (*ans) = f;
+        return true;
+    }
+    int g = map[0][0] + map[1][1] + map[2][2];
+    if (g == 3 || g == -3) {
+        (*ans) = g;
+        return true;
+    }
+    int h = map[0][2] + map[1][1] + map[2][0];
+    if (h == 3 || h == -3) {
+        (*ans) = h;
+        return true;
+    }
+    return false;
+}
+
+bool validTicTacToe(char** board, int boardSize) {
+    int num[2] = {0};
+    int** map = (int**) malloc(3 * sizeof(int*));
+    for (int i = 0; i < 3; i++) {
+        map[i] = (int*) calloc(3, sizeof(int));
+    }
+    for (int i = 0; i < boardSize; i++) {
+        for (int j = 0; j < 3; j++) {
+            if (board[i][j] == 'X') {
+                num[0]++;
+                map[i][j] = 1;
+            }
+            if (board[i][j] == 'O') {
+                num[1]++;
+                map[i][j] = -1;
+            }
+        }
+    }
+    int sum = num[0] + num[1], ans = 0;
+    bool haveWin = check(map, &ans);
+    for (int i = 0; i < 3; i++) {
+        free(map[i]);
+    }
+    free(map);
+    if (sum == 1) return num[0] == 1 ? true : false;
+    if (sum % 2 == 0) {
+        if (haveWin && ans != -3) return false;
+        return num[0] == num[1] ? true : false;
+    }
+    if (sum == 9) {
+        if (num[1] > num[0]) return false;
+        return ans == -3 ? false : true;
+    }
+    return num[0] - num[1] == 1 ? true : false;
+}

@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int maximumTastiness(vector<int>& price, int k) {
+        sort(begin(price), end(price));
+        auto valid = [&price, k](int tastiness) {
+            auto first = begin(price);
+            for (int i = 1; i < k && first != end(price); ++i)
+                first = lower_bound(next(first), end(price), *first + tastiness);
+            return first != end(price);
+        };
+        int lo = 0, hi = price.back();
+        while (lo + 1 < hi)
+            if (int mid = lo + (hi - lo) / 2; valid(mid)) {
+                lo = mid;
+            } else {
+                hi = mid;
+            }
+        return lo;
+    }
+};

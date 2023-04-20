@@ -1,0 +1,51 @@
+class Solution {
+public:
+     map<pair<int,int>,bool> mp;
+    //count ans for 0;
+    int get_ans(vector<vector<int>>&g,int node,vector<bool> &vis)
+    {
+        vis[node]=1;
+        int ans=0;
+        for(auto &x:g[node])
+        {
+            if(!vis[x])
+            {
+                ans+=(mp.count({node,x})+get_ans(g,x,vis));
+            }
+        }
+        return ans;
+    }
+    int res=0;
+    void dfs(vector<vector<int>> &g,int ans,int node,int k,vector<bool> &vis)
+    {
+        if(ans>=k)
+            res++;
+        vis[node]=1;
+        for(auto &x:g[node])
+        {
+            if(!vis[x])
+            {
+                dfs(g,ans-mp.count({node,x})+mp.count({x,node}),x,k,vis);
+            }
+        }
+    }
+    int rootCount(vector<vector<int>>& edges, vector<vector<int>>& guesses, int k)
+    {
+        int n=edges.size()+1;
+        vector<vector<int>> g(n,vector<int>());
+        for(auto &e:edges)
+        {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        for(auto gs:guesses)
+        {
+            mp[{gs[0],gs[1]}]=1;
+        }
+        vector<bool> vis(n,0);
+        int ans=get_ans(g,0,vis);
+        fill(vis.begin(),vis.end(),0);
+        dfs(g,ans,0,k,vis);
+        return res;  
+    }
+};

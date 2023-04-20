@@ -1,0 +1,44 @@
+public class Solution {
+    public Node Construct(int[][] grid) {
+        var n = grid.Length;
+
+        var root = new Node();
+        if (n == 0) return root;
+
+        return DFS(grid, 0, n - 1, 0, n - 1);
+    }
+
+    private Node DFS(int[][] grid, int top, int bottom, int left, int right) {
+        if (top > bottom || left > right) return null;
+        var n = grid.Length;
+
+        var isAllTrue = getIsAllTrue(grid, top, bottom, left, right);
+
+        if (isAllTrue != null) {
+            return new Node(isAllTrue.Value, true, null, null, null, null);
+        } else {
+            // divide
+            var mid1 = (right - left) / 2;
+            var mid2 = (bottom - top) / 2;
+            var topLeft = DFS(grid, top, top + mid2, left, left + mid1);
+            var topRight = DFS(grid, top, top + mid2, left + mid1 + 1, right);
+            var bottomLeft = DFS(grid, top + mid2 + 1, bottom, left, left + mid1);
+            var bottomRight = DFS(grid, top + mid2 + 1, bottom, left + mid1 + 1, right);
+
+            return new Node(false, false, topLeft, topRight, bottomLeft, bottomRight);
+        }
+    }
+
+    private bool? getIsAllTrue(int[][] grid, int top, int bottom, int left, int right) {
+        if (top > bottom || left > right) return null;
+        var firstVal = grid[top][left];
+        for (int i = top; i <= bottom; i++) {
+            for (int j = left; j <= right; j++) {
+                if (grid[i][j] != firstVal) {
+                    return null;
+                }
+            }
+        }
+        return firstVal == 1 ? true : false;
+    }
+}

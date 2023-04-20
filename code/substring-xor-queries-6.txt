@@ -1,0 +1,69 @@
+<!-- Method - 1 -->
+class Solution
+{
+public:
+    vector<vector<int>> substringXorQueries(string s, vector<vector<int>> &queries)
+    {
+        vector<vector<int>> res;
+        for (int i = 0; i < queries.size(); i++)
+        {
+            int val = queries[i][0] ^ queries[i][1];
+            bitset<64> bit(val);
+            string str = bit.to_string();
+            auto it = str.find('1');
+            if (it == string::npos)
+            {
+                str = "0";
+            }
+            else
+            {
+                str = str.substr(it);
+            }   
+            if (s.find(str) == string::npos)
+            {
+                res.push_back({-1, -1});
+            }
+            else
+            {
+                int idx1 = s.find(str), idx2 = idx1 + (str.size() - 1;
+                res.push_back({idx1, idx2});
+            }
+        }
+        return res;
+    }
+};
+<!-- Method - 2 -->
+class Solution {
+public:
+    vector<vector<int>> substringXorQueries(string s, vector<vector<int>> &queries)
+{
+    unordered_map<int, pair<int, int>> seen;
+    for (int i = 0; i < s.size(); i++)
+    {
+        string str;
+        for (int j = i; j < min(int(s.size()),i + 32); j++)
+        {
+            str = s.substr(i, j - i + 1);
+            long val = stol(str, nullptr, 2);
+            if (!seen.count(val) || (j - i + 1 < seen[val].second - seen[val].first + 1))
+                seen[val] = {i, j};
+        }
+    }
+
+    vector<vector<int>> res;
+
+    for (int i = 0; i < queries.size(); i++)
+    {
+        int val = queries[i][0] ^ queries[i][1];
+        if (seen.count(val))
+        {
+            res.push_back({seen[val].first, seen[val].second});
+        }
+        else
+        {
+            res.push_back({-1, -1});
+        }
+    }
+    return res;
+}
+};

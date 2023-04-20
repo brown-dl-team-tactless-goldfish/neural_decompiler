@@ -1,0 +1,36 @@
+using LL = long long ;
+using PII = pair<LL, LL> ;  // {endtime, index}
+class Solution {
+public:
+    int mostBooked(int n, vector<vector<int>>& meetings) {
+        priority_queue<int, vector<int>, greater<>>canUseRoom ;
+        priority_queue<PII, vector<PII>, greater<PII>>used ;
+        vector<int>count(n) ;
+        sort(meetings.begin(), meetings.end()) ;    
+        for(int i = 0; i < n; i++)
+            canUseRoom.push(i) ;
+        
+        for(auto& meeting : meetings){
+            int start = meeting[0] ;
+            int end = meeting[1] ;
+            while(!used.empty() && used.top().first <= start ){
+                int idx = used.top().second ;
+                used.pop() ;
+                canUseRoom.push(idx) ;
+            }
+            if(!canUseRoom.empty()){
+                int idx = canUseRoom.top() ;
+                canUseRoom.pop() ;
+                used.push({end, idx}) ;
+                count[idx]++ ;
+            }
+            else{
+                auto [time, idx] = used.top() ;
+                used.pop() ;
+                count[idx]++ ;
+                used.push({time + end - start, idx}) ;
+            }
+        }
+        return max_element(count.begin(), count.end()) - count.begin() ;
+    }
+};

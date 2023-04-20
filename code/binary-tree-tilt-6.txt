@@ -1,0 +1,42 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+void sumNode(struct TreeNode* root, int* sum){
+    if(root){
+        *sum+=root->val;
+        sumNode(root->left, sum);
+        sumNode(root->right, sum);
+    }
+    else{
+        return 0;
+    }
+}
+int childDiff(struct TreeNode* root){
+    int diff=0;
+    int leftsum = 0;
+    int rightsum = 0;
+    sumNode(root->left, &leftsum);
+    sumNode(root->right, &rightsum);
+    if(leftsum>rightsum){
+        diff+=(leftsum-rightsum);
+    }
+    else{
+        diff+=(rightsum-leftsum);
+    }
+    return diff;
+}
+
+
+int findTilt(struct TreeNode* root){
+    if(root){
+        return childDiff(root)+findTilt(root->left)+findTilt(root->right);
+    }
+    else{
+        return 0;
+    }
+}

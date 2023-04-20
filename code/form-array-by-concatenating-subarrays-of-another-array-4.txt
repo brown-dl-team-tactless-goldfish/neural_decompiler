@@ -1,0 +1,48 @@
+class Solution {
+public:
+    int findGroup(vector<int>nums,int l,int h,vector<int>grp){
+        int len=grp.size();
+        int idx=-1;
+        for(int i=l;i<=(h-len+1);i++){
+            int k=i;
+            if(nums[i]==grp[0]){
+                int j=0;;
+                for(;j<grp.size();j++){
+                    if(nums[i]!=grp[j])break;
+                    i++;
+                }
+                if(j==grp.size()){
+                    idx=k;
+                    break;
+                }
+            }
+            i=k;
+
+        }
+        cout<<idx;
+        return idx;
+    }
+    bool canChoose(vector<vector<int>>& groups, vector<int>& nums) {
+        int prev_start=-1,prev_end=-1;
+
+        for(int i=0;i<groups.size();i++){
+            int idx=-1;
+            if(i==0){
+               idx=findGroup(nums,0,nums.size()-1,groups[i]);
+            }
+            else if(i!=0){
+                if(prev_end+1>=nums.size())return false;
+                idx=findGroup(nums,prev_end+1,nums.size()-1,groups[i]);
+            }
+
+            if(idx==-1)return false;
+            else{
+                prev_start=idx;
+                prev_end=prev_start+groups[i].size()-1;
+                
+            }
+        }
+        return true;
+        
+    }
+};

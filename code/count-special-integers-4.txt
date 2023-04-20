@@ -1,0 +1,48 @@
+class Solution {
+    int ret = 0 ;
+    void dfs(const string& s, int cur, vector<bool>& used ){
+        if(cur == s.size()){
+            ret++ ;
+            return ;
+        }
+        
+        for(int d = 0; d <= 9; d++){
+            if(cur == 0 && d == 0)
+                continue ;
+            if(used[d])
+                continue ;
+            if(d < s[cur] - '0'){
+                ret += permu(10-(cur+1), s.size()-(cur+1)) ;
+            }
+            else if(d == s[cur] -'0'){
+                used[d] = true ;
+                dfs(s, cur+1, used) ;
+                used[d] = false ;
+            }
+            else
+                break ;
+        }
+    }
+                
+    int permu(int m, int n){
+        if(n == 0)
+            return 1 ;
+        int ret = 1 ;
+        for(int i = 0; i < n; i++)
+            ret *= (m-i) ;
+        return ret ;
+    }
+                
+public:
+    int countSpecialNumbers(int n) {
+        string s = to_string(n) ;
+        int len = s.size() ;
+        
+        for(int i = 1 ; i <= len-1; i++)
+            ret += 9 * permu(9, i-1) ;
+        
+        vector<bool>used(10) ;
+        dfs(s, 0, used) ;
+        return ret ;
+    }
+};

@@ -1,0 +1,55 @@
+class Solution {
+public:
+typedef long long int ll;
+std::vector<int> manacher(std::string& s){
+  std::vector<int> R(s.size());
+  int i = 0, j = 0;
+  while (i < s.size()) {
+    while (i-j >= 0 && i+j < s.size() && s[i-j] == s[i+j]) ++j;
+    R[i] = j;
+    int k = 1;
+    while (i-k >= 0 && k+R[i-k] < j) R[i+k] = R[i-k], ++k;
+    i += k; j -= k;
+  }
+  return std::move(R);
+}
+
+  vector<int> maxlength(string &s){
+    vector<int> center_l = manacher(s);
+    vector<int> ans(s.size());
+    int num = 1;
+    int maxv = 1;
+    for(int i=0;i<s.size()-1;i++){
+        int len = 2 * (center_l[i] - 1) + 1;
+        int loc = center_l[i] - 1;
+        ans[i+loc] = max(ans[i+loc], len);
+    }
+    int tmp = 0;
+    for(int i=0;i<s.size();i++){
+        if(tmp < ans[i])
+            tmp = ans[i];
+        ans[i] = tmp;
+    }
+    int cnt = ans[s.size()-1];
+    for(int i=s.size()-2;i>=0;i--){
+        if(ans[i] < cnt)
+            cnt = cnt - 2;
+        ans[i] = cnt;
+    }
+    return std::move(ans);
+  }
+    
+  long long maxProduct(string s) {
+    vector<int> left = maxlength(s);
+    reverse(s.begin(), s.end());
+    vector<int> right = maxlength(s);
+    ll ans = 0;
+    for(int i=0;i<s.size()-1;i++){
+        ll l = left[i];
+        ll r = right[s.size() - i -2];
+        if(ans < l * r)
+            ans = l * r;
+    }
+    return ans;
+  }
+};

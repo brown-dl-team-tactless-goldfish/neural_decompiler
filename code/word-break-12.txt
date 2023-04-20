@@ -1,0 +1,110 @@
+#define ARRAY_SIZE(a)   (sizeof(a) / sizeof(a[0]))
+
+struct dict_node {
+    struct dict_node *next[26];
+    uint16_t contain_word;
+    uint16_t word_max_len;
+};
+
+static struct dict_node *dict_alloc(void)
+{
+    struct dict_node *droot;
+    
+    droot = (struct dict_node *)malloc(sizeof(*droot));
+    memset(droot, 0, sizeof(*droot));
+    
+    return droot;
+}
+
+static void dict_add(struct dict_node *droot, const char *s)
+{
+    const char *s_orig = s;
+    struct dict_node *dnode = droot;
+    int idx;
+    
+    while (*s) {
+        idx = *s - 'a';
+        
+        if (!dnode->next[idx]) {
+            dnode->next[idx] = dict_alloc();
+        }
+        dnode = dnode->next[idx];
+        s++;
+    }
+    
+    dnode->contain_word = 1;
+    
+    if (s - s_orig > droot->word_max_len) {
+        droot->word_max_len = s - s_orig;
+    }
+}
+
+static void dict_free(struct dict_node *droot)
+{
+    int i;
+    struct dict_node *sub;
+    
+    for (i = 0; i < 26; i++) {
+        sub = droot->next[i];
+        if (sub) {
+            dict_free(sub);
+        }
+    }
+    
+    free(droot);
+}
+
+static uint16_t dict_lookup(struct dict_node *droot, const char *s, unsigned int len)
+{
+    const char *s_orig = s;
+    int idx;
+
+    /* shortcut */
+    if (len > droot->word_max_len) {
+        return 0;
+    }
+    
+    while (s - s_orig < len) {
+        idx = *s - 'a';
+        if (!droot->next[idx]) {
+            return 0;
+        }
+        droot = droot->next[idx];
+        s++;
+    }
+    
+    return droot->contain_word;
+}
+
+bool wordBreak(char * s, char ** wordDict, int wordDictSize){
+    struct dict_node *dict;
+    int i;
+    int j;
+    uint16_t result[301];
+    
+    /* build a dictionary */
+    dict = dict_alloc();
+    for (i = 0; i < wordDictSize; i++) {
+        dict_add(dict, wordDict[i]);
+    }
+
+    result[0] = 1;
+    i = 1;
+    
+    while (*s) {
+        result[i] = 0;
+        
+        for (j = 1; j <= i; j++) {
+            if (result[i - j] && dict_lookup(dict, s - j + 1, j)) {
+                result[i] = 1;
+                break;
+            }
+        }
+        i++;
+        s++;
+    }
+    
+    dict_free(dict);
+    
+    return (result[i - 1] == 1);
+}

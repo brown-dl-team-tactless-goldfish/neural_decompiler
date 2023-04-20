@@ -1,0 +1,88 @@
+class Solution {
+public:
+    int m,n;
+    int dx[4]={1,0,0,-1};
+    int dy[4]={0,1,-1,0};
+    bool valid(int i,int j)
+    {
+        if(i<0 || j<0 || i>=m || j>=n)
+            return false;
+        return true;
+    }
+    bool possible(int i,int j ,int x,int y,int bx,int by,vector<vector<char>>& grid)
+    {
+        queue<pair<int,int>>q;
+        q.push({i,j});
+        vector<vector<bool>>vis(m,vector<bool>(n,false));
+        vis[i][j]=true;
+        while(!q.empty())
+        {
+            int size=q.size();
+            while(size--)
+            {
+                i=q.front().first,j=q.front().second;q.pop();
+                if(i==x && j==y)
+                    return true;
+                for(int k=0;k<4;k++)
+                {
+                    int a=i+dx[k],b=j+dy[k];
+                    if(a==bx && b==by)
+                        continue;
+                    if(valid(a,b) && !vis[a][b] && grid[a][b]!='#')
+                    {
+                        vis[a][b]=true;
+                        q.push({a,b});
+                    }
+                }
+            }
+        }
+        return false;
+    }
+    int minPushBox(vector<vector<char>>& grid) 
+    {
+        int bx,by,px,py,res=0,tx,ty;
+        m=grid.size();
+        n=grid[0].size();
+        for(int i=0;i<m;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                if(grid[i][j]=='B')
+                    bx=i,by=j;
+                else if(grid[i][j]=='S')
+                    px=i,py=j;
+                else if(grid[i][j]=='T')
+                    tx=i,ty=j;
+            }
+        }
+        vector<vector<bool>>visb(m,vector<bool>(n,false)),visp(m,vector<bool>(n,false));
+        queue<vector<int>>q;
+        q.push({bx,by,px,py});
+        visb[bx][by]=true;
+        visp[px][py]=true;
+        while(!q.empty())
+        {
+            int size=q.size();
+            while(size--)
+            {
+                bx=q.front()[0],by=q.front()[1],px=q.front()[2],py=q.front()[3];
+                q.pop();
+                if(bx==tx && by==ty)
+                    return res;
+                for(int k=0;k<4;k++)
+                {
+                    int x=bx+dx[k],y=by+dy[k];
+                    int a=bx-dx[k],b=by-dy[k];
+                    if(valid(x,y) && grid[x][y]!='#' && possible(px,py,a,b,bx,by,grid) && !(visb[x][y]&&visp[a][b]))
+                    {
+                        visb[x][y]=true;
+                        visp[a][b]=true;
+                        q.push({x,y,bx,by});
+                    }
+                }
+            }
+            res++;
+        }
+        return -1;
+    }
+};

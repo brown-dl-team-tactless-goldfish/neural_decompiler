@@ -1,0 +1,66 @@
+
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** groupThePeople(int* groupSizes, int groupSizesSize, int* returnSize, int** returnColumnSizes){
+
+    int i, j, group, index;
+    int hash_table[groupSizesSize][groupSizesSize];
+    int col_length[groupSizesSize];
+    int **ans;
+
+    memset(hash_table, 0x0, sizeof(hash_table));
+    memset(col_length, 0x0, sizeof(col_length));
+
+    /* Save all data into hash table first */
+    for(i=0; i<groupSizesSize; i++) {
+        
+        group = groupSizes[i];
+        hash_table[group-1][col_length[group-1]] = i;
+        col_length[group-1]++;
+    }
+
+    ans = (int**)malloc(sizeof(int*)*groupSizesSize);
+    *returnColumnSizes = (int*)malloc(sizeof(int)*groupSizesSize);
+
+    /* Fill the answer according to hash table column length. */
+    *returnSize = 0;
+    for(i=0; i<groupSizesSize; i++) {
+
+        /* Each column length may longer than itself index */
+        /* We need to use the while loop to check if it still have the data */
+        index = 0;
+        while(col_length[i]) {
+            ans[*returnSize] = (int*)malloc(sizeof(int)*col_length[i]);
+            for(j=0; j<(i+1); j++) {
+
+                ans[*returnSize][j] = hash_table[i][index++];
+            }
+            (*returnColumnSizes)[(*returnSize)] = i+1;
+            (*returnSize)++;
+            col_length[i] -= (i+1);
+        }
+    }
+
+    return ans;
+}
+
+/*
+Sample
+[3,3,3,3,3,1,3]
+
+Hash Table
+5 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 1 2 3 4 6 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+0 0 0 0 0 0 0 
+
+Hash Table Column Length
+1 0 6 0 0 0 0 
+*/

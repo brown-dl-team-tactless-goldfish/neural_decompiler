@@ -1,0 +1,54 @@
+using PII = pair<int, int> ;
+using LL = long long ;
+class Solution {
+    vector<PII>map[20001] ;
+    LL distance[20001] ;
+    LL pathNumber[20001] ;
+    int mod =  1e9 + 7 ;
+    int n ;
+public:
+    int countRestrictedPaths(int n, vector<vector<int>>& edges) {
+        this->n = n ;
+        for(auto e : edges){
+            int a = e[0] - 1  , b = e[1] -1, c = e[2] ;
+            map[a].push_back({b, c}) ;
+            map[b].push_back({a, c}) ;
+        } 
+        
+        priority_queue<PII, vector<PII>, greater<>> pq ;
+        pq.push({0, n-1}) ;  //dist, cur
+        
+        for(int i = 0; i < 20000; i++){
+            distance[i] = -1 ;
+        }
+        while(!pq.empty()){
+            auto[dist, cur] = pq.top() ;
+            pq.pop() ;
+            if(distance[cur] != -1) continue ;
+            distance[cur] = dist ;
+            for(auto [next, d] : map[cur]){
+                if(distance[next] != -1) continue ;
+                pq.push({dist + d, next}) ;
+            }            
+        }
+        
+        for(int i = 0; i < 20000; i++){
+            pathNumber[i] = -1 ;
+        }
+        return DFS(0) ;
+    }
+    
+    LL DFS(int cur){
+        if(cur == n-1) return 1 ;
+        if(pathNumber[cur] != -1)
+            return pathNumber[cur] ;
+        LL total = 0 ;
+        for(auto[next, d] : map[cur]){
+            if(distance[next] >= distance[cur]) continue ;
+            total += DFS(next) ;
+            total %= mod ;
+        }
+        pathNumber[cur] = total ;
+        return total ;
+    }
+};

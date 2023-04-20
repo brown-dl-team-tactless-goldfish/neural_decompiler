@@ -1,0 +1,18 @@
+    vector<int> fallingSquares(vector<pair<int, int>>& positions) {
+        map<int,int> mp = {{0,0}, {INT_MAX,0}};
+        vector<int> res;
+        int cur = 0;
+        for(auto &p : positions){
+            int l = p.first, r = p.first + p.second, h = p.second, maxH = 0;
+            auto ptri = mp.upper_bound(l), ptrj = mp.lower_bound(r);        // find range
+            int tmp = ptrj->first == r? ptrj->second : (--ptrj)++->second;  // tmp will be applied by new right bound 
+            for(auto i = --ptri; i != ptrj; ++i)
+                maxH = max(maxH, i->second);                                // find biggest height
+            mp.erase(++ptri, ptrj);                                         // erase range
+            mp[l] = h+maxH;                                                 // new left bound
+            mp[r] = tmp;                                                    // new right bound
+            cur = max(cur, mp[l]);
+            res.push_back(cur);
+        }
+        return res;
+    }

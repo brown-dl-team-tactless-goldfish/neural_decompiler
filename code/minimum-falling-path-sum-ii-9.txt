@@ -1,0 +1,39 @@
+class Solution {
+public:
+    
+    int R, C;
+    vector<vector<int>> dp;
+    
+    bool isValid(int r, int c){
+        if(r < R and c < C and c >= 0 and r >= 0) return true;
+        else return false;
+    }
+    
+    int getMinSum(int r, int c, vector<vector<int>>& matrix){
+        if(!isValid(r, c)) return 1e9;
+        if(r == R-1) return matrix[r][c];
+        if(dp[r][c] != -1) return dp[r][c];
+        
+        int best = 1e9;
+        for(int shift=0;shift<C;shift++){
+            if(shift != c) best = min(best, getMinSum(r+1, shift, matrix));
+        }
+                
+        if(best == 1e9) return 1e9;
+        else return dp[r][c] = matrix[r][c] + best;        
+    }
+    
+    int minFallingPathSum(vector<vector<int>>& matrix) {
+        R = matrix.size();
+        C = matrix[0].size();
+        
+        dp = vector<vector<int>>(R, vector<int>(C, -1));
+        
+        int result = 1e9;
+        for(int c=0;c<C;c++){
+            result = min(result, getMinSum(0, c, matrix));
+        }
+        
+        return result;
+    }
+};

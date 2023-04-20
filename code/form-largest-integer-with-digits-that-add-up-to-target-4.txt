@@ -1,0 +1,60 @@
+class Solution {
+    vector<int> getBigger(vector<int> v1, vector<int> v2) {
+        int sum1 = 0, sum2 = 0;
+        for(auto a : v1) sum1 += a;
+        for(auto a : v2) sum2 += a;
+        if(sum1 > sum2) return v1;
+        if(sum1 < sum2) return v2;
+        
+        for(int i=8; i>=0; i--) {
+            if(v1[i] > v2[i]) return v1;
+            else if(v1[i] < v2[i]) return v2;
+        }
+        return v1; 
+    }
+    
+    // Convert the vector<int> storing digits back to string.
+    string convert(vector<int>& v) {
+        string s = "";
+        for(int i=8; i>=0; i--) {
+            if(v[i] == 0) continue;
+            
+            char c = '0' + (i+1);
+            string part(v[i], c);
+            s += part;
+        }
+        return s;
+    }
+public:
+    string largestNumber(vector<int>& cost, int target) {
+	    // dp[t] stores a vector of size 9. each number in the vector stands for the # of digits 1~9.
+		// E.g. {0,0,0,0,1,0,2,0,3} means there are one '5', two '7' and three '9's.
+		// dp[t] stores the maximum number when target==t. 
+        vector<vector<int>> dp(target+1, vector<int>(9, -1));
+        dp[0] = vector<int>(9, 0);
+        for(int t = 1; t<= target; ++t) {
+            for(int i=1; i<=9; i++) {
+                int c = cost[i-1];
+                if(t >= c) {
+				    // find the maximum number when target == prev. plus the digit 'i'.
+                    int prev = t - c;
+                    if(dp[prev][0] == -1) {
+					    // prev cannot be the target, no number can be formed. 
+                        continue;
+                    } else {
+                        if(dp[t][0] == -1) {
+                            dp[t] = dp[prev];
+                            dp[t][i-1]++;
+                        } else {
+                            vector<int> v = dp[prev];
+                            v[i-1]++;
+                            dp[t] = getBigger(v, dp[t]);
+                        }
+                    }
+                }
+            }
+        }
+
+        return dp[target][0] == -1 ? "0" : convert(dp[target]);
+    }
+};

@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int findBestValue(vector<int>& arr, int target) {
+        int L = 0 , R = 0 , mid = 0 , ans = INT_MAX ;
+        for(auto i : arr ) R = max( R , i ) ;
+        int disp = INT_MAX ;
+        while( L <= R )
+        {
+            mid = ( L + R ) / 2 ;
+            int K = solve( mid , arr , target ) ;
+            if( abs(target-K) < ans )
+            {
+                ans = abs(target-K) ;
+                disp = mid ;
+            }
+            else if( abs(target-K) == ans ) disp = min(disp , mid ) ;
+            (K>=target)?R=mid-1:L=mid+1;
+        }
+        return disp ;
+    }
+    int solve( int an , vector<int>&arr,  int target )
+    {
+        int all_ = 0 ;
+        for( auto i : arr )
+        {
+            (i>=an)?all_+=an:all_+=i;
+        }
+        return all_ ;
+    }
+};

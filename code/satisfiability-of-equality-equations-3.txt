@@ -1,0 +1,62 @@
+class DSU {
+    vector<int> parent;
+    public:
+    DSU(int n){
+        parent.resize(n);
+        for(int i=0; i<n; i++){
+            parent[i] = i;
+        }
+    }
+    
+    int find(int x){
+        if(parent[x]!=x){
+            return parent[x] = find(parent[x]);
+        }
+        
+        return parent[x];
+    }
+    
+    void Union(int first, int second){
+        parent[find(first)] = find(second);
+    }
+};
+
+class Solution {
+public:
+    bool equationsPossible(vector<string>& equations) {
+        int n = equations.size();
+        DSU dsu(26);
+        for(int i=0; i<n; i++){
+            int first = equations[i][0] - 'a';
+            char op =  equations[i][1];
+            int second =  equations[i][3] - 'a';
+            
+            if(op == '='){
+                dsu.Union(first, second);
+            } else {
+                if(dsu.find(first) == dsu.find(second)){
+                    return false;
+                }
+            }
+        }
+        
+        for(int i=0; i<n; i++){
+            int first = equations[i][0] - 'a';
+            char op =  equations[i][1];
+            int second =  equations[i][3] - 'a';
+          
+            
+            if(op == '='){
+                if(dsu.find(first) != dsu.find(second)){
+                    return false;
+                }
+            } else {
+                if(dsu.find(first) == dsu.find(second)){
+                    return false;
+                }
+            }
+        }
+        
+        return true;
+    }
+};

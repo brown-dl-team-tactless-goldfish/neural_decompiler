@@ -1,0 +1,32 @@
+public class Solution 
+{
+    int[] dx = new int[]{0, 1, 0, -1 };
+    int[] dy = new int[]{1, 0, -1, 0 };
+    
+    public int RobotSim(int[] commands, int[][] obstacles) 
+    {
+        int x = 0, y = 0, dir = 0, max = 0;
+        var hashSet = new HashSet<string>(obstacles.Select(o => o[0] + ":" + o[1]));
+        foreach(var command in commands)
+        {
+            if (command == -1)
+                dir = (dir + 1) % 4;
+            else if (command == -2)
+                dir = (dir + 3) % 4;
+            else
+            {
+                for (int i = 0; i < command; i++)
+                {
+                    int a = x + dx[dir], b= y + dy[dir];
+                    if (hashSet.Contains(a + ":" + b)) 
+                        break;
+                    x = a; y = b;
+                }
+            }
+            
+            max = Math.Max(max, x * x + y * y);
+        }
+        
+        return max;
+    }
+}

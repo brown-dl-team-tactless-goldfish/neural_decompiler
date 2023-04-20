@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int garbageCollection(vector<string>& garbage, vector<int>& travel) {
+        unordered_map<char, int> contains;
+        long long ans = 0;
+        for(int i=0; i<travel.size(); i++)
+            ans += 1LL * travel[i];
+        
+        for(int i=0; i<garbage.size(); i++)
+        {
+            string curr = garbage[i];
+            for(char c : curr){
+                contains[c] ++;
+            }
+        }
+        
+        for(auto it : contains){
+            ans += 1LL * it.second;
+        }
+        
+        
+        for(int i=0; i<garbage.size(); i++)
+        {
+            string curr = garbage[i];
+            set<char> st(curr.begin(), curr.end());
+            for(char ch : curr)
+            {
+                contains[ch]--;
+                if(contains[ch] <= 0)
+                    contains.erase(ch);
+            }
+            int val = contains.size() - 1;
+            if( i < travel.size())
+                ans += 1LL * (val * travel[i]);
+        }
+        
+        
+        
+        
+        return ans;
+    }
+};

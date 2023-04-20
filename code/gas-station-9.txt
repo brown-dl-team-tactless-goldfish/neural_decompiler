@@ -1,0 +1,28 @@
+int canCompleteCircuit(int* gas, int gasSize, int* cost, int costSize){
+    //iterate through every station
+    for(int start_stn =0; start_stn < gasSize; start_stn++){
+        //we will be requiring end point which is start point - 1 to check circular iteration completion 
+        int end_stn = start_stn;
+        //we will be requiring current station index pointer to iterate from the start_stn to stop_stn
+        int current_stn = (start_stn + 1) % gasSize;
+        //we will be requirinf condtion to check the tank is not getting empty
+        int fuel_tank = (gas[start_stn] - cost[start_stn]);
+        //iterating through the station in circular way by considering circular buffer iteration and fuel_tank not getting empty
+        while(fuel_tank >= 0 && current_stn != end_stn){
+            //updating the fuel_tank in circular buffer interation to check tank is not getting empty
+            //here will also consider the previous fuel_tank capcity 
+            fuel_tank = fuel_tank + (gas[current_stn] - cost[current_stn]);
+            //increment the current_stn in circular buffer iterative mechanism 
+            current_stn = (current_stn + 1) % gasSize;
+            //we will also increment the start_stn to monitor the completion of the circular buffer loop and to avoid
+            // re - iteration of the start_stn
+            start_stn++;
+        }
+        //since we havent monitored the last station reachability we will check wheater current stn is the end_stn
+        if(fuel_tank >= 0 && current_stn == end_stn){return end_stn;}
+        //if the start station has exceeded the value of gasSize we will decrement it
+        if(start_stn != end_stn){start_stn--;}
+    }
+    //returning -1 when circular buffer iteration  is not returning any value 
+    return -1;
+}

@@ -1,0 +1,43 @@
+#define min(a, b)   (a < b ? a : b)
+
+int calculateMinimumHP(int** dungeon, int dungeonRowSize, int dungeonColSize) {
+    int result = 0;
+    // allocate the DP table
+    int** dp = malloc(sizeof(int*) * dungeonRowSize);
+    for(int row = 0; row < dungeonRowSize; ++row)
+        dp[row] = malloc(sizeof(int) * dungeonColSize);
+
+    int lastRow = dungeonRowSize - 1;
+    int lastCol = dungeonColSize - 1;
+    // boundary conditions
+    if(dungeon[lastRow][lastCol] > 0)
+        dp[lastRow][lastCol] = 1;
+    else
+        dp[lastRow][lastCol] = 1 - dungeon[lastRow][lastCol];
+
+    for(int row = lastRow - 1; row >= 0; --row) {
+        dp[row][lastCol] = dp[row + 1][lastCol] - dungeon[row][lastCol];
+        if(dp[row][lastCol] <= 0)
+            dp[row][lastCol] = 1;
+    }
+    for(int col = lastCol - 1; col >= 0; --col) {
+        dp[lastRow][col] = dp[lastRow][col + 1] - dungeon[lastRow][col];
+        if(dp[lastRow][col] <= 0)
+            dp[lastRow][col] = 1;
+    }
+    // fill the DP table
+    for(int row = lastRow - 1; row >= 0; --row) {
+        for(int col = lastCol - 1; col >= 0; --col) {
+            dp[row][col] = min(dp[row + 1][col], dp[row][col + 1]) - dungeon[row][col];
+            if(dp[row][col] <= 0)
+                dp[row][col] = 1;
+        }
+    }
+    result = dp[0][0];
+
+    // cleanup
+    for(int row = 0; row < dungeonRowSize; ++row)
+        free(dp[row]);
+    free(dp);
+    return result;
+}

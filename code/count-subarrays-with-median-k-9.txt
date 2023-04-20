@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int countSubarrays(vector<int>& nums, int k) {
+        int res = 0, n = nums.size(), pos = find(begin(nums), end(nums), k) - nums.begin();      
+        unordered_map<int,int> leftCnt = {{0,1}}, rightCnt = leftCnt;
+        for(int i=pos-1, cnt=0; i>=0;i--){
+            nums[i] > k? cnt++ : cnt--;
+            leftCnt[cnt]++;
+        }
+        for(int i=pos+1, cnt=0; i<n;i++){
+            nums[i] > k? cnt++ : cnt--;
+            rightCnt[cnt]++;
+        }
+        for(auto [x, n] : leftCnt){
+            res += n * rightCnt[-x]; //odd
+            res += n * rightCnt[1-x]; //even
+        }
+        return res;
+    }
+};

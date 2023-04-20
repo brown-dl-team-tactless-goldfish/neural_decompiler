@@ -1,0 +1,101 @@
+    int n = nums.size(), i, sum = 0, max_sum = 0;
+    
+    vector<int> left(n), right(n), pre_sum(n);
+    
+    for(i=0; i<n; i++)
+    {
+        if(i<k)
+        {
+           sum += nums[i] ;
+            
+           left[i] = sum;
+        }
+        
+        else
+        {
+            sum += nums[i] - nums[i-k];
+            
+            left[i] = max(left[i-1], sum);
+        }
+    }
+    
+    sum = 0;
+    
+    for(i = n-1; i>=0; i--)
+    {
+        if(i+k >= n)
+        {
+            sum += nums[i];
+            
+            right[i] = sum;
+        }
+        
+        else
+        {
+            sum += nums[i] - nums[i+k];
+            
+            right[i] = max(sum, right[i+1]);
+        }
+    }
+    
+    for(i=0; i<n; i++)
+    {
+        if(i == 0)
+        {
+            pre_sum[i] = nums[i];
+        }
+        
+        else
+        {
+            pre_sum[i] = pre_sum[i-1] + nums[i];
+        }
+    }
+    
+    int lsum ,rsum , start_of_mid;
+    
+    for(i=k; i<=n-2*k; i++)
+    {
+        if(left[i-1]+pre_sum[i+k-1] - pre_sum[i-1] + right[i+k] > max_sum)
+        {
+           max_sum =  left[i-1]+pre_sum[i+k-1] - pre_sum[i-1] + right[i+k];
+            
+            lsum = left[i-1];
+            
+            rsum = right[i+k];
+            
+            start_of_mid = i;
+        }
+    }
+    
+    int start_of_left, start_of_right;
+     
+    for(i=k-1; i < start_of_mid; i++)
+    {
+        if(pre_sum[i] - (i-k < 0? 0: pre_sum[i-k]) == lsum)
+        {
+            start_of_left  = i-k+1;
+            
+            break;
+        }
+    }
+    
+    for(i = start_of_mid+ (2*k)-1; i<n; i++)
+    {
+        if(pre_sum[i] - pre_sum[i-k] == rsum)
+        {
+            start_of_right = i-k+1;
+            
+            break;
+        }
+    }
+    
+    vector<int> res;
+    
+    res.push_back(start_of_left);
+    res.push_back(start_of_mid);
+    res.push_back(start_of_right);
+    
+    return res;
+    
+    
+}

@@ -1,0 +1,49 @@
+vector<int> addNegabinary(vector<int>& arr1, vector<int>& arr2) {
+        // observation: sign alternates between each bit
+        // case 1: sum+carry > 1. sum of current bits overflow, carry should be negative for the next bit
+        // for example, (base2)11 = (base10)(-2 + 1), (base2)1 = (base10)1;
+        // if we add (base2)(11+1), the sum of least significant bit is 1+1 = 2
+        // the next bit's value is -2, carry is 2, so sum is 2+(-2) = 0, thus the carry should be (base2)-1 as (base2)(1+(-1) = 0)
+        // case 2: what if sum+carry < 0 ? 
+        // for example, (base2) 101 = (base10)(4+1), (base2) 1 = 1;
+        // we add them up, same as last example, carry = -1 for second bit, 
+        // this means second bit needs to add (-2), but second bit has value of 0
+        // how do we counter for this -2? need to add 2 for future bits to balance
+        // observation: 
+        // (base10) 1 = (base2) 1, (base10) -1 = (base2) 11.
+        // (base10) -2 = (base2) 10, (base10) 2 = (base2) 110
+        // to make a value negative, just add 1 to next bit.
+        // so in this case, we want to counter for -2 by adding 2, then we simply set current bit to +1, and make carry for next bit +1. in other words, (base10)2 = (base2) 110 = 4+(-2)+0 = 0
+        // 101 + 1 = 100+(1+1) = 100 + 110 = (100+100)+10 = 11000+10 = 11010
+        // case 3: sum+carry = 0. everything is balaned, just reset carry = 0
+        int i = 0;
+        vector<int> res;
+        int carry = 0;
+        int sum;
+        while(i<arr1.size()||i<arr2.size()){
+            sum = 0;
+            if(i<arr1.size()) sum += arr1[arr1.size()-1-i];
+            if(i<arr2.size()) sum += arr2[arr2.size()-1-i];
+            sum += carry;
+            if(sum<0){
+                sum = 1;
+                carry = 1;
+            }
+            else if(sum>1){
+                carry = -1;
+                sum = sum%2;
+            }
+            else carry = 0;
+            res.push_back(sum);
+            i++;
+        }
+        //deal with remaining carry, same logic in case 2
+        if(carry){
+            res.push_back(1);
+            res.push_back(1);
+        }
+        //get rid of all possible leading zeros
+        while(res.size()>1&&res.back()==0) res.pop_back();
+        reverse(begin(res),end(res));
+        return res;
+    }

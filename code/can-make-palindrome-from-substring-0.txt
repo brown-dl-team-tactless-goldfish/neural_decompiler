@@ -1,0 +1,41 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+bool process(char* s, bool** alpha, int begin, int end, int n){
+    if(begin == end || n >=26 || (end-begin+1)/2 <= n)
+        return true;
+    int k = 0;
+    for(int i = 0; i < 26; i++){
+        if(begin == 0){
+            k += alpha[end][i];
+        }
+        else{
+            k += alpha[end][i] ^ alpha[begin-1][i];
+        }
+    }
+    if(k/2 <= n)
+        return true;
+    else
+        return false;
+}
+bool* canMakePaliQueries(char * s, int** queries, int queriesSize, int* queriesColSize, int* returnSize){
+    int  n = strlen(s);
+    bool* ans = malloc(queriesSize * sizeof(bool));
+    bool** alpha = malloc(n * sizeof(bool*));
+    alpha[0] = calloc(26, sizeof(bool));
+    alpha[0][s[0]-'a'] = true;
+    for(int i = 1; i < n; i++){
+        alpha[i] = malloc(26 * sizeof(bool));
+        memcpy(alpha[i], alpha[i-1], 26*sizeof(bool));
+        alpha[i][s[i]-'a'] ^= true;
+    }
+    *returnSize = queriesSize;
+    for(int i = 0; i < queriesSize; i++){
+        ans[i] = process(s, alpha, queries[i][0], queries[i][1], queries[i][2]);
+    }
+    for(int i = 0; i < n; i++){
+        free(alpha[i]);
+    }
+    free(alpha);
+    return ans;
+}

@@ -1,0 +1,38 @@
+int cmp(const void *x, const void *y)
+{
+    return (*(int*)x-*(int*)y);
+}
+int* kthSmallestPrimeFraction(int* a, int n, int k, int* t)
+{
+    *t=2;
+    int *res=(int *)malloc(sizeof(int)*2);
+    if(k==1)
+    {
+        res[0]=a[0];
+        res[1]=a[n-1];
+        return res;
+    }
+    int l=((n-1)*n)/2;
+    float arr[l];
+    l=0;
+    for(int i=0;i<n;i++)
+    {
+        for(int j=i+1;j<n;j++)
+            arr[l++]=(float)a[i]/(float)a[j];
+    }
+    qsort(arr, l, sizeof(int), cmp);
+    for(int i=0;i<n;i++)
+    {
+        for(int j=i+1;j<n;j++)
+        {
+            if((float)a[i]/(float)a[j]==arr[k-1])
+            {
+                res[0]=a[i];
+                res[1]=a[j];
+                return res;
+            }
+            
+        }
+    }
+    return res;
+}

@@ -1,0 +1,186 @@
+#include<stdio.h>
+#include<stdlib.h>
+
+//2887 is a prime number, it is chosen to be the size of the hash table
+const int HASH_SIZE = 2887;
+
+//double-linked list
+struct MyListNode
+{
+	int key;
+    int value;
+    struct MyListNode * next;
+    struct MyListNode * prev;
+};
+typedef struct MyListNode MyListNode;
+
+//the element of hash table, the hash table uses separate-chain to solve the collision
+struct HashElement
+{
+    MyListNode * node;
+    struct HashElement * next;
+};
+typedef struct HashElement HashElement;
+
+//the head of double-linked list
+MyListNode my_head;
+//pointer to the head
+MyListNode * head;
+//total capacity of the LRU Cache
+int my_capacity;
+//current size of the LRU Cache
+int current_capacity;
+//memory pool for list node
+MyListNode * mem_pool;
+//hash table
+HashElement * hash_table;
+
+//allocate list node from memory pool
+MyListNode * Alloc() { return &mem_pool[current_capacity++]; }
+
+//insert an element into hash table
+void hash_insert(MyListNode * my_node)
+{
+    int pos = my_node->key % HASH_SIZE;
+    HashElement * p;
+    for (p = hash_table[pos].next; p; p = p->next)
+    {
+	    if (p->node == my_node) return;
+    }
+    p = (HashElement *)malloc(sizeof(*p));
+    p->node = my_node;
+    p->next = hash_table[pos].next;
+    hash_table[pos].next = p;
+}
+
+//find a key in the hash table, if the key matches, return the list node, else return NULL
+MyListNode * hash_find(int key)
+{
+    int pos = key % HASH_SIZE;
+    HashElement * p;
+    for (p = hash_table[pos].next; p; p = p->next)
+    {
+	    if (p->node->key == key) break;
+    }
+    return p ? p->node : NULL;
+}
+
+//delete a element from the hash table
+void hash_delete(int key)
+{
+    int pos = key % HASH_SIZE;
+    HashElement * p;
+    HashElement * q;
+    for (q = &hash_table[pos], p = hash_table[pos].next; p; q = p, p = p->next)
+    {
+	    if (p->node->key == key)
+	    {
+		    q->next = p->next;
+		    free(p);
+	    }
+    }
+}
+
+
+void lruCacheInit(int capacity)
+{
+    //initialization of the double-linked list
+    head = &my_head;
+    head->key = 0;
+    head->value = 0;
+    head->next = head;
+    head->prev = head;
+    my_capacity = capacity;
+    current_capacity = 0;
+    //allocate memory for the memory pool and hash table
+    mem_pool = (MyListNode *)malloc(sizeof(*mem_pool) * capacity);
+    hash_table = (HashElement *)calloc(HASH_SIZE, sizeof(*hash_table));
+}
+
+void lruCacheFree()
+{
+    int i;
+    //free the memory pool
+    free(mem_pool);
+    //free each bucket of the hash table, and the separate-chain list nodes of these buckets. 
+    for (i = 0; i < HASH_SIZE; ++i)
+    {
+	    HashElement * p;
+	    HashElement * q;
+	    for (q = &hash_table[i], p = hash_table[i].next; p;)
+	    {
+	    	q = p;
+		    p = p->next;
+		    free(q);
+	    }
+    }
+    //free the hash table
+    free(hash_table);
+}
+
+int lruCacheGet(int key)
+{
+    MyListNode * p;
+
+    p = hash_find(key);
+    //if find the key successfully, move the list node to the head of the list
+    if (p)
+    {
+	    p->prev->next = p->next;
+	    p->next->prev = p->prev;
+	    p->prev = head;
+	    p->next = head->next;
+	    p->prev->next = p;
+	    p->next->prev = p;
+    }
+    return p ? p->value : -1;
+}
+
+void lruCacheSet(int key, int value)
+{
+    MyListNode * p;
+
+    p = hash_find(key);
+    //if find the key successfully, modify its value, and move the list node to the head of the list
+    if (p)
+    {
+	    p->value = value;
+	    p->prev->next = p->next;
+	    p->next->prev = p->prev;
+	    p->prev = head;
+	    p->next = head->next;
+	    p->prev->next = p;
+	    p->next->prev = p;
+    }
+    //otherwise, try to allocate memory for the new key-value set, or try to vacate a key-value set for the new one
+    else
+    {
+	    //when LRU Cache is not full, try to allocate memory for the new key-value set
+	    if (current_capacity < my_capacity)
+	    {
+		    p = (MyListNode *)Alloc(sizeof(*p));
+		    p->key = key;
+		    p->value = value;
+		    p->prev = head;
+		    p->next = head->next;
+		    p->prev->next = p;
+		    p->next->prev = p;
+		    hash_insert(p);
+	    }
+	        //otherwise, try to vacate one
+	    else
+	    {
+		    p = head->prev;
+		    hash_delete(p->key);
+		    p->key = key;
+		    p->value = value;
+		    p->prev->next = p->next;
+		    p->next->prev = p->prev;
+		    p->prev = head;
+		    p->next = head->next;
+		    p->prev->next = p;
+		    p->next->prev = p;
+		    hash_insert(p);
+	    }
+    }
+}

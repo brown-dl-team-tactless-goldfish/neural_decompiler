@@ -1,0 +1,139 @@
+#define HEAP_SIZE   1000    // try to find balance between runtime & memory
+
+struct TaskRecord
+{
+    int nValue;
+    int nCount;
+
+    struct TaskRecord* pstLeft;
+    struct TaskRecord* pstRight;
+};
+
+void AddTaskRecord(struct TaskRecord* pstRoot, int nValue)
+{
+    if(nValue == pstRoot->nValue)
+    {
+        pstRoot->nCount++;
+    }
+    else if(nValue < pstRoot->nValue)
+    {
+        if(pstRoot->pstLeft)
+        {
+            AddTaskRecord(pstRoot->pstLeft, nValue);
+        }
+        else
+        {
+            pstRoot->pstLeft = (struct TaskRecord*) malloc(sizeof(struct TaskRecord));
+            pstRoot->pstLeft->nValue = nValue;
+            pstRoot->pstLeft->nCount = 1;
+            pstRoot->pstLeft->pstLeft = NULL;
+            pstRoot->pstLeft->pstRight = NULL;
+        }
+    }
+    else
+    {
+        if(pstRoot->pstRight)
+        {
+            AddTaskRecord(pstRoot->pstRight, nValue);
+        }
+        else
+        {
+            pstRoot->pstRight = (struct TaskRecord*) malloc(sizeof(struct TaskRecord));
+            pstRoot->pstRight->nValue = nValue;
+            pstRoot->pstRight->nCount = 1;
+            pstRoot->pstRight->pstLeft = NULL;
+            pstRoot->pstRight->pstRight = NULL;
+        }
+    }
+}
+
+void FreeTaskRecord(struct TaskRecord* pstRoot)
+{
+    if(pstRoot->pstLeft) FreeTaskRecord(pstRoot->pstLeft);
+    if(pstRoot->pstRight) FreeTaskRecord(pstRoot->pstRight);
+
+    free(pstRoot);
+}
+
+int CalculateRound(struct TaskRecord* pstRoot)
+{
+    if(pstRoot->nCount == 1) return 0;
+
+    int nRet = pstRoot->nCount / 3 + (pstRoot->nCount % 3 > 0);
+    if(pstRoot->pstLeft)
+    {
+        int nTmp = CalculateRound(pstRoot->pstLeft);
+        if(nTmp == 0) return 0;
+
+        nRet += nTmp;
+        pstRoot->pstLeft = NULL;
+    }
+
+    if(pstRoot->pstRight)
+    {
+        int nTmp = CalculateRound(pstRoot->pstRight);
+        if(nTmp == 0) return 0;
+
+        nRet += nTmp;
+        pstRoot->pstRight = NULL;
+    }
+
+    free(pstRoot);
+
+    return nRet;
+}
+
+int minimumRounds(int* tasks, int tasksSize){
+    if(tasksSize == 1) return -1;
+
+    struct TaskRecord* apstTaskRecord[HEAP_SIZE];
+    memset(apstTaskRecord, NULL, HEAP_SIZE*sizeof(struct TaskRecord*));
+
+    // build tree from input tasks
+    while(tasksSize-- > 0)
+    {
+        short sIndex = *tasks % HEAP_SIZE;
+        if(apstTaskRecord[sIndex])
+        {
+            AddTaskRecord(apstTaskRecord[sIndex], *tasks);
+        }
+        else
+        {
+            apstTaskRecord[sIndex] = (struct TaskRecord*) malloc(sizeof(struct TaskRecord));
+            apstTaskRecord[sIndex]->nValue = *tasks;
+            apstTaskRecord[sIndex]->nCount = 1;
+            apstTaskRecord[sIndex]->pstLeft = NULL;
+            apstTaskRecord[sIndex]->pstRight = NULL;            
+        }
+
+        tasks++;
+    }
+
+    int nRet = 0;
+    for(short i=0; i<HEAP_SIZE; i++)
+    {
+        if(apstTaskRecord[i])
+        {
+            int nTmp = CalculateRound(apstTaskRecord[i]);
+
+            if(nTmp == 0)
+            {
+                nRet = 0;
+                break;
+            }
+            else
+            {
+                nRet += nTmp;
+                apstTaskRecord[i] = NULL;
+            }
+        }
+    }
+
+    // free memory
+    for(short i=0; i<HEAP_SIZE; i++)
+    {
+        if(apstTaskRecord[i]) FreeTaskRecord(apstTaskRecord[i]);
+    }
+
+    return nRet? nRet: -1;
+}

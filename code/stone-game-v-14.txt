@@ -1,0 +1,57 @@
+class Solution {
+public:
+    int stoneGameV(vector<int>& a) 
+    {
+        int n = a.size();
+
+        int pfsum[n]; pfsum[0] = a[0];
+        for(int i = 1; i < n; i++)
+            pfsum[i] = pfsum[i - 1] + a[i];
+
+        int dp[n][n];
+        memset(&dp, 0x00, sizeof(dp));
+
+        for(int i  = 0; i < n; i++)
+        {
+            if(i + 1 >= n) continue;
+            dp[i][i + 1] = min(a[i], a[i + 1]);
+        }
+        
+        for(int c = 2; c < n; c++)
+        {
+            int i = 0;
+            int j = c;
+
+            while(i < n && j < n)
+            {
+                for(int k = i; k < j; k++)
+                {
+                    int lsum = (i) ? pfsum[k] - pfsum[i - 1] : pfsum[k]; //a[i ..... k]
+                    int rsum = pfsum[j] - pfsum[k]; // a[k + 1 ...... j]
+
+                    if(lsum < rsum)
+                    {   
+                        dp[i][j] = max(dp[i][j], lsum + dp[i][k]);
+                    }
+                    else if(rsum < lsum)
+                    {
+                        dp[i][j] = max(dp[i][j], rsum + dp[k + 1][j]);
+                    }
+                    else
+                    {
+                        dp[i][j] = max(dp[i][j], lsum + dp[i][k]);
+                        dp[i][j] = max(dp[i][j], rsum + dp[k + 1][j]);
+                    }
+
+
+                }
+
+                i++;
+                j++;
+            }
+        }
+
+        return dp[0][n - 1];
+
+    }
+};

@@ -1,0 +1,60 @@
+#define INTERVAL_L (0)
+#define INTERVAL_R (1)
+
+static int
+removeCoveredIntervals_qsort(const void *A, const void *B)
+{
+    const int *intervalA = *(const int **)A;
+    const int *intervalB = *(const int **)B;
+    
+    /*
+     * Use subtraction comparison because constraint is positive
+     * and 'int' is signed.
+     *
+     * Sort:
+     * - first by 'l', in incrementing order
+     * - second by 'r', in decrementing order
+     *
+     * Once sorted, the current interval can be swallowed by a
+     * previous interval based on the MAX previous 'r'. When 'l'
+     * is the same, the MAX previous must come first.
+     */
+    if (intervalA[INTERVAL_L] == intervalB[INTERVAL_L]) {
+        return (intervalB[INTERVAL_R] - intervalA[INTERVAL_R]);
+    } else {
+        return (intervalA[INTERVAL_L] - intervalB[INTERVAL_L]);
+    }
+}
+
+int
+removeCoveredIntervals (int** intervals,
+                        int intervalsSize,
+                        int* intervalsColSize)
+{
+    int count = 0;
+    int r_max = 0;
+    
+    qsort(intervals, intervalsSize, sizeof(*intervals),
+          removeCoveredIntervals_qsort);
+    
+    /*
+     * Once sorted, the current interval can be swallowed by a
+     * previous interval based on the MAX previous 'r'. With the
+     * same 'l' value, the highest 'r' value comes first.
+     */
+     for (int idx = 0; idx < intervalsSize; idx++) {
+        const int *interval = intervals[idx];
+        const int interval_r = interval[INTERVAL_R];
+        
+        /*
+         * Once sorted, the current interval can be swallowed by a
+         * previous interval based on the MAX previous 'r'.
+         */
+        if (interval_r > r_max) {
+            count++;
+            r_max = interval_r;
+        }
+    }
+
+    return (count);
+}

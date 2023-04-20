@@ -1,0 +1,27 @@
+public class Solution {
+    public string[] SplitMessage(string message, int limit) {
+        int mesLen = message.Length;
+        int parts = 1;
+        int allPartsLen = Len(parts);
+        
+        while(parts*(3 + Len(parts)) + allPartsLen + mesLen> limit*parts){
+            if(3 + Len(parts)*2 >= limit) // <10/10> >= limit, no plase for message;
+                return new string[0];
+            parts++;
+            allPartsLen += Len(parts);
+        } 
+        
+        List<string> ans = new();
+        for(int i=1; i<=parts; i++){
+            
+            int j = Math.Min(message.Length, limit - (3 + Len(i) + Len(parts))); 
+            string chunk = message.Substring(0,j);
+            message = message.Substring(j); 
+            ans.Add($"{chunk}<{i}/{parts}>");
+        }
+        
+        return ans.ToArray();
+    }
+    
+    public int Len(int num)=> num.ToString().Length;
+}

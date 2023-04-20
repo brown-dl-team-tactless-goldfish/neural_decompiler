@@ -1,0 +1,22 @@
+class Solution {
+public:
+    vector<bool> canEat(vector<int>& _candiesCount, vector<vector<int>>& queries) {
+        vector<long long> candiesCount(_candiesCount.size());
+        candiesCount[0] = _candiesCount[0];
+        for(int i = 1; i < candiesCount.size(); ++i) {       
+            candiesCount[i] = _candiesCount[i];
+            candiesCount[i] += candiesCount[i - 1];
+        }
+        long long i = 0;
+        vector<bool> ans(queries.size(), true);
+        for(int i = 0; i < queries.size(); ++i) {
+            auto &q = queries[i];
+            ++i;
+            long long tp = q[0], day = q[1], cap = q[2];
+            long long mn = day, mx = (day + 1) * cap;
+            if(mn >= candiesCount[tp]) {ans[i] = false; continue;}
+            if(mx <= (tp > 0 ? candiesCount[tp - 1] :0)){ans[i] = false; continue;}
+        }
+        return ans;
+    }
+};

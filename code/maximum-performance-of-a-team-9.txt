@@ -1,0 +1,16 @@
+    int maxPerformance(int n, vector<int>& speed, vector<int>& efficiency, int k) {
+        vector<vector<int>> v;
+        for(int i = 0; i < speed.size(); i++) v.push_back({efficiency[i], speed[i]});
+        sort(v.begin(), v.end());
+        
+        priority_queue<int, vector<int>, greater<int>> pq;
+        long res = 0, sum = 0, mod = 1e9 + 7;
+        for(int i = n-1; i >= 0; i--) {
+            auto t = v[i];
+            sum += t[1];
+            pq.push(t[1]);
+            if(pq.size() > k) sum -= pq.top(), pq.pop();
+            res = max(res, sum*t[0]);
+        }
+        return res%mod;
+    }

@@ -1,0 +1,42 @@
+class Solution {
+public:
+    vector<string> invalidTransactions(vector<string>& transactions) {
+        unordered_set<string> res;
+        unordered_map<string, vector<Data>> m;
+        for(const auto& s: transactions){
+            auto data = Data(s);
+            if(data.invalid()) res.insert(s);
+            m[data.name].emplace_back(move(data));
+        }
+        
+        for(const auto& [name, v] : m){
+            for(int i=0;i<v.size();i++){
+                for(int j=i+1; j<v.size(); j++){
+                    if(v[i].bothInvalid(v[j])){
+                        res.insert(v[i].str);
+                        res.insert(v[j].str);
+                    }
+                }
+            }
+        }
+        return vector<string>(res.begin(), res.end());
+    }
+    
+    struct Data{
+        Data(const string& s){
+            str = s;
+            auto pos = s.find(','), pos0 = 0ul;
+            name = s.substr(pos0, pos-pos0); pos0 = pos+1; pos = s.find(',', pos0);            
+            time = stoi(s.substr(pos0, pos-pos0)); pos0 = pos+1; pos = s.find(',', pos0);
+            amount = stoi(s.substr(pos0, pos-pos0)); pos0 = pos+1; pos = s.find(',', pos0);
+            city = s.substr(pos0);     
+        }
+        string name;
+        int time;
+        int amount;
+        string city;
+        string str;
+        bool invalid() const {return amount > 1000;}
+        bool bothInvalid(const Data& rhs) const {return abs(time - rhs.time) <= 60 && city != rhs.city;}
+    };
+};

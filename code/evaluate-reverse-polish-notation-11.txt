@@ -1,0 +1,35 @@
+long int evaluate(long int a, long int b, char op){
+    switch(op){
+        case '+': return a + b;
+        case '-': return a - b;
+        case '*': return a * b;
+        case '/': return a / b;
+        default : return -1;    //Control does not reach here
+    }
+}
+int evalRPN(char ** tokens, int tokensSize){
+    long int stack[tokensSize];
+    int top = -1;
+    
+    for(int j = 0; j < tokensSize; ++j){
+        if(isdigit(tokens[j][0]) || strlen(tokens[j]) > 1 && tokens[j][0] == '-'){ //If token is a +ive or -ive number
+            int num = 0;
+            int sign = 1;
+            int i = 0;
+            if(tokens[j][0] == '-'){
+                sign = -1;
+                i++;        //Skip sign
+            }
+            while(i < strlen(tokens[j])){ //Convert ascii to integer
+                num = num * 10 + (tokens[j][i++] - '0') % 10;
+            }
+            stack[++top] = num * sign;  //push value into stack;
+        } else {
+            int num1 = stack[top--];    //pop 2 numbers to evaluate
+            int num2 = stack[top--];
+            int result = evaluate(num2, num1, tokens[j][0]);
+            stack[++top] = result;      //push the result back into stack
+        }
+    }
+    return (int)stack[0];   //Return the final result from stack
+}

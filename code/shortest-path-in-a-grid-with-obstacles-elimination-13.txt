@@ -1,0 +1,53 @@
+struct Pos {
+    int r;
+    int c;
+    int e;
+    int lvl;
+    Pos (int r, int c, int e, int lvl): r(r), c(c), e(e),
+        lvl(lvl) {;}
+    bool operator==(const Pos& p) const {
+        return r == p.r && c == p.c && e == p.e;
+    }
+};
+
+struct PosHash {
+    const int kMax = 40;
+    size_t operator()(const Pos& p) const {
+        return p.r + p.c * kMax + p.e * kMax * kMax;
+    }
+};
+
+class Solution {
+    vector<vector<int>> dir{{0,1}, {1,0}, {0,-1}, {-1,0}};
+public:
+    int shortestPath(vector<vector<int>>& grid, int k) {
+        unordered_set<Pos, PosHash> visited;
+        queue<Pos> q;
+        q.push(Pos(0,0,k,0));
+        
+        while (!q.empty()) {
+            Pos p = q.front();
+            q.pop();
+            if (p.r == grid.size() - 1 &&
+                p.c == grid[0].size() - 1)
+                return  p.lvl;
+            
+            for (auto& d : dir) {
+                Pos new_p(p.r + d[0], p.c + d[1], p.e, p.lvl + 1);
+                if (new_p.r >= 0 && new_p.r < grid.size() &&
+                    new_p.c >= 0 && new_p.c < grid[0].size() &&
+                    !visited.count(new_p)) {
+                    visited.insert(new_p);
+                    if (grid[new_p.r][new_p.c] == 1 && new_p.e >= 1) {
+                        --new_p.e;
+                        q.push(new_p);
+                    } else if (grid[new_p.r][new_p.c] == 0) {
+                        q.push(new_p);
+                    } 
+                }
+            }
+        }
+        
+        return -1;        
+    }
+};

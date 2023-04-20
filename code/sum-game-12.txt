@@ -1,0 +1,39 @@
+class Solution {
+public:
+    pair<int,int> getPair(string str){
+        int num=0,count=0;
+        for(char ch : str){
+            if(ch=='?')
+                count++;
+            if(ch-'0'>=0 && ch-'0'<=9)
+                num += (ch-'0');
+        }
+        return {num,count};
+    }
+    bool sumGame(string str) {
+        string left = str.substr(0,str.size()/2);
+        string right = str.substr(str.size()/2, str.size()/2);
+        pair<int,int> left_pair = getPair(left);
+        pair<int,int> right_pair = getPair(right);
+        int total_s=0, total_d=0;
+        if(left_pair.second >= right_pair.second){
+            total_d = left_pair.second - right_pair.second;
+            total_s = right_pair.first - left_pair.first;
+        }
+        else{
+            total_d = right_pair.second - left_pair.second;
+            total_s = left_pair.first - right_pair.first;
+        }
+		// Think like that 
+		//In left string, sum = s1 and count1_? = c1
+		//In right string, sum = s2 and count2_? = c2
+		//now differenceOfSum = |s2-s1| and differenceOf? = |c2-c1|
+		// Alice always win until, differenceOf? is even && differenceOf?/2 *9 is exact eqaul to differenceOfSum  
+        if(total_d%2 != 0)
+            return true;
+        if((total_d/2)*9 == total_s){
+            return false;
+        }
+        return true;        
+    }
+};

@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int dp[100005];
+    int ways(int index, int &low, int &high, int &zero, int &one){
+        if(index>high){
+            return 0;
+        }
+        int ans=0;
+        if(index>=low){
+            ans=1;
+        }
+        if(dp[index]!=-1){
+            return dp[index];
+        }
+        ans+=ways(index+zero, low, high, zero, one);
+        ans%=1000000007;
+        ans+=ways(index+one, low, high, zero, one);
+        ans%=1000000007;
+        dp[index]=ans;
+        return dp[index];
+    }
+    int countGoodStrings(int low, int high, int zero, int one) {
+        memset(dp,-1,sizeof(dp));
+        return ways(0,low,high,zero, one);
+    }
+};

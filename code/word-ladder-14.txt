@@ -1,0 +1,29 @@
+//initialize
+int* visited = (int*)calloc(wordListSize, sizeof(int));
+int flag = 0, j; // flag used for decide when to break while loop
+enqueue(beginWord);
+last->level = 1;
+node* tmp = NULL;
+
+//BFS
+while (!isEmpty() && flag == 0) {
+	tmp = dequeue();
+	for (j = 0; j < wordListSize; j++) {
+		if (visited[j] == 0 && check(tmp->word, wordList[j])) {
+			if (strcmp(wordList[j], endWord) == 0) {
+				//if endWord is found, go out of for&while loop 
+				flag= 1;
+				break;
+			}
+			else {
+				//if found a string that Only one letter is different but not endWord, enqueue it and record its level
+				enqueue(wordList[j]);
+				visited[j]++;
+				last->level = tmp->level + 1;
+			}
+		}
+	}
+}
+//flag == 0 : endWord not found
+//flag == 1 : endWord was found, and increase the level by 1
+return flag == 0 ? 0 : tmp->level + 1;

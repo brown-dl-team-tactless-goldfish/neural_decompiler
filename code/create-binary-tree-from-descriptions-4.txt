@@ -1,0 +1,19 @@
+public class Solution {
+    public TreeNode CreateBinaryTree(int[][] descriptions) {
+        var map = new Dictionary<int, TreeNode>();
+        var childs = new HashSet<int>();
+        foreach (var desc in descriptions) {
+            int p = desc[0], c = desc[1], isLeft = desc[2];
+            if (!map.ContainsKey(p)) map[p] = new TreeNode() { val = p };
+            if (!map.ContainsKey(c)) map[c] = new TreeNode() { val = c };
+            childs.Add(c);
+
+            if (isLeft == 1) map[p].left = map[c];
+            else map[p].right = map[c];
+        }
+
+        var parentSet = map.Keys.ToHashSet();
+        parentSet.RemoveWhere(r => childs.Contains(r));       
+        return map[parentSet.ElementAt(0)];
+    }
+}

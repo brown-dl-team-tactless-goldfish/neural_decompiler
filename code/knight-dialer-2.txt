@@ -1,0 +1,59 @@
+class Solution {
+    public int knightDialer(int N) {
+        Map<Integer,List<Integer>> currentToNextPostns = 
+            new HashMap<>();
+        int MOD = (int)1e9 + 7;
+        fill(currentToNextPostns);
+        int mem[][] = new int[10][N+1];
+        for (int i=0; i<=N; i++) {
+            for (int j=0; j<10; j++) {
+                if (j==5 && i > 1) {
+                    mem[j][i] = 0;
+                    continue;
+                }
+                if (i==0) {
+                    mem[j][i] = 0;
+                    continue;
+                }
+                if (i==1) {
+                    mem[j][i] = 1;
+                    continue;
+                }
+                List<Integer> postns = currentToNextPostns
+                    .get(j);
+                for (int p : postns) {
+                    mem[j][i] += mem[p][i-1];
+                    mem[j][i] %= MOD; 
+                }
+            }
+        }
+        int ans = 0;
+        for (int i=0; i<10; i++) {
+            ans+=mem[i][N];
+            ans %= MOD;
+        }
+        return ans;
+    }
+    
+    void fill(Map<Integer,List<Integer>> map) {
+        Integer[] one = new Integer[] { 8, 6 };
+        Integer[] two = new Integer[] { 7, 9 };
+        Integer[] three = new Integer[] { 4, 8 };
+        Integer[] four = new Integer[] { 3, 9, 0 };
+        Integer[] six = new Integer[] { 1, 7, 0 };
+        Integer[] seven = new Integer[] { 2, 6 };
+        Integer[] eight = new Integer[] { 1, 3 };
+        Integer[] nine = new Integer[] { 2, 4 };
+        Integer[] zero = new Integer[] { 4, 6 };
+        map.put(1, Arrays.asList(one));
+        map.put(2, Arrays.asList(two));
+        map.put(3, Arrays.asList(three));
+        map.put(4, Arrays.asList(four));
+        map.put(6, Arrays.asList(six));
+        map.put(7, Arrays.asList(seven));
+        map.put(8, Arrays.asList(eight));
+        map.put(9, Arrays.asList(nine));
+        map.put(0, Arrays.asList(zero));
+        map.put(5, new ArrayList<>());
+    }
+}

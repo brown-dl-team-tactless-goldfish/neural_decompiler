@@ -1,0 +1,65 @@
+#include <stdbool.h>
+#include <stdint.h>
+
+typedef char **grid_t;
+typedef struct {
+  uint16_t row[9], col[9], box[9];
+  struct {
+    uint8_t r : 4, c : 4;
+  } blank[81];
+} data_t;
+
+bool solve(data_t *data, grid_t g, uint16_t i) {
+  if (data->blank[i].c > 8) return true;
+
+  const uint8_t 
+    r = data->blank[i].r,
+    c = data->blank[i].c,
+    b = (r / 3) * 3 + c / 3;
+
+  uint16_t j, x,
+      y = ~data->row[r] & ~data->col[c] & ~data->box[b] & 0b1111111110u;
+
+  while (y) {
+    j = __builtin_ffs(y) - 1;
+    x = 1u << j;
+
+    data->row[r] |= x;
+    data->col[c] |= x;
+    data->box[b] |= x;
+
+    g[r][c] = j + '0';
+    if (solve(data, g, i + 1))
+	  return true;
+
+    data->row[r] ^= x;
+    data->col[c] ^= x;
+    data->box[b] ^= x;
+
+    y &= (y - 1);
+  }
+
+  return false;
+}
+
+void solveSudoku(grid_t grid, ...) {
+  data_t  data    = {.row = {0}, .col = {0}, .box = {0}};
+  uint8_t blank_i = 0;
+
+  for (uint8_t r = 0u; r < 9u; ++r)
+    for (uint8_t c = 0u; c < 9u; ++c)
+      if (grid[r][c] != '.') {
+        uint16_t x = 1u << (grid[r][c] - '0');
+        data.row[r]                      |= x;
+        data.col[c]                      |= x;
+        data.box[(r / 3u) * 3u + c / 3u] |= x;
+      } else {
+        data.blank[blank_i].c = c;
+        data.blank[blank_i].r = r;
+        ++blank_i;
+      }
+  data.blank[blank_i].r = 9;
+  data.blank[blank_i].c = 9;
+
+  solve(&data, grid, 0);
+}

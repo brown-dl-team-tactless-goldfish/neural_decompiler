@@ -1,0 +1,11 @@
+    int findMaxValueOfEquation(vector<vector<int>>& points, int k) {
+        int res = INT_MIN;
+        auto cmp = [&] (const int& a, const int& b) { return (points[a][0] + points[a][1] < points[b][0] + points[b][1]); };
+        priority_queue<int, vector<int>, decltype(cmp)> PQ(cmp);
+        for (int i = points.size()-1; i >= 0; i--) {
+            while (!PQ.empty() && points[PQ.top()][0] - points[i][0] > k) PQ.pop();
+            if (!PQ.empty()) res = max(res, points[PQ.top()][0] - points[i][0] + points[i][1] + points[PQ.top()][1]);
+            PQ.push(i);
+        }
+        return res;
+    }

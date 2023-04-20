@@ -1,0 +1,74 @@
+typedef struct {
+    int key;
+    unsigned char mappings[8];
+    UT_hash_handle hh;
+} hash;
+
+bool checkReplace(int key, int target, hash *map)
+{
+	hash *tmp;
+    HASH_FIND_INT(map, &key, tmp);
+    if (NULL == tmp) return false;
+            
+    char shift, reg;
+    int bit_mask = 0;
+			
+	if (target >= '0' && target <= '9')
+		bit_mask = target - '0';
+	else if (target >= 'A' && target <='Z')
+		bit_mask = target - 'A' + 10;
+	else if (target >= 'a' && target <= 'z')
+		bit_mask = target - 'a' + 36;
+	
+	reg = bit_mask / 8;
+	shift = bit_mask % 8;
+	if (!((tmp->mappings[reg] >> shift) & 0x1)) return false;
+	
+	return true;
+}
+
+bool matchReplacement(char * s, char * sub, char** mappings, int mappingsSize, int* mappingsColSize){
+    int s_i = 0, s_len = strlen(s), sub_len = strlen(sub), i = 0, j = 0;
+    hash *map = NULL;
+    
+    for (i = 0; i < mappingsSize; i++) {
+        hash *tmp = NULL;
+		int key = mappings[i][0];
+        char replace = mappings[i][1];
+        int bit_mask = 0;
+        HASH_FIND_INT(map, &key, tmp);
+        if (NULL == tmp) {
+            tmp = (hash*) malloc(sizeof(hash));
+            tmp->key = key;
+            memset(tmp->mappings, 0x00, 8);
+            HASH_ADD_INT(map, key, tmp);
+        }
+                
+        if (replace >= '0' && replace <= '9') bit_mask = replace - '0';
+        else if (replace >= 'A' && replace <= 'Z') bit_mask = replace - 'A' + 10;
+		else if (replace >= 'a' && replace <= 'z') bit_mask = replace - 'a' + 36;
+        tmp->mappings[bit_mask / 8] |= 0x1 << (bit_mask % 8);
+    }
+    
+    while (s[s_i] != '\0' && (s_i + sub_len - 1) < s_len) {
+        bool match = true;
+        for (i = 0, j = sub_len - 1; i <= j;) {
+			if (s[s_i + i] != sub[i]) {
+				match = checkReplace(sub[i], s[s_i + i], map);
+				if (!match) break;
+			}
+			
+            if (i != j &&  s[s_i + j] != sub[j]) {
+				match = checkReplace(sub[j], s[s_i + j], map);
+				if (!match) break;
+            }
+            
+            i++; j--;
+        }
+        
+        if (match) return true;
+        s_i++;
+    }
+    
+    return false;
+}

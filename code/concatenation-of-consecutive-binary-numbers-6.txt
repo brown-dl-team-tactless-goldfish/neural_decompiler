@@ -1,0 +1,51 @@
+#include <stdint.h>
+
+#define MODULO 1000000007ll
+#define SIZE 100000
+
+
+int bitsize32(int n)
+{
+	int shift;
+	unsigned bitmask = 0xFFFFFFFF;
+
+	bitmask <<= 1;
+	for(shift=1; shift<=32; shift++) {
+		if((n & bitmask) == 0)
+			return shift;
+		bitmask <<= 1;
+	}
+	return 32; // warning suppressor, should NOT be reached
+}
+
+int computeNext(int prev, int cur)
+{
+	int64_t prev64 = prev;
+
+	prev64 <<= bitsize32(cur);
+	prev64 += cur;
+	prev64 %= MODULO;
+	return (int)prev64;
+}
+
+void precompute(int *out, int size)
+{
+	int i;
+
+	out[0] = 1;
+	for(i=1; i<size; i++)
+		out[i] = computeNext(out[i-1], i+1);
+}
+
+
+int concatenatedBinary(int n)
+{
+    static int precomputed[SIZE];
+    static bool precomputedIsInitialized = false;
+
+    if(!precomputedIsInitialized) {
+        precompute(precomputed, SIZE);
+        precomputedIsInitialized = true;
+    }
+    return precomputed[n-1];
+}

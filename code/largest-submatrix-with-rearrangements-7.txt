@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int largestSubmatrix(vector<vector<int>>& matrix) {
+        int R{(int)matrix.size()}, C{(int)matrix[0].size()}, max_{0};
+        std::vector<int> count(C, 0);
+        std::unordered_map<int,int> m;
+        for(int i{0}; i < R; ++i) {
+            for(int j{0}; j < C; ++j) {
+                if(count[j]) {
+                    if(--m[count[j]] == 0) m.erase(count[j]);
+                }
+                if(!matrix[i][j]) count[j] = 0;
+                else ++count[j], ++m[count[j]];
+            }
+            calculate(std::vector<std::pair<int,int>>(m.begin(), m.end()), max_);
+        }
+        
+        return max_;
+    }
+    
+    void calculate(std::vector<std::pair<int,int>>&& data, int& max_) {
+        std::sort(data.begin(), data.end(), [](const auto& a, const auto& b){return a.first > b.first;});
+        int w{0};
+        for(const auto& [l, cw]: data) {
+            w += cw;
+            max_ = std::max(max_, l*w);
+        }
+    }
+};

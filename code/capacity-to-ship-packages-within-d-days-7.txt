@@ -1,0 +1,26 @@
+    int shipWithinDays(vector<int>& weights, int D) {
+        auto loadable = [&](int capacity){
+            int c = 0, d = 0;
+            for (int w : weights) {
+                if (w > capacity) return -1;
+                c += w;
+                if (c > capacity) {
+                    d++;
+                    c = w;
+                }
+            }
+            if (c > 0) d++;
+            if (d < D) return 1;
+            else if (d == D) return 0;
+            else return -1;
+        };
+        int left = 1, right = accumulate(weights.begin(), weights.end(), 0);
+        while (left + 1 < right) {
+            int mid = left + (right - left) / 2;
+            int res = loadable(mid);
+            if (res >= 0) right = mid;
+            else left = mid;
+        }
+        if (loadable(left) >= 0) return left;
+        return right;
+    }

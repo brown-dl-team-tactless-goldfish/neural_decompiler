@@ -1,0 +1,27 @@
+bool isValidSudoku(char** board, int boardSize, int* boardColSize){
+    int **rows = (int**)calloc(9, sizeof(int*));
+    int **cols = (int**)calloc(9, sizeof(int*));
+    for (int i = 0; i < 9; i++) {
+        rows[i] = (int*)calloc(9, sizeof(int));
+        cols[i] = (int*)calloc(9, sizeof(int));
+    }
+    int ***square = (int**)calloc(3, sizeof(int**));
+    for (int i = 0; i < 3; i++)
+        square[i] = (int*)calloc(3, sizeof(int*));
+    for (int i = 0; i < 3; i++)
+        for (int j = 0; j < 3; j++)
+            square[i][j] = (int*)calloc(9, sizeof(int));
+    
+    for (int i = 0; i < 9; i++ ) {
+        for (int j = 0; j < 9; j++) {
+            if (board[i][j] == '.') continue;
+            int x = board[i][j]-'0'-1;
+            if (rows[i][x]) return false;
+            if (cols[j][x]) return false;
+            if (square[i/3][j/3][x]) return false;
+            rows[i][x] = cols[j][x] = square[i/3][j/3][x] = 1;
+
+        }
+    }
+    return true;
+}

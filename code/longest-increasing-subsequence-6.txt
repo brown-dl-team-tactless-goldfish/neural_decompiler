@@ -1,0 +1,35 @@
+int max;
+int *memo;
+void dfs(int *nums, int size, int count, int current){
+        
+    for(int i = current + 1; i < size; i++){
+        if(nums[current] < nums[i]){
+            if(memo[i]){
+                if(count + memo[i] > max) 
+                    max = count + memo[i];
+                continue;
+            }
+            dfs(nums, size, count + 1, i);
+        }
+    }
+    if(count > max) 
+        max = count;
+}
+
+int lengthOfLIS(int* nums, int numsSize){
+    max = INT_MIN;
+    memo = calloc(numsSize, sizeof(int));
+    memo[numsSize - 1] = 1;
+    for(int i = numsSize - 2; i  >= 0; i--){
+        dfs(nums, numsSize, 1, i);
+        memo[i] = max;
+        max = INT_MIN;
+    }
+    
+    for(int i = 0; i < numsSize; i++){
+        if(max < memo[i])
+            max = memo[i];
+    }
+    free(memo);
+    return max;
+}

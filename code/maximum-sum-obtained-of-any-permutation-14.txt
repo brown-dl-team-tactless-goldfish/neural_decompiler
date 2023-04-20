@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int maxSumRangeQuery(vector<int>& nums, vector<vector<int>>& requests) {
+        int cnt[100002] = {0};
+
+        for (int i = 0; i < requests.size(); ++i) {
+            ++cnt[requests[i][0]], --cnt[requests[i][1] + 1];
+        }
+        
+        for (int i = 0, freq = 0; i < nums.size(); ++i) {
+            freq += cnt[i];
+            cnt[i] = freq;
+        }
+
+        priority_queue<long long> fpq;
+        for (int i = 0; i < nums.size(); ++i) {
+            fpq.push(cnt[i]);
+        }
+        
+        sort(nums.begin(), nums.end(), greater<int>());
+        int mod = 1e9 + 7, res = 0;
+        for (int i = 0; i < nums.size(); ++i) {
+            res = (res + nums[i] * fpq.top() % mod) % mod;
+            fpq.pop();
+        }
+        
+        return res;
+    }
+};

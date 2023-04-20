@@ -1,0 +1,31 @@
+public class Solution {
+    public int MaximumTastiness(int[] price, int k) {
+        Array.Sort(price);
+        int ans = 0, low = 0, high = int.MaxValue;
+        while(low <= high) {
+            int mid = low + (high - low) / 2;
+            if(IsPossible(price, k, mid)) {
+                ans = Math.Max(ans, mid);
+                low = mid + 1;
+            }
+            else
+                high = mid - 1;
+        }
+
+        return ans;
+    }
+
+    private bool IsPossible(int[] price, int k, int diff) {
+        var num = price[price.Length - 1] - diff;
+        for(int i = price.Length - 2; i >= 0; i--) {
+            if(price[i] <= num) {
+                k--;
+                num = price[i] - diff;
+            }
+            if(k == 1)
+            return true;
+        }
+
+        return false;
+    }
+}

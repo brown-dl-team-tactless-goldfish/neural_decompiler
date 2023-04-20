@@ -1,0 +1,40 @@
+class Solution {
+public:
+    #define ll long long
+    ll dp[101];
+    const int mod = 1e9 + 7;
+    ll fact(ll n){
+        if(n == 0 || n == 1) return 1;
+        return dp[n] = ((n%mod)  * (fact(n-1)%mod))%mod;
+    }
+    bool isPrime(ll n){
+        
+        if(n == 1) return false;
+        
+        for(ll i=2;i*i<=n;i++){
+            
+               if(n%i == 0) return false;
+        }
+        return true;
+    }
+    ll numPrimeArrangements(ll n) {
+         
+        memset(dp,-1,sizeof(dp));
+        
+        ll primes = 0, normal = 0;
+        
+        for(ll i=1;i<=n;i++){
+            
+              if(isPrime(i)){
+                   primes++;
+              }
+            else{
+                  normal++;
+            }
+        }
+        
+        ll ans = ((fact(primes)%mod) * (fact(normal)%mod))%mod;
+        
+        return ans;
+    }
+};

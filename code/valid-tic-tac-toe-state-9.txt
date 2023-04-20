@@ -1,0 +1,29 @@
+class Solution {
+public:
+    bool validTicTacToe(vector<string>& board) {
+        int dr[8][3] = {{0, 0, 0}, {1, 1, 1}, {2, 2, 2}, {0, 1, 2}, {0, 1, 2}, {0, 1, 2}, {0, 1, 2}, {0, 1, 2}};
+        int dc[8][3] = {{0, 1, 2}, {0, 1, 2}, {0, 1, 2}, {0, 0, 0}, {1, 1, 1}, {2, 2, 2}, {0, 1, 2}, {2, 1, 0}};
+        int numX = 0, numO = 0;
+        for (int i = 0; i < 3; i++) {
+            for (int j = 0; j < 3; j++) {
+                if (board[i][j] == 'X') numX++;
+                if (board[i][j] == 'O') numO++;
+            }
+        }
+        if (numX < numO || numX > numO + 1) return false;
+        if (!numX && !numO) return true;
+        int linesX = 0, linesO = 0;
+        for (int i = 0; i < 8; i++) {
+            char c = board[dr[i][0]][dc[i][0]];
+            int j;
+            for (j = 1; j < 3; j++)
+                if (c == ' ' || c != board[dr[i][j]][dc[i][j]]) break;
+            if (j == 3 && c == 'X') linesX++;
+            else if (j == 3 && c == 'O') linesO++;
+            if (linesX > 0 && numX - 1 != numO) return false;
+            if (linesO > 0 && numX != numO) return false;
+            if ((linesX > 2 || (linesX == 2 && numX != 5)) || (linesO > 2 || (linesO == 2 && numO != 5))) return false;
+        }
+        return true;
+    }
+};

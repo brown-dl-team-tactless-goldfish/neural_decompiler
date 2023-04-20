@@ -1,0 +1,32 @@
+class Solution {
+public:
+    static bool canTransform(string const& start, string const& end) {
+        if (start.size() != end.size()) return false;
+        size_t start_idx = 0, end_idx = 0;
+        while (start_idx < start.size() || end_idx < end.size()) {
+            auto const c1 = nextChar(start_idx, start);
+            auto const c2 = nextChar(end_idx, end);
+            // It is only possible to move 'L's backward relative to 'X's
+            // move 'R's forward relative to 'X's. In addition, it is
+			// impossible to move any 'R' past any 'L' or replace a 'L'
+			// with a 'R'.
+            if (c1 != c2 || ('L' == c1 && start_idx < end_idx) || ('R' == c1 && start_idx > end_idx)) return false;
+        }
+        return true;
+    }
+private:
+    static char nextChar(size_t& idx, string const& str) {
+        while (idx < str.size()) {
+            auto const c = str[idx++];
+            if ('L' == c || 'R' == c) return c;
+        }
+        return '\0';
+    }
+};
+
+int const _ = []() {
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    return 0;
+}();

@@ -1,0 +1,46 @@
+char ** findAndReplacePattern(char ** words, int wordsSize, char * pattern, int* returnSize){
+    char cWordsSize = wordsSize, cStrLen = strlen(pattern), aacMappings[2][26];
+
+    for(char i=0; i<cWordsSize; i++)
+    {
+        memset(aacMappings, 0, 52*sizeof(char));
+
+        for(char j=0; j<cStrLen; j++)
+        {
+            // word maps to pattern
+            char cIndex = words[i][j]-'a';
+            if(aacMappings[0][cIndex])
+            {
+                if(aacMappings[0][cIndex] != pattern[j])
+                {
+                    words[i--] = words[--cWordsSize];
+                    break;
+                }
+            }
+            else
+            {
+                aacMappings[0][cIndex] = pattern[j];
+            }
+
+            // pattern maps to word
+            cIndex = pattern[j]-'a';
+            if(aacMappings[1][cIndex])
+            {
+                if(aacMappings[1][cIndex] != words[i][j])
+                {
+                    words[i--] = words[--cWordsSize];
+                    break;
+                }
+            }
+            else
+            {
+                aacMappings[1][cIndex] = words[i][j];
+            }
+        }
+    }
+
+    // update *returnSize;
+    *returnSize = cWordsSize;
+
+    return words;
+}

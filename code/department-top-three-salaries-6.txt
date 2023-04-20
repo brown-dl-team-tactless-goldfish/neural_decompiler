@@ -1,0 +1,24 @@
+/* Write your T-SQL query statement below */
+
+;With tmp as 
+(
+    select  row_number() over (Partition by departmentId order by salary desc) as RowNum,
+            departmentId,
+            Salary
+    from Employee
+    group by departmentId, Salary
+),tmpSalary as
+(
+    select Min(Salary) as min,
+           departmentId
+    from tmp
+    where RowNum<=3
+    group by departmentId
+)
+
+select  b.name as Department,
+        a.Name as Employee,
+        a.Salary
+from Employee a
+join Department b on a.departmentId=b.id
+join tmpSalary c on a.departmentId=c.departmentId and a.Salary>=c.min

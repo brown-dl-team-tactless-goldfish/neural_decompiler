@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int minOperationsMaxProfit(vector<int>& c, int bCost, int rCost) {
+        int in_queue = 0;
+        int n_rotations = 0;
+        int boarded = 0;
+        
+        int ans = 0;
+        int max_profit = 0;
+        
+        int i = 0;
+        while(in_queue > 0 || i < c.size()){
+            if( i < c.size())
+                in_queue += c[i++];
+            n_rotations++;
+            if(in_queue < 4){
+                boarded += in_queue;
+                in_queue = 0;
+            }
+            else {
+                boarded += 4;
+                in_queue = in_queue - 4;
+            }
+            
+            auto curr_profit = (boarded * bCost) - (n_rotations * rCost);
+            if(curr_profit > max_profit){
+                ans = n_rotations;
+                max_profit = curr_profit;
+            }
+        }
+
+        if(ans == 0)
+            return -1;
+        return ans;
+    }
+};

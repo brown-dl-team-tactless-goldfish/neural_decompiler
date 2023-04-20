@@ -1,0 +1,17 @@
+class Solution {
+public:
+    bool stoneGameIX(vector<int>& stones) {
+        int cnt[3]{}, steps[2];
+        for (auto s : stones) cnt[s % 3]++;
+        if (cnt[1] > cnt[2]) swap(cnt[1], cnt[2]);
+        int n = cnt[0] + cnt[1] + cnt[2];
+        if (!cnt[2]) return false;
+        steps[1] = cnt[0] + (cnt[2] == 1 ? 1 : cnt[1] + cnt[1] + (cnt[2] > cnt[1]) + (cnt[2] + 1 > cnt[1]));
+        steps[0] = cnt[0] + (cnt[1] == 1 ? 1 : cnt[1] + cnt[1] - 1);
+        if (!cnt[1]) steps[0] = steps[1];
+        if ((steps[0] & 1) && steps[0] < n) return true;
+        if ((steps[1] & 1) && steps[1] < n) return true;
+        return false;
+    }
+};
+

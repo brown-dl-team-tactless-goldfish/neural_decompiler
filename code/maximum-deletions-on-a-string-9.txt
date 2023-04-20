@@ -1,0 +1,36 @@
+class Solution {
+public:
+    unordered_map<int,int> gdp; // also we can use vector
+    int sol(vector<vector<int>>& dp, int st){
+        if(st == dp.size()) return gdp[st] = 1;
+        int sst = st+1; // second start point will start from st + 1
+        int ans = 1;
+        if(gdp.find(st) != gdp.end()) return gdp[st];
+        while((2*sst - st) <= dp.size()){ // will run till we got half way
+            if(dp[st][sst-1] == dp[sst][2*sst-st-1]){
+                ans = max(ans, sol(dp,sst)+1);
+            }
+            sst++;
+        }
+        gdp[st] = ans;
+        return ans;
+    }
+
+    int deleteString(string s) {
+        if(s.length() == 1) return 1;
+        int i = 0, j = 1;
+        int M = 1e9+7 , p = 37;
+        vector<vector<int>> dp(s.length(), vector<int>(s.length(),0));
+        for(int i=0;i<s.length();i++){
+            int no = 0;
+            long int mul = 1;
+            for(int j=i;j<s.length();j++){
+                no += (s[j]*mul)%M;
+                dp[i][j] = no;
+                mul *= p;
+                mul %= M;
+            }
+        }
+        return sol(dp,0);
+    }
+};

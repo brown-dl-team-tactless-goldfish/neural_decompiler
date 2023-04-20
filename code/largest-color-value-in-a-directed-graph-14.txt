@@ -1,0 +1,40 @@
+class Solution {
+   unordered_map<int, unordered_map<char, int>> dp;
+   pair<unordered_map<char, int>, bool> dfs(int node, vector<int> adj[], string &colors, vector<int> &vis, vector<int> &dfsvis) {
+       vis[node] = dfsvis[node] = 1;
+       unordered_map<char, int> m;
+
+       for(int ad : adj[node]) {
+           if(!vis[ad]) {
+               auto r = dfs(ad, adj, colors, vis, dfsvis);
+               if(r.second) return {m, true};
+               for(auto i : r.first) m[i.first] = max(m[i.first], i.second);
+               
+           }
+           else {
+               if(dfsvis[ad]) return {m, true};
+               for(auto i : dp[ad]) m[i.first] = max(m[i.first], i.second);
+           }
+       }
+       m[colors[node]]++;
+       dfsvis[node] = 0;
+       dp[node] = m;
+       return {m, false};
+   }
+public:
+    int largestPathValue(string colors, vector<vector<int>>& edges) {
+        int n = colors.size(), ans = 0;
+        vector<int> adj[n];
+        for(auto e : edges) adj[e[0]].push_back(e[1]);
+
+        vector<int> vis(n), dfsvis(n);
+        for(int i=0; i<n; i++) {
+            if(!vis[i]) {
+                auto r = dfs(i, adj, colors, vis, dfsvis);
+                if(r.second) return -1;
+                for(auto i : r.first) ans = max(ans, i.second);
+            }
+        }
+        return ans;
+    }
+};

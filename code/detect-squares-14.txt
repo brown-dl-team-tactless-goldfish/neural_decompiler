@@ -1,0 +1,35 @@
+class DetectSquares{
+	public:
+        DetectSquares() {
+        
+    }
+		
+    void add(vector<int> point){
+		++count_pnts[{point[0],point[1]}];
+		points.push_back({point[0],point[1]});
+    }
+
+    int count(vector<int> point){
+        int ans = 0;
+        for(const auto& p : points){
+            if(abs(point[0] - p.x_) == 0 || abs(point[0] - p.x_) != abs(point[1] - p.y_))
+                continue;
+            Point p3 {point[0],p.y_};
+            Point p4 {p.x_,point[1]};
+            if(count_pnts.find(p3) != count_pnts.end() && count_pnts.find(p4) != count_pnts.end())
+                ans += count_pnts[p3] * count_pnts[p4];
+        }
+        return ans;
+    }
+	
+    private:
+        struct Point{
+            int x_;
+            int y_;
+            bool operator()(const Point& lhs, const Point& rhs) const{
+                return (lhs.x_ == rhs.x_) ? (lhs.y_ > rhs.y_) : (lhs.x_ > rhs.x_);
+            }
+        };  
+		vector<Point> points;
+		map<Point,int,Point> count_pnts;
+};

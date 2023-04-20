@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int f(int i, int j, int &n, int &m, int maxMove, int &M, vector<vector<vector<int>>> &dp) {
+        if(maxMove < 0) return 0;
+        if(i < 0 || j < 0 || i >= n || j >= m) return 1;
+        if(dp[i][j][maxMove] != -1) return dp[i][j][maxMove];
+        int res = 0;
+        int a = f(i + 1, j, n, m, maxMove - 1, M, dp) % M;
+        res += a; res %= M;
+        int b = f(i - 1, j, n, m, maxMove - 1, M, dp) % M;
+        res += b; res %=M;
+        int c = f(i, j + 1, n, m, maxMove - 1, M, dp) % M;
+        res += c; res %= M;
+        int d = f(i, j - 1, n, m, maxMove - 1, M, dp) % M;
+        res += d; res %= M;
+        return dp[i][j][maxMove] = res % M;
+    }
+    int findPaths(int n, int m, int maxMove, int r, int c) {
+        int cnt=0, M=1e9+7;
+        vector<vector<vector<int>>> dp(51, vector<vector<int>> (51, vector<int> (51, -1)));
+        return f(r, c, n, m, maxMove, M, dp);
+    }
+};

@@ -1,0 +1,88 @@
+void get_nof_operations(int *nof_ops, int sum1, int sum2, int* nums1, int nums1Size, int* nums2, int nums2Size)
+{
+    int max_pos = nums1Size - 1;
+    int min_pos = 0;
+    
+    int maxim1 = nums1[max_pos], minim2 = nums2[min_pos];
+    while (sum1 > sum2) {
+        // max_pos = -1 and min_pos = nums2Size are values that can be obtained
+        // at some point in this function (after going through one full array),
+        // so I have to check if the current value stored in max_pos / min_pos is
+        // a valid position in the actual array
+        if (max_pos >= 0) maxim1 = nums1[max_pos]; else maxim1 = 1;
+        if (min_pos < nums2Size) minim2 = nums2[min_pos]; else minim2 = 6;
+
+        
+        // if min_pos or max_pos are out of range with at least 2 units,
+        // it means that I'll have buff overflow, because the algorithm will
+        // go at infinity on one branch in the last if
+        if (min_pos >= nums2Size + 1 || max_pos <= -2) {
+            printf("%d %d\n", min_pos, max_pos);
+            *nof_ops = -1;
+            break;
+        }
+            
+        if (maxim1 - 1 > 6 - minim2) {
+            if (max_pos >= 0) {
+                // IF I WANT TO END UP AT sum1 == sum2 (else I'll have sum1 < sum2, but the number of steps will be the same)
+                // nums1[max_pos] = ((sum1 - sum2) > (nums1[max_pos] - 1)) ? 1 : (nums1[max_pos] -(sum1 - sum2));
+                // sum1 = sum1 - (maxim1 - nums1[max_pos]);
+    
+                sum1 = sum1 - (maxim1 - 1);
+                nums1[max_pos] = 1;
+                
+                *nof_ops += 1;
+            }
+
+            --max_pos;
+        } else {
+            if (min_pos < nums2Size) {
+                // nums2[min_pos] = ((sum1 - sum2) > (6 - nums2[min_pos])) ? 6 :  (nums2[min_pos] + sum1 - sum2);
+                // sum2 = sum2 + (nums2[min_pos] - minim2);
+    
+                sum2 += 6 - minim2;
+                nums2[min_pos] = 6;
+                
+                *nof_ops += 1;
+            }
+
+            ++min_pos;
+        }
+    }
+}
+
+int int_cmp(void *num1, void *num2) {
+    return *((int *)num1) - *((int *)num2);
+}
+
+int minOperations(int* nums1, int nums1Size, int* nums2, int nums2Size){
+    int sum1 = 0, sum2 = 0;
+    
+    for (int i = 0; i < nums1Size; ++i) {
+        sum1 += nums1[i];
+    }
+    
+    for (int i = 0; i < nums2Size; ++i) {
+        sum2 += nums2[i];
+    }
+    
+    if (sum1 == sum2) {
+        return 0;
+    }
+    
+    // I sort the arrays, so I won't have to search for min and max in the function
+    // get_nof_operations()
+    qsort(nums1, nums1Size, sizeof(int), &int_cmp);
+    qsort(nums2, nums2Size, sizeof(int), &int_cmp);
+    
+    int nof_operations = 0;
+    
+    if (sum1 > sum2) {
+        get_nof_operations(&nof_operations, sum1, sum2, nums1, nums1Size, nums2, nums2Size);
+        
+    } else {
+        get_nof_operations(&nof_operations, sum2, sum1, nums2, nums2Size, nums1, nums1Size);
+    }
+
+    return nof_operations;
+}

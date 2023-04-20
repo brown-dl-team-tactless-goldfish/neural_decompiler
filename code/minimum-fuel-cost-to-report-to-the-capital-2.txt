@@ -1,0 +1,58 @@
+class Solution {
+public:
+    using ll = long long;
+    using vi = vector<int>;
+    long long minimumFuelCost(vector<vector<int>>& roads, int seats) {
+        int m = roads.size() + 1;
+        
+        // build gragh and indegree
+        vector<vector<int>> g(m);
+        vector<int> id(m);
+        for (auto e: roads) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+            id[e[0]]++;
+            id[e[1]]++;
+        }
+        
+        vector<bool> visited(m);
+        
+        // count of ppl at node
+        vector<int> np(m, 1);
+        
+        queue<int> q;
+        for (int i = 0; i < m; ++i) {
+            if (id[i] != 1) continue;
+            
+            // leaf node
+            q.push(i);    
+        }
+        
+        ll res = 0;
+        while (!q.empty()) {
+            int c = q.front();
+            q.pop();
+            
+            if (c == 0) continue;
+            
+            visited[c] = true;
+            
+            for (auto next: g[c]) {
+                if (visited[next]) continue;
+                
+                // fuel needed
+                res += (np[c] + seats - 1) / seats;
+                
+                // move to city next
+                np[next] += np[c];
+                
+                
+                if (--id[next] == 1) {
+                    q.push(next);
+                }
+            }
+        }
+        
+        return res;
+    }
+};

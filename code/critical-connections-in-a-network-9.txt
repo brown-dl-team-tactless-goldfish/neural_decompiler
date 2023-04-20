@@ -1,0 +1,52 @@
+public class Solution {
+        private int time = 0;
+        private int[] visitedTimes = null,
+                      lowTimes = null;
+        private IList<IList<int>> result = new List<IList<int>>();
+        private Dictionary<int, List<int>> graph = new Dictionary<int, List<int>>();
+        private HashSet<int> visited = new HashSet<int>();
+
+        public IList<IList<int>> CriticalConnections(int n, IList<IList<int>> connections)
+        {
+            visitedTimes = Enumerable.Repeat(-1, n).ToArray();
+            lowTimes = new int[n];
+
+            foreach (var connection in connections)
+            {
+                if (!graph.ContainsKey(connection[0]))
+                    graph.Add(connection[0], new List<int>());
+
+                if (!graph.ContainsKey(connection[1]))
+                    graph.Add(connection[1], new List<int>());
+
+                graph[connection[0]].Add(connection[1]);
+                graph[connection[1]].Add(connection[0]);
+            }
+            
+            DFS(connections[0][0], -1);
+
+            return result;
+        }
+
+        private void DFS(int cur, int parent)
+        {
+            visitedTimes[cur] = lowTimes[cur] = ++time;
+            visited.Add(cur);
+
+            foreach (var node in graph[cur])
+                if (node != parent)
+                {
+                    if (!visited.Contains(node))
+                    {
+                        DFS(node, cur);
+
+                        if (visitedTimes[cur] < lowTimes[node])
+                            result.Add(new List<int>() { cur, node });
+                        else
+                            lowTimes[cur] = Math.Min(lowTimes[cur], lowTimes[node]);
+                    }
+                    else
+                        lowTimes[cur] = Math.Min(lowTimes[cur], visitedTimes[node]);
+                }
+        }
+}

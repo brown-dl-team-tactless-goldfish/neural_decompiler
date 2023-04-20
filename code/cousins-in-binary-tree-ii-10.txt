@@ -1,0 +1,45 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* replaceValueInTree(TreeNode* root) {
+        queue<TreeNode*> Queue;
+        Queue.push(root);
+        root -> val = 0;
+        while(!Queue.empty()) {
+            int sz = Queue.size();
+            int sum = 0;
+            vector<pair<TreeNode*, TreeNode*>> level;
+            unordered_map<TreeNode*, int> Map;
+            for(int i = 0; i < sz; i++) {
+                TreeNode* curr = Queue.front();
+                Queue.pop();
+                if(curr -> left) {
+                    sum += curr -> left -> val;
+                    Queue.push(curr -> left);
+                    level.push_back({curr -> left, curr});
+                    Map[curr] += curr -> left -> val;
+                }
+                if(curr -> right) {
+                    sum += curr -> right -> val;
+                    Queue.push(curr -> right);
+                    level.push_back({curr -> right, curr});
+                    Map[curr] += curr -> right -> val;
+                }
+            }
+            for(int i = 0; i < level.size(); i++) {
+                level[i].first -> val = sum - Map[level[i].second];
+            }
+        }
+        return root;
+    }
+};

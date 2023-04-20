@@ -1,0 +1,31 @@
+    // for a string s of length n
+    // we can denote each character in s as c with the index of c plus one, such that s can be denoted as
+    // c1c2c3...cn
+    // then let's create a two dimensional vector memo
+    // memo[i][m] means the minimum insertion step for a substring of s starting at index i with length m, where m is in the range of [0, n - i]
+    // and what the problem needs us to get is memo[0][n]
+    // the recurrence of the problem is:
+    // if c1 == cn then memo[0][n] = memo[1][n - 2]
+    // if c1 != cn, then there are two ways to make the string palindrome:
+    // 1. add a character same as cn before c1, then we need memo[0][n - 1] + 1 steps to make the string palindrome
+    // 2. add a character same as c1 after cn, in this case we need memo[1][n - 1] + 1 steps to make the string palindrome
+    // so when c1 != cn memo[0][n] = min(memo[0][n - 1], memo[1][n - 1]) + 1
+    // the base case in the recurrence is memo[i][0] = 0 and memo[i][1] = 0 where i is in the range of [0, n - 1], which means a length 0 or 1 string needs 0 steps to make it palindrome
+    int minInsertions(string s) {
+        int size = s.size();
+        vector<vector<int>> memo;
+        for (int i = 0; i < size; i++) {
+            memo.push_back(vector<int>(size - i + 1, 0));
+        }
+        for (int length = 2; length <= size; length++) {
+            for (int i = 0; i <= size - length; i++) {
+                if (s[i] == s[i + length - 1]) {
+                    memo[i][length] = memo[i + 1][length - 2];
+                } else {
+                    int lengthSubOne = length - 1;
+                    memo[i][length] = min(memo[i][lengthSubOne], memo[i + 1][lengthSubOne]) + 1;
+                }
+            }
+        }
+        return memo[0][size];
+    }

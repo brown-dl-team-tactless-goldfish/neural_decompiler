@@ -1,0 +1,27 @@
+bool helper(char* a, char* b, int i){
+    // find longest prefix that matches suffix
+    int j = 0;
+    while (a[j] && a[j] == b[i-j]) j++;
+    if (j == i) return true;
+    
+	// check if remaining region is a palindrome in either word
+	bool basp = true;
+    bool absp = true;
+    while(j <= (i-j)){
+        basp &= b[j] == b[i-j];
+        absp &= a[j] == a[i-j];
+        j++;
+    }
+    
+    return (basp || absp);
+}
+
+bool checkPalindromeFormation(char * a, char * b){
+    // find end of string
+    int i = 0;
+    while (a[i]) i++; 
+    i--;
+
+	// check both a_prefix + b_suffix and b_prefix + a_suffix
+    return(helper(a, b, i) || helper(b,a,i));
+}

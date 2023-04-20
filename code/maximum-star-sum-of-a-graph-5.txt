@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int maxStarSum(vector<int>& vals, vector<vector<int>>& edges, int k) {
+        int ans = INT_MIN;
+        vector<priority_queue<int>>vec(vals.size());
+        
+        for(auto x: edges){
+            vec[x[0]].push(vals[x[1]]);
+            vec[x[1]].push(vals[x[0]]);
+        }
+
+        for(int i = 0; i<vec.size(); i++){
+            int currans = vals[i];
+            int c = k;
+            while(vec[i].empty()==false and c--){
+                if(vec[i].top()>0){
+                    currans+=vec[i].top();
+                }
+                else{
+                    break;
+                }
+                vec[i].pop();
+            }
+            ans = max(ans, currans);
+        }
+
+        return ans;
+    }
+};

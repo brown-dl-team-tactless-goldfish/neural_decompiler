@@ -1,0 +1,68 @@
+class Solution {
+public:
+    long long maximumBeauty(vector<int>& flowers, long long newFlowers, int target, int full, int par) {
+        int n=flowers.size();
+        vector<long long>flower;
+        for(auto it:flowers)
+            flower.push_back(it);
+        sort(flower.begin(),flower.end());
+         int r;
+          int k=0;
+        long long used=0;
+        for(int i=n-1;i>=0;i--)
+        {
+            if(flower[i]<1LL*target)
+            {
+                r=i;break;
+            }
+            else
+                k++;
+        }
+        long long res=0;
+        vector<long long>prem(n),pre(n);
+        
+        prem[0]=flower[0];
+        pre[0]=flower[0];
+        for(int i=1;i<n;i++)
+        {
+            pre[i]=pre[i-1]+flower[i];
+            prem[i]=min(prem[i],flower[i]);
+        }
+        
+        for(int i=r;i>=0;i--)
+        {
+            
+            long long l=prem[i],hi=target-1,ans=-1,mid;
+            while(l<=hi)
+            {
+                mid=l+(hi-l)/2;
+                long long va=0;
+                   if(flower[0]<mid)
+                   {
+                    int j=upper_bound(flower.begin(),flower.begin()+(n-k),mid)-flower.begin();
+                       
+                    va=(1LL*j*mid)-pre[j-1];   
+                   }
+                if(va<=newFlowers-used)
+                {
+                    ans=mid;
+                    l=mid+1;
+                }
+                else
+                    hi=mid-1;
+            }
+           if(ans!=-1)
+           {               
+               long long val=1LL*k*full+1LL*ans*par;
+               res=max(res,val);
+           }
+            used+=abs(flower[i]-1LL*target);
+            k++;  
+        }
+        if(used<=newFlowers)
+        {
+            res=max(res,1LL*n*full);
+        }
+    return res;
+    }
+};

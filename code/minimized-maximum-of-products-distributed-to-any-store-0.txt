@@ -1,0 +1,25 @@
+int divide(int* nums, int numsSize, double k){
+    int ret =0 ;
+    for(int i = 0; i < numsSize; i++){
+        ret += ceil(nums[i]/k);
+    }
+    return ret;
+}
+
+int cmpfunc(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+
+int minimizedMaximum(int n, int* quantities, int quantitiesSize){
+    qsort(quantities, quantitiesSize, sizeof(int), cmpfunc);
+    int left = 1, right = 100000;
+    int mid;
+    while(left < right){
+        mid = (left + right) / 2;
+        if(divide(quantities, quantitiesSize, mid) <= n)
+            right = mid;
+        else
+            left = mid + 1;
+    }
+    return left;
+}

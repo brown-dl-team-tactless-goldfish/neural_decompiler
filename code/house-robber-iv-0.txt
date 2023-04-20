@@ -1,0 +1,39 @@
+using PII = pair<int, int> ; //noRob, Rob
+class Solution {
+    int n ;
+    vector<PII>dp ;
+    int k ;
+    
+    bool check(int& cap, vector<int>& nums){
+        dp[0].first = 0 ;
+        dp[0].second = (nums[0] <= cap) ;
+        
+        for(int i = 1; i < n; i++){
+            if(nums[i] > cap){
+                dp[i].first = max(dp[i-1].first, dp[i-1].second) ;
+                dp[i].second = 0 ;
+            }
+            else{
+                dp[i].first = max(dp[i-1].first, dp[i-1].second) ;
+                dp[i].second = 1 + dp[i-1].first ;
+            }
+        }
+
+        return max(dp[n-1].first, dp[n-1].second) >= k ;
+    }
+public:
+    int minCapability(vector<int>& nums, int k) {
+        n = nums.size() ;
+        this->k = k ;
+        dp.resize(n) ;
+        int left = 1, right = *max_element(nums.begin(), nums.end()) ;
+        while(left < right){
+            int mid = left + (right-left)/2 ;
+            if(check(mid, nums))
+                right = mid ;
+            else
+                left = mid + 1 ;
+        }
+        return left ;
+    }
+};

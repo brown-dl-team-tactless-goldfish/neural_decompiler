@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int preimageSizeFZF(int k) {
+          return solve(k) - solve(k-1);
+    }
+    long long solve(int k) {
+         long long L = 0 , R = LLONG_MAX;
+         while(L<=R) {
+             long long m = L + (R-L)/2 , x = m , cnt = 0;
+             while(x) {
+                 cnt+=x/5;
+                 x/=5;
+             }
+             cnt<=k ? L = m + 1 : R = m - 1;
+         }
+        return R;
+    }
+};
+
+/*
+
+min(2f,5f) ~ 5f
+
+5! => = 1(5/5) + 0(1/5) = 1 ~ 120 , 120 has one leading zero.
+
+    leading zeroes will only going to increase with big numbers , we can create a monotonic function & apply binary search 
+
+    k - 1 leading zeroes | k leading zeroes
+    
+    i , i+1 , i+2 | i+3 .....i+k
+    
+    difference between last element of k leading zero & k-1 leading zero , i+k - i+2 length means range i+3...i+k , 
+    these are for k leading zeroes!
+    
+*/

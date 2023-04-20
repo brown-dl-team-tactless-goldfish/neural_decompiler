@@ -1,0 +1,40 @@
+int countNodes(struct Node * root) {
+    
+    int i, c;
+    
+    if (root == NULL)
+        return 0;
+    
+    for (c = 0, i = 0; i < root->numChildren; i++)
+        c = c + countNodes(root->children[i]);
+    
+    return (c + 1);
+}
+
+void preorder_r(struct Node * root, int *v, int *pos) {
+    
+    int i;
+    
+    if (root == NULL)
+        return;
+    
+     v[*pos] = root->val;
+    *pos = *pos + 1;
+    for (i = 0; i < root->numChildren; i++)
+        preorder_r(root->children[i], v, pos);
+   
+    return;
+}
+
+int * preorder(struct Node *root, int *returnSize) {
+    int *ans, i;
+    
+    *returnSize = countNodes(root);
+    
+    ans = (int *) malloc(*returnSize * sizeof(int));
+    
+    i = 0;
+    preorder_r(root, ans, &i);
+    
+    return ans;
+}

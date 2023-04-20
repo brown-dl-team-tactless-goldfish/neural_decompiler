@@ -1,0 +1,24 @@
+vector<double> calcEquation(vector<vector<string>>& equations, vector<double>& values, vector<vector<string>>& queries) {
+ vector<double>result(queries.size());
+ unordered_map<string,unordered_map<string,double>>adjmat;//Adjacency matrix
+ for(int i=0;i<equations.size();i++)
+ {
+     adjmat[equations[i][0]][equations[i][1]]=values[i];
+     adjmat[equations[i][1]][equations[i][0]]=1.0/values[i];
+     adjmat[equations[i][0]][equations[i][0]]=1.0;//For types a/a=1 and so on..
+     adjmat[equations[i][1]][equations[i][1]]=1.0;
+ }
+ for(auto k=adjmat.begin();k!=adjmat.end();k++)
+  for(auto i=adjmat.begin();i!=adjmat.end();i++)
+    for(auto j=adjmat.begin();j!=adjmat.end();j++)
+        i->second[j->first]=max(i->second[j->first],i->second[k->first]*k->second[j->first]);
+ //By Floyd Warshall dp[i][j]=max(dp[i][j],dp[i][k]*dp[k][j]) IF i/j cannot be reached via k then dp[i][k]*dp[k][j] will be 0.
+    
+ for(int i=0;i<queries.size();i++)
+ {
+     if(!adjmat[queries[i][0]][queries[i][1]]) result[i]=-1.0;
+     else result[i]=adjmat[queries[i][0]][queries[i][1]];
+ }
+return result;
+}
+};

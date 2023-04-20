@@ -1,0 +1,92 @@
+int N = 0;
+
+typedef struct list{
+    int size;
+    int* adj;  
+}AdjList;
+
+AdjList *adjList = NULL;
+int *timeStamp = NULL;
+int t = 0;
+
+int **result = NULL;
+int resultSize = 0;
+
+void showAdjList(){
+    for(int i=0;i<N;i++){
+        printf("server:%d\n\t",i);
+        for(int j=0;j<adjList[i].size;j++){
+            printf("%d ",adjList[i].adj[j]);
+        }
+        printf("\n");
+    }
+}
+
+int tarjan(int i, int p){
+    int min_i = timeStamp[i] = ++t;
+    for(int k=0;k<adjList[i].size;k++){
+        int j = adjList[i].adj[k];
+        //printf("%d<->%d",i,j);
+        if(timeStamp[j]==INT_MAX){
+            int min_j = tarjan(j,i);
+            min_i = fmin(min_i,min_j);
+            if(timeStamp[i] < min_j){
+                result = realloc(result,sizeof(int*)*(++resultSize));
+                result[resultSize-1] = malloc(sizeof(int)*2);
+                result[resultSize-1][0] = i;
+                result[resultSize-1][1] = j;
+            }
+        }else if(j!=p){
+            min_i = fmin(min_i,timeStamp[j]);
+        }
+    }
+    return min_i;
+}
+
+int** criticalConnections(int n, int** connections, int connectionsSize, int* connectionsColSize, int* returnSize, int** returnColumnSizes){
+    free(result);
+    result = NULL;
+    resultSize = 0;
+    N = n;
+    *returnSize = 0;
+    *returnColumnSizes = NULL;
+    
+    adjList = malloc(sizeof(AdjList)*n);
+    for(int i=0;i<n;i++){
+        adjList[i].size = 0;
+        adjList[i].adj = NULL;
+    }
+    for(int i=0;i<connectionsSize;i++){
+        int u = connections[i][0];
+        int v = connections[i][1];
+        adjList[u].size++;
+        adjList[u].adj = realloc(adjList[u].adj, sizeof(int)*adjList[u].size);
+        adjList[u].adj[adjList[u].size-1] = v;
+        adjList[v].size++;
+        adjList[v].adj = realloc(adjList[v].adj, sizeof(int)*adjList[v].size);
+        adjList[v].adj[adjList[v].size-1] = u;
+    }
+    //showAdjList();
+    
+    timeStamp = malloc(sizeof(int)*n);
+    for(int i=0;i<n;i++)
+        timeStamp[i] = INT_MAX;
+    //find bcc
+    tarjan(0,-1);
+    
+    free(timeStamp);
+    
+    *returnSize = resultSize;
+    (*returnColumnSizes) = malloc(sizeof(int)*(*returnSize));
+    for(int i=0;i<resultSize;i++){
+        (*returnColumnSizes)[i] = 2;
+    }
+    
+    for(int i=0;i<n;i++){
+        free(adjList[i].adj);
+    }
+    free(adjList);
+    
+    
+    return result;
+}

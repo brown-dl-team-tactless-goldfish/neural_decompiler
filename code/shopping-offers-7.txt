@@ -1,0 +1,20 @@
+    int shoppingOffers(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {
+        return dfs(price, special, needs, 0);
+    }
+
+private:
+    int dfs(vector<int>& price, vector<vector<int>>& special, vector<int>& needs, int path_cost)
+    {
+        if (std::any_of(needs.begin(), needs.end(), [](const auto& n) { return n < 0; }))
+        {
+            return std::numeric_limits<int>::max(); // backtracking, if need for an item is negative, return
+        }
+        int cost = std::inner_product(price.begin(), price.end(), needs.begin(), 0) + path_cost;
+        for (const auto& offer : special)
+        {
+            std::transform(needs.begin(), needs.end(), offer.begin(), needs.begin(), std::minus<int>());
+            cost = std::min(cost, dfs(price, special, needs, path_cost + offer.back())); // check for a better choice
+            std::transform(needs.begin(), needs.end(), offer.begin(), needs.begin(), std::plus<int>()); // recover calling stack
+        }
+        return cost;
+    }

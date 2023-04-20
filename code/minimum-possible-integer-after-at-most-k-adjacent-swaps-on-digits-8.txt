@@ -1,0 +1,31 @@
+string minInteger_(string& num, int k, int idx, vector<int>& pos) {
+	if (idx >= num.length()) return num;
+	if (k <= 0) return num;
+
+	int nextIdx = -1;
+
+	for (int j = 0; j < num[idx] - '0'; ++j) {
+		int i = max(idx + 1, pos[j]);
+		for (; i < num.size() && i - idx <= k; ++i) {
+			if (num[i] - '0' == j) {
+				nextIdx = i;
+				break;
+			}
+		}
+		pos[j] = i;
+		if (nextIdx != -1) break;
+	}
+
+	if (nextIdx < 0) return minInteger_(num, k, idx + 1, pos);
+
+	char t = num[nextIdx];
+	num.erase(nextIdx, 1);
+	num.insert(idx, string(1, t));
+
+	return minInteger_(num, k - (nextIdx - idx), idx + 1, pos);
+}
+
+string minInteger(string num, int k) {
+	vector<int> pos(10, 0);
+	return minInteger_(num, k, 0, pos);
+}

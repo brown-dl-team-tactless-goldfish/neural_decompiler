@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int findCheapestPrice(int n, vector<vector<int>>& flights, int src, int dst, int K) {
+        
+        unordered_map<int, vector<pair<int, int>>>mp;
+        for (int i = 0; i < flights.size(); i++)
+            mp[flights[i][0]].push_back({flights[i][1], flights[i][2]});
+            
+        
+        int res = INT_MAX;
+        queue<pair<int, int>>q;
+        q.push({src, 0});
+        
+        int steps = 0;
+        
+        while (!q.empty()) {
+            int size = q.size();
+            for (int i = 0; i < size; i++) {
+                auto t = q.front();
+                q.pop();
+                if (t.first == dst)
+                    res = min(res, t.second);
+                
+                for (auto k = 0; k < mp[t.first].size(); k++) {
+                    if (t.second + mp[t.first][k].second > res) continue;
+                    q.push({mp[t.first][k].first, t.second + mp[t.first][k].second});
+                }
+            }
+            
+            if (steps++ > K) break;
+        }
+        
+        return res == INT_MAX ? -1 : res;
+
+    }
+};

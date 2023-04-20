@@ -1,0 +1,169 @@
+struct HT_item {
+    char* word;
+    int val;  // aka count
+};
+typedef struct HT_item HT_item;
+
+typedef struct HT {
+    HT_item** words;
+    unsigned int size;
+    unsigned int count;
+} HT;
+
+#define FNV_SOMEPRIME 16777619
+#define FNV_OFFSET 2166136261
+#define CAPACITY 2000
+
+unsigned int kinda_hash(const char* word, unsigned int base) {
+    // hashing function
+    unsigned int res = FNV_OFFSET;
+    for (; *word; word++) {
+        res ^= (unsigned int)(unsigned char)(*word);
+        res *= FNV_SOMEPRIME;
+    }
+    return res % base;
+}
+
+HT_item* create_item(char* key, int value) {
+    // Creates a pointer to a new HashTable item.
+    HT_item* item = (HT_item*)malloc(sizeof(HT_item));
+    item->word = (char*)malloc(strlen(key) + 1);
+    strcpy(item->word, key);
+    item->val = value;
+    return item;
+}
+
+HT* create_table(int size) {
+    // Creates a new HashTable.
+    HT* table = (HT*)malloc(sizeof(HT));
+    table->size = size;
+    table->count = 0;
+    table->words = (HT_item**)malloc(size* sizeof(HT_item*));
+
+    for (int i = 0; i < size; i++) table->words[i] = NULL;
+
+    return table;
+}
+
+void free_item(HT_item* item) {
+    // Frees an item.
+    free(item->word);
+    free(item);
+}
+
+void free_table(HT* table) {
+    // Frees the table.
+    for (int i = 0; i < table->size; i++) {
+        HT_item* item = table->words[i];
+
+        if (item != NULL) free_item(item);
+    }
+
+    free(table->words);
+    free(table);
+}
+
+void print_table(HT* table) {
+    printf("\nHash Table\n-------------------\n");
+
+    for (int i = 0; i < table->size; i++) {
+        if (table->words[i]) {
+            printf("Index:%d, Key:%s, Value:%d\n", i, table->words[i]->word, table->words[i]->val);
+        }
+    }
+    printf("-------------------\n\n");
+}
+
+HT_item* HT_find(struct HT* ht, char* word) {
+    unsigned int hash_ = kinda_hash(word, ht->size);
+    unsigned int initial_hash = hash_;
+    // Loop till we find an empty entry.
+
+    while (ht->words[hash_] != NULL) {
+        if (strcmp(word, ht->words[hash_]->word) == 0) {
+            // Found key, return value.
+            return ht->words[hash_];
+        }
+        // Key wasn't in this slot, move to next (linear probing).
+        hash_++;
+        if (hash_ >= ht->size) {
+            // At end of entries array, wrap around.
+            hash_ = 0;
+        }
+        if (hash_ == initial_hash) break;
+    }
+    return NULL;  // looped whole ht
+}
+
+unsigned int collision_handler(struct HT* ht, char* word) {
+    unsigned int hash_ = kinda_hash(word, ht->size) + 1;
+    if (ht->count < ht->size) {
+        while (ht->words[hash_]) {
+            hash_++;
+            if (hash_ >= ht->size) {
+                // At end of entries array, wrap around.
+                hash_ = 0;
+            }
+        }
+    }
+    return hash_;
+}
+
+void HT_add(struct HT* ht, char* word) {
+    HT_item* curr_item =
+        HT_find(ht, word);  // search for item (can also return index of first NULL or same hash_index)
+    if (curr_item) {        // fount item
+        if (strcmp(curr_item->word, word) == 0) {  // same word <-useless if?
+            curr_item->val += 1;
+            
+        }
+    } else {
+        unsigned int hash_idx = kinda_hash(word, ht->size);
+        if (ht->words[hash_idx]) // collision
+        {  
+            hash_idx = collision_handler(ht, word);  // looking for first NULL index
+        }
+        HT_item* new_item = create_item(word, 1);
+        ht->words[hash_idx] = new_item;
+        ht->count++;
+    }
+
+    // printf("%d ",hash_idx);
+}
+
+int HT_decrease_val(struct HT* ht, char* word) {
+    int status = 0;
+    HT_item* curr_item = HT_find(ht, word);
+    if (curr_item && curr_item->word&&curr_item->val <=1)  {
+        if (strcmp(curr_item->word, word) == 0) {
+            curr_item->val -= 1;
+            status = 1;
+        }}
+    return status;
+}
+
+int countWords(char** words1, int words1Size, char** words2, int words2Size) {
+    int res = 0;
+    HT* ht = create_table(CAPACITY +1 );
+    int k = 0;
+    for (int i = 0; i < words1Size; i++, k++)
+        HT_add(ht, words1[i]);
+    // printf("\nTotal inserted: %d, ht->count %d\n", k, ht->count);
+    // print_table(ht);
+    // printf("\n");
+    for (int i = 0; i < words2Size; i++)
+        HT_decrease_val(ht, words2[i]);
+
+    for (int i = 0; i < ht->size; i++) {
+        if (ht->words[i]) {
+            if (ht->words[i]->val == 0) {
+               // printf("%d %s %d\n", i, ht->words[i]->word, ht->words[i]->val);
+                res++;
+            }
+        }
+    }
+
+    free_table(ht);
+
+    return res;
+}

@@ -1,0 +1,42 @@
+class Solution {
+public:
+    bool pyramidTransition(string bottom, vector<string>& allowed) {
+        unordered_map<string, unordered_set<char>> dict;
+        for (string triple : allowed) {
+            dict[triple.substr(0, 2)].insert(triple[2]);
+        }
+        
+        unordered_set<string> failed;
+        return dfs(bottom, 0, "", failed, dict);
+    }
+    
+private:
+    bool dfs(string bot_row, int bot_index, string curt_row, unordered_set<string>& failed, unordered_map<string, unordered_set<char>>& dict) {       
+        if (bot_row.size() == 1) {
+            return true;
+        }        
+        
+        if (bot_index == bot_row.size() - 1) {
+            if (failed.count(curt_row)) {
+                return false;
+            }
+            if (dfs(curt_row, 0, "", failed, dict)) {
+                return true;
+            }
+            return false;
+        }
+        
+        if (!dict.count(bot_row.substr(bot_index, 2))) {
+            return false;
+        }
+        
+        for (auto c : dict[bot_row.substr(bot_index, 2)]) {
+            if (dfs(bot_row, bot_index + 1, curt_row + c, failed, dict)) {
+                return true;
+            }
+        }    
+        
+        failed.insert(bot_row);
+        return false;
+    }    
+};

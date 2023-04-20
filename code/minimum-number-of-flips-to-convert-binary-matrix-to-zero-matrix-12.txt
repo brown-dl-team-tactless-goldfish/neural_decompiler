@@ -1,0 +1,68 @@
+class Solution {
+public:
+    int n, m;
+    queue<pair<pair<int, int>, vector<vector<int>>>> q;
+    unordered_set<string> set;
+    vector<int> DIR = {1, 0, -1, 0, 1};    
+    string ans = "";
+    
+    int minFlips(vector<vector<int>>& mat) {
+        n = mat.size(), m = mat[0].size();
+        ans = string(n * m, '0');
+        string s = serialize(mat);
+        if(s == ans) return 0;
+        set.insert(s);
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < m; j++)
+                if(mat[i][j])
+                    add(i, j, mat);
+        return helper();
+    }
+    string serialize(vector<vector<int>>& A){
+        string result = "";
+        for(int i = 0; i < n; i++)
+            for(int j = 0; j < m; j++)
+                result += A[i][j] + '0';
+        return result;
+    }
+    void add(int r, int c, vector<vector<int>>& state){
+        q.push({{r,c}, state});
+        for(int k = 0; k < 4; k++){
+            int nr = r + DIR[k], nc = c + DIR[k + 1];
+            if(nr < 0 || nc < 0 || nr == n || nc == m)
+                continue;
+            q.push({{nr, nc}, state});
+        }
+    }
+    int helper(){
+        int count = 1;
+        while(!q.empty()){
+            int sz = q.size();
+            for(int i = 0; i < sz; i++){
+                auto temp = q.front();
+                // {{coordinates}, state}
+                q.pop();
+                auto [r, c] = temp.first;
+                auto state = temp.second;
+                string a = serialize(state);
+                state[r][c] += state[r][c] == 0 ? 1 : -1;
+                for(int k = 0; k < 4; k++){
+                    int nr = r + DIR[k], nc = c + DIR[k + 1];
+                        if(nr < 0 || nc < 0 || nr == n || nc == m)
+                            continue;
+                    state[nr][nc] += state[nr][nc] == 0 ? 1 : -1;
+                }
+                string s = serialize(state);
+                if(s == ans) return count;
+                if(set.find(s) != set.end()) continue;
+                set.insert(s);
+                for(int i = 0; i < n; i++)
+                    for(int j = 0; j < m; j++)
+                        if(state[i][j])
+                            add(i, j, state);
+            }
+            count++;
+        }
+        return -1;
+    }
+};

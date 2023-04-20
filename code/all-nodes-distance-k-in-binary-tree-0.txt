@@ -1,0 +1,75 @@
+//caculate depth
+int depth(struct TreeNode* root){
+    if(root == NULL)
+        return -1;
+    return 1 + fmax( depth(root->left) , depth(root->right) );
+}
+
+//find path from root to target 
+void findPath(struct TreeNode* root,struct TreeNode* target, struct TreeNode** data, int dataIdx, struct TreeNode** path, int* pathIdx){
+    if(root == NULL)
+        return ;
+    data[dataIdx] = root;
+    if(root == target){
+        *pathIdx = dataIdx + 1 ; 
+        for(int i = 0; i < (dataIdx + 1 ) ; i++){
+            path[i] = data[i];
+        }
+        return;
+    }
+    
+    findPath(root->left, target, data, dataIdx+1, path, pathIdx);
+    findPath(root->right, target, data, dataIdx+1 , path, pathIdx);
+}
+
+//from root, find children in k level 
+void kLevelData(struct TreeNode* root, int* data, int* idx, int k){
+    if(root == NULL)
+        return;
+    if(k == 0){
+        data[*idx] = root->val ;
+        *idx = *idx + 1;
+        return;
+    }
+    kLevelData(root->left, data, idx, k-1) ;
+    kLevelData(root->right, data, idx, k-1) ;
+}
+
+int* distanceK(struct TreeNode* root, struct TreeNode* target, int k, int* returnSize) {
+    int* ans = malloc(100 * sizeof(int));
+    int idx = 0;
+    
+    if(root == target){
+        kLevelData(root, ans, &idx, k);
+        *returnSize = idx;
+        return ans;
+    }
+    
+    int dep = depth(root);
+    struct TreeNode** data = malloc((dep + 1)* sizeof(struct TreeNode*)) ;    
+    struct TreeNode** path = malloc((dep + 1)* sizeof(struct TreeNode*)) ;
+    int dataIdx = 0;
+    int pathIdx = 0;
+
+    findPath(root, target, data, dataIdx, path, &pathIdx);
+
+    kLevelData(target, ans, &idx, k);
+    
+    int a = 1;
+    for(int i = pathIdx - 2; i >=0; i--){
+        if((k - a) == 0){
+            ans[idx] = path[i]->val;
+            idx++;
+            break;
+        }
+        if(path[i]->left == path[i+1])
+            kLevelData(path[i]->right, ans, &idx, k - a - 1);
+        else
+            kLevelData(path[i]->left, ans, &idx, k - a - 1);
+        a++;
+    }
+
+    *returnSize = idx;
+    return ans;
+    
+}

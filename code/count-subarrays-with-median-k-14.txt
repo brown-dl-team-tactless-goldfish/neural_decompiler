@@ -1,0 +1,67 @@
+class Solution {
+public:
+  
+  int countSubarrays(vector<int>& nums, int k) {
+    int n = nums.size();
+    int kIdx = -1;
+    for (int i = 0; i < n; ++i) {
+      if (nums[i] == k) {
+        kIdx = i;
+        break;
+      }
+    }
+    int numMore = 0, numLess = 0;
+    unordered_map<int, int> leftOdd, leftEven, rightOdd, rightEven;
+    for (int i = kIdx - 1; i >= 0; --i) {
+      if (nums[i] > k) {
+        numMore++;
+      } else {
+        numLess++;
+      }
+      int tot = numMore + numLess;
+      int imbalance = numMore - numLess;
+      if (tot % 2 == 0) {
+        leftEven[imbalance]++;
+      } else {
+        leftOdd[imbalance]++;
+      }
+    }
+    numMore = 0; numLess = 0;
+    for (int i = kIdx + 1; i < n; ++i) {
+      if (nums[i] > k) {
+        numMore++;
+      } else {
+        numLess++;
+      }
+      if ((numMore + numLess) % 2 == 0) {
+        rightEven[numMore - numLess]++;
+      } else {
+        rightOdd[numMore - numLess]++;
+      }
+    }
+    
+    int tot = 0;
+    for (auto it = leftOdd.begin(); it != leftOdd.end(); ++it) {
+      int imbalance = it->first;
+      if (rightOdd.find(-imbalance) != rightOdd.end()) {
+        tot += (it->second * rightOdd[-imbalance]);
+      }
+      if (rightEven.find(1 - imbalance) != rightEven.end()) {
+        tot += (it->second * rightEven[1 - imbalance]);
+      }
+    }
+    for (auto it = leftEven.begin(); it != leftEven.end(); ++it) {
+      int imbalance = it->first;
+      if (rightEven.find(-imbalance) != rightEven.end()) {
+        tot += (it->second * rightEven[-imbalance]);
+      }
+      if (rightOdd.find(1 - imbalance) != rightOdd.end()) {
+        tot += (it->second * rightOdd[1 - imbalance]);
+      }
+    }
+    
+    return tot + 1 + leftOdd[1] + rightOdd[1] +
+      leftOdd[0] + leftEven[0] +
+      rightOdd[0] + rightEven[0];
+  }
+};

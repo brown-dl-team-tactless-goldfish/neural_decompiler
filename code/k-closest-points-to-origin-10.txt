@@ -1,0 +1,71 @@
+int** kClosest(int** points, int pointsRowSize, int *pointsColSizes, int K, int** columnSizes, int* returnSize) {
+    
+    (void)(pointsColSizes); // 2 is assumed
+    
+    int l = 0;
+    int r = pointsRowSize - 1;
+
+    while (l < r) {
+        int oldl = l;
+        int oldr = r;
+
+        // Find pivot
+        int m  = (l + r)/2;
+        int md = points[m][0]*points[m][0] + 
+                 points[m][1]*points[m][1];
+
+        while (l < r) {
+            while (l < r) {
+                int ld = points[l][0]*points[l][0] + 
+                         points[l][1]*points[l][1];
+                if (ld < md) ++l;
+                else break;
+            }
+
+            while (l < r) {
+                int rd = points[r][0]*points[r][0] + 
+                         points[r][1]*points[r][1];
+                if (rd > md) --r;
+                else break;
+            }
+
+            if (l != r) {
+                // Swap
+                points[l][0] = points[l][0] + points[r][0];
+                points[r][0] = points[l][0] - points[r][0];
+                points[l][0] = points[l][0] - points[r][0];
+                
+                points[l][1] = points[l][1] + points[r][1];
+                points[r][1] = points[l][1] - points[r][1];
+                points[l][1] = points[l][1] - points[r][1];
+            }
+        }
+
+        // Config new range
+        if (l < K - 1) {
+            l = l + 1;
+            r = oldr;
+        }
+        else {
+            r = l - 1;
+            l = oldl;
+        }
+    }
+
+    // Construct answer
+    int** ans  = malloc(K*sizeof(int*));
+    int*  cols = malloc(K*sizeof(int));
+    for (int i = 0; i < K; ++i) {
+        ans[i]    = malloc(2*sizeof(int));
+        
+        ans[i][0] = points[i][0];
+        ans[i][1] = points[i][1];
+        
+        cols[i] = 2;
+    }
+    
+    *columnSizes = cols;
+    *returnSize  = K;
+    
+    return ans;
+}

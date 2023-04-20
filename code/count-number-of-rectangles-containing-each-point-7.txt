@@ -1,0 +1,77 @@
+
+#define all(a) begin(a), end(a)
+using namespace std;
+struct Seg{
+    Seg* l = NULL, *r = NULL;
+    int mi, ma, c = 0;
+    Seg(int l, int r) : mi(l), ma(r) {};
+
+    void update(int n) {
+        if(mi > n or ma < n) return;
+        c++;
+        if(l) l->update(n);
+        if(r) r->update(n);
+    }
+
+    int qry(int lo, int hi) {
+        if(mi > hi or ma < lo) return 0;
+        if(lo <= mi and ma <= hi) return c;
+        return (l ? l->qry(lo,hi) : 0) + (r ? r->qry(lo,hi) : 0);
+    }
+};
+class Solution {
+    Seg* s;
+    int init(vector<vector<int>>& r) {
+        int n = r.size();
+        unordered_set<int> us;
+        for(auto& R : r) {
+            us.insert(R[1]);
+        }
+        vector<int> st(begin(us), end(us));
+        sort(all(st));
+        s = build(st, 0, st.size() - 1);
+        return st.back();
+    }
+
+    Seg* build(vector<int>& A, int l, int r) {
+        if(l > r) return NULL;
+        Seg* sg = new Seg(A[l], A[r]);
+        if(l == r) return sg;
+        int m = l + (r - l) / 2;
+        sg->l = build(A, l, m);
+        sg->r = build(A, m + 1, r);
+        return sg;
+    }
+public:
+    vector<int> countRectangles(vector<vector<int>>& r, vector<vector<int>>& po) {
+        int n = r.size(), m = po.size();
+        vector<array<int,3>> p;
+        vector<int> res(m,0);
+        
+        for(int i = 0; i < m; i++) {
+            p.push_back({po[i][0],po[i][1],i});
+        }
+        
+        sort(all(r));
+        sort(all(p));
+        
+        int ma = init(r);
+        int i = n - 1, j = m - 1;
+
+        while(i >= 0 and j >= 0) {
+            int lo = r[i][0];
+            while(j >= 0 and p[j][0] > lo) j--;
+
+            while(i >= 0 and r[i][0] == lo)
+                s->update(r[i--][1]);
+
+            lo = i >= 0 ? r[i][0] : 0;
+
+            while(j >= 0 and p[j][0] > lo) {
+                auto [x, y, idx] = p[j--];
+                res[idx] = s->qry(y, ma);
+            }
+        }
+        return res;
+    }
+};

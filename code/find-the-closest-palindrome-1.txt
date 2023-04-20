@@ -1,0 +1,83 @@
+#define MIN(a,b)((a)<(b)?(a):(b))
+#define ABS(a)((a)<0?(a)*-1:(a))
+static inline void sub_str(char *str, char *sub, int start, int copy_size)
+{
+    memcpy(sub, &str[start], copy_size);
+    sub[copy_size] = '\0';
+}
+
+static long long get_palindrome(long prefix, bool even_len)
+{
+    long long result = prefix; //Eg: result = 129
+    if(!even_len)
+    {
+        prefix = prefix/10; //129 -> 12
+    }
+    /*result = 129, prefix = 12
+     *Iter#1 result = 129*10 + 12%10 = 1290+2=1292, prefix = 12/10 = 1;
+     *
+     *result = 1292, prefix = 1
+     *Iter#2 result = 1292*10 + 1%10 = 12920+1=12921, prefix = 1/10 = 0;
+     *
+     *result = 12921, prefix = 0 ..break.
+    */
+    while(prefix > 0)
+    {
+        result = result * 10 + prefix % 10; 
+        prefix /= 10;
+    }
+    return result;     
+}
+
+//Eg: 12932 : Combinations should generate : 12921, 12821, 13031, 9999, 100001 and then find closest combination to 12932
+char * nearestPalindromic(char * n){
+    int len = strlen(n);
+    if(len == 1)
+    {
+        n[0] = (((n[0]-'0')-1)+'0');
+        return n;
+    }
+    char *return_string = malloc(len+3);
+    bool even_len = len % 2 == 0 ? true : false;
+    int prefix_len = even_len ? len/2 - 1: len/2; //Find the middle. As per our example , prefix_len = 2 
+    
+    //Lets create prefix. Eg: 12932 .. 129 would be our prefix.
+    //First three prefix combinations would be 129, 128, 130 followed by 99 and 1000
+    char *prefix_sub = malloc(prefix_len+2);
+    sub_str(n, prefix_sub, 0, prefix_len+1); //Copy 3 bytes (index 0 to prefix_len i.e. 2)
+    char *n_end;
+    long long prefix = strtoll(prefix_sub, &n_end, 10); 
+    
+    //Declare an array to store our combinations
+    long long combinations[5] = {0};
+    
+    //Prepare combinations
+    combinations[0] = get_palindrome(prefix, even_len); //this should store 12921
+    combinations[1] = get_palindrome(prefix-1, even_len); //this should store 12821
+    combinations[2] = get_palindrome(prefix+1, even_len); //this should store 13031
+    combinations[3] = (long long)(pow(10, len-1)-1); // this should store 9999 since len of orig str is 5, so 10^4-1
+    combinations[4] = (long long)(pow(10,len)+1); //this should store 100001
+    
+    //Iterate the array to find the closest combination to our original number. Simply store the result as the one with 
+    //minimum diff (absolute value) from orignial number. 
+    long long diff = INT64_MAX, result = 0, orig_number = strtol(n, &n_end, 10);
+    for(int i=0; i < 5; i++)
+    {        
+        long long curr_diff = orig_number - combinations[i];
+        curr_diff = ABS(curr_diff);
+        //Edge case : if orig number is palindrone, then diff = 0 but we need to ignore this and provide the next closest
+        if(!curr_diff)
+            continue;
+        else if(curr_diff == diff && combinations[i] > result)
+            continue;
+        //If current diff is smaller than previous smaller diff, then this combination is a better answer.
+        else if(MIN(curr_diff,diff) == curr_diff)
+        {
+            result = combinations[i];
+            diff = curr_diff;
+        }
+    }
+    sprintf(return_string,"%lld",result);
+    free(prefix_sub);
+    return return_string;   
+}

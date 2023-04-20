@@ -1,0 +1,29 @@
+class Solution {
+public:
+    vector<int>job;
+    int dp[301][11]={0};
+    int md(int i,int d)
+    {
+        if(i==job.size())
+            return d==0?0:INT_MAX;
+        if(d==0)
+            return INT_MAX;
+        if(dp[i][d]>0)
+            return dp[i][d];
+        int m=0,res=INT_MAX;
+        for(int k=i;k<job.size();k++)
+        {
+            m=max(m,job[k]);
+            int curr=md(k+1,d-1);
+            if(curr!=INT_MAX)
+                res=min(res,m+curr);
+        }
+        return dp[i][d]=res;
+    }
+    int minDifficulty(vector<int>& jobDifficulty, int d) 
+    {
+        job=jobDifficulty;
+        int res=md(0,d);
+        return res==INT_MAX?-1:res;
+    }
+};

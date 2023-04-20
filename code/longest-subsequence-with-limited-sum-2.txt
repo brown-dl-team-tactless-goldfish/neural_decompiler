@@ -1,0 +1,26 @@
+int compfun(const void * a, const void * b)
+{
+    return (*(int*)a - *(int*)b);
+}
+
+int* answerQueries(int* nums, int numsSize, int* queries, int queriesSize, int* returnSize){
+
+    qsort(nums, numsSize, sizeof(int), compfun);
+    *returnSize = queriesSize;
+    int* res = (int*) calloc(queriesSize, sizeof(int));
+    
+    for(int i = 0; i < queriesSize; ++i)
+    {
+        int sum = 0;
+        int j = 0;    
+        while(j < numsSize && sum < *(queries+i))
+        {
+            sum += nums[j++];
+            if(sum <= *(queries+i))
+            {
+                res[i]++;
+            }
+        }
+    }
+    return res;
+}

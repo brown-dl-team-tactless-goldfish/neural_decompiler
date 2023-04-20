@@ -1,0 +1,54 @@
+public class RandomizedSet {
+    
+    private Dictionary<int,int> cache; 
+    private Random rnd;
+    private List<int> data;
+    /** Initialize your data structure here. */
+    public RandomizedSet() {
+        cache = new Dictionary<int,int>();
+        rnd = new Random();
+        data = new List<int>();
+    }
+    
+    /** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+    public bool Insert(int val) {
+        if(cache.ContainsKey(val))
+            return false;
+        else
+        {
+            data.Add(val);
+            cache.Add(val,(data.Count-1));
+            // Console.WriteLine("Add Val: "+ val +" At Index "+(data.Count-1) + " DataSize: "+ data.Count);
+            return true;
+        }
+    }
+    
+    /** Removes a value from the set. Returns true if the set contained the specified element. */
+    public bool Remove(int val) {
+          if(!cache.ContainsKey(val))
+            return false;
+        else
+        {
+            int lastIndex = (data.Count-1);
+            int lastElem = data[lastIndex];
+            
+            int i = cache[val];
+            data[i] = lastElem;
+            cache[lastElem] = i;
+            
+            // remove from cache and list.
+            data.RemoveAt(lastIndex);
+            cache.Remove(val);
+            
+            return true;
+        }
+            
+    }
+    
+    /** Get a random element from the set. */
+    public int GetRandom() {
+        Console.WriteLine(cache.Count);
+        return data[rnd.Next(data.Count)];
+    }
+}
+

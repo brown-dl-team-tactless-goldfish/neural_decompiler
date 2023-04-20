@@ -1,0 +1,29 @@
+// time O(N): traverse each plant in the input array
+// space O(1): use no extra space
+
+int wateringPlants(int* plants, int plantsSize, int capacity){
+    
+    // distance to the river
+    // it's 0 at the beginning,
+    int river_distance = 0;
+    
+    // the total number of steps taken so far
+    int step = 0;
+    
+    // water can capacity
+    // it's full since we're standing at the river
+    int can_cap= capacity;
+    
+    for(int i=0;i<plantsSize;i++){
+        if(can_cap >= plants[i]){ // enough water
+            step++;
+            can_cap -= plants[i];
+        } else { // not enough water, go to river to refill and come back
+            step += 2*river_distance + 1;
+            can_cap = capacity - plants[i];
+        }
+        river_distance++; // distance to river increase one for each plant waterred
+    }
+    
+    return step;
+}

@@ -1,0 +1,13 @@
+    int minOperations(vector<int>& T, vector<int>& A) {
+        unordered_map<int, int> pos;  // T's numbers' indexes
+        for (int i=0, n=T.size(); i<n; ++i) pos[T[i]] = i;
+        
+        vector<int> d;  // d[i]: the smallest last number that forms a LIS of length i
+        for (auto &x : A) {
+            if (!pos.count(x)) continue;
+            int p = pos[x];
+            if (d.empty() || p > d.back()) d.push_back(p);
+            else *lower_bound(begin(d), end(d), p) = p;
+        }
+        return T.size() - d.size();
+    }

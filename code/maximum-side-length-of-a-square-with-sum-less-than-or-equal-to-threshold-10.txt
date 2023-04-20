@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int maxSideLength(vector<vector<int>>& mat, int threshold) {
+        size_t R = mat.size(), C = mat[0].size(), stop = min(R,C);
+        int maxLen = 0;
+        vector<vector<int>> m(R, vector<int>(C, 0));
+        for(int i = 0; i < R; ++i)
+            for(int j = 0, sum = 0; j < C; ++j) m[i][j] = (sum += mat[i][j]) + (i > 0 ? m[i-1][j] : 0);
+        
+        for(int i = 0; i+maxLen < R; ++i) {
+            for(int j = 0, k = maxLen; k < C; ++k) {
+                int c = k, r = i + k-j;
+                int area = m[r][c];
+                if(i > 0) area -= m[i-1][c];
+                if(j > 0) area -= m[r][j-1];
+                if(i > 0 && j > 0) area += m[i-1][j-1];
+                if(area > threshold) ++j;
+                else {
+                    maxLen = max(maxLen, k-j+1);
+                    if(k == C-1) break;
+                    if(r == R-1) ++j;
+                }
+            }
+            if(maxLen == stop) return maxLen;
+        }
+        return maxLen;
+    }
+};
+
+auto gucciGang = []() {std::ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);return 0;}();

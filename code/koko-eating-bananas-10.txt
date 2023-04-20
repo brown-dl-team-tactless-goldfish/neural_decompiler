@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int minEatingSpeed(vector<int>& piles, int h) {
+        int lo = 1;
+        int hi = 1000000005;
+        sort(piles.begin(), piles.end());
+        int ans = INT_MAX;
+        while(lo<=hi){
+            int mid = lo + (hi - lo)/2; // this is the speed.
+            int time = 0;
+            for(auto&it:piles){
+                int mod = it%mid;
+                if(mod){
+                    time += it/mid;
+                    time+=1;
+                }else{
+                    time += it/mid;
+                }
+            }
+            if(time == h){
+                ans = mid;
+                hi = mid-1; // try reducing the speed.
+                
+            }else if(time<h){
+                // check if it can do this at a lower speed?
+                ans = min(ans, mid); // this is very important -> we check if this was lower than the earlier
+                hi = mid-1;  // try reducing 
+                
+            }else{
+                // if time taken is more
+                lo = mid+1; // try increasing speed.
+            }
+        }
+        return ans;
+    }
+};

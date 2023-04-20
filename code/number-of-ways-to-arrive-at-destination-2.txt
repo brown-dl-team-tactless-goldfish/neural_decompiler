@@ -1,0 +1,64 @@
+#define ll long long
+#define pll pair<ll, ll>
+class Solution {
+public:
+    int countPaths(int n, vector<vector<int>>& roads) {
+        // normal dijkstra's algo
+
+       // SC: O(2*n)
+        vector<vector<pll>>adjList(n,vector<pll>());
+      
+      // creating an adjacency list
+            // TC: O(|E|), |E|= Number of Edges
+        for(auto road:roads)
+           {adjList[road[0]].push_back({road[1],road[2]});
+            adjList[road[1]].push_back({road[0],road[2]});}
+
+    // track distance and amount of time visit node with minimum dis
+     
+    vector<ll>amount(n,0);  // TC: O(n), SC: O(n)
+    vector<ll>dist(n,LONG_MAX); // TC: O(n), SC: O(n)
+
+    // update src
+    amount[0]=1;
+    dist[0]=0;
+
+   int mod=1e9+7;
+    // apply dijkstra
+    priority_queue<pll,vector<pll>,greater<pll>>pq; // SC: O(|E|)
+
+    pq.push({0,0});
+  
+    while(!pq.empty())  // TC: O(E*log|n|)
+    {
+        // access top
+        auto it=pq.top(); //TC: O(1)
+        pq.pop(); // TC: O(log |E|)
+
+        ll d=it.first;
+       ll node=it.second;
+
+        // access neighbor nodes  
+        for(auto n: adjList[node])  // TC: O(|E|)
+        {
+            ll new_d=d+n.second;
+            
+
+             if(new_d==dist[n.first])
+                 amount[n.first]=(amount[n.first]%mod+amount[node]%mod)%mod; 
+    
+            if(new_d<dist[n.first])
+            {   
+                // update new distance
+                 dist[n.first]=new_d;
+                 pq.push({new_d,n.first}); // TC: O(log|E|)
+                 amount[n.first]=amount[node];
+            }
+            
+            
+        }
+    }
+
+    return amount[n-1]%mod;
+    }
+};

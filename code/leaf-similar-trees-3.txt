@@ -1,0 +1,25 @@
+void getLeafValues(struct TreeNode* root, int *A, int *length){
+    if(root==NULL) return;
+    if(root->left == NULL && root->right == NULL) {A[(*length)++] = root->val; return;}
+    getLeafValues(root->left, A, length);
+    getLeafValues(root->right, A, length);
+}
+
+bool leafSimilar(struct TreeNode* root1, struct TreeNode* root2){
+    int A[100] = {0};
+    int B[100] = {0};
+    
+    int lengthA = 0;
+    int lengthB = 0;
+    
+    getLeafValues(root1, A, &lengthA);
+    getLeafValues(root2, B, &lengthB);
+    
+    if(lengthA!=lengthB) return false;
+    
+    int i;
+    for(i = 0; i < lengthA; i++){
+        if(A[i] != B[i]) return false;
+    }
+    return true;
+}

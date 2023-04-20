@@ -1,0 +1,47 @@
+class Solution {
+public:
+    string entityParser(string text) {
+        vector<tuple<string,char,int>> parser = {{"&quot;",'\"',0},{"&apos;",'\'',0},{"&amp;",'&',0},{"&gt;",'>',0},{"&lt;",'<',0},{"&frasl;",'/',0}};
+		/* Small Note how access tuple's elements :
+		   tuple<int,string,char> myTuple = {369,"aniket",'b'};
+		   to access ith  element get<i>(myTuple);
+		*/
+		//this for loop will stroe the freqency of every parser
+        for(auto& it : parser){
+            int start = 0;
+            string str = get<0>(it);
+            int cnt = 0;
+            while(true){
+                int idx = text.find(str,start);
+                if(idx != string::npos){ 
+                    cnt++;
+                    start = idx+1;
+                }
+                else break; 
+            }
+            get<2>(it) = cnt;
+        }
+        
+		/*just find the parser if it is presnt just perform the replace operation according frequency 
+		(how many time it  occurs in the text to avoid previous output . . . . */
+        for(auto& it : parser){
+            int cnt = get<2>(it);
+            if(!cnt) continue;
+            else{
+                int start = 0;
+                string str = get<0>(it);
+                int n = size(str);
+                while(cnt--){
+                    int idx = text.find(str,start);
+                    if(idx != string::npos){
+                        string s = string(1,get<1>(it));
+                        text.replace(idx,n,s);
+                        start = idx;
+                    }
+                }     
+            }  
+        }
+        
+        return text;
+    }
+};

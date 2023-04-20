@@ -1,0 +1,104 @@
+class TrieNode {
+public: 
+    TrieNode* next[26];
+    bool is_word;
+    TrieNode() {memset(next, 0, sizeof(next)); is_word = false;}
+};
+
+class Trie {
+public: 
+    Trie() {
+        root = new TrieNode();
+    }
+    
+    TrieNode* getRoot()
+    {
+        return root;
+    }
+    
+    void insert(string word) {
+        TrieNode* cur = root;
+        for (auto c : word)
+        {
+            if (!cur->next[c - 'a'])
+                cur->next[c - 'a'] = new TrieNode();
+            cur = cur->next[c - 'a'];
+        }
+        cur->is_word = true;
+    }
+    
+    TrieNode* find(char c, TrieNode* node)
+    {
+        if (node->next[c - 'a'])
+            return node->next[c - 'a'];
+        else 
+            return nullptr;
+    }
+    
+private: 
+    TrieNode* root;
+};
+
+class Encrypter {
+public:
+    Encrypter(vector<char>& keys, vector<string>& values, vector<string>& dictionary) {
+        int n = keys.size();
+        for (int i = 0; i < n; i++)
+        {
+            k2v[keys[i]] = values[i];
+            v2k[values[i]].push_back(keys[i]);
+        }
+        trie = new Trie();
+        for (auto& s : dictionary)
+            trie->insert(s);
+    }
+    
+    string encrypt(string word1) {
+        string ans = "";
+        for (auto& c : word1)
+            ans += k2v[c];
+        return ans;
+    }
+    
+    int decrypt(string word2) {
+        int n = word2.length(), m = n / 2;
+        vector<vector<char>> k(m);
+        for (int i = 0, j = 0; i < n; i += 2, j++)
+        {
+            k[j] = v2k[word2.substr(i, 2)];
+            if (k[j].size() == 0)
+                return 0;
+        }
+        int ans = 0;
+        dfs(k, 0, m, trie->getRoot(), ans);
+        return ans;
+    }
+    
+private: 
+    unordered_map<char, string> k2v;
+    unordered_map<string, vector<char>> v2k;
+    Trie* trie;
+    
+    void dfs(vector<vector<char>>& k, int r, int& m, TrieNode* cur, int& ans)
+    {
+        if (r == m)
+        {
+            if (cur->is_word)
+                ans++;
+            return;
+        }
+        for (auto& c : k[r])
+        {
+            TrieNode* nxt = trie->find(c, cur);
+            if (nxt)
+                dfs(k, r + 1, m, nxt, ans);
+        }
+    }
+};
+
+/**
+ * Your Encrypter object will be instantiated and called as such:
+ * Encrypter* obj = new Encrypter(keys, values, dictionary);
+ * string param_1 = obj->encrypt(word1);
+ * int param_2 = obj->decrypt(word2);
+ */

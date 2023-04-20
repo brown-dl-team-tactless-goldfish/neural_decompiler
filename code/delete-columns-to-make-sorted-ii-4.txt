@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int minDeletionSize(vector<string>& A) {
+        int size = A.size(), len = A[0].size(), count = 0, last = -1;
+        vector<bool> valid(size, false);
+        for(int j = 0; j < len; ++j) {
+            bool drop = false;
+            vector<bool> tmp(valid.begin(), valid.end());
+            for(int i = 1; i < size; ++i) {
+                if(valid[i]) continue;
+                if((last == -1 || A[i][last] == A[i-1][last]) && A[i][j] < A[i-1][j]) {
+                    ++count;
+                    drop = true;
+                    valid = tmp;
+                    break;
+                }
+
+                if(A[i][j] > A[i-1][j]) valid[i] = true;
+            }
+
+            last = drop ? last : j;
+        }
+
+        return count;
+    }
+};

@@ -1,0 +1,19 @@
+class Solution 
+{
+public:
+    long long dp[100005][3];
+    long long f(int i, int add, int n, vector<int>& nums)
+    {
+        if(i==n) return 0;
+        if(dp[i][add]!=-1) return dp[i][add];
+        if(add==1) dp[i][add]=max(nums[i]+f(i+1,0,n,nums),f(i+1,1,n,nums));
+        else dp[i][add]=max(f(i+1,1,n,nums)-nums[i],f(i+1,0,n,nums));
+        return dp[i][add];
+    }
+    long long maxAlternatingSum(vector<int>& nums) 
+    {
+        int n=nums.size();
+        memset(dp,-1,sizeof(dp));
+        return f(0,1,n,nums);
+    }
+};

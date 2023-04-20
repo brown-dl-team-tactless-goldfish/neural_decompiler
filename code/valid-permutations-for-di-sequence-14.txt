@@ -1,0 +1,73 @@
+using ll = long long;
+
+ll dp[205][205];
+const ll mod = 1e9 + 7;
+int n;
+
+ll solve(int index, string &s, vector<int> &v, int piche)
+{
+    if (index >= s.size())
+        return 1;
+
+    if (dp[index][piche] != -1)
+        return dp[index][piche];
+
+    dp[index][piche] = 0;
+
+    if (s[index] == 'D')
+    {
+        for (int i = 0; i < piche; ++i)
+        {
+            if (v[i] == 0)
+            {
+                v[i] = 1;
+                dp[index][piche] += solve(index + 1, s, v, i);
+                dp[index][piche] %= mod;
+                v[i] = 0;
+            }
+        }
+    }
+    else
+    {
+        for (int i = piche + 1; i < n + 1; ++i)
+        {
+            if (v[i] == 0)
+            {
+                v[i] = 1;
+                dp[index][piche] += solve(index + 1, s, v, i);
+                dp[index][piche] %= mod;
+                v[i] = 0;
+            }
+        }
+    }
+
+    return dp[index][piche] %= mod;
+
+}
+
+class Solution
+{
+    public:
+        int numPermsDISequence(string s)
+        {
+            memset(dp, -1, sizeof(dp));
+            n=s.size();
+            
+            if(n==1)
+                return 1;
+            
+            vector<int>v(n+1,0);
+            
+            ll ans=0;
+            
+            for(int i=0;i<=n;++i)
+            {
+                v[i]=1;
+                ans+=solve(0,s,v,i);
+                ans%=mod;
+                v[i]=0;
+            }
+            return ans;
+            
+        }
+};

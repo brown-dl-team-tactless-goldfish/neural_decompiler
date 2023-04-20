@@ -1,0 +1,39 @@
+class Solution {
+public:
+    bool canMouseWin(vector<string>& g, int catJump, int mouseJump) {
+        int c_pos , m_pos, f_pos, n = g.size()*g[0].size();
+        for(int i = 0; i < n; i++) {
+            switch (g[i/g[0].size()][i%g[0].size()]) {
+                case 'C': c_pos = i; break;
+                case 'F': f_pos = i; break;
+                case 'M': m_pos = i; break;
+            }
+        }
+
+        int limits = 64*2, dirs[5] = {0, 1, 0, -1, 0};
+        vector<vector<vector<int>>> memo(n, vector<vector<int>>(n,vector<int>(limits+1, -1)));
+        function<bool(int, int, int)> dfs = [&](int c_pos, int m_pos, int step) {
+            bool isCat = step&1;
+            if(c_pos == f_pos || m_pos == c_pos || step >= limits) return isCat;
+            if(m_pos == f_pos) return !isCat;
+
+            if(memo[c_pos][m_pos][step] != -1) return (bool)memo[c_pos][m_pos][step];
+            int pos = isCat ? c_pos : m_pos, jump = isCat ? catJump : mouseJump;
+            int x = pos/g[0].size(), y = pos%g[0].size();
+            for(int d = 0; d < 4; d++) {
+                for(int i = 0; i <= jump; i++) {//i = 0, stay put
+                    int nxt_x = x + i*dirs[d], nxt_y = y + i*dirs[d+1];
+                    if(nxt_x < 0 || nxt_y < 0 || nxt_x >= g.size() || nxt_y >= g[0].size() || g[nxt_x][nxt_y] == '#') break;
+                    int nxt_pos = nxt_x*g[0].size()+nxt_y;
+                    if(!dfs(isCat? nxt_pos : c_pos, isCat ? m_pos : nxt_pos, step+1)) {
+                        memo[c_pos][m_pos][step] = true;
+                        return true;
+                    }
+                }
+            }
+            memo[c_pos][m_pos][step] = false;
+            return false;
+        };
+        return dfs(c_pos, m_pos, 0);
+    }
+};

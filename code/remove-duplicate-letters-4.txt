@@ -1,0 +1,44 @@
+#define MAX 10000
+
+char* removeDuplicateLetters(char* s) {
+int stack[26][MAX],top[26],i,j,len=strlen(s),size=0,h;
+memset(top,0,sizeof(top));
+char *str = (char*)malloc(27);
+int cnt = 0;
+for(i=len-1;i>-1;i--)
+    stack[s[i]-'a'][top[s[i]-'a']++] = i;
+for(i=0;i<26;i++){
+    if(top[i]>0)
+        cnt++;
+}
+h = 0;
+while(h<cnt){
+for(i=0;i<26;i++){
+    if(top[i]>0){
+        for(j=0;j<26;j++){
+            if(j == i)
+                continue;
+            if(top[j]>0&&stack[i][top[i]-1]>stack[j][0]){
+                break;
+            }
+        }
+        if(j==26){
+            str[size++] = i+'a';
+            for(j=0;j<26;j++){
+                if(j == i)
+                    continue;
+                if(top[j]>0){
+                    while(top[j]>0&&stack[j][top[j]-1]<stack[i][top[i]-1])
+                        top[j]--;
+                }
+            }
+            top[i] = 0;
+            h++;
+            break;
+        }
+    }
+}
+}
+str[size] = 0;
+return str;
+}

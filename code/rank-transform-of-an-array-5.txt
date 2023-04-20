@@ -1,0 +1,75 @@
+/* here i used heapsort which takes O(nlogn) time to sort array  */
+void heapify(int *nums,int *p,int n,int i){
+    int lar=i;
+    int l=2*i+1;
+    int r=2*i+2;
+    if(l<n && nums[l]>nums[lar]){
+        lar=l;
+    }
+    if(r<n && nums[r]>nums[lar]){
+        lar=r;
+    }
+    if(lar!=i){
+        int swap=nums[i];
+        nums[i]=nums[lar];
+        nums[lar]=swap;
+    swap=p[i];
+        p[i]=p[lar];
+        p[lar]=swap;
+        heapify(nums,p,n,lar);
+    }
+    return ;
+}
+
+void heap(int *nums,int *p,int n){
+    for(int i=n/2-1;i>=0;i--){
+        heapify(nums,p,n,i);
+    }
+    for(int i=n-1;i>=0;i--){
+        int swap=nums[i];
+        nums[i]=nums[0];
+        nums[0]=swap;
+        swap=p[i];
+        p[i]=p[0];
+        p[0]=swap;
+        heapify(nums,p,i,0);
+    }
+    return ;
+}
+int* arrayRankTransform(int* arr, int arrSize, int* returnSize){
+/*we r sorting so that we  can know the rank of elements.  But i need to compare them back with initial array so I  copied the values into new array. to reduce time complexity I created a new array will store  intial index values of arr elements .go through example to have clear idea */
+/*example:arr=[40,20,30,10]
+nums=[40,20,30,10](before sorting)
+p=[0,1,2,3](indices of elements in arr)
+I sorted nums and p will change according to that.
+after heapsorting:
+nums=[10,20,30,40]
+p=[3,1,2,0]
+ p tells index of num[i]
+in initial array.
+output:
+place 1 at index 3 in array hell
+then 2 at index 1
+3 at index 2
+4 at index 1*/
+int *nums=malloc(arrSize*sizeof(int));
+    int *p=malloc(arrSize*sizeof(int));
+    for(int i=0;i<arrSize;i++){
+        nums[i]=arr[i];
+        p[i]=i;
+    }
+    heap(nums,p,arrSize);
+    int j=1;
+    *returnSize=arrSize;
+    int *hell=malloc(arrSize*sizeof(int));
+    
+
+    for(int i=0;i<arrSize;i++){
+        if(i>0 && nums[i]>nums[i-1]){
+            j++;
+        }
+        hell[p[i]]=j;
+        
+    }
+    return hell;
+}

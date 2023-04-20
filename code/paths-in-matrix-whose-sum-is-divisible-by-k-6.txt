@@ -1,0 +1,42 @@
+int m, n;
+
+vector<vector<vector<int>>> dp;
+
+int mod = 1e9+7;
+
+
+int help(vector<vector<int>>& grid, int i, int j, int cur, int k)
+{
+    if(i < 0 || i >= m || j < 0 || j >= n)
+    {
+        return 0;
+    }
+    
+    if(i == m-1 && j == n-1)
+    {
+        if((cur+grid[i][j])%k == 0)
+        {
+            return dp[i][j][cur] = 1;
+        }
+    }
+    
+    if(dp[i][j][cur] != -1)
+    {
+        return dp[i][j][cur];
+    }
+    
+    return dp[i][j][cur] = (help(grid,i+1,j,(cur+grid[i][j])%k,k)+help(grid,i,j+1,(cur+grid[i][j])%k,k))%mod;
+    
+        
+}
+
+
+int numberOfPaths(vector<vector<int>>& grid, int k) 
+{
+   m = grid.size(), n = grid[0].size();
+    
+  dp.resize(m,vector<vector<int>>(n,vector<int>(k,-1)));
+    
+    
+   return help(grid,0,0,0,k);
+}

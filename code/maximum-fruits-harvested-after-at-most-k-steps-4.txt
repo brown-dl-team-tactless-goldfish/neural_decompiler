@@ -1,0 +1,39 @@
+public class Solution { 
+    public int MaxTotalFruits(int[][] f, int s, int k) {
+        int mp = Math.Max(f[f.Length - 1][0], s);
+        long[] fr = new long[mp + 1];
+        long[] pf = new long[mp + 1 + 1];
+        
+        // place fruit
+        for (long i = 0; i < f.Length; ++i)
+            fr[f[i][0]] = f[i][1];
+        
+        // prevent double counting of starting position fruit
+        long bonus = fr[s];
+        long res = bonus;
+        fr[s] = 0;
+        
+        // calculate prefix sum
+        for (long i = 0; i <= mp; ++i)
+            pf[i + 1] = pf[i] + fr[i];
+        
+        // walk left first, l = num of steps
+        for (long l = 0; l <= k; ++l) {
+            long r = Math.Max(k - l * 2, 0); // num steps for r after move l and back
+            long cur = pf[s + 1] - pf[Math.Max(s + 1 - l - 1, 0)]; // s + 1 for 0-indexed pf sum
+            cur += -pf[s + 1] + pf[Math.Min(s + 1 + r, mp + 1)]; // add pf for right side for however far you can go
+            cur += bonus;
+            res = Math.Max(res, cur);
+        }
+        
+        for (long r = 0; r <= k; ++r) {
+            long l = Math.Max(k - r * 2, 0); // num steps for l after move r and back
+            long cur = pf[s + 1] - pf[Math.Max(s + 1 - l - 1, 0)]; // calc left side pf sum
+            cur += -pf[s + 1] + pf[Math.Min(s + 1 + r, mp + 1)]; // calc right side pf sum
+            cur += bonus;
+            res = Math.Max(res, cur);
+        }
+        
+        return (int)res;
+    }
+}

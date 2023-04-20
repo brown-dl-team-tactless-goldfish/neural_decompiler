@@ -1,0 +1,42 @@
+bool hasAllCodes(char * s, int k){
+    if(strlen(s) <= k) return false; // no way hold true if length of s is less than k
+    char *map = malloc((1 << k)*sizeof(char) + 1); // hash map, to recrod how many numbers has been up
+    memset(map, 0, (1 << k)*sizeof(char) + 1);
+    int temp = 1 << (k - 1); // works as the mark for the first number in s
+    int number = 0;
+    int temp2 = 1; // this one works as a mark
+    
+    for(int i = 0; i < k; i++){ // get the first number in s which has a length of k
+        if(s[i] == '1'){
+            number |= temp;
+        }
+        temp = temp >> 1;
+        temp2 = temp2 << 1;
+        temp2 += 1;
+    }
+    
+    temp2 = temp2 >> 1; // temp2 will be like 000000011....11 and has a tottal amount of k of 1
+    map[number] = '1'; // mark the first number in hash map
+    
+    for(int i = k; s[i] != '\0'; i++){ // now we can work on the other number one element at a time
+        if(s[i] == '1'){
+            number = number << 1;
+            number += 1;
+            number = number & temp2; // get the last k digits 
+        } else {
+            number = number << 1;
+            number = number & temp2;
+        }
+        map[number] = '1';
+    }
+    
+    for(int i = 0; i < (1 << k); i ++){
+        if(map[i] == 0){
+            free(map);
+            return false;
+        }
+    }
+    
+    free(map);
+    return true;
+}

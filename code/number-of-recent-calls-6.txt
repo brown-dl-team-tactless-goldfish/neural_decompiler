@@ -1,0 +1,32 @@
+typedef struct {
+    int data[10000];
+    int begin;
+    int end;
+} RecentCounter;
+
+RecentCounter* recentCounterCreate() {
+    RecentCounter* p = malloc(sizeof(RecentCounter));
+    p->begin = 0;
+    p->end   = 0;
+    return p;
+}
+
+int recentCounterPing(RecentCounter* obj, int t) {
+    obj->data[obj->end] = t;
+    
+    int l = obj->begin;
+    for (int r = obj->end; l < r;) {
+        int m = (l + r) >> 1;
+        if (t - obj->data[m] > 3000) l = m + 1;
+        else                         r = m;
+    }
+    
+    obj->begin = l;
+    ++obj->end;
+    
+    return obj->end - obj->begin;
+}
+
+void recentCounterFree(RecentCounter* obj) {
+    free(obj);
+}

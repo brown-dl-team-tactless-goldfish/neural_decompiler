@@ -1,0 +1,62 @@
+public class Solution {
+    public string FractionAddition(string expression) {
+        
+        expression += "."; // to mark ending
+        int small = 1; // keeps track of + and - 
+        
+        List<int> numerators = new List<int>();
+        List<int> denominators = new List<int>();
+        
+        string sub = ""; // temporary string
+        
+		// stores each numerator and denominator in two different lists
+        foreach (char c in expression) {
+
+            if (Char.IsDigit(c)) {
+                sub += c.ToString();
+            }
+            
+            else if (c == '/') {
+                numerators.Add(Int32.Parse(sub)*small);
+                sub = "";
+            }
+            
+            else {
+                if (c == '-') small = -1;
+                if (c == '+') small = 1;
+            
+                if (sub != "") {
+                    denominators.Add(Int32.Parse(sub));
+                    sub = "";
+                }
+            }
+        }
+        
+        int denominator = 1;
+        int numerator = 0;
+        
+		// calculates the sum of numbers 
+        for (int x = 0; x < denominators.Count(); x++) {
+		
+            if (denominators[x] != denominator) {
+                numerator = numerator * denominators[x] + numerators[x] * denominator;
+                denominator *= denominators[x];   
+            }
+			
+            else numerator += numerators[x];    
+        }
+        
+		// divides expression until smallest" expression has been found
+        int y = 10;
+        while (y > 1) {
+		
+            if (numerator%y == 0 && denominator%y == 0) {
+                numerator /= y;
+                denominator /= y;
+            }
+			
+            else y--;
+        }
+        return $"{numerator}/{denominator}";
+    }
+}

@@ -1,0 +1,44 @@
+int minimumTeachings(int n, vector<vector<int>>& languages, vector<vector<int>>& friendships) {
+
+	int m = languages.size();
+
+	vector<vector<bool>> l(m + 1, vector<bool>(n + 1, false));
+
+	for (int i = 0; i < languages.size(); ++i) {
+		for (int j = 0; j < languages[i].size(); ++j) {
+			l[i + 1][languages[i][j]] = true;
+		}
+	}
+
+	vector<bool> visited(m + 1, false);
+	vector<int> cnt(n + 1, 0);
+	int people = 0;
+	int res = INT_MAX;
+
+	for (vector<int>& vec : friendships) {
+		int p0 = vec[0], p1 = vec[1];
+		int i = 1;
+		for (; i <= n; ++i) {
+			if (l[p0][i] && l[p1][i]) break;
+		}
+
+		if (i <= n) continue;
+
+		if (!visited[p0]) {
+			for (int& j : languages[p0 - 1]) cnt[j]++;
+			visited[p0] = true;
+			++people;
+		}
+
+		if (!visited[p1]) {
+			for (int& j : languages[p1 - 1]) cnt[j]++;
+			visited[p1] = true;
+			++people;
+		}
+	}
+
+	for (int i = 1; i <= n; ++i) res = min(res, people - cnt[i]);
+
+	return res;
+
+}

@@ -1,0 +1,48 @@
+class Solution {
+    void fillBFS(int r, int c, int M, int N, vector<vector<int>>& land, vector<int> &rec) {        
+        deque<pair<int,int>> dq;
+        
+        land[r][c] = -1;
+        dq.push_back({r, c});
+        
+        static const vector<pair<int,int>> moves = {{1,0}, {-1,0}, {0, 1}, {0, -1}};
+        
+        while(!dq.empty()) {
+            const auto cell = dq.front();
+            dq.pop_front();
+            rec[0] = min(rec[0], cell.first);
+            rec[1] = min(rec[1], cell.second);
+            rec[2] = max(rec[2], cell.first);
+            rec[3] = max(rec[3], cell.second);
+                        
+            for(const auto &mv : moves) {
+                int nr = cell.first + mv.first;
+                int nc = cell.second + mv.second;
+                if(nr >= M || nc >= N || nr < 0 || nc < 0)
+                    continue;
+                if(land[nr][nc] != 1)
+                    continue;
+                land[nr][nc] = -1;
+                dq.push_back({nr, nc});
+            }
+            
+        }
+    }
+public:
+    vector<vector<int>> findFarmland(vector<vector<int>>& land) {
+        const int M = land.size();
+        const int N = land[0].size();
+        
+        vector<vector<int>> ans;
+        for(int r = 0; r < M; ++r) {
+            for(int c = 0; c < N; ++c) {
+                if(land[r][c] != 1)
+                    continue;
+                vector<int> rec{INT_MAX, INT_MAX, INT_MIN, INT_MIN};
+                fillBFS(r, c, M, N, land, rec);
+                ans.emplace_back(move(rec));
+            }
+        }
+        return ans;
+    }
+};

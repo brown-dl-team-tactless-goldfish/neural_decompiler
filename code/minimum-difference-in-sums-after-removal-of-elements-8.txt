@@ -1,0 +1,48 @@
+public class Solution {
+    public long MinimumDifference(int[] nums) {
+        PriorityQueue<long,long> left = new PriorityQueue<long,long>();
+        PriorityQueue<long,long> right = new PriorityQueue<long,long>();
+        int n = nums.Length/3;
+       
+        long[] sumLeft = new long[n+1];
+        long[] sumRight = new long[n+1];
+        long tLeft = 0;
+        long tRight = 0;
+        for(int i=0;i<n;i++){
+            tLeft += nums[i];
+            left.Enqueue(nums[i],-nums[i]);
+            tRight += nums[nums.Length-1-i];
+            right.Enqueue(nums[nums.Length-1-i],nums[nums.Length-1-i]);
+        }
+        sumLeft[0] = tLeft;
+        sumRight[0]= tRight;
+        for(int i=1;i<n+1;i++){            
+            long t = left.Dequeue();
+            if(t>nums[n-1+i]){
+                sumLeft[i] = sumLeft[i-1]-t+nums[n-1+i];
+                left.Enqueue(nums[n-1+i],-nums[n-1+i]);
+            }else{
+                left.Enqueue(t,-t);
+                sumLeft[i] = sumLeft[i-1];
+            }
+                
+        }
+         
+        for(int i=1;i<n+1;i++){            
+            long t = right.Dequeue();
+            if(t<nums[2*n-i]){
+                sumRight[i] = sumRight[i-1]-t+nums[2*n-i];
+                right.Enqueue(nums[2*n-i],nums[2*n-i]);
+            }else{
+                right.Enqueue(t,t);
+                sumRight[i] = sumRight[i-1];
+            }
+        }
+        long res = sumLeft[0];
+        for(int i=0;i<n+1;i++)
+            res = Math.Min(res,sumLeft[i]-sumRight[n-i]);
+        
+        return res;
+        
+    }
+}

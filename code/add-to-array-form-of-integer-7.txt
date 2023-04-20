@@ -1,0 +1,15 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* addToArrayForm(int* A, int ASize, int K, int* returnSize){
+    int rsz = 10000 + 1, *r = malloc(sizeof(int [rsz])), j = rsz - 1, *a, fsz;
+    for (int i = ASize - 1, c = 0 ; i >= 0 || K || c ; i--) {
+        int s = c + (i >= 0 ? A[i] : 0) + K % 10;
+        K /= 10;
+        r[j--] = s - ((c = s >= 10) ? 10 : 0);
+    }
+    fsz = rsz - j - 1;
+    memcpy(a = malloc(sizeof(int [fsz])), r + j + 1, sizeof(int [fsz]));
+    free(r);
+    return *returnSize = fsz, a;
+}

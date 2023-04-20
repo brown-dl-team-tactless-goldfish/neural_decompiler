@@ -1,0 +1,190 @@
+#include <stdint.h>
+#include <setjmp.h>
+
+struct cell {
+        uint8_t r;
+        uint8_t c;
+        uint8_t b;
+        uint16_t possible;
+        struct cell *next;
+        struct cell *prev;
+};
+
+#define EACH(VAR, TAILP)\
+        (VAR) = (TAILP)->next; (VAR)->next->next; (VAR) = (VAR)->next
+
+static jmp_buf jmp;
+static uint16_t covered_col[9];
+static uint16_t covered_row[9];
+static uint16_t covered_box[9];
+
+static void
+insert_before(struct cell *node, struct cell *anchor)
+{
+        node->next = anchor;
+        node->prev = anchor->prev;
+        anchor->prev->next = node;
+        anchor->prev = node;
+}
+
+static void
+remove_node(struct cell *node)
+{
+        node->next->prev = node->prev;
+        node->prev->next = node->next;
+}
+
+static uint16_t
+find_possible(struct cell *cell)
+{
+        return (((1 << 9) - 1) << 1) & ~(covered_col[cell->c] | covered_row[cell->r] | covered_box[cell->b]);
+}
+
+static void
+board_to_ints(char **board)
+{
+        int i, j;
+        for (i = 0; i < 9; i++)
+                for (j = 0; j < 9; j++)
+                        board[i][j] = board[i][j] == '.' ? 0 : (board[i][j] & 15);    
+}
+
+
+static void
+board_to_chars(char **board)
+{
+        int i, j;
+        for (i = 0; i < 9; i++)
+                for (j = 0; j < 9; j++)
+                        board[i][j] |= '0';
+}
+
+static void
+init_cover(char **board)
+{
+        int r, c, b;
+        for (r = 0; r < 9; r++) {
+                for (c = 0; c < 9; c++) {
+                        b = r - r % 3 + c / 3;
+                        covered_col[c] |= 1 << board[r][c];
+                        covered_row[r] |= 1 << board[r][c];
+                        covered_box[b] |= 1 << board[r][c];
+                }
+        }
+}
+
+static void
+init_cell_list(char **board, struct cell *tail, struct cell *head, struct cell cells[9][9])
+{
+        int i, j, k, r, c;
+
+        tail->prev = NULL;
+        tail->next = head;
+        head->prev = tail;
+        head->next = NULL;
+
+        for (i = 0; i < 9; i++) {
+                for (j = 0; j < 9; j++) {
+                        if (board[i][j])
+                                continue;
+                        cells[i][j].r = i;
+                        cells[i][j].c = j;
+                        cells[i][j].b = i - i % 3 + j / 3;
+                        cells[i][j].possible = find_possible(&cells[i][j]);
+                        if (__builtin_popcount(cells[i][j].possible) == 1) {
+                                board[i][j] = __builtin_ctz(cells[i][j].possible);
+                                covered_col[cells[i][j].c] |= cells[i][j].possible;
+                                covered_row[cells[i][j].r] |= cells[i][j].possible;
+                                covered_box[cells[i][j].b] |= cells[i][j].possible;
+                                for (k = 0; k < i; k++)
+                                        cells[k][j].possible &= ~cells[i][j].possible;
+                                for (k = 0; k < j; k++)
+                                        cells[i][k].possible &= ~cells[i][j].possible;
+                                for (r = i / 3 * 3; r < i; r++)
+                                        for (c = j / 3 * 3; c < j / 3 * 3 + 3; c++)
+                                                cells[r][c].possible &= ~cells[i][j].possible;
+                                for (c = j / 3 * 3; c < j; c++)
+                                        cells[i][c].possible &= ~cells[i][j].possible;
+                        } else {
+                                insert_before(&cells[i][j], head);
+                        }
+                }
+        }
+}
+
+static void
+solve_trivials(char **board, struct cell *tail, struct cell cells[9][9])
+{
+        struct cell *node;
+        int i, j, k, r, c, updated;
+
+        do {
+                updated = 0;
+                for (EACH(node, tail)) {
+                        if (__builtin_popcount(node->possible) == 1) {
+                                updated = 1;
+                                r = node->r;
+                                c = node->c;
+                                board[r][c] = __builtin_ctz(node->possible);
+                                covered_col[node->c] |= node->possible;
+                                covered_row[node->r] |= node->possible;
+                                covered_box[node->b] |= node->possible;
+                                for (k = 0; k < 9; k++) {
+                                        cells[k][c].possible &= ~node->possible;
+                                        cells[r][k].possible &= ~node->possible;
+                                }
+                                r = r / 3 * 3;
+                                c = c / 3 * 3;
+                                for (i = 0; i < 3; i++)
+                                        for (j = 0; j < 3; j++)
+                                                cells[r + i][c + j].possible &= ~node->possible;
+                                remove_node(node);
+                        }
+                }
+        } while (updated);
+}
+
+static void
+solve_recursive(char **board, struct cell *node)
+{
+        uint16_t possible, bit;
+        int v;
+
+        if (!node->next)
+                longjmp(jmp, 1);
+
+        possible = find_possible(node);
+        while (possible) {
+                v = __builtin_ctz(possible);
+                possible ^= bit = 1 << v;
+                board[node->r][node->c] = v;
+                covered_col[node->c] ^= bit;
+                covered_row[node->r] ^= bit;
+                covered_box[node->b] ^= bit;
+                solve_recursive(board, node->next);
+                covered_col[node->c] ^= bit;
+                covered_row[node->r] ^= bit;
+                covered_box[node->b] ^= bit;
+        }
+}
+
+void
+solveSudoku(char **board, int rows, int *colsp)
+{
+        struct cell head, tail, cells[9][9];
+
+        (void) rows;
+        (void) colsp;
+
+        memset(covered_col, 0, sizeof(covered_col));
+        memset(covered_row, 0, sizeof(covered_row));
+        memset(covered_box, 0, sizeof(covered_box));
+
+        board_to_ints(board);
+        init_cover(board);
+        init_cell_list(board, &tail, &head, cells);
+        solve_trivials(board, &tail, cells);
+        if (!setjmp(jmp))
+                solve_recursive(board, tail.next);
+        board_to_chars(board);
+}

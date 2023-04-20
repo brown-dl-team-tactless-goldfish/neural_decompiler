@@ -1,0 +1,41 @@
+int findMax(int* nums, int n){
+    int max = nums[0];
+    int max_idx = 0;
+    for(int i = 1; i < n; i++){
+        if(nums[i] > max){
+            max = nums[i];
+            max_idx = i;
+        }
+    }
+    return max_idx;
+}
+void reverse(int* nums, int n){
+    int temp;
+    for(int i = 0; i < n/2; i++){
+        temp = nums[i];
+        nums[i] = nums[n-1-i];
+        nums[n-1-i] = temp;
+    }
+}
+int* pancakeSort(int* arr, int arrSize, int* returnSize){
+    int max_idx;
+    int n = arrSize;
+    int* ans = malloc( 2 * n * sizeof(int));
+    int ans_idx = 0;
+    for(int i = 0; i < n-1; i++){
+        max_idx = findMax(arr, n-i);
+        if(max_idx == n-1-i)
+            continue;
+        if(max_idx > 0){
+            reverse(arr, max_idx+1);
+            ans[ans_idx] = max_idx+1;
+            ans_idx++;
+        }
+        reverse(arr, n-i); 
+        ans[ans_idx] = n-i;
+        ans_idx++;
+    }
+    *returnSize = ans_idx;
+    ans = realloc(ans, ans_idx*sizeof(int));
+    return ans;    
+}

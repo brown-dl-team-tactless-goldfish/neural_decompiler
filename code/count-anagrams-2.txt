@@ -1,0 +1,47 @@
+class Solution {
+public:
+    const int MOD = (int)(1E9 + 7);
+    int fact[100001] = {1, 1}, inv_fact[100001] = {1, 1};
+
+    vector<string> split(string& ori) {
+        stringstream ss(ori);
+        string token;
+        vector<string> result;
+        while (getline(ss, token, ' ')) {
+            result.push_back(token);
+        }
+        return result;
+    }
+
+    vector<int> cntString(string& ori) {
+        vector<int> cnt(26);
+        for (char c : ori) {
+            ++cnt[c - 'a'];
+        }
+        return cnt;
+    }
+
+    int countAnagrams(string s) {
+        if (fact[2] == 0) {
+            vector<int> inv(100001, 1);
+            for (long long i = 2; i < sizeof(fact) / sizeof(fact[0]); ++i) {
+                fact[i] = i * fact[i - 1] % MOD;
+                inv[i] = MOD - MOD / i * inv[MOD % i] % MOD;
+                inv_fact[i] = 1LL * inv_fact[i - 1] * inv[i] % MOD;            
+            }
+        }
+        vector<string> ss = split(s);
+        int result = 1;
+        for (string& ele : ss) {
+            vector<int> cnt = cntString(ele);
+            int temp = fact[ele.length()];
+            for (int each : cnt) {
+                if (each > 1) {
+                    temp = temp * 1ll * inv_fact[each] % MOD;
+                }
+            }
+            result = result * 1ll * temp % MOD;
+        }
+        return result;
+    }
+};

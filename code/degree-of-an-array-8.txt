@@ -1,0 +1,29 @@
+class Solution {
+public:
+  struct data {                 //struct for hash - ( c - value of the same numbers , first index and last  index
+   int c, idxst, idxend; 
+  };
+  
+    int findShortestSubArray(vector<int>& nums) {
+      unordered_map<int,data> mp;           //hash for numbers
+      
+      for(int i =0;i < nums.size();i++)                    //contain in hash our numbers
+        if(!mp.count(nums[i])) mp.insert({nums[i],{1,i,i+1}});
+        else {
+          mp[nums[i]].idxend = i + 1;
+          mp[nums[i]].c++;
+        }
+      
+      int m = 0, count = 0;                //m - local maximum, count - its lenght
+      unordered_map<int,data>::iterator it = mp.begin();
+      for(;it != mp.end();it++)
+        if(m < it->second.c){
+          m = it->second.c;
+          count = it->second.idxend - it->second.idxst;
+        }
+      else if(m == it->second.c && count > it->second.idxend - it->second.idxst)
+            count = it->second.idxend - it->second.idxst;
+      
+      return count;
+    }
+};

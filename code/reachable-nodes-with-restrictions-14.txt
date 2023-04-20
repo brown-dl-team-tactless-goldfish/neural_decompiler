@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int reachableNodes(int n, vector<vector<int>>& edges, vector<int>& restricted) {
+        
+        set<int> restricted_st;
+        for(auto &i : restricted)
+            restricted_st.insert(i);
+        
+        vector<vector<int>> graph(n);
+        for(auto &i : edges)
+            graph[i[0]].push_back(i[1]), graph[i[1]].push_back(i[0]);
+        
+        vector<bool> visited(n, false);
+        queue<int> q;
+        q.push(0), visited[0] = true;
+        
+        while(!q.empty())
+        {
+            int i = q.front();
+            q.pop();
+            
+            for(auto &j : graph[i])
+                if(!visited[j] && restricted_st.find(j) == restricted_st.end())
+                    q.push(j), visited[j] = true;           
+        }
+        
+        int cnt = 0;
+        for(auto i : visited)
+            cnt += i;
+        
+        return cnt;
+    }
+};

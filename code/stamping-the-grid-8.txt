@@ -1,0 +1,45 @@
+class Solution {
+public:
+    bool possibleToStamp(vector<vector<int>>& grid, int sh, int sw) {
+        int n=grid.size();
+        int m = grid[0].size();
+        int dp[n+2][m+2];
+        memset(dp,0,sizeof(dp));
+        int vis[n+2][m+2];
+        memset(vis,0,sizeof(vis));
+        for(int i=0;i<n;++i){
+            for(int j=0;j<m;++j){
+                dp[i+1][j+1]=grid[i][j]+dp[i][j+1]+dp[i+1][j]-dp[i][j];
+            }
+        }
+        bool res = true;
+        for(int i=sh;i<=n;++i) {
+            for(int j=sw;j<=m;++j){
+                int bb = dp[i][j] - (dp[i-sh][j] + dp[i][j-sw]) + dp[i-sh][j-sw];
+                if(bb==0){
+                    vis[i-sh+1][j-sw+1]+=1;
+                    vis[i+1][j-sw+1]-=1;
+                    vis[i-sh+1][j+1]-=1;
+                    vis[i+1][j+1]+=1;
+                }
+            }
+        }
+        for(int i=1;i<=n;++i){
+            for(int j=1;j<=m;++j){
+                vis[i][j]+=vis[i][j-1];
+            }
+        }
+        for(int i=1;i<=n;++i){
+            for(int j=1;j<=m;++j){
+                vis[i][j]+=vis[i-1][j];
+            }
+        }
+        
+        for(int i=1;i<=n;++i){
+            for(int j=1;j<=m;++j){
+                if(grid[i-1][j-1]==0&&vis[i][j]==0)res = false;
+            }
+        }
+        return res;
+    }
+};

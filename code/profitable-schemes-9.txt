@@ -1,0 +1,15 @@
+class Solution {
+public:
+    int profitableSchemes(int n, int minProfit, vector<int>& group, vector<int>& profit) {
+        const int MOD = 1'000'000'007; 
+        vector<vector<int>> dp(1+minProfit, vector<int>(1+n)); 
+        dp[0][0] = 1; 
+        for (int k = 0; k < group.size(); ++k) 
+            for (int i = minProfit; i >= 0; --i) 
+                for (int j = n-group[k]; j >= 0; --j) 
+                    dp[min(i+profit[k], minProfit)][j+group[k]] = (dp[min(i+profit[k], minProfit)][j+group[k]] + dp[i][j]) % MOD; 
+        int ans = 0; 
+        for (auto& x : dp[minProfit]) ans = (ans + x) % MOD; 
+        return ans; 
+    }
+};

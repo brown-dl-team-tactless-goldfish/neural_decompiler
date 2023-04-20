@@ -1,0 +1,48 @@
+int cmpfunc(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+
+int minMoves2(int* nums, int numsSize){
+    if(numsSize == 1)
+        return 0;
+    qsort(nums, numsSize, sizeof(int), cmpfunc);
+    int base;
+    if(numsSize%2){
+    //odd items, get middle item to be base
+        base = nums[numsSize/2];
+        int temp = 0; 
+        for(int i = 0; i < numsSize/2; i++){
+            temp += base - nums[i];
+        }
+        for(int i = numsSize/2; i < numsSize; i++){
+            temp += nums[i] - base;
+        }
+        return temp;
+    }
+    else{
+    //even items, get middle two item to be base, and count these two moves, and return the smallest
+        base = nums[numsSize/2 -1];
+        int temp1 = 0;
+        for(int i = 0; i < (numsSize/2 -1); i++){
+            temp1 += base - nums[i];
+        }
+        for(int i = numsSize/2 -1; i < numsSize; i++){
+            temp1 += nums[i] - base;
+        }
+        
+        
+        base = nums[numsSize/2];
+        int temp2 = 0;
+        for(int i = 0; i < numsSize/2; i++){
+            temp2 += base - nums[i];
+        }
+        for(int i = numsSize/2; i < numsSize; i++){
+            temp2 += nums[i] - base;
+        }
+        if(temp1 < temp2)
+            return temp1;
+        else
+            return temp2;
+    }
+
+}

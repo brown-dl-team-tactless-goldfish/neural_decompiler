@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int minCharacters(string a, string b) {
+        auto c1 = cnt(a), c2 = cnt(b);
+        int res = a.size() + b.size() - numMax(c1, c2);
+        return min({res, numOpToChangStrictlyLess(c1, c2), numOpToChangStrictlyLess(c2, c1)});
+    }
+    
+    vector<int> cnt(const string& s){
+        vector<int> cnt(26);
+        for(auto c:s) cnt[c-'a']++;
+        return cnt;
+    }
+    
+    int numMax(vector<int>& v1, vector<int>& v2){
+        int res = 0;
+        for(int i=0;i<26;i++) res = max(res, v1[i] + v2[i]);
+        return res;
+    }
+    
+    int numOpToChangStrictlyLess(const vector<int>& v1, const vector<int>& v2){
+        int res = 99999999;
+        for(char pivot = 'b'; pivot <= 'z'; pivot++){
+            const int p = pivot - 'a';
+            int numToMoveLeftInV1 = accumulate(v1.begin()+p, v1.end(), 0);
+            int numToMoveRightInV2 = accumulate(v2.begin(), v2.begin()+p, 0);
+            res = min(res, numToMoveLeftInV1 + numToMoveRightInV2);
+        }
+        return res;
+    }
+};

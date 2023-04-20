@@ -1,0 +1,109 @@
+
+
+
+typedef struct browser_history
+{
+    char * url;
+    struct browser_history * prev;
+    struct browser_history * next;
+} BrowserHistory;
+
+BrowserHistory * current = NULL;
+
+BrowserHistory* browserHistoryCreate(char * homepage) 
+{
+    BrowserHistory * obj = (BrowserHistory *)malloc(sizeof(BrowserHistory));
+    obj->url = (char *)malloc(sizeof(char) * (strlen(homepage)+1));
+    strcpy(obj->url, homepage);
+    obj->url[strlen(homepage)] = '\0';
+    obj->next = NULL;
+    obj->prev = NULL;
+    
+    current = obj;
+    return obj;
+}
+
+void browserHistoryVisit(BrowserHistory* obj, char * url) 
+{
+    BrowserHistory * trav = current->next;
+    BrowserHistory * tmp = NULL;
+    
+    current->next = NULL;
+    
+    //Clearing up the forward history
+    while(trav != NULL)
+    {
+        tmp = trav->next;
+        free(trav->url);
+        free(trav);
+        trav = tmp;
+    }
+    
+    BrowserHistory * new_node = (BrowserHistory *)malloc(sizeof(BrowserHistory));
+    new_node->url = (char *)malloc(sizeof(char) * (strlen(url)+1));
+    strcpy(new_node->url, url);
+    new_node->url[strlen(url)] = '\0';
+    new_node->next = NULL;
+    new_node->prev = current;
+    
+    current->next = new_node;
+    
+    current = new_node;
+    
+}
+
+char * browserHistoryBack(BrowserHistory* obj, int steps) 
+{
+    BrowserHistory * trav = current;
+    
+    while(steps > 0 && trav->prev != NULL)
+    {
+        trav = trav->prev;
+        steps--;
+    }
+    
+    current = trav;
+    
+    return trav->url;
+}
+
+char * browserHistoryForward(BrowserHistory* obj, int steps) 
+{
+    BrowserHistory * trav = current;
+    
+    while(steps > 0 && trav->next != NULL)
+    {
+        trav = trav->next;
+        steps--;
+    }
+    
+    current = trav;
+    
+    return trav->url;
+}
+
+void browserHistoryFree(BrowserHistory* obj) 
+{
+    BrowserHistory * trav = obj;
+    BrowserHistory * tmp = NULL;
+    
+    while(trav != NULL)
+    {
+        tmp = trav->next;
+        free(trav->url);
+        free(trav);
+        trav = tmp;
+    }
+}
+
+/**
+ * Your BrowserHistory struct will be instantiated and called as such:
+ * BrowserHistory* obj = browserHistoryCreate(homepage);
+ * browserHistoryVisit(obj, url);
+ 
+ * char * param_2 = browserHistoryBack(obj, steps);
+ 
+ * char * param_3 = browserHistoryForward(obj, steps);
+ 
+ * browserHistoryFree(obj);
+*/

@@ -1,0 +1,70 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    void build(TreeNode* r,  unordered_map<TreeNode*, vector<TreeNode*>>& conn, int& num) {
+        for(auto* n: conn[r]) {
+            build(n, conn, num);
+            if(r->left && r->left->val == n->val) {
+                r->left = n;
+                ++num;
+            }
+            if(r->right && r->right->val == n->val) {
+                r->right = n;
+                ++num;
+            }           
+        }
+    }
+    
+    void preorder(TreeNode* r, vector<int>& v) {
+        if(!r) return;
+        preorder(r->left, v);
+        v.push_back(r->val);
+        preorder(r->right, v);
+    }
+    
+    TreeNode* canMerge(vector<TreeNode*>& trees) {
+		// Build a map that stores the val of each root as the key.
+        unordered_map<int, TreeNode*> mp;
+        for(auto* n: trees) mp[n->val] = n;
+        
+		// For each root in trees, find out the other roots that it can connect to.
+        unordered_map<TreeNode*, vector<TreeNode*>> conn;
+        for(auto* n: trees) {
+            if(n->left && mp.count(n->left->val)) {
+                conn[n].push_back(mp[n->left->val]);
+                mp.erase(n->left->val);
+            }
+            if(n->right && mp.count(n->right->val)) {
+                conn[n].push_back(mp[n->right->val]);
+                mp.erase(n->right->val);
+            }            
+        }
+        
+		// After finding the connections, there should be only one root that is left (the root of the result BST).
+        if(mp.empty() || mp.size() > 1) return nullptr;
+
+		// Build the tree, note that the tree should include all the roots in trees.
+        TreeNode* r = mp.begin()->second;
+        int num = 1;
+        build(r, conn, num);
+        if(num != trees.size()) return nullptr;
+        
+		// Pre-order traversal to make sure the result binary tree is BST.
+        vector<int> v;
+        preorder(r, v);
+        for(int i=1; i<v.size(); ++i) {
+            if(v[i] <= v[i-1]) return nullptr;
+        }
+        return r;
+    }
+};

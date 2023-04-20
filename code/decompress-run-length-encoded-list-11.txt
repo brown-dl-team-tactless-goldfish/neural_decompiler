@@ -1,0 +1,36 @@
+int out_s(int *n, int size)
+{
+    int v=0;
+    
+    for (int i=0; i<size; i+=2)
+    {
+        v=v+n[i];
+    }
+    return v;
+}
+
+void fill(int *n, int freq, int val, int index)
+{
+    while (freq>0)
+    {
+        n[index]=val;
+        freq--;
+        index++;
+    }
+}
+
+
+int* decompressRLElist(int* nums, int numsSize, int* returnSize){
+    int out_size=out_s(nums, numsSize);
+    int *R=(int *)malloc(out_size*sizeof(int));
+    int counter=0, R_counter=0;
+    
+    while (counter<numsSize-1)
+    {
+        fill(R, nums[counter], nums[counter+1], R_counter);
+        R_counter+=nums[counter];
+        counter+=2;
+    }
+    *returnSize=out_size;
+    return R;
+}

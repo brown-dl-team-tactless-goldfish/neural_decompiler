@@ -1,0 +1,41 @@
+class Solution {
+public:
+    
+    int solve(int n)
+    {
+        return n*(n-1)/2;
+    }
+    int similarPairs(vector<string>& words) {
+    
+        int n = words.size();
+        
+        for(int i =0;i<n;i++)
+        {
+            set<char> s;
+            for(auto c : words[i])
+            {
+                s.insert(c);
+            }
+            words[i]="";
+            for(auto j = s.begin();j !=s.end();j++)words[i]+=(*j);
+            
+        }
+        
+        sort(words.begin(),words.end());
+        
+        string prev = words[0];
+        int count = 1,ans=0;
+        for(int i =1;i<n;i++)
+        {
+            if(words[i]==prev)count++;
+            else
+            {
+                ans+=solve(count);
+                prev = words[i];
+                count=1;
+            }
+        }
+        if(count!=1)ans+=solve(count);
+        return ans;
+    }
+};

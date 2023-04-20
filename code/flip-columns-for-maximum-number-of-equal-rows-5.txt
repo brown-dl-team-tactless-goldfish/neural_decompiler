@@ -1,0 +1,92 @@
+class Solution {
+public:
+    
+    struct TreeNode
+    {
+        int val;
+        TreeNode * left;
+        TreeNode * right;
+    };
+    
+    // create TreeNode
+    TreeNode * createNode()
+    {
+        TreeNode* node = new TreeNode();
+        node->val = 0;
+        node->left = NULL;
+        node->right = NULL;
+        
+        return node;
+    }
+    
+    // insert row elements in the BT and update the count and return
+    int insertRow(vector<int>&mat, int c)
+    {
+        TreeNode * obj = root;
+        for(int i=0;i<c;i++)
+        {
+            if(mat[i])
+            {
+                if(obj->right==NULL)obj->right=createNode();
+                obj = obj->right;
+            }        
+            else
+            {
+                if(obj->left==NULL)obj->left=createNode();
+                obj = obj->left;                
+            }
+        }
+        
+        obj->val++;
+        return obj->val;
+    }
+    
+    // get the count for inverse row elements in the BT 
+    int getInverseRowVal(vector<int>&mat,int c)
+    {
+        TreeNode * obj = root;
+        for(int i=0;i<c;i++)
+        {
+            if(1-mat[i])
+            {
+                if(obj->right==NULL)return 0;
+                obj = obj->right;
+            }        
+            else
+            {
+                if(obj->left==NULL)return 0;
+                obj = obj->left;                
+            }
+        }
+        
+        return obj->val;
+    }
+    
+    TreeNode * root;
+    
+    int maxEqualRowsAfterFlips(vector<vector<int>>& mat) {
+        
+        int r = mat.size();
+        int c = mat[0].size();
+        
+        // Store row occurence count in Binary Tree
+        root = createNode();
+        
+        // max row with same value
+        int maxc = 0;
+        int x,y;
+        
+        // loop through all rows and insert rows in BT
+        // also get the count of inverse row pattern
+        // total rows with same value = x + y
+        for(int i=0;i<r;i++)
+        {
+            x = insertRow(mat[i],c);
+            y = getInverseRowVal(mat[i],c);
+
+            maxc =  max(maxc,x + y);
+        }
+        
+        return maxc;
+    }
+};

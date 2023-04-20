@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int largestSubmatrix(vector<vector<int>>& matrix) {
+    
+        vector<int> sums(matrix[0].size(),0);
+        
+        int maxarea=0;
+        
+        for(int i=matrix.size()-1;i>=0;i--)
+        {
+            for(int j=0;j<matrix[0].size();j++)
+            {
+                sums[j]=(matrix[i][j]==0)?0:sums[j]+matrix[i][j];
+            }
+            
+            vector<int> sortsums=sums;
+            
+            sort(sortsums.begin(),sortsums.end(),greater<int>());
+        
+            int minAns=INT_MAX;
+            for(int k=0;k<sortsums.size();k++)
+            {
+                minAns=min(minAns,sortsums[k]);
+                maxarea=max(minAns*(k+1),maxarea);
+            }
+        }
+        
+        return maxarea;
+    }
+};

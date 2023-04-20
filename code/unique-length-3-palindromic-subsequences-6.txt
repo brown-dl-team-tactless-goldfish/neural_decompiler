@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int countPalindromicSubsequence(string s) {
+        unordered_map<char, vector<int>> locs; 
+        for (int i = 0; i < s.size(); ++i) locs[s[i]].push_back(i); 
+        
+        int ans = 0; 
+        string ascii_lowercase = "abcdefghijklmnopqrstuvwxyz"; 
+        for (auto& c : ascii_lowercase) 
+            if (locs[c].size() > 1) {
+                if (locs[c].size() > 2) ++ans; 
+                for (auto& cc : ascii_lowercase) 
+                    if (c != cc) {
+                        auto lo = lower_bound(locs[cc].begin(), locs[cc].end(), locs[c].front()); 
+                        auto hi = lower_bound(locs[cc].begin(), locs[cc].end(), locs[c].back()); 
+                        if (lo != hi) ++ans; 
+                    }
+            }
+        return ans; 
+    }
+};

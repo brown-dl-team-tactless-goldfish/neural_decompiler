@@ -1,0 +1,41 @@
+char * predictPartyVictory(char * senate){
+    int n = strlen(senate) ;
+    int* queueR = malloc(n * sizeof(int)) ;
+    int* queueD = malloc(n * sizeof(int)) ;
+    int r_cn = 0 ;
+    int d_cn = 0 ;
+    int next = n ;
+    for(int i = 0; i < n; i++){
+        if(senate[i] == 'R'){
+            queueR[r_cn] = i ;
+            r_cn++ ;;
+        }
+        else{
+            queueD[d_cn] = i ;
+            d_cn++ ;
+        }
+    }
+    int r_idx = 0, d_idx = 0 ;
+    while(r_idx < r_cn && d_idx < d_cn){
+        if(queueR[r_idx] < queueD[d_idx]){            
+            queueR[r_cn] = next ;
+            next++ ;
+            r_cn++ ;
+            d_idx++ ;
+            r_idx++ ;
+        }
+        else{
+            queueD[d_cn] = next ;
+            next ++ ;
+            d_cn++ ;
+            d_idx++ ;
+            r_idx++ ;
+        }
+    }
+    free(queueD) ;
+    free(queueR) ;
+    if(r_idx == r_cn)
+        return "Dire" ;
+    else
+        return "Radiant" ;
+}

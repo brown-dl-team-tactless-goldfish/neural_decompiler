@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int getindex(vector<int>& nums,int index, int val){
+        int l = index, h = nums.size()-1,m;
+        if(h-l <= 1){
+            return nums[h] < val ? h : nums[l] < val ? l : l-1;
+        }
+        while(h-l > 1){
+            m = (h+l)/2;
+            if(nums[m] < val)
+                l = m;
+            else
+                h = m;
+        }
+        return nums[h] < val ? h : nums[l] < val ? l : l-1;
+    }
+    
+    int triangleNumber(vector<int>& nums) {
+        if(nums.size() < 3) return 0;
+        
+        sort(nums.begin(),nums.end());
+        int c = 0,index;
+        for(int i = 0;i < nums.size()-2;i++){
+            for(int j = i+1;j < nums.size()-1;j++){
+                index = getindex(nums,j+1,nums[i]+nums[j]);
+                if(index > j) c+=(index-j);
+            }
+        }
+        return c;
+    }
+};

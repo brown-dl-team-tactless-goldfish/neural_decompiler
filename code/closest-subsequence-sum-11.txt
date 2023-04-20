@@ -1,0 +1,64 @@
+/*
+    we know one thing:
+    if we have to minimize |x - y|, where x can be changed (and replaced with certain given values) and y is FIXED, 
+    then the optimal way is to chose that x, which is either:
+    1) just greater than or equal to y (use lower bound to get this)
+    2) just smallet than y (to get this one, take the upper bound and go one step back)
+    
+    use meet in the middle technique to solve this problem
+    divide the array into two halves, leftHalf and rightHalf (leftHalf is from 0 to (n/2 - 1))
+    and (rightHalf is from (n/2 to n - 1))
+    
+    store all the subset sums of leftHald and rightHalf, in two arrays
+    now we can form all the subsequence sums using these two arrays
+    if we chose an x from leftHalf and  y from rightHalf, then (x + y) actually represents a subsequence sum of the entire array
+    
+    we need to minimize 
+        |goal - (x + y)| 
+        lets fix x
+        
+        and, 
+        |goal - x - y| = |y - (goal - x)| (just take - common)
+        
+        so now we need to minimize |y - (goal - x)|, so y must be replaced with someone who is either just greater than  or equal to 
+        (goal - x) or someone just smaller than (goal - x),
+        for every x in leftSums, we can find the possible optimal answers from rightSums using binary search
+    
+    
+
+*/
+class Solution {
+public:
+    void generateSums(int i, int end,  int sum, vector<int> &a, vector<int> &sums) {
+        if(i == end) {
+            sums.push_back(sum);
+            return;
+        }
+        
+        generateSums(i + 1, end, sum + a[i], a, sums);
+        generateSums(i + 1, end, sum, a, sums);
+    }
+    int minAbsDifference(vector<int>& a, int goal) {
+        int n = a.size();
+        vector<int> leftSums, rightSums;
+        int mid = n/2;        
+        generateSums(0, mid, 0, a, leftSums);
+        generateSums(mid, n, 0, a, rightSums);
+        
+        sort(rightSums.begin(), rightSums.end()); int ans = INT_MAX;
+        for(int x : leftSums) {
+            int y = goal - x;
+            int i = lower_bound(rightSums.begin(), rightSums.end(), y) - rightSums.begin();
+            if(i != rightSums.size()) ans = min(ans, abs(goal - (x + rightSums[i])));
+            if(ans == 0) return ans;
+            
+            int j = upper_bound(rightSums.begin(), rightSums.end(), y) - rightSums.begin();
+            j--;
+            if(j >= 0) ans = min(ans, abs(goal - (x + rightSums[j])));
+            if(ans == 0) return ans;
+        }
+        
+        return ans;
+        
+    }
+};

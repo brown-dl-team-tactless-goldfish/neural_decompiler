@@ -1,0 +1,41 @@
+class Solution {
+public:
+    double getMinDistSum(vector<vector<int>>& positions) {
+        int n = positions.size();
+        double cx = 0.0, cy = 0.0;
+        for (const auto& pos : positions){
+            cx += pos[0];
+            cy += pos[1];
+        }
+        cx /= n;
+        cy /= n;
+        
+        while (true) {
+            double sx = 0, sy = 0, sd = 0;
+            for (const auto& pos : positions){
+                double dx = cx - pos[0], dy = cy - pos[1];
+                double d = sqrt(dx * dx + dy * dy);
+                if (d < 1e-20) continue;
+                sx += pos[0] / d;
+                sy += pos[1] / d;
+                sd += 1 / d;
+            }
+            if (sd == 0) break;
+            double nx = sx / sd, ny = sy / sd;
+            double err = (cx - nx) * (cx - nx) + (cy - ny) * (cy - ny);
+            cx = nx;
+            cy = ny;
+            if (err < 1e-15) break;
+        }
+        
+        return getDist(positions, cx, cy);
+    }
+private:
+    double getDist(vector<vector<int>>& positions, double x, double y){
+        double dist = 0.0;
+        for(const auto& pos : positions){
+            dist += sqrt((pos[0]-x)*(pos[0]-x) + (pos[1]-y)*(pos[1]-y));
+        }
+        return dist;
+    }
+};

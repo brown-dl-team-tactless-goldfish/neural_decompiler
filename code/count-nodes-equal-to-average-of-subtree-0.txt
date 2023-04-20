@@ -1,0 +1,22 @@
+int countOfSubtree(struct TreeNode* root, int* ans){
+    if(!root) return 0;
+    
+    int left = countOfSubtree(root->left, ans);
+    int right = countOfSubtree(root->right, ans);
+
+    int currCnt = left + right + 1;
+    int currSum = root->val;
+    currSum += (root->left)?root->left->val : 0;
+    currSum += (root->right)?root->right->val : 0;
+    
+    if(root->val == (currSum / currCnt))
+        (*ans)++;
+    root->val = currSum;
+    return currCnt;
+}
+
+int averageOfSubtree(struct TreeNode* root){
+    int ans = 0;
+    countOfSubtree(root, &ans);
+    return ans;
+}

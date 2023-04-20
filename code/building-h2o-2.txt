@@ -1,0 +1,39 @@
+#include <semaphore.h>
+
+class H2O {
+public:
+    sem_t sem_hydrogen;
+    sem_t sem_oxygen;
+    int numHydrogen;
+    H2O() {
+        sem_init(&sem_hydrogen, 0, 0);
+        sem_init(&sem_oxygen, 0, 1);
+        numHydrogen = 2;
+    }
+
+    ~H2O(){
+        sem_destroy(&sem_hydrogen);
+        sem_destroy(&sem_oxygen);
+    }
+    
+    void hydrogen(function<void()> releaseHydrogen) {
+        
+        // releaseHydrogen() outputs "H". Do not change or remove this line.
+        sem_wait(&sem_hydrogen);
+        releaseHydrogen();
+        numHydrogen--;
+        if(!numHydrogen){
+            numHydrogen = 2;
+            sem_post(&sem_oxygen);
+        }
+    }
+
+    void oxygen(function<void()> releaseOxygen) {
+        
+        // releaseOxygen() outputs "O". Do not change or remove this line.
+        sem_wait(&sem_oxygen);
+        releaseOxygen();
+        sem_post(&sem_hydrogen);
+        sem_post(&sem_hydrogen);
+    }
+};

@@ -1,0 +1,22 @@
+    int partitionDisjoint(vector<int>& nums) {
+        int size = nums.size();
+        vector<int> minValue(size, 0);
+        int minVal = INT_MAX;
+        for (int i = size - 1; i >= 0; i--) {
+            if (nums[i] < minVal) {
+                minVal = nums[i];
+            }
+            minValue[i] = minVal;
+        }
+        // the partition happens when the left maximum number is less than or equal to the minimum number from the right
+        int maxVal = INT_MIN;
+        for (int i = 0; i < size - 1; i++) {
+            if (nums[i] > maxVal) {
+                maxVal = nums[i];
+            }
+            if (maxVal <= minValue[i + 1]) {
+                return i + 1;
+            }
+        }
+        return -1;
+    }

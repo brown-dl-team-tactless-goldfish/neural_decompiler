@@ -1,0 +1,70 @@
+class Solution {
+public:
+    
+    typedef vector<vector<int>>  matrix;
+    std::unordered_map<int, std::pair<int,int>> indexToMN;
+    int minNumFlips = INT_MAX;
+    
+    
+    bool isASolution(int k , matrix& m) {       
+        if (k == indexToMN.size()-1) return true;
+        return false;
+    }
+    
+    void processSolution(int numFlips, matrix& m) {
+        bool isZero = true;
+        for (int i = 0; i < m.size(); i++) {
+            for (int j = 0; j < m[0].size(); j++) {
+                if (m[i][j] == 1) {
+                    isZero = false;
+                    break;
+                }
+            }
+        }
+        if (isZero) minNumFlips = std::min(numFlips, minNumFlips);
+    }
+    
+    void flipMatrixIndex(int index, matrix& m) {
+     
+        int i = indexToMN.at(index).first;
+        int j =  indexToMN.at(index).second;
+        m[i][j] = !m[i][j];
+        if (i-1 >= 0)  m[i-1][j] = !m[i-1][j];
+        if (j-1 >= 0)  m[i][j-1] = !m[i][j-1];
+        if (i+1 < m.size()) m[i+1][j] = !m[i+1][j];
+        if (j+1 < m[0].size()) m[i][j+1] = !m[i][j+1];
+    }
+    
+     void backtrack( matrix mat, std::vector<bool> a , int numFlips, int k) {
+       int ncandidates = 2;     
+        bool c[2] ;
+        c[0] = false; c[1] = true;
+        if (isASolution(k, mat))
+            processSolution(numFlips, mat);
+        else {
+            k = k+1;             
+            for (int i = 0; i < ncandidates; i++) {
+                a[k] = c[i];                
+                if (a[k]) flipMatrixIndex(k, mat);
+     
+                backtrack(mat, a, a[k] ? numFlips + 1: numFlips, k);                
+            }
+        }
+        
+    }
+    
+    
+    int minFlips(vector<vector<int>>& mat) {
+        int numIndex = 0;
+        for (int i = 0; i < mat.size(); i++) {
+            for (int j = 0; j < mat[0].size(); j++) {
+                indexToMN[numIndex] = make_pair(i,j);
+                numIndex++;
+            }
+        }
+        std::vector<bool> a(9, 0 );
+        backtrack(mat, a, 0, -1);
+        if (minNumFlips == INT_MAX)  return -1 ;
+        return minNumFlips;
+    }
+};

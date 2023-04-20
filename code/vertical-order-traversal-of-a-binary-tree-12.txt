@@ -1,0 +1,20 @@
+    vector<vector<int>> verticalTraversal(TreeNode* root) {
+        map<int,map<int,set<int>,greater<int>>> res;
+        inorder(root,res,0,0);
+        vector<vector<int>> ret;
+        for(auto m : res){
+            ret.push_back({});
+            for(auto i:m.second){
+                for(auto c :i.second){
+                    ret[ret.size()-1].push_back(c);
+                }
+            }
+        }
+        return ret;
+    }
+    void inorder(TreeNode* root,map<int,map<int,set<int>,greater<int>>>& res,int x, int y){
+        if(!root) return;
+        res[x][y].insert(root->val);
+        inorder(root->left, res,x-1,y-1);
+        inorder(root->right, res,x+1,y-1);
+    }

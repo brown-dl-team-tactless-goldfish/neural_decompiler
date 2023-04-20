@@ -1,0 +1,102 @@
+class Solution {
+public:
+
+    bool check_color(vector<vector<int>>& t, pair<int,int> s, pair<int,int> e, int c){
+
+        for(int i = s.first; i <= e.first; i++){
+            for(int j = s.second; j <= e.second; j++){
+                //cout << c <<" "<<t[i][j]<<" "<<i <<" "<<j << endl;
+                if(t[i][j] != c && t[i][j] != -1){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
+    void fill(vector<vector<int>>& t, pair<int,int> s, pair<int,int> e){
+
+        for(int i = s.first; i <= e.first; i++){
+            for(int j = s.second; j <= e.second; j++){
+                t[i][j] = -1;
+            }
+        }
+    }
+
+    bool isPrintable(vector<vector<int>>& t) {
+        
+        //the start and end locations for colours
+        unordered_map<int, pair<int,int>> start;
+        unordered_map<int, pair<int,int>> end;
+
+        //now just iterate
+        int n = t.size();
+        int m = t[0].size();
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                int c = t[i][j];
+                
+                //find the start
+                auto start_it = start.find(c);
+                auto end_it = end.find(c);
+
+                //start pair and end pair
+                pair<int,int> start_c;
+                pair<int,int> end_c;
+                
+                if(start_it == start.end()){
+                    start_c = make_pair(INT_MAX, INT_MAX);
+                }
+                else{
+                    start_c = start_it->second;
+                }
+
+                if(end_it == end.end()){
+                    end_c = make_pair(INT_MIN, INT_MIN);
+                }
+                else{
+                    end_c = end_it->second;
+                }
+
+                start_c = make_pair(min(i, start_c.first), min(j, start_c.second));
+                end_c = make_pair(max(i, end_c.first), max(j, end_c.second));
+
+                start[c] = start_c;
+                end[c] = end_c;
+            }
+        }
+
+        //  for(auto it = start.begin(); it != start.end(); it++){
+        //     int c = it->first;
+        //     pair<int, int> t = it->second;
+        //     cout << c <<": "<<t.first <<","<<t.second;
+        //     t = end[c];
+        //     cout <<" - "<<t.first <<","<<t.second<<endl;
+        // }
+
+        while(true){
+            bool changed = false;
+            for(auto it = start.begin(); it != start.end(); it++){
+                int c = it->first;
+                pair<int,int> s = it->second;
+                pair<int,int> e = end[c];
+
+                if(check_color(t, s, e, c)){
+                    fill(t,s,e);
+                    changed = true;
+                    start.erase(it);
+                    end.erase(c);
+                    break;
+                }
+            }
+            if(!changed){
+                return false;
+            }
+            if(start.size() == 0){
+                return true;
+            }
+        }
+
+        return false;   
+    }
+};

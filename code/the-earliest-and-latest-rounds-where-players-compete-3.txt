@@ -1,0 +1,47 @@
+class Solution {
+public:
+int a1=INT_MAX;
+int a2=INT_MIN;
+
+void dfs(int i,int j,int mask,int n,int first,int second,int t){
+   
+     if(i>=j){
+         return dfs(1,n,mask,n,first,second,t+1);
+     }
+     
+     while(!(mask&(1<<i))&&i<j)i++;
+     while(!(mask&(1<<j)) &&i<j)j--;
+     if(i==j){
+         return dfs(1,n,mask,n,first,second,t+1);
+     }
+    
+    if((i==first&&j==second) || (i==second && j==first)){
+        
+        a1=min(a1,t);
+        a2=max(a2,t);
+        return ;
+    }
+    if(i==first || i==second){
+        return dfs(i+1,j-1,(mask^(1<<j)),n,first,second,t);
+    }else if(j==second || j==first){
+        return dfs(i+1,j-1,(mask^(1<<i)),n,first,second,t);
+    }else{
+        dfs(i+1,j-1,(mask^(1<<i)),n,first,second,t);
+        dfs(i+1,j-1,(mask^(1<<j)),n,first,second,t);
+    }
+      
+        
+    }
+    
+    
+    vector<int> earliestAndLatest(int n, int first, int second) {
+        
+        int mask = (1<<(n+1))-1;
+        
+        dfs(1,n,mask,n,first,second,1);
+        return {a1,a2};
+        
+        
+    }
+};
+

@@ -1,0 +1,21 @@
+class Solution {
+public:
+    vector<string> alertNames(vector<string>& keyName, vector<string>& keyTime) {
+        map<string, vector<int>> nameTime;
+        for (int i = 0; i < keyName.size(); i++) {
+            // Converting time to minutes only
+            nameTime[keyName[i]].push_back(stoi(keyTime[i].substr(0,2)) * 60 + stoi(keyTime[i].substr(3)));
+        }
+        set<string> namesOrdered;
+        for (auto pair : nameTime) {
+            sort(pair.second.begin(), pair.second.end());
+            for (int i = 2; i < pair.second.size(); i++) {
+                if (pair.second[i] - pair.second[i - 2] <= 60) {
+                    namesOrdered.insert(pair.first);
+                }
+            }
+        } 
+        vector<string> result(namesOrdered.begin(), namesOrdered.end());
+        return result;
+    }
+};

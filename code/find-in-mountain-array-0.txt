@@ -1,0 +1,114 @@
+//step 1 find peak, also record "location and value" already queried, and verify if target has happend
+//step 2 if target has happen and index <= peak, then exit and return ans
+//step 3 find right of mountain, if target exit then exit and return ans
+//step 4 find left of mountain, if target exit then exit and return ans
+//step 5 not found target return -1;
+
+//
+//Method for find peak index
+int findPeak(MountainArray* mountainArr, int len, int* data, bool* flag, int target, int* idx){
+    int left = 0;
+    int right = len - 1;
+    int mid;
+    int l , m, r;
+    
+    while(left < right){
+        mid = (left + right)/2;       
+        m = get(mountainArr, mid);
+            flag[mid] = true;
+            data[mid] = m;
+        if(m == target)
+            *idx = fmin(*idx, mid);
+        
+        r = get(mountainArr, mid + 1);    
+            flag[mid+1] = true;
+            data[mid+1] = r;
+        if(r == target)
+            *idx = fmin(*idx, mid+1);
+        
+        if(m < r){
+            left = mid + 1;
+        }
+        else{
+            l = get(mountainArr, mid-1);
+                flag[mid-1] = true;
+                data[mid-1] = l;
+            if(l == target)
+                *idx = fmin(*idx, mid-1);
+            if(m > l)
+                return mid;
+            else{
+                right = mid - 1;
+            }
+        }
+    }
+    return left;
+}
+
+
+
+int findVal(MountainArray* mountainArr, int begin, int end, int val, int* data, bool* flag, bool up){
+    int left = begin;
+    int right = end;
+    int temp;
+    while(left < right){
+        int mid = left + (right - left)/2;
+        if(flag[mid])
+            temp = data[mid];
+        else
+            temp = get(mountainArr, mid);
+        if(temp == val)
+            return mid;
+        if(temp > val){
+            if(up)
+                right = mid -1;
+            else
+                left = mid + 1;
+        }
+        else{
+            if(up)
+                left = mid + 1;
+            else
+                right = mid -1;
+        }
+    }
+    
+    if(get(mountainArr, left) == val)
+        return left;
+    else
+        return -1;
+}
+
+//
+//main function
+int findInMountainArray(int target, MountainArray* mountainArr) {
+    int len = length(mountainArr);
+    //flag record queried, data record value
+    int* data = malloc(len * sizeof(int));
+    bool* flag =  calloc(len , sizeof(bool));
+    
+    //idx record target's index
+    int* idx = malloc(sizeof(int));
+    *idx = INT_MAX;
+    
+    //find peak index
+    int peak =  findPeak(mountainArr, len , data, flag, target, idx);
+    int ans;
+    //if target has happen and index <= peak, then find the position
+    if((*idx) <= peak){
+        ans = *idx;
+        goto exit;
+    }
+    //right of moutain
+    ans = findVal(mountainArr, 0, peak, target, data, flag, true);       
+    
+    //if not found in right of moutain, then keep find left of moutain
+    if(ans == -1)
+        ans = findVal(mountainArr, peak+1, len-1, target, data, flag, false);   
+    
+    exit:
+    free(data);
+    free(flag);
+    
+    return ans;
+}

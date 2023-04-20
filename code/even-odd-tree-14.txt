@@ -1,0 +1,28 @@
+class Solution {
+private:
+public:
+	bool isEvenOddTree(TreeNode* root) {
+   		queue<TreeNode*> q;
+		q.push(root);
+		int level = 0;
+		while (not q.empty()){
+			int breadth = q.size();
+			int prev = (level % 2 == 0) ? INT_MIN : INT_MAX;
+			while (breadth--){
+				TreeNode* node = q.front(); q.pop();
+				int val = node->val;
+				if (level % 2 == 0 and (val % 2 == 0 or val <= prev))
+					return false;
+				else if (level % 2 != 0 and (val % 2 != 0 or val >= prev))
+					return false;
+				prev = val;
+				if (node->left)
+					q.push(node->left);
+				if (node->right)
+					q.push(node->right);
+			}
+			level++;
+		}
+		return true;
+    }
+};

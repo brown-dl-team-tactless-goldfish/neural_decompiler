@@ -1,0 +1,70 @@
+class Solution {
+public:
+    vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {
+        unordered_set<string> dict(wordList.begin(), wordList.end());
+        vector<vector<string>> ans;
+        if(!dict.count(endWord)) return ans;
+        
+        unordered_map<string, vector<string>> map;
+        unordered_set<string> startSet;
+        unordered_set<string> endSet;
+        startSet.insert(beginWord);
+        endSet.insert(endWord);
+        bfs(startSet, endSet, map, dict, false);
+        
+        vector<string> vec{beginWord};
+        dfs(beginWord, endWord, map, vec, ans);
+        return ans;
+    }
+    
+private:
+    void dfs(string word, string endWord, unordered_map<string, vector<string>>& map, vector<string>& vec, vector<vector<string>>& ans){
+        if(word == endWord){
+            ans.push_back(vec);
+            return;
+        }
+        if(map.find(word) == map.end()) return;
+        for(string next : map[word]){
+            vec.push_back(next);
+            dfs(next, endWord, map, vec, ans);
+            vec.pop_back();
+        }
+    }
+    
+    void bfs(unordered_set<string> startSet, unordered_set<string> endSet, unordered_map<string, vector<string>>& map, unordered_set<string>& dict, bool reverse){
+        if(startSet.empty()) return;
+        if(startSet.size() > endSet.size()){
+            bfs(endSet, startSet, map, dict, !reverse);
+            return;
+        }
+        unordered_set<string> temp;
+        for(string s : startSet){
+            dict.erase(s);
+        }
+        bool finish = false;
+        for(string word : startSet){
+            string w = word;
+            for(int i = 0; i < w.size(); i++){
+                char ch = w[i];
+                for(char c = 'a'; c <= 'z'; c++){
+                    w[i] = c;
+                    if(dict.count(w)){
+                        if(endSet.count(w)){
+                            finish = true;
+                        }
+                        else{
+                            temp.insert(w);
+                        }
+                        string key = reverse ? w : word;
+                        string val = reverse ? word : w;
+                        map[key].push_back(val);
+                    }
+                }
+                w[i] = ch;
+            }
+        }
+        if(!finish){
+            bfs(temp, endSet, map, dict, reverse);
+        }
+    }  
+};

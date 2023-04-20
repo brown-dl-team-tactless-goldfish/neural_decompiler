@@ -1,0 +1,34 @@
+class Solution {
+   public:
+    int kSimilarity(string s1, string s2) {
+        vector<vector<int>> charPos(6);  //  contains index of 'i'th character in s2
+        for (int i = 0; i < s2.size(); i++) charPos[s2[i] - 'a'].push_back(i);
+        int k = 0;
+        queue<string> q;
+        q.push(s1);
+        q.push("");
+        while (q.size()) {
+            string cur = q.front();
+            q.pop();
+            if (!cur.size()) {
+                if (q.empty()) break;
+                q.push("");
+                k++;
+            } else {
+                if (cur == s2) return k;
+                int firstMismatch = -1;
+                for (int i = 0; i < s2.size(); i++)
+                    if (cur[i] != s2[i]) {        
+                        firstMismatch = i;
+                        break;
+                    }
+                for (auto correctPos : charPos[cur[firstMismatch] - 'a'])
+                    if (cur[correctPos] != cur[firstMismatch]) {        //  check if 2 same characters are not getting swapped (else there's no change)
+                        swap(cur[correctPos], cur[firstMismatch]);
+                        q.push(cur);
+                    }
+            }
+        }
+        return -1;
+    }
+};

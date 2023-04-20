@@ -1,0 +1,86 @@
+void swap(int *a0, int *a1)
+{
+  // int array size = 2
+  int t0 = a0[0];
+  int t1 = a0[1];
+  a0[0] = a1[0];
+  a0[1] = a1[1];
+  a1[0] = t0;
+  a1[1] = t1;
+  return;
+}
+
+int mid(int a, int b, int c)
+{
+  if (a <= b)
+  {
+    if (c <= a)
+      return a;
+    else if (b <= c)
+      return b;
+    return c;
+  }
+  else // b <= a
+  {
+    if (c <= b)
+      return b;
+    else if (a <= c)
+      return a;
+    return c;
+  }
+}
+
+void quickSort(int **a, int x, int y)
+{
+  // non-increasing order, consider value bu only a[i][1]
+  // int** a, a[i] size == 2
+  // array, Quick Sort a[x] ~ a[y]
+  if (x < y) // has at least 2 data to sort
+  {
+    int pk = mid(a[x][1], a[(x+y)/2][1], a[y][1]);
+    if (pk == a[(x+y)/2][1])
+      swap(a[x], a[(x+y)/2]);
+    else if (pk == a[y][1])
+      swap(a[x], a[y]);
+
+    int i = x, j = y + 1;
+    do // while (i < j)
+    {
+      do
+      {
+        i++;
+      } while (a[i][1] > pk && i != y);
+      do
+      {
+        j--;
+      } while (a[j][1] < pk && j != x);
+      if (i < j)
+      {
+        swap(a[i], a[j]);
+      }
+    } while (i < j);
+    swap(a[j], a[x]);
+    quickSort(a, x, j - 1);
+    quickSort(a, j + 1, y);
+  }
+  return;
+}
+
+int maximumUnits(int** boxTypes, int boxTypesSize, int* boxTypesColSize, int truckSize){
+  int res = 0;
+  quickSort(boxTypes, 0, boxTypesSize - 1);
+  for (size_t i = 0; i < boxTypesSize; i++)
+  {
+    if (truckSize > boxTypes[i][0])
+    {
+      truckSize -= boxTypes[i][0];
+      res += boxTypes[i][0] * boxTypes[i][1];
+    }
+    else
+    {
+      res += truckSize * boxTypes[i][1];
+      break;
+    }
+  }
+  return res;
+}

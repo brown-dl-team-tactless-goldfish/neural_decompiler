@@ -1,0 +1,56 @@
+
+#ifndef min
+#define min(a,b) ((a)>(b)?(b):(a))
+#endif
+
+struct hashtable{
+    int val; // as key;
+    int num; // as value;
+    UT_hash_handle hh; 
+};
+
+void additem(struct hashtable** ht, int val){
+    struct hashtable *s;
+    HASH_FIND_INT(*ht, &val, s);  /* val already in the hash? */
+    if (s==NULL) {
+      s = (struct hashtable *)malloc(sizeof *s);
+      s->val = val;
+      s->num = 0;
+      HASH_ADD_INT( *ht, val, s );  /* val: name of key field */
+    }
+    s->num+=1;
+}
+
+void it_and_count(struct hashtable* ht, int* ans, int k){
+    struct hashtable *s;
+    for(s=ht; s != NULL; s=s->hh.next) {
+        if(k==0){
+            if(s->num>1)
+                *ans += 1;
+        }else{
+            struct hashtable *t;
+            int v = (s->val)+k;
+            HASH_FIND_INT(ht,&v,t);
+            if(t){
+                *ans += 1;
+            }
+        }
+    }
+    free(s);
+}
+
+int id_sort(struct hashtable *a, struct hashtable *b) {
+    return (a->val - b->val);
+}
+
+int findPairs(int* nums, int numsSize, int k){
+    struct hashtable *ht = NULL;
+    for(int i=0;i<numsSize;i++){
+        additem(&ht,nums[i]);
+    }
+    HASH_SORT(ht,id_sort);
+    int ans = 0;
+    int* ans_p = &ans;
+    it_and_count(ht,ans_p,k);
+    return ans;
+}

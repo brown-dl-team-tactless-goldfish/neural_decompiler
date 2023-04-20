@@ -1,0 +1,30 @@
+class RLEIterator {
+public:
+    RLEIterator(vector<int>& A) {
+        for(int i=0; i<A.size(); ++i) {
+            if(i%2) nums.push_back(A[i]);
+            else if(!A[i]) ++i;
+            else times.push_back(A[i]);
+        }
+    }
+    
+    int next(int n) {
+        int i=0, sum=0;
+        for(; i<times.size(); ++i) {
+            sum += times[i];
+            if(n <= sum) break;
+        }
+        if(i == times.size()) {
+            times.clear();
+            nums.clear();
+            return -1;
+        }
+        int res = nums[i];
+        times[i] = sum-n;
+        times.erase(times.begin(),times.begin()+i);
+        nums.erase(nums.begin(),nums.begin()+i);
+        return res;
+    }
+private:
+    vector<int> times, nums;
+};

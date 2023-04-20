@@ -1,0 +1,24 @@
+static bool cmp(pair<int, int> &a, pair<int, int> &b){
+        return a.second < b.second;
+    }
+    
+    int findLeastNumOfUniqueInts(vector<int>& arr, int k) {
+        unordered_map<int, int> m;
+        for(auto it: arr)
+            ++m[it];
+        vector<pair<int, int>> temp;
+        for(auto it: m)
+            temp.push_back({it.first, it.second});
+        sort(temp.begin(), temp.end(), cmp);
+        int c = 0;
+        for(auto it: temp){
+            if(it.second <= k){
+                k -= it.second;
+                ++c;
+            }
+            else{
+                return m.size() - c;
+            }
+        }
+        return m.size() - c;
+    }

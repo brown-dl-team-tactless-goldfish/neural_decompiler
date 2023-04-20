@@ -1,0 +1,40 @@
+const char *const MEDALS[3] = {
+	"Gold Medal",
+	"Silver Medal",
+	"Bronze Medal"
+};
+
+char **
+findRelativeRanks(int *const nums, const int numsSize, int *const retSize)
+{
+	int *pos, i, tmp;
+	char **ret, *buf;
+
+	pos = malloc(numsSize * sizeof(int));
+	for (i = 0; i < numsSize; ++i)
+		pos[i] = i;
+	for (i = 1; i < numsSize;)
+		if (i == 0 || nums[i - 1] >= nums[i]) {
+			++i;
+		} else {
+			tmp = nums[i];
+			nums[i] = nums[i - 1];
+			nums[i - 1] = tmp;
+			tmp = pos[i];
+			pos[i] = pos[i - 1];
+			pos[i - 1] = tmp;
+			--i;
+		}
+	ret = malloc((*retSize = numsSize) * sizeof(char *));
+	for (i = 0; i < numsSize; ++i)
+		if (i < 3) {
+			buf = malloc(13 * sizeof(char));
+			ret[pos[i]] = strcpy(buf, MEDALS[i]);
+		} else {
+			buf = malloc(6 * sizeof(char));
+			(void)sprintf(ret[pos[i]] = buf, "%d", i + 1);
+		}
+
+	free(pos);
+	return ret;
+}

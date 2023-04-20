@@ -1,0 +1,212 @@
+#define BUFFER_SIZE 5000
+
+struct RandomRecord
+{
+    int nVal;
+    int nRandomBuffIndex;
+
+    struct RandomRecord* pstLeft;
+    struct RandomRecord* pstRight;
+};
+
+typedef struct {
+    struct RandomRecord** ppstRandomRecord;
+
+    int* pnRandomBuff;
+    int nRandomBuffSize;
+
+    int nMinIndex;
+    int nMaxIndex;
+} RandomizedSet;
+
+
+RandomizedSet* randomizedSetCreate() {
+    RandomizedSet* pstRandomizedSet = (RandomizedSet*) malloc(sizeof(RandomizedSet));
+
+    pstRandomizedSet->ppstRandomRecord = (struct RandomRecord**) malloc(BUFFER_SIZE*sizeof(struct RandomRecord*));
+    memset(pstRandomizedSet->ppstRandomRecord, NULL, BUFFER_SIZE*sizeof(struct RandomRecord*));
+
+    pstRandomizedSet->pnRandomBuff = (int*) malloc(BUFFER_SIZE*sizeof(int));
+    pstRandomizedSet->nRandomBuffSize = 0;
+
+    pstRandomizedSet->nMinIndex = BUFFER_SIZE;
+    pstRandomizedSet->nMaxIndex = 0;
+
+    return pstRandomizedSet;
+}
+
+bool AddRandomRecord(struct RandomRecord* pstRoot, int nVal, int nRandomBuffIndex)
+{
+    if(pstRoot->nVal == nVal)
+    {
+        if(pstRoot->nRandomBuffIndex >= 0) return false;
+
+        pstRoot->nRandomBuffIndex = nRandomBuffIndex;
+    }
+    else if(pstRoot->nVal > nVal)
+    {
+        if(pstRoot->pstLeft)
+        {
+            return AddRandomRecord(pstRoot->pstLeft, nVal, nRandomBuffIndex);
+        }
+        else
+        {
+            pstRoot->pstLeft = (struct RandomRecord*) malloc(sizeof(struct RandomRecord));
+            pstRoot->pstLeft->nVal = nVal;
+            pstRoot->pstLeft->nRandomBuffIndex = nRandomBuffIndex;
+            pstRoot->pstLeft->pstLeft = NULL;
+            pstRoot->pstLeft->pstRight = NULL;
+        }
+    }
+    else
+    {
+        if(pstRoot->pstRight)
+        {
+            return AddRandomRecord(pstRoot->pstRight, nVal, nRandomBuffIndex);
+        }
+        else
+        {
+            pstRoot->pstRight = (struct RandomRecord*) malloc(sizeof(struct RandomRecord));
+            pstRoot->pstRight->nVal = nVal;
+            pstRoot->pstRight->nRandomBuffIndex = nRandomBuffIndex;
+            pstRoot->pstRight->pstLeft = NULL;
+            pstRoot->pstRight->pstRight = NULL;
+        }
+    }
+
+    return true;
+}
+
+bool randomizedSetInsert(RandomizedSet* obj, int val) {
+    int nIndex = (val >= 0? val: -val) % BUFFER_SIZE;
+
+    if(nIndex < obj->nMinIndex) obj->nMinIndex = nIndex;
+    if(nIndex > obj->nMaxIndex) obj->nMaxIndex = nIndex;
+
+    bool bRet = false;
+    if(obj->ppstRandomRecord[nIndex])
+    {
+        bRet = AddRandomRecord(obj->ppstRandomRecord[nIndex], val, obj->nRandomBuffSize);
+    }
+    else
+    {
+        obj->ppstRandomRecord[nIndex] = (struct RandomRecord*) malloc(sizeof(struct RandomRecord));
+        obj->ppstRandomRecord[nIndex]->nVal = val;
+        obj->ppstRandomRecord[nIndex]->nRandomBuffIndex = obj->nRandomBuffSize;
+        obj->ppstRandomRecord[nIndex]->pstLeft = NULL;
+        obj->ppstRandomRecord[nIndex]->pstRight = NULL;
+
+        bRet = true;
+    }
+
+    if(bRet) obj->pnRandomBuff[obj->nRandomBuffSize++] = val;
+
+    return bRet;
+}
+
+void UpdateRandomRecord(struct RandomRecord* pstRoot, int nVal, int nRandomBuffIndex)
+{
+    if(pstRoot->nVal == nVal)
+    {
+        pstRoot->nRandomBuffIndex = nRandomBuffIndex;
+    }
+    else if(pstRoot->nVal > nVal)
+    {
+        if(pstRoot->pstLeft)
+        {
+            UpdateRandomRecord(pstRoot->pstLeft, nVal, nRandomBuffIndex);
+        }
+    }
+    else
+    {
+        if(pstRoot->pstRight)
+        {
+            UpdateRandomRecord(pstRoot->pstRight, nVal, nRandomBuffIndex);
+        }
+    }
+}
+
+bool DelRandomRecord(struct RandomRecord* pstRoot, int nVal, int* pnRandomBuffIndex)
+{
+    if(pstRoot->nVal == nVal)
+    {
+        if(pstRoot->nRandomBuffIndex >= 0)
+        {
+            *pnRandomBuffIndex = pstRoot->nRandomBuffIndex;
+            pstRoot->nRandomBuffIndex = -1;
+            return true;
+        }
+    }
+    else if(pstRoot->nVal > nVal)
+    {
+        if(pstRoot->pstLeft)
+        {
+            return DelRandomRecord(pstRoot->pstLeft, nVal, pnRandomBuffIndex);
+        }
+    }
+    else
+    {
+        if(pstRoot->pstRight)
+        {
+            return DelRandomRecord(pstRoot->pstRight, nVal, pnRandomBuffIndex);
+        }
+    }
+
+    return false;
+}
+
+bool randomizedSetRemove(RandomizedSet* obj, int val) {
+    int nIndex = (val >= 0? val: -val) % BUFFER_SIZE;
+
+    bool bRet = false;
+    int nRandomBuffIndex = -1;
+    if(obj->ppstRandomRecord[nIndex]) bRet = DelRandomRecord(obj->ppstRandomRecord[nIndex], val, &nRandomBuffIndex);
+
+    if(bRet)
+    {
+        obj->pnRandomBuff[nRandomBuffIndex] = obj->pnRandomBuff[--obj->nRandomBuffSize];
+
+        if(obj->pnRandomBuff[nRandomBuffIndex] != val)
+        {
+            nIndex = (obj->pnRandomBuff[nRandomBuffIndex] >= 0? obj->pnRandomBuff[nRandomBuffIndex]: -obj->pnRandomBuff[nRandomBuffIndex]) % BUFFER_SIZE;
+            UpdateRandomRecord(obj->ppstRandomRecord[nIndex], obj->pnRandomBuff[nRandomBuffIndex], nRandomBuffIndex);
+        }
+    }
+
+    return bRet;
+}
+
+int randomizedSetGetRandom(RandomizedSet* obj) {
+    return obj->pnRandomBuff[rand() % obj->nRandomBuffSize];
+}
+
+void FreeRandomRecord(struct RandomRecord* pstRoot)
+{
+    if(pstRoot->pstLeft) FreeRandomRecord(pstRoot->pstLeft);
+    if(pstRoot->pstRight) FreeRandomRecord(pstRoot->pstRight);
+
+    free(pstRoot);
+}
+
+void randomizedSetFree(RandomizedSet* obj) {
+    for(int i=obj->nMinIndex; i<=obj->nMaxIndex; i++)
+    {
+        if(obj->ppstRandomRecord[i]) FreeRandomRecord(obj->ppstRandomRecord[i]);
+    }
+    free(obj->ppstRandomRecord);
+    free(obj->pnRandomBuff);
+
+    free(obj);
+}
+
+/**
+ * Your RandomizedSet struct will be instantiated and called as such:
+ * RandomizedSet* obj = randomizedSetCreate();
+ * bool param_1 = randomizedSetInsert(obj, val);
+ 
+ * bool param_2 = randomizedSetRemove(obj, val);
+ 
+ * int param_3 = randomizedSetGetRandom(obj);
+ 
+ * randomizedSetFree(obj);
+*/

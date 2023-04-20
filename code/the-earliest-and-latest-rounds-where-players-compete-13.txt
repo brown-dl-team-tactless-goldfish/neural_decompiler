@@ -1,0 +1,68 @@
+class Solution {
+public:
+    void f(string str, int depth, int& small, int& big, unordered_set<string>& dp) {
+        //cout<<str<<endl; 
+        const int n = str.size();
+        for(int i = 0;i<n/2;i++) {
+            if(str[i] == '1' && str[str.size()-1-i] == '1') {
+                small = min(small,depth);
+                big = max(big,depth);
+                return;
+            }
+        }
+        if(dp.count(str)) {
+            return; 
+        }
+        const int total = (1<<(n/2)) - 1; 
+        for(int i = 0;i<=total;i++) {
+            string a;
+            string b; 
+            bool valid = true; 
+            for(int j = 0;j<n/2;j++) {
+                // 1 left win 
+                // 0 right win
+                if(i&(1<<j) && str[str.size()-j-1] == '1') {
+                    valid = false; 
+                    break;
+                } 
+                if(!(i&(1<<j)) && str[j] == '1') {
+                    valid = false; 
+                    break; 
+                }
+                if(i&(1<<j)) {
+                    a.push_back(str[j]);
+                } else {
+                    b.push_back(str[str.size()-j-1]);
+                }
+            }
+            if(!valid) {
+                continue; 
+            }
+            string tmp; 
+            reverse(b.begin(),b.end());
+            if(str.size() % 2 == 1) {
+                tmp = a + string(1,str[str.size()/2]) + b; 
+            } else {
+                tmp = a + b; 
+            }
+            f(tmp,depth+1,small,big,dp);
+        }
+        dp.insert(str);
+    }
+    vector<int> earliestAndLatest(int n, int fp, int sp) {
+        string str; 
+        for(int i = 1;i<=n;i++) {
+            if(i == fp || i == sp) {
+                str.push_back('1');
+            } else {
+                str.push_back('0');
+            }
+        }
+        unordered_set<string> dp; 
+        //cout<<str<<endl;
+        int big = 0; 
+        int small = INT_MAX; 
+        f(str,1,small,big,dp);
+        return {small,big};
+    }
+};

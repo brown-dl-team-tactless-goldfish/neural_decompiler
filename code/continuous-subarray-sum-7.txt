@@ -1,0 +1,33 @@
+struct hashTable{
+    int key;
+    int value;
+    UT_hash_handle hh;
+};
+
+bool checkSubarraySum(int* nums, int numsSize, int k){
+    struct hashTable *map = NULL;
+    struct hashTable *first;
+    first = (struct hashTable *)malloc(sizeof(struct hashTable));
+    nums[0] %= k;
+    first->key   = nums[0];
+    first->value = 0;
+    HASH_ADD_INT(map, key, first);  
+
+    for(int i = 1; i < numsSize; i++){
+        struct hashTable *temp;
+        nums[i] = (nums[i] + nums[i-1]) % k;
+        if(nums[i] == 0){
+            return true;
+        } 
+        HASH_FIND_INT( map, &nums[i], temp );
+        if(temp == NULL) {
+            temp = (struct hashTable *)malloc(sizeof(struct hashTable));
+            temp->key   = nums[i];
+            temp->value = i;
+            HASH_ADD_INT(map, key, temp);
+        } else if(i - temp->value > 1){
+            return true;
+        }
+    }
+    return false;
+}

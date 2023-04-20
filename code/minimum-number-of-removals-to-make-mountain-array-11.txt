@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int minimumMountainRemovals(vector<int>& nums) {
+        int size{(int)nums.size()};
+        std::vector<int> left(size, 0), right(size, 0);
+        
+        std::vector<int> tmp{0};
+        for(int i{0}; i < size; ++i) {
+            auto s{std::lower_bound(tmp.begin(), tmp.end(), nums[i])};
+            if(s == tmp.end()) tmp.emplace_back(nums[i]), s = --tmp.end();
+            else *s = nums[i];
+            left[i] = s - tmp.begin() - 1;
+        }
+        
+        tmp = {0};
+        for(int i{(int)size-1}; i >= 0; --i) {
+            auto s{std::lower_bound(tmp.begin(), tmp.end(), nums[i])};
+            if(s == tmp.end()) tmp.emplace_back(nums[i]), s = --tmp.end();
+            else *s = nums[i];
+            right[i] = s - tmp.begin() - 1;
+        }
+        
+        int best{size};
+        for(int i{1}; i < size-1; ++i) 
+            if(left[i] && right[i]) best = std::min(best, size-left[i]-right[i]-1);
+        
+        return best;
+    }
+};

@@ -1,0 +1,98 @@
+class Node
+{
+    public int Value { get; set; }
+    public Node Prev { get; set; }
+    public Node Next { get; set; }
+    public Node Upper { get; set; }
+    public Node Lower { get; set; }
+    
+    public Node InsertNext(int value)
+    {
+        var a = new Node()
+        {
+            Prev = this,
+            Next = this.Next,
+            Value = value
+        };
+        if (Next != null)
+            Next.Prev = a;
+        return Next = a;
+    }
+}
+
+public class Skiplist {
+
+    Node head;
+    Random rand = new Random();
+    
+    public bool Search(int target)
+    {
+        if (head == null)
+            return false;
+        var a = Find(target).Next;
+        return a != null && a.Value == target;
+    }
+    
+    public void Add(int num)
+    {
+        if (head == null)
+            head = new Node() { Value = -1 };
+        var a = Find(num);
+        var b = a.InsertNext(num);
+        while (rand.Next(1000) < 500)
+        {
+            while (a != head && a.Upper == null)
+                a = a.Prev;            
+            if (a == head)
+                head = a.Upper = new Node() { Value = -1, Lower = a };
+            a = a.Upper;
+            var c = a.InsertNext(num);
+            b.Upper = c;
+            c.Lower = b;
+            b = b.Upper;
+        }
+    }
+    
+    public bool Erase(int num)
+    {
+        if (head == null)
+            return false;
+        var a = Find(num).Next;
+        if (a == null || a.Value != num)
+            return false;
+        while (a != null)
+        {
+            a.Prev.Next = a.Next;
+            if (a.Next != null)
+                a.Next.Prev = a.Prev;
+            a = a.Upper;
+        }
+        while (head != null && head.Next == null)
+            head = head.Lower;
+        return true;
+    }
+    
+    Node Find(int value)
+    {
+        var a = head;
+        while (true)
+        {
+            if (a.Next != null && a.Next.Value < value)
+                a = a.Next;
+            else if (a.Lower != null)
+                a = a.Lower;
+            else
+                break;            
+        }
+        
+        return a;
+    }
+}
+
+/**
+ * Your Skiplist object will be instantiated and called as such:
+ * Skiplist obj = new Skiplist();
+ * bool param_1 = obj.Search(target);
+ * obj.Add(num);
+ * bool param_3 = obj.Erase(num);
+ */

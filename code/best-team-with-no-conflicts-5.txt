@@ -1,0 +1,66 @@
+void swap(int* xp, int* yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+ 
+// A function to implement bubble sort for 2 arrays in paralle
+// the sort depends on the ages array
+void sortByAges(int ages[], int scores[], int n)
+{
+    int i, j;
+    for (i = 0; i < n - 1; i++){
+        // Last i elements are already in place
+        for (j = 0; j < n - i - 1; j++){
+            if (ages[j] > ages[j + 1]){
+                swap(&ages[j], &ages[j + 1]);
+                swap(&scores[j], &scores[j + 1]);
+
+            }
+        }
+    }        
+}
+ 
+
+void sortByScores(int ages[], int scores[], int n){
+    int i,j;
+    for (i = 0; i < n - 1; i++){
+        for(j = 0; j < n -i - 1; j++){
+                if (ages[j] == ages[j+1] && scores[j] > scores[j + 1]){
+                swap(&ages[j], &ages[j + 1]);
+                swap(&scores[j], &scores[j + 1]);
+
+            }
+        }
+    }
+}
+
+int bestTeamScore(int* scores, int scoresSize, int* ages, int agesSize){
+    if (agesSize == 1){
+        return scores[0];
+    }
+    
+    int max_score;
+    int i;
+    int j;
+    
+    // sort the arrays by ages and then by scores;
+    sortByAges(ages, scores,scoresSize);
+    sortByScores(ages, scores,scoresSize);
+    
+    max_score = 0;
+    int dp[scoresSize];
+    for (i = 0; i < scoresSize; i++){
+        dp[i] = scores[i];
+        for (j = i - 1; j >= 0; j--){
+            if (scores[i] >= scores[j]){
+                dp[i] = fmax(dp[i], dp[j]+scores[i]);
+            }
+        }
+        max_score = fmax(max_score,dp[i]);
+    }
+    
+    return max_score;
+}
+

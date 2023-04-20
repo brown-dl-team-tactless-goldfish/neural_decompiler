@@ -1,0 +1,49 @@
+class TreeAncestor {
+public:
+    vector<vector<int>> children;
+    int fa[50001][22];
+    int depth[50001];
+    
+    int getlog(int n){
+        return log(n)/log(2);
+    }
+    
+    TreeAncestor(int n, vector<int>& parent) {
+        children=vector<vector<int>> (n);
+        for(int i=1;i<n;i++){
+            children[parent[i]].push_back(i);
+        }
+        memset(fa,-1,sizeof(fa));
+        for(int next:children[0]){
+            dfs(next,0);
+        }
+    }
+    
+    void dfs(int u, int pre){
+        depth[u]=1+depth[pre];
+        fa[u][0]=pre;
+        for(int i=1;i<=getlog(depth[u]);i++){
+            fa[u][i]=fa[fa[u][i-1]][i-1];
+        }
+        for(int next:children[u]){
+            dfs(next,u);
+        }
+    }
+    
+    int getKthAncestor(int node, int k) {
+        int res=node;
+        while(k>0){
+            int t=getlog(k);
+            res=fa[res][t];
+            if(res==-1) return -1;
+            k-=pow(2,t);
+        }
+        return res;
+    }
+};
+
+/**
+ * Your TreeAncestor object will be instantiated and called as such:
+ * TreeAncestor* obj = new TreeAncestor(n, parent);
+ * int param_1 = obj->getKthAncestor(node,k);
+ */

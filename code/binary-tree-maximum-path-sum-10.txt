@@ -1,0 +1,32 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+#define MAX(num1,num2) ((num1) > (num2) ? (num1) : (num2))
+
+int maximum_path_calc(struct TreeNode* root,int* max_val){
+    if(!root){return 0;}
+    int left_trav = maximum_path_calc(root->left,max_val);
+    int right_trav = maximum_path_calc(root->right,max_val);
+    
+    //filter out negative values drived from traversal
+    left_trav = MAX(left_trav,0);
+    right_trav = MAX(right_trav,0);
+
+    //maximum value calcultatiom
+    int curr_val = left_trav+root->val+right_trav;
+    *max_val = MAX(*max_val,curr_val);
+
+    return root->val + MAX(left_trav,right_trav);
+}
+
+int maxPathSum(struct TreeNode* root){
+    //declare maximum value
+    int MAX_RETURN_VAL = INT_MIN;
+    maximum_path_calc(root,&MAX_RETURN_VAL);
+    return MAX_RETURN_VAL;
+}

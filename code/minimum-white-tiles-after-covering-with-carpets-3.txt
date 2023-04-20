@@ -1,0 +1,21 @@
+class Solution {
+public:
+        int minimumWhiteTiles(string s, int numCarpets, int carpetLen) {
+        vector<int> floor(carpetLen * (s.size() / carpetLen + (s.size() % carpetLen != 0)) + 1);
+        for (int i = 1; i < floor.size(); ++i) {
+            floor[i] = floor[i - 1] + (i <= s.size() ? s[i - 1] - '0' : 0);
+        }
+        
+        int res = 0;
+        vector<vector<int>> maxWhite(numCarpets + 1, vector<int>(floor.size()));
+        for (int i = 1; i <= numCarpets; ++i) {
+            for (int j = carpetLen * i; j < floor.size(); ++j) {
+                maxWhite[i][j] = maxWhite[i][j - 1];
+                maxWhite[i][j] = max(maxWhite[i][j], maxWhite[i - 1][j - carpetLen] + floor[j] - floor[j - carpetLen]);
+                res = max(res, maxWhite[i][j]);
+            }
+        }
+
+        return floor.back() - res;
+    }
+};

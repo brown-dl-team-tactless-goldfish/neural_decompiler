@@ -1,0 +1,60 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char ** findAndReplacePattern(char ** words, int wordsSize, char * pattern, int* returnSize){
+    //x array to record the mapping of letters from pattern to element in words.
+    //used array to record the mapping of whichever element has been used
+    char x[26],used[26];
+    int cur;
+    int index,j;
+    char **output =NULL;
+    *returnSize=0;
+    
+    // Iterate through every element in words
+    for (int i=0; i<wordsSize;i++){
+        if (strlen(words[i])!=strlen(pattern)) continue;
+        
+        //set the mapping to be 0
+        for (int j=0;j<26;j++){
+            x[j]=100;
+            used[j]=0;
+        }
+        
+        //For each letter in the word, identify if there is a pre-existing map.
+        for (j=0; j<strlen(pattern);j++){
+            index=pattern[j]-'a';
+            cur=words[i][j]-'a';
+            if (x[index]!=100){
+                //if there exist a pre-existing map, check if the letters mapped to is correct. If correct, continue, else break
+                if (cur==x[index]){
+                    continue;
+                }else{
+                    break;
+                }
+            }else{
+                //If there does not exist a existing map, add the mapping
+                if (used[cur]==0){
+                    //if the current mapping is not used before
+                    x[index]=words[i][j]-'a';
+                    used[cur]=1;
+                } else {
+                    //if the current mapping is used before
+                    break;
+                }
+            }    
+        }
+        if (j==strlen(pattern)){
+            if ((*returnSize)==0){
+                (*returnSize)++;
+                output=malloc(sizeof(char *)*1);
+                output[0]=words[i];
+            }else{
+                (*returnSize)++;
+                output=realloc(output,sizeof(char *)*(*returnSize));
+                output[(*returnSize)-1]=words[i];
+            }
+        }
+        
+    }
+    return output; 
+}

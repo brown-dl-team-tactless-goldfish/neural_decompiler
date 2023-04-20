@@ -1,0 +1,52 @@
+class Solution {
+public:
+    int find(string text){
+        vector<int> s(26, 0);
+        for(char c: text)
+            s[c - 'a']++;
+        
+        int ans = 0, diff = 0, nextIndex = 0, i = 0, j = 0, count = 0, start = 0;
+        while(i < text.size()){
+            char c = text[i];
+            count = 0;
+            start = i;
+            diff = 0;
+            j = i;
+
+            while(j < text.size()){
+                if(text[j] != c){
+                    diff++;
+                    if(diff == 1)
+                        nextIndex = j;
+                }
+                else
+                    count++;
+                
+                if(diff > 1){
+                    i = nextIndex;
+                    break;
+                }
+                
+                if(diff == 1 && s[c-'a'] <= count){
+                    i = j;
+                    break;
+                }
+                
+                if(diff <= 1)
+                    ans = max(ans, j-start+1);
+                
+                j++;
+                i = j;
+            }
+        }
+        
+        return ans;
+    }
+    
+    int maxRepOpt1(string text) {
+        int r1 = find(text);
+        reverse(text.begin(), text.end());
+        int r2 = find(text);
+        return max(r1, r2);
+    }
+};

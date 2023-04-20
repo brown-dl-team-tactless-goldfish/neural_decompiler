@@ -1,0 +1,35 @@
+
+void generate(int n, int lc, int rc, char *tmp, int idx, char ***ret, int *rs)
+{
+        if (rc == n) {
+                tmp[idx] = '\0';
+                char *new = malloc(sizeof(char) * 2 * n + 1);
+                memcpy(new, tmp, sizeof(char) * 2 * n + 1);
+                (*ret)[(*rs)++] = new;
+        }
+
+        if (lc < n) {
+                tmp[idx] = '(';
+                generate(n, lc + 1, rc, tmp, idx + 1, ret, rs);
+        }
+
+        if (rc < n && rc < lc) {
+                tmp[idx] = ')';
+                generate(n, lc, rc + 1, tmp, idx + 1, ret, rs);
+        }
+}
+
+char ** generateParenthesis(int n, int* returnSize)
+{
+        char tmp[20];
+        int idx = 0;
+        int lc = 0;
+        int rc = 0;
+
+        char **ret = malloc(2000 * sizeof(char *));
+
+        *returnSize = 0;
+        generate(n, lc, rc, tmp, idx, &ret, returnSize);
+
+        return ret;
+}

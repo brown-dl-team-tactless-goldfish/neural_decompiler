@@ -1,0 +1,32 @@
+class Solution {
+public:
+    vector<vector<string>> mostPopularCreator(vector<string>& creators, vector<string>& ids, vector<int>& views) {
+        vector<vector<string>> ans;
+        unordered_map<string,long> mp;
+        unordered_map<string,pair<int,string>> v;
+        int n = views.size();
+        for(int i=0; i<n; ++i){
+            mp[creators[i]] += views[i];
+            if(v.find(creators[i]) == v.end())
+                v[creators[i]] = {views[i],ids[i]};
+            else
+            {
+                auto [a,b] = v[creators[i]];
+                if(a < views[i])
+                v[creators[i]] = {views[i],ids[i]};
+            else if(a == views[i])
+                v[creators[i]] = {views[i],min(ids[i],b)};
+            }
+        }
+        long m = 0;
+        for(auto it:mp)
+            m = max(m,it.second);
+        for(auto it:mp){
+            if(it.second == m){
+                auto [x,y] = v[it.first];
+                ans.push_back({it.first,y});
+            }
+        }
+        return ans;
+    }
+};

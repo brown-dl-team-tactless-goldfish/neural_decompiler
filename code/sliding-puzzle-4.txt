@@ -1,0 +1,95 @@
+
+class Solution {
+public:
+    int slidingPuzzle(vector<vector<int>>& board) {
+        // Find starting position
+        pair<int, int> start;
+        
+        for (int r = 0; r < 2; ++r) {
+            for (int c = 0; c < 3; ++c) {
+                if (board[r][c] == 0) {
+                    start = {r, c};
+                    break;
+                } 
+            }
+        }
+        
+        // Legal moves
+        vector<pair<int, int>> moves = {{0, 1}, {0, -1}, {-1, 0}, {1, 0}};
+
+        // State encoder
+        auto encoder = [ ] (const vector<vector<int>>& state) {
+            size_t e = 0;
+        
+            for (auto& v : state) {
+                for (int i : v) {
+                    e *= 10;
+                    e += i;
+                }
+            }
+
+            return e;
+        };
+        
+        // Visited flag
+        unordered_set<vector<vector<int>>, decltype(encoder)> visited(10, encoder);
+        
+        // Level order BFS queue
+        queue<pair<pair<int, int>, vector<vector<int>>>> qu;
+        
+        // Level
+        int level = -1;
+        
+        // Target found
+        bool found = false;
+        
+        // Push start state
+        qu.push({start, board});
+        visited.insert(board);
+        
+        // Process scheduled nodes until target not found or que
+        while (!qu.empty() && !found) {
+            ++level;
+            
+            // Visit nodes at current level
+            for (int i = 0, size = qu.size(); i < size; ++i) {
+                auto& front = qu.front();
+                vector<vector<int>>& state = front.second;
+                pair<int, int>& curr = front.first;
+                
+                // Check if target reached
+                if (encoder(state) == 123450) {
+                    found = true;
+                    break;
+                }
+        
+                // Schedule neighboring states
+                for (auto& m: moves) {
+                    pair<int, int> next = {curr.first + m.first, curr.second + m.second};
+                    
+                    // Out of bound
+                    if (next.first < 0 || next.first >= 2 || next.second < 0 || next.second >= 3) {
+                        continue;
+                    }
+                    
+                    // Move 0 to next
+                    swap(state[next.first][next.second], state[curr.first][curr.second]);
+                    
+                    // Schedule if not visited
+                    auto it = visited.insert(state);
+                    
+                    if (it.second) {
+                        qu.push({next, state});
+                    }
+                    
+                    // Move 0 back to pos
+                    swap(state[next.first][next.second], state[curr.first][curr.second]);
+                }
+                
+                qu.pop();
+            }
+        }
+        
+        return found ? level : -1;
+    }
+};

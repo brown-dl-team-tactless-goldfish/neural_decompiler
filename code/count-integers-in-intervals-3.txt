@@ -1,0 +1,54 @@
+class node{
+public:
+    int l,r,lz,k;
+    node* left; node* right;
+    node(int l,int r,int k,int lz){
+        this->l= l;this->r= r;this->k= k;this->lz= lz;
+        left=right=NULL;
+    }
+};
+class CountIntervals {
+    node* root;  int m = 0;
+    void find(node* root){
+        if(root->l<root->r){
+            int m = (root->l+root->r)/2;
+            int l = root->l, r = root->r;
+            if(root->left==NULL && root->right==NULL){
+                root->left = new node(l,m,root->lz*(m-l+1),root->lz);
+                root->right = new node(m+1,r,root->lz*(r-(m+1)+1),root->lz);
+            }
+            else if(root->lz>0){
+                root->left->k=root->lz*(root->left->r-root->left->l+1);
+                root->left->lz=root->lz; 
+                
+                root->right->k=root->lz*(root->right->r-root->right->l+1);
+                root->right->lz=root->lz; 
+            }
+        }
+    }
+    void update(node* root,int l,int h,int val){
+       if(l<=h){
+           int m = (root->l+root->r)/2;
+           if(root->r<l || root->l>h) return;
+           if(l <= root->l && root->r <= h){
+               root->k=val*(root->r-root->l+1); root->lz=val; return;
+           }
+           find(root);
+           update(root->left,l,h,val);
+           update(root->right,l,h,val);
+           root->k = root->left->k + root->right->k;
+       }
+    }
+public:
+    CountIntervals() {
+        root = new node(0,1000000001,0,0);
+    }
+    
+    void add(int left, int right) {
+        update(root,left,right,1);
+    }
+    
+    int count() {
+        return root->k;
+    }
+};

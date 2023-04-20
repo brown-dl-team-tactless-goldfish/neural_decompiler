@@ -1,0 +1,149 @@
+public class MedianFinder {
+
+    /** initialize your data structure here. */
+    PriorityQueue<int> lowerHalf = new PriorityQueue<int>(true);
+    PriorityQueue<int> upperHalf = new PriorityQueue<int>();
+    
+    public MedianFinder() {
+        
+    }
+    
+    public void AddNum(int num) 
+    {
+        int ln = lowerHalf.Count;
+        int un = upperHalf.Count;
+        
+        if(ln==un && ln==0)
+        {
+            lowerHalf.Enqueue(num);
+            return;
+        }
+        
+        if(num < lowerHalf.Peek())
+            lowerHalf.Enqueue(num);
+        else
+            upperHalf.Enqueue(num);
+        
+        ln = lowerHalf.Count;
+        un = upperHalf.Count;
+        
+        bool isLnGreater = ln - un > 0;  
+        if(Math.Abs(ln-un)>1)
+        {
+            if(isLnGreater)
+                upperHalf.Enqueue(lowerHalf.Dequeue());
+            else
+                lowerHalf.Enqueue(upperHalf.Dequeue());
+        }
+    }
+    
+    public double FindMedian() 
+    {
+        int ln = lowerHalf.Count;
+        int un = upperHalf.Count;
+        
+        if(ln==un)
+            return (lowerHalf.Peek() + upperHalf.Peek())/2.0;
+        if(ln>un)
+            return lowerHalf.Peek();
+        else
+            return upperHalf.Peek();
+    }
+}
+
+class PriorityQueue<T> where T : IComparable
+{
+    private List<T> list;
+    public int Count { get { return list.Count; } }
+    public readonly bool IsDescending;
+
+    public PriorityQueue()
+    {
+        list = new List<T>();
+    }
+
+    public PriorityQueue(bool isdesc)
+        : this()
+    {
+        IsDescending = isdesc;
+    }
+
+    public PriorityQueue(int capacity)
+        : this(capacity, false)
+    { }
+
+    public PriorityQueue(IEnumerable<T> collection)
+        : this(collection, false)
+    { }
+
+    public PriorityQueue(int capacity, bool isdesc)
+    {
+        list = new List<T>(capacity);
+        IsDescending = isdesc;
+    }
+
+    public PriorityQueue(IEnumerable<T> collection, bool isdesc)
+        : this()
+    {
+        IsDescending = isdesc;
+        foreach (var item in collection)
+            Enqueue(item);
+    }
+
+
+    public void Enqueue(T x)
+    {
+        list.Add(x);
+        int i = Count - 1;
+
+        while (i > 0)
+        {
+            int p = (i - 1) / 2;
+            if ((IsDescending ? -1 : 1) * list[p].CompareTo(x) <= 0) break;
+
+            list[i] = list[p];
+            i = p;
+        }
+
+        if (Count > 0) list[i] = x;
+    }
+
+    public T Dequeue()
+    {
+        T target = Peek();
+        T root = list[Count - 1];
+        list.RemoveAt(Count - 1);
+
+        int i = 0;
+        while (i * 2 + 1 < Count)
+        {
+            int a = i * 2 + 1;
+            int b = i * 2 + 2;
+            int c = b < Count && (IsDescending ? -1 : 1) * list[b].CompareTo(list[a]) < 0 ? b : a;
+
+            if ((IsDescending ? -1 : 1) * list[c].CompareTo(root) >= 0) break;
+            list[i] = list[c];
+            i = c;
+        }
+
+        if (Count > 0) list[i] = root;
+        return target;
+    }
+
+    public T Peek()
+    {
+        if (Count == 0) throw new InvalidOperationException("Queue is empty.");
+        return list[0];
+    }
+
+    public void Clear()
+    {
+        list.Clear();
+    }
+}
+/**
+ * Your MedianFinder object will be instantiated and called as such:
+ * MedianFinder obj = new MedianFinder();
+ * obj.AddNum(num);
+ * double param_2 = obj.FindMedian();
+ */

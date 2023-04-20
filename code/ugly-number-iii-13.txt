@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int nthUglyNumber(int n, int a, int b, int c) {
+        if(c == a || c == b) {
+            if(b == a) return a*n;
+            int res{search2(n,a,b)};
+            if(res) return res;
+            return search2(n,b,a);
+        }
+        int res{search3(n,a,b,c)};
+        if(res) return res;
+        res = search3(n,b,a,c);
+        if(res) return res;
+        res = search3(n,c,a,b);
+        if(res) return res;
+        return 0;
+    }
+    
+    int search3(int n, int a, int b, int c) {
+        int64_t lo{0}, hi{(int64_t)n}, mid, det, ab{(int64_t)a*b/gcd(a,b)}, ac{(int64_t)a*c/gcd(a,c)}, bc{(int64_t)b*c/gcd(b,c)}, abc{(int64_t)ab*c/gcd(ab,c)};
+        while(lo <= hi) {
+            mid = (lo+hi)>>1, det = mid + (a*mid-1)/b + (a*mid-1)/c - (a*mid-1)/ab - (a*mid-1)/ac - (a*mid-1)/bc + (a*mid-1)/abc;
+            if(det == n) return mid*a;
+            else if(det > n) hi = mid-1;
+            else lo = mid+1;
+        }
+        return 0;
+    }
+    
+    int search2(int n, int a, int b) {
+        int64_t lo{0}, hi{(int64_t)n}, mid, det, ab{(int64_t)a*b/gcd(a,b)};
+        while(lo <= hi) {
+            mid = (lo+hi)>>1, det = mid + (a*mid-1)/b - (a*mid-1)/(ab);
+            if(det == n) return mid*a;
+            else if(det > n) hi = mid-1;
+            else lo = mid+1;
+        }
+        return 0;
+    }
+};

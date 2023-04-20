@@ -1,0 +1,26 @@
+	public long MakeSubKSumEqual(int[] arr, int k) {
+		var visited = new HashSet<int>();
+        var groups = new List<HashSet<int>>();
+        for (int i = 0; i < arr.Length; i++) {
+            if (visited.Contains(i)) continue;
+            var group = new HashSet<int>();
+            var index = i;
+            while (group.Add(index))
+                index = (index + k) % arr.Length;
+            visited.UnionWith(group);
+            groups.Add(group);
+        }
+        long res = 0;
+        foreach (var group in groups)
+            res += GetOperations(arr, group);
+        return res;
+    }
+
+    public static long GetOperations(int[] arr, HashSet<int> indexes) {
+        var nums = indexes.Select(x => arr[x]).OrderBy(x => x).ToArray();
+        var median = nums[nums.Length / 2];
+        long res = 0;
+        foreach (var num in nums) 
+            res += Math.Abs(num - median);
+        return res;
+    }

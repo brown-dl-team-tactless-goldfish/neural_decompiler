@@ -1,0 +1,42 @@
+typedef struct {
+    int** rectangle;
+    int row;
+    int col;
+} SubrectangleQueries;
+
+
+SubrectangleQueries* subrectangleQueriesCreate(int** rectangle, int rectangleSize, int* rectangleColSize) {
+    SubrectangleQueries* ret = malloc(sizeof(SubrectangleQueries));
+    ret->rectangle = malloc(rectangleSize * sizeof(int*));
+    for(int i = 0; i < rectangleSize; i++){
+        ret->rectangle[i] = malloc((*rectangleColSize) * sizeof(int));
+        for(int j = 0; j < (*rectangleColSize); j++ ){
+            ret->rectangle[i][j] =  rectangle[i][j];   
+        }
+    }
+    ret->row = rectangleSize;
+    ret->col = *rectangleColSize;
+    return ret;
+}
+
+void subrectangleQueriesUpdateSubrectangle(SubrectangleQueries* obj, int row1, int col1, int row2, int col2, int newValue) {
+    
+    for(int i = row1; i <= row2; i++){
+        for(int j = col1; j <= col2; j++){
+            obj->rectangle[i][j] = newValue;
+        }
+    }
+  
+}
+
+int subrectangleQueriesGetValue(SubrectangleQueries* obj, int row, int col) {
+  return obj->rectangle[row][col];
+}
+
+void subrectangleQueriesFree(SubrectangleQueries* obj) {
+    for(int i = 0; i < obj->row; i++){
+        free(obj->rectangle[i]);
+    }
+    free(obj->rectangle);
+    free(obj);    
+}

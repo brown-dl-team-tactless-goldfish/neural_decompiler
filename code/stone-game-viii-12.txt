@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int stoneGameVIII(vector<int>& a) {
+        int n = a.size();
+        
+        vector<int> prefix(n, 0); 
+        prefix[0] = a[0]; for(int i = 1; i < n; i++) prefix[i] = a[i] + prefix[i - 1];
+        if(n == 2) return a[0] + a[1];
+        
+        vector<int> dp(n, 0); dp[n - 1] = prefix[n - 1];
+
+        
+        for(int i = n - 2; i >= 0; i--) {
+            dp[i] = max(dp[i + 1], prefix[i] - dp[i + 1]);
+        }
+        
+        return dp[1];
+    }
+};

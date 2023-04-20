@@ -1,0 +1,52 @@
+    public class Solution
+    {
+
+        private void Helper(ref int res, int idx, int[] nums)
+        {
+            if (idx == nums.Length)
+            {
+                res++;
+                return;
+            }
+
+            ISet<int> visited = new HashSet<int>();
+
+            for (int i = idx; i < nums.Length; i++)
+            {
+                if (idx != 0)
+                {
+                    long sum = (long)nums[i] + nums[idx - 1];
+                    double sqrt = Math.Sqrt(sum);
+                    bool isSquare = sqrt % 1 == 0;
+                    if (!isSquare)
+                    {
+                        continue;
+                    }
+                }
+
+                if (!visited.Add(nums[i]))
+                {
+                    continue;
+                }
+
+                var tmp = nums[idx];
+                nums[idx] = nums[i];
+                nums[i] = tmp;
+
+                Helper(ref res, idx + 1, nums);
+
+                tmp = nums[idx];
+                nums[idx] = nums[i];
+                nums[i] = tmp;
+            }
+
+        }
+
+
+        public int NumSquarefulPerms(int[] nums)
+        {
+            int res = 0;
+            Helper(ref res, 0, nums);
+            return res;
+        }
+    }

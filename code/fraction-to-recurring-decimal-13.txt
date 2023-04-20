@@ -1,0 +1,26 @@
+public:
+    string fractionToDecimal(int numerator, int denominator) {
+        long long x = numerator, y = denominator;
+        if(x == 0) return "0";
+        string res;
+        if(x<0 && y>0 || x>0 && y<0) res = "-";
+        x = abs(x), y = abs(y);
+        auto quotient = x / y, reminder = x%y;
+        res += to_string(quotient);
+        
+        if(reminder == 0) return res;        
+        res += '.';
+        
+        unordered_map<int, string> m;
+        string s;
+        reminder *= 10;
+        while(m.find(reminder) == m.end()){
+            m[reminder]  =s;
+            s += '0' + reminder / y;
+            reminder = 10*(reminder % y);
+        }
+        auto t = m[reminder];
+        auto r = s.substr(t.size());
+        if(r == "0") return res + t;
+        else return res + t + '(' + r + ')';
+    }

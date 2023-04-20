@@ -1,0 +1,49 @@
+// C++
+class Solution {
+    void dfs(vector<vector<int>>& grid, int i, int j, bool &ans) {
+        int m = grid.size(), n = grid[0].size();
+        if(ans || i < 0 || j < 0 || i >= m || j >= n || !grid[i][j]) return;
+        if(i == m - 1 && j == n - 1) {
+            ans = true;
+            return;
+        }
+        grid[i][j] = 0;
+        dfs(grid, i + 1, j, ans);
+        dfs(grid, i, j + 1, ans);
+    }
+public:
+    bool isPossibleToCutPath(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        bool ans = false;
+        dfs(grid, 0, 0, ans);
+        grid[0][0] = grid[m - 1][n - 1] = 1;
+        ans = false;
+        dfs(grid, 0, 0, ans);
+        return !ans;
+    }
+};
+
+
+// Golang
+func dfs(grid [][]int, i, j int, ans *bool) {
+    var m, n int = len(grid), len(grid[0])
+    if *ans || i < 0 || j < 0 || i >= m || j >= n || grid[i][j] == 0 {return}
+    if i == m - 1 && j == n - 1 {
+        *ans = true
+        return
+    }
+    grid[i][j] = 0
+    dfs(grid, i + 1, j, ans)
+    dfs(grid, i, j + 1, ans)
+}
+
+func isPossibleToCutPath(grid [][]int) bool {
+    var m, n int = len(grid), len(grid[0])
+    var ans bool = false
+    dfs(grid, 0, 0, &ans)
+    grid[0][0], grid[m - 1][n - 1] = 1, 1
+    ans = false
+    dfs(grid, 0, 0, &ans)
+    return !ans
+}

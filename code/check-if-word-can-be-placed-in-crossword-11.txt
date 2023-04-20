@@ -1,0 +1,73 @@
+/*
+
+1. Starting from every cell you can grow in foru directions.
+2. So, for each cell try to check if that can be the starting position of word
+3. For each cell iterate in all four directions.
+4. When starting check if cell before that was having a # or it was a border cell.
+5. Then starting at that cell see if word can be placed.
+6. Also check for the last left over cell (if didn't hit border yet) to make sure that its a #.
+
+TC -> O(MN * 4 * K)
+SC -> O(1)
+
+M -> maxRow
+N -> maxCol
+4 -> Dirs
+K -> Length of word
+
+*/
+
+class Solution {
+private:
+    int maxRow;
+    int maxCol;
+    const char BLANK = '#';
+    const int dirs[4][2] = { { 0, 1}, {1, 0}, {0, -1}, {-1, 0} };
+    
+    bool isValidWordPlacement(vector<vector<char>>& board, int row, int col, int dIdx, string word) {
+        int prevRow = row - dirs[dIdx][0];
+        int prevCol = col - dirs[dIdx][1];
+        
+        if (prevRow >= 0 && prevRow < maxRow && prevCol >= 0 && prevCol < maxCol && board[prevRow][prevCol] != BLANK) {
+            // We cannot start from this cell
+            return false;
+        }
+        
+        for (int wIdx = 0; wIdx < word.size(); wIdx++) {
+            if (row < 0 || row >= maxRow || col < 0 || col >= maxCol) {
+                    return false;
+            } else
+            if (board[row][col] == ' ' || board[row][col] == word[wIdx]) {
+                row += dirs[dIdx][0];
+                col += dirs[dIdx][1];
+            } else {
+                return false;
+            }
+        }
+        
+        // Check for the last cell
+        if (row >= 0 && row < maxRow && col >= 0 && col < maxCol) {
+            return (board[row][col] == BLANK);
+        }
+        
+        return true;
+    }
+    
+public:
+    bool placeWordInCrossword(vector<vector<char>>& board, string word) {
+        maxRow = board.size();
+        maxCol = board[0].size();
+        
+        for (int row = 0; row < maxRow; row++) {
+            for (int col = 0; col < maxCol; col++) {
+                for (int dIdx = 0; dIdx < 4; dIdx++) {
+                    if (isValidWordPlacement(board, row, col, dIdx, word)) {
+                        return true;
+                    }
+                }
+            }
+        }
+        
+        return false;
+    }
+};

@@ -1,0 +1,34 @@
+class Solution {
+public:
+    long long gridGame(vector<vector<int>>& grid) {
+       //use logic
+        //we need to get a point where the robot makes it move to down
+        //once it makes a downward move it has to travel straigt to get to the destination point
+        int n=grid[0].size();
+        if(n==1)
+            return 0;
+        long long res=0;
+        //create prefix sum for row2
+        long long sum=0;
+        vector<vector<long long>> prefix(2,vector<long long>(n));
+        prefix[0][0]=grid[0][0];
+        prefix[1][0]=grid[1][0];
+        for(int i=1;i<n;i++)
+        {
+            prefix[0][i]=prefix[0][i-1]+ grid[0][i];
+            prefix[1][i]=prefix[1][i-1]+ grid[1][i];
+        }
+       
+       long long mini=prefix[0][n-1]-prefix[0][0];
+        for(int j=1;j<n;j++)
+        {
+            mini=min(mini,max(prefix[1][j-1],prefix[0][n-1]-prefix[0][j]));
+        }
+        return mini;
+       
+        
+        
+        
+            
+    }
+};

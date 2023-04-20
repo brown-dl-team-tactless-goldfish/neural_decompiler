@@ -1,0 +1,28 @@
+class Solution {
+public:
+long long ans=0;
+    long long dfs(int i,vector<bool>&visited,vector<vector<int>>&adj,int seats){
+        
+       visited[i]=1;
+       long long cnt=1;
+       for(auto child:adj[i]){
+           if(!visited[child])
+           cnt+=dfs(child,visited,adj,seats);
+       }
+       long long x=cnt/seats;
+       if(cnt%seats)x++;
+       if(i!=0)ans+=x;
+       return cnt;
+    }
+    long long minimumFuelCost(vector<vector<int>>& roads, int seats) {
+        long long n=roads.size();
+        vector<vector<int>>adj(n+1);
+        for(int i=0;i<n;i++){
+            adj[roads[i][0]].push_back(roads[i][1]);
+            adj[roads[i][1]].push_back(roads[i][0]);
+        }
+        vector<bool>visited(n+1,0);
+        dfs(0,visited,adj,seats);
+        return ans;
+    }
+};

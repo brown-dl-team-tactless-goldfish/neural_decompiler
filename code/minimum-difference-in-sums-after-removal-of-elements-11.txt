@@ -1,0 +1,40 @@
+class Solution {
+public:
+    long long minimumDifference(vector<int>& nums) {
+        int n = nums.size()/3;
+        vector<long long> left(n+1), right(n+1);
+        priority_queue<int> minHeap, maxHeap;
+        long long leftSum = 0;
+        for(int i=0; i<n; i++){
+            leftSum += nums[i];
+            maxHeap.push(nums[i]);
+        }
+        left[0] = leftSum;
+        for(int i=n; i<2*n; i++){
+            if(nums[i] < maxHeap.top()){
+                leftSum = leftSum - maxHeap.top() + nums[i];
+                maxHeap.pop();
+                maxHeap.push(nums[i]);
+            }
+            left[i-n+1] = leftSum;
+        }
+        long long rightSum = 0;
+        for(int i=2*n; i<3*n; i++){
+            rightSum += nums[i];
+            minHeap.push(-nums[i]);
+        }
+        right[n] = rightSum;
+        for(int i=2*n-1; i>=n; i--){
+            if(nums[i] > -minHeap.top()){
+                rightSum = rightSum + minHeap.top() + nums[i];
+                minHeap.pop();
+                minHeap.push(-nums[i]);
+            }
+            right[i-n] = rightSum;
+        }
+        long long ans = left[0] - right[0];
+        for(int i=1; i<=n; i++)
+            ans = min(ans, left[i] - right[i]);
+        return ans;
+    }
+};

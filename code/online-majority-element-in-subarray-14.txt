@@ -1,0 +1,49 @@
+class MajorityChecker {
+public:
+    MajorityChecker(vector<int>& arr) {
+        ary = arr;
+        idxs = vector<vector<int>>(20001);
+        for (int i = 0; i < arr.size(); ++i) {
+            idxs[arr[i]].push_back(i);
+        }
+        for (int i = 1; i <= 20000; ++i) {
+            if (idxs[i].size() >= 80) {
+                mp.insert({idxs[i].size(), i});
+            }
+        }
+    }
+    
+    int query(int left, int right, int threshold) {
+        int len = right - left + 1;
+        if (len >= 160) {
+            for (auto it = mp.rbegin(); it != mp.rend() && it->first >= threshold; ++it) {
+                int num = it->second;
+                const vector<int>& is = idxs[num];
+                auto l = lower_bound(is.begin(), is.end(), left);
+                auto r = upper_bound(is.begin(), is.end(), right);
+                if (distance(l, r) >= threshold)
+                    return num;
+            }
+        } else {
+            unordered_map<int, int> cnt;
+            for (int i = left; i <= right; ++i) {
+                ++cnt[ary[i]];
+            }
+            for (const auto& p : cnt) {
+                if (p.second >= threshold)
+                    return p.first;
+            }
+        }
+        return -1;
+    }
+    
+    vector<int> ary;
+    vector<vector<int>> idxs;
+    multimap<int, int> mp;
+};
+
+/**
+ * Your MajorityChecker object will be instantiated and called as such:
+ * MajorityChecker* obj = new MajorityChecker(arr);
+ * int param_1 = obj->query(left,right,threshold);
+ */

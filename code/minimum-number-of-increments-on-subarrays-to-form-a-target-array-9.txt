@@ -1,0 +1,59 @@
+class SegmentTree {
+    vector<int> tree;
+public:
+    SegmentTree(int n) {
+        tree.resize(4 * n + 1, 0);
+    }
+    void buildTree(vector<int> &nums, int index, int s, int e) {
+        if (s == e) {
+            tree[index] = s;
+            return;
+        }
+        int mid = (s + e) / 2;
+        buildTree(nums, 2 * index + 1, s, mid);
+        buildTree(nums, 2 * index + 2, mid + 1, e);
+        int left = tree[2 * index + 1];
+        int right = tree[2 * index + 2];
+        tree[index] = nums[left] < nums[right] ? left : right;
+    }
+    int query(vector<int> &nums, int index, int s, int e, int qs, int qe) {
+        // No Overlap
+        if (qe < s || qs > e) {
+            return -1;
+        }
+
+        // Complete Overlap
+        if (qs <= s && qe >= e) {
+            return tree[index];
+        }
+
+        int mid = (s + e) / 2;
+        int left = query(nums, 2 * index + 1, s, mid, qs, qe);
+        int right = query(nums, 2 * index + 2, mid + 1, e, qs, qe);
+        if(left == -1)
+            return right;
+        if(right == -1)
+            return left;
+        return nums[left] < nums[right] ? left : right;
+    }
+};
+
+class Solution {
+    int n;
+    SegmentTree *s;
+public:
+    int helper(int prev, int qs, int qe, vector<int> &target){
+        if(qs <= qe){
+            int q = s->query(target, 0, 0, target.size() - 1, qs, qe);
+            int val = target[q] - prev;
+            return val + helper(target[q], qs, q - 1, target) + helper(target[q], q + 1, qe, target);
+        }
+        return 0;
+    }
+    int minNumberOperations(vector<int>& target) {
+        n = target.size();
+        s = new SegmentTree(n);
+        s->buildTree(target, 0, 0, n - 1);
+        return helper(0, 0, n - 1, target);
+    }
+};

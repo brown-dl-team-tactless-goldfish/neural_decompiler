@@ -1,0 +1,134 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+typedef enum Status_e {
+    UnVisited = 0,
+    Exploring,
+    Visited,
+} Status;
+
+typedef struct Node_t {
+    Status status;
+    int    id;
+    bool   isVertex;             // vertex / group head
+    struct AdjNode_t* next;      // next node
+    struct AdjNode_t* adj;       // adjacent nodes
+} Node;
+
+typedef struct AdjNode_t {
+    Node*  data;
+    struct AdjNode_t* next;  // next node
+} AdjNode;
+
+void appendAdj(Node* head, Node* data) {
+    AdjNode* adj = head->adj;
+    if (adj) {
+        while(adj->next) adj = adj->next;
+        adj->next = malloc(sizeof(AdjNode));
+        memset(adj->next, 0, sizeof(AdjNode));
+        adj->next->data = data;
+    }
+    else {
+        head->adj = malloc(sizeof(AdjNode));
+        memset(head->adj, 0, sizeof(AdjNode));
+        head->adj->data = data;
+    }
+    return;
+}
+
+void appendNext(Node* head, Node* data) {
+    AdjNode* node = (AdjNode*)head->next;
+    if (node) {
+        while(node->next) node = node->next;
+        node->next = malloc(sizeof(AdjNode));
+        memset(node->next, 0, sizeof(AdjNode));
+        node->next->data = data;
+    }
+    else {
+        head->next = malloc(sizeof(AdjNode));
+        memset(head->next, 0, sizeof(AdjNode));
+        head->next->data = data;
+    }
+    return;
+}
+
+int     N = 0;      // return size
+int    *R = 0;      // return array
+
+bool DFS(Node* node) {
+    if (node == 0 || node->status == Visited) return true;
+    else if (node->status == Exploring) return false;
+    node->status = Exploring;
+    
+    AdjNode* next = node->next;
+    while (next) {
+        if (!DFS(next->data)) return false;
+        next = next->next;
+    }
+
+    // is group head
+    if (!node->isVertex) {
+        AdjNode* adj = node->adj;
+        while (adj) {
+            if (!DFS(adj->data)) return false;
+            adj = adj->next;
+        }
+    }
+
+    if (node->isVertex) R[--N] = node->id;
+    node->status = Visited;
+    return true;
+    
+}
+
+int* sortItems(int n, int m, int* group, int groupSize, int** beforeItems, int beforeItemsSize, int* beforeItemsColSize, int* returnSize){
+    R = malloc(sizeof(int) * n);
+    N = n;
+
+    Node items[n];
+    memset(items, 0, sizeof(Node)*n);
+
+    // pre process
+    for (int i=0; i<n; i++) {
+        items[i].id = i;
+        items[i].isVertex = true;
+        // not belonged to any group, create new group and put it in
+        if (group[i] == -1) group[i] = m++;
+    }
+
+    Node groupheads[m];
+    memset(groupheads, 0, sizeof(Node)*m);
+    
+    // construct the graph
+    for (int i=0; i<n; i++) {
+        // put item into the group
+        appendAdj(&(groupheads[group[i]]), &(items[i]));
+        
+        // before item
+        for (int j=0; j<beforeItemsColSize[i]; j++) {
+            int before = beforeItems[i][j];
+            
+            //  at the same group
+            if (group[before] == group[i]) {
+                // construct the sub graph
+                appendNext(&(items[before]), &(items[i]));
+            }
+            // not at the same group
+            else {
+                // construct graph using group heads
+                appendNext(&(groupheads[group[before]]), &(groupheads[group[i]]));
+            };
+        }
+    }
+
+    for (int i=0; i<m; i++) {
+        if (!DFS(&(groupheads[i]))) {
+            printf("\nCycle detected...\n");
+            *returnSize = 0;
+            return 0;
+        }
+    }
+
+    *returnSize = n;
+    return R;
+}

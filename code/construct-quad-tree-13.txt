@@ -1,0 +1,44 @@
+Node* construct (vector<vector<int>> &grid, int r, int c, int size)
+{
+	if (size == 0)
+		return NULL; 
+
+	if (size == 1)
+		return new Node (grid[r][c], true, NULL, NULL, NULL, NULL);
+
+	int dr [] = {0, 0, 1, 1};
+	int dc [] = {0, 1, 0, 1};
+
+	vector <Node*> children (4, NULL);
+	for (int i = 0; i < 4; i++)
+		children [i] = construct (grid, r+dr[i]*size/2, c+dc[i]*size/2, size/2);
+
+	if (!canMerge (children [0], children [1]) ||
+		!canMerge (children [0], children [2]) ||
+		!canMerge (children [0], children [3]))
+	{
+		return new Node (false, false, children [0], children [1], children [2], children [3]);
+	}
+
+	for (int i = 0; i < 4; i++)
+		delete children [i];
+	return new Node (grid [r][c], true, NULL, NULL, NULL, NULL);
+}
+
+bool canMerge (Node* node1, Node* node2)
+{
+	if (node1 == NULL && node2 == NULL)
+		return true;
+	if (node1 == NULL || node2 == NULL)
+		return false;
+	return node1->isLeaf == true && node2->isLeaf == true && 
+		   hasChildren (node1) == false && hasChildren (node2) == false &&
+		   node1->val == node2->val;
+}
+
+bool hasChildren (Node* node)
+{
+	if (node == NULL)
+		return false;
+	return node->topLeft || node->topRight || node->bottomLeft || node->bottomRight;
+}

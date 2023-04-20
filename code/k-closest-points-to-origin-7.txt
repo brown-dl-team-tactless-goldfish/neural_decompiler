@@ -1,0 +1,32 @@
+int count_sqrt(int x, int y)
+{
+	return x*x + y*y;
+}
+int compare(const void  *a, const void *b)
+{
+	return (*(int*)a - *(int*)b);
+}
+int** kClosest(int** points, int pointsRowSize, int *pointsColSizes, int K, int** columnSizes, int* returnSize) {
+	*returnSize = 0;
+	int **arrys = (int **)malloc(K*sizeof(int *));// 要返回的二维数组
+	int *points_sqrt = (int*)malloc(pointsRowSize*sizeof(int));
+	int*  cols = (int*)malloc(K*sizeof(int));
+	for (int i = 0; i < pointsRowSize; i++)
+		points_sqrt[i] = count_sqrt(points[i][0], points[i][1]);
+	qsort(points_sqrt, pointsRowSize, sizeof(int), compare);
+	//printf("%d %d %d",points_sqrt[0], points_sqrt[1], points_sqrt[2]);
+	for (int i = 0; i < pointsRowSize; i++)
+	{
+		if (count_sqrt(points[i][0], points[i][1]) <= points_sqrt[K - 1])
+		{
+			cols[*returnSize] = 2;
+			arrys[*returnSize] = (int*)malloc(2 * sizeof(int));
+			arrys[*returnSize][0] = points[i][0];
+			arrys[*returnSize][1] = points[i][1];
+			++(*returnSize);
+		}
+	}
+	*columnSizes = cols;
+	free(points_sqrt);
+	return arrys;
+}

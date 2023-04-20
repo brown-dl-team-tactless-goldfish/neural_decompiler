@@ -1,0 +1,35 @@
+int* sequentialDigits(int low, int high, int* returnSize){
+    int *result = calloc(36, sizeof(int));
+
+    int baseCur = 12;
+    int baseCount = 8;
+    int cur = 12;
+    int add = 11;
+    int count = 8;
+    
+    *returnSize = 0;
+    while (1) {
+        if (high < cur) {
+            break;
+        } else if (low <= cur) {
+            result[*returnSize] = cur;
+            *returnSize += 1;
+        }
+
+        count--;
+        if (count == 0) {
+            baseCount--;
+            count = baseCount;
+            baseCur = (baseCur * 10) + ((baseCur % 10) + 1);
+            cur = baseCur;
+            add = (add * 10) + 1;
+        } else {
+            cur += add;
+        }
+    }
+    
+    if (*returnSize < 36) {
+        result = realloc(result, *returnSize * sizeof(int));
+    }
+    return result;
+}

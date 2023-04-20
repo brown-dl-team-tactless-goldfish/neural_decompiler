@@ -1,0 +1,71 @@
+public class Solution
+    {
+        public int DistinctEchoSubstrings(string str)
+        {
+            checked
+            {
+                int n = str.Length;
+                int @base = 27;
+                long modulus = (long)Math.Pow(2, 31);
+
+                long[] aL = new long[n + 1];
+                long al = 1;
+                long h = 0;
+                long[] hLeftToRight = new long[n];
+
+                for (int i = 0; i < n; ++i)
+                {
+                    var num = (long)(str[i] - 'a' + 1);
+                    al = (al * @base) % modulus;
+                    aL[i + 1] = al;
+
+                    h = (h * @base + num) % modulus;
+                    hLeftToRight[i] = h;
+                }
+
+                ISet<long> res = new HashSet<long>();
+
+                for (int start = 0; start < str.Length - 1; start++)
+                {
+                    for (int end = start + 1; end < str.Length; end+=2)
+                    {
+                        int length = end - start + 1;
+                        int halfLength = length / 2;
+                        int leftEnd = start + halfLength - 1;
+
+                        long leftSubstr = hLeftToRight[leftEnd];
+                        int excludeIdx = start - 1;
+
+                        if (excludeIdx >= 0)
+                        {
+                            long longExclude = hLeftToRight[excludeIdx] * aL[halfLength] % modulus;
+
+                            leftSubstr -= longExclude;
+                            leftSubstr += modulus;
+                            leftSubstr %= modulus;
+                        }
+
+
+                        long rightSubstr = hLeftToRight[end];
+                        excludeIdx = leftEnd;
+
+                        if (excludeIdx >= 0)
+                        {
+                            long longExclude = hLeftToRight[excludeIdx] * aL[halfLength] % modulus;
+
+                            rightSubstr -= longExclude;
+                            rightSubstr += modulus;
+                            rightSubstr %= modulus;
+                        }
+
+                        if (leftSubstr == rightSubstr)
+                        {
+                            res.Add(leftSubstr);
+                        }
+                    }
+                }
+
+                return res.Count;
+            }
+        }
+    }

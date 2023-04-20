@@ -1,0 +1,47 @@
+int cmpfunc (const void * a, const void * b) {
+   return ( *(int*)a - *(int*)b );
+}
+
+int* luckyNumbers (int** matrix, int matrixSize, int* matrixColSize, int* returnSize){
+    
+    int idx1[50],idx2[50],min,max, count1=0, count2=0, Col, Row;
+    int i,j;
+    
+    for(i=0; i<matrixSize; i++){
+        min=matrix[i][0];
+        Col=0;
+        for(j=1; j<*matrixColSize; j++){
+            if(min>matrix[i][j]) {Col = j; min = matrix[i][j];}
+        }
+        idx1[count1++] = i*(*matrixColSize) + Col;
+    }
+    
+    
+    for(j=0; j<*matrixColSize; j++){
+        max=matrix[0][j];
+        Row=0;
+        for(i=1; i<matrixSize; i++){
+            if(max<matrix[i][j]) { Row = i; max = matrix[i][j];}
+        }
+        idx2[count2++] = Row*(*matrixColSize) + j;
+    }
+    
+    qsort(idx1, count1, sizeof(int), cmpfunc);
+    qsort(idx2, count2, sizeof(int), cmpfunc);
+
+    int* dst = (int*)malloc(50*sizeof(int));
+    int count = 0;
+    
+    i=j=0;
+    while(i<count1 && j<count2){
+        if(idx1[i]<idx2[j]) i++;
+        else if(idx1[i]>idx2[j]) j++;
+        else{
+            dst[count++] = matrix[idx1[i]/(*matrixColSize)][idx1[i]%(*matrixColSize)];
+            j++;
+        }
+    }
+    
+    *returnSize = count;
+    return dst;
+}

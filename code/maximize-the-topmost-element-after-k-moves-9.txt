@@ -1,0 +1,48 @@
+class Solution {
+public:
+    int maximumTop(vector<int>& nums, int k) {
+        int maxi = -1;          //maximum element that can be on top
+        int n = nums.size();
+        
+        if(n == 1)              //When n == 1 then if k is odd then return -1 else num[0]
+		{
+			//because at last operation we have to remove the element so return -1   
+			//ex - nums = [18], k = 3  after removing and adding at last we have to remove that b/c we have no choice
+            if(k%2 == 1) return maxi;      
+            else return nums[0];     //because at last operation we can always insert num into array
+        }
+		//When k > n then simply return maximum of the array
+		//b/c we can remove all elements from the array and insert maximum in the last operation to get maximum element on front of array
+        if(k>n)                 
+        {
+            int max1 = -1;
+            for(int i=0; i<n; i++) max1 = max(max1, nums[i]);
+            return max1;
+        }
+        else{
+            //Here we are not actually removing elements from array instead we are increasing a pointer
+            //ith location represent which element is in front of array right now and all the elements before i are removed
+            
+            //When k < n then till k-1 remove all the elements from array (virtually through i pointer) and maintain maxi = max(maxi, nums[i])
+            //when i == k-1 means we have left with 1 operation only    //i represent first element after all removing
+            //Now if nums[i+1] > nums[i] then we can pop nums[i] also then maxi becomes nums[i+1]
+            //And if nums[i+1] < maxi then if we pop nums[i] then on top we get nums[i+1] which is < maxi
+            //so in this case we will push maxi onto top of array
+            
+            for(int i=0; i<k; i++)
+            {
+                if(i == k-1)
+                {
+                    if(i < n-1 && nums[i+1] > maxi) maxi = nums[i+1];
+                }
+                else{
+                    maxi = max(maxi, nums[i]);
+                }
+            }
+            if(k == 0) maxi = nums[0];   //after all if k == 0 assign maxi = nums[0]
+            if(k == 1) maxi = nums[1];   //and if k == 1 means we have to remove first elemnt then first will become nums[1]
+        }
+        
+        return maxi;
+    }
+};

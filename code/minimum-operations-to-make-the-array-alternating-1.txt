@@ -1,0 +1,100 @@
+class Solution {
+public:
+    int minimumOperations(vector<int>& nums) {
+        
+        // nums[i - 2] == nums[i]== nums[i+2]
+        // nums[i - 1] != nums[i] ! = nums[i+1]
+
+        // 0 2 4 6 .. idx element must be equal
+        // 1 3 5 7 must be equal as well 
+        int n = nums.size();
+        unordered_map<int,int>even;
+        unordered_map<int,int>odd;
+
+        for(int i = 0 ; i < n ; i++)
+        {
+            if(i%2==0)
+            {
+                even[nums[i]]++;
+            }
+            else
+            {
+                odd[nums[i]]++;
+            }
+        }
+
+        map<int,vector<int>,greater<int>>even_f;
+        map<int,vector<int>,greater<int>>odd_f;
+
+        for(auto &i:even)
+            even_f[i.second].push_back(i.first);
+
+        for(auto &i:odd)
+            odd_f[i.second].push_back(i.first);
+
+        
+        pair<int,vector<int>>x,y,a,b;
+
+        int cnt = 0;
+        for(auto &i:even_f)
+            {
+                if(cnt==0)
+                    {
+                        x={i.first,i.second};
+                        cnt++;
+                    }
+                else if(cnt==1)
+                    {
+                        y={i.first,i.second};
+                        cnt++;
+                    }
+                else
+                    {
+                        ;
+                    }
+            }
+        cnt=0;
+
+        for(auto &i:odd_f)
+            {
+                if(cnt==0)
+                    {
+                        a={i.first,i.second};
+                        cnt++;
+                    }
+                else if(cnt==1)
+                    {
+                        b={i.first,i.second};
+                        cnt++;
+                    }
+                else
+                    {
+                        ;
+                    }
+            }
+            
+        int c = x.first+a.first;
+
+        if(x.second==a.second)
+        {
+            int i = x.first;
+            int j = a.first;
+
+            if(i==j)
+            {
+                if(y.first<b.first)
+                    c = i + b.first;
+                else
+                    c = j + a.first;
+            }
+            if(i-y.first<j-b.first)
+                c=y.first + j;
+            else
+                c=i + b.first;
+            
+        }
+
+
+        return n-c;
+    }
+};

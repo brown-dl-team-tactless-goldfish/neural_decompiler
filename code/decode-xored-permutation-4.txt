@@ -1,0 +1,53 @@
+public class Solution {
+    public int[] Decode(int[] encoded) {
+		/*
+		Intuition:
+		We know how many numbers we need to find. That's len(encoded) + 1.
+		Let's take the xor of all numbers from 1 to n
+		
+		Let's say n == 5
+		a, b, c, d, e
+		a ^ b ^ c ^ d ^ e = y
+		
+		This is the encoded array:
+		(a ^ b), (b ^ c), (c ^ d), (d ^ e) 
+		
+		If we xor all of them we end up with a ^ e. Not very helpful, as adjacent elements will cancel each other out.
+		But If you notice, the problem says n will always be odd. 
+		What happens if we drop the odd elements from the encoded array?
+		
+		(a ^ b), (c ^ d)
+		if we xor them, 
+		
+		a ^ b ^ c ^ d = x
+		
+		so x ^ y == e
+		
+		The moment we have the last element, we can unroll the encoded array easily.
+		
+		*/
+		
+        var n = encoded.Length + 1;
+		// Fancy way of getting 1 ^ 2 ^ .. ^ n
+        var xor = Enumerable
+            .Range(1, n)
+            .Aggregate((acc, x) => acc ^ x);
+
+		// Fancy way of getting encoded[0] ^ encoded[2] ^ .. 
+        var skipOdd = Enumerable
+            .Range(0, n - 1)
+            .Where(x => x % 2 == 0)
+            .Select(x => encoded[x])
+            .Aggregate((acc, x) => acc ^ x);
+        
+        var lastNumber = xor ^ skipOdd;
+        var result = new int[n];
+        
+        result[n - 1] = lastNumber;
+        for (var i = n - 2; i >= 0; i--) {
+            result[i] = result[i + 1] ^ encoded[i];
+        }
+        
+        return result;
+    }
+}

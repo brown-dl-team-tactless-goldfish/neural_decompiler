@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int findSubstringInWraproundString(string_view p) {
+        int maxLen[26] = {0};
+        for(int i = 0; i < p.size();)
+        {
+            int j = i+1;
+            while(j < p.size() && 
+                  (+p[j] == p[j-1] + 1 || 
+                   +p[j] == p[j-1] - 'z' + 'a')
+                  )
+            {
+                j++;
+            }
+            
+            for(int k = 1; k <= min(26, j - i); ++k)
+            {
+                const auto c = p[j - k] - 'a';
+                const auto len = j - i + 1 - k;
+                maxLen[c] = max(maxLen[c], len);
+            }
+            i = j;
+        }
+
+        return std::accumulate(std::begin(maxLen), std::end(maxLen), 0);
+    }
+};

@@ -1,0 +1,71 @@
+
+
+
+typedef struct {
+    int* val;
+    int* cn  ;
+    int size;
+    int cur;
+} RLEIterator;
+
+
+RLEIterator* rLEIteratorCreate(int* encoding, int encodingSize) {
+    int size = encodingSize/2;
+    int* val = malloc(size * sizeof(int));
+    int* cn  = malloc(size * sizeof(int));
+    int idx = 0;
+    for(int i = 0; i < size; i++){
+        if(encoding[2 * i] == 0)
+            continue;
+        val[idx] = encoding[2 * i + 1];
+        cn[idx] = encoding[2 * i];
+        idx++;
+    }
+    val = realloc(val, idx * sizeof(int));
+    cn  = realloc(cn, idx * sizeof(int));
+    RLEIterator* ret = malloc(sizeof(RLEIterator));
+    ret->val = val;
+    ret->cn = cn;
+    ret->size = idx;
+    ret->cur = 0;
+    return ret;
+}
+
+int rLEIteratorNext(RLEIterator* obj, int n) {
+    if(obj->cur >= obj->size)  
+        return -1;
+    int ans = -1;  
+    int items = n;
+    int p = obj->cur;
+    int* cn =  obj->cn;
+    while(items > 0 && p < obj->size){
+        if(cn[p] > items){
+            cn[p] -= items;
+            items = 0;
+            ans = obj->val[p];
+        }
+        else{
+            items -= cn[p];
+            if(items == 0)
+                ans = obj->val[p];
+            cn[p] = 0;
+            p++;
+        }
+    }
+    obj->cur = p;
+    return ans;
+}
+
+void rLEIteratorFree(RLEIterator* obj) {
+    free(obj->val);
+    free(obj->cn);
+    free(obj);
+}
+
+/**
+ * Your RLEIterator struct will be instantiated and called as such:
+ * RLEIterator* obj = rLEIteratorCreate(encoding, encodingSize);
+ * int param_1 = rLEIteratorNext(obj, n);
+ 
+ * rLEIteratorFree(obj);
+*/

@@ -1,0 +1,46 @@
+class Solution {
+public:
+    long long maxProduct(string s) {
+        auto t = s;
+        reverse(t.begin(), t.end());
+        auto v =prefixLen(s), u = prefixLen(t);
+        long long res = 0;
+        for(int i=0, n = s.size();i<n-1;i++){
+            res = max(res, (long long)v[i] * u[n-i-2]);
+        }
+        return res;
+    }
+    
+    //https://cp-algorithms.com/string/manacher.html#solution
+    vector<int> manacher_odd(string s) {
+        int n = s.size();
+        s = "$" + s + "^";
+        vector<int> p(n + 2);
+        int l = 1, r = 1;
+        for(int i = 1; i <= n; i++) {
+            p[i] = max(0, min(r - i, p[l + (r - i)]));
+            while(s[i - p[i]] == s[i + p[i]]) {
+                p[i]++;
+            }
+            if(i + p[i] > r) {
+                l = i - p[i], r = i + p[i];
+            }
+        }
+        return vector<int>(begin(p) + 1, end(p) - 1);
+    }
+    
+    vector<int> prefixLen(const string& s){
+        int maxLen = 0;
+        auto manacher = manacher_odd(s);
+        const int n = s.size();
+        vector<int> res(n, 1);
+        for(int i=0, j=0;i<n;i++){
+            int len = manacher[i]-1;
+            for(; j <= i+len; j++){
+                maxLen = max(maxLen, 1+2*(j-i));
+                res[j] = maxLen;
+            } 
+        }
+        return res;
+    }   
+};

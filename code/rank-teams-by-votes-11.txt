@@ -1,0 +1,31 @@
+class Solution {
+public:
+    string rankTeams(vector<string>& votes) {
+        int n = votes[0].size(), m = votes.size();
+        if (m == 0) return "";
+        vector<vector<int>> count(n, vector<int>(n + 1, 0));
+        unordered_map<char, int> c2i;
+        unordered_map<int, char> i2c;
+        for (int i = 0; i < n; i++) {
+            c2i[votes[0][i]] = i;
+            i2c[i] = votes[0][i];
+            count[i][n] = i;
+        }
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                count[c2i[votes[i][j]]][j]++;
+            } 
+        }
+        sort(begin(count), end(count), [&](vector<int>& a, vector<int>& b) {
+            for (int i = 0; i < n; i++) {
+                if (a[i] != b[i]) {
+                    return a[i] > b[i];
+                }
+            }
+            return i2c[a[n]] < i2c[b[n]];
+        });
+        string result = "";
+        for (auto c : count) result += i2c[c[n]];        
+        return result;
+    }
+};

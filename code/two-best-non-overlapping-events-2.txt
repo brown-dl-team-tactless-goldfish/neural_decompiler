@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int maxTwoEvents(vector<vector<int>>& events) {
+        int n = events.size();
+        sort(events.begin(), events.end());
+        vector<vector<int>> dp(n + 1, vector<int>(3));
+
+        for(int i=n-1; i>=0; i--) {
+            for(int cnt=1; cnt<=2; cnt++) {
+                int notPick = dp[i + 1][cnt];
+                vector<int> x = {events[i][1], INT_MAX, INT_MAX};
+                auto pos = upper_bound(events.begin() + i, events.end(), x) - events.begin();
+                int pick = events[i][2] + dp[pos][cnt - 1];
+
+                dp[i][cnt] = max(pick, notPick);
+            }
+        }
+        return dp[0][2];
+    }
+};

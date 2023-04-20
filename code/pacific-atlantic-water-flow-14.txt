@@ -1,0 +1,86 @@
+class Solution {
+public:
+    
+    #define SET_ATLANTIC(x) (x |= 1)
+    #define SET_PACIFIC(x)  (x |= 2)
+    #define IS_PACIFIC(x) (x > 1)
+    #define IS_ATLANTIC(x) (x & 1)
+    #define IS_BOTH(x) (x == 3)
+    
+    
+    vector<pair<int, int>> pacificAtlantic(vector<vector<int>>& matrix) {
+        unordered_map<int,int> visited;
+        int N = matrix.size();
+        int M = N == 0 ? 0 : matrix[0].size();
+        deque<int> pq, aq;
+        
+        
+        auto processQ = [&](bool pacific){
+            deque<int> *q = (pacific ? &pq : &aq);
+            static vector<int> rows = {-1,0,1,0};
+            static vector<int> cols = {0,-1,0,1};
+            auto top = q->front();
+            q->pop_front();
+            int r = top / M;
+            int c = top % M;
+            
+            for(int i = 0; i < 4; ++i){
+                int nr = r + rows[i];
+                int nc = c + cols[i];
+                int idx = nr*M + nc;
+                if(nr >= 0 && nr < N && nc >= 0 && nc < M && matrix[r][c] <= matrix[nr][nc]){
+                    if(visited.find(idx) == visited.end() || 
+                        pacific && !IS_PACIFIC(visited[idx]) ||
+                       !pacific && !IS_ATLANTIC(visited[idx])){
+                        if(pacific){
+                            SET_PACIFIC(visited[idx]);
+                        }else{
+                            SET_ATLANTIC(visited[idx]);
+                        }
+                        
+                         q->push_back(idx);
+                    }
+                }
+            }
+        };
+        
+        for(int i = 0; i < N; ++i){
+            pq.push_back(i*M);
+            SET_PACIFIC(visited[i*M]);
+            SET_ATLANTIC(visited[(N - 1)*M]);
+            SET_PACIFIC(visited[M - 1]);
+            aq.push_back((N - 1)*M);
+            pq.push_back(M - 1);
+            aq.push_back(i*M + M - 1);
+            SET_ATLANTIC(visited[i*M + M - 1]);
+        }
+        
+        for(int i = 1; i < M - 1; ++i){
+            pq.push_back(i);
+            SET_PACIFIC(visited[i]);
+            aq.push_back((N - 1)*M + i);
+            SET_ATLANTIC(visited[(N - 1)*M + i]);
+        }
+        
+        while(!pq.empty() || !aq.empty()){
+            if(!pq.empty()){
+                processQ(true);
+            }
+            
+            if(!aq.empty()){
+              processQ(false);
+            }
+        }
+        
+        vector<pair<int,int> > result;
+                
+        for(auto &p : visited){
+            if(IS_BOTH(p.second)){
+                int f = p.first;
+                result.emplace_back(f/M, f%M);
+            }
+        }
+        
+        return result;
+    }
+};

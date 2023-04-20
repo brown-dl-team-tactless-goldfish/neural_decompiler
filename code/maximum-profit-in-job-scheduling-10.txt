@@ -1,0 +1,28 @@
+public class Solution 
+{
+    public int JobScheduling(int[] start, int[] end, int[] points) 
+    {
+        var intervals = new List<int[]>();
+        for(int i = 0; i < start.Length; i++)
+            intervals.Add(new int[] {start[i], end[i], points[i]});
+        
+        intervals.Sort((x, y) => x[1].CompareTo(y[1]));
+        List<int> dpProfit = new List<int>(){ 0 }, dpEndTime = new List<int>(){ 0 };
+        
+        foreach(var interval in intervals)
+        {
+            int s = interval[0], e = interval[1], p = interval[2]; 
+            int prevIndex = dpEndTime.BinarySearch(s + 1);
+            if (prevIndex < 0) prevIndex =  ~prevIndex;
+            prevIndex--;
+            int currProfit = dpProfit[prevIndex] + p, maxProfit = dpProfit[dpProfit.Count - 1];
+            if (currProfit > maxProfit)
+            {
+                dpProfit.Add(currProfit);
+                dpEndTime.Add(e);
+            }
+        }
+        
+        return dpProfit[dpProfit.Count - 1];
+    }
+}

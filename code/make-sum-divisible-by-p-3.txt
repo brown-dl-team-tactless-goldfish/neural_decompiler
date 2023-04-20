@@ -1,0 +1,54 @@
+// Time Complexity: O(2*n)
+// Space Complexity: O(n)
+class Solution {
+public:
+    int minSubarray(vector<int>& nums, int p) {
+
+      // Intution: (total_sum-subarray_sum)%p=0
+         // total_sum %p= subarray_sum%p=k (constant)
+    // now find out a minimum size subarray which toatl_sum is: (total_sum_of_subarray)%p=k
+
+
+
+        // to memorize the prefix sum
+        unordered_map<int,long>mp;
+
+        // edge case: when selected array is whole you have to remove
+         mp[0]=-1;
+
+         long prefix_sum=0;
+         
+         // to store result
+         long ans=INT_MAX;
+
+
+         // to store commulative sum
+         long total=0;
+
+         for(auto num:nums)
+           total+=num;
+
+        if(total%p==0)
+              return 0;
+
+         int k=total%p;
+
+         for(int i=0;i<nums.size();i++)
+         {
+             prefix_sum+=nums[i];
+
+             int find1=(prefix_sum-k)%p;
+             
+             auto it=mp.find(find1);
+             if(it!=mp.end())
+                  ans=min(i-it->second,ans);
+          
+
+             // store in map
+             mp[prefix_sum%p]=i;
+         }
+
+          // return ans
+         return ans==nums.size() ? -1 : ans;
+    }
+};

@@ -1,0 +1,57 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+void add_right_most_leaf(struct TreeNode *node, struct TreeNode *new)
+{
+        while (node->right)
+                node = node->right;
+        node->right = new;
+}
+
+void del_node(struct TreeNode **root, struct TreeNode *node, struct TreeNode *parent)
+{
+        struct TreeNode **_parent; 
+        if (parent)
+                _parent = node->val < parent->val ? &parent->left : &parent->right;
+        else
+                _parent = root;
+        
+        if (!node->left) {
+                *_parent = node->right;
+        } else if (!node->right) {
+                *_parent = node->left;
+        } else {
+                struct TreeNode *tmp = node->right->left;
+                node->right->left = node->left;
+                add_right_most_leaf(node->right->left, tmp);
+                *_parent = node->right;
+                free(node);
+        }
+}
+
+struct TreeNode* deleteNode(struct TreeNode* root, int key)
+{
+        struct TreeNode *node = root;
+        struct TreeNode *parent = NULL;
+        
+        while (node) {
+                if (node->val > key) {
+                        parent = node;
+                        node = node->left;
+                } else if (node->val < key) {
+                        parent = node;
+                        node = node->right;
+                } else {
+                        del_node(&root, node, parent);
+                        break;
+                }
+        }
+        
+        return root;
+}

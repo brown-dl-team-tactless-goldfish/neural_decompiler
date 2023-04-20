@@ -1,0 +1,48 @@
+class Solution:
+    def totalFruit(self, tree: List[int]) -> int:
+        # print("tree = ", tree)
+        
+        data = {}
+        for t in tree:
+            if (t not in data):
+                data[t] = 1
+            else:
+                data[t] += 1
+                
+        if (len(data) <= 2):
+            return len(tree)
+
+        self.res = 0
+        n = len(tree)
+        # print("n = ", n)
+
+        def helper(curBaskets, curIdx, curTypes):
+            # print("curIdx = ", curIdx)
+            # print("curBaskets = ", curBaskets)
+            # print("curTypes = ", curTypes)
+
+            self.res = max(self.res, len(curBaskets))
+            if (curIdx == n):
+
+                return
+
+            a = tree[curIdx]
+            # print("a = ", a)
+
+            if (a in curTypes):
+                curBaskets.append(a)
+                helper(curBaskets, curIdx+1, curTypes)
+            else:
+                if (len(curTypes) < 2):
+                    curBaskets.append(a)
+                    curTypes.append(a)
+                    helper(curBaskets, curIdx+1, curTypes)
+                else:
+                    return
+
+        for i in range(n):
+            helper([], i, [])
+
+        # print("self.res = ", self.res)
+
+        return self.res

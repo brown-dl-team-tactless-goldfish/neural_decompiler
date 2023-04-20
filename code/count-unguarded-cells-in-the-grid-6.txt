@@ -1,0 +1,51 @@
+class Solution {
+public:
+    int countUnguarded(int m, int n, vector<vector<int>>& guards, vector<vector<int>>& walls) {
+        //graph[i][j] == 0 means not guarded
+        //graph[i][j] == 1 means guarded 
+        //graph[i][j] == 2 means there is a guard
+        //graph[i][j] == -1 means wall
+        vector<vector<int>> graph (m, vector<int>(n, 0));
+        int res = m * n;
+        vector<pair<int,int>> dirs {
+            {1,0},
+            {-1,0},
+            {0,-1},
+            {0,1},
+        };
+        
+        //set walls
+        for (auto wall : walls)
+            graph[wall[0]][wall[1]] = -1,
+            res--;
+        
+        //set walls
+        for (auto guard : guards)
+            graph[guard[0]][guard[1]] = 2,
+            res--;
+        
+        //set guarded cells
+        for (auto guard : guards){
+            int i = guard[0], j = guard[1];
+            //4 dir
+            for (auto dir : dirs){
+                int newI = i + dir.first, newJ = j + dir.second;
+                while(!out_range(m,n,newI,newJ) && graph[newI][newJ] != 2 && graph[newI][newJ] != -1){
+                    if (graph[newI][newJ] == 0)
+                        res--;
+
+                    graph[newI][newJ] = 1;
+                    newI += dir.first;
+                    newJ += dir.second;
+                }
+            }   
+        }
+
+        
+        return res;
+    }
+    
+    bool out_range(int m, int n, int i, int j){
+        return i < 0 || j < 0 || i >= m || j >= n;
+    }
+};

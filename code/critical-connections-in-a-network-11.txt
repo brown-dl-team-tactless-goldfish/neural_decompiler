@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int *p = nullptr, *l = nullptr, cnt = 0;
+    vector<vector<int>> edges, res;
+    void tarjan(int f, int pre) {
+        p[f] = l[f] = cnt++;
+        for (auto& e : edges[f]) {
+            if (e == pre) continue;
+            if (!p[e]) {
+                tarjan(e, f), l[f] = min(l[e], l[f]);
+                if (l[e] > p[f]) res.push_back({e, f});
+            }
+            else if (l[f] > p[e]) l[f] = p[e];
+        }
+    }
+    vector<vector<int>> criticalConnections(int n, vector<vector<int>>& connections) {
+        p = (int*) calloc(n, 4), l = (int*) calloc(n, 4);
+        edges.resize(n);
+        for (auto& c : connections) 
+            edges[c[0]].push_back(c[1]), edges[c[1]].push_back(c[0]);
+        tarjan(0, -1);
+        free(p), free(l);
+        return res;
+    }
+};

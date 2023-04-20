@@ -1,0 +1,52 @@
+class Solution {
+public:
+    vector<vector<bool>>vis;
+    int n,m;
+    void dfs(int x,int y,vector<vector<int>>&adj){
+        if(x<0 || x>=n || y<0 || y>=m || vis[x][y] || adj[x][y]==0)return ;
+        vis[x][y]=true;
+        dfs(x+1,y,adj);
+        dfs(x-1,y,adj);
+        dfs(x,y+1,adj);
+        dfs(x,y-1,adj);
+    }
+    int minDays(vector<vector<int>>& grid) {
+        n=grid.size(),m=grid[0].size();
+        vis.resize(n,vector<bool>(m,false));
+        int island=0;
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(!vis[i][j] && grid[i][j]){
+                    island++;
+                    dfs(i,j,grid);
+                }
+            }
+        }
+        if(island>1 || island==0)return 0;
+        //either 1 or 2;
+        //..checking for 1..
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(grid[i][j]){
+                    grid[i][j]=0;
+                    vis.clear();
+                    island=0;
+                    vis.resize(n,vector<bool>(m,false));
+                    int island=0;
+                    for(int i=0;i<n;i++){
+                        for(int j=0;j<m;j++){
+                            if(!vis[i][j] && grid[i][j]){
+                                island++;
+                                dfs(i,j,grid);
+                            }
+                        }
+                    }
+                    if(island>1)return 1;
+                    grid[i][j]=1;
+                }
+            }
+        }
+        //one not possible answer is 2
+        return 2;
+    }
+};

@@ -1,0 +1,110 @@
+struct Node {
+    int val;
+    Node* prev;
+    Node* next;
+    Node* down;
+    
+    Node(int val): val(val), prev(nullptr), next(nullptr), down(nullptr) {}
+};
+
+class Skiplist {
+    Node* entry;
+    int levels; // Number of levels to start with. This solution uses a fixed size.
+    
+public:
+    Skiplist(): levels(15) {
+        // Dummy
+        entry = new Node(-2);
+        Node* prev = entry;
+        
+        // Initialize dummy starts for each level
+        for (int i = 0; i < levels; ++i) {
+            Node* head = new Node(-2); // Dummy start for level
+            Node* tail = new Node(-1); // Dummy end for level
+            head->next = tail;
+            tail->prev = head;
+            
+            prev->down = head;
+            prev = head;
+        }
+    }
+    
+    bool search(int num) {
+        Node* cur = entry->down;
+        
+        while (cur) {
+            if (cur ->val == num) {
+                return true;
+            }
+            
+            if (cur->val == -1 || num <= cur->val) {
+                cur = cur->prev->down;
+            } else {
+                cur = cur->next;
+            }
+        }
+        
+        return false;
+    }
+    
+    void add(int num) {
+        vector<Node*> prevs; // Store the path taken, so we may insert.
+        Node* cur = entry->down;
+        
+        while (cur) {
+            if (cur->val == -1 || num <= cur->val) {
+                prevs.push_back(cur->prev);
+                cur = cur->prev->down;
+            } else {
+                cur = cur->next;
+            }
+        }
+        
+        // Insert into last last level
+        Node* down = prevs.back();
+        addNode(down, new Node(num));
+        
+        // Probabilistially add the rest while getProb returns true
+        for (int i = prevs.size()-2; i >= 0 && getProb(); --i) {
+            Node* n = new Node(num);
+            addNode(prevs[i], n);
+            
+            n->down = down;
+            down = n;
+        }        
+    }
+    
+    bool erase(int num) {
+        vector<Node*> remove;
+        Node* cur = entry->down;
+        
+        while (cur) {
+            if (cur->val == -1 || num <= cur->val) {
+                if (cur->val == num) {
+                    remove.push_back(cur);
+                }
+                cur = cur->prev->down;
+            } else {
+                cur = cur->next;
+            }
+        }
+        
+        for (auto node: remove) {
+            node->prev->next = node->next;
+            node->next->prev = node->prev;
+        }
+        
+        return !remove.empty();
+    }
+    
+    void addNode(Node* cur, Node* node) {
+        node->next = cur->next;
+        cur->next->prev = node;
+        node->prev = cur;
+        cur->next = node;
+    }
+    
+    bool getProb() {
+        return rand() % 100 <= 50;
+    }
+};

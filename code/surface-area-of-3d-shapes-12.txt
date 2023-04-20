@@ -1,0 +1,37 @@
+class Solution {
+public:
+    bool isInside(vector<vector<int>>& grid,int i,int j) {
+        return i>=0 && j>=0 && i<grid.size() && j<grid[0].size();
+    }
+    int surfaceArea(vector<vector<int>>& grid) {
+        int area=0,di[4]={-1,0,1,0},dj[4]={0,1,0,-1};
+        for(int i=0;i<grid.size();i++) 
+        {
+            for(int j=0;j<grid[0].size();j++)
+            {
+                if(grid[i][j]>0)
+                {
+                    // as bottom and top will always be there, add 2 units 
+                    area+=2;
+                    
+                    // look in 4 directions
+                    for(int k=0;k<4;k++)
+                    {
+                        // if it has neighbour and neighbours height is less then add the visible area
+                        if(isInside(grid,i+di[k],j+dj[k]) && grid[i][j]>grid[i+di[k]][j+dj[k]])
+                        {
+                            area+=(grid[i][j]-grid[i+di[k]][j+dj[k]]);
+                        }
+                        
+                        // otherwise the whole block will be visible
+                        else if(!isInside(grid,i+di[k],j+dj[k]))
+                        {
+                            area+=grid[i][j];
+                        }
+                    }
+                }
+            }
+        }
+        return area;
+    }
+};

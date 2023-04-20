@@ -1,0 +1,90 @@
+
+// Trie Node
+struct TrieNode {
+    TrieNode() : children(26, nullptr), isWord(false) { }
+    
+    vector<TrieNode*> children;
+    bool isWord;
+};
+
+// Reverse trie
+class ReverseTrie {
+public:
+    // Add a word in reverse order
+    void addWord(string& word) {
+        TrieNode* currNode = &root;
+        
+        for (int i = word.length() - 1; i >= 0; --i) {
+            int c = word[i] - 'a';
+            
+            if (currNode->children[c] == nullptr) {
+                currNode->children[c] = new TrieNode;     
+            }
+            
+            currNode = currNode->children[c];
+        }
+        
+        currNode->isWord = true;
+    }
+    
+    // Search word as prefix in given pattern
+    bool searchPrefixWord(deque<char>& pattern) {
+        TrieNode* currNode = &root;
+        
+        for (int i = 0; i < pattern.size(); ++i) {
+            int c = pattern[i] - 'a';
+            
+            if (currNode->children[c] == nullptr) {
+                break;    
+            } 
+            
+            currNode = currNode->children[c];
+            
+            if (currNode->isWord) {
+                return true;
+            }
+        }
+        
+        return false;
+    } 
+        
+private:
+    // Reverse trie 
+    TrieNode root;
+};
+
+class StreamChecker {
+public:
+    StreamChecker(vector<string>& words) : maxLength(0) {
+        for (string& word: words) {
+            maxLength = max(maxLength, word.length());
+            reverseTrie.addWord(word);    
+        }    
+    }
+    
+    bool query(char letter) {
+        if (stream.size() > maxLength) {
+            stream.pop_back();
+        }
+        
+        stream.push_front(letter);
+        
+        return reverseTrie.searchPrefixWord(stream);
+    }
+    
+private:
+    // Reverse trie
+    ReverseTrie reverseTrie;
+    
+    // Stream - push at front and pop at back when size exceeds max length
+    deque<char> stream;
+    
+    // Max stream length
+    size_t maxLength;
+};
+
+/**
+ * Your StreamChecker object will be instantiated and called as such:
+ * StreamChecker* obj = new StreamChecker(words);
+ * bool param_1 = obj->query(letter);
+ */

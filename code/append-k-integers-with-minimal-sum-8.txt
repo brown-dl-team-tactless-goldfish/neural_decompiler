@@ -1,0 +1,20 @@
+class Solution {
+public:
+    long long minimalKSum(vector<int>& nums, int k){
+        long long sum=0;
+        sort(nums.begin(),nums.end());
+        if(nums[0]!=1) sum=1,k--;
+        int prev=1;
+        for(int i=0;i<nums.size() && k>0;i++){
+            int curr=min(nums[i],(prev+k+1));
+            long long midsum=(((curr-prev)*(long)(curr+prev+1))/2)-curr;
+            if(midsum>0) sum+=midsum;
+			k-=max(0,(curr-prev-1));
+            prev=curr;
+        }
+        if(k>0){
+            sum+=(((prev+k)-prev)*(long)(prev+k+prev+1))/2;
+        }
+        return sum;
+    }
+};

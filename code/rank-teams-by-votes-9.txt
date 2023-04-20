@@ -1,0 +1,35 @@
+class Solution {
+public:
+    string rankTeams(vector<string>& votes) {
+        const int n = votes.size(), m = votes[0].size();
+        if(n == 1) return votes[0];
+        vector<pair<char, vector<int>>> w(26,{0,vector<int>(m, 0)});
+        int weight = n;
+        for(int i = 0; i < n; ++i) {
+            for(int j = 0; j < m; ++j) {
+                int c = votes[i][j] - 'A';
+                w[c].first = votes[i][j];
+                w[c].second[j]++;
+            }
+        }
+        
+        sort(w.begin(), w.end(),[](const auto& a, const auto& b){
+            for(int i = 0; i < a.second.size(); ++i){
+                if(a.second[i] != b.second[i])
+                    return a.second[i] > b.second[i];
+            }
+            return a.first < b.first;
+        });
+        string res = "";
+        for(int i = 0; i < 26; ++i) {
+            //cout<<w[i].first<<endl;
+            if(w[i].first >='A' && w[i].first <= 'Z')
+                res += w[i].first;
+            else
+                break;
+        }
+        
+        return res;
+          
+    }
+};

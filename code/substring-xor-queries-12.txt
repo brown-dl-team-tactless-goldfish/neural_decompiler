@@ -1,0 +1,35 @@
+T.C: O(32*N)
+S.C: O(32*N)
+
+#define ll long long
+class Solution {
+public:
+    vector<vector<int>> substringXorQueries(string s, vector<vector<int>>& q) {
+        int n=s.length(),m=q.size();
+        map<ll,vector<int>> mp;
+        for(int i=0;i<n;i++){
+            if(s[i]=='0'){
+                if(mp.find(0)==mp.end()) mp[0]={i,i};
+                continue;
+            }
+            int sz=min(i+32,n-1);
+            ll val=0;
+            for(int j=i;j<=sz;j++){
+                val=(val<<1) + (s[j]-'0');
+                if(mp.find(val)==mp.end()) mp[val]={i,j};
+            }
+        }
+        vector<vector<int>> res;
+        for(int i=0;i<m;i++){
+            int val=(q[i][0] ^ q[i][1]);
+            if(mp.find(val)!=mp.end()){
+                res.push_back(mp[val]);
+            }
+            else{
+                res.push_back({-1,-1});
+            }
+        }
+        if(res.size()==0) res.push_back({-1,-1});
+        return res;
+    }
+};

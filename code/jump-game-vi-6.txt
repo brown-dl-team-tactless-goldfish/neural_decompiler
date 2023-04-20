@@ -1,0 +1,48 @@
+int maxResult(int* nums, int numsSize, int k){
+    // 1. store first k buff scores
+    // 2. always update nKPre to the index of current maximum score
+    // 3. update nKCurr score into buff
+    int anBuff[k], nKPre = k-1, nKCurr = 0, nRet = *nums;
+
+    // trace input nums
+    nums++;
+    while(--numsSize > 1)
+    {
+        anBuff[nKCurr] = nRet + *nums;
+
+        // if nKCurr already hit nKPre index
+        if(nKCurr == nKPre)
+        {
+            // try to get nKIndex which has the most score
+            int nKIndex = nKPre, nI = nKIndex;
+            while(--nI != nKPre)
+            {
+                if(nI < 0) nI = k - 1;
+                if(anBuff[nI] > anBuff[nKIndex]) nKIndex = nI;
+
+                if(nI == nKPre) break;
+            }
+
+            nRet = anBuff[nKIndex];
+            nKCurr = nKPre + 1;
+            if(nKCurr == k) nKCurr = 0;
+            nKPre = nKIndex;
+        }
+        else
+        {
+            // if current score is larger than final score, update it
+            if(anBuff[nKCurr] > nRet)
+            {
+                nRet = anBuff[nKCurr];
+                nKPre = nKCurr;
+            }
+            if(++nKCurr == k) nKCurr = 0;
+        }
+        
+        nums++;
+    }
+
+    if(numsSize == 1) nRet += *nums;
+
+    return nRet;
+}

@@ -1,0 +1,43 @@
+class Solution {
+public:
+    
+    int findsum(long long n){
+        int s = 0;
+        while(n){
+            s += n%10;
+            n /= 10;
+        }
+        return s;
+    }
+    
+    long long makeIntegerBeautiful(long long n, int target) {
+        string s = to_string(n);
+        int m = s.size();
+        int sum = findsum(n) - target;
+        string ans;
+        for(int i=m-1; i>=0 && sum>0; --i){
+            if(s[i] == '0'){
+                ans = "0"+ans;
+                continue;
+            }
+            int j = i-1;
+            while(j >= 0 && s[j] == '9'){
+                s[j] = '0';
+                sum -= 9;
+                j--;
+            }
+            if(j >= 0){
+                s[j]++;
+                sum += 1;
+            }
+            int r = 10 - (s[i] - '0');
+            sum -= (s[i] - '0');
+            ans = to_string(r) + ans;
+            s[i] = '0';
+        }
+        long long ret = 0;
+        for(auto it:ans)
+            ret = ret*10 + (it-'0');
+        return ret;
+    }
+};

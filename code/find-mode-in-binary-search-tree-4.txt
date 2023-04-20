@@ -1,0 +1,39 @@
+int cnt;
+int maxCnt;
+int prev;
+int resTop;
+int* res;
+
+void inOrder(struct TreeNode* root) {
+  if (!root) return;
+
+  inOrder(root->left);
+
+  if (root->val == prev) {
+    cnt++;
+  } else {
+    cnt = 1;
+    prev = root->val;
+  }
+
+  if (cnt == maxCnt) {
+    res[resTop++] = root->val;
+  } else if (cnt > maxCnt) {
+    resTop = 0;
+    res[resTop++] = root->val;
+    maxCnt = cnt;
+  }
+  inOrder(root->right);
+}
+
+int* findMode(struct TreeNode* root, int* returnSize) {
+  cnt = 0;
+  maxCnt = 0;
+  prev = INT_MIN;
+  resTop = 0;
+  res = malloc(sizeof(int) * 10000);
+
+  inOrder(root);
+  *returnSize = resTop;
+  return res;
+}

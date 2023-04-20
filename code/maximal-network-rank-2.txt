@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int maximalNetworkRank(int n, vector<vector<int>>& roads) {
+        vector<int> degree(n, 0);
+        vector<vector<bool>> connected(n, vector<bool>(n, false));
+        for (auto &road : roads) {
+            ++degree[road[0]];
+            ++degree[road[1]];
+            connected[road[0]][road[1]] = true;
+            connected[road[1]][road[0]] = true;
+        }
+
+        int answer = INT_MIN;
+        for (int r = 0; r < n; ++r) {
+            for (int c = 0; c < n; ++c) {
+                if (r == c) {
+                    continue;
+                }
+                if (connected[r][c]) {
+                    answer = max(answer, degree[r] + degree[c] - 1);
+                } else {
+                    answer = max(answer, degree[r] + degree[c]);
+                }
+            }
+        }
+
+        return answer;
+    }
+};

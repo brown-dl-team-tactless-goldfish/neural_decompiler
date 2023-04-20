@@ -1,0 +1,47 @@
+
+bool isValid(int hour, int minute) {
+  return hour < 24 && minute < 60;
+}
+
+bool isGreater(int hour1, int minute1, int hour2, int minute2) {
+  return (hour1 > hour2 || (hour1 == hour2 && minute1 > minute2));
+}
+
+void checkHourMinite(int tmpHour, int tmpMinute, int* hour, int* minute) {
+  if (isValid(tmpHour, tmpMinute) && isGreater(tmpHour, tmpMinute, *hour, *minute)) { 
+    *hour = tmpHour;
+    *minute = tmpMinute; 
+  } 
+}
+
+void getMaxHourMinutes(int a, int b, int c, int d, int* hour, int* minute) {
+  checkHourMinite(a * 10 + b, c * 10 + d, hour, minute);
+  checkHourMinite(a * 10 + b, d * 10 + c, hour, minute);
+  checkHourMinite(b * 10 + a, c * 10 + d, hour, minute);
+  checkHourMinite(b * 10 + a, d * 10 + c, hour, minute);
+
+  checkHourMinite(c * 10 + d, a * 10 + b, hour, minute);
+  checkHourMinite(c * 10 + d, b * 10 + a, hour, minute);
+  checkHourMinite(d * 10 + c, a * 10 + b, hour, minute);
+  checkHourMinite(d * 10 + c, b * 10 + a, hour, minute); 
+}
+
+char * largestTimeFromDigits(int* A, int ASize){
+  char* result = malloc(sizeof(char)*6);
+  result[5] = '\0';
+
+  int ok = 0;
+
+  int maxHour = -1;
+  int maxMinute = -1;
+  getMaxHourMinutes(A[0], A[1], A[2], A[3], &maxHour, &maxMinute);  
+  getMaxHourMinutes(A[0], A[2], A[1], A[3], &maxHour, &maxMinute);
+  getMaxHourMinutes(A[0], A[3], A[1], A[2], &maxHour, &maxMinute); 
+  if (maxHour == -1) {
+    result[0] = '\0';
+  } else {
+    sprintf(result, "%02d:%02d", maxHour, maxMinute);
+  }
+
+  return result;
+}

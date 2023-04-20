@@ -1,0 +1,31 @@
+class Solution {
+public:
+    string repeatLimitedString(string s, int repeatLimit) {
+        vector<int>alpha(26) ;
+        for(auto& c : s)
+            alpha[c -'a']++ ;
+        string ret ;
+        int idx = 25 ;
+        while(idx >= 0){
+            if(alpha[idx] == 0 || ret.back() == 'a' + idx){
+                idx-- ;
+                continue ;
+            }                
+            int repeats = min(repeatLimit, alpha[idx] ) ;
+            ret += string(repeats, 'a' + idx);
+            alpha[idx] -= repeats ;
+            if(alpha[idx]  == 0)
+                continue ;
+            for(int j = idx-1; j >=0 ; j--){
+                if(alpha[j]){
+                    ret += 'a' + j ;
+                    alpha[j]-- ;
+                    break ;
+                }
+                if(j == 0)
+                    return ret ;
+            }
+        }
+        return ret ;
+    }
+};

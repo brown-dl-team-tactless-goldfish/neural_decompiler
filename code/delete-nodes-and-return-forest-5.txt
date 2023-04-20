@@ -1,0 +1,83 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+typedef struct TreeNode TreeNode;
+struct node{
+    TreeNode*val;
+    struct node*next;
+};
+typedef struct node node;
+node*newNode(TreeNode*val){
+    node*temp = (node*)malloc(sizeof(node));
+    temp->val = val;
+    temp->next = NULL;
+    return temp;
+}
+struct list{
+    int size;
+    node*root;
+    node*tail;
+};
+typedef struct list list;
+void insert(list*l,TreeNode* val){
+    node*temp = newNode(val);
+    if(l->size==0)
+        l->root = temp;
+    else
+        l->tail->next = temp;
+    l->tail = temp;
+    l->size++;
+}
+TreeNode*helper(TreeNode*root,int*to_delete,int n,list*l){
+    if(root){
+        root->left = helper(root->left,to_delete,n,l);
+        root->right = helper(root->right,to_delete,n,l);
+        int exists=0;
+        for(int i=0;i<n;i++)
+            if(to_delete[i]==root->val)
+                {exists=1;break;}
+        if(exists){
+            if(root->left)insert(l,root->left);
+            if(root->right)insert(l,root->right);
+            return NULL;
+        }
+    }
+    return root;
+}
+struct TreeNode** delNodes(struct TreeNode* root, int* to_delete, int to_deleteSize, int* returnSize){
+    if(root==NULL){
+        *returnSize = 0;
+        TreeNode**ret;
+        return ret;
+    }
+    list*l = (list*)malloc(sizeof(list));
+    l->tail = NULL;
+    l->root = NULL;
+    l->size = 0;
+    int check=0;
+    for(int i=0;i<to_deleteSize;i++)
+        if(to_delete[i]==root->val)
+            {check=1;break;}
+    if(!check)
+        insert(l,root);
+    helper(root,to_delete,to_deleteSize,l);
+    TreeNode**result = (TreeNode**)malloc(sizeof(TreeNode)*l->size);
+    *returnSize = l->size;
+    int index=0;
+    node*temp = l->root;
+    while(temp){
+        result[index++]=temp->val;
+        temp = temp->next;
+    }
+    return result;
+}

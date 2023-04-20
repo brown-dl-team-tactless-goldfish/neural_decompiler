@@ -1,0 +1,33 @@
+
+class Solution {
+public:
+    vector<long long> kthPalindrome(vector<int>& queries, int intLength) {
+        int m = (intLength + 1) / 2;
+		long long f = pow(10, m - 1);
+		int n = queries.size();
+		vector<long long> ans(n);
+		long long mx = 9 * f;
+		string start = "";
+		for (int i = 0; i < intLength; i++) start += '0';
+		for (int i = 0; i < n; i++) {
+			if (queries[i] > mx) ans[i] = -1;
+			else {
+				string s = start;
+				queries[i]--;
+				long long d = f;
+				s[0] = s[intLength - 1] = '0' + (1 + queries[i] / d);
+				queries[i] %= d;
+				d /= 10;
+				int st = 1, en = intLength - 2;
+				while (st <= en) {
+					s[st] = s[en] = '0' + (queries[i] / d);
+					queries[i] %= d;
+					d /= 10;
+					st++, en--;
+				}
+				ans[i] = stoll(s);
+			}
+		}
+		return ans;
+    }
+};

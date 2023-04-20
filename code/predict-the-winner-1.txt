@@ -1,0 +1,34 @@
+bool PredictTheWinner(int* nums, int numsSize) {
+    if(numsSize==1){
+        return true;
+    }
+    int player1=0;
+    int player2=0;
+    int sum=0;
+    for(int i=0;i<numsSize;i++){
+        sum+=nums[i];
+    }
+    int temp1=nums[0]+score(&nums[1],numsSize-1,2);
+    int temp2=nums[numsSize-1]+score(nums,numsSize-1,2);
+    player1=temp1>temp2?temp1:temp2;
+    player2=sum-player1;
+    return player1>=player2;
+}
+int score(int* nums, int numsSize,int flag){
+    if(numsSize==0){
+        return 0;
+    }
+    int temp1=0;
+    int temp2=0;
+    int ret=0;
+    if(flag==2){
+        temp1=score(&nums[1],numsSize-1,1);
+        temp2=score(nums,numsSize-1,1);
+        ret=temp1<temp2?temp1:temp2;
+    }else if(flag==1){
+        temp1=nums[0]+score(&nums[1],numsSize-1,2);
+        temp2=nums[numsSize-1]+score(nums,numsSize-1,2);
+        ret=temp1>temp2?temp1:temp2;
+    }
+    return ret;
+}

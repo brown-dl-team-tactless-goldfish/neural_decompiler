@@ -1,0 +1,23 @@
+public class Solution {
+    private int ans = 0;
+    public int MinCameraCover(TreeNode root) {
+        
+        if (dfs(root).covered == false) ans++;
+        
+        return ans;
+    }
+    
+    private (bool covered, bool hasCamera) dfs(TreeNode root){
+        if(root == null) return (true, false);
+        
+        var (leftCovered, leftHasCamera) = dfs(root.left);        
+        var (rightCovered, rightHasCamera) = dfs(root.right);
+
+        bool hasCamera = !leftCovered || !rightCovered;
+        bool covered = leftHasCamera || rightHasCamera || hasCamera;
+        
+        if(hasCamera) ans++;
+        
+        return (covered, hasCamera);
+    }
+}

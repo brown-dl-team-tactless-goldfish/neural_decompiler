@@ -1,0 +1,42 @@
+class Solution {
+public:
+    vector<string> findAllRecipes(vector<string>& recipes, vector<vector<string>>& ingredients, vector<string>& supplies) {
+		// store supplies in a set
+        unordered_set<string> s(supplies.begin(), supplies.end());
+        int sz = recipes.size();
+		// vector to check if a recipe is complete and should not be checked again
+        vector<bool> done(sz, false);
+		// variable to track new recipes per iteration
+        int curr = 0;
+        vector<string> ret;
+		
+        while(sz--) {
+            for(int i = 0; i < recipes.size(); i++) {
+                if(done[i]) continue;
+                auto ing = ingredients[i]; 
+                int count = 0;
+				// to store the remaining ingredients of recipe
+                vector<string> t;
+                for(auto j :ing) {
+                    if(s.find(j) != s.end()) {
+                        count++;
+                    } else {
+                        t.push_back(j);
+                    }   
+                }
+                if(count == ing.size()) {
+                    s.insert(recipes[i]);
+                    ret.push_back(recipes[i]);
+                    done[i] = true;
+                    curr++;
+                } else {
+                    ingredients[i] = t;
+                }
+            }
+            // no new recipe has been created, break
+            if(curr == 0) break;
+            curr = 0;
+        }
+        return ret;
+    }
+};

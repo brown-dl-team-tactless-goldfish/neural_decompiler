@@ -1,0 +1,54 @@
+// Time Complexity: O(V+E) + O(n) + O(n)
+// Space Complexity: O(V+E) + O(n) + O(n)
+class Solution {
+public:
+    int minimumTime(int n, vector<vector<int>>& relations, vector<int>& time) {
+        // create an adjacency list
+        vector<vector<int>>adjList(n+1,vector<int>());
+        
+        // to store in-degree of each vertex
+        vector<int>inDegree(n+1,0);
+
+        for(auto it: relations)
+           {
+               adjList[it[0]].push_back(it[1]);
+               inDegree[it[1]]++;
+           }
+         // to store minimum time to finish course
+        vector<int>requiredT(n+1,0);
+
+        // Pick all the vertex which have in-degree to zero
+        queue<pair<int,int>>q;
+        for(int i=1;i<=n;i++)
+          if(!inDegree[i])
+            {q.push({time[i-1],i});
+            requiredT[i]=time[i-1];}
+
+       
+        while(!q.empty())
+        {
+            auto it=q.front();
+            q.pop();
+            int t=it.first;
+            int node=it.second;
+
+            // traverse over neighbor nodes
+            for(auto adjNode: adjList[node])
+            {
+                // update inDegree of that vertex
+                inDegree[adjNode]--;
+                int new_t=time[adjNode-1]+t;
+                requiredT[adjNode]=max(requiredT[adjNode],new_t);
+                if(!inDegree[adjNode])
+                   q.push({requiredT[adjNode],adjNode});  
+                
+            }
+        }
+
+        int ans=0;
+        for(int i=1;i<requiredT.size();i++)
+          ans=max(ans,requiredT[i]); 
+
+        return ans;       
+    }
+};

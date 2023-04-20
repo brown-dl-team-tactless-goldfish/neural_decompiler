@@ -1,0 +1,27 @@
+vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {
+    if (board[click[0]][click[1]] == 'M') 
+        board[click[0]][click[1]] = 'X';
+    else {
+        deque<pair<int, int>> q({ { click[0], click[1] } });
+        while (!q.empty()) {
+            auto c = q.front().first, r = q.front().second, mines = 0;
+            vector<pair<int, int>> neighbours;
+            for (auto i = -1; i <= 1; ++i)
+                for (auto j = -1; j <= 1; ++j)
+                    if (c + i >= 0 && r + j >= 0 && c + i < board.size() && r + j < board[0].size()) {
+                        if (board[c + i][r + j] == 'M') 
+                            ++mines;
+                        else if (board[c + i][r + j] == 'E') 
+                            neighbours.push_back({ c + i, r + j});
+                    }
+            if (mines > 0) 
+                board[c][r] = '0' + mines;
+            else for (auto n : neighbours) {
+                board[n.first][n.second] = 'B';
+                q.push_back(n);
+            }
+            q.pop_front();
+        }
+    }
+    return board;
+}

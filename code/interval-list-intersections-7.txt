@@ -1,0 +1,56 @@
+
+int *new_interval(int s, int e)
+{
+        int *new = malloc(2 * sizeof(int));
+        new[0] = s;
+        new[1] = e;
+        return new;
+}
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** intervalIntersection(int** firstList, int firstListSize, int* firstListColSize, int** secondList, int secondListSize, int* secondListColSize, int* returnSize, int** returnColumnSizes)
+{
+        int *p0, *p1;
+        int s, e;
+        
+        int **ret = malloc(2000 * sizeof(int *));
+        int rs = 0; //return size;
+        
+        int i, j;
+        for (i = 0, j = 0; i < firstListSize && j < secondListSize;) {
+                p0 = firstList[i];
+                p1 = secondList[j];
+                
+                if (p0[0] > p1[1])
+                        j++;
+                else if (p1[0] > p0[1])
+                        i++;
+                else {
+                        //we get the intersection and add to ret list
+                        s = p1[0] >= p0[0] ? p1[0] : p0[0];
+                        e = p1[1] <= p0[1] ? p1[1] : p0[1];
+                        ret[rs++] = new_interval(s, e);
+                        
+                        //update the both intervals to [e + 1, px[1]]. If e + 1 > px[1], this interval is no longer valid,
+                        //we take next interval as input 
+                        p0[0] = e + 1;
+                        if (p0[0] > p0[1])
+                                i++;
+                        p1[0] = e + 1;
+                        if (p1[0] > p1[1])
+                                j++;
+                }
+        }
+        
+        int *rcs = malloc(sizeof(int) * rs); //return column size
+        for (i = 0; i < rs; i++)
+                rcs[i] = 2;
+        *returnSize = rs;
+        *returnColumnSizes = rcs;
+        return ret;
+
+}

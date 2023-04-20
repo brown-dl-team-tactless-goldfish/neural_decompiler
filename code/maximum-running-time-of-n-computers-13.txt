@@ -1,0 +1,47 @@
+class Solution {
+    public:
+        long long maxRunTime(int n, vector<int>& nums) {
+            
+            sort(nums.begin(), nums.end());
+            
+            long long l = 1, r = LLONG_MAX;
+            while (l + 1 < r) {
+                long long m = l + (r - l) / 2;
+                if (canFit(n, nums, m)) {
+                    l = m;
+                } else {
+                    r = m;
+                }
+            }
+            
+            return canFit(n, nums, r) ? r : l;
+        }
+        
+    private:
+        bool canFit(long long n, vector<int>& nums, long long k) {
+            
+            long long computer = 0;
+            long long period = 0;
+            long long count = nums.size();
+            
+            for (int i = 0 ; i < count ; ++i) {
+                int num = nums[i];
+                
+                // # of remaining batteries < # of remaining to be served computers,
+                // implying it is impossible to run n computers at the same time
+                if (count - i < n - computer) {
+                    return false;
+                }
+                
+                if (period + num < k) {
+                    period += num;
+                    continue;
+                }
+                
+                period = period + num - k;
+                ++computer;
+            }
+            
+            return computer >= n;
+        }
+    };

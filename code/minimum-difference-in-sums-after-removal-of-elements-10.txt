@@ -1,0 +1,61 @@
+// Idea: scan L->R and R->L
+// we split the nums array into two parts [0...k-1] and [k...3n-1] at k.
+// k is in [n...2n].
+// we select the min sum of n nums in the first part,
+// and select the max sum of n nums from the second part.
+
+// from left to right, we gather the sum of the smallest n numbers
+
+// from right to left, we compute the sume of the largest n numbers
+// and we update the min diff.
+class Solution {
+public:
+    long long minimumDifference(vector<int>& nums) {
+        const int n = nums.size() / 3;
+        // we split the nums array into two parts [0...k-1] and [k...3n-1] at k.
+        // k is in [n...2n].
+        // we select the min sum of n nums in the first part,
+        // and select the max sum of n nums from the second part.
+        vector<int64_t> mins(n+1);
+        
+        multiset<int> s;
+        int64_t sum = 0;
+        // from left to right, we gather the sum of the smallest n numbers
+        for (int i = 0; i < 2*n; ++i) {
+            sum += nums[i];
+            s.insert(nums[i]);
+            if (i >= n) {
+                // remove the max element from the set
+                sum -= *s.rbegin();
+                s.erase(prev(s.end()));
+            }
+            if (i >= n-1) {
+                mins[i - n + 1] = sum;
+                // cout << "min[" << i << "] = " << sum << endl;
+            }
+        }
+        
+        s.clear();
+        sum = 0;
+        
+        // from right to left, we compute the sum of the largest n numbers
+        // and we update the min diff.
+        int64_t minDiff = INT64_MAX;
+        for (int i = 3*n-1; i >= n; --i) {
+            sum += nums[i];
+            s.insert(nums[i]);
+            if (i < 2*n) {
+                // remove the min element from the set
+                sum -= *s.begin();
+                s.erase(s.begin());
+            }
+            if (i <= 2*n) {
+                // look up the mins using i-1
+                auto before = mins[i-1-n+1];
+                auto diff = before - sum;
+                minDiff = min(minDiff, diff);
+            }
+        }
+        return minDiff;
+    }
+};

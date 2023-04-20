@@ -1,0 +1,56 @@
+int manhattan_distance(const int* a, const int* b) {
+  return
+    ((a[0] < b[0]) ? (b[0] - a[0]) : (a[0] - b[0])) +
+    ((a[1] < b[1]) ? (b[1] - a[1]) : (a[1] - b[1]));
+}
+
+int minCostConnectPoints(int** points, int pointsSize, int* pointsColSize) {
+  int ret = 0;
+
+  /* Start by connecting the last point first, thus we only need to check up to pointSize - 1 *
+   * record the current best distance for the point at idx.                                   */
+  struct Link {
+    size_t idx;   /* The index of the unconnected point */
+    int distance; /* Best distance to a connected point (don't need to know which one) */
+  };
+  struct Link* best_links = (struct Link*) malloc(sizeof(struct Link) * (pointsSize - 1));
+  struct Link* best = best_links;
+
+  /* Setup the initial best links to point to the last point which is always connected first */
+  int** last_point = &points[pointsSize - 1];
+  for (size_t idx = 0; idx < pointsSize - 1; ++idx) {
+    best_links[idx].idx = idx;
+    best_links[idx].distance = manhattan_distance(points[idx], *last_point);
+    if (best->distance > best_links[idx].distance) {
+      best = &best_links[idx];
+    }
+  }
+ 
+  /* Keep picking the shortest link between a connected point and a disconnected point */
+  for (size_t count = 0; count < pointsSize - 1; ++count) {
+    size_t chosen_idx = best->idx;
+    ret += best->distance;
+    
+    /* The chosen cache link has now been used. Write the link stored at the front to the  *
+     * location to reuse it and just strink the arrary by moving the front.                */
+    best->idx = best_links[count].idx;
+    best->distance = best_links[count].distance;
+   
+    /* Update any non connected point that is closer to our newly connected point *
+     * While we're at it, record the current best link for the next loop around   */
+    best = &best_links[count + 1];
+    for (size_t i = count + 1; i < pointsSize - 1; ++i) {
+      struct Link* link = &best_links[i];
+      int distance = manhattan_distance(points[link->idx], points[chosen_idx]);
+      if (distance < link->distance) {
+        link->distance = distance;
+      }
+      if (link->distance < best->distance) {
+        best = link;
+      }
+    }
+  }
+  
+  free(best_links);
+  return ret;
+}

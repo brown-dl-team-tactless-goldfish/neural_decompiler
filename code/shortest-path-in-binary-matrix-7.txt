@@ -1,0 +1,107 @@
+struct Q {
+	int alloced;
+	int filled;
+	short int* entries;
+};
+struct Q* q_create();
+void q_append(struct Q*, short int);
+short int q_remove(struct Q*);
+void q_free(struct Q*);
+int shortestPathBinaryMatrix(int**, int, int*);
+
+int main() { /* ... */ }
+
+struct Q* q_create()
+{
+	struct Q* q = malloc(sizeof(struct Q));
+	q->alloced = 1;
+	q->filled = 0;;
+	q->entries = calloc(q->alloced, sizeof(short int));
+	return q;
+}
+
+void q_append(struct Q* q, short int i)
+{
+	if (q->filled == q->alloced) {
+		q->alloced *= 2;
+		q->entries = realloc(q->entries, q->alloced*sizeof(short int));
+	}
+	q->entries[q->filled] = i;
+	q->filled++;
+}
+
+short int q_remove(struct Q* q)
+{
+	if (q->filled == 0) return 0;
+	int toReturn = q->entries[0];
+	for (int i = 1; i < q->filled; i++) {
+		q->entries[i-1]=q->entries[i];
+	}
+	q->filled--;
+	return toReturn;
+}
+
+void q_free(struct Q* q)
+{
+	free(q->entries);
+	free(q);
+}
+
+int shortestPathBinaryMatrix(int** grid, int gridSize, int* gridColSize)
+{
+	if (grid[0][0] == 1) return -1;
+	char** visited = calloc(gridSize, sizeof(char*));
+	for (int i = 0; i < gridSize; i++) visited[i] = calloc(gridSize, sizeof(char));
+	visited[0][0] = 1;
+
+	struct Q* q = q_create();
+	struct Q* next = q_create();
+	int depth = 1;
+	q_append(q,0);
+
+	while (1) {
+		while (q->filled>0) {
+			short int raw = q_remove(q);
+			char x = (raw & 0xff);
+			char y = (raw >> 8) & 0xff;
+			if (x == gridSize-1 && y == gridSize-1) {
+				q_free(q);
+				q_free(next);
+				for (int i = 0; i < gridSize; i++) free(visited[i]);
+				free(visited);
+				return depth;
+			}
+			for (char i = x-1; i <= x+1; i++) {
+				for (char j = y-1; j <= y+1; j++) {
+					if (i < 0 || i >= gridSize || j < 0 || j >= gridSize) {
+						continue;
+					}
+					if (i == x && j == y) {
+						continue;
+					}
+					if (grid[i][j] == 1) {
+						continue;
+					}
+					if (visited[i][j] == 1) {
+						continue;
+					}
+
+					short int coord = (j<<8)|(i);
+					visited[i][j] = 1;
+					q_append(next,coord);
+				}
+			}
+
+		}
+		if (next->filled == 0) break;
+		depth++;
+		q_free(q);
+		q = next;
+		next = q_create();
+	}
+	for (int i = 0; i < gridSize; i++) free(visited[i]);
+	free(visited);
+	q_free(q);
+	q_free(next);
+	return -1;
+}

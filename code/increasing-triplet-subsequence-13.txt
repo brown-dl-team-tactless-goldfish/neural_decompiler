@@ -1,0 +1,28 @@
+class Solution {
+public:
+    bool increasingTriplet(vector<int>& nums) {
+        
+        int n=nums.size();
+        vector<int>small_to_left(n);
+        vector<int>big_to_right(n);
+        small_to_left[0]  = nums[0];
+        big_to_right[n-1] = nums[n-1];
+        
+        for(int i=1;i<n;i++)
+            small_to_left[i]=min(small_to_left[i-1],nums[i]);
+        for(int i=n-2;i>=0;i--)
+            big_to_right[i]=max(big_to_right[i+1],nums[i]);
+        
+        for(int i=0;i<n;i++){
+            if(small_to_left[i]!=nums[i]&& big_to_right[i]!=nums[i])
+                return true;
+        }
+        return false;
+    }
+};
+
+/*
+ we have to found 3 numbers :  a < b < c holds true when
+ means for any nums[i], there should be atleast 1 element < nums[i]
+                       there should be atleast 1 element > nums[i]
+*/

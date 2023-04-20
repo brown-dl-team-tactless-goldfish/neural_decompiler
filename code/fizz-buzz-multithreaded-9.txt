@@ -1,0 +1,88 @@
+    int n;
+    pthread_mutex_t fizz_lock;
+    pthread_mutex_t buzz_lock;
+    pthread_mutex_t fizz_buzz_lock;
+    pthread_mutex_t number;
+    bool done;
+} FizzBuzz;
+
+FizzBuzz* fizzBuzzCreate(int n) {
+    FizzBuzz* obj = (FizzBuzz*) malloc(sizeof(FizzBuzz));
+    obj->n = n;
+    pthread_mutex_init(&obj->fizz_lock, NULL);
+    pthread_mutex_init(&obj->buzz_lock, NULL);
+    pthread_mutex_init(&obj->fizz_buzz_lock, NULL);
+    pthread_mutex_init(&obj->number, NULL);
+    pthread_mutex_lock(&obj->fizz_lock);
+    pthread_mutex_lock(&obj->buzz_lock);
+    pthread_mutex_lock(&obj->fizz_buzz_lock);
+    obj->done = false;
+    return obj;
+}
+
+// printFizz() outputs "fizz".
+void fizz(FizzBuzz* obj) {
+    pthread_mutex_lock(&obj->fizz_lock);
+    if(obj->done == true)
+        return;
+    printFizz();
+    pthread_mutex_unlock(&obj->number);
+}
+
+// printBuzz() outputs "buzz".
+void buzz(FizzBuzz* obj) {
+    pthread_mutex_lock(&obj->buzz_lock);
+    if(obj->done == true)
+        return;
+    printBuzz();
+    pthread_mutex_unlock(&obj->number);
+}
+
+// printFizzBuzz() outputs "fizzbuzz".
+void fizzbuzz(FizzBuzz* obj) {
+    pthread_mutex_lock(&obj->fizz_buzz_lock);
+    if(obj->done == true)
+        return;
+    printFizzBuzz();
+    pthread_mutex_unlock(&obj->number);
+}
+
+// You may call global function `void printNumber(int x)`
+// to output "x", where x is an integer.
+void number(FizzBuzz* obj) {
+    for(int i=1; i <= obj->n ; i++)
+    {
+        pthread_mutex_lock(&obj->number);
+        if(i%15 == 0)
+        {
+            pthread_mutex_unlock(&obj->fizz_buzz_lock);
+        }
+        else if(i % 5 == 0)
+        {
+            pthread_mutex_unlock(&obj->buzz_lock);
+        }
+        else if(i % 3 == 0)
+        {
+            pthread_mutex_unlock(&obj->fizz_lock);
+        }
+        else
+        {
+            printNumber(i);
+            pthread_mutex_unlock(&obj->number);
+        }
+    }
+    pthread_mutex_lock(&obj->number);
+    obj->done = true;
+    pthread_mutex_unlock(&obj->buzz_lock);
+    pthread_mutex_unlock(&obj->fizz_lock);
+    pthread_mutex_unlock(&obj->fizz_buzz_lock);
+    return;
+}
+
+void fizzBuzzFree(FizzBuzz* obj) {
+    pthread_mutex_destroy(&obj->fizz_lock);
+    pthread_mutex_destroy(&obj->buzz_lock);
+    pthread_mutex_destroy(&obj->fizz_buzz_lock);
+    pthread_mutex_destroy(&obj->number);
+    free(obj);   
+}```

@@ -1,0 +1,38 @@
+class Solution {
+private:
+    bool checkValid(int mask,vector<vector<int>>&statements){
+        int copy=mask;
+        while(mask){
+            //allows me to turn the rightmost bit off, meaning I only have to 
+            //traverse through the 1s in the bitmask rather than all the bits
+            //of the bitmask
+            int pos=log2(mask&(-mask));
+            mask-=mask&(-mask);
+            //pos is a good person, therefore all his statements should be 
+            //consistent
+            for(int i=0;i<statements[pos].size();i++){
+                if(statements[pos][i]==2){
+                    continue;
+                } else {
+                    //his statement on j is not consistent, therefore this 
+                    //assignment is not valid
+                    if(statements[pos][i]!=((copy>>i)&1)){
+                        return false;
+                    }
+                }
+            }
+        }
+        return true;
+    }
+public:
+    int maximumGood(vector<vector<int>>& statements) {
+        int n=statements.size(),ans=0;
+        //checking every possible assignment of good people
+        for(int mask=0;mask<(1<<n);mask++){
+            if(checkValid(mask,statements)){
+                ans=max(ans,__builtin_popcount(mask));
+            }
+        }
+        return ans;
+    }
+};

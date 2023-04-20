@@ -1,0 +1,37 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int cmp(const void* a, const void* b){
+    int* A = *(int**)a ;
+    int* B = *(int**)b ;
+    if(A[2] == B[2])
+        return A[0] - B[0] ;
+    return A[2] - B[2] ;
+}
+int* sortJumbled(int* mapping, int mappingSize, int* nums, int numsSize, int* returnSize){
+    *returnSize = numsSize ;
+    int** tmp = malloc( numsSize * sizeof(int*) ) ;
+    for(int i = 0 ; i < numsSize ; i++){
+        tmp[i] = malloc(3 * sizeof(int) ) ;
+        tmp[i][0] = i ;
+        tmp[i][1] = nums[i] ;
+        int k = 0 ;
+        int val = nums[i] ;
+        int d = 0 ;
+        //have to use do, it need run at least once
+        do{
+            k = mapping[val % 10]*pow(10, d) + k ;
+            val /= 10 ;
+            d++ ;
+        }while(val) ;
+        tmp[i][2] = k ;
+    }
+    qsort(tmp, numsSize, sizeof(int*), cmp ) ;
+    int* ans = malloc(numsSize * sizeof(int) ) ;
+    for(int i = 0; i < numsSize; i++){
+        ans[i] = tmp[i][1] ;
+        free(tmp[i]) ;
+    }
+    free(tmp) ;
+    return ans ;
+}

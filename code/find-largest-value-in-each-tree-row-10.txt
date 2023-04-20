@@ -1,0 +1,46 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+void depth(struct TreeNode* root, int* maxLevel, int currLevel){
+    if(*maxLevel<currLevel) *maxLevel=currLevel;
+    if(!root) return;
+    depth(root->left, maxLevel, currLevel+1);
+    depth(root->right, maxLevel, currLevel+1);
+}
+
+void BFS(struct TreeNode* root, int* ans, int currLevel){
+    if(!root) return;
+    ans[currLevel]=ans[currLevel] > root->val ? ans[currLevel] : root->val;
+    BFS(root->left, ans, currLevel+1);
+    BFS(root->right, ans, currLevel+1);
+        
+}
+
+int* largestValues(struct TreeNode* root, int* returnSize){
+    
+    *returnSize=0;
+    
+    if(!root){
+        return NULL;
+    }
+    
+    depth(root, returnSize, 0);
+    int* ans=malloc(sizeof(int*)*(*returnSize));
+    for(int i=0; i<(*returnSize); i++){
+        ans[i]=INT_MIN;
+    }
+    BFS(root, ans, 0);
+    
+    return ans;
+}

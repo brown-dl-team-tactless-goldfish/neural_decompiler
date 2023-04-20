@@ -1,0 +1,48 @@
+#define in long long int
+
+bool cmp(pair<int, int>&a, pair<int, int>&b){
+    return (long double)a.second/(long double)a.first < (long double)b.second/(long double)b.first;
+}
+
+class Solution {
+public:
+    vector<pair<int, int>> x[201];
+    long long int dp[201][201];
+    vector<vector<int>> p;
+    
+    in find(int m, int n){
+        if(dp[m][n] != -1) return dp[m][n];
+        if(m == 0 || n == 0) return dp[m][n] = 0;
+        in ans = 0;
+        for(int i=m;i>=1;i--){
+            int ind = x[i].size()-1;
+            while(ind >= 0){
+                if(x[i][ind].first > n){
+                    ind--;
+                    continue;
+                }
+                in before = ans;
+                ans = max({
+                    ans,
+                    x[i][ind].second*1ll + find(i, n-x[i][ind].first) + find(m - i, n),
+                    x[i][ind].second*1ll + find(m-i, x[i][ind].first) + find(m, n - x[i][ind].first)
+                });
+                if(ans == before) break;
+                ind--;
+            }
+        }
+        
+        return dp[m][n] = ans;
+    }
+    
+    long long sellingWood(int m, int n, vector<vector<int>>& prices) {
+        memset(dp, -1, sizeof(dp));
+        for(vector<int>&pp : prices){
+            x[pp[0]].push_back({pp[1], pp[2]});
+        }
+        for(int i=0;i<201;i++){
+            sort(x[i].begin(), x[i].end(), cmp);
+        }
+        return find(m, n);    
+    }
+};

@@ -1,0 +1,53 @@
+void ZZ(string s, int n, vector<int> &Z)
+    {
+        int left = 0;
+        int right = 0;
+        int k;
+        for (int i = 1; i < n; ++i) {
+            if (!(i <= right)){
+               
+               left = right = i;
+                while (right < n && s[right - left] == s[right]){
+                    right++;
+                }
+                Z[i] = right - left;
+                right--;
+            }
+            else {
+               k = i - left;
+                if (Z[k] < right - i + 1){
+                    Z[i] = Z[k];
+                }
+                else {
+                    left = i;
+                    while (right < n && s[right - left] == s[right]){
+                        right++;
+                    }
+                    Z[i] = right - left;
+                    right--;
+                   
+                }
+                
+            }
+          
+        }
+    }
+ 
+
+    long long sumScores(string s)
+    {
+        int n = s.size();
+        vector<int> Zzzzz(n);
+        for(int i=0;i<n;i++){
+            Zzzzz[i] = 0;
+        }
+
+        ZZ(s, n, Zzzzz);
+
+        long long ans = n;
+
+        for (int i = 1; i < n; i++)
+            ans += Zzzzz[i];
+
+        return ans;
+    }

@@ -1,0 +1,58 @@
+int binarySearch1(MountainArray & arr, int start, int end, int target){
+        if(start<=end){
+            int mid = start + (end - start)/2;
+            int val = arr.get(mid);
+            if(val == target)
+                return mid;
+            else if(val > target)
+                return binarySearch1(arr, start, mid-1, target);
+            else
+                return binarySearch1(arr, mid+1, end, target);
+        }
+        return -1;
+    }
+    
+     int binarySearch2(MountainArray & arr, int start, int end, int target){
+        if(start<=end){
+            int mid = start + (end - start)/2;
+            int val = arr.get(mid);
+            if(val == target)
+                return mid;
+            else if(val < target)
+                return binarySearch1(arr, start, mid-1, target);
+            else
+                return binarySearch1(arr, mid+1, end, target);
+        }
+        return -1;
+    }
+    
+    int findInMountainArray(int target, MountainArray & arr) {
+        // find peak..
+        int start = 0, end = arr.length()-1;
+        int maxIndex = -1;
+        while(start<=end){
+            int mid = start + (end - start)/2;
+            int val = arr.get(mid);
+            if( mid > 0 && mid < arr.length()-1 &&  val > arr.get(mid-1) && val > arr.get(mid+1)) {
+                maxIndex = mid;
+                break;
+            }
+            else if(mid+1<arr.length() && val < arr.get(mid+1) )
+                start = mid+1;
+            else if(mid-1>=0 && val < arr.get(mid-1))
+                end = mid-1;
+        }
+        if(maxIndex == -1)
+            return -1;
+        if(arr.get(maxIndex) == target)
+            return maxIndex;
+        int val1 =  binarySearch1(arr, 0, maxIndex-1, target); 
+        int val2 =  binarySearch2(arr, maxIndex+1, arr.length()-1, target);
+        if(val1 != -1)
+            return val1;
+        if(val2 != -1)
+            return val2;
+        
+        
+        return -1;
+    }

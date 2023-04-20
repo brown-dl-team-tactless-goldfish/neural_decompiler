@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int findShortestSubArray(vector<int>& nums) {
+        unordered_map<int, pair<int, pair<int, int>>> mp;
+        int n = nums.size();
+        
+        int maxCount =  0;
+        for(int i = 0; i<n; i++) {
+            if(!mp.count(nums[i])) {
+                mp[nums[i]] = make_pair(1, make_pair(i, i));
+            } else {
+                mp[nums[i]].first++;
+                mp[nums[i]].second.second = i;
+            }
+            maxCount = max(maxCount, mp[nums[i]].first);
+        }
+        
+        int length = INT_MAX;
+        for(auto &it : mp) {
+            int element = it.first;
+            int count   = it.second.first;
+            int start   = it.second.second.first;
+            int end     = it.second.second.second;
+            
+            
+            
+            if(count == maxCount) {
+                length = min(length, end-start+1);
+            }
+        }
+        return length;
+    }
+};

@@ -1,0 +1,26 @@
+class Solution {
+public:
+    vector<int> flipMatchVoyage(TreeNode* root, const vector<int>& voyage) {
+        vector<int> res;
+        bool b = h(root, voyage.begin(), voyage.end(), res);
+        if (b) return res;
+        return {-1};
+    }
+
+    bool h(TreeNode* r, vector<int>::const_iterator a, vector<int>::const_iterator b, vector<int>& res) {
+        if (r == nullptr) return false;
+        if (b <= a) return false;
+        if (r->val != *a) return false;
+        if (r->left && r->right) {
+            auto p = *(a + 1) == r->left->val ? find(a + 1, b, r->right->val) : find(a + 1, b, r->left->val);
+            if (*(a + 1) == r->right->val) {
+                res.push_back(r->val);
+                return h(r->left, p, b, res) && h(r->right, a + 1, p, res);
+            }
+            return h(r->left, a + 1, p, res) && h(r->right, p, b, res);
+        } else if (r->left) return h(r->left, a + 1, b, res);
+        else if (r->right) return h(r->right, a + 1, b, res);
+        return true;
+    }
+
+};

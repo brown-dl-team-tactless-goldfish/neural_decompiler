@@ -1,0 +1,33 @@
+class Solution {
+public:
+    long long maxPoints(vector<vector<int>>& points) 
+    {
+           long long r = points.size();
+           long long c = points[0].size();
+        vector<vector< long long>>dp(r,vector< long long>(c,0));
+        for(int i=0;i<c;i++)
+            dp[0][i]  = points[0][i];
+        
+         for(int i=1;i<r;i++)
+         {
+              long long ma = INT_MIN;
+                for(int j=0;j<c;j++)
+                {
+                    ma= max(ma, dp[i-1][j]+j);
+                    dp[i][j] = points[i][j]+ma-j;
+                }
+             ma = INT_MIN;
+             for(int j=c-1;j>=0;j--)
+             {
+                 ma= max(ma, dp[i-1][j] - j);
+                 dp[i][j] = max(dp[i][j] ,points[i][j]+ma+j);
+             }   
+         }
+         long long ans = dp[r-1][0];
+        for(int i=1;i<c;i++)
+        {
+            ans = max(ans, dp[r-1][i]);
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,37 @@
+class Solution {
+    const int M = 1000000007;
+    
+    int add(int x, int y) {
+        if ((x += y) >= M) x -= M;
+        return x;
+    }
+    
+    int mul(long long x, long long y) {
+        return x * y % M;
+    }
+    
+    int dfs(const vector<int> &v, const vector<vector<int>>& c) {
+        if (v.size() <= 2) return 1;
+        vector<int> v1, v2;
+        for (int i = 1; i < v.size(); ++i) {
+            if (v[i] < v[0]) {
+                v1.push_back(v[i]);
+            } else {
+                v2.push_back(v[i]);
+            }
+        }
+        return mul(mul(dfs(v1, c), dfs(v2, c)), c[v.size() - 1][v1.size()]);
+    }
+public:
+    int numOfWays(vector<int>& nums) {
+        const int n = nums.size();
+        vector<vector<int>> c(n + 1, vector<int>(n + 1));
+        for (int i = 0; i <= n; ++i) {
+            for (int j = c[i][0] = 1; j <= i; ++j) {
+                c[i][j] = add(c[i - 1][j - 1], c[i - 1][j]);
+            }
+        }
+        return add(dfs(nums, c), M - 1);
+        
+    }
+};

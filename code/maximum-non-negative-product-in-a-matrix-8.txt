@@ -1,0 +1,38 @@
+#define MOD 1000000007
+
+class Solution {
+public:
+    int maxProductPath(vector<vector<int>>& grid) {
+        int R{(int)grid.size()}, C{(int)grid[0].size()};
+        std::vector<std::vector<std::pair<int64_t,int64_t>>> dp(R, std::vector<std::pair<int64_t,int64_t>>(C));
+        for(int i{0}; i < R; ++i) {
+            for(int j{0}; j < C; ++j) {
+                int64_t maxN, maxP, maxPrevN{-1}, maxPrevP{1};
+                if(i > 0 && j > 0) {
+                    maxPrevN = std::max(dp[i-1][j].first, dp[i][j-1].first);
+                    maxPrevP = std::max(dp[i-1][j].second, dp[i][j-1].second);
+                } else if(j > 0) {
+                    maxPrevN = dp[i][j-1].first;
+                    maxPrevP = dp[i][j-1].second;
+                } else if(i > 0) {
+                    maxPrevN = dp[i-1][j].first;
+                    maxPrevP = dp[i-1][j].second;
+                }
+                
+                if(grid[i][j] > 0) {
+                    maxN = maxPrevN >= 0 ? grid[i][j] * maxPrevN : -1;
+                    maxP = maxPrevP >= 0 ? grid[i][j] * maxPrevP : -1;
+                } else {
+                    maxN = maxPrevP >= 0 ? -grid[i][j] * maxPrevP : -1;
+                    maxP = maxPrevN >= 0 ? -grid[i][j] * maxPrevN : -1;
+                }
+                
+                if(grid[i][j] == 0) maxN = std::max(maxN, (int64_t)0), maxP = std::max(maxP, (int64_t)0);
+                dp[i][j] = {maxN, maxP};
+                   
+            }
+        }
+
+        return dp[R-1][C-1].second % MOD;
+    }
+};

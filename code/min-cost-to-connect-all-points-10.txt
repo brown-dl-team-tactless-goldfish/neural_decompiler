@@ -1,0 +1,62 @@
+struct edge {
+    int p1;
+    int p2;
+    int cost;
+    edge(int p1, int p2, int cost) : p1(p1), p2(p2), cost(cost) {}
+};
+
+class cmp {
+public:
+    bool operator() (edge &e1, edge &e2) {
+        return e1.cost > e2.cost;
+    }
+};
+
+class Solution {
+public:
+    int minCostConnectPoints(vector<vector<int>>& points) {
+        int numPts = points.size(), numMstPts = 0;
+        priority_queue<edge, vector<edge>, cmp> heap;
+        vector<bool> inMst(numPts, false);
+
+        // We start from point 0. Add all the edges (0, x),
+        // x = 1, 2, ... numPts - 1, into the minimum heap.
+        for (int i = 1; i < numPts; ++i) {
+            int cost = abs(points[0][0] - points[i][0]) + abs(points[0][1] - points[i][1]);
+            heap.push(edge(0, i, cost));
+        }
+
+        // Add point 0 int MST.
+        inMst[0] = true;
+        ++numMstPts;
+
+        int answer = 0;
+        while (numMstPts < numPts && !heap.empty()) {
+            int p1 = heap.top().p1;
+            int p2 = heap.top().p2;
+            int cost = heap.top().cost;
+            heap.pop();
+
+            if (inMst[p2]) {
+                // p2 is already in MST. Give up this edge.
+                continue;
+            }
+            answer += cost;
+
+            // Add p2 to MST.
+            ++numMstPts;
+            inMst[p2] = true;
+
+            // Add all the edges from p2 to other points that are not in MST into minimum heap.
+            for (int i = 0; i < numPts; ++i) {
+                if (!inMst[i]) {
+                    // Point i is not in MST. Add the edge (p2, i) into minimum heap.
+                    int c = abs(points[p2][0] - points[i][0]) + abs(points[p2][1] - points[i][1]);
+                    heap.push(edge(p2, i, c));
+                }
+            }
+        }
+
+        return answer;
+    }
+};

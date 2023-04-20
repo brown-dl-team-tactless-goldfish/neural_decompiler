@@ -1,0 +1,47 @@
+class Solution {
+public:
+    string fractionAddition(string expression) {
+        vector<pair<int, int>> fracs;
+        if (isdigit(expression[0])) {
+            expression = "+" + expression;
+        }
+        expression.push_back('+');
+        map<int, int> db; 
+        int sign = 1;
+        int n = 0;
+        int d = 0;
+        bool isN = true;
+        for (char& c: expression) {
+            if (c == '+' || c == '-') {
+                db[d] += sign * n;
+                sign = 1 - 2 * (c == '-');
+                n = 0;
+                d = 0;
+                isN = true;
+            } else if (isdigit(c)) {
+                if (isN) {
+                    n *= 10;
+                    n += c - '0';
+                } else {
+                    d *= 10;
+                    d += c - '0';
+                }
+            } else {
+                isN = false;
+            }
+        }
+        db.erase(0);
+        d = 1;
+        n = 0;
+        for (auto& p: db) {
+            int tmp = d / gcd(d, p.first);
+            n *= p.first * tmp / d;
+            n += p.second * tmp;
+            d = p.first * tmp;
+            tmp = gcd(n, d);
+            n /= tmp;
+            d /= tmp;
+        }
+        return to_string(n) + "/" + to_string(d);
+    }
+};

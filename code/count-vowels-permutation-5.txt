@@ -1,0 +1,67 @@
+#define mod 1000000007
+class Solution {
+public:
+    int dp[27][100002];
+    int find(char pre , int n)
+    {
+        if(dp[pre-'a'][n] != -1)
+            return dp[pre-'a'][n] % mod;
+        int count = 0;
+        if(n == 0)
+        {
+            count++;
+            count %= mod;
+            dp[pre-'a'][n] = count % mod;
+            return count % mod;
+        }
+        if(pre == 'a')
+        {
+            count += find('e' , n-1);
+            count %= mod;
+        }
+        if(pre == 'e')
+        {
+            count += find('a' , n-1);
+            count %= mod;
+            count += find('i' , n-1);
+            count %= mod;
+        }
+        if(pre == 'i')
+        {
+            count += find('a' , n-1);
+            count %= mod;
+            count += find('e' , n-1);
+            count %= mod;
+            
+            count += find('o' , n-1);
+            count %= mod;
+            count += find('u' , n-1);
+            count %= mod;
+        }
+        if(pre == 'o')
+        {
+            count += find('i' , n-1);
+            count %= mod;
+            count += find('u' , n-1);
+            count %= mod;
+        }
+       if(pre == 'u')
+        {
+            count += find('a' , n-1);
+           count %= mod;
+        }
+       return dp[pre-'a'][n] = count;
+    }
+    int countVowelPermutation(int n) {
+        if(n <= 0)
+            return 0;
+        memset(dp , -1 , sizeof dp);
+        int c = 0 ;
+        c += find('a' , n-1);c %= mod;
+        c += find('e' , n-1);c %= mod;
+        c += find('i' , n-1);c %= mod;
+        c += find('o' , n-1);c %= mod;
+        c += find('u' , n-1);c %= mod;
+        return c;
+    }
+};

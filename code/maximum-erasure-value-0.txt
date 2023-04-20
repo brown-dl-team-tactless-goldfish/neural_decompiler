@@ -1,0 +1,24 @@
+int findlen(int* nums, int numsSize) {
+    int max = nums[0];
+    for(int i = 0; i < numsSize; i++) {
+        max = nums[i] > max ? nums[i] : max;
+    }
+    return max + 1;
+}
+
+int maximumUniqueSubarray(int* nums, int numsSize) {
+    int arrSize = findlen(nums, numsSize);
+    int* arr = calloc(arrSize, sizeof(int));
+    int ans = 0, sum = 0, idxL = 0;
+    for(int idxR = 0; idxR < numsSize; idxR++) {
+        sum += nums[idxR];
+        arr[nums[idxR]]++;
+        while(arr[nums[idxR]] > 1) {
+            sum -= nums[idxL];
+            arr[nums[idxL++]]--;
+        }
+        ans = sum > ans ? sum : ans;
+    } 
+    free(arr);
+    return ans;
+}

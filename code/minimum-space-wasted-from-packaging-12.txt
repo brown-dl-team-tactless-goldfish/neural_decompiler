@@ -1,0 +1,46 @@
+class Solution {
+    typedef long long ll;
+    long long big = 1e9 + 7;
+public:
+    int minWastedSpace(vector<int>& packages, vector<vector<int>>& boxes) {
+        packages.push_back(100001);
+        int n = packages.size();
+        sort(packages.begin(), packages.end());
+        
+        vector<ll> sum(100001, 0), count(100001, 0);
+        ll cursum = 0, cnt = 0;
+        int last = 0;
+        
+        for(int i=0; i<n; ++i) {
+            int a = packages[i];
+            for(int j=last; j<a; ++j) {
+                sum[j] = cursum;
+                count[j] = cnt;
+            }
+            cursum += a;
+            cnt += 1;
+            last = a;
+        }
+        packages.pop_back();
+
+        ll ans = 1e13;
+
+        for(auto& v : boxes) {
+            ll cur = 0;
+            sort(v.begin(), v.end());
+            if(v.back() < packages.back()) {
+                continue;
+            }
+            for(int i=0; i<v.size(); ++i) {
+                if(i == 0) {
+                    cur += v[i] * count[v[i]] - sum[v[i]];
+                } else {
+                    cur += v[i] * (count[v[i]] - count[v[i-1]]) - sum[v[i]] + sum[v[i-1]];
+                }
+            }
+            ans = min(ans, cur);
+        }
+        
+        return ans == (long long) 1e13 ? -1 : ans % big;
+    }
+};

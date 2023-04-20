@@ -1,0 +1,156 @@
+typedef struct{
+    int* values;
+    int depth;
+}stack;
+
+enum stack_state {NONE = 0, EMPTY, USED, FULL};
+
+typedef struct {
+    int state;
+    stack * s;
+}status;
+
+#define STACK_NUM 100001
+#define TH 60
+
+typedef struct {
+    int cap;
+    int r_s;  //right most non empty stack index
+    int l_s;  //left most non full stack index
+    status st[STACK_NUM]; 
+} DinnerPlates;
+
+
+DinnerPlates* dinnerPlatesCreate(int capacity) {
+    DinnerPlates* rt = malloc(sizeof(DinnerPlates));
+    memset(rt, 0, sizeof(DinnerPlates));
+    rt->cap = capacity;
+    printf("cap %d", capacity);
+    return rt;
+}
+
+void dinnerPlatesPush(DinnerPlates* obj, int val) {
+                                        static int count = 0;
+    int s_idx = obj->l_s;
+    status *st = &((obj->st)[s_idx]);
+    stack *s;
+
+    switch(st->state){
+        case NONE:
+                                        count ++;
+                                        if((count!= (s_idx+1))||(count>TH)){
+                                            printf("\tAllocation %d on index %d", count, s_idx);
+                                        }
+            st->s = malloc(sizeof(stack));
+            s = st->s;
+            s->values = malloc(sizeof(int)*(obj->cap));
+            memset(s->values, 0, sizeof(int)*(obj->cap));
+            s->depth = 0;
+            
+            st->state = EMPTY;
+        case EMPTY:
+                                        if(count>TH){
+                                            printf("\tEMPTY");
+                                        }
+            if(obj->r_s < s_idx){
+                obj->r_s = s_idx;
+            }
+            st->state = USED;
+        case USED:
+            s = st->s;
+            (s->values)[s->depth] = val;
+            s->depth = s->depth + 1;
+
+                                        if(count>TH){
+                                            printf("\t D %d",  s->depth);
+                                        }
+            if((s->depth) >= (obj->cap)){
+                                            if(count>TH){
+                                                printf("\t FULL");
+                                            }
+
+                st->state = FULL;
+                for(s_idx++; s_idx<STACK_NUM; s_idx++){
+                    if(FULL !=  ((obj->st)[s_idx].state)){
+                                                    if(count>TH){
+                                                         printf("\t NEXt %d", s_idx);
+                                                    }
+                               
+                        obj->l_s = s_idx;
+                        break;
+                    }
+                }
+                if(s_idx>=STACK_NUM){
+                    printf("too many");
+                    return;
+                }
+            }
+            break;
+        case FULL:
+            printf("BANANANANANAA");
+            break;
+        default:
+            printf("BANANANANANAAdefault");
+            
+    }
+  
+}
+
+int dinnerPlatesPopAtStack(DinnerPlates* obj, int index) {
+    status *st = &((obj->st)[index]);
+    stack *s;
+    int ret = 0;
+
+    switch(st->state){
+        case NONE:
+        case EMPTY:
+            return -1;
+        case FULL:
+            st->state = USED;
+            if(index < obj->l_s){
+                obj->l_s = index;
+            }
+        case USED:
+            s = st->s;
+            s->depth = s->depth - 1;
+            ret = (s->values)[s->depth];
+            
+            if(0 == s->depth){
+                st->state = EMPTY;
+                if(index == obj->r_s){
+                    for(index--; index >= 0; index--){
+                        if((USED == (obj->st)[index].state) || (FULL==(obj->st)[index].state)){
+                            obj->r_s = index;
+                            break;
+                        }
+                    }
+                }
+            }
+            
+            return ret;
+        default: 
+            printf("  At stack default");
+    }
+    return ret;
+    
+}
+
+int dinnerPlatesPop(DinnerPlates* obj) {
+    return dinnerPlatesPopAtStack(obj, obj->r_s);   
+}
+
+void dinnerPlatesFree(DinnerPlates* obj) {
+    int idx;
+    status* st;
+    for(idx = 0; idx<100001;idx++){
+        st = &((obj->st)[idx]);
+        if(NONE != st->state){
+            free(st->s->values);
+            free(st->s);
+        } else {
+            break;
+        }
+    }
+    
+    free(obj);
+}

@@ -1,0 +1,70 @@
+class Solution {
+    vector<int> parent;
+    vector<int> rank;
+    
+    int find(int row) {
+        return parent[row] == row ? row : (parent[row] = find(parent[row]));
+    }
+    
+    void merge(int row1, int row2) {
+        auto par1 = find(row1);
+        auto par2 = find(row2);
+        
+        if (par1 == par2) return;
+        
+        if (rank[par1] < rank[par2]) {
+            swap(par1, par2);
+        } else if (rank[par1] == rank[par2]) {
+            ++rank[par1];
+        }
+        
+        parent[par2] = par1;
+    }
+    
+public:
+    int latestDayToCross(int row, int col, vector<vector<int>>& cells) {
+        static vector<pair<int, int>> moves{{0,-1},{0,1},{-1,0},{1,0}};
+        
+        // Initialize union-find structures
+        for (int i = 0; i < row * col; ++i) {
+            parent.push_back(i);
+            rank.push_back(0);
+        }
+        
+        // Track land that we uncover
+        vector<bool> valid(row * col, false);
+        
+        // Iterate backwards and uncover land. Merge land cells via union-find.
+        // When we see the top and bottom connected, return the index.
+        for (int c = cells.size()-1; c >= 0; --c) {
+            int i = cells[c][0]-1, j = cells[c][1]-1;
+            int cellEncoding = i * col + j;
+            valid[cellEncoding] = true;
+            
+            // For efficiency, merge valid top row land cells into the same set
+            if (i == 0) {
+                merge(0, cellEncoding);
+            }
+            // For efficiency, merge valid bottom row land cells into the same set
+            if (i == row-1) {
+                merge(i * col, cellEncoding);
+            }
+            
+            // For neighbors, union land cells into same set
+            for (const auto [dx, dy]: moves) {
+                int x = i + dx, y = j + dy;
+                int neighborEncoding = x * col + y;
+                if (x >= 0 && x < row && y >= 0 && y < col && valid[neighborEncoding]) {
+                    merge(cellEncoding, neighborEncoding);
+                }
+            }
+            
+            // Top and bottom of grid are connected
+            if (find((row-1)*col) == find(0)) {
+                return c;
+            }
+        }
+        
+        return -1;
+    }
+};

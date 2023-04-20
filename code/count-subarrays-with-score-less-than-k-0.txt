@@ -1,0 +1,31 @@
+long long countSubarrays(int* nums, int numsSize, long long k){
+    long long ans = 0;
+    int n = numsSize;
+    long long* preSum = malloc((n+1) * sizeof(long long) );
+    preSum[0] = 0;
+
+    for(int i = 1; i <= n; i++){
+        preSum[i] = preSum[i-1] + nums[i-1];
+    }
+    for(int i = 0; i < n ; i++){
+        if(nums[i] >= k)
+            continue;
+        else if(preSum[i+1] * (i+1) < k)
+            ans += (i+1);
+        else{
+            int l = 0, r = i, mid;
+            while(l < r){
+                mid = l + (r-l)/2;
+                long long temp = (preSum[i+1] - preSum[mid])*(i-mid+1);
+                if(temp >= k)
+                    l = mid + 1;
+                else
+                    r = mid;
+            }
+            ans += (i-l+1) ;
+        }
+    }
+    
+    return ans;
+    
+}

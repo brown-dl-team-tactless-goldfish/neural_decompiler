@@ -1,0 +1,45 @@
+public class DinnerPlates 
+{
+    private Dictionary<int, Stack<int>> dict;
+    private int capacity, current = 0, last = 0, count = 0;
+    public DinnerPlates(int capacity) 
+    {
+        this.capacity = capacity;
+        dict = new Dictionary<int, Stack<int>>();
+        dict.Add(current, new Stack<int>());
+    }
+    
+    public void Push(int val) 
+    {
+        while(dict.ContainsKey(current) && dict[current].Count == capacity)
+            current++;
+        
+        if(!dict.ContainsKey(current))
+            dict[current] = new Stack<int>();
+        
+        dict[current].Push(val);
+        last = Math.Max(last, current);
+        count++;
+    }
+    
+    public int Pop() 
+    {
+        if(count == 0) return -1;
+        while(last >= 0 && dict[last].Count == 0)
+            last--;
+        
+        count--;
+        current = Math.Min(current, last);
+        return dict[last].Pop();
+    }
+    
+    public int PopAtStack(int index) 
+    {
+        if(!dict.ContainsKey(index) || dict[index].Count == 0)
+            return -1;
+        
+        count--;
+        current=Math.Min(current, index);
+        return dict[index].Pop();
+    }
+}

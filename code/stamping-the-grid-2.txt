@@ -1,0 +1,32 @@
+class Solution:
+    def possibleToStamp(self, a: List[List[int]], H: int, W: int) -> bool:
+        
+        def get_prefix(a):
+            n, m = len(a), len(a[0])
+            prefix = [[0]*(m + 1) for _ in range(n + 1)]
+            for i in range(n):
+                for j in range(m):
+                    prefix[i+1][j + 1] = prefix[i+1][j] + prefix[i][j+1] -prefix[i][j] + a[i][j]
+            return prefix
+       
+        if not a or not a[0]:return True
+        n, m = len(a), len(a[0])
+        stamp_mask = [[0]*m for _ in range(n)]
+        occupied_prefix = get_prefix(a)
+        
+        for i in range(n - H + 1):
+            for j in range(m - W + 1):
+                if a[i][j] == 1:continue
+                r, c = i + H -1, j + W - 1
+                if occupied_prefix[r+1][c+1] -occupied_prefix[r+1][j] - occupied_prefix[i][c+1] + occupied_prefix[i][j] == 0:
+                    stamp_mask[i][j] = 1
+           
+        stamp_prefix = get_prefix(stamp_mask)
+        
+        for r in range(n):
+            for c in range(m):
+                if a[r][c] == 1:continue
+                i, j = max(0, r - H + 1), max(0, c - W +1)
+                if stamp_prefix[r+1][c+1] -stamp_prefix[r+1][j] - stamp_prefix[i][c+1]+ stamp_prefix[i][j] == 0:
+                    return False
+        return True

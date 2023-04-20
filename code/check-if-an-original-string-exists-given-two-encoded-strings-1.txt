@@ -1,0 +1,170 @@
+class Solution
+{
+public:
+    
+    inline bool is_end(string &s, int p, int c)
+    {
+        return p == s.length() && c == 0;
+    }
+    
+    inline bool is_digit(char c)
+    {
+        return c >= '0' && c <= '9';
+    }
+    
+    inline bool is_letter(char c)
+    {
+        return c >= 'a' && c <= 'z';
+    }
+
+    map<pair<pair<int, int>, pair<int, int>>, bool> f;
+    
+    inline bool dfs(string &s1, string &s2, int p1, int p2, int c1, int c2)
+    {
+        pair<pair<int, int>, pair<int, int>> key = make_pair(make_pair(p1, p2), make_pair(c1, c2));
+
+        if (f.find(key) != f.end())
+        {
+            return f[key];
+        }
+
+        bool e1 = is_end(s1, p1, c1);
+        bool e2 = is_end(s2, p2, c2);
+        
+        if (e1 && e2)
+        {
+            return f[key] = true;
+        }
+        
+        if (e1 != e2)
+        {
+            return f[key] = false;
+        }
+        
+        if (c1 > 0 && c2 > 0)
+        {
+            return f[key] = dfs(s1, s2, p1, p2, c1 - min(c1, c2), c2 - min(c1, c2));
+        }
+        
+        if (c1 > 0)
+        {
+            // Here, c2 must be 0 and thus p2 < s2.length
+            
+            if (is_letter(s2[p2]))
+            {
+                return f[key] = dfs(s1, s2, p1, p2 + 1, c1 - 1, 0);
+            }
+            else
+            {
+                int num = 0;
+                
+                for (int i = 0; p2 + i < s2.length(); i++)
+                {
+                    if (!is_digit(s2[p2 + i]))
+                    {
+                        break;
+                    }
+                    
+                    num = num * 10 + s2[p2 + i] - '0';
+                    
+                    if (dfs(s1, s2, p1, p2 + i + 1, c1, num))
+                    {
+                        return f[key] = true;
+                    }
+                }
+                
+                return f[key] = false;
+            }
+        }
+            
+        if (c2 > 0)
+        {
+            // Here, c1 must be 0 and thus p1 < s1.length
+            
+            if (is_letter(s1[p1]))
+            {
+                return f[key] = dfs(s1, s2, p1 + 1, p2, 0, c2 - 1);
+            }
+            else
+            {
+                int num = 0;
+                
+                for (int i = 0; p1 + i < s1.length(); i++)
+                {
+                    if (!is_digit(s1[p1 + i]))
+                    {
+                        break;
+                    }
+                    
+                    num = num * 10 + s1[p1 + i] - '0';
+                    
+                    if (dfs(s1, s2, p1 + i + 1, p2, num, c2))
+                    {
+                        return f[key] = true;
+                    }
+                }
+                
+                return f[key] = false;
+            }
+        }
+        
+        // Here, both c1 and c2 must be 0s
+        
+        if (is_letter(s1[p1]) && is_letter(s2[p2]))
+        {
+            return f[key] = (s1[p1] == s2[p2] && dfs(s1, s2, p1 + 1, p2 + 1, 0, 0));
+        }
+        
+        if (is_digit(s1[p1]))
+        {
+            int num = 0;
+            
+            for (int i = 0; p1 + i < s1.length(); i++)
+            {
+                if (!is_digit(s1[p1 + i]))
+                {
+                    break;
+                }
+                
+                num = num * 10 + s1[p1 + i] - '0';
+                
+                if (dfs(s1, s2, p1 + i + 1, p2, num, 0))
+                {
+                    return f[key] = true;
+                }
+            }
+            
+            return f[key] = false;
+        }
+        
+        if (is_digit(s2[p2]))
+        {
+            int num = 0;
+            
+            for (int i = 0; p2 + i < s2.length(); i++)
+            {
+                if (!is_digit(s2[p2 + i]))
+                {
+                    break;
+                }
+                
+                num = num * 10 + s2[p2 + i] - '0';
+                
+                if (dfs(s1, s2, p1, p2 + i + 1, 0, num))
+                {
+                    return f[key] = true;
+                }
+            }
+
+			return f[key] = false;
+        }
+        
+        // Ideally, we should never go here
+        throw invalid_argument("Sth went wrong");
+    }
+    
+    bool possiblyEquals(string s1, string s2)
+    {
+        return dfs(s1, s2, 0, 0, 0, 0);
+    }
+};

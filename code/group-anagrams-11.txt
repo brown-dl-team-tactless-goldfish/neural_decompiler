@@ -1,0 +1,89 @@
+struct map{
+    int count[26];
+};
+
+struct my_struct{
+    struct map charMap;
+    int index;
+    UT_hash_handle hh;
+};
+
+void createMap(char *str, struct map *out){
+    int i = 0;
+    while(i < strlen(str)){
+        out->count[str[i] - 'a']++;
+        i++;
+    }
+}
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+char *** groupAnagrams(char ** strs, int strsSize, int* returnSize, int** returnColumnSizes){
+    struct my_struct *list = NULL, *item = NULL, *temp = NULL;
+    struct map charMap = {0};
+    char ***res = NULL;
+    int i = 0, index = 0;
+    *returnSize = 0;
+
+    res = (char ***)malloc(sizeof(*res));
+    *returnColumnSizes = (int *)malloc(sizeof(int));
+
+    while (i < strsSize){
+        memset(&charMap, 0, sizeof(struct map));
+        createMap(strs[i], &charMap);
+
+        /*Search the angram in hashmap */
+        HASH_FIND(hh, list, &charMap, sizeof(struct map), item);
+        if(item == NULL){
+            /*Add the item in hash map*/
+            item = (struct my_struct *)malloc(sizeof(struct my_struct));
+            memcpy(&item->charMap, &charMap, sizeof(struct map));
+            item->index = *returnSize;
+            HASH_ADD(hh, list, charMap, sizeof(struct map), item);
+
+            /*copy the response*/
+            //printf("1st:%s\n",strs[i]);
+            res = (char ***)realloc(res, sizeof(*res) * (*returnSize + 1));
+            *returnColumnSizes = (int *)realloc(*returnColumnSizes, sizeof(int)*(*returnSize + 1));
+            (*returnColumnSizes)[*returnSize] = 0;
+            res[*returnSize] = (char **)malloc(sizeof(char *));
+            res[*returnSize][(*returnColumnSizes)[*returnSize]] = (char *)malloc(sizeof(char) * (strlen(strs[i]) + 1));
+            strncpy(res[*returnSize][(*returnColumnSizes)[*returnSize]], strs[i], strlen(strs[i]));
+            res[*returnSize][(*returnColumnSizes)[*returnSize]][strlen(strs[i])] = '\0';
+            ((*returnColumnSizes)[*returnSize])++;
+            (*returnSize)++;
+        } else {
+            /*item already present in hash map, get the index in the response */
+            index = item->index;
+            //printf("2nd:%s, idx:%d, (*returnColumnSizes)[index]:%d\n",strs[i],index, (*returnColumnSizes)[index]);
+            /*copy the response on the index */
+
+            res[index] = (char **)realloc(res[index], sizeof(char *)*((*returnColumnSizes)[index]+1));
+  
+            res[index][(*returnColumnSizes)[index]] = (char *)malloc(sizeof(char) * (strlen(strs[i]) + 1));
+            strncpy(res[index][(*returnColumnSizes)[index]], strs[i], strlen(strs[i]));
+            res[index][(*returnColumnSizes)[index]][strlen(strs[i])] = '\0';
+            ((*returnColumnSizes)[index])++;
+        }
+        i++;
+    }
+
+    HASH_ITER(hh, list, item, temp) {
+        HASH_DEL(list, item);  
+        free(item); 
+    }
+    #if 0
+    printf("returnSize:%d\n", *returnSize);
+    for(int i = 0; i < *returnSize; i++){
+        printf("colSize:%d\n", (*returnColumnSizes)[i]);
+        for(int j = 0; j < (*returnColumnSizes)[i]; j++){
+            printf("str:%s,",res[i][j]);
+        }
+        printf("\n", *returnSize);
+    }
+    #endif
+    return res;
+}

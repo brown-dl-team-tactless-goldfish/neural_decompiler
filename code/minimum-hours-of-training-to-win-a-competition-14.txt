@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int minNumberOfHours(int initialEnergy, int initialExperience, vector<int>& energy, vector<int>& experience) {
+        int ans = 0;
+        for(int i = 0 ; i < energy.size(); i++){
+            initialEnergy -= energy[i];
+        }
+        if(initialEnergy <= 0){
+            ans += abs(initialEnergy) + 1;
+        }
+        for(int i = 0 ; i < experience.size() ;i++){
+            if(initialExperience - experience[i] >= 1){
+                initialExperience += experience[i];
+            }
+            else{
+                int val = experience[i] - initialExperience  + 1;
+                ans += val;
+                initialExperience = 2 * experience[i] + 1;
+            }
+        }
+        return ans;
+    }
+};
+
+// one pass
+
+    int minNumberOfHours(int initialEnergy, int initialExperience, vector<int>& energy, vector<int>& experience) {
+        int ans = 0;
+        int n = energy.size();
+        for(int i = 0 ; i < n ; i++){
+            initialEnergy -= energy[i];
+            if(initialExperience - experience[i] >= 1){
+                initialExperience += experience[i];
+            }
+            else{
+                int val = experience[i] - initialExperience  + 1;
+                ans += val;
+                initialExperience = 2 * experience[i] + 1;
+            }
+        }
+        if(initialEnergy <= 0){
+            ans += abs(initialEnergy) + 1;
+        }
+        return ans;
+    }

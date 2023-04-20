@@ -1,0 +1,63 @@
+class Solution {
+public:
+    int GetNumber(const string &str, int &index) {
+        bool is_negative = false;
+        if (str[index] == '-') {
+            is_negative = true;
+            ++index;
+        }
+        if (str[index] == '+') {
+            ++index;
+        }
+        int num = 0;
+        while (index < str.size() && isdigit(str[index]))
+            num = 10 * num + (str[index++] - '0');
+        if (is_negative)
+            num = -num;
+        return num;
+    }
+    void ParseExpression(const string &str, int start_index, int one_past_end, int &x_coeff, int &const_coeff, int multiplier) {
+        while (start_index < one_past_end) {
+            char c = str[start_index];
+            if (c == 'x') {
+                x_coeff += multiplier;
+                ++start_index;
+                continue ;
+            } else if (c == '+') {
+                ++start_index;
+                continue ;
+            } else if (c == '-') {
+                assert(start_index + 1 < one_past_end);
+                if (str[start_index + 1] == 'x') {
+                    x_coeff -= multiplier;
+                    start_index += 2;
+                    continue ;
+                }
+            }
+            int coefficient = multiplier * GetNumber(str, start_index);
+            if (start_index < one_past_end && str[start_index] == 'x') {
+                x_coeff += coefficient;
+                ++start_index;
+                continue;
+            }
+            const_coeff += coefficient;
+        }
+        return ;
+    }
+    string solveEquation(string equation) {
+        int x_coeff = 0, const_coeff = 0;
+        int equality_index = 0;
+        while (equality_index < equation.size() && equation[equality_index] != '=') equality_index++;
+        assert(equality_index < equation.size());
+        ParseExpression(equation, 0, equality_index, x_coeff, const_coeff, 1);
+        ParseExpression(equation, equality_index + 1, equation.size(), x_coeff, const_coeff, -1);
+        if (x_coeff == 0) {
+            if (const_coeff == 0)
+                return string("Infinite solutions");
+            return string("No solution");
+        }
+        int result = -const_coeff / x_coeff;
+        string str = string("x=") + to_string(result);
+        return str;
+    }
+};

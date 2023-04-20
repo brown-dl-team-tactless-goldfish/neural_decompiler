@@ -1,0 +1,167 @@
+class Solution {
+public:
+    int n;
+    int tt = 0;
+    vector<vector<int>> dp;
+    vector<int> used;
+    vector<vector<int>> matrix;
+    bool onechild = false;
+    int edgecnt = 0;
+    int dfs(unordered_set<int>& ids, vector<int>& parent)
+    {
+        int n = ids.size();
+        vector<int> ps;
+        if (ids.size() == 1)
+        {
+            used[*ids.begin()] = 1;
+            for (auto& id : parent)
+            {
+                if (matrix[*ids.begin()][id] == 0)
+                {
+                    return 0;
+                }
+                else
+                {
+                    edgecnt++;
+                }
+            }
+            return 1;
+        }
+        int maxl = n - 1;
+        int pid = -1;
+        for (auto& id : ids)
+        {
+            if (dp[id].size() >= maxl)
+            {
+                maxl = dp[id].size();
+                pid = id;
+            }
+        }
+        int cnt = 0;
+        for (auto& id : ids)
+        {
+            if (dp[id].size() == maxl)
+            {
+                cnt++;
+            }
+        }
+        onechild = onechild | (cnt > 1);
+        //cout << pid << endl;
+
+        if (pid == -1)
+        {
+            return 0;
+        }
+        used[pid] = 1;
+        int res = 0;
+
+        {
+            int p = pid;
+            bool find = false;
+            int cnt = 0;
+
+            for (auto& id : parent)
+            {
+                if (matrix[p][id] == 0)
+                {
+                    return 0;
+                }
+                else
+                {
+                    edgecnt++;
+                }
+            }
+            int remain = n - 1;
+            int r = 1;
+            parent.push_back(p);
+            while (remain > 0)
+            {
+
+                // find next best id;
+                maxl = 0;
+                int nid = -1;
+                for (auto& id : ids)
+                {
+                    if ((used[id] == false) && (maxl < dp[id].size()))
+                    {
+                        maxl = dp[id].size();
+                        nid = id;
+                    }
+                }
+
+                {
+                    int id = nid;
+                    if (id == -1)
+                    {
+                        return 0;
+                    }
+                    unordered_set<int> cur;
+                    cur.insert(id);
+                    for (int i = 1; i < tt; i++)
+                    {
+                        if ((used[i] == false) && (matrix[id][i] == 1))
+                        {
+                            cur.insert(i);
+                            //cout << i << "," << id << endl;
+                        }
+                    }
+                    // visit(id, ids, p, cur);
+                    r = dfs(cur, parent);
+                    if (r == 0)
+                    {
+                        return 0;
+                    }
+                    remain -= cur.size();
+
+                }
+            }
+            parent.pop_back();
+            res = r;
+
+        }
+        return res;
+    }
+    int checkWays(vector<vector<int>>& pairs) {
+
+        vector<int> ids;
+        unordered_set<int> total;
+        for (auto& p : pairs)
+        {
+            int m = max(p[0], p[1]);
+            if (dp.size() <= m)
+            {
+                dp.resize(m + 1);
+            }
+            dp[p[0]].push_back(p[1]);
+
+            dp[p[1]].push_back(p[0]);
+
+            total.insert(p[0]);
+            total.insert(p[1]);
+        }
+        n = dp.size();
+        used = vector<int>(n, 0);
+        matrix = vector<vector<int>>(n, vector<int>(n, 0));
+        for (auto& p : pairs)
+        {
+            matrix[p[0]][p[1]] = 1;
+            matrix[p[1]][p[0]] = 1;
+        }
+
+        int i = 0;
+        tt = n;
+        for (auto& v : dp)
+        {
+            ids.push_back(i);
+            i++;
+        }
+
+        vector<int> parent;
+        int r = dfs(total, parent);
+        if (edgecnt != pairs.size())
+        {
+            r = 0;
+        }
+        return (r == 0) ? r : (onechild ? 2 : 1);
+    }
+};

@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int daysBetweenDates(string a, string b, int y1 = 0, int m1 = 0, int d1 = 0, int y2 = 0, int m2 = 0, int d2 = 0, char _ = '-') {
+        auto leapYears = [](auto y, auto m) {
+            if (m <= 2) --y; // don't count current year if month is Jan/Feb
+            return (y / 400) + (y / 4) - (y / 100);
+        };
+        vector<int> monthDays{0, 0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30};
+        for (auto i = 1; i < monthDays.size(); ++i)
+            monthDays[i] += monthDays[i - 1];
+        auto days = [&](auto y, auto m, auto d) {
+            return (y * 365) + leapYears(y, m) + monthDays[m] + d;
+        };
+        stringstream ss1{a}, ss2{b};
+        ss1 >> y1 >> _ >> m1 >> _ >> d1;
+        ss2 >> y2 >> _ >> m2 >> _ >> d2;
+        auto p = days(y1, m1, d1),
+             q = days(y2, m2, d2);
+        return abs(p - q);
+    }
+};

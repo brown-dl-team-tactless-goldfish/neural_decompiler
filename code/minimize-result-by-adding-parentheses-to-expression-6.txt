@@ -1,0 +1,39 @@
+public class Solution {
+    
+    private int min = Int32.MaxValue;
+    private string res = "";
+    public string MinimizeResult(string expression) {
+        
+        int k = expression.IndexOf('+');
+        helper(expression, k, k - 1, k + 1);
+        return res;
+    }
+    
+    private void helper(string expression, int k, int i, int j)
+    {
+        if(i < 0 || j >= expression.Length)
+            return;
+        
+        string str1 = expression.Substring(i, k - i);
+        int num1 = Convert.ToInt32(str1);
+        
+        string str2 = expression.Substring(k + 1, j - k);
+        int num2 = Convert.ToInt32(str2);
+        
+        string prefixStr = expression.Substring(0, i);
+        int prefix = i == 0? 1 : Convert.ToInt32(prefixStr);
+        
+        string suffixStr = expression.Substring(j+1, expression.Length - 1 - j);
+        int suffix = expression.Length - 1 - j == 0? 1 : Convert.ToInt32(suffixStr);
+        
+        int prod = prefix * (num1 + num2) * suffix;
+        if(prod < min)
+        {
+            min = prod;
+            res = prefixStr + "(" + str1 + "+" + str2 + ")" + suffixStr;
+        }
+        
+        helper(expression, k, i, j+1);
+        helper(expression, k, i-1, j);
+    }
+}

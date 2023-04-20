@@ -1,0 +1,41 @@
+class Solution {
+    int get_characteristic(string& str){
+        int characteristic = 0;
+        for (char const& c: str) {
+            int pos = c - 'a';
+            characteristic |= (0x1 << pos);
+        }
+        return characteristic;
+    }
+public:
+    vector<int> findNumOfValidWords(vector<string>& words, vector<string>& puzzles) {
+        vector<int> word_characteristics;
+        vector<pair<int, int>> puzzle_characteristics;
+        for (string& word: words){
+            word_characteristics.push_back(get_characteristic(word));
+        }
+        sort(word_characteristics.begin(), word_characteristics.end());
+        
+        for (string& word: puzzles){
+            int first_letter = word[0] - 'a';
+            puzzle_characteristics.push_back(pair(first_letter, get_characteristic(word)));
+        }
+        
+        vector<int> result;
+        for (int i=0; i<puzzles.size(); i++){
+            int valid = 0;
+            int puzzle_first_letter = puzzle_characteristics[i].first;
+            int puzzle_characteristic = puzzle_characteristics[i].second;
+            for (int j=0; j<words.size(); j++) {
+                int word_characteristic = word_characteristics[j];
+                if (word_characteristic > puzzle_characteristic) break;
+                bool word_valid = (((0x1 << puzzle_first_letter) | word_characteristic) == word_characteristic)
+                    && 
+                    (puzzle_characteristic | word_characteristic) == puzzle_characteristic;
+                if (word_valid) valid++;
+            }
+            result.push_back(valid);
+        }
+        return result;
+    }
+};

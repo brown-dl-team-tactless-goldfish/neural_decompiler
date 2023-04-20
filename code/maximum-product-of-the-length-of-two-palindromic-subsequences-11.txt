@@ -1,0 +1,44 @@
+class Solution {
+    int ans;
+    // Check for palindrome
+    bool isPalindrome(string& temp){
+        int i=0,j = temp.length() - 1;
+        while(i<j){
+            if(temp[i]!=temp[j]){
+                return false;
+            }
+            i++,j--;
+        }
+        return true;
+    }
+    
+    void helper(int i,string& str,string temp,int prev,vector<bool> &vis){
+        if(i==str.length()){
+            if(isPalindrome(temp)){
+				// If we have already found 1 palindromic subsequence
+                if(prev!=-1){
+                    int s = temp.length();
+                    ans=max(ans,prev*s);
+                }
+                else{ // Search for another palindromic subsequence
+                    helper(0,str,"",temp.length(),vis);
+                }
+            }
+            return ; 
+        }
+        helper(i+1,str,temp,prev,vis);
+        if(!vis[i]){
+            vis[i]=true;
+            helper(i+1,str,temp+str[i],prev,vis);
+            vis[i]=false;
+        }
+    }
+    
+public:
+    int maxProduct(string s) {
+        ans = 0;
+        vector<bool> vis(s.length(),false);
+        helper(0,s,"",-1,vis);
+        return ans;
+    }
+};

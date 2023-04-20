@@ -1,0 +1,46 @@
+class Solution {
+public:
+    vector<string> watchedVideosByFriends(vector<vector<string>>& watchedVideos, vector<vector<int>>& friends, int id, int level) {
+        unordered_set<int> cur;
+        unordered_set<int> next;
+        unordered_set<int> visited;
+        cur.insert(id);
+        visited.insert(id);
+        
+        // O(N^3)
+        for (int i = 0; i < level; ++i) {
+            for (int c : cur) {
+                for (int f : friends[c]) {
+                    if (!visited.count(f)) {
+                        next.insert(f);
+                        visited.insert(f);
+                    }
+                }
+            }
+            
+            swap(cur, next);
+            next.clear();
+        }
+        
+        // O(N)
+        unordered_map<string, int> watches;
+        vector<string> res;
+        for (int c : cur) {
+            for (string& vid : watchedVideos[c]) {
+                if (!watches.count(vid)) {
+                    res.push_back(vid);
+                }
+                ++watches[vid];
+            }
+        }
+        
+        // O(N*log(N))
+        sort(res.begin(), res.end(), [&](string& lhs, string& rhs) {
+            int lwatch = watches[lhs];
+            int rwatch = watches[rhs];
+            return lwatch == rwatch ? lhs < rhs : lwatch < rwatch;
+        });
+        
+        return res;
+    }
+};

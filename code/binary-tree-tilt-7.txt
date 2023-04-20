@@ -1,0 +1,33 @@
+int findSum(struct TreeNode* root)
+{
+    if (!root)
+        return 0;
+
+    if (root->left == NULL && root->right == NULL)
+        return root->val;
+
+    return root->val + findSum(root->left) + findSum(root->right);
+}
+
+int findTilt(struct TreeNode* root)
+{
+    int tilt = 0;
+    int leftSum = 0;
+    int rightSum = 0;
+    
+    if (!root)
+        return 0;
+    
+    if (root->left == NULL && root->right == NULL)
+        return 0;
+
+    leftSum = findSum(root->left);
+    rightSum = findSum(root->right);
+
+    tilt = leftSum - rightSum;
+    
+    if (tilt < 0)
+        tilt = -tilt;
+    
+    return tilt + findTilt(root->left) + findTilt(root->right);
+}

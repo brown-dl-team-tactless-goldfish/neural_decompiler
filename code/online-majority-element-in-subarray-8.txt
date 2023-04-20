@@ -1,0 +1,25 @@
+class MajorityChecker {
+public:
+    MajorityChecker(vector<int>& arr) : arr(arr) {
+        for (int i = 0; i < arr.size(); ++i) {
+            if (mp.find(arr[i]) == mp.end()) mp[arr[i]] = vector<int>(1, i);
+            else mp[arr[i]].push_back(i);
+        }
+        srand((unsigned) time(0));
+    }
+    
+    int query(int left, int right, int threshold) {
+        for (int i = 0; i < 20; ++i) {
+            int rand_i = rand() % (right - left + 1) + left;
+            int st_idx = lower_bound(mp[arr[rand_i]].begin(), mp[arr[rand_i]].end(), left)
+                    - mp[arr[rand_i]].begin();
+            int ed_idx = upper_bound(mp[arr[rand_i]].begin(), mp[arr[rand_i]].end(), right)
+                    - mp[arr[rand_i]].begin();
+            if (ed_idx - st_idx >= threshold) return arr[rand_i];
+        }
+        return -1;
+    }
+private:
+    unordered_map<int, vector<int>> mp;
+    vector<int> arr;
+};

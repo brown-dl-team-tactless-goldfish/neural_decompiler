@@ -1,0 +1,49 @@
+class Solution {
+    func maxPoints(_ points: [[Int]]) -> Int {
+        if points.count < 2 {
+            return 1
+        }
+        
+        var bySlop: [Double: Int] = [:]
+        var result = 0
+        
+        for i in 0..<points.count {
+            let p1 = points[i]
+            bySlop = [:]
+            for j in 0..<points.count {
+                if i == j { continue }
+
+                let p2 = points[j] 
+                
+				/*
+				Straight line formula
+				======================
+				y = mx + c
+				m = (y2 - y1)/(x2 - x1)
+				*/
+                let yDiff = (p2[1] - p1[1])
+                let xDiff = (p2[0] - p1[0])
+
+                let m: Double
+                if xDiff == 0 && yDiff > 0 {
+                    m = Double(Int.max)
+                } else {
+                    m = Double(yDiff)/Double(xDiff)
+                }
+
+                var slopPoints = bySlop[m] ?? 0
+                if slopPoints == 0 {
+                    slopPoints = 2
+                } else {
+                    slopPoints += 1
+                }
+
+                bySlop[m] = slopPoints
+
+                result = max(result, slopPoints)
+            }
+        }
+        
+        return result
+    }
+}

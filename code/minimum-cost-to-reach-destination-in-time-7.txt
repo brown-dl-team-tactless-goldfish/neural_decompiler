@@ -1,0 +1,33 @@
+class Solution {
+    long long dfs(int i, vector<int>& passingFees, vector<vector<int>> &dp, vector<vector<int>> graph[], int maxTime)
+    {
+        if(i == passingFees.size()-1)
+            return passingFees[passingFees.size()-1];
+        if(dp[i][maxTime] != -1)
+            return dp[i][maxTime];
+        long long mx = INT_MAX;
+        for(vector<int> &v : graph[i])
+        {
+            if(maxTime-v[1] < 0)
+                continue;
+            long long val = (long long)passingFees[i] + dfs(v[0], passingFees, dp, graph, maxTime-v[1]);
+            if(mx > val)
+                mx = val;
+        }
+        return dp[i][maxTime] = mx;
+    }
+public:
+    int minCost(int maxTime, vector<vector<int>>& edges, vector<int>& passingFees) {
+        int n = passingFees.size();
+        vector<vector<int>> graph[n];
+        for(vector<int> &vec : edges)
+        {
+            graph[vec[0]].push_back({vec[1],vec[2]});
+            graph[vec[1]].push_back({vec[0],vec[2]});
+        }
+        vector<vector<int>> dp(n+1, vector<int> (maxTime+1,-1));
+        long long ans = dfs(0, passingFees, dp, graph, maxTime);
+        if(ans >= INT_MAX) return -1;
+        return ans;
+    }
+};

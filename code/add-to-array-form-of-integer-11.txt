@@ -1,0 +1,65 @@
+int* addToArrayForm(int* A, int ASize, int k, int* returnSize){
+    //Handle Edge Cases
+    if(k==0){
+        *returnSize=ASize;
+        return A;
+    }
+    
+    int carry=0; int sum=0;
+    //Run a loop for the entire size of the array starting from the rightmost element.
+	//At the end the result has the sum of some or all the digits of k and all the array elements
+    for(int i=ASize-1;i>=0;i--){
+        sum=A[i]+(k%10)+carry;
+        if(sum>=10)
+        {
+            carry=sum/10; sum=sum%10;
+        }
+        else{
+            carry=0;
+        }
+        A[i]=sum;
+        k/=10;
+    }
+    
+	//For cases where k has more digits than elements in the array
+	//Here I check if k has any digits left 
+    int extra_size=0;
+    if(k>0){
+        extra_size=log10(k)+1;
+    }
+    if(carry>0) extra_size++;
+    
+	//Sizing the return array  according as more space might be needed depending on carry
+    if(extra_size>=0) *returnSize=ASize+extra_size;
+    else *returnSize=ASize;
+    
+    int* ret_arr=(int*)malloc(*returnSize*sizeof(int));
+    
+	//As on now the sum exists in the input Array itself.
+	//So I copy the A array into the return Array depending on the value of extra_size
+    if(extra_size>=0) memcpy(ret_arr+extra_size,A,ASize*sizeof(int));
+    else memcpy(ret_arr,A,ASize*sizeof(int));
+    
+	//Handle the extra digits of k if present
+    if(extra_size>=0){
+        for(int i=extra_size-1;i>=0;i--){
+           sum=(k%10)+carry;
+            if(sum>=10)
+            {
+                carry=sum/10; sum=sum%10;
+            }
+            else{
+                carry=0;
+            }
+            ret_arr[i]=sum;
+            k/=10;
+        }
+    }
+    
+    //Cancel out if there is a leading zero
+     if(ret_arr[0] != 0) return ret_arr;
+    else{
+        *returnSize=*returnSize-1;
+    }
+    return ret_arr+1;    
+}

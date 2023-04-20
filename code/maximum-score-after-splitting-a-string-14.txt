@@ -1,0 +1,53 @@
+class Solution {
+public:
+    int maximumGain(string s, int x, int y) {
+        //to calculate min(a, b) at the end
+        s += 'c';
+        
+        int sum = 0;
+        int a = 0, b = 0;
+        
+        if(x>y) {
+            for(auto c : s) {
+                if(c == 'a') {
+                    a++;
+                }
+                else if(c == 'b') {
+                    if(a) {
+                        sum += x;
+                        a--;
+                    }
+                    else {
+                        b++;
+                    }
+                }
+                else {
+                    sum += min(a, b) * y;
+                    a = b = 0;
+                }
+            }
+        }
+        else {
+            for(auto c : s) {
+                if(c == 'b') {
+                    b++;
+                }
+                else if(c == 'a') {
+                    if(b) {
+                        b--;
+                        sum += y;
+                    }
+                    else {
+                        a++;
+                    }
+                }
+                else {
+                    sum += min(a, b) * x;
+                    a = b = 0;
+                }
+            }
+        }
+        
+        return sum;
+    }
+};

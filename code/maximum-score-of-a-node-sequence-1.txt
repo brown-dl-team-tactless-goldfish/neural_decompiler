@@ -1,0 +1,42 @@
+    public int MaximumScore(int[] scores, int[][] edges) {
+        int n = scores.Length;
+        var graph = new List<(int, int)>[n];     // <score, id>
+        
+        // get insertion sort pos
+        int index(List<(int, int)> list, int val) {
+            int j = 0;
+            while(j < list.Count && list[j].Item1 > val) j++;
+            return j;
+        }
+        
+        // for each node save the most largest 3 neighbors
+        foreach(var e in edges) {
+            if(graph[e[0]] == null) graph[e[0]] = new List<(int, int)>();
+            if(graph[e[1]] == null) graph[e[1]] = new List<(int, int)>();
+            if(graph[e[0]].Count == 0) 
+                graph[e[0]].Add((scores[e[1]], e[1]));
+            else {
+                var idx1 = index(graph[e[0]], scores[e[1]]);
+                graph[e[0]].Insert(idx1, (scores[e[1]], e[1]));
+            }
+            if(graph[e[1]].Count == 0) 
+                graph[e[1]].Add((scores[e[0]], e[0]));
+            else {
+                var idx2 = index(graph[e[1]], scores[e[0]]);
+                graph[e[1]].Insert(idx2, (scores[e[0]], e[0]));
+            }
+            if(graph[e[0]].Count > 3) graph[e[0]].RemoveAt(3);
+            if(graph[e[1]].Count > 3) graph[e[1]].RemoveAt(3);
+        }
+        
+
+        int result = -1;
+        foreach(var e in edges) {
+            int a = e[0], b = e[1], sa = scores[e[0]], sb = scores[e[1]];
+            foreach(var (sc, c) in graph[a])
+                foreach(var (sd, d) in graph[b]) 
+                    if(sa + sb + sc + sd > result && c != b && c != d && d != a)
+                        result = sa + sb + sc + sd;
+        }
+        return result;
+    }

@@ -1,0 +1,46 @@
+#include<math.h>
+
+void HowmanyRoot(struct TreeNode* root,int* nums)
+{
+	if(root==NULL)
+	{
+		return;
+	}
+	(*nums)++;
+	HowmanyRoot(root->left,nums);
+	HowmanyRoot(root->right,nums); 
+}
+
+
+void difference(struct TreeNode* root,int* array,int* nth)
+{
+	if(root==NULL)
+	{
+		return;
+	}
+	difference(root->left,array,nth);
+	array[*nth]=root->val;
+	(*nth)++;
+	difference(root->right,array,nth);
+}
+
+int getMinimumDifference(struct TreeNode* root){
+
+	int nums=0;
+	HowmanyRoot(root,&nums);
+
+	int nth=0;
+	int* array=malloc(sizeof(int)*nums);
+	difference(root,array,&nth);
+
+	int min=100000;
+	for(int i=0;i<nums-1;i++)
+	{
+		if(array[i+1]-array[i]<min)
+		{
+			min = array[i+1]-array[i];
+		}
+	}
+
+	return min;
+}

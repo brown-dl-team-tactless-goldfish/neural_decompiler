@@ -1,0 +1,48 @@
+struct ListNode *newNode(int val)
+{
+    struct ListNode *node = (struct ListNode*)malloc(sizeof(struct ListNode));
+    node->val = val;
+    node->next = NULL;
+    
+    return node;
+}
+int* deckRevealedIncreasing(int* deck, int deckSize, int* returnSize) {
+    struct ListNode *head = NULL;
+    struct ListNode *temp;
+    
+    qsort(deck, deckSize, sizeof(int), cmpfunc);
+    
+    temp = newNode(deck[deckSize - 1]);
+    head = temp;
+   
+    for(int i = deckSize - 2; i >= 0; i--){
+        struct ListNode *last = head;
+        struct ListNode *prev = head;
+        while(last->next){
+            prev = last;
+            last = last->next;
+        }
+        if(last != head){
+            int lastVal = last->val;
+            free(last);
+            prev->next = NULL;
+                      
+            temp = newNode(lastVal);
+            temp->next = head;
+            head = temp;
+        }
+        temp = newNode(deck[i]);
+        temp->next = head;
+        head = temp;
+    }
+    int* res = calloc(deckSize, sizeof(int));
+    int i = 0;
+    *returnSize = deckSize;
+
+    temp = head;
+    while(temp){
+       res[i++] = temp->val;        
+       temp = temp->next;
+    }
+    return res; 
+}

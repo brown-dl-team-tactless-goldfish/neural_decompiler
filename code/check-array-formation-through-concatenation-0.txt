@@ -1,0 +1,28 @@
+bool canFormArray(int* arr, int arrSize, int** pieces, int piecesSize, int* piecesColSize){
+    int* position = malloc(101 * sizeof(int) ) ;
+    bool ans = true ;
+    for(int i = 0; i < 101; i++){
+        position[i] = -1 ;
+    }
+
+    for(int i = 0; i < arrSize; i++){
+        position[ arr[i] ] = i ;
+    }
+
+    for(int i = 0; i < piecesSize; i++){
+        if(ans == false)
+            break ;
+        for(int j = 0; j < piecesColSize[i] ; j++){
+            if(position[pieces[i][j]] == -1){
+                ans =  false ;
+                break ;
+            }
+            if( j > 0 && position[pieces[i][j]] != ( position[pieces[i][j-1]] + 1)  ){
+                ans = false ;
+                break ;
+            }
+        }
+    }
+    free(position) ;
+    return ans ;
+}

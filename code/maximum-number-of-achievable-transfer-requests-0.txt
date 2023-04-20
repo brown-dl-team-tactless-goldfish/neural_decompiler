@@ -1,0 +1,10 @@
+def maximumRequests(self, n: int, requests: List[List[int]]) -> int:
+    @lru_cache(None)
+    def dfs(i : int, balance: Tuple[int]) -> int:
+        if i == len(requests):
+            return 0 if all(b == 0 for b in balance) else float('-inf') 
+        bal = list(balance)
+        bal[requests[i][0]] -= 1
+        bal[requests[i][1]] += 1
+        return max(1 + dfs(i + 1, tuple(bal)), dfs(i + 1, balance))
+    return dfs(0, tuple([0] * n))

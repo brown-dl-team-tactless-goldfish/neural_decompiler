@@ -1,0 +1,24 @@
+bool checkDupChar(char * s){
+    int count[26] = {0};
+    for(int i = 0; i<strlen(s); i++)
+    {
+        if(count[s[i] - 'a'] > 0) return false;
+        count[s[i] - 'a']++;
+    }
+    return true;
+}
+
+void helper(char ** arr, int arrSize, int idx, char * s, int * out){
+    if(checkDupChar(s)) *out = *out > strlen(s) ? *out : strlen(s);
+    if(idx == arrSize) return;
+    char * temp = malloc(strlen(s)+strlen(arr[idx])+1);
+    sprintf(temp, "%s%s", s, arr[idx]);
+    helper(arr, arrSize, idx + 1, s, out);
+    helper(arr, arrSize, idx + 1, temp, out);
+}
+
+int maxLength(char ** arr, int arrSize){
+    int result = 0;
+    helper(arr, arrSize, 0, "", &result);
+    return result;
+}

@@ -1,0 +1,86 @@
+std::vector<int> powerfulIntegers(int x, int y, int bound) 
+{
+    std::vector<int> res;      
+    
+    if(x == 1 && y == 1)
+    {
+        if (x+y <= bound)
+        {
+            res.push_back(2);
+        }
+        return res;
+    }
+    
+    if(x == 1)
+    {
+        for(int i = 0 ;; i++)
+        {
+            bool flg1 = false;
+        
+            int tot = 1 + std::pow(y, i);
+                     
+            if(tot <= bound)
+            {
+                res.push_back(tot);
+            }
+            else
+            {
+                break;
+            }
+        }
+        
+        return res;
+    }
+    
+    if(y == 1)
+    {
+        for(int i = 0 ;; i++)
+        {
+            bool flg1 = false;
+        
+            int tot = 1 + std::pow(x, i);
+                     
+            if(tot <= bound)
+            {
+                res.push_back(tot);
+            }
+            else
+            {
+                break;
+            }
+        }
+        
+        return res;
+    }
+    
+    
+    for(int i = 0 ;; i++)
+    {
+        bool flg1 = false;
+        bool flg2 = true;
+        
+        for(int j = 0 ;; j++)
+        {   
+            int tot = std::pow(x, i) + std::pow(y, j);
+                     
+            if(tot <= bound)
+            {
+                flg2 = false;
+                res.push_back(tot);
+            }
+            else
+            {
+                flg1 = true;
+                break;
+            }
+        }
+        
+        if (flg1 && flg2) break;
+    }
+    
+    std::sort(res.begin(), res.end());
+    const auto it = std::unique(res.begin(), res.end());
+    res.resize(std::distance(res.begin(), it));
+    
+    return res;
+}

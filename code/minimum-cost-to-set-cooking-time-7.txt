@@ -1,0 +1,25 @@
+public int MinCostSetTime(int startAt, int moveCost, int pushCost, int targetSeconds) {
+	var minutes = targetSeconds / 60;
+	var sec = targetSeconds % 60;
+	var minCost = minutes < 100 ? calcCost(startAt) : int.MaxValue;
+	if (minutes > 0 && sec <= 39) {
+		minutes--; sec += 60;
+		minCost = Math.Min(minCost, calcCost(startAt));
+	}
+	return minCost;
+
+	int calcCost(int position) {
+		var a = new int[] { minutes / 10, minutes % 10, sec / 10, sec % 10 };
+		var cost = 0; var pushed = false;
+		for(var i = 0; i < a.Length; ++i) {
+			if (a[i] == 0 && !pushed) continue;
+			if (a[i] != position) {
+				cost += moveCost;
+				position = a[i];
+			}
+			pushed = true;
+			cost += pushCost;
+		}
+		return cost;
+	}
+}

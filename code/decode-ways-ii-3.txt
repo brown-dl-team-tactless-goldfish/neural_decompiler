@@ -1,0 +1,30 @@
+class Solution {    
+public:
+    int numDecodings(string s) {
+        unsigned long c1=1,c2=0;
+        for(int i = s.size()-1; i>=0; i--)
+        {
+            unsigned long c = 0;
+            if (s[i] != '0') 
+            {
+                c = s[i] == '*' ? (c1 * 9):c1;
+                if (s[i] == '1'|| s[i] == '*')
+                    c += s[i+1] == '*'?(c2*9):c2;
+                if (s[i] == '2' || s[i] == '*')
+                {
+                    if (i+1 < s.size())
+                    {
+                        if (s[i+1] <= '6')
+                            c += c2;
+                        else if (s[i+1] == '*')
+                            c += (c2 * 6);
+                    }
+                }
+            }
+            c %= 1000000007
+            c2 = c1;
+            c1 =  c;
+        }
+        return c1;
+    }
+};

@@ -1,0 +1,29 @@
+int maxPoints(int** points, int pointsSize, int* pointsColSize){
+    int total_match = 0;
+    //protection mechanism 
+    if(pointsSize == 1){return 1;}
+    else{
+        //scanning mechanims for iterating through all the points of the graph
+        for(int ptr1 = 0; ptr1 < pointsSize; ptr1++){
+            for(int ptr2 = ptr1+1; ptr2< pointsSize; ptr2++){
+                int scan_ptr = 0;               //scanning pointer index variable
+                int scan_match = 0;             //variable to hold the scan count of matching co-ordinate points 
+                //we will be scanning slope of y2-y1 * x2-x1 is similar for the scan in case of similarity then increment scan_match
+                while(scan_ptr < pointsSize){
+                    if(ptr1 != scan_ptr && ptr2 != scan_ptr){
+                        //y2 -y1 * x2 -x1 where x1 will be used scan hence scan_ptr
+                        //y2 -y1 * x2 -x1 where y1 will be used scan hence scan_ptr
+                        if((points[ptr1][1] - points[ptr2][1]) * (points[ptr1][0] - points[scan_ptr][0])
+                            == (points[ptr1][1] - points[scan_ptr][1]) * (points[ptr1][0] - points[ptr2][0])){
+                            scan_match++;
+                        }
+                    }
+                    scan_ptr++;
+                }
+                //we will store the highesh value in the total_match variable
+                total_match = total_match > scan_match +2 ? total_match : scan_match +2;
+            }
+        }
+        return total_match;
+    }
+}

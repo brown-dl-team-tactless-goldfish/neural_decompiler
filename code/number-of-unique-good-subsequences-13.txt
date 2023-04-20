@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int numberOfUniqueGoodSubsequences(string binary) {
+        
+        int n = binary.size();
+        
+        long long mod = 1e9 + 7;
+        
+        // dp[i][j] will tell us no. of subsequence starting with i and ending with j
+        
+        // dp[0][1] will be always 0, because "01" is invalid
+        
+        vector<vector<int>> dp(2, vector<int> (2, 0));
+        
+        for(int i = 0; i < n; i++)
+        {
+            if(binary[i] == '0')
+            {
+                // no. of subsequence starting with 0 and ending with 0 i.e "0"
+                
+                dp[0][0] = 1;
+                
+                // no. of subsequence starting with 1 and ending with 0
+                
+                dp[1][0] = (dp[1][0] % mod + dp[1][1] % mod) % mod;
+            }
+            else
+            {
+                // no. of subsequence starting with 1 and ending with 1
+                
+                dp[1][1] = (dp[1][0] % mod + dp[1][1] % mod + 1 % mod) % mod;
+            }
+        }
+        
+        return (dp[0][0] % mod + dp[1][0] % mod + dp[1][1] % mod) % mod;
+    }
+};

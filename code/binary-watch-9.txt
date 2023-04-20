@@ -1,0 +1,40 @@
+void combSearch(int begin, int depth, int* pIdx, int len, char** ppAns, int* pCnt) {
+    if (depth == len) {
+        int h = 0;
+        int m = 0;
+        
+        for (int i = 0; i < len; ++i) {
+            if (pIdx[i] > 5) h |= (1 << (pIdx[i] - 6));
+            else             m |= (1 << pIdx[i]);
+        }
+        
+        if (h >= 0 && h <= 11 && m >=0 && m <=59) {
+            char* buf = malloc(6*sizeof(char));
+            
+            sprintf(buf, "%d:%02d", h, m);
+            
+            ppAns[*pCnt] = buf;
+            *pCnt       += 1;
+        }
+        return;
+    }
+    
+    for (int i = begin; i < 10; ++i) {
+        pIdx[depth] = i;
+        combSearch(i + 1, depth + 1, pIdx, len, ppAns, pCnt);
+    }
+    
+    return;
+}
+
+char ** readBinaryWatch(int num, int* returnSize){
+        int idx[num + 1];
+
+        char** ppAns = malloc(1024*sizeof(char*));
+        int    cnt   = 0;
+
+        combSearch(0, 0, idx, num, ppAns, &cnt);
+
+        *returnSize = cnt;
+        return ppAns;
+}

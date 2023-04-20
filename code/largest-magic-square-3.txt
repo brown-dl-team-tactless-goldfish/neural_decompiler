@@ -1,0 +1,70 @@
+class Solution {
+public:
+    bool ismagic(vector<vector<int>>& grid, int i,int j, int s, int sum)
+    {
+        int rs =0;
+        vector<int> cs(s+1,0);
+        int ds1 = 0; // this /
+        for(int r = i;r<= i+s;++r)
+        {
+            rs=0;
+            for(int c = j;c<=j+s;++c)
+            {
+                rs+=grid[r][c];
+                cs[c-j]+=grid[r][c];
+                if(r+c == i+s+j)
+                {
+                    ds1+=grid[r][c];
+                }
+            }
+            if(rs!=sum)
+            {
+                return false;
+            }
+        }
+        for(int k=0;k<=s;++k)
+            if(cs[k]!=sum)
+            {
+                return false;
+            }
+        if(ds1!=sum)
+        {
+            return false;
+        }
+        return true;
+    }
+    int largestMagicSquare(vector<vector<int>>& grid) {
+        
+        int rows = grid.size();
+        int cols = grid[0].size();
+        
+        int ms = min(grid.size(),grid[0].size()); //  max size
+        
+        int result = 1;
+            
+        for(int i = 0; i< rows;++i)
+        {
+            for(int j=0;j<cols;++j)
+            {
+                int hs,vs,ds;
+                hs=vs=ds=grid[i][j];
+                for(int s=1;s<ms;++s)
+                {
+                    if(i+s>=rows || j+s>=cols)
+                        break;
+                    hs += grid[i][j+s];
+                    vs += grid[i+s][j];
+                    ds += grid[i+s][j+s];
+                    if(hs!=vs || vs !=ds)
+                        continue;
+                    // check if this is magic square
+                    if(ismagic(grid,i,j,s,hs))
+                    {
+                        result = max(result,s+1);
+                    }   
+                }
+            }
+        }
+        return result;
+    }
+};

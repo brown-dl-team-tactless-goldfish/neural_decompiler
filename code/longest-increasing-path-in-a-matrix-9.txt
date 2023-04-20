@@ -1,0 +1,83 @@
+int max(int a, int b, int c, int d)
+{
+    int maxValue = 0;
+
+    if (a > maxValue)
+    {
+        maxValue = a;
+    }
+
+    if (b > maxValue)
+    {
+        maxValue = b;
+    }
+
+    if (c > maxValue)
+    {
+        maxValue = c;
+    }
+
+    if (d > maxValue)
+    {
+        maxValue = d;
+    }
+
+    return maxValue;
+}
+
+int dfs(int prev, int **matrix, int rowSize, int colSize, int row, int col, int **walkedLength)
+{
+    if (row < 0 || row >= rowSize || col < 0 || col >= colSize || matrix[row][col] <= prev)
+    {
+        return 0;
+    }
+
+    if (walkedLength[row][col] != 0)
+    {
+        return walkedLength[row][col];
+    }
+
+    int left = dfs(matrix[row][col], matrix, rowSize, colSize, row - 1, col, walkedLength) + 1;
+    int right = dfs(matrix[row][col], matrix, rowSize, colSize, row + 1, col, walkedLength) + 1;
+    int up = dfs(matrix[row][col], matrix, rowSize, colSize, row, col - 1, walkedLength) + 1;
+    int down = dfs(matrix[row][col], matrix, rowSize, colSize, row, col + 1, walkedLength) + 1;
+    walkedLength[row][col] = max(left, right, up, down);
+
+    return walkedLength[row][col];
+}
+
+int longestIncreasingPath(int **matrix, int matrixSize, int *matrixColSize)
+{
+    if (!matrix || !matrixSize || !matrixColSize)
+    {
+        return 0;
+    }
+
+    int **walkedLength = malloc(matrixSize * sizeof(int *));
+
+    for (int i = 0; i < matrixSize; ++i)
+    {
+        walkedLength[i] = calloc(*matrixColSize, sizeof(int));
+    }
+
+    int longest = 0;
+
+    for (int row = 0; row < matrixSize; row++)
+    {
+        for (int col = 0; col < *matrixColSize; col++)
+        {
+            if (walkedLength[row][col] == 0)
+            {
+                int maxLength = dfs(INT_MIN, matrix, matrixSize, *matrixColSize, row, col, walkedLength);
+
+                if (maxLength > longest)
+                {
+                    longest = maxLength;
+                }
+            }
+        }
+    }
+
+    free(walkedLength);
+    return longest;
+}

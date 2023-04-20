@@ -1,0 +1,52 @@
+#define MAX_NUMS    10000
+#define MAX_INDEX   500
+
+typedef struct {
+    int indexes[MAX_INDEX];     // index in count array is the value
+    int numIndex;
+} pair;
+
+typedef struct {
+    int elem;
+    int count;
+    UT_hash_handle hh;
+} hElem;
+
+int* topKFrequent(int* nums, int numsSize, int k, int* returnSize){
+    hElem *count = NULL, *s, *cur;
+    pair *freq = calloc(sizeof(pair), (numsSize + 1));
+    int *res = malloc(sizeof(int) * k);
+    
+    *returnSize = 0;
+    
+    // get the count of each element
+    for(int i = 0; i < numsSize; i++) {
+        HASH_FIND_INT(count, &nums[i], s);
+        if(s) 
+            s->count ++;
+        else {
+            s = malloc(sizeof(hElem));
+            s->elem = nums[i];
+            s->count = 1;
+            HASH_ADD_INT(count, elem, s);
+        }
+            
+    }
+        
+    // note down the frequencies of each element (index)
+    HASH_ITER(hh, count, cur, s)
+        freq[cur->count].indexes[freq[cur->count].numIndex++] = cur->elem;
+    
+    // build the result for k top elements
+    for(int i = numsSize; i >= 0; i--) {
+        if(freq[i].numIndex > 0) {
+            for(int j = 0; j < freq[i].numIndex; j++) {
+                res[(*returnSize)++] = freq[i].indexes[j];
+                    if(*returnSize == k)
+                    return res;
+            }
+        }
+            
+    }
+    return res;
+}

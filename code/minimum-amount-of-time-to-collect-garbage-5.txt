@@ -1,0 +1,66 @@
+public class Solution {
+    public int GarbageCollection(string[] garbage, int[] travel) {
+        Queue<(int index, int cnt)> mQueue = new Queue<(int, int)>();
+        Queue<(int index, int cnt)> pQueue = new Queue<(int, int)>();
+        Queue<(int index, int cnt)> gQueue = new Queue<(int, int)>();
+        
+        for(int i = 0; i < garbage.Length; i++)
+        {
+            int index = i;
+            int mCnt = 0;
+            int pCnt = 0;
+            int gCnt = 0;
+            foreach(char c in garbage[i])
+            {
+                if(c=='M')
+                    mCnt++;
+                else if(c=='P')
+                    pCnt++;
+                else if(c=='G')
+                    gCnt++;                  
+            }
+            if(mCnt>0)
+                mQueue.Enqueue((i, mCnt));
+            if(pCnt>0)
+                pQueue.Enqueue((i, pCnt));
+            if(gCnt>0)
+                gQueue.Enqueue((i, gCnt));
+        }
+        int res =0;
+        int cur = 0;
+        while(mQueue.Count>0)
+        {
+            var house = mQueue.Dequeue();
+            while(house.index>cur)
+            {
+                res+=travel[cur];
+                cur++;
+            }
+            res+=house.cnt;
+        }
+        cur = 0;
+        while(pQueue.Count>0)
+        {
+            var house = pQueue.Dequeue();
+            while(house.index>cur)
+            {
+                res+=travel[cur];
+                cur++;
+            }
+            res+=house.cnt;
+        }
+        cur = 0;
+        while(gQueue.Count>0)
+        {
+            var house = gQueue.Dequeue();
+            while(house.index>cur)
+            {
+                res+=travel[cur];
+                cur++;
+            }
+            res+=house.cnt;
+        }
+        
+        return res;
+    }
+}

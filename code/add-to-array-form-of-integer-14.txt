@@ -1,0 +1,46 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* addToArrayForm(int* A, int ASize, int K, int* returnSize) {
+    if(ASize <= 0 || !A)
+        return NULL;
+    int str_len = snprintf( NULL, 0, "%d", K ) + 1;
+    char str[str_len];
+    snprintf(str, str_len, "%d", K);
+    int num_size = str_len - 1;
+    int num[num_size];
+    int ret_size = (num_size > ASize)?num_size:ASize;
+    int *ret = calloc(ret_size, sizeof(int));
+    for(int i = 0; i < num_size; ++i)
+        num[i] = str[i] - '0';
+
+    int temp_sum = 0;
+    int carry = 0;
+    for(int i = ASize - 1, j = num_size - 1, ret_ctr = ret_size - 1; ret_ctr >= 0; --i, --j, --ret_ctr)
+    {
+        temp_sum = 0;
+        if(i >= 0)
+            temp_sum += A[i];
+        if(j >= 0)
+            temp_sum += num[j];
+        temp_sum += carry;
+        if(temp_sum >= 10) {
+            ret[ret_ctr] = temp_sum % 10;
+            carry = temp_sum / 10;
+            if(ret_ctr == 0) {
+                int* new_ret = realloc(ret, (ret_size + 1) * sizeof(int));
+                ret_size += 1;
+                ret = new_ret;
+                memmove(&ret[1], &ret[0], (ret_size-1)*sizeof(*ret));
+                ret[0] = carry;
+            }
+        } else {
+            ret[ret_ctr] = temp_sum;
+            carry = 0;
+        }
+    }
+    
+    *returnSize = ret_size;
+    return ret;
+}

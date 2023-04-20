@@ -1,0 +1,87 @@
+struct Mint {
+    int val = 0;
+    const int Mod = 1e9 + 7;
+
+    constexpr Mint() : val() {}
+
+    Mint(const long long &_val) {
+        val = _val % Mod;
+    }
+
+    Mint operator+(Mint x) {
+        return val + x.val;
+    }
+    Mint operator*(Mint x) {
+        return 1LL * val * x.val;
+    }
+
+    Mint operator-(Mint x) {
+        return val - x.val + Mod;
+    }
+
+    void operator+=(Mint x) {
+        val = (Mint(val) + x).val;
+    }
+
+    void operator-=(Mint x) {
+        val = (Mint(val) - x).val;
+    }
+
+    void operator*=(Mint x) {
+        val = (Mint(val) * x).val;
+    }
+};
+
+class Solution {
+    int Mod;
+    vector<Mint> factorial, inv_factorial;
+
+    Mint power_mint(Mint a, int b) {
+        Mint res = 1;
+        while (b > 0) {
+            if (b & 1) res *= a;
+            a *= a;
+            b >>= 1;
+        }
+        return res;
+    }
+
+    void ensure_fact(int n) {
+        if (factorial.empty()) {
+            factorial.push_back(1);
+            inv_factorial.push_back(1);
+        }
+        while (n >= factorial.size()) {
+            factorial.push_back(factorial.back() * factorial.size());
+            inv_factorial.push_back(power_mint(factorial.back(), Mod - 2));
+        }
+    }
+
+    Mint fact(int n) {
+        ensure_fact(n);
+        return factorial[n];
+    }
+
+    Mint ifact(int n) {
+        ensure_fact(n);
+        return inv_factorial[n];
+    }
+
+public:
+    int countAnagrams(string s) {
+        Mod = 1e9 + 7;
+        Mint ans = 1;
+        stringstream str(s);
+        string word;
+        while (str >> word) {
+            vector<int> cnt(26);
+            for (char c : word) cnt[c - 'a']++;
+            Mint cur = fact(word.size());
+            for (int i = 0; i < 26; i++) {
+                cur *= ifact(cnt[i]);
+            }
+            ans *= cur;
+        }
+        return ans.val;
+    }
+};

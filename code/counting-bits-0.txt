@@ -1,0 +1,62 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* countBits(int n, int* returnSize){
+        *returnSize = n+1;
+        int* ans = (int*)malloc((n+1)*sizeof(int));
+        int org, dis;
+        int ptr, post;
+        ans[0] = 0;
+        if(n==0){
+            return ans;
+        }
+        ans[1] = 1;
+        if(n==1){
+            return ans;
+        }  
+        ans[2] = 1;
+        if(n==2){
+            return ans;
+        }     
+        ans[3] = 2;
+        if(n==3){
+            return ans;
+        }
+    
+        int index = 4;
+        dis = org = 1;
+    
+        ptr = 2;
+        post =3;
+        while(index <=n){
+            dis = org = org * 2;
+            
+            while(ptr!= post){
+                for(int i= ptr; i<= post; i++){
+                    ans[index] = ans[i];
+                    if(index == n)
+                        return ans;
+                    index++;
+                }
+                dis = dis/2;
+                ptr = ptr +dis;
+            }
+          ans[index] = ans[index-1];
+          if(n== index)
+              break;
+          index++;
+          ans[index] = ans[index-1]+1;
+          if(n== index)
+              break;
+          index++;      
+            
+          ptr = post+1;
+          post = index-1;
+        }
+    
+    return ans;
+    
+    
+}

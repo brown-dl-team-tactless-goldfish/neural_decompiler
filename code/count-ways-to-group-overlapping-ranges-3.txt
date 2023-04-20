@@ -1,0 +1,33 @@
+class Solution {
+    int M = 1e9 + 7 ;
+long long POW( long long a, long long b){
+    a %= M ;
+    if(b == 0)
+        return 1 ;
+    if(b == 1)
+        return a ;
+    if(b%2)
+        return a*POW(a, b-1) % M ;
+    
+    return POW(a*a, b/2) % M ;
+}
+
+public:
+    int countWays(vector<vector<int>>& ranges) {
+        sort(ranges.begin(), ranges.end(),[](vector<int>&a, vector<int>&b){
+        return a[0] < b[0]; 
+    });
+        int g = 1 ;
+        int end = ranges[0][1] ;
+        for(int i = 1 ; i < ranges.size(); i++){
+            if(ranges[i][0] <= end)
+                end = max(end, ranges[i][1]) ;
+            else{
+                g++ ;
+                end = ranges[i][1] ;
+            }
+        }
+        long long ret = POW(2, g) ;
+        return ret % M;
+    }
+};

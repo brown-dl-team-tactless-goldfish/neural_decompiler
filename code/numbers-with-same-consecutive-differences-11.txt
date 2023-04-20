@@ -1,0 +1,37 @@
+class Solution {
+    vector<int> ans;
+    void dfs(int idx, int n, int k, string &s)
+    {
+        if(idx == n)
+        {
+            int m = stoi(s);
+            ans.push_back(m);
+            return;
+        }
+        char num = s.back();
+        if(num + k <= '9')
+        {
+            s.push_back(num+k);
+            dfs(idx+1, n, k, s);
+            s.pop_back();
+        }
+        if(num - k >= '0' && k != 0)
+        {
+            s.push_back(num - k);
+            dfs(idx+1, n, k, s);
+            s.pop_back();
+        }
+        return;
+    }
+public:
+    vector<int> numsSameConsecDiff(int n, int k) {
+        string s = "";
+        for(int i = 1; i <= 9; i++)
+        {
+            s.push_back((i+'0'));
+            dfs(1, n, k, s);
+            s.pop_back();
+        }
+        return ans;
+    }
+};

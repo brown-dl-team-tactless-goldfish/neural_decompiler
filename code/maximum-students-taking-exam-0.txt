@@ -1,0 +1,47 @@
+    int maxStudents(vector<vector<char>>& seats) {
+        int r = seats.size(), c = seats[0].size();
+        vector<vector<int>> memo(r, vector<int>(1<<c, -1));
+        return getMAX(seats, 0, 0, memo);
+    }
+    
+    int getMAX(vector<vector<char>>& seats, int r, int pMask, vector<vector<int>>& memo) {
+        if(r == seats.size()) return 0;
+        if(memo[r][pMask] != -1) return memo[r][pMask];
+
+        vector<int> mList;
+        bt(seats, r, 0, pMask, 0, mList);
+        
+        int res = 0;
+        for(auto m : mList) {
+            res = max(res, countBits(m) + getMAX(seats, r + 1, m, memo));
+        }
+        memo[r][pMask] = res;
+        return res;
+    }
+    
+    int countBits(int a) {
+        int count = 0;
+        while(a) {
+            if(a&1) count++;
+            a >>= 1;
+        }
+        return count;
+    }
+
+    void bt(vector<vector<char>>& seats, int r, int c, int pMask, int curM, vector<int>& mList) {
+        if(c == seats[0].size()) {
+            mList.push_back(curM);
+            return;
+        }
+        
+        bool flag = true;
+        if(seats[r][c] == '.') {
+            if(c > 0 && ((pMask >> c-1)%2 != 0 || (curM >> c-1)%2 != 0 )) flag = false;
+            if(c < seats[0].size()-1 && (pMask >> c+1)%2 != 0) flag = false;
+        } else {
+            flag = false;
+        }
+        
+        if(flag) bt(seats, r, c+1, pMask, curM | (1 << c), mList);
+        bt(seats, r, c+1, pMask, curM, mList);
+    }   

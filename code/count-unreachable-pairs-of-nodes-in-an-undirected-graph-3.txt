@@ -1,0 +1,111 @@
+long long countPairs(int n, int** edges, int edgesSize, int* edgesColSize){
+    
+    int *roots = (int *)malloc(sizeof(int) * n);
+    int *sizes = (int *)malloc(sizeof(int) * n);
+    for (int i = 0; i < n; i ++) {
+        roots[i] = -1;
+        sizes[i] = 1;
+    }
+    int rA, rB;
+    long long int ans = 0, pre = 0;
+    for (int i = 0; i < edgesSize; i ++) {
+        if (roots[edges[i][0]] == -1 && roots[edges[i][1]] == -1) {
+            if (sizes[edges[i][0]] > sizes[edges[i][1]]) {
+                roots[edges[i][1]] = edges[i][0];
+                sizes[edges[i][0]] += sizes[edges[i][1]];
+                sizes[edges[i][1]] = 0;
+            }
+            else {
+                roots[edges[i][0]] = edges[i][1];
+                sizes[edges[i][1]] += sizes[edges[i][0]];
+                sizes[edges[i][0]] = 0;
+            }
+        }
+        else if (roots[edges[i][0]] == -1) {
+            rB = roots[edges[i][1]];
+            while (roots[rB] != -1) {
+                rB = roots[rB];
+            }
+            //printf("%d root %d, sizes %d, i %d\n", edges[i][1], rB, sizes[rB], i);
+            if (rB == edges[i][0]) {
+                roots[edges[i][1]] = rB;
+                continue;
+            }
+            if (sizes[edges[i][0]] > sizes[rB]) {
+                roots[rB] = edges[i][0];
+                roots[edges[i][1]] = edges[i][0];
+                sizes[edges[i][0]] += sizes[rB];
+                sizes[rB] = 0;
+            }
+            else {
+                roots[edges[i][0]] = rB;
+                roots[edges[i][1]] = rB;
+                sizes[rB] += sizes[edges[i][0]];
+                sizes[edges[i][0]] = 0;
+            }
+        }
+        else if (roots[edges[i][1]] == -1) {
+            rB = roots[edges[i][0]];
+            while (roots[rB] != -1) {
+                rB = roots[rB];
+            }
+            //printf("%d root %d, size %d i %d\n", edges[i][0], rB, sizes[rB], i);
+            if (rB == edges[i][1]) {
+                roots[edges[i][0]] = rB;
+                continue;
+            }
+            if (sizes[edges[i][1]] > sizes[rB]) {
+                roots[rB] = edges[i][1];
+                roots[edges[i][0]] = edges[i][1];
+                sizes[edges[i][1]] += sizes[rB];
+                sizes[rB] = 0;
+            }
+            else {
+                roots[edges[i][1]] = rB;
+                roots[edges[i][0]] = rB;
+                sizes[rB] += sizes[edges[i][1]];
+                sizes[edges[i][1]] = 0;
+            }
+        }
+        else {
+            rA = roots[edges[i][0]];
+            rB = roots[edges[i][1]];
+            while (roots[rA] != -1) {
+                rA = roots[rA];
+            }
+            while (roots[rB] != -1) {
+                rB = roots[rB];
+            }
+            //printf("%d root %d, size %d i %d ", edges[i][0], rA, sizes[rA], i);
+            //printf("& %d root %d, size %d i %d\n", edges[i][1], rB, sizes[rB], i);
+
+            if (rA == rB){
+                roots[edges[i][0]] = rA;
+                roots[edges[i][1]] = rA;
+                continue;
+            }
+            
+            if (sizes[rA] > sizes[rB]) {
+                roots[rB] = rA;
+                roots[edges[i][0]] = rA;
+                roots[edges[i][1]] = rA;
+                sizes[rA] += sizes[rB];
+                sizes[rB] = 0;
+            }
+            else {
+                roots[rA] = rB;
+                roots[edges[i][0]] = rB;
+                roots[edges[i][1]] = rB;
+                sizes[rB] += sizes[rA];
+                sizes[rA] = 0;
+            }
+        }
+    }
+    for (int i = 0; i < n; i ++) {
+        if (sizes[i]) {
+            ans += (pre * sizes[i]);
+            pre += sizes[i];
+        }
+    }
+    return ans;
+}

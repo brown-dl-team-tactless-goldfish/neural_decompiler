@@ -1,0 +1,49 @@
+void sort(int *nums, int left, int right)
+{
+    int i, j, k;
+    if(left < right)
+    {
+        i = left - 1;
+        j = right + 1;
+        k = nums[(left + right) / 2];
+        while(1)
+        {
+            while(nums[++i] < k);
+            while(nums[--j] > k);
+            if(i >= j)
+                break;
+            int temp = nums[i];
+            nums[i] = nums[j];
+            nums[j] = temp;
+        }
+        sort(nums,  left,  i - 1);
+        sort(nums,  j + 1,  right);
+    }
+}
+
+int bagOfTokensScore(int* tokens, int len, int power){
+    if(len == 0) return 0;
+
+    int score = 0;
+    int left = 0;
+    int right = len - 1;
+
+    sort(tokens, 0, right);
+    if(tokens[0] > power) return 0;
+
+    while(left <= right)
+    {
+        if(power >= tokens[left])
+        {
+            power -= tokens[left++];
+            score += 1;
+        } else if(score && left < right)
+        {
+            power += tokens[right--];
+            score -= 1;
+        } else
+            break;
+    }
+
+    return score;
+}

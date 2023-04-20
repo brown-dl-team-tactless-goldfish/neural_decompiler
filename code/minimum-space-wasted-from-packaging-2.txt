@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int mod = 1e9 + 7;
+    int minWastedSpace(vector<int>& packages, vector<vector<int>>& boxes) {
+        int n = packages.size();
+        int m = boxes.size();
+        sort(packages.begin(), packages.end());
+        vector<long long> pre(n, 0);
+        pre[0] = packages[0];
+        for(int i = 1; i < n; i++) {
+            pre[i] = pre[i-1] + packages[i];
+        }
+        long long res = 1e18;
+        for(int i = 0; i < m; i++) {
+            sort(boxes[i].begin(), boxes[i].end());
+            long long sum = 0, cnt = 0;
+            long long val = 0;
+            for(int j = 0; j < boxes[i].size(); j++) {
+                auto it = upper_bound(packages.begin(), packages.end(), boxes[i][j]);
+                if(it != packages.begin()) {
+                    it--;
+                    int idx = it-packages.begin();
+                    val += (idx+1-cnt)*boxes[i][j] - (pre[idx]-sum);
+                    cnt = idx+1;
+                    sum = pre[idx];
+                }
+            }
+            if(cnt == n) {
+                res = min(res, val);
+            }
+        }
+        if(res == 1e18) return -1;
+        return res%mod;
+    }
+};

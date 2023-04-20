@@ -1,0 +1,23 @@
+typedef struct {
+    int c, n, *prc, d;
+} Cashier;
+
+Cashier* cashierCreate(int n, int discount, int* products, int productsSize, int* prices, int pricesSize) {
+    Cashier *c = calloc(1, sizeof *c);
+    c->n = n;
+    c->d = discount;    
+    c->prc = malloc(sizeof(int [256]));
+    for (int i = -1 ; ++i < productsSize ; c->prc[products[i]] = prices[i]);
+    return c;
+}
+
+double cashierGetBill(Cashier* obj, int* product, int productSize, int* amount, int amountSize) {
+    double t = 0;
+    for (int i = -1 ; ++i < productSize ; t += obj->prc[product[i]] * amount[i]);
+    return ++obj->c % obj->n ? t : t - obj->d * t / 100;
+}
+
+void cashierFree(Cashier* obj) {
+    free(obj->prc);
+    free(obj);
+}

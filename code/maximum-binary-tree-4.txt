@@ -1,0 +1,27 @@
+struct TreeNode* constructMaximumBinaryTree(int* nums, int numsSize){
+    // find max by traversing the nums arr
+    int max = -1, idx = -1;
+    for (int i = 0; i < numsSize; i++){
+        if (nums[i] > max){
+            max = nums[i];
+            idx = i;
+        }
+    }
+    // seperate nums into prefix and suffix arr
+    int size1 = idx;
+    int size2 = numsSize - idx - 1;
+    int * pref = nums;
+    int * suff = nums + idx + 1;
+    // value root node as max and recursively build the left/right subtree
+    struct TreeNode * root = malloc(sizeof(struct TreeNode));
+    root->val = max;
+    if (size1 != 0){
+        root->left = constructMaximumBinaryTree(pref, size1);
+    }
+    else root->left = NULL;
+    if (size2 != 0){
+        root->right = constructMaximumBinaryTree(suff, size2);
+    }
+    else root->right = NULL;
+    return root;
+}

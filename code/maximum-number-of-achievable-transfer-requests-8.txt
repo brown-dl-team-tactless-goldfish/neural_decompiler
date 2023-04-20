@@ -1,0 +1,40 @@
+public class Solution 
+{
+    private int maxRequests = 0;
+    
+    public int MaximumRequests(int n, int[][] requests) 
+    {
+        MaxRequests(requests,0,new(),new int[n]);
+        return maxRequests;
+    }
+    
+    private void MaxRequests(int[][] requests, int ind, List<int[]> requestsConsidered, int[] netRequests)
+    {
+        if(CanRequestsBeFulfilled(netRequests))
+        {
+            maxRequests = Math.Max(maxRequests,requestsConsidered.Count);
+        }
+        
+        for(int i=ind; i<requests.Length; i++)
+        {
+            requestsConsidered.Add(requests[i]);
+            netRequests[requests[i][0]]--;
+            netRequests[requests[i][1]]++;
+            MaxRequests(requests,i+1,requestsConsidered,netRequests);
+            netRequests[requests[i][0]]++;
+            netRequests[requests[i][1]]--;
+            requestsConsidered.RemoveAt(requestsConsidered.Count-1);
+        }
+    }
+    
+    private bool CanRequestsBeFulfilled(int[] netRequests)
+    {
+        for(int i=0; i<netRequests.Length; i++)
+        {
+            if(netRequests[i]!=0)
+                return false;
+        }
+        
+        return true;
+    }
+}

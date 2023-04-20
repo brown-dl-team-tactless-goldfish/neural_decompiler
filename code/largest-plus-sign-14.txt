@@ -1,0 +1,50 @@
+class Solution {
+public:    
+    int orderOfLargestPlusSign(int n, vector<vector<int>>& mines) {
+        vector<vector<int>> row(n);
+        vector<vector<int>> col(n);
+
+        for(auto it:mines){
+            int r = it[0];
+            int c = it[1];
+            row[r].push_back(c);
+            col[c].push_back(r);
+        }
+        for(int i=0;i<n;i++){
+            sort(row[i].begin(),row[i].end());
+            sort(col[i].begin(),col[i].end());
+        }
+        int res = 0;
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                auto it = lower_bound(row[i].begin(),row[i].end(),j);
+                int right = n;
+                if (it!=row[i].end())
+                    right = (*it);
+                right-=j;   
+                int left = -1;
+                if (it!=row[i].begin())
+                    left = *(it-1); 
+                left = j-left;
+                it = lower_bound(col[j].begin(),col[j].end(),i);
+                int down = n;
+                if (it!=col[j].end())
+                    down = (*it);
+                down-=i;   
+                int up = -1;
+                if (it!=col[j].begin())
+                    up = *(it-1); 
+                up = i-up;
+                res = max(res,min(min(left,right),min(up,down)));
+                
+            }
+        }
+        return res;
+        
+        
+        
+        
+    }
+};

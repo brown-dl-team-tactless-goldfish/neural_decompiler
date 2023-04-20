@@ -1,0 +1,44 @@
+/**
+ * Note: The returned array must be malloced,
+ * assume caller calls free().
+ */
+int* executeInstructions(
+         int n,
+         int* startPos, 
+         int startPosSize, 
+         char * s, 
+         int* returnSize){
+    int m = strlen(s);
+    *returnSize = m;
+    int* res = malloc(m * sizeof(int));
+    for (int i = 0; i < m; i++) {
+        int x = startPos[0];
+        int y = startPos[1];
+        int count = 0;
+        int currIndex = i;
+        while (currIndex < m 
+               && x >= 0 
+               && x < n 
+               && y >= 0 
+               && y < n) {
+            char c = s[currIndex];
+            if (c == 'U') {
+                x--;
+            } else if (c == 'D') {
+                x++;
+            } else if (c == 'L') {
+                y--;
+            } else if (c == 'R') {
+                y++;
+            }
+            count++;
+            currIndex++;
+        }
+        if (!(x >= 0 && x < n && y >= 0 && y < n)) {
+            // remove last move that was invalid
+            count--;
+        }
+        res[i] = count;
+    }
+    return res;
+}

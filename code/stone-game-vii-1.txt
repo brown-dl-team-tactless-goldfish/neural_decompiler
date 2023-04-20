@@ -1,0 +1,22 @@
+int max(int a, int b){
+    return a > b ? a : b;
+}
+
+int stoneGameVII(int* stones, int stonesSize){
+    int sum[1000];
+    int list[1001][1001];
+    sum[0] = stones[0];
+    for (int i = 1 ; i < stonesSize ; i++){
+        list[i-1][i] = stones[i-1] > stones[i] ? stones[i-1] : stones[i];
+        sum[i] = sum[i-1]+stones[i];
+    }
+    for (int j = 2 ; j < stonesSize ; j++){
+        int now = j-1;
+        for (int m = 0, n = j ; n < stonesSize ; m++, n++){
+            int a = sum[now]-list[m][n-1];
+            sum[now] += (stones[n]-stones[m]);
+            list[m][n] = max(a, sum[now]-list[m+1][n]);
+        }
+    }
+    return list[0][stonesSize-1];
+}

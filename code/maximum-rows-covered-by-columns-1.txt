@@ -1,0 +1,35 @@
+    int max = 0;
+    public int MaximumRows(int[][] mat, int cols)
+    {
+        Backtrack(mat, cols, mat.Length, mat[0].Length, 0, new HashSet<int>());
+        return max;
+    }
+
+    public void Backtrack(int[][] mat, int cols, int r, int c, int currentCol, HashSet<int> selectedCols)
+    {
+        if (selectedCols.Count == cols)
+        {
+            HashSet<int> notSeenRows = new HashSet<int>();
+            for (int col = 0; col < c; col++)
+            {
+                if (!selectedCols.Contains(col))
+                {
+                    for (int row = 0; row < r; row++)
+                    {
+                        if (mat[row][col] == 1)
+                            notSeenRows.Add(row);
+                    }
+                }
+            }
+            max = Math.Max(max, r - notSeenRows.Count);
+            return;
+        }
+
+        if (currentCol == c || selectedCols.Count + (c - currentCol) < cols)
+            return;
+
+        Backtrack(mat, cols, r, c, currentCol + 1, selectedCols);
+        selectedCols.Add(currentCol);
+        Backtrack(mat, cols, r, c, currentCol + 1, selectedCols);
+        selectedCols.Remove(currentCol);
+    }

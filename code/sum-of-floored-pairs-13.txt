@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int mod = 1e9+7;
+    int sumOfFlooredPairs(vector<int>& nums) {
+        sort(nums.begin(),nums.end());
+        int res=0;
+        for(int i=0;i<nums.size();i++)
+        {
+            int prev_index=0,val=-1,cnt=1;
+            while(1)
+            {
+                val++;
+                int curr_index = upper_bound(nums.begin()+prev_index,nums.end(),(cnt*nums[i]-1))-nums.begin();
+                res = (res % mod + (val * (curr_index - prev_index)) % mod) % mod;
+                prev_index = curr_index,cnt++;
+                if(curr_index==nums.size())
+                    break;
+            }
+        }
+        return res;
+    }
+};

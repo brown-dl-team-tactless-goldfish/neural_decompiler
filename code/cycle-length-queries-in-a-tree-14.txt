@@ -1,0 +1,22 @@
+vector<int> cycleLengthQueries(int n, vector<vector<int>>& queries) 
+{
+	int m=queries.size();
+	vector<int> result(m);
+	for(int i=0;i<m;i++)
+	{
+		int c1=queries[i][0],c2=queries[i][1];
+		if(c1>c2) swap(c1,c2); // let c1 be smaller
+		int t1=log2(c1),t2=log2(c2),c=t2-t1+1; // t2-t1 is the height difference, and 1 is for new edge
+		c2/=1<<(t2-t1); // remove the descendant nodes
+		for(int i=t1;i>-1;i--)
+		{
+			if((c1&(1<<i))!=(c2&(1<<i))) // the highest level node that differs
+			{
+				c+=(i+1)*2; // distance to the other same level node
+				break;
+			}
+		}
+		result[i]=c;
+	}
+	return result;
+}

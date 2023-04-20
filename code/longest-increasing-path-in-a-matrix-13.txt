@@ -1,0 +1,40 @@
+class Solution {
+public:
+    vector<vector<int>> lens;
+    vector<vector<int>> matrix;
+    int w;
+    int h;
+    int out = 0;
+    
+    int dfs(int r, int c)
+    {
+        if(lens[r][c] != 0) return lens[r][c];
+        int len = 1;
+        if(c-1 >= 0 && matrix[r][c] > matrix[r][c-1]) 
+            len = std::max(len, 1+dfs(r, c-1));
+        if(c+1 < w && matrix[r][c] > matrix[r][c+1]) 
+            len = std::max(len, 1+dfs(r, c+1));
+        if(r-1 >= 0 && matrix[r][c] > matrix[r-1][c]) 
+            len = std::max(len, 1+dfs(r-1, c));
+        if(r+1 < h && matrix[r][c] > matrix[r+1][c]) 
+            len = std::max(len, 1+dfs(r+1, c));
+        lens[r][c] = len;
+        out = std::max(out, len);
+        return len;
+    }
+    
+    int longestIncreasingPath(vector<vector<int>>& matrix) {
+        if(matrix.size() == 0 || matrix[0].size() == 0) return 0;
+        this->matrix = matrix;       
+        h = matrix.size();
+        w = matrix[0].size();
+        lens.resize(h, vector<int>(w, 0));
+        
+        for(int r = 0; r < h; r++)
+            for(int c = 0; c < w; c++)
+                if(lens[r][c] == 0)
+                    dfs(r, c);
+        
+        return out;
+    }
+};

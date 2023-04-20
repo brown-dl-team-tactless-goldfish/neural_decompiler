@@ -1,0 +1,59 @@
+class Solution {
+public:
+    vector<int> smallestSubarrays(vector<int>& nums) {
+
+        vector<int> count(32, 0);
+
+        int cur = 0;
+        vector<int> dp(nums.size(), 0);
+        for(int i=nums.size()-1;i>=0;i--) {
+            cur |= nums[i];
+            int tmp = cur;
+            while(tmp!=0) {
+                if(tmp%2==1) {
+                    dp[i]++;
+                }
+                tmp/=2;
+            }
+        }
+        
+        int j = nums.size()-1;
+        int cur_count = 0;
+        vector<int> res;
+
+        auto update_func = [&](int ele, int add_val) {
+            for(int k=0;k<32;k++) {
+                bool flag = (1<<k)&ele;
+                if(flag) {
+                    count[k]+=add_val;
+                    if(count[k] == 1 && add_val == 1) {
+                        cur_count++;
+                    }else if(count[k] == 0 && add_val == -1) {
+                        cur_count--;
+                    }
+                }
+            }
+        };
+
+        for(int i=nums.size()-1; i>=0; i--) {
+            int target_count = dp[i];
+            int cur_val = nums[i];
+
+            update_func(cur_val, 1);
+            while(j>i) {
+                update_func(nums[j], -1);
+                if(target_count!=cur_count) {
+                    update_func(nums[j], 1);
+                    break;
+                }else {
+                    j--;
+                }
+            }
+
+            res.push_back(j-i+1);
+        }
+
+        reverse(res.begin(), res.end());
+        return res;
+    }
+};

@@ -1,0 +1,47 @@
+class Solution {
+public:
+    vector<int>L,R;
+    int checkValid(string s,int i){
+        int right = R[s[i]-'a'];
+        for(int j=i;j<right;j++){
+            if(L[s[j]-'a']<i)
+                return -1;
+            right=max(right,R[s[j]-'a']);
+        }
+        return right;
+    }
+    vector<string> maxNumOfSubstrings(string s) {
+        vector<string>ans;
+        int n = s.size();
+        L = R = vector<int>(26,-1);
+        for(int i=0;i<n;i++){
+            if(L[s[i]-'a']==-1)
+                L[s[i]-'a']=i;
+            R[s[i]-'a']=i;
+        }
+        // for(auto x:L)
+        //     cout<<x<<" ";
+        // cout<<endl;
+        int temp=-1;
+        for(int i=0;i<n;i++){
+            if(i==L[s[i]-'a']){
+                // cout<<i<<" ## ";
+                int right = checkValid(s,i);
+                // cout<<right<<endl;
+                if(right!=-1){
+                    
+                    string str = s.substr(i,right-i+1);
+                    if(right<temp){
+                        // ans.pop_back();
+                        ans.back()=str;
+                    }
+                    else
+                        ans.push_back(str);
+                    temp=right;
+                    // i=right;
+                }
+            }
+        }
+        return ans;
+    }
+};

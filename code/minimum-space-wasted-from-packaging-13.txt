@@ -1,0 +1,48 @@
+class Solution {
+public:
+    #define ll long long int
+    int mod=1000000007;
+    int find(vector<int>& p,int s,int x)
+    {
+        int res=0,j=p.size()-1,i=s;
+        while(i<=j)
+        {
+            int mid=(i+j)/2;
+            if(p[mid]<=x)
+            {
+                res=mid-s+1;
+                i=mid+1;
+            }
+            else
+                j=mid-1;
+        }
+        return res;
+    }
+    int minWastedSpace(vector<int>& p, vector<vector<int>>& boxes) 
+    {
+        sort(p.begin(),p.end());
+        int n=p.size();
+        ll ans=1e18;
+        vector<ll>prefix(n+1,0);
+        for(int i=0;i<n;i++)
+            prefix[i+1]=prefix[i]+p[i];
+        for(auto &v:boxes)
+        {
+            int i=0;
+            ll res=0;
+            sort(v.begin(),v.end());
+            for(auto x:v)
+            {
+                if(i>=n)
+                    break;
+                int c=find(p,i,x);
+                ll t=(ll)c*x;
+                res=(res+t-prefix[i+c]+prefix[i]);
+                i+=c;
+            }
+            if(i==n)
+               ans=min(ans,res);
+        }
+        return ans==1e18?-1:ans%mod;
+    }
+};

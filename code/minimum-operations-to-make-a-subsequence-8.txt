@@ -1,0 +1,14 @@
+    int minOperations(vector<int>& target, vector<int>& arr) {
+        unordered_map<int,int> index;
+        for(int i=0;i<target.size();i++) index[target[i]] = i;
+        vector<int> v;
+        for(auto x:arr){
+            auto it = index.find(x);
+            if(it == index.end()) continue;
+            int i = it->second;
+            auto it2 = lower_bound(v.begin(), v.end(), i);
+            if(it2 == v.end()) v.push_back(i);
+            else *it2 = i;
+        }
+        return target.size() - v.size();
+    }

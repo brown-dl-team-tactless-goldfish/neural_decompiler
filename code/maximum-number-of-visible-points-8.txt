@@ -1,0 +1,43 @@
+    int visiblePoints(vector<vector<int>>& points, int angle, vector<int>& location) {
+        vector<double> v;
+        int same = 0;
+        for (int i = 0; i < points.size(); i++) {
+            if (points[i][1] == location[1] && points[i][0] == location[0]) {
+                same++;
+                continue;
+            }
+            int y = points[i][1] - location[1];
+            int x = points[i][0] - location[0];
+            
+            double theta_rad = atan2((double)y, (double)x);
+            double theta_deg = (theta_rad/M_PI*180) + (theta_rad > 0 ? 0 : 360);
+            v.push_back((theta_deg == 360 ? 0 : theta_deg));
+            
+        }
+        sort(v.begin(), v.end());
+        
+        queue<double>q;
+        int r = 0;
+        //calculate sliding window from 0, 360
+        for (int i = 0; i < v.size(); i++) {
+            double c = v[i];
+            while (q.size() > 0 && c - q.front() > angle)
+                q.pop();
+            q.push(c);
+            int h = q.size();
+            r = max(r, h );
+        }
+        int kk = 0;
+        //calculate cyclical part of sliding window
+        for (int i = 0; i < v.size(); i++) {
+            double c = v[i];
+            if (c > angle) 
+                break;
+            int j = kk;
+            for (j = kk; j < v.size() && v[j] < 360 - (angle-c); j++);
+            kk = j;
+            if (kk >= n) break;
+            r = max(r, i+1+(n-kk));
+        }
+        return r + same;
+    }

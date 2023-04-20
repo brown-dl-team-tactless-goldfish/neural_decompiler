@@ -1,0 +1,127 @@
+     public class Solution
+    {
+        public class Unions
+        {
+            private readonly int[] _parents;
+            private readonly int[] _ranks;
+
+            public Unions(int n)
+            {
+                _parents = new int[n];
+                _ranks = new int[n];
+                for (int i = 0; i < n; i++)
+                {
+                    _parents[i] = i;
+                }
+            }
+
+            public int Find(int x)
+            {
+                if (x != _parents[x])
+                {
+                    x = Find(_parents[x]);
+                }
+                return _parents[x];
+            }
+
+            public bool Union(int x, int y)
+            {
+                int px = Find(x);
+                int py = Find(y);
+                if (px == py)
+                {
+                    return false;
+                }
+                if (_ranks[px] > _ranks[py])
+                {
+                    _parents[py] = px;
+                    _ranks[px]++;
+                }
+                else
+                {
+                    _parents[px] = py;
+                    _ranks[py]++;
+                }
+                return true;
+            }
+        }
+
+        private int Kruskal(int n, (int from, int to, int w, int origIndex)[] newEdges, int? ignoreIdx, int? forceAddedIdx)
+        {
+            int sum = 0;
+            Unions dsu = new Unions(n);
+            int count = 0;
+
+            if (forceAddedIdx.HasValue)
+            {
+                var edge = newEdges[forceAddedIdx.Value];
+                var v1 = edge.from;
+                var v2 = edge.to;
+                dsu.Union(v1, v2);
+                sum += edge.w;
+                count++;
+            }
+
+            for (int i = 0; i < newEdges.Length; i++)
+            {
+                var edge = newEdges[i];
+                var v1 = edge.from;
+                var v2 = edge.to;
+                if (dsu.Find(v1) == dsu.Find(v2))
+                {
+                    continue;
+                }
+
+                if (ignoreIdx.HasValue && ignoreIdx == i)
+                {
+                    continue;
+                }
+
+                dsu.Union(v1, v2);
+                sum += edge.w;
+                count++;
+            }
+
+            return count == n - 1 ? sum : -1;
+        }
+
+        public IList<IList<int>> FindCriticalAndPseudoCriticalEdges(int n, int[][] edges)
+        {
+            IList<int> crit = new List<int>();
+            IList<int> pseudoCrit = new List<int>();
+
+            (int from, int to, int w, int origIndex)[] newEdges = new (int @from, int to, int w, int origIndex)[edges.Length];
+            for (int i = 0; i < edges.Length; i++)
+            {
+                var edge = edges[i];
+                var v1 = edge[0];
+                var v2 = edge[1];
+                var w = edge[2];
+
+                newEdges[i] = (v1, v2, w, i);
+            }
+
+            Array.Sort(newEdges, (e1, e2) => e1.w.CompareTo(e2.w));
+            int targetSum = Kruskal(n, newEdges, null, null);
+
+
+            for (int i = 0; i < newEdges.Length; i++)
+            {
+                var excludeThis = Kruskal(n, newEdges, i, null);
+                if (excludeThis < 0 || excludeThis > targetSum)
+                {
+                    crit.Add(newEdges[i].origIndex);
+                    continue;
+                }
+
+                var forceIncludeThis = Kruskal(n, newEdges, null, i);
+                if (forceIncludeThis == targetSum)
+                {
+                    pseudoCrit.Add(newEdges[i].origIndex);
+                }
+            }
+
+            
+            return new List<IList<int>>(){crit, pseudoCrit};
+        }
+    }

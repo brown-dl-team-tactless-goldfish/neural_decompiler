@@ -1,0 +1,34 @@
+class Solution {
+public:
+    string longestDupSubstring(string s) {
+        auto valid = [&s] (int len) {
+            uint64_t p = 1, x = 0;
+            for (int i = 0; i < len; i++) x *= 26, x += s[i] - 'a';
+            for (int i = 0; i < len - 1; i++) p *= 26;
+            unordered_map<uint64_t, vector<int>> um;
+            um[x].push_back(0);
+            for (int i = 1; i + len <= s.size(); i++) {
+                x -= p * (s[i - 1] - 'a');
+                x *= 26;
+                x += s[i + len - 1] - 'a';
+                if (um.count(x)) {
+                    for (int j : um[x]) {
+                        if (!s.compare(j, len, s, i, len))
+                            return i;
+                    }
+                }
+                um[x].push_back(i);
+            }
+            return 0;
+        };
+        int len = 0, pos = 0;
+        for (int l = 1 << 20; l; l >>= 1) {
+            if ((len | l) >= s.size()) continue;
+            if (auto t = valid(len | l)) {
+                len |= l;
+                pos = t;
+            }
+        }
+        return s.substr(pos, len);
+    }
+};

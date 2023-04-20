@@ -1,0 +1,26 @@
+class Solution {
+public:
+    string smallestFromLeaf(TreeNode* root) {
+        vector<string> a;
+        rec(root,a,"");
+        string s="";
+        for(string &x:a){ 
+            reverse(x.begin(),x.end());
+            if(s=="") s = x;
+            else s = min(s,x);
+        }
+        return s;
+    }
+    void rec(TreeNode* root,vector<string> &a, string s){
+        if(root==NULL)
+            return;
+        char c = root->val+'a';
+        if(root->left==NULL && root->right==NULL){
+            s+=c;
+            a.push_back(s);
+            return;
+        }
+        rec(root->left,a,s+c);
+        rec(root->right,a,s+c);
+    }
+};

@@ -1,0 +1,21 @@
+class Solution {
+public:
+  string decodeAtIndex(string S, int K) {
+    stack<pair<long, string>> stk;
+    for(int i = 0; i < S.size(); i++){
+      string token;
+      while(i < S.size() && !isdigit(S[i])) token += S[i++];
+
+      long cur = (token.size() + (stk.empty()?0:stk.top().first))*(S[i] - '0');
+      stk.push({cur, token});
+      if(cur >= K) break;
+    }
+    while(!stk.empty()){
+      auto x = stk.top().second; stk.pop();
+      K = K%((stk.empty()?0:stk.top().first) + x.size());
+      if(K == 0) K = ((stk.empty()?0:stk.top().first) + x.size());
+      if(stk.empty()) return string (1, x[K - 1]);
+      if(K > stk.top().first) return string (1, x[K - stk.top().first - 1]);
+    }
+  }
+};

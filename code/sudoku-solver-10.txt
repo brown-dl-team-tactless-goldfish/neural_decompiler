@@ -1,0 +1,88 @@
+bool solve(char **board, int boardRowSize, int boardColSize,bool row_array[][9],bool col_array[][9],bool Sudoku_sub_array[][9],int start_i,int start_j) {	
+
+	int i = start_i;
+	int j = start_j+1;
+	for (; i < 9; i++,j=0)//当进行下一行的时候，j需要赋0，表示从下一行的第一列开始遍历了
+	{
+		for (; j < 9; j++)
+		{
+			if (board[i][j]!='.')//已经填写的就跳过
+			{
+				continue;
+			}else{
+				int k=0;
+				for (; k < 9; k++)//k表示填写的数字，1~9。
+				{
+					if (!row_array[i][k] && !col_array[j][k]  && !Sudoku_sub_array[i/3*3+j/3][k] )//只有行，列，3x3小格都允许的时候才填写该数字，并且把相应的位置设置为true
+					{
+						board[i][j]=k+'1';
+						row_array[i][k]=true;
+						col_array[j][k]=true;
+						Sudoku_sub_array[i/3*3+j/3][k]=true;
+						bool result_flag = solve(board,9,9,row_array,col_array,Sudoku_sub_array,i,j);//然后尝试后面一个未填写的元素
+						if (!result_flag)//如果填写失败，则进行还原操作，以及返回false。
+						{
+							board[i][j]='.';
+							row_array[i][k]=false;
+							col_array[j][k]=false;
+							Sudoku_sub_array[i/3*3+j/3][k]=false;
+							continue;
+						}else//如果填写成功，则返回true
+						{
+							return true;
+						}
+					}
+				}
+				if (k==9)//当数字1~9都试过，则说明没有合适的，返回false
+				{
+					return false;
+				}
+			}
+		}
+
+	}
+	bool flag=true;
+	for (int i = 0; i < 9; i++)//当（0，0）到（9，9）都遍历了，那么需要确认是否所有的位置都已经被占用
+	{
+		for (int j = 0; j < 9; j++)
+		{
+			if (!(row_array[i][j] && col_array[i][j] && Sudoku_sub_array[i][j]))//只要有一个元素未被占用，那么就返回false
+			{
+				return false;
+			}
+		}
+	}
+	if (flag)//如果都占用了，那么说明已经解决了，返回true
+	{
+		return true;
+	}
+	return false;
+}
+
+void solveSudoku(char **board, int boardRowSize, int boardColSize) {
+	bool row_array[9][9]={false};
+	bool col_array[9][9]={false};
+	bool Sudoku_sub_array[9][9]={false};
+	for (int i = 0; i < 9; i++)//先记录目前不需要填写的数字，true表示已经被占用了
+	{
+		for (int j = 0; j < 9; j++)
+		{
+			if (board[i][j]=='.')
+			{
+				continue;
+			}else{
+				int number = board[i][j]-'1';
+				if (number>=0 && number<9)
+				{
+					row_array[i][number]=true;//按行记录
+					col_array[j][number] = true;//按列记录
+					Sudoku_sub_array[i/3*3+j/3][number] = true;//3x3小九宫格记录
+				}else
+				{
+					return;
+				}
+			}
+		}
+	}
+	solve(board,9,9,row_array,col_array,Sudoku_sub_array,0,-1);
+}

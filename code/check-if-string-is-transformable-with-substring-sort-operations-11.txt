@@ -1,0 +1,18 @@
+class Solution {
+public:
+    bool isTransformable(string s, string t) {
+        vector<queue<int>> vNumIndicies(10);
+        for(int i = 0; i < s.size(); i++)
+            vNumIndicies[s[i] - '0'].push(i);
+        for(int i = 0; i < t.size(); i++){
+            if(vNumIndicies[t[i] - '0'].empty())
+                return false;
+            for(int j = 0; j < t[i] - '0'; j++){
+                if(!vNumIndicies[j].empty() && vNumIndicies[j].front() < vNumIndicies[t[i] - '0'].front())
+                    return false;
+            }
+            vNumIndicies[t[i] - '0'].pop();
+        }
+        return true;
+    }
+};

@@ -1,0 +1,74 @@
+class Solution
+{
+    vector<int> colors;
+    int find_root_color(int n)
+    {
+        if (colors[n] != n)
+        {
+            return colors[n] = find_root_color(colors[n]);
+        }
+        return n;
+    }
+
+public:
+    vector<int> groupStrings(vector<string> &words)
+    {
+        int w = words.size();
+        for (int i = 0; i != w; ++i)
+        {
+            colors.push_back(i);
+        }
+        sort(words.begin(), words.end(), [](string &a, string &b)
+             { return a.size() < b.size(); });
+        unordered_map<int, int> mp;
+        for (int i = 0; i != w; ++i)
+        {
+            auto &word = words[i];
+            int int_word = 0;
+            for (auto w : word)
+            {
+                int_word |= 1 << (w - 'a');
+            }
+            if (mp.count(int_word))
+            {
+                colors[find_root_color(mp[int_word])] = colors[i];
+                mp[int_word] = colors[i];
+                continue;
+            }
+            else
+            {
+                mp[int_word] = colors[i];
+            }
+            for (int j = 0, w_w = word.size(); j != w_w; ++j)
+            {
+                int_word ^= (1 << (word[j] - 'a'));
+                if (!mp.count(int_word))
+                {
+                    mp[int_word] = colors[i];
+                }
+                else
+                {
+                    colors[find_root_color(mp[int_word])] = colors[i];
+                    mp[int_word] = colors[i];
+                }
+                int_word |= (1 << (word[j] - 'a'));
+            }
+        }
+        vector<int> gp(w);
+        vector<int> res = {0, 0};
+        for (auto c : colors)
+        {
+            int find_color = find_root_color(c);
+            ++gp[find_color];
+            if (gp[find_color] > res[1])
+            {
+                res[1] = gp[find_color];
+            }
+            if (gp[find_color] == 1)
+            {
+                ++res[0];
+            }
+        }
+        return res;
+    }
+};

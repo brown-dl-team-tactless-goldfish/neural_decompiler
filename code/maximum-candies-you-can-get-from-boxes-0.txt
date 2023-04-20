@@ -1,0 +1,56 @@
+
+#include<stdio.h>
+#include<string.h>
+
+int maxCandies(int* status, int statusSize, int* candies, int candiesSize, int** keys, int keysSize, int* keysColSize, int** containedBoxes, int containedBoxesSize, int* containedBoxesColSize, int* initialBoxes, int initialBoxesSize)
+{
+    if (!status) return 0;
+    /* initialize queue and copies of passed arrays for modification */
+    int rooms = statusSize;
+    int *queue_right = malloc(rooms * sizeof(int));
+    int *queue_left = queue_right;
+    int *unlocked = malloc(rooms * sizeof(int));
+    int *has_path = malloc(rooms * sizeof(int));
+    memset(has_path, 0, rooms * sizeof(int)); 
+    int my_candy = 0;
+    
+    for (int i = 0; i < rooms; i++){  /* copy the status array */
+        unlocked[i] = status[i];
+    }
+    
+    for (int i = 0; i < initialBoxesSize; i ++) /* queue up initial boxes */
+        if ( unlocked[initialBoxes[i]] ){
+            *queue_right = initialBoxes[i];
+            queue_right ++;
+        }
+        else
+            has_path[initialBoxes[i]] = 1;
+    
+    while (queue_left < queue_right){
+        int front = *(queue_left++);  /* pop from queue */
+        my_candy += candies[front];
+        
+        /* goes through keys and unlocks, enque if alreay has path */
+        for (int i = 0; i < keysColSize[front]; i++){
+            int key = keys[front][i];
+            if (unlocked[key])
+                continue;
+            else
+                unlocked[key] = 1;
+            if (has_path[key])
+                *(queue_right++) = key; 
+        }
+        
+        /* goes through doors and adds to path, enque if unlocked */
+        for (int i = 0; i < containedBoxesColSize[front]; i++){
+            int door = containedBoxes[front][i];
+            if  (*(has_path + door)) 
+                continue;
+            else 
+                *(has_path + door) = 1;
+            if(*(unlocked + door))
+                *(queue_right++) = door;
+        }
+    }
+    return my_candy;
+}

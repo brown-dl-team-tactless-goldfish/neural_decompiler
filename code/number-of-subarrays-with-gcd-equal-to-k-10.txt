@@ -1,0 +1,56 @@
+public class Solution {
+
+    public static long Gcd(long left, long right) {
+        if (left < 0)
+            left = -left;
+        if (right < 0)
+            right = -right;
+
+        int shift;
+
+        if (left == 0)
+            return right;
+
+        if (right == 0)
+            return left;
+
+        for (shift = 0; ((left | right) & 1) == 0; ++shift) {
+            left >>= 1;
+            right >>= 1;
+        }
+
+        while ((left & 1) == 0)
+            left >>= 1;
+
+        do {
+            while ((right & 1) == 0)  /* Loop X */
+                right >>= 1;
+
+            if (left > right)
+                (left, right) = (right, left);
+
+            right -= left;
+        } while (right != 0);
+
+        return left << shift;
+    }
+
+    public int SubarrayGCD(int[] nums, int k) {
+      int result = 0;
+
+      for (int start = 0; start < nums.Length; ++start) {
+          long gcd = nums[start];
+
+          for (int i = start; i < nums.Length; ++i) {
+              gcd = Gcd(gcd, nums[i]);
+
+              if (gcd == k)
+                  result += 1;
+              else if (gcd < k)
+                  break; 
+          } 
+      }        
+
+      return result;
+    }
+}

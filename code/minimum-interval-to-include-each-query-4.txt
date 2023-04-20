@@ -1,0 +1,29 @@
+class Solution {
+public:
+    vector<int> minInterval(vector<vector<int>>& A, vector<int>& Q) {
+        int N = Q.size(), M = A.size();
+        sort(begin(A), end(A));
+        
+        vector<vector<int>> qq;
+        for(int i = 0; i < N; i++) qq.push_back({Q[i], i});
+        sort(begin(qq), end(qq));
+
+        auto comp = [](auto & a, auto & b){
+            return a[1]- a[0] >= b[1]-b[0];
+        };
+        priority_queue<vector<int>, vector<vector<int>>, decltype(comp)> pq(comp);
+
+        vector<int> res(N, -1);
+        int idx = 0;
+        for(auto & q : qq) {
+            while(idx < M && q[0] >= A[idx][0]) {
+                if(q[0] <= A[idx][1]) pq.push(A[idx]);
+                idx++;
+            }
+            while(!pq.empty() && q[0] > pq.top()[1]) pq.pop();
+            if(pq.empty()) continue;
+            res[q[1]] = pq.top()[1]-pq.top()[0]+1;
+        }
+        return res;
+    }
+};

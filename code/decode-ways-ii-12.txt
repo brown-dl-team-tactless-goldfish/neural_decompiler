@@ -1,0 +1,43 @@
+#define MOD 1000000007
+
+class Solution {
+public:
+    int numDecodings(string s) {
+        if(s[0] == '0') return 0;
+        int64_t last1{s[0] == '*' ? 9 : 1}, last2{1}, sum;
+        for(int i{1}, size{(int)s.size()}; i < size; ++i) {
+            sum = 0;
+            if(s[i] != '*') {
+                
+                if(s[i-1] == '1') {
+                    sum = (sum + last2) % MOD;
+                } else if(s[i-1] == '2') {
+                    if(s[i] <= '6') sum = (sum + last2) % MOD;
+                } else if(s[i-1] == '*') {
+                    if(s[i] <= '6') {
+                        sum = (sum + (2 * last2) % MOD) % MOD;
+                    } else {
+                        sum = (sum + last2) % MOD;
+                    }
+                }
+                
+                if(s[i] != '0') sum = (sum + last1) % MOD;
+            } else {
+                if(s[i-1] == '1') {
+                    sum = (sum + (9 * last2) % MOD) % MOD;
+                } else if(s[i-1] == '2') {
+                    sum = (sum + (6 * last2) % MOD) % MOD;
+                } else if(s[i-1] == '*') {
+                    sum = (sum + (15 * last2) % MOD) % MOD;
+                }
+
+                sum = (sum + 9 * last1) % MOD;
+            }
+            
+            last2 = last1;
+            last1 = sum;
+        }
+        
+        return last1;
+    }
+};

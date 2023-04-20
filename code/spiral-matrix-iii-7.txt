@@ -1,0 +1,57 @@
+class Solution {
+private:
+    int R, C;
+    vector<vector<int>> ans;
+    int totalCells;
+    
+    bool isValid(int r, int c)
+    {
+        //cout << r << "," << c << endl;
+        return (r < R && r >= 0 && c < C && c >= 0);
+    }
+    
+    void walk(int loop, int r, int c) {
+        r = r + loop - 1;
+        c = c - loop + 1;
+        int w = (2*loop)-1;
+        
+        // Go ^
+        for (int i = 0; i < w; ++i) {
+            if (isValid(r - i, c))
+                ans.push_back({r-i,c});
+        }
+        
+        // Go >
+        for(int i = 1; i <= w; ++i) {
+            if (isValid(r-w+1, c+i))
+                ans.push_back({r-w+1, c+i});
+        }
+        
+        // Go v
+        for(int i = 1; i <= w; ++i) {
+            if (isValid(r-w+i+1, c+w))
+                ans.push_back({r-w+i+1, c+w});
+        }
+         
+        // Go <
+        for (int i = 1; i <= w; ++i) {
+            if (isValid(r+1, c+w-i))
+                ans.push_back({r+1, c+w-i});
+        }
+    }
+    
+public:
+    vector<vector<int>> spiralMatrixIII(int R, int C, int r0, int c0) {
+        this->R = R;
+        this->C = C;
+        this->totalCells = R * C;
+        int loop = 1;
+        
+        while(ans.size() < this->totalCells) {
+            walk(loop, r0, c0);
+            loop++;
+        }
+        
+        return ans;
+    }
+};

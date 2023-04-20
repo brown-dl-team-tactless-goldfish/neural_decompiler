@@ -1,0 +1,26 @@
+class Solution {
+public:
+    const int row[4]={-1,0,0,1};
+    const int col[4]={0,-1,1,0};
+    int minimumObstacles(vector<vector<int>>& grid) {
+	    // Path from 0,0 to n-1,m-1 with minimum cost is the answer , classic dijkstra!
+        int n =grid.size() , m = grid[0].size();
+        priority_queue<array<int,3>,vector<array<int,3>>,greater<array<int,3>>>pq;
+        vector<vector<int>> dist(n,vector<int>(m,INT_MAX));
+        pq.push({grid[0][0],0,0});
+        dist[0][0]=grid[0][0];
+        while(!pq.empty()) {
+            array<int,3> par = pq.top();
+            pq.pop();
+            if(par[1]==n-1 && par[2]==m-1) return par[0]; 
+            for(int d=0; d<4; d++) {
+                int R = row[d]+par[1] , C = col[d]+par[2];
+                if(R>=0 && R<n && C>=0 && C<m && dist[R][C]>dist[par[1]][par[2]]+grid[R][C]) {
+                     dist[R][C]=dist[par[1]][par[2]]+grid[R][C];
+                     pq.push({dist[R][C],R,C});
+                }
+            }
+        }
+        return dist[n-1][m-1];
+    }
+};

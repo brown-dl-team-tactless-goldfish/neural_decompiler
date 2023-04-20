@@ -1,0 +1,35 @@
+class Solution {
+public:
+    vector<vector<int>> substringXorQueries(string s, vector<vector<int>>& queries) {
+        map<int,vector<int>> mp;
+        int n=s.length();
+        
+        for(int i=0;i<n;i++){   //store all subarray in map with its index range, except for one which starts with 0.
+            if(s[i]=='0'){
+                if(mp.count(0)==0){
+                    mp[0]={i,i};
+                }
+                continue;
+            }
+            int num=0;
+            for(int j=i;j<n && j-i<31;j++){
+                num=num*2 + (s[j]-'0');
+                if(mp.count(num)==0){
+                    mp[num]={i,j};
+                }
+            }
+        }
+        
+        vector<vector<int>> ans;
+        for(auto &vec: queries){
+            int first=vec[0],second=vec[1];
+            int curr=first^second;
+            if(mp.count(curr)){
+                ans.push_back(mp[curr]);
+            }
+            else ans.push_back({-1,-1});
+        }
+        
+        return ans;
+    }
+};

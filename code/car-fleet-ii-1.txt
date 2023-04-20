@@ -1,0 +1,98 @@
+class Solution {
+public:
+    double getCollision(vector<int>& a, vector<int>& b)
+    {
+        if (a[1] <= b[1]) return DBL_MAX;
+        double res = (double)(b[0] - a[0]) / double(a[1] - b[1]);
+        return res;
+    }
+    struct node
+    {
+        // fast back car
+        int i;
+        // slow , front car
+        int j;
+
+        double t;
+
+        node(int pi, int pj, double pt)
+        {
+            i = pi;
+            j = pj;
+            t = pt;
+        }
+    };
+    struct link
+    {
+        link* pre = nullptr;
+        link* suc = nullptr;
+        int i;
+        link()
+        {};
+    };
+    struct cmp_node
+    {
+        bool operator() (node& l, node& r)
+        {
+            return l.t > r.t;
+        }
+    };
+    vector<double> getCollisionTimes(vector<vector<int>>& cars) {
+        int n = cars.size();
+        priority_queue<node, vector<node>, cmp_node> q;
+        vector<link> list(n);
+        list[n - 1].i = n - 1;
+        for (int i = 0; i < n - 1; i++)
+        {
+            list[i].i = i;
+            if (i == 0) list[i].pre = nullptr;
+            else
+            {
+                list[i].pre = &list[i - 1];
+            }
+            list[i].suc = &list[i + 1];
+            double t = getCollision(cars[i], cars[i + 1]);
+            if (t != DBL_MAX)
+            {
+                q.push(node(i, i + 1, t));
+            }
+        }
+        vector<double> ans(n, -1.0);
+        while (!q.empty())
+        {
+            auto nd = q.top();
+            //cout << nd.t << "," << nd.i << "," << nd.j << endl;
+            q.pop();
+
+            if (list[nd.i].i == -1 || list[nd.j].i == -1)
+            {
+                continue;
+            }
+            ans[nd.i] = nd.t;
+            int i = nd.i;
+            auto& cur = list[i];
+
+            int x = cur.pre == nullptr ? -1 : cur.pre->i;
+            int y = cur.suc == nullptr ? -1 : cur.suc->i;
+
+            // link list
+            if (x != -1)
+            {
+                cur.pre->suc = cur.suc;
+                double t = getCollision(cars[x], cars[y]);
+                if (t != DBL_MAX)
+                {
+                    node nn(x, y, t);
+                    q.push(nn);
+                }
+            }
+            if (cur.suc)
+            {
+                cur.suc->pre = cur.pre;
+            }
+            cur.i = -1;
+
+        }
+        return ans;
+    }
+};

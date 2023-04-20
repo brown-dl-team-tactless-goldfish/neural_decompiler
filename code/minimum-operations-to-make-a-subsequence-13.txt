@@ -1,0 +1,208 @@
+public class Solution
+    {
+
+        private class Fenwick
+        {
+            private const int CHUNK_SIZE = 256;
+
+            private class Node
+            {
+                public readonly int[] Data;
+                public readonly int Min;
+                public readonly int Max;
+
+                public Node(int[] data, int min, int max)
+                {
+                    Data = data;
+                    Min = min;
+                    Max = max;
+                }
+
+                public Node Left;
+                public Node Right;
+                public bool IsLeaf => Left == null && Right == null;
+                public int Res;
+            }
+
+            private readonly Node _root;
+
+            public Fenwick(int min, int max, int[] input)
+            {
+                _root = new Node(input, min, max);
+                Build(_root);
+            }
+
+            private void Build(Node node)
+            {
+                int chunk = node.Max - node.Min + 1;
+                int chunksCount = Convert.ToInt32(Math.Ceiling((double)chunk / CHUNK_SIZE));
+
+                if (chunksCount <= 1)
+                {
+                    checked
+                    {
+                        int res = int.MinValue;
+
+                        for (int i = node.Min; i <= node.Max; i++)
+                        {
+                            res = Math.Max(res, node.Data[i]);
+                        }
+
+                        node.Res = res;
+                    }
+
+                    return;
+                }
+
+                int leftChunksCount = chunksCount / 2;
+
+                node.Left = new Node(node.Data, node.Min, node.Min + leftChunksCount * CHUNK_SIZE - 1);
+                node.Right = new Node(node.Data, node.Min + leftChunksCount * CHUNK_SIZE, node.Max);
+
+                Build(node.Left);
+                Build(node.Right);
+
+                node.Res = Math.Max(node.Left.Res, node.Right.Res);
+            }
+
+            private void Update(Node node, int i, int val)
+            {
+                if (node == null || i < node.Min || i > node.Max)
+                {
+                    return;
+                }
+
+                if (!node.IsLeaf)
+                {
+                    Update(node.Left, i, val);
+                    Update(node.Right, i, val);
+
+                    node.Res = Math.Max(node.Left.Res, node.Right.Res);
+                    return;
+                }
+
+                node.Res = Math.Max(node.Res, val);
+            }
+
+            public void Update(int i, int val)
+            {
+                _root.Data[i] = val;
+                Update(_root, i, val);
+            }
+
+            private int Res(Node node, int from, int to)
+            {
+                if (node == null || from > node.Max || to < node.Min)
+                {
+                    return int.MinValue;
+                }
+
+                if (node.Min == from && node.Max == to)
+                {
+                    return node.Res;
+                }
+
+                if (node.IsLeaf)
+                {
+                    int start = Math.Max(node.Min, from);
+                    int end = Math.Min(node.Max, to);
+
+
+                    int res = int.MinValue;
+
+                    for (int i = start; i <= end; i++)
+                    {
+                        res = Math.Max(res, node.Data[i]);
+                    }
+
+                    return res;
+
+                }
+
+                return Math.Max(Res(node.Left, Math.Max(node.Left.Min, from), Math.Min(node.Left.Max, to)),
+                       Res(node.Right, Math.Max(node.Right.Min, from), Math.Min(node.Right.Max, to)));
+            }
+
+            public int Res(int from, int to)
+            {
+                return Res(_root, from, to);
+            }
+        }
+
+        private int[] LongestIncreasingSubsequence(int[] arr)
+        {
+            var set = arr.ToHashSet();
+            set.Remove(-1); //skip -1 here
+            var list = set.ToList();
+            list.Sort();
+
+            IDictionary<int, int> map = new Dictionary<int, int>();
+            for (int i = 0; i < list.Count; i++)
+            {
+                map[list[i]] = i;
+            }
+
+            int[] res = new int[arr.Length];
+            int[] data = new int[list.Count];
+            Fenwick f = new Fenwick(0, list.Count - 1, data);
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                var val = arr[i];
+
+                if (val == -1)
+                {
+                    res[i] = 0;
+                    continue;
+                }
+
+                var listIdx = map[val];
+
+                int max = 0;
+                if (listIdx != 0)
+                {
+                    max = f.Res(0, listIdx - 1);
+                }
+
+                var cand = max + 1;
+                res[i] = cand;
+                var upd = Math.Max(data[listIdx], cand);
+                f.Update(listIdx, upd);
+            }
+
+            return res;
+
+        }
+
+        public int MinOperations(int[] target, int[] arr)
+        {
+            IDictionary<int, int> val2Index = new Dictionary<int, int>();
+            for (int i = 0; i < target.Length; i++)
+            {
+                val2Index.Add(target[i], i);
+            }
+
+            int[] data = new int[arr.Length];
+            for (int i = 0; i < arr.Length; i++)
+            {
+                if (val2Index.TryGetValue(arr[i], out var idx))
+                {
+                    data[i] = idx;
+                }
+                else
+                {
+                    data[i] = -1;
+                }
+            }
+
+            int res = target.Length;
+
+            var lis = LongestIncreasingSubsequence(data);
+            for (int i = 0; i < lis.Length; i++)
+            {
+                res = Math.Min(res, target.Length - lis[i]);
+            }
+
+            return res;
+        }
+    }

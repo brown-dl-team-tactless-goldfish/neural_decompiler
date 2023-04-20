@@ -1,0 +1,46 @@
+int profitableSchemes(int G, int P, vector<int>& group, vector<int>& profit) {
+        int MOD = 1e9 + 7;
+        int N = group.size();
+        
+        long prev[P+1][G+1];
+        long curr[P+1][G+1];
+        
+        memset(prev, 0, sizeof(prev));
+        prev[0][0] = 1;
+        
+        for (int i = 0; i < N; ++i) {
+            int pi = profit[i];
+            int gi = group[i];
+            
+            //copy prev into curr
+            for (int p = 0; p <= P; ++p) {
+                for (int g = 0; g <= G; ++g) {
+                    curr[p][g] = prev[p][g];
+                }
+            }
+            
+            for (int p = 0; p <= P; ++p) {
+                int newp = min(p + pi, P);
+                for (int g = 0; g + gi <= G; ++g) {
+                    int newg = g + gi; 
+                    curr[newp][newg] += prev[p][g];
+                    curr[newp][newg] %= MOD;
+                }
+            }
+            
+            // Copy curr into prev
+            for (int p = 0; p <= P; ++p) {
+                for (int g = 0; g <= G; ++g) {
+                    prev[p][g] = curr[p][g];
+                }
+            }
+        }
+        
+        
+        long ans = 0;
+        for (int g = 0; g <= G; ++g)
+            ans +=  prev[P][g];
+        
+        return (int)(ans%MOD);
+    }
+};

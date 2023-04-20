@@ -1,0 +1,27 @@
+bool circularArrayLoop(int* nums, int numsSize){
+    int n = numsSize;
+    int* visit = calloc(n , sizeof(int));
+    int cur, next;
+    int cycle = 1;
+    bool ans = false;
+    for(int i = 0; i < n; i++){
+        if(visit[i] > 0)
+            continue;
+        cur = i;       
+        while(1){
+            visit[cur] = cycle;
+            next = ((cur + nums[cur]) % n + n) % n;
+            if(nums[next] * nums[cur] < 0 || next == cur)
+                break;
+            if(visit[next] == cycle){
+                ans = true;   
+                goto exit;
+            }
+            visit[cur] = cycle;
+            cur = next;            
+        }
+        cycle++;
+    }
+    exit:
+    return ans;
+}

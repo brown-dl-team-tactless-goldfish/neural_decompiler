@@ -1,0 +1,38 @@
+class Solution 
+{
+public:
+	vector<int> replaceNonCoprimes(vector<int>& nums) 
+	{
+		int j = 0;   // left pointer
+		int g;
+
+		for (int i = 1; i < nums.size(); ++i)
+		{    
+			g = gcd(nums[j], nums[i]);
+
+			if (g == 1)
+			{    
+				if (++j != i)
+					nums[j] = nums[i];
+			}
+
+			else
+			{    
+				nums[j] = nums[j] / g * nums[i];
+
+				while (j >= 1)
+				{    
+					g = gcd(nums[j - 1], nums[j]);
+
+					if (g == 1) 
+						break;
+
+					nums[j - 1] = nums[j - 1] / g * nums[j];
+					--j;
+				}
+			}
+		}
+
+		return vector<int>(nums.begin(), nums.begin() + j + 1);
+	}
+};

@@ -1,0 +1,26 @@
+long long* maximumEvenSplit(long long finalSum, int* returnSize){
+    if(finalSum %2 ){
+        *returnSize = 0;
+        return NULL;
+    }
+    long long n = sqrt(finalSum) ; 
+    if(n * (n+1) > finalSum)
+        n = n-1;
+    
+    long long *ans = malloc(n * sizeof(long long));
+    *returnSize = n;
+    if(n == 1){
+        ans[0] = finalSum;
+        return ans;
+    }
+    ans[0] = 2;
+    int left = finalSum - ans[0];
+    for(int i = 1; i < n-1; i++){
+        ans[i] = 2 + ans[i-1];
+        left -= ans[i]; 
+    }
+    if(n > 1)
+        ans[n-1] = left;
+    
+    return ans;
+}

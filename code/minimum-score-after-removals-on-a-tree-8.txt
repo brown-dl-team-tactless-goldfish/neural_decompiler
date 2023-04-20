@@ -1,0 +1,73 @@
+class Solution {
+public:
+    int N;
+    void dfs(int u,vector<vector<int>>&adj,vector<vector<int>>&child,vector<int>&vis){
+        vis[u] = 1;
+        for(int nbr:adj[u]){
+            if(!vis[nbr]){
+                vis[nbr] = 1;
+                dfs(nbr,adj,child,vis);
+                for(int i=0;i<N;i++){
+                    if(child[nbr][i]){
+                        child[u][i] = 1;
+                    }
+                }
+                child[u][nbr] = 1;                
+            }
+        }
+    }
+    void fill_xor(int u,vector<vector<int>>&adj,vector<int>&vis,vector<int>&XOR,vector<int>&val){
+        vis[u] = 1;
+        XOR[u] = val[u];
+        for(int nbr:adj[u]){
+            if(!vis[nbr]){
+                vis[nbr] = 1;
+                fill_xor(nbr,adj,vis,XOR,val);
+                XOR[u] ^= XOR[nbr];
+            }
+        }
+    }
+    int minimumScore(vector<int>& nums, vector<vector<int>>& edges) {
+        int n = nums.size();
+        N = n;
+        vector<vector<int>>child(n+1,vector<int>(n+1,0));
+        vector<vector<int>>adj(n+1);
+        map<int,int>mp;
+        for(auto i:edges){
+            adj[i[0]].push_back(i[1]);
+            adj[i[1]].push_back(i[0]);
+            mp[i[0]] = i[1];
+        }
+        vector<int>XOR(n+1,0);
+        vector<int>vis1(n+1,0);
+        vector<int>vis2(n+1,0);
+        fill_xor(0,adj,vis2,XOR,nums);
+        dfs(0,adj,child,vis1);
+
+        int ans = INT_MAX;
+        for(int i=1;i<n;i++){
+            for(int j=i+1;j<n;j++){
+                
+                if(child[i][j] ){
+                    int a = XOR[i]^XOR[0];
+                    int b = XOR[i]^XOR[j];
+                    int c = XOR[j];
+                    ans = min(max(a,max(b,c)) - min(a,min(b,c)) , ans);
+                }
+                else if(child[j][i]){
+                    int a = XOR[j]^XOR[0];
+                    int b = XOR[i]^XOR[j];
+                    int c = XOR[i];
+                    ans = min(max(a,max(b,c)) - min(a,min(b,c)) , ans);
+                }
+                else{
+                    int a = XOR[0]^XOR[i]^XOR[j];
+                    int b = XOR[i];
+                    int c = XOR[j];
+                    ans = min(max(a,max(b,c)) - min(a,min(b,c)) , ans);
+                }
+            }
+        }
+        return ans;
+    }
+};

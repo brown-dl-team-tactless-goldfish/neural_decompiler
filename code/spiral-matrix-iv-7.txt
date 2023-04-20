@@ -1,0 +1,54 @@
+    public int[][] SpiralMatrix1(int m, int n, ListNode head)
+    {
+        int[][] result = new int[m][];
+        for (int i = 0; i < m; i++)
+        {
+            result[i] = new int[n];
+            Array.Fill(result[i], -1);
+        }
+
+        int iStart = 0, jStart = 0, iEnd = m - 1, jEnd = n - 1;
+        while (iStart <= iEnd && jStart <= jEnd)
+        {
+            for (int j = jStart; j <= jEnd; j++)
+            {
+                result[iStart][j] = head.val;
+                head = head.next;
+                if (head == null)
+                    return result;
+            }
+
+            for (int i = iStart + 1; i <= iEnd; i++)
+            {
+                result[i][jEnd] = head.val;
+                head = head.next;
+                if (head == null)
+                    return result;
+            }
+
+            if (iStart + 1 <= iEnd)
+                for (int j = jEnd - 1; j >= jStart; j--)
+                {
+                    result[iEnd][j] = head.val;
+                    head = head.next;
+                    if (head == null)
+                        return result;
+                }
+
+            if (jStart <= jEnd - 1)
+                for (int i = iEnd - 1; i > iStart; i--)
+                {
+                    result[i][jStart] = head.val;
+                    head = head.next;
+                    if (head == null)
+                        return result;
+                }
+
+            iStart++;
+            jEnd--;
+            iEnd--;
+            jStart++;
+        }
+
+        return result;
+    }

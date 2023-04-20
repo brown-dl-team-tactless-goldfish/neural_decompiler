@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int dp[2001][2001];
+    int mp[2001][2001];
+    bool checkPartitioning(string s) {
+         memset(dp,-1,sizeof(dp));
+         memset(mp,-1,sizeof(mp));
+         return solve(0,2,s);
+    }
+    int solve(int pos,int k,string &s) {
+        if(k==0) return good(pos,s.size()-1,s);
+        if(pos>=s.size()) return 0;
+        if(dp[pos][k]!=-1) return dp[pos][k];
+        int ans = 0;
+        for(int i=pos; i<s.size()-1; i++) {
+              ans|=(good(pos,i,s)&&solve(i+1,k-1,s));
+              if(ans) break;
+        }
+        return dp[pos][k] = ans;
+    }
+    int good(int l,int r,string &s) {
+        if(l>=r) return 1;
+        if(mp[l][r]!=-1) return mp[l][r];
+        return mp[l][r] = (s[l] == s[r]) && good(l+1,r-1,s);
+    }
+};

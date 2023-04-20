@@ -1,0 +1,39 @@
+public class Solution {
+    public int DistinctEchoSubstrings(string text) {
+        var trie = new Trie();
+        for(var i=0; i<text.Length; i++){
+            trie.Add(text, i);
+        }
+        return trie.total;
+    }
+}
+
+class Node{
+    public Node[] children = new Node[26];
+    public HashSet<int> starts = new HashSet<int>();
+    public bool counted;
+}
+
+class Trie{
+    Node root = new Node();
+    public int total;
+    public void Add(string s, int start){
+        var curr = root;
+        for(var i=start; i<s.Length&& (i-start+1<=s.Length-i || i-start+1<=start); i++){
+            var j = s[i]-'a';
+            if(curr.children[j]==null){
+                curr.children[j] = new Node();
+            }
+            curr = curr.children[j];
+            
+            if(curr.counted)
+                continue;
+            
+            if(curr.starts.Contains(start-(i-start+1))){
+                curr.counted = true;
+                total++;
+            }
+            curr.starts.Add(start);
+        }
+    }    
+}

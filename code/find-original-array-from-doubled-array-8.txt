@@ -1,0 +1,18 @@
+class Solution {
+public:
+    vector<int> findOriginalArray(vector<int>& changed) {
+        map<int, int> mp;
+        for(auto e : changed) mp[e]++;
+        vector<int> keys, res;
+        for(auto & [k, v] : mp) keys.push_back(k);
+        for(auto k : keys) {
+            if(!k && mp[k]%2 || mp[k] > mp[2*k]) return {};
+            for(int i = 0, c = !k ? mp[k]/2 : mp[k]; i < c; i++) {
+                mp[k]--;
+                mp[2*k]--;
+                res.push_back(k);
+            }
+        }
+        return res;
+    }
+};

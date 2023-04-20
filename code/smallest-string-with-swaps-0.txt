@@ -1,0 +1,98 @@
+int find(int *rt, int x){
+    int rx = rt[x];
+    if (rx == x)
+        return x;
+    return rt[x] = find(rt, rx);
+}
+
+void union_link(int *rt, int *rnk, int x, int y){
+    int rx = find(rt, x);
+    int ry = find(rt, y);
+    if (rx !=ry){
+        if (rnk[rx] > rnk[ry])
+            rt[ry] =rx;
+        else if (rnk[ry] > rnk[rx])
+            rt[rx] = ry;
+        else {
+            rt[ry] = rx;
+            rnk[rx] +=1;
+        }
+    }
+}
+
+/* djset contains array of 26 elements. Each array element corresponds to the count of each lower alphabet.
+    each disjoint set can use this structure instance.
+    each disjoint set can have lower alphabets a-z.
+*/      
+struct djset {
+    int chcnt[26];
+    char ind;
+};
+
+char * smallestStringWithSwaps(char * s, int** pairs, int pairsSize, int* pairsColSize){
+    int n = strlen(s);
+    
+    int rt[n];
+    /* frame disjoint set */
+    int ii, jj;
+    {
+        int rnk[n];
+        for (ii=0; ii< n; ii++){
+            rt[ii] = ii;
+            rnk[ii] = 1;
+        }
+        for (ii=0; ii<pairsSize; ii++)
+            union_link(rt, rnk, pairs[ii][0], pairs[ii][1]);
+    }
+    
+    int numdjsets=0;
+    int ind_djsets[n];
+    /* get num of disjoint sets */
+    for (ii=0; ii< n; ii++){
+        jj = find(rt, ii);
+        if (jj == ii) {
+            ind_djsets[ii] = numdjsets;
+            numdjsets++;
+        }
+    }
+    
+    /* Define a djset for each disjoint set.
+       Max number of disjoint sets can be of string length
+    */
+    /* define array indices of djsets */
+    struct djset dsets[numdjsets+1];
+    
+    memset(dsets, 0, sizeof(dsets));
+    
+    for (ii=0; ii<n; ii++){
+        /* get the root element corresponding to each alphabet */
+        jj = rt[ii];
+        
+        jj = ind_djsets[jj];
+        /* increment the corresponding alphabet count in root djset */
+        dsets[jj].chcnt[s[ii]-'a'] += 1;
+    }
+    
+    /* keep the alphabets of each disjoint set in ascending order
+        Get the count of first non-zero elements in alphabets array,
+        assign it, reduce , then go for next non-zero element 
+    */
+    for (ii=0; ii<n; ii++){
+        /* get the root element */
+        jj = rt[ii];
+        jj = ind_djsets[jj];
+        /* get the lowest existing alphabet index of disjoint set */
+        while (!dsets[jj].chcnt[dsets[jj].ind]) dsets[jj].ind++;
+        
+        /* assign the lowest existing alphabet of disjoint set element s[ii] */
+        s[ii] = 'a' + dsets[jj].ind;
+        
+        /* go for the next lowest alphabet 
+           by reducing the count of existing alphabet,
+           in loop, it goes to next alphabet count in next occurrence */
+        dsets[jj].chcnt[dsets[jj].ind] -= 1;
+    }
+    
+    /* above loop ensures to arrange alphabets in ascending order */
+    return s;
+}

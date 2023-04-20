@@ -1,0 +1,61 @@
+//a b c d e (such that a<b<c<d<e)
+//let's assume a,b,c,d,e are indices such that arr[a]=arr[b]=arr[c]=arr[d]=arr[e]
+//now assume we are stading at index 'c' then 
+// ans[c] = |c-a| + |c-b| + |d-c| + |e-c| -----(1)
+//we can divide it into two parts 1.) occuring before index 'c' 2.) occuring after index 'c'
+//let's say count of indexes occuring before index 'c' be cnt1=2(which is 2 here) and sum of those indices is a+b (here)
+
+//let's say count of indexes occuring after index 'c' be cnt2=2(which is 2 here) and sum of those indices is d+e (here)
+
+//then equation 1 boils down to
+// cnt1*c - (a+b) + (d+e) - cnt2*c
+// 2*c-(a+b) + (d+e) - 2*c
+class Solution {
+public:
+    vector<long long> getDistances(vector<int>& arr) {
+        int n=arr.size();
+        unordered_map<int,long long> sum_map;
+        unordered_map<int,long long> count_map;
+        vector<long long> ans(n,0);
+        
+        //first loop for first part of condition when we considering all the indices occuring before the curr_idx
+        for(int i=0;i<n;i++){
+            if(count_map.find(arr[i])==count_map.end()){
+                count_map[arr[i]]++;
+                sum_map[arr[i]]+=i;
+                ans[i]=0;
+            }
+            else{
+                long long cnt=count_map[arr[i]];
+                long long before_sum=sum_map[arr[i]];
+                ans[i]=(long long)cnt*i - (before_sum);
+                count_map[arr[i]]++;
+                sum_map[arr[i]]+=i;
+            }
+        }
+        
+        count_map.clear();
+        sum_map.clear();
+        
+        
+        //second loop for second part of condition when we considering all the indices occuring after the curr_idx
+        for(int i=n-1;i>=0;i--){
+            if(count_map.find(arr[i])==count_map.end()){
+                count_map[arr[i]]++;
+                sum_map[arr[i]]+=i;
+                ans[i]+=0;
+            }
+            else{
+                long long cnt=count_map[arr[i]];
+                long long after_sum=sum_map[arr[i]];
+                ans[i]+=after_sum - (long long)(cnt*i);
+                count_map[arr[i]]++;
+                sum_map[arr[i]]+=i;
+            }
+        }
+        // for(int i=0;i<n;i++){
+        //     cout<<ans[i]<<" ";
+        // }
+        return ans;
+    }
+};

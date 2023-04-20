@@ -1,0 +1,39 @@
+class Solution {
+public:
+    bitset<1<<21> cache;
+    bitset<1<<21> visited;
+    int total;
+    int max_;
+
+    bool helper(int curSum, int state) {
+        if(curSum >= total) { // If curSum is greater than total, then this is an end state, so mark as true.
+            visited.set(state);
+            cache.set(state);
+            return true;
+        }
+
+        for(int i = 1; i <= max_; ++i) {
+            if((state & (1 << i)) == 0) { // Possible next state
+                int newState = state | (1 << i);
+                if((visited[newState] && cache[newState]) || (!visited[newState] && helper(curSum+i, newState))) {
+                    visited.set(state); // Since a next state is true, this state is false. No need to mark cache since it is default false
+                    return false;
+                }
+            }
+        }
+        visited.set(state); // Since all next opponent states are false, this state is true.
+        cache.set(state);
+        return true;
+    }
+
+    bool canIWin(int m, int d) { 	
+        if(d <= m) return true; // First player always wins if desired below maxChoose
+        int tmp = m*(m+1)/2;
+        if(tmp < d) return false; // No one wins if it is not possible to reach desired 
+        if(tmp == d && m%2 == 1) return true; // If desired equal to max possible sum, then only if the maxChoose is odd can the first player win. 
+        total = d; max_ = m;
+        return !helper(0, 0); // Do dfs, and negate the result
+    }
+};
+
+auto gucciGang = []() {std::ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);return 0;}();

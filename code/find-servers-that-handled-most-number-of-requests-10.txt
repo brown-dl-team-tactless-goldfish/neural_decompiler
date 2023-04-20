@@ -1,0 +1,42 @@
+#define pii pair<int,int>
+class Solution {
+public:
+    vector<int> busiestServers(int k, vector<int>& arrival, vector<int>& load) {
+        set<int>servers;
+        unordered_map<int,int>count;
+        priority_queue<pii,vector<pii>,greater<pii>>pq;
+        for(int i=0;i<k;i++)
+            servers.insert(i);
+        for(int i=0;i<arrival.size();i++){
+            
+            while(!pq.empty()  && pq.top().first<=arrival[i]){
+                auto fr = pq.top();
+                pq.pop();
+                servers.insert(fr.second);
+            }
+            
+            if(!servers.size())
+                continue;
+            
+            auto it = servers.lower_bound(i%k);
+            if(it==servers.end()){
+                it = servers.begin();
+            }
+            int server = *it;
+            count[server]++;
+            pq.push({arrival[i]+load[i],server});
+            servers.erase(it);
+        }
+        int mx = 0;
+        vector<int>ans;
+        for(auto it :count){
+            mx = max(mx,it.second);
+        }
+        for(auto it : count){
+            if(it.second==mx){
+                ans.push_back(it.first);
+            }
+        }
+        return ans;
+    }
+};

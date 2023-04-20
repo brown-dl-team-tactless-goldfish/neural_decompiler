@@ -1,0 +1,34 @@
+void input(int add, int now, int len, int left, int right, int* returnSize, int* box, char** ans){
+    if (now == len-1){
+        ans[*returnSize] = malloc(sizeof(char)*len);
+        for (int i = 0 ; i < now ; i++){
+            if (box[i] == 1){
+                ans[*returnSize][i] = '(' ;
+            } else {
+                ans[*returnSize][i] = ')' ;
+            }
+        }
+        ans[*returnSize][now] = '\0';
+        *returnSize += 1;
+        return;
+    }
+    if (left > 0){
+        box[now] = 1;
+        input(add+1, now+1, len, left-1, right, returnSize, box, ans);
+    }
+    if (right > 0){
+        box[now] = 0;
+        if (add-1 >= 0){
+            input(add-1, now+1, len, left, right-1, returnSize, box, ans);
+        }
+    }
+    return;
+}
+
+char ** generateParenthesis(int n, int* returnSize){
+    char** ans = malloc(sizeof(char*)*2000);
+    int box[n*2];
+    *returnSize = 0;
+    input( 0, 0, 2*n+1, n, n, returnSize, box, ans);
+    return ans;
+}

@@ -1,0 +1,66 @@
+class Solution {
+    int evaluation(string &m1, string &expression, string &m2)
+    {
+        int n = expression.size(), plus = -1;
+        string val1 = "", val2 = "";
+        for(int i = 0; i < n; i++)
+        {
+            if(expression[i] == '+')
+            {
+                plus = i;
+                continue;
+            }
+            if(plus == -1)
+                val1 += expression[i];
+            else
+                val2 += expression[i];
+        }
+        // cout << m1 << "-" << m2 << endl;
+        // cout << m1.size() << " " << m2.size() << endl;
+        int val = stoi(val1) + stoi(val2);
+        if(m1.size() > 0)
+            val *= stoi(m1);
+        if(m2.size() > 0)
+            val *= stoi(m2);
+        return val;
+    }
+public:
+    string minimizeResult(string expression) {
+        string val1 = "", val2 ="";
+        int plus = -1;
+        for(int i = 0; i < expression.size(); i++)
+        {
+            if(expression[i] == '+')
+            {
+                plus = i;
+                continue;
+            }
+            if(plus == -1)
+                val1 += expression[i];
+            else
+                val2 += expression[i];
+        }
+        string ans = '(' + val1 + '+' + val2 + ')';
+        //cout << val1 << " " << val2;
+        int val = stoi(val1) + stoi(val2);
+        for(int i = 0; i < plus; i++)
+        {
+            for(int j = plus+1; j < expression.size(); j++)
+            {
+                string m1 = expression.substr(0,i);
+                string v = expression.substr(i, (j-i+1));
+                string m2 = expression.substr(j+1);
+                string exp = m1 + '(' + v + ')' + m2;
+                // cout << expression.substr(0,i) << " " << expression.substr(i, (j-i+1)) << " " << expression.substr(j+1) << endl;
+                
+                int cal = evaluation(m1, v, m2);
+                if(val > cal)
+                {
+                    val = cal;
+                    ans = exp;
+                }
+            }
+        }
+        return ans;
+    }
+};

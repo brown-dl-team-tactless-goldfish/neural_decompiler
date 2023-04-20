@@ -1,0 +1,46 @@
+class Solution {
+public:
+    vector<string> printVertically(string s) {
+        
+        int n = s.length();
+        vector<string>words;    
+        
+        int iter = 0;   // current word's iter
+        int maxL = 0;   // max word length
+        int count = 1;  // number of words processed in the string s
+        
+        // loop through words in the string s
+        for(int i=0;i<n;i++)
+        {
+            if(s[i]!=' ')
+            {
+                // if words size <= current word iter then insert new word with count-1 blanks
+                if(words.size()<=iter)
+                    words.push_back(string(count-1,' '));
+                
+                words[iter].push_back(s[i]);
+                iter++;
+            }
+            else
+            {
+                // push blanks from current iter to maxL words 
+                for(int i=iter;i<maxL;i++)
+                {
+                    if(words.size()<=i)words.push_back("");  
+                    words[i].push_back(' ');
+                }
+                
+                maxL = max(maxL,iter);
+                iter = 0;
+                count++;
+            }
+        }
+        
+        
+        // remove trailing blanks from words
+        for(int i=0;i<words.size();i++)
+            while(words[i].back()==' ')words[i].pop_back();
+        
+        return words;
+    }
+};

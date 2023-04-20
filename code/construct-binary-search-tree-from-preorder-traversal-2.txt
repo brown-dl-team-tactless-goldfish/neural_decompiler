@@ -1,0 +1,56 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+struct TreeNode* bstFromPreorder(int* preorder, int preorderSize) {
+    
+    if(preorder==NULL)
+        return NULL;
+    
+    struct TreeNode *root=(struct TreeNode *)malloc(sizeof(struct TreeNode));
+    
+    int i=0, j=0;
+    
+    root->val = preorder[0];
+   // printf("root->val=%d\n", root->val);
+    i++;
+    
+    if(preorderSize==1){
+        root->left=NULL;
+        root->right=NULL;
+        return root;
+    
+    }
+
+    while(i<preorderSize && preorder[i]<preorder[0]){
+        if(j==0)
+            j=i;
+        i++;
+    }
+    
+   // printf("i=%d, j=%d\n", i, j);
+  //  printf("i-j=%d, preorderSize-i=%d\n", i-j, preorderSize-i);
+    if(j!=0 && j<preorderSize){
+        root->left = bstFromPreorder(&preorder[j], i-j);
+    }
+    else{
+        root->left=NULL;
+    }
+   // printf("Forming right\n");
+    if(i!=0 && i<preorderSize){
+        root->right = bstFromPreorder(&preorder[i], preorderSize-i);
+    }
+    else
+        root->right=NULL;
+    
+    
+    return root;
+    
+    
+    
+    
+}

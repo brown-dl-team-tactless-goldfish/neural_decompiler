@@ -1,0 +1,60 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+
+int getDepth(struct TreeNode* root)
+{
+    if(root==NULL)
+        return 0;
+    
+    int l = getDepth(root->left);
+    int r = getDepth(root->right);
+    
+    return 1+(l>r?l:r);
+}
+
+void helper(struct TreeNode* root, int **ans, int maxDepth, int *returnColumnSizes, int depth)
+{
+    int index = 0;
+    
+    if(root==NULL)
+        return;
+    
+    index = maxDepth - depth -1;
+    
+    ans[index] = (int*)realloc(ans[index], (returnColumnSizes[index]+1) * sizeof(int));
+    ans[index][returnColumnSizes[index]] = root->val;
+    returnColumnSizes[index]++;
+
+    helper(root->left, ans, maxDepth, returnColumnSizes, depth+1);
+    helper(root->right, ans, maxDepth, returnColumnSizes, depth+1);
+    
+}
+
+int** levelOrderBottom(struct TreeNode* root, int* returnSize, int** returnColumnSizes){
+
+    int depth=0;
+    int **ans = NULL;
+    depth = getDepth(root);
+    
+    ans = (int**)calloc(depth, sizeof(int*));
+    (*returnColumnSizes) = (int*)calloc(depth, sizeof(int));
+    
+    helper(root, ans, depth, *returnColumnSizes, 0);
+
+    *returnSize=depth;
+    return ans;
+}
+

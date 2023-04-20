@@ -1,0 +1,74 @@
+int toint(string s){
+       stringstream geek(s);
+int x = 0;
+geek >> x;
+    return x;
+}
+
+int find(string s){
+    for(int i = 0; i < s.length();i++){
+        if(s[i]=='+'){
+            return i;
+        }
+    }
+    return -1;
+}
+
+string minimizeResult(string exp) {
+    int ind = find(exp);
+    unordered_map<int,int> h;
+    h[ind+1] = exp[ind+1]-'0';
+    for(int i = ind+2; i < exp.size();i++){
+        h[i] = (h[i-1]*10 + (exp[i]-'0'));
+    }
+    h[ind-1] = exp[ind-1] - '0';
+    for(int i = ind-2;i>=0;i--){
+        h[i] = (exp[i]-'0')*pow(10,ind-i-1) + h[i+1];
+      
+    }
+   
+    // for(int i = 0; i < ind;i++){
+    //     cout << h[i] << " ";
+    // }
+    // for(int i = ind+1; i < exp.size();i++){
+    //     cout << h[i] << " ";
+    // }
+   
+  int ans  = INT_MAX;
+    int p = -1;
+    int q = -1;
+    for(int i = 0; i < ind;i++){
+        for(int j = ind+1; j < exp.size();j++){
+            int a = toint(exp.substr(0,i));
+            if(a == 0){
+                a = 1;
+            }
+            int b = toint(exp.substr(j+1));
+            if(b == 0){
+                b = 1;
+            }
+            int c = h[i] + h[j];
+            // cout << a << " " << b << " " << c << endl;
+            if(a*b*c < ans){
+                ans = a*b*c;
+                p = i;
+                q = j;
+            }
+        }
+    }
+    cout << p << "  " << q << endl;
+    string ans1 = "";
+    for(int i = 0; i < p;i++){
+        ans1+=exp[i];
+    }
+    ans1+="(";
+    for(int i = p; i <= q;i++){
+        ans1+=exp[i];
+    }
+    ans1+=")";
+    for(int i = q+1; i < exp.size();i++){
+        ans1+=exp[i];
+    }
+    
+    return ans1;
+}

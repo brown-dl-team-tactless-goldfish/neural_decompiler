@@ -1,0 +1,32 @@
+class Solution 
+{
+    public:
+    int constrainedSubsetSum(vector<int>& nums, int k) 
+    {
+        int result=-2147483648;
+        int n=nums.size();
+        int dp[n+1];//dp[i+1] is the maximum sum of subarray nums[0]~nums[i]
+        memset(dp,0,sizeof(dp));
+        multiset<int> m={0};//maintain a list for last k states (for dp[i+1]: dp[i-k+1] to dp[i] are all feasible states)
+        for(int i=0;i<n;i++)
+        {
+            dp[i+1]=nums[i];//nums[i] can always be the first element to start with
+            dp[i+1]=max(dp[i+1],dp[i+1]+*m.rbegin());//*m.rbegin() is the largest among dp[i-k+1] to dp[i]
+            if(m.size()<k)
+            {
+                m.insert(dp[i+1]);//still not reach the capacity
+            }
+            else
+            {
+                m.erase(m.find(dp[i+1-k]));//remove the state which is out of reach
+                m.insert(dp[i+1]);//add the current state(it will be the previous state in the next round) instead
+            }
+        }
+        
+        for(int i=1;i<=n;i++)
+        {
+            result=max(result,dp[i]);//all the nums[i] can be the last element
+        }
+        return result;
+    }
+};

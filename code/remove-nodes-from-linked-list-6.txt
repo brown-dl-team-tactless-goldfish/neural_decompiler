@@ -1,0 +1,29 @@
+struct ListNode* reverseList(struct ListNode *head){
+    if (!head  ||  !head->next) 
+	    return head;
+    struct ListNode *prev = NULL, *temp;
+    
+    while (head){
+        temp = head->next;
+        head->next = prev;
+        prev = head;
+        head = temp;
+    }
+    return prev;
+}
+
+struct ListNode* removeNodes(struct ListNode* head){
+    if (!head || !head->next)
+        return head;
+    head = reverseList(head);
+    struct ListNode *safe = head, *cur = head->next;
+    while (cur){
+        if (safe->val > cur->val)
+            safe->next = cur->next;
+        else
+            safe = cur;
+        cur = cur->next;
+    }
+    head = reverseList(head);
+    return head;
+}

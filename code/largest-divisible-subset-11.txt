@@ -1,0 +1,22 @@
+vector<int> largestDivisibleSubset(vector<int>& nums) {
+	int n = nums.size();
+	vector<int> dp(n, 1), prev(n, -1), ans;
+	sort(nums.begin(), nums.end());
+	for(int i = 1; i < n; i++) {
+		int maxi = 1;
+		for(int j = 0; j < i; j++) {
+			if(nums[i] % nums[j] == 0)
+				if(dp[i] + dp[j] > maxi)
+					maxi = dp[i] + dp[j], prev[i] = j;
+		}
+		dp[i] = maxi;
+	}
+	int maxLen = 0, idx;
+	for(int i = 0; i < n; i++)
+		if(dp[i] > maxLen)
+			maxLen = dp[i], idx = i;
+	while(idx != -1)
+		ans.push_back(nums[idx]), idx = prev[idx];
+	reverse(ans.begin(), ans.end());
+	return ans;
+}

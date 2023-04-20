@@ -1,0 +1,85 @@
+typedef struct {
+    struct MagicDictionary* sons[26];
+    bool isEndOfWord;
+} MagicDictionary;
+
+/** Initialize your data structure here. */
+MagicDictionary* magicDictionaryCreate() {
+    MagicDictionary* newNode = (MagicDictionary*)malloc(sizeof(MagicDictionary));
+    for(int i=0; i<26; ++i) newNode->sons[i]=NULL;
+    newNode->isEndOfWord = false;
+    return newNode;
+}
+
+void addWord(MagicDictionary* ob, char* word){
+    if(!ob || !word) return;
+    
+    int len = strlen(word);
+    
+    MagicDictionary* obj = ob;
+    
+    for(int i=0; i<len; ++i){
+        if(!obj->sons[word[i]-'a']) obj->sons[word[i]-'a'] = magicDictionaryCreate();
+        obj = obj->sons[word[i]-'a'];
+    }
+    
+    obj->isEndOfWord = true;
+    return;
+}
+
+/** Build a dictionary through a list of words */
+void magicDictionaryBuildDict(MagicDictionary* obj, char** dict) {
+    if(!obj || !dict) return;
+    int len = ((int)sizeof(dict)/sizeof(dict[0]));
+    
+    for(int i=0; i<len; ++i) addWord(obj,dict[i]);
+    
+    return;
+}
+
+bool DictionarySearch(MagicDictionary* obj, char* word,int to,int charIndex){
+    
+    if(!obj) return false;
+    
+    int len = strlen(word);
+    
+    for(int i=0; i<=to; ++i){
+        if(!obj->sons[word[i]-'a']) return false;
+        obj = obj->sons[word[i]-'a'];
+    }
+    
+    if(!obj->sons[charIndex]) return false;
+    
+    obj = obj->sons[charIndex];
+    
+    for(int i=to+2; i<len; ++i){
+        if(!obj->sons[word[i]-'a']) return false;
+        obj = obj->sons[word[i]-'a'];
+    }
+    
+    return obj->isEndOfWord;
+}
+
+/** Returns if there is any word in the trie that equals to the given word after modifying exactly one character */
+bool magicDictionarySearch(MagicDictionary* obj, char* word) {
+    
+    if(!obj) return false;
+    
+    int len = strlen(word);
+    
+    for(int to=-1; to<len-1; ++to){
+        for(int j=0; j<26; ++j){
+            if((word[to+1]-'a')!=j) continue;
+            if(DictionarySearch(obj,word,to,j)) return true;
+        }
+    }
+    
+    return false;
+}
+
+void magicDictionaryFree(MagicDictionary* obj) {
+    if(!obj) return;
+    for(int i=0; i<26; ++i) magicDictionaryFree(obj->sons[i]);
+    free(obj);
+    return;
+}

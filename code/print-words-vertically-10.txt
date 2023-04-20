@@ -1,0 +1,57 @@
+class Solution {
+public:
+    vector<string> split(string s, char c, int* length = NULL)
+{
+	vector<string> res;
+	int left = 0, right = 0;
+	while (s[left] == c)right = ++left;
+	while (right < s.size())
+	{
+		if (s[right] == c && right > left)
+		{
+			res.push_back(s.substr(left, right - left));
+            *length = max(*length, right - left);
+			left = right + 1;
+		}
+		++right;
+	}
+	if (right > left)
+    {
+         *length = max(*length, right - left);
+        res.push_back(s.substr(left, right - left));
+    }
+		
+	return res;
+}
+    
+    vector<string> printVertically(string s) 
+    {
+        int length = 0;
+    
+        vector<string> res;
+        if(s.size() == 0)
+            return res;
+        
+        vector<string> strs = split(s, ' ', &length);
+        res.resize(length);
+        
+        for(int i = 0; i < length; i++)
+        {
+            for(int j = 0; j < strs.size(); j++)
+            {
+                if(i < strs[j].size())
+                    res[i].push_back(strs[j][i]);
+                else
+                    res[i].push_back(' ');
+            }
+        }
+        
+        for(int i = 0; i < res.size(); i++)
+        {
+            while(res[i].back() == ' ')
+                res[i].pop_back();
+        }
+        
+        return res;
+    }
+};

@@ -1,0 +1,36 @@
+int find(const int n , int delta, const int pre) {
+   
+    for(int i = 0; i <= 9; i++) {
+            int now = pre + i;
+        if(now == 0) continue;
+        if(delta == 1) return now;
+     int count =countStartWith(n, now);
+        // cout<< now<<" "<<count<<" "<<delta<<endl;
+        if(delta <= count) {
+            return find (n , delta - 1, (now) * 10);
+        }
+        
+        delta -= count;
+    }
+  return -1;
+}
+
+int countStartWith(const int n, long pre) {
+    int low = logN - log10(pre);
+    if(low < 0) {
+        return 0;
+    }
+    else if(low == 0) {
+        return 1;
+    }
+    
+    int high = logN - log10(pre + 1);
+    
+    if(low == high) {
+        return fullCount[low];
+    }
+    else {
+        return n % tens[low] + fullCount[low -1 ] + 1;
+    }
+    
+}

@@ -1,0 +1,40 @@
+using LL = long long ;
+class Solution {
+public:
+    int n ;
+    vector<vector<int>>graph ;
+    unordered_map<LL, int>Map ;  //{score, number}
+    int countHighestScoreNodes(vector<int>& parents) {
+        n = parents.size() ;
+        graph.resize(n) ;
+        for(int i = 1; i < n; i++){
+            graph[parents[i]].push_back(i) ;    
+        }
+        
+        dfs(0) ;
+        LL max_id = -1 ;
+        int maxNum = -1 ;
+        for(auto m : Map){
+            if(m.first > max_id){
+                max_id = m.first ;
+                maxNum = m.second ;
+            }
+        }
+        return maxNum ;
+    }
+    
+    int dfs(int cur){
+        int subTotal = 0 ;
+        LL score = 1 ;
+        for(auto v : graph[cur]){
+            int val = dfs(v) ;
+            subTotal += val ;  
+            score *= val ;
+        }
+        
+        if(n - 1 - subTotal)
+            score *= (n - 1 - subTotal) ;
+        Map[score]++ ;
+        return subTotal + 1 ;
+    }
+};

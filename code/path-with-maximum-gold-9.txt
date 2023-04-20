@@ -1,0 +1,32 @@
+class Solution {
+
+public:
+ int dfs(vector<vector<int>>& grid, int i, int j) {
+	if (i < 0 || j < 0 || i >= grid.size() || j >= grid[i].size() || grid[i][j] == 0)
+		return 0;
+	int count = grid[i][j];
+	int old_val = grid[i][j];
+	grid[i][j] = 0;
+	int a = dfs(grid, i + 1, j);
+	int b = dfs(grid, i - 1, j);
+	int c = dfs(grid, i, j + 1);
+	int d = dfs(grid, i, j - 1);
+	int max_val = max(max(a, b), max(c, d));
+	grid[i][j] = old_val;
+	return count + max_val;
+}
+int getMaximumGold(vector<vector<int>>& grid) {
+	if (grid.empty())
+		return 0;
+	int ans = 0;
+	for (int i = 0; i < grid.size(); i++) {
+		for (int j = 0; j < grid[i].size(); j++) {
+			if (grid[i][j] != 0) {
+				int count = dfs(grid, i, j);
+				ans = max(ans, count);
+			}
+		}
+	}
+	return ans;
+}
+};

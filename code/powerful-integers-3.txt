@@ -1,0 +1,52 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int cmp(void* a, void* b){
+    return *(int*)a-*(int*)b;
+}
+int* powerfulIntegers(int x, int y, int bound, int* returnSize) {
+    if(bound<2){
+        *returnSize=0;
+        return NULL;
+    }
+    int* ret=(int*)calloc(1000,sizeof(int));
+    int* arrayX=(int*)calloc(1000,sizeof(int));
+    int* arrayY=(int*)calloc(1000,sizeof(int));
+    int i=0;
+    int j=0;
+    arrayX[i++]=1;
+    arrayY[j++]=1;
+    while(arrayX[i-1]<=bound&&x!=1){
+        arrayX[i]=arrayX[i-1]*x;
+        i++;
+    }
+    if(arrayX[i-1]>bound){
+        i--;
+    }
+    while(arrayY[j-1]<=bound&&y!=1){
+        arrayY[j]=arrayY[j-1]*y;
+        j++;
+    }
+    if(arrayY[j-1]>bound){
+        j--;
+    }
+    int count=0;
+    for(int k=0;k<i;k++){
+        for(int h=0;h<j;h++){
+            if(arrayX[k]+arrayY[h]>bound){
+                break;
+            }
+            ret[count++]=arrayX[k]+arrayY[h];
+        }
+    }
+    qsort(ret,count,sizeof(int),cmp);
+    i=0;
+    for(int k=1;k<count;k++){
+        if(ret[k]!=ret[i]){
+            ret[++i]=ret[k];
+        }
+    }
+    *returnSize=i+1;
+    return ret;
+}

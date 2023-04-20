@@ -1,0 +1,23 @@
+public class Solution {
+    public int MaximumSum(int[] arr) {
+        var dp = new int[2][];
+        dp[0] = new int[arr.Length];
+        dp[1] = new int[arr.Length];
+        dp[0][0] = arr[0];
+        dp[1][0] = -10000;
+        
+        for (var i = 1; i < arr.Length; i++)
+        {
+            dp[0][i] = Math.Max(dp[0][i-1] + arr[i], arr[i]);
+            dp[1][i] = Math.Max(dp[0][i-1], Math.Max(dp[1][i-1] + arr[i], arr[i]));
+        }
+        
+        var max = Int32.MinValue;
+        for (var i = 0; i < arr.Length; i++)
+        {
+            max = Math.Max(max, Math.Max(dp[0][i], dp[1][i])); 
+        }
+        
+        return max;
+    }
+}

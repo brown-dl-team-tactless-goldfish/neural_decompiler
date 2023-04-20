@@ -1,0 +1,48 @@
+int minCharacters(string a, string b) {
+            vector<int> aa(26, 0);
+    vector<int> bb(26, 0);
+    
+    // aa and bb are alphabate statistic vector for a and b
+    for(auto& c : a) {
+        ++aa[(int)(c - 'a')];
+    }        
+    for(auto& d : b) {
+        ++bb[(int)(d - 'a')];
+    }
+    
+    // first, result should be as small as total length - most frequent letter
+    // a.size + b.size - (times of k)
+    int res = a.size() + b.size();        
+    int mx = 0;
+    for(int i = 0; i < 26; ++i) {
+        mx = std::max(mx, aa[i] + bb[i]);
+    }        
+    res = std::min(res, (int)a.size() + (int)b.size() - mx);
+    
+    // then we enumrate from a to y as k
+    // how many char need change if put all a under k (inclusive), all b after k(exclusive)
+    // how many char need change if put all b under k (inclusive), all a after k(exclusive)
+    // due to exclusive after k, we don't need do it for k as z
+    int a3 = 0;        
+    int b3 = 0;
+    int a4 = std::accumulate(aa.begin(), aa.end(), 0); // a4 is all letter count in a
+    int b4 = std::accumulate(bb.begin(), bb.end(), 0); // b4 is all letter count in b
+    for(int i = 0; i < 25; ++i) {
+        
+        a3 += aa[i];
+        b3 += bb[i];
+        
+        // how many char need change if put all a under k (inclusive), all b after k(exclusive)
+        int a5 = a4 - a3;
+        int b5 = b3;            
+        res = std::min(res, a5 + b5);
+        
+        // how many char need change if put all b under k (inclusive), all a after k(exclusive)
+        a5 = a3;
+        b5 = b4 - b3;            
+        res = std::min(res, a5 + b5);            
+    }
+    
+    
+    return res;
+}

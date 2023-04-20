@@ -1,0 +1,114 @@
+
+    public class Solution
+    {
+        public int BestRotation(int[] arr)
+        {
+            int maxScore = 0;
+            int res = 0;
+
+            int[] prefixScore = new int[arr.Length];
+            int[] suffixScore = new int[arr.Length];
+
+            IDictionary<int, int> diff2Count = new Dictionary<int, int>();
+            int tmp = 0;
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                int diff = arr[i] - i;
+                if (diff > 0)
+                {
+                    continue;
+                }
+
+                if (!diff2Count.ContainsKey(diff))
+                {
+                    diff2Count[diff] = 0;
+                }
+
+                diff2Count[diff]++;
+                tmp++;
+            }
+
+            prefixScore[0] = tmp;
+
+            int remove = 0;
+            for (int i = 1; i < arr.Length; i++)
+            {
+                int diff = arr[i - 1] - (i - 1);
+
+                if (diff2Count.ContainsKey(diff))
+                {
+                    diff2Count[diff]--;
+                    tmp--;
+                }
+
+                if (diff2Count.ContainsKey(remove))
+                {
+                    tmp -= diff2Count[remove];
+                    diff2Count.Remove(remove);
+                }
+
+                remove--;
+                prefixScore[i] = tmp;
+            }
+
+
+
+            diff2Count.Clear();
+            tmp = 0;
+            for (int i = arr.Length - 1; i >= 0; i--)
+            {
+                int diff = i - arr[i];
+                if (diff >= 0)
+                {
+                    continue;
+                }
+
+                if (!diff2Count.ContainsKey(diff))
+                {
+                    diff2Count[diff] = 0;
+                }
+
+                diff2Count[diff]++;
+                tmp++;
+            }
+
+            suffixScore[arr.Length - 1] = arr.Length - tmp;
+            remove = -1;
+            for (int i = arr.Length - 2; i >= 0; i--)
+            {
+                int diff = i + 1 - arr[i + 1];
+                if (diff2Count.ContainsKey(diff))
+                {
+                    diff2Count[diff]--;
+                    tmp--;
+                }
+
+                if (diff2Count.ContainsKey(remove))
+                {
+                    tmp -= diff2Count[remove];
+                    diff2Count.Remove(remove);
+                }
+
+                remove--;
+                suffixScore[i] = i + 1 - tmp;
+            }
+
+            maxScore = prefixScore[0];
+            res = 0;
+
+            for (int k = 1; k < arr.Length; k++)
+            {
+                int p = prefixScore[k];
+                int s = suffixScore[k - 1];
+
+                if (p + s > maxScore)
+                {
+                    maxScore = p + s;
+                    res = k;
+                }
+            }
+
+            return res;
+        }
+    }

@@ -1,0 +1,62 @@
+#define f(i,a,b) for(int i=a;i<=b;i++)
+
+class Solution {
+public:
+    int dp[3][3][3][5001];
+    int mod = 1e9 +7;
+    
+    // ways to color grid if we have a, b, c col on last row and we have n rows remaing to fill with col
+    int fun(int a, int b, int c, int n){
+        
+        if(n==0){
+            return 1;
+        }
+        if(dp[a][b][c][n]!=-1){
+            return dp[a][b][c][n];
+        }
+        
+        int ans = 0;
+        
+        f(i,0,2){
+            f(j,0,2){
+                f(k,0,2){
+                    
+                    // i!=j and j!=k => color shdn't be equal in row
+                    // i!=a and j!=b and k!=c => color shdn't be equal to prev row
+                    if(i!=j and j!=k and i!=a and j!=b and k!=c){
+                        
+                        ans += fun(i,j,k, n-1);
+                        
+                        ans %=mod; 
+                    }
+                }
+            }
+        }
+        
+        return dp[a][b][c][n]=ans;
+    }
+    
+    int numOfWays(int n) {
+        
+        memset(dp,-1,sizeof(dp));
+        
+        int ans = 0;
+        
+        // checking all possibilities for nth row
+        f(i,0,2){
+            f(j,0,2){
+                f(k,0,2){
+                    
+                    if(i!=j and j!=k){
+                        
+                        ans += fun(i,j,k, n-1);
+                        
+                        ans %=mod; 
+                    }
+                }
+            }
+        }
+        
+        return ans;
+    }
+};

@@ -1,0 +1,52 @@
+class Solution {
+public:
+    string alphabetBoardPath(string target) {
+        unordered_map<char, pair<int, int>> map;
+        
+        vector<string> board = {"abcde", "fghij", "klmno", "pqrst", "uvwxy", "z"};
+        
+        for (int i = 0; i < board.size(); ++i) {
+            for (int j = 0; j < board[i].length(); ++j) {
+                map[board[i][j]] = {i, j};
+            }
+        }
+        
+        int r = 0, c = 0;
+        
+        string ans = "";
+        
+        for (char &ch : target) {
+            int row = map[ch].first;
+            int col = map[ch].second;
+            
+            if (r == 5 && r != row) {
+                r--;
+                ans += "U";
+            }
+            
+            while (c > col) {
+                c--;
+                ans += "L";
+            }
+            
+            while (c < col) {
+                c++;
+                ans += "R";
+            }
+            
+            while (r > row) {
+                r--;
+                ans += "U";
+            }
+            
+            while (r < row) {
+                r++;
+                ans += "D";
+            }
+            
+            ans += "!";
+        }
+        
+        return ans;
+    }
+};

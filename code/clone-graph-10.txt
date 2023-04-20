@@ -1,0 +1,31 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     int numNeighbors;
+ *     struct Node** neighbors;
+ * };
+ */
+
+struct Node *cloneGraphVisited(struct Node *s, struct Node **visited) {
+	struct Node *copy;
+    if (visited[s->val] != NULL) {
+        return visited[s->val];
+    }
+	copy = malloc(sizeof(struct Node));
+    visited[s->val] = copy;
+    copy->val = s->val;
+    copy->numNeighbors = s->numNeighbors;
+    copy->neighbors = malloc(s->numNeighbors * sizeof(struct Node*));
+    for (int i=0; i < s->numNeighbors; ++i) {
+        copy->neighbors[i] = cloneGraphVisited(s->neighbors[i], visited);
+    }
+    return copy;
+}
+
+
+struct Node *cloneGraph(struct Node *s) {
+	struct Node *visited[101] = {NULL};
+    if (s == NULL) return NULL;
+	return cloneGraphVisited(s, visited);
+}

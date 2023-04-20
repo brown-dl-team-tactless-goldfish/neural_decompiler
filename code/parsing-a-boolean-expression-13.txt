@@ -1,0 +1,38 @@
+string endChars = ")}";
+string ops = "|!&";
+
+
+bool solve(string&s, int &idx){
+    char op = s[idx];
+    bool res = op == '|' ? false : true;
+    idx++;
+    
+    while(endChars.find(s[idx]) == -1){
+        if(ops.find(s[idx]) != -1){
+            bool c = solve(s, idx);
+            
+            if (op == '&') res &= c;
+			if (op == '|') res |= c;
+			if (op == '!') res = !c;
+            
+        }else if(s[idx] == '(' || s[idx] == '{' || s[idx] == ','){
+            idx++;
+            continue;
+        }else{
+            bool c = s[idx] == 't' ? true : false;
+            if (op == '&') res &= c;
+			if (op == '|') res |= c;
+			if (op == '!') res = !c;
+        }    
+        idx++;
+    }
+    return res;
+}
+
+
+bool parseBoolExpr(string expression) {
+    int i =0;
+    expression = "!(" + expression + ")";
+    return !solve(expression, i);
+   
+}

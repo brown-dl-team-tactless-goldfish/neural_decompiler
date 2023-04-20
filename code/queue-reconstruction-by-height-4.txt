@@ -1,0 +1,51 @@
+int cmpfunc(int** a, int** b)
+{
+    int* pa = (*a);
+    int* pb = (*b);
+    
+    if(pa[0]==pb[0]) // if same height, position small at the front
+        return pa[1] - pb[1];
+    else             // bigger height at the front
+        return pb[0] - pa[0];
+}
+
+void helper(int** result, int size, int* people)
+{
+    int i;
+    
+    for(i=size;i>people[1];i--)
+    {
+        result[i][0] = result[i-1][0];
+        result[i][1] = result[i-1][1];
+    }
+    result[i][0] = people[0];
+    result[i][1] = people[1];
+}
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** reconstructQueue(int** people, int peopleSize, int* peopleColSize, int* returnSize, int** returnColumnSizes){
+    int** result = (int**)malloc(peopleSize*sizeof(int*));
+    int i;
+    
+    (*returnColumnSizes) = (int*)malloc(peopleSize*sizeof(int));
+    for(i=0;i<peopleSize;i++)
+    {
+        result[i] = (int*)malloc(2*sizeof(int));
+        (*returnColumnSizes)[i] = 2;
+    }
+    
+    qsort(people,peopleSize,sizeof(int*),cmpfunc);
+    
+    for(i=0;i<peopleSize;i++)
+    {
+        helper(result,i,people[i]);
+    }
+    
+    *returnSize = peopleSize;
+    
+    return result;
+}

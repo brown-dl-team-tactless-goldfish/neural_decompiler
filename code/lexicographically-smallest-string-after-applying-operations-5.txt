@@ -1,0 +1,42 @@
+class Solution {
+public:
+    string add(string s,int x){
+        int n = s.size();
+        for (int i=1; i<n; i += 2) {
+            char &c = s[i];
+            c = '0' + (c-'0'+x)%10;
+        }
+        return s;
+    }
+    string rotate(string s,int b){
+        b = b%s.size();
+        for(int i = 0 ; i < b ; i++){
+            s.insert(s.begin(),s.back());
+            s.pop_back();
+        }
+        return s;
+    }
+    string findLexSmallestString(string s, int a, int b) {
+        set<string>vis;
+        queue<string>bfs;
+        bfs.push(s);
+        string ans = s;
+        while(!bfs.empty()){
+            string curr = bfs.front();
+            bfs.pop();
+            string addstr = add(curr,a);
+            if(vis.find(addstr) == vis.end()){
+                vis.insert(addstr);
+                bfs.push(addstr);
+                ans = min(ans,addstr);
+            }
+            string rotatestr = rotate(curr,b);
+            if(vis.find(rotatestr) == vis.end()){
+                vis.insert(rotatestr);
+                bfs.push(rotatestr);
+                ans = min(ans,rotatestr);
+            }
+        }
+        return ans;
+    }
+};

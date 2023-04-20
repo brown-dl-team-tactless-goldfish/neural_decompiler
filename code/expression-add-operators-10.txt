@@ -1,0 +1,30 @@
+class Solution {
+public:
+    vector<string> addOperators(string num, int target) {
+        vector<string> res;
+        string builder;
+        dfs(builder, num, target, 0, 0, res);
+        return res;
+    }
+
+private:
+    void dfs(string builder, string s, int target, int from, long product, vector<string>& res) {
+        if (from == s.length()) {
+            if (product == target) {
+                res.push_back(builder);
+            }
+            return;
+        }
+
+        for (int i = from + 1; i <= s.length() && i < from + 11; i++) {
+            string ns = s.substr(from, i - from);
+            long n = stol(ns);
+            dfs(builder + (from == 0 ? "" : "+") + ns, s, target - product, i, n, res);
+            if (from != 0) {
+                dfs(builder + "-" + ns, s, target - product, i, -n, res);
+                dfs(builder + "*" + ns, s, target, i, product * n, res);
+            }
+            if (s[from] == '0') break;  // if the first char in the rest string is '0', break here, "0*" is illegal number
+        }
+    }
+};

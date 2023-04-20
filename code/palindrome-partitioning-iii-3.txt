@@ -1,0 +1,25 @@
+public class Solution 
+{
+    public int PalindromePartition(string s, int k) 
+    {
+        int n = s.Length;
+        var dp = new int[n + 1, k + 1];
+        for (int i = 0; i <= n; i++)
+            for (int j = 0; j <= k; j++)
+                dp[i, j] = 1000;
+        dp[0, 0] = 0;
+        for (int i = 0; i < n; i++)
+            for (int j = 0; j < k; j++)
+                for (int len = 1; i + len <= n; len++) 
+                    dp[i + len, j + 1] = Math.Min(dp[i + len, j + 1], dp[i, j] + CountMismatch(s, i, i + len - 1));
+        return dp[n, k];
+    }
+    
+    private int CountMismatch(string s, int start, int end)
+    {
+        int mismatch = 0;
+        while(start < end)
+            mismatch += s[start++] == s[end--] ? 0 : 1;
+        return mismatch;
+    }
+}

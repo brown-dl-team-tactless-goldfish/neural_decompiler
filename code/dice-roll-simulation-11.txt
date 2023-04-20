@@ -1,0 +1,23 @@
+class Solution {
+    const int MOD = 1e9+7;
+public:
+    int dieSimulator(int n, vector<int>& rollMax) {
+        vector<vector<int>> mat(n+1, vector<int>(6+1,0));
+        mat[0][6] = 1;
+        for (int i=1; i<=n; i++) {
+            for (int j=0; j<6; j++) {
+                long long sum = 0;
+                for (int k=1; k<rollMax[j]+1; k++) {
+                    if (i-k<0)
+                        break;
+                    int val = (mat[i-k][6] - mat[i-k][j] + MOD) % MOD;
+                    mat[i][j] = (mat[i][j] + val) % MOD;          
+                }
+                mat[i][6] = (mat[i][6] + mat[i][j]) % MOD;                 
+                //cout << mat[i][j] << ", ";                    
+            }
+            //cout << "..... i, mat[i][6] = " << i << ", " << mat[i][6] << endl;
+        }
+        return mat[n][6];
+    }
+};

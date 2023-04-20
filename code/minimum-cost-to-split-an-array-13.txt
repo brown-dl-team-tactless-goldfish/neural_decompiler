@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int solve(int ind,int k,vector<int>&nums,vector<int>&dp){
+        if(ind==nums.size()) return 0;
+        if(dp[ind]!=-1) return dp[ind];
+        int score=k;
+        unordered_map<int,int>mpp;
+        int ans=INT_MAX;
+        for(int i=ind;i<nums.size();i++){
+            mpp[nums[i]]++;
+            if(mpp[nums[i]]>1){
+                if(mpp[nums[i]]==2)score+=2;
+                else score++;
+            }
+            ans=min(ans,score+solve(i+1,k,nums,dp));
+        }
+        return dp[ind]=ans;
+        
+        
+    }
+    int minCost(vector<int>& nums, int k) {
+        vector<int>dp(nums.size(),-1);
+        return solve(0,k,nums,dp);
+       
+    }
+};

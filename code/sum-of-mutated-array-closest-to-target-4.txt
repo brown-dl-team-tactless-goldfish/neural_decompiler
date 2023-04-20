@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int calculate (vector<int>&arr, vector<int>& sum, int val) {
+        int n = arr.size();
+        auto it = upper_bound(arr.begin(), arr.end(), val);
+        if(it == arr.end()) return sum[n];
+        
+        int p = it - arr.begin();
+        int newSum = sum[p] + val * (n - p);
+        return newSum;
+    }
+    
+    int findBestValue(vector<int>& arr, int target) {
+        int n = arr.size();
+        sort(arr.begin(), arr.end());
+        vector<int> sum(n + 1, 0);
+        int mx = INT_MIN;
+        for(int i=0; i<n; i++) {
+            sum[i+1] = sum[i] + arr[i];
+            mx = max(mx, arr[i]);
+        }
+        
+        int l = 0, r = mx;
+        while(l < r-1) {
+            int mid = (l + r) / 2;
+            int c = calculate(arr, sum, mid);
+            if(c > target) r = mid;
+            else l = mid;
+        }
+        
+        int low = calculate(arr, sum, l), high = calculate(arr, sum, r);
+        if(abs(low - target) <= abs(high - target)) return l;
+        else return r;
+    }
+};

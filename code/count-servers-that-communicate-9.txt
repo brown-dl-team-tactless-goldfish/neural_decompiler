@@ -1,0 +1,68 @@
+#define WHITE (0)
+#define GRAY  (1)
+#define BLACK (2)
+
+#define HAS_SERVER (1)
+
+class Solution {
+public:
+    int countServers(vector<vector<int>>& grid) {
+        int rows = grid.size(), cols = grid[0].size();
+        vector<vector<int>> state(rows, vector<int>(cols, WHITE));
+
+        int answer = 0;
+        for (int r = 0; r < rows; ++r) {
+            for (int c = 0; c < cols; ++c) {
+                if (grid[r][c] == HAS_SERVER && state[r][c] == WHITE) {
+                    int cnt = dfs(grid, state, r, c);
+                    if (cnt > 1) {
+                        answer += cnt;
+                    }
+                }
+            }
+        }
+
+        return answer;
+    }
+
+private:
+    int dfs(vector<vector<int>> &grid, vector<vector<int>> &state, int cr, int cc) {
+        int rows = grid.size(), cols = grid[0].size();
+
+        state[cr][cc] = GRAY;
+        int cnt = 1;
+        
+        // search upward
+        for (int r = cr - 1; r >= 0; --r) {
+            if (grid[r][cc] == HAS_SERVER && state[r][cc] == WHITE) {
+                cnt += dfs(grid, state, r, cc);
+            }
+        }
+
+        // search downward
+        for (int r = cr + 1; r < rows; ++r) {
+            if (grid[r][cc] == HAS_SERVER && state[r][cc] == WHITE) {
+                cnt += dfs(grid, state, r, cc);
+            }
+        }
+
+        // search left
+        for (int c = cc - 1; c >= 0; --c) {
+            if (grid[cr][c] == HAS_SERVER && state[cr][c] == WHITE) {
+                cnt += dfs(grid, state, cr, c);
+
+            }
+        }
+
+        // search right
+        for (int c = cc + 1; c < cols; ++c) {
+            if (grid[cr][c] == HAS_SERVER && state[cr][c] == WHITE) {
+                cnt += dfs(grid, state, cr, c);
+            }
+        }
+        
+        state[cr][cc] = BLACK;
+
+        return cnt;
+    }
+};

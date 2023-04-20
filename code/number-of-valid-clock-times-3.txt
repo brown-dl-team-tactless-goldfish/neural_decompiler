@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int isValidTime(string &s) {
+        int h= (s[0]-'0')*10 + s[1]-'0';
+        int m= (s[3]-'0')*10 + s[4] - '0';
+        return h<24 && m<60;
+    }
+    void getAns(string &s, int i, int &ans) {
+        if(i==s.size()){
+            if(isValidTime(s))ans++;
+            return ;
+        }
+        if(s[i]=='?') {
+            for(int j=0;j<=9;j++)
+            {
+                s[i]='0'+j;
+                getAns(s, i+1, ans);
+                s[i] = '?';
+            }
+        } else {
+            getAns(s, i+1,ans);
+        }
+    }
+    int countTime(string time) {
+        int  ans=0;
+        getAns(time, 0, ans);
+        return ans;
+    }
+};

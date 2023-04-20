@@ -1,0 +1,36 @@
+#define pii pair<int, int>
+#define maxn 100005
+#define inf 1000000007
+class Solution {
+public:
+    vector<pii>g[maxn];
+    int dis[maxn];
+    void dijkstra(int s, int n) {
+        priority_queue<pii, vector<pii>, greater<pii>> q;
+        for(int i=0; i<=n; i++) dis[i] = inf;
+        q.push({inf, s});
+        while(!q.empty()) {
+            int u = q.top().second;
+            q.pop();
+            for(int i=0; i<g[u].size(); i++) {
+                int v = g[u][i].first;
+                int w = g[u][i].second;
+                if(min(dis[u], w) < dis[v]) {
+                    dis[v] = min(dis[u], w);
+                    q.push({dis[v], v});
+                }
+            }
+        }
+    }
+    int minScore(int n, vector<vector<int>>& roads) {
+        for(auto x: roads) {
+            int u = x[0];
+            int v = x[1];
+            int w = x[2];
+            g[u].push_back({v, w});
+            g[v].push_back({u, w});
+        }
+        dijkstra(1, n);
+        return dis[n]; 
+    }
+};

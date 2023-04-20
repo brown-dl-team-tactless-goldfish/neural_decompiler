@@ -1,0 +1,38 @@
+class Solution {
+public:
+    vector<vector<int>> highestPeak(vector<vector<int>>& isWater) {
+        int m = isWater.size() , n = isWater[0].size();
+        int dir[5] = {-1 , 0 , 1 , 0 , -1};
+        vector<vector<int>>vis(m , vector<int>(n));
+        queue<pair<pair<int,int> , int>>q;
+        for(int i = 0; i < m; i++){
+            for(int j = 0; j < n; j++){
+                if(!vis[i][j] && isWater[i][j]){
+                    vis[i][j] = 1;
+                    for(int k = 0; k < 4; k++){
+                        int nr = i + dir[k] , nc = j + dir[k + 1];
+                        if(nr >= 0 && nc >= 0 && nr < m && nc < n && isWater[nr][nc] == 0 && !vis[nr][nc]){
+                            isWater[nr][nc] = 1;
+                            vis[nr][nc] = 1;
+                            q.push({{nr , nc}, 1});
+                        }
+                    }
+                    isWater[i][j] = 0;
+                }
+            }
+        }   
+        while(q.size()){
+            int r = q.front().first.first , c = q.front().first.second ,h = q.front().second;
+            for(int k = 0; k < 4; k++){
+                int nr = r + dir[k] , nc = c + dir[k + 1];
+                if(nr >= 0 && nc >= 0 && nr < m && nc < n && !vis[nr][nc]){
+                    isWater[nr][nc] = h + 1;
+                    q.push({{nr , nc}, h + 1});
+                    vis[nr][nc] = 1;
+                }
+            }
+            q.pop();
+        }
+        return isWater;
+    }
+};

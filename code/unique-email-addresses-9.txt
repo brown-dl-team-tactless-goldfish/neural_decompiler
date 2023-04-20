@@ -1,0 +1,59 @@
+// convert emails with '.' and  '+' to emails without '.' and '+'
+void normalizeEmail(char* email, char* ret) {
+    int i = 0, index = 0;
+    int skip = 0; // when sign character is found, set skip = 1.
+    while (email[i++] != 0) {
+        if (email[i-1] == '@') break;
+        if (skip || email[i-1] == '.') continue;
+        if (email[i-1] == '+') { skip = 1; continue; }
+        ret[index++] = email[i-1];
+    }
+    // copy domain name
+    while (email[i] != 0) {
+        ret[index++] = email[i++];
+    }
+     
+}
+int numUniqueEmails(char** emails, int emailsSize) {
+    int ret = 0;
+    
+    int i = 0, j = 0;
+		// normalize input emails
+    while (i < emailsSize) {
+      char tmp[100] = {0};
+      normalizeEmail(emails[i], &tmp);
+      j = 0;
+      while (tmp[j] != 0) { emails[i][j] = tmp[j]; j++; }
+      emails[i][j] = 0;
+      i++;
+    }
+    i = 0;
+    
+		// remove duplicated emails, after this process, the duplicated emails will be set to null.
+    while (i < emailsSize) {
+      j = i + 1;
+      char* e1 = emails[i];
+      if (e1[0] == 0) { i++; continue; }
+      while (j < emailsSize) {
+        char* e2 = emails[j];
+        if (e2[0] == 0) { j++; continue; }
+        int k = 0;
+        while (e1[k] != 0 && e2[k] != 0) {
+          if (e1[k] == e2[k]) { k++; continue; }
+          break;
+        }
+        if (e1[k] == 0 && e2[k] == 0) {
+          e2[0] = 0;
+        }
+        j++;
+      }
+      i++;
+    }
+
+    i = 0;
+    while (i < emailsSize) {
+      if (emails[i][0] != 0) ret++;
+      i++;
+    }
+    return ret;
+}

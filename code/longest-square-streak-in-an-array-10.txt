@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int longestSquareStreak(vector<int>& nums) {
+        sort(nums.begin(), nums.end());
+        unordered_map<long long, int> mp;
+        long long res = -1;
+        for(auto n : nums) mp[n]++;
+        
+        for(auto n : nums) {
+            if(!mp.size())
+                break;
+            if(mp.count(n) != 0) {
+                long long cnt = 1, cur = (long long)n * (long long)n;
+                while(mp.size()) {
+                    if(mp.count(cur)) {
+                        mp.erase(cur);
+                        ++cnt;
+                        cur *= cur;
+                    }
+                    else
+                        break;
+                }
+                if(cnt > 1)
+                    res= max(res, cnt);
+            }
+        }
+        return res;
+    }
+};

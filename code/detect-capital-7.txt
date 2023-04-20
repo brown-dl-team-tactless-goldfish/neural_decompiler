@@ -1,0 +1,35 @@
+// cap ascii: 65 <= x <= 90
+bool isCap(char c)
+{   
+    if(c >= 65 && c <= 90)
+        return true;
+    return false;
+}
+
+bool detectCapitalUse(char * word)
+{
+    int cint = 0; // points to current postion
+    bool allcap = true; // this will be either true, all letter must be cap, or false, no letter must be cap
+
+    if(word[1] == '\0') // returns true if the letter is only one letter.
+        return true;
+    if(isCap(word[cint])) // if first letter is upper
+    {
+        if(isCap(word[++cint]))// depending on next letter is upper or lower we determine allcap
+            allcap = true;
+        else
+            allcap = false;
+    }
+    else 
+        allcap = false; // if first letter is lower all letter must be lower
+    
+    while(word[cint] != '\0') // simple scan through letter until we reach end
+    {
+        if(allcap && !isCap(word[cint])) // if we ever have a wrong char, immediately return false
+            return false;
+        if(!allcap && isCap(word[cint]))
+            return false;
+        cint++;
+    }
+    return true; // if it isn't false yet, then its true :)
+}

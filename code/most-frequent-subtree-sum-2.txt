@@ -1,0 +1,83 @@
+struct node{
+    int key;
+    int val;
+    struct node *next;
+};
+struct table{
+    int size;
+    struct node **list;
+};
+struct table *createTable(int size){
+    struct table *t = (struct table*)malloc(sizeof(struct table));
+    t->size = size;
+    t->list = (struct node**)malloc(sizeof(struct node*)*size);
+    int i;
+    for(i=0;i<size;i++)
+        t->list[i] = NULL;
+    return t;
+}
+int hashCode(struct table *t,int key){
+    if(key<0)
+        return -(key%t->size);
+    return key%t->size;
+}
+void insert(struct table *t,int key,int *arr,int *idx,int *max){
+    int pos = hashCode(t,key);
+    struct node *list = t->list[pos];
+    struct node *newNode = (struct node*)malloc(sizeof(struct node));
+    struct node *temp = list;
+    
+    while(temp){
+        if(temp->key==key){
+            temp->val++;
+            if(temp->val>*max)
+                *max=temp->val;
+            return;
+        }
+        temp = temp->next;
+    }
+
+    arr[(*idx)++]=key;
+    newNode->key = key;
+    newNode->val = 1;
+    newNode->next = list;
+    t->list[pos] = newNode;
+}
+
+int lookup(struct table *t,int key){
+    int pos = hashCode(t,key);
+    struct node *list = t->list[pos];
+    struct node *temp = list;
+    while(temp){
+        if(temp->key==key){
+            return temp->val;
+        }
+        temp = temp->next;
+    }
+    return -1;
+}
+/*****************hash table*****************/
+int travel(struct table* t,struct TreeNode* root,int* idx,int* arr,int* max)
+{
+    if(!root)
+        return 0;
+    int left=travel(t,root->left,idx,arr,max);
+    int right=travel(t,root->right,idx,arr,max);
+    insert(t,root->val+left+right,arr,idx,max);
+    return root->val+left+right;
+}
+int* findFrequentTreeSum(struct TreeNode* root, int* returnSize){
+    int *arr=calloc(20000,sizeof(int));
+    int *ret=malloc(sizeof(int)*1000);
+    struct table *t = createTable(1000);
+    int idx=0,max=1,cnt=0;  
+    travel(t,root,&idx,arr,&max);
+    
+    for(int i=0;i<idx;i++)
+    {
+        if(lookup(t,arr[i])==max)
+            ret[cnt++]=arr[i];
+    }
+    *returnSize=cnt;
+    return ret;
+}

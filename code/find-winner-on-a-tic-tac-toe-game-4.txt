@@ -1,0 +1,26 @@
+
+char * tictactoe(int** moves, int movesSize, int* movesColSize){
+    int col[2][3]={0};
+    int row[2][3]={0};
+    int diag1[2]={0};
+    int diag2[2]={0};
+    int win=0;
+    char * ret[4]={"A","B","Draw","Pending"};
+    int count=0;
+    for(int x=0;x<movesSize;x++){
+        int r=moves[x][0];
+        int c=moves[x][1];
+        row[x%2][r]++;
+        col[x%2][c]++;
+        if(r==c)diag1[x%2]++;
+        if(abs(r+c)==2)diag2[x%2]++; 
+        if(diag1[x%2]==3)win=1;
+        if(diag2[x%2]==3)win=2;
+        if(row[x%2][r]==3)win=3;
+        if(col[x%2][c]==3)win=4;
+        if(win!=0)return ret[x%2];
+        count++;
+    }
+    if(count==9)return ret[2];
+    return ret[3];
+}

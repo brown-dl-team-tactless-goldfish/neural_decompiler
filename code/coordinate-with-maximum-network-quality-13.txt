@@ -1,0 +1,56 @@
+
+vector<int> bestCoordinate(vector<vector<int>>& towers, int radius) {
+        
+		//Map to store the point and its total signal
+        map<pair<int,int>, int> mp1;
+        
+        
+        for(int i=0; i<towers.size(); i++){
+            int x = towers[i][0], y = towers[i][1], q = towers[i][2];
+          
+            int total_quality = 0;
+
+            for(int j=0; j<towers.size();j++){
+                int a = towers[j][0], b = towers[j][1], c = towers[j][2];   
+				
+				//finding the tower's distance
+                double dist = sqrt(((x-a)*(x-a)) + ((y-b)*(y-b)));
+				
+				//if dist > raduis, skip
+                if(dist>radius)
+                    continue;
+					
+				//find signal quality 	
+                double signal_quality = c/(1 + dist);
+               
+                total_quality += signal_quality;
+            
+				}
+				
+				//after finding total signal, add it to the map
+				mp1.insert({{x,y},total_quality});
+        }
+        
+        int max = 0;
+		
+		//find what the maximum value of the total signal is
+        for(auto it = mp1.begin(); it!=mp1.end(); it++){
+            if(it->second>=max){
+                max = it->second;
+            }
+        }
+        vector<int> temp2;
+		
+		//find the first occurence where the max occurs and add it to the vector and return
+        for(auto it = mp1.begin(); it!=mp1.end(); it++){
+            if(it->second ==max){
+                temp2.push_back(it->first.first);
+                temp2.push_back(it->first.second);
+                break;
+                
+            }
+        }
+    
+        
+        return temp2;
+    }

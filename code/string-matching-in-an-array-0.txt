@@ -1,0 +1,48 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int cmp(const void* a, const void* b){
+    char* A = *(char**)a ;
+    char* B = *(char**)b ;
+    return strlen(A) - strlen(B) ;
+}
+bool check(char* a, char* b){
+    int n1 = strlen(a) ;
+    int n2 = strlen(b) ;
+    if(n1 == n2)  // All the strings of words are unique.
+        return false ;
+    for(int i = 0 ; i <= n2-n1; i++){
+        if(strncmp(a, &b[i], n1) == 0)
+            return true ;
+    }
+    return false ;
+}
+char ** stringMatching(char ** words, int wordsSize, int* returnSize){
+    bool* flag = calloc( wordsSize, sizeof(bool) ) ;
+    qsort(words, wordsSize, sizeof(char*), cmp ) ;
+    for(int i = 0; i < wordsSize; i++){
+        for(int j = i+1; j < wordsSize; j++){
+            if(check( words[i] , words[j] ) == true){
+                flag[i] = true ;
+                break ;
+            }
+        }
+    }
+    int count = 0 ;
+    for(int i = 0; i < wordsSize ; i++){
+        if(flag[i] )
+            count++ ;
+    }
+    char** ans = malloc( count * sizeof(char*) ) ;
+    *returnSize = count ;
+    int idx = 0; 
+    for(int i = 0; i < wordsSize ; i ++){
+        if(flag[i] ){
+            int l = strlen( words[i] ) ;
+            ans[idx] = malloc((l+1) * sizeof(char)) ;
+            strcpy(ans[idx], words[i]) ;
+            idx++ ;
+        }
+    }
+    return ans ;
+}

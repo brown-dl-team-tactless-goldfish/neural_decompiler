@@ -1,0 +1,65 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+void node(struct TreeNode* root, int *count) {
+    
+    if(root == NULL)
+        return;
+    
+    node(root->left,count);
+    (*count)++;
+    node(root->right,count);
+    
+}
+//create arr
+void create(struct TreeNode *root, struct TreeNode **arr, int *k) {
+    
+    
+    if(root == NULL)
+        return;
+    
+    create(root->left,arr,k);
+    
+    arr[(*k)++] = root;
+    create(root->right,arr,k);
+}
+
+//convert to balance tree
+struct TreeNode* help(struct TreeNode **arr, int low, int high) {
+    struct TreeNode *temp;
+    if(low > high)
+        return NULL;
+    int mid = (low+high)/2;    
+    
+    temp = arr[mid];
+    temp->left = help(arr,low,mid-1);
+    temp->right = help(arr,mid+1,high);
+    
+    return temp;
+    
+}
+
+struct TreeNode* balanceBST(struct TreeNode* root){
+    
+    int count=0;
+    int k=0;
+    struct TreeNode **arr;
+    
+    //count no of nodes
+    node(root, &count);
+
+    //create arr of binary search tree
+    arr = (struct TreeNode **)malloc(sizeof(struct TreeNode*) * count);
+    create(root, arr, &k) ;  
+    
+    //conver
+    root = help(arr,0,count-1);
+    free(arr);
+    return root;
+}

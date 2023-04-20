@@ -1,0 +1,55 @@
+class Solution {
+public:
+    vector<vector<long long>> dp;
+    string pt;
+    long long dfs(int d, int mask, int cnt) {
+        if (cnt >= pt.size()) return 0;
+        if (dp[mask][d] != -1) return dp[mask][d];
+        dp[mask][d] = -2;
+        char c = pt[cnt];
+        if (c == 'I') {
+            for (int cur = d + 1; cur <= 9; cur++) {
+                int bit = 1 << cur;
+                if ((bit & mask) == bit) continue;
+                long long next = dfs(cur, mask | bit, cnt + 1);
+                if (next >= 0)
+                {
+                    dp[mask][d] = cur * pow(10, pt.size() - cnt) + next;
+                    return dp[mask][d];
+                }
+            }
+        } else {
+            for (int cur = 1; cur < d; cur++) {
+                int bit = 1 << cur;
+                if ((bit & mask) == bit) continue;
+                long long next = dfs(cur, mask | bit, cnt + 1);
+                if (next >= 0)
+                {
+                    dp[mask][d] = cur * pow(10, pt.size() - cnt) + next;
+                    return dp[mask][d];
+                }
+            }
+        }
+        return dp[mask][d];
+    }
+    
+    string smallestNumber(string p) {
+        pt = p;
+        int m = p.size() + 1;
+        dp = vector<vector<long long>>(1024, vector<long long>(10, -1));
+        int i = 0;
+        vector<array<int, 2>> dp;
+        int mask = 0;
+        for (int d = 1; d <= 9; d++) {
+            long long ans = dfs(d, 1 << d, 0);
+            if (ans > 0) {
+                ans += d * pow(10, pt.size() + 1);
+                ans = ans / 10;
+                string s = to_string(ans);
+                return s;
+            } 
+        }
+        return "";
+        
+    }
+};

@@ -1,0 +1,38 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* relativeSortArray(int* arr1, int arr1Size, int* arr2, int arr2Size, int* returnSize){
+    
+    
+    int list[3][1001]={{0}};
+    
+    for (int i = 0; i < arr2Size; i++){
+        list[0][arr2[i]]++;
+    }
+    for (int i = 0; i < arr1Size; i++){
+        if (list[0][arr1[i]] != 0){
+            list[1][arr1[i]]++;
+        }
+        else {
+            list[2][arr1[i]]++;
+        }
+    }
+    
+    *returnSize = arr1Size;
+    int *ret = malloc(sizeof(int)*arr1Size);
+    
+    int n = 0;
+    for (int i = 0; i < arr2Size; i++){
+        while (list[1][arr2[i]]-- > 0){
+            ret[n++] = arr2[i];
+        }
+    }
+    for (int i = 0; i < 1001; i++){
+        while (list[2][i]-- > 0){
+            ret[n++] = i;
+        }
+    }        
+    return ret;    
+}

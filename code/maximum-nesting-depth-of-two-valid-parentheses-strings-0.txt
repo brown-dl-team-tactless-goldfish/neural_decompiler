@@ -1,0 +1,27 @@
+int* maxDepthAfterSplit(char* seq, int* returnSize) {
+    int len = strlen(seq), top = 0;
+    int* ans = (int*) calloc(len, sizeof(int));
+    for (int i = 0; i < len; i++) {
+        if (seq[i] == '(') {
+            top++;
+            ans[i] = top % 2 == 0 ? 1 : 0;
+        }
+        if (seq[i] == ')') {
+            ans[i] = top % 2 == 0 ? 1 : 0;
+            top--;
+        }
+    }
+    *returnSize = len;
+    return ans;
+}
+//----------------------- another way -----------------------//
+int* maxDepthAfterSplit(char* seq, int* returnSize) {
+    *returnSize = strlen(seq);
+    int idx = 0;
+    int* ans = (int*) calloc((*returnSize), sizeof(int));
+    for (int i = 0; i < (*returnSize); i++) {
+        ans[idx] = (seq[i] ^ idx) & 1;
+		idx++;
+    }
+    return ans;
+}

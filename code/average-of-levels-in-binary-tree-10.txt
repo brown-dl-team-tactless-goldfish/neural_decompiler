@@ -1,0 +1,46 @@
+typedef struct {
+    int layer;
+    struct TreeNode *p;
+} Node1;
+
+double* averageOfLevels(struct TreeNode* root, int* returnSize){
+    Node1 a[10001] = {0};
+    int h = 0, t = 1;
+    a[0].layer = 0;
+    a[0].p = root;
+    while (h < t) {
+        if (a[h].p->left) {
+            a[t].p = a[h].p->left;
+            a[t].layer = a[h].layer + 1;
+            t++;
+        }
+        if (a[h].p->right) {
+            a[t].p = a[h].p->right;
+            a[t].layer = a[h].layer + 1;
+            t++;
+        }
+        h++;
+    }
+
+    double *ans = (double *)malloc(sizeof(double) * t);
+    int pos = 0;
+    memset(ans, 0, sizeof(double) * t);
+    
+    int l = 0, r = l;
+    while (r < t) {
+        int count = 0;
+        double total = 0;
+        while (r < t && a[l].layer == a[r].layer) {
+            total += a[r].p->val;
+            count++;
+            r++;
+        }
+
+        ans[pos++] = (double)total/(double)count;
+        l = r;
+        r = l;
+    }
+    
+    *returnSize = pos;
+    return ans;
+}

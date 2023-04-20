@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int findPaths(int m, int n, int N, int i, int j, int mod = 1e9+7) {
+        vector<vector<int>> dp(m, vector<int>(n, 0));
+        vector<int> preR, tmpR;
+        int preC = INT_MIN, tmpC = INT_MIN;
+        
+        for (int steps = 1; steps <= N; steps++) {
+            for (int r = 0; r < m; r++) {
+                tmpR = dp[r];
+                for (int c = 0; c < n; c++) {
+                    tmpC = dp[r][c];
+                    dp[r][c] = (((r==0?1:preR[c])+(c==0?1:preC))%mod+ 
+                                ((r==m-1?1:dp[r+1][c])+(c==n-1?1:dp[r][c+1]))%mod) % mod;
+                    preC = tmpC;
+                }
+                preR = move(tmpR);
+            }
+        }
+        return dp[i][j];
+    }
+};

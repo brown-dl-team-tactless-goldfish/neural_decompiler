@@ -1,0 +1,82 @@
+
+
+typedef struct {
+    
+    char rem[5000][21];
+    int start;
+    int end;
+    int curr;
+    
+} BrowserHistory;
+
+void copy(char *a, char *b) {
+    
+    char *temp = b;
+    int i=0;
+    while(*temp!='\0') {
+        
+        a[i++] = *temp;
+        temp++;
+    }
+    
+    a[i]='\0';
+}
+BrowserHistory* browserHistoryCreate(char * homepage) {
+    
+        BrowserHistory *obj;
+        obj = malloc(sizeof(BrowserHistory));
+        copy(&obj->rem[obj->start][0],homepage);
+        obj->start=0;
+        obj->end=0;
+        obj->curr=0;
+        return obj;   
+}
+
+void browserHistoryVisit(BrowserHistory* obj, char * url) {
+  
+    
+        copy(&obj->rem[++(obj->curr)][0],url);
+        
+        //reset forward
+        obj->end = obj->curr;
+}
+
+char * browserHistoryBack(BrowserHistory* obj, int steps) {
+  
+        while(obj->curr > obj->start && steps > 0) {
+            (obj->curr)--;
+            steps--;
+            
+        }
+        
+        return obj->rem[obj->curr];
+}
+
+char * browserHistoryForward(BrowserHistory* obj, int steps) {
+    
+    while(obj->curr < obj->end && steps > 0) {
+            (obj->curr)++;
+            steps --;
+            
+        }
+        return obj->rem[obj->curr];
+  
+}
+
+void browserHistoryFree(BrowserHistory* obj) {
+    
+    free(obj);
+    
+}
+
+/**
+ * Your BrowserHistory struct will be instantiated and called as such:
+ * BrowserHistory* obj = browserHistoryCreate(homepage);
+ * browserHistoryVisit(obj, url);
+ 
+ * char * param_2 = browserHistoryBack(obj, steps);
+ 
+ * char * param_3 = browserHistoryForward(obj, steps);
+ 
+ * browserHistoryFree(obj);
+*/

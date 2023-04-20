@@ -1,0 +1,35 @@
+class Solution {
+    int Precision = 2 ;
+public:
+    string discountPrices(string sentence, int discount) {
+        string ans ; 
+        istringstream iss(sentence) ;
+        string word ;
+        while(iss >> word){
+            bool flag = true ;
+            if(word[0] == '$' && word.length() > 1)
+            {                               
+                for(int i = 1; i < word.length(); i++){
+                    if(word[i] < '0' || word[i] > '9'){
+                        flag = false ;
+                        break ;
+                    }
+                } 
+                
+            }
+            else
+                flag = false ;
+            if(flag)
+            {
+                double val = stold(word.substr(1)) * (100 - discount) / 100 + 0.005 ;
+                string s = to_string(val) ;
+                string format = s.substr(0, s.find(".") + Precision + 1) ;
+                ans += "$" + format + " " ;
+            }
+            else
+                ans += word + " " ;
+        }
+        ans.pop_back() ;
+        return ans ;
+    }
+};

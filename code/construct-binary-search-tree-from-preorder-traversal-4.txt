@@ -1,0 +1,44 @@
+struct TreeNode* newNode(int val) {
+    struct TreeNode *temp = (struct TreeNode *) malloc(sizeof(struct TreeNode));
+    if(temp == NULL) return NULL;
+    temp->left = NULL;
+    temp->right = NULL;
+    temp->val = val;
+    return temp;
+}
+
+struct TreeNode* bstFromPreorder(int* preorder, int preorderSize) {
+    // Base Case
+    if(preorderSize <= 0) return NULL;
+    if(preorderSize == 1) return newNode(preorder[0]);
+    
+    // Declare root and temp to iterate through BST
+    struct TreeNode *root = newNode(preorder[0]);
+    struct TreeNode *temp = root;
+    
+    // loop through BST and insert in correct position
+    int i = 1;
+    while(i < preorderSize) {
+        // check to see if we need to keep going left or right
+        if(temp->val > preorder[i] && temp->left != NULL) {
+            temp = temp->left;
+            continue;
+        } else if(temp->val < preorder[i] && temp->right != NULL) {
+            temp = temp->right;
+            continue;
+            
+        // found correct spot, now insert
+        } else if(temp->val > preorder[i] && temp->left == NULL) {
+            temp->left = newNode(preorder[i]);
+        } else if(temp->val < preorder[i] && temp->right == NULL) {
+            temp->right = newNode(preorder[i]);
+        }
+        
+        // reset temp and start next value insert
+        temp = root;
+        i++;
+    }
+    
+    // return our created root
+    return root;
+}

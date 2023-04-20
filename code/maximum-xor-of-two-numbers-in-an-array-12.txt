@@ -1,0 +1,38 @@
+const int BITLEN = 31;
+
+class Solution {
+    struct TrieNode {
+        TrieNode *children[2];
+    };
+    struct Trie {
+        TrieNode *root = new TrieNode();
+        int insert(int x) {
+            int res = 0;
+            TrieNode *cur = root, *comp = root;
+            for (int b = BITLEN; b >= 0; b--) {
+                int c = x >> b & 1;
+                if (cur->children[c] == nullptr) {
+                    cur->children[c] = new TrieNode();
+                }
+                cur = cur->children[c];
+                
+                if (comp->children[1 - c] != nullptr) {
+                    res += 1 << b;
+                    comp = comp->children[1 - c];
+                } else {
+                    comp = comp->children[c];
+                }
+            }
+            return res;
+        }
+    };
+public:
+    int findMaximumXOR(vector<int>& nums) {
+        int ans = 0;
+        Trie *trie = new Trie();
+        for (int num : nums) {
+            ans = max(ans, trie->insert(num));
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,79 @@
+struct trieNode{
+    
+    vector<trieNode*> children;
+    trieNode():children(2, nullptr){};
+    void insert(int num);
+    int query(int num);
+    
+    ~trieNode(){
+        for(auto& child : children)
+            delete(child);
+    }
+      
+};
+
+void trieNode::insert(int num){
+    
+    trieNode* p = this;
+    for(int i = 31; i >= 0; i--){
+        bool t = num & (1 << i);
+        if(!p->children[t])
+            p->children[t] = new trieNode();
+        p = p->children[t];
+    }
+    
+}
+
+int trieNode::query(int num){
+    
+    trieNode* p = this;
+    int res = 0;
+    for(int i = 31; i >= 0; i--){
+        bool t = num & (1 << i);
+        if(p->children[1 - t]){
+            p = p->children[1 - t];
+            res |= (1 << i);
+        }
+        else
+            p = p->children[t];
+        
+    }
+    
+    return res;
+}
+
+//TC:  O(nlog(n) + mlog(m));
+//SC:  O(m) : trie has constant space(32 * 2); 
+class Solution {
+public:
+    vector<int> maximizeXor(vector<int>& nums, vector<vector<int>>& queries) {
+        
+        int n = nums.size();
+        int m = queries.size();
+        
+        for(int i = 0 ; i < m; i++)
+            queries[i].push_back(i);
+            
+        sort(queries.begin(), queries.end(), [](const auto& a, const auto& b){return a[1] < b[1];});
+        sort(nums.begin(), nums.end());
+        
+        unique_ptr<trieNode> roots = make_unique<trieNode>();
+        
+        vector<int> res(m, -1);
+        int i = 0;
+        
+        for(int j = 0; j < m; j++){
+            
+            while(i < nums.size() && queries[j][1] >= nums[i]){
+                roots->insert(nums[i]);
+                i++;
+            }
+            if(i != 0) res[queries[j][2]] = roots->query(queries[j][0]);
+            
+        }
+        
+        return res;
+                
+        
+    }
+};

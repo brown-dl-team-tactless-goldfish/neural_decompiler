@@ -1,0 +1,42 @@
+class Solution {
+public:
+    vector<int> findPeakGrid(vector<vector<int>>& mat) {
+        const auto n = mat.size();
+        const auto m = mat.front().size();
+
+        int resultR = 0;
+        int resultC = 0;
+
+        recurse( mat, n, m, 0 /** l **/, m-1 /** r **/, resultR, resultC );
+
+        return std::vector<int>{ resultR, resultC };
+    }
+
+private:
+    bool recurse( vector<vector<int>>& mat, const int n, const int m, int l, int r, int& resultR, int& resultC ) const {
+        auto c = l + (r-l) /2;
+        
+        for ( auto r = 0; r < n; ++r ) {
+            const auto val = mat[r][c];
+
+            auto left   = c >= 1    ? mat[r][c-1] : -1;
+            auto right  = c + 1 < m ? mat[r][c+1] : -1;
+            auto top    = r >= 1    ? mat[r-1][c] : -1;
+            auto bottom = r + 1 < n ? mat[r+1][c] : -1;
+
+            if ( val > top and val > right and val > bottom and val > left  ) {
+                resultR = r;
+                resultC = c;
+                return true;
+            }
+        }
+
+        if ( l <= c-1 and recurse( mat, n, m, l, c-1, resultR, resultC ) )
+            return true;
+
+        if ( c+1 <= r and recurse( mat, n, m, c+1, r, resultR, resultC ) )
+            return true;
+
+        return false;
+    }
+};

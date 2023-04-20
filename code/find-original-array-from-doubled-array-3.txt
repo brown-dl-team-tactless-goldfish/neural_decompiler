@@ -1,0 +1,35 @@
+int* findOriginalArray(int* changed, int changedSize, int* returnSize){
+    if (changedSize == 0) {
+        *returnSize = 0;
+        return NULL;
+    }
+    if ((changedSize % 2) == 1) {
+        *returnSize = 0;
+        return NULL;
+    }
+    int a[1000001] = {0};
+    for (int i=0; i<changedSize; i++) {
+        a[changed[i]]++;
+    }
+    
+    int *ret = (int *)malloc(sizeof(int) * 1000001);
+    int pos = 0;
+    for (int i=0; i<1000001; i++) {
+        while ((a[i] > 0) && (a[2*i] > 0)) {
+            a[2*i]--;
+            a[i]--;
+            ret[pos++] = i;
+        }
+    }
+    
+    for (int i=0; i<1000001; i++) {
+        if (a[i] > 0) {
+            free(ret);
+            *returnSize = 0;
+            return NULL;
+        }
+    }
+    
+    *returnSize = pos;
+    return ret;
+}

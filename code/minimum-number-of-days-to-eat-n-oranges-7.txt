@@ -1,0 +1,41 @@
+public int MinDays(int n)
+{
+	Dictionary<int, int> cache = new Dictionary<int, int>();
+	int days = helper(n, cache);
+	return days;
+}
+
+private int helper(int n, Dictionary<int, int> cache)
+{
+	if (n < 3)
+	{
+		return n;
+	}
+
+	if (cache.ContainsKey(n))
+	{
+		return cache[n];
+	}
+
+	int days2 = int.MaxValue;
+	int days3 = int.MaxValue;
+
+	if (n % 2 == 0)
+	{
+		days2 = 1 + helper(n / 2, cache);
+	}
+
+	if (n % 3 == 0)
+	{
+		days3 = 1 + helper(n - 2 * (n / 3), cache);
+	}
+
+	int min = Math.Min(days2, days3);
+	if ((n - 1) % 2 == 0 || (n - 1) % 3 == 0 || (n - 2) % 3 == 0)
+	{
+		min = Math.Min(min, 1 + helper(n - 1, cache));
+	}
+
+	cache.Add(n, min);
+	return min;
+}

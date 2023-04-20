@@ -1,0 +1,55 @@
+class Solution {
+private:
+    int mod=1000000000+7;
+    vector<vector<int>>mem;
+    int nCr(int n,int k){
+        if(k==1){
+            return n;
+        } else if(k==0 or n==k){
+            return 1;
+        } else if(k>n){
+            return 0;
+        } else if(mem[n][k]!=-1){
+            return mem[n][k];
+        } else {
+            return mem[n][k]=(nCr(n-1,k)%mod+nCr(n-1,k-1)%mod)%mod;
+        }
+    }
+    int multiply(int a,int b){
+        if(a==0 or b==0){
+            return 0;
+        } else if(b%2==0){
+            int ans=multiply(a,b/2);
+            return (ans%mod+ans%mod)%mod;
+        } else {
+            int ans=multiply(a,b-1);
+            return (a%mod+ans%mod)%mod;
+        }
+    }
+    int solve(vector<int>nums){
+        if(nums.size()<=1){
+            return 1;
+        } else {
+            int root=nums[0];
+            vector<int>left,right;
+            for(int i=1;i<nums.size();i++){
+                if(nums[i]<root){
+                    left.push_back(nums[i]);
+                } else {
+                    right.push_back(nums[i]);
+                }
+            }
+            int totalPlaces=left.size()+right.size();
+            int arrangeLeft=solve(left);
+            int arrangeRight=solve(right);
+            int interleave=nCr(totalPlaces,left.size());
+            return multiply(multiply(arrangeLeft,arrangeRight),interleave);
+        }
+    }
+public:
+    int numOfWays(vector<int>& nums) {
+        int n=nums.size();
+        mem=vector<vector<int>>(n+1,vector<int>(n+1,-1));
+        return (solve(nums)-1)%mod;
+    }
+};

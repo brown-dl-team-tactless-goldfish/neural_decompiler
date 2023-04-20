@@ -1,0 +1,47 @@
+class Solution {
+public:
+    int calculate_partitions(vector<int>& nums, long& cumulative_sum){
+        int count = 0;
+        long long left_sum = nums[0], right_sum = cumulative_sum - left_sum;        
+        for(int i = 1; i < nums.size() - 1; ++i){
+            if(left_sum == right_sum) ++count;
+            left_sum += nums[i];
+            right_sum -= nums[i];
+        }
+        
+        if(left_sum == right_sum) ++count;
+        
+        return count;
+    }
+    
+    int waysToPartition(vector<int>& nums, int k) {
+        long cumulative_sum = accumulate(begin(nums), end(nums), 0L);
+        
+        int ans = calculate_partitions(nums, cumulative_sum);
+        vector<long> differences(nums.size() - 1);
+        unordered_map<long, long> left_occurs, right_occurs;
+        
+        long left_sum = nums[0], right_sum = cumulative_sum -= left_sum;
+
+        for(int i = 1; i <= differences.size(); ++i){
+            differences[i - 1] = left_sum - right_sum;
+            left_occurs[differences[i - 1]]++;
+            left_sum += nums[i];
+            right_sum -= nums[i];        
+        }
+        
+        for(int i = nums.size() - 1; i >= 0; --i){
+            long curr = 0;
+            curr += left_occurs[k - nums[i]];
+            curr += right_occurs[nums[i] - k];
+            if(i > 0){
+                left_occurs[differences[i - 1]] -= 1;
+                right_occurs[differences[i - 1]] += 1;    
+            }
+            
+            ans = max(ans, (int)curr);
+        }
+        return ans;
+        
+    }
+};

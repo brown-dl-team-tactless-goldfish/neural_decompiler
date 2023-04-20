@@ -1,0 +1,41 @@
+class H2O {
+public:
+    H2O() {
+        
+    }
+
+    void hydrogen(function<void()> releaseHydrogen) {
+        std::unique_lock<std::mutex> guard(lock_);        
+        cv_.wait(guard, [this]{ return hreleased_ < 2; });
+
+        // releaseHydrogen() outputs "H". Do not change or remove this line.
+        releaseHydrogen();
+        
+        ++hreleased_;
+        bool notify_oxy = hreleased_ == 2;
+        guard.unlock();
+        
+        if (notify_oxy)
+            cv_.notify_all();
+    }
+
+    void oxygen(function<void()> releaseOxygen) {
+        std::unique_lock<std::mutex> guard(lock_);
+        cv_.wait(guard, [this]{ return hreleased_ == 2; });
+        guard.unlock();
+
+        // releaseOxygen() outputs "O". Do not change or remove this line.
+        releaseOxygen();
+        
+        guard.lock();
+        hreleased_ -= 2;
+        guard.unlock();
+        
+        cv_.notify_all();
+    }
+    
+private:
+    int hreleased_ = 0;
+    mutable std::mutex lock_;
+    mutable std::condition_variable cv_;
+};

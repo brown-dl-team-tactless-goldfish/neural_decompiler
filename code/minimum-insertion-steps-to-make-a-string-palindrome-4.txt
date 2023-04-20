@@ -1,0 +1,29 @@
+public:
+    vector < int > previous;
+    string rev;
+    int n;
+    int minInsertions(string s){
+        n = s.size() ;
+        int c = n - 1 ;
+        rev = s ;
+        reverse( rev.begin() , rev.end() ) ;
+        previous.assign( n , 0 );
+        int z = n - 1 ;
+        while ( c > 0 ) {
+            int x = minsteps ( s[n - c - 1 ] , c ) ;
+            c--;
+            z = min ( z , x );
+        }
+        return z;
+    }
+    int minsteps(char a,int b1){
+        vector < int >  now ( b1 + 1 , 0 ) ;
+        for ( int i = 0 ; i < b1 ; i++ ) { 
+            if ( a == rev[i] ) now[i+1] = previous[i] + 1 ;
+            else now[i+1] = max( now[i] , previous[i+1] ) ; 
+        } 
+        previous = now ;
+        if( previous[b1] == previous[b1-1] )return n - 2 * previous[b1] - 1;
+        return n - 2 * previous[b1]; 
+    }
+};

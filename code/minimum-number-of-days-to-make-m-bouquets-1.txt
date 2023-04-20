@@ -1,0 +1,44 @@
+  					int min(int a , int b){
+  						return a<b?a:b;
+  					}
+  					int max(int a, int b){
+  						return a>b?a:b;
+  					}
+  					int minDays(int* bloomDay, int bloomDaySize, int m, int k){
+  						int i=0,j=0, lo=0, hi=0, mid=0, flowers=0, boquets=0;
+  						if(m*k>bloomDaySize)
+  							return -1;
+  						for(i=0;i<bloomDaySize;i++){
+  							lo=min(lo, bloomDay[i]);
+  							hi=max(hi, bloomDay[i]);
+  						}
+  						while(lo<hi){
+  							mid=lo+(hi-lo)/2;
+  							flowers=0;
+  							boquets=0;
+  							for(i=0;i<bloomDaySize;i++){
+  								if(bloomDay[i]>mid){
+  									//because we need adjascent flowers to make boquet
+  									//on any day in the search if a flower is not ready, drop everything 
+  									//and start collecting adjascent flowers
+  									flowers=0;
+  								}
+  								else{
+  									flowers++;
+  									if(flowers==k){
+  										boquets++;
+  										flowers=0;
+  									}    
+  								}
+  								if(boquets>=m)
+  									break;
+  							}
+  							if(boquets<m){
+  								lo=mid+1;
+  							}
+  							else{
+  								hi=mid; // The reason we still search is to find if we can do this in less days
+  							}
+  						}
+  						return lo;
+  					}

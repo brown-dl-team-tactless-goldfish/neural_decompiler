@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int findSmallestInteger(vector<int>& nums, int value) {
+        vector<int> mod(value);
+        for(int i : nums) {
+            if(i < 0) mod[(i % value) ? (i % value) + value : 0]++;
+            else mod[i % value]++;
+        }
+
+        int mn = 1e9;
+        for(int i : mod) mn = min(mn, i);
+
+        for(int i=0; i<value; i++) {
+            if(mod[i] == mn) return mn * value + i;
+        }
+        return mn * value;
+    }
+};

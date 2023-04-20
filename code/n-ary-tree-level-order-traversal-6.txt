@@ -1,0 +1,29 @@
+void dfs_search(struct Node* root, int depth, int *size, int** arr,int **returnColumnSizes)
+{
+    int i;
+    if(root==NULL) return ;
+    
+    if(depth>=(*size)) // when we encounter a new level we allocate the space for it
+      {  
+        arr[*size]=malloc(sizeof(int)*10001);
+        (*returnColumnSizes)[*size]=0;
+        (*size)++;    // updating the new size of no. of levels
+      }
+    arr[depth][(*returnColumnSizes)[depth]]=root->val;
+    (*returnColumnSizes)[depth]++;
+    
+    for(i=0;i<root->numChildren;i++)
+        dfs_search (root->children[i],depth+1,size,arr,returnColumnSizes);
+    
+}
+
+int** levelOrder(struct Node* root, int* returnSize, int** returnColumnSizes)
+{
+    int **arr;
+    
+    arr=malloc(sizeof(int*)*1001);
+    (*returnColumnSizes)=malloc(sizeof(int)*1001);
+    *returnSize=0;
+    dfs_search(root,0,returnSize,arr,returnColumnSizes);
+    return arr;
+}

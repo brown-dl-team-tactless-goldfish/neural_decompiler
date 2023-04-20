@@ -1,0 +1,91 @@
+int pos;
+typedef struct StreamChecker {
+    int isLeaf;
+    struct StreamChecker *child[26];
+} StreamChecker;
+
+struct StreamChecker* create(){
+    struct StreamChecker* node = (struct StreamChecker*)malloc(sizeof(struct StreamChecker));
+    int i;
+    for(i=0;i<26;i++){
+        node->child[i]=NULL;
+    }
+    node->isLeaf = 0;
+    return node;
+}
+void insert(struct StreamChecker* root, char word[]){
+    int i,index;
+    struct StreamChecker* cur = root;
+    //printf("%s\n",word);
+    for(i=0;word[i];i++){
+        index = word[i]-'a';
+        if(!cur->child[index]){
+            cur->child[index]=create();
+        }
+        cur=cur->child[index];
+    }
+    cur->isLeaf = 1;
+}
+void reverse(StreamChecker* root, char w[]){
+    int i,j=0;
+    char word[2005];
+    for(i=0;w[i];i++);
+    i--;
+    while(i>=0){
+        word[j++]=w[i];
+        i--;
+    }
+    word[j]='\0';
+   // printf("%s\n",word);
+    insert(root, word); 
+}
+StreamChecker* streamCheckerCreate(char ** words, int wSize) {
+    struct StreamChecker* root = create();
+    int i;pos=-1;
+    for(i=0;i<wSize;i++){
+        reverse(root,words[i]);
+    }
+    return root;
+}
+bool check(StreamChecker* obj, char letArr[], int j){
+    int i,index;
+    StreamChecker* cur = obj;
+    while(j>=0){
+        index = letArr[j]-'a';
+        if(!cur->child[index]){
+            //printf("False for %c\n",(char)(index+'a'));
+            return false;
+        }
+        cur = cur->child[index];
+        if(cur->isLeaf)
+        {//printf("True for %c\n",(char)(index+'a'));
+            return true;}
+        j--;
+    }
+    return false;
+}
+
+bool streamCheckerQuery(StreamChecker* obj, char letter) {
+    char letArr[400005]; // This is a bug;
+    letArr[++pos] = letter;
+    return check(obj, letArr, pos);
+}
+
+void streamCheckerFree(StreamChecker* obj) {
+    int i;
+    for(i=0;i<26;i++){
+        if(obj->child[i]){
+            streamCheckerFree(obj->child[i]);
+        }
+    }
+    free(obj);
+}
+
+/**
+ * Your StreamChecker struct will be instantiated and called as such:
+ * StreamChecker* obj = streamCheckerCreate(words, wordsSize);
+ * bool param_1 = streamCheckerQuery(obj, letter);
+ 
+ * streamCheckerFree(obj);
+*/
+``

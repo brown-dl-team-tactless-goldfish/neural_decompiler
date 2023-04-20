@@ -1,0 +1,30 @@
+class Solution {
+    bool isVowel(char c) {
+        return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+    }
+    bool wordFit(const string &s) {
+        const size_t N = s.length();
+        return isVowel(s[0]) && isVowel(s[N-1]);
+    }
+public:
+    vector<int> vowelStrings(vector<string>& words, vector<vector<int>>& queries) {
+        const int N = words.size();
+        vector<int> sums(N, 0);
+        sums[0] = wordFit(words[0]) ? 1 : 0;
+        for(int i = 1; i < N; ++i) {
+            int addon = wordFit(words[i]) ? 1 : 0;
+            sums[i] = sums[i-1] + addon;
+        }
+        
+        const int M = queries.size();
+        vector<int> ret(M, 0);
+        for(int i = 0; i < M; ++i) {
+            const auto &query = queries[i];
+            int val = sums[query[1]];
+            if(query[0] > 0)
+                val -= sums[query[0]-1];
+            ret[i] = val;
+        }
+        return ret;
+    }
+};

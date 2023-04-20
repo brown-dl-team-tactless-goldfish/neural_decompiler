@@ -1,0 +1,21 @@
+#define MAX(x, y) (x) > (y) ? (x) : (y)
+int compare(const void *x, const void *y)
+{
+    const int *x1 = *(const int **)x;
+    const int *y1 = *(const int **)y;
+    return (x1[0] == y1[0]) ? x1[1] < y1[1] : x1[0] > y1[0];
+}
+
+int removeCoveredIntervals(int **intervals, int intervalsSize, int *intervalsColSize)
+{
+
+    qsort(intervals, intervalsSize, sizeof(intervals[0]), compare);
+    int max_range = 0;
+    int count = 0;
+    for (int i = 0; i < intervalsSize; i++)
+    {
+        count += max_range < intervals[i][1];
+        max_range = MAX(intervals[i][1], max_range);
+    }
+    return count;
+}

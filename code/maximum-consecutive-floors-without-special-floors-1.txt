@@ -1,0 +1,12 @@
+int cmp(const void* a, const void* b) {
+    return *(const int*) a > *(const int*) b;
+}
+
+int maxConsecutive(int bottom, int top, int* special, int specialSize) {
+    qsort(special, specialSize, sizeof(int), cmp);
+    int len = fmax(special[0] - bottom, top - special[specialSize - 1]);
+    for (int i = 1; i < specialSize; i++) {
+        if (special[i] - special[i - 1] > 1) len = fmax(special[i] - special[i - 1] - 1, len);
+    }
+    return len;
+}

@@ -1,0 +1,51 @@
+public class DinnerPlates {
+    IList<Stack<int>> stacks = new List<Stack<int>>();
+    SortedSet<int> free = new SortedSet<int>();
+    SortedSet<int> any = new SortedSet<int>();
+    int max;
+    
+    public DinnerPlates(int capacity) {
+        max = capacity;
+    }
+    
+    public void Push(int val) {
+        if (!free.Any()) {
+            free.Add(stacks.Count);
+            stacks.Add(new Stack<int>());
+        }
+        
+        var idx = free.Min;
+        stacks[idx].Push(val);
+        if (stacks[idx].Count == max) {
+            free.Remove(idx);
+        }
+        
+        any.Add(idx);
+    }
+    
+    public int Pop() {
+        if (!any.Any()) {
+            return -1;
+        }
+        
+        return Pop(any.Max);
+    }
+    
+    public int PopAtStack(int index) {
+        if (stacks.Count <= index || index < 0 || !stacks[index].Any()) {
+            return -1;
+        }
+        
+        return Pop(index);
+    }
+    
+    private int Pop(int index) {
+        var result = stacks[index].Pop();
+        free.Add(index);
+        if (!stacks[index].Any()) {
+            any.Remove(index);
+        }
+        
+        return result;
+    }
+}

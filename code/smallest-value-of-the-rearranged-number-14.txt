@@ -1,0 +1,64 @@
+class Solution {
+public:
+    void countDigits(int count[], long long num) {
+        while(num) {
+            count[num%10]++;
+            num = num/10;
+        }
+    }
+    
+    
+    long long forPositive(int count[]) {
+        long long ans = 0;
+        
+        if(count[0]) {
+            int ss = 11;
+            
+            for(int i=9; i>=1; i--) {
+                if(count[i]) ss = i;
+            }
+            
+            ans = ss;
+            count[ss]--;
+            
+            for(int i=0; i<=9; i++) {
+                while(count[i]--) {
+                    ans = ans*10 + i;
+                }
+            }
+        }
+        
+        else {
+            for(int i=0; i<=9; i++) {
+                while(count[i]--) {
+                    ans = ans*10 + i;
+                }
+            }
+        }
+        
+        return ans;
+    }
+    
+    
+    long long forNegative(int count[]) {
+        long long ans = 0;
+        
+        for(int i=9; i>=0; i--) {
+            while(count[i]--) {
+                ans = ans*10 + i;
+            }
+        }
+        
+        ans = -ans;
+        return ans;
+    }
+    
+    
+    long long smallestNumber(long long num) {
+        int count[10] = {0};
+        countDigits(count, abs(num));
+        
+        if(num>=0) return forPositive(count);
+        return forNegative(count);
+    }
+};

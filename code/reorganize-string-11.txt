@@ -1,0 +1,44 @@
+char * reorganizeString(char * s){
+
+    int *hash=calloc(26,sizeof(int));
+    for(int i=0;i<strlen(s);i++)
+    {
+        hash[s[i]-'a']++;
+    }
+    
+    int count=0; //to update the index of the character having largest frequency
+    int used=-1; //to represent the index of the last used character
+    char *ans=calloc(strlen(s)+1,sizeof(char)); // for output;
+    
+    for(int i=0;i<strlen(s);i++)
+    {   
+        int max=0;
+        for(int j=0;j<26;j++)
+        {
+            if(max<hash[j] && used!=j)
+            {
+                max=hash[j];
+                count=j;
+               
+                
+            }
+        }
+        used=count;
+        if(i==0)
+        {
+            ans[0]=used+'a';
+            hash[used]--;
+        }
+        else if(ans[i-1]!=(used+'a'))
+        {
+            ans[i]=used+'a';
+            hash[used]--;
+        }
+    }
+    if(strlen(ans)!=strlen(s))
+    {
+        return "";
+    }
+    return ans;
+    
+}

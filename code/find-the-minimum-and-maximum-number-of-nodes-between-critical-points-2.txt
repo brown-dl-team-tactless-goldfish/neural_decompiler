@@ -1,0 +1,71 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* nodesBetweenCriticalPoints(struct ListNode* head, int* returnSize)
+{
+    int min_dist = INT_MAX;
+    int max_dist = INT_MIN;
+
+    *returnSize = 2;
+    int * ret_arr = (int *)malloc(sizeof(int) * (*returnSize));
+
+    int first_critical = -1;
+    int last_critical = -1;
+
+    struct ListNode * prev = NULL;
+    struct ListNode * trav = head;
+    int index = 1;
+
+    while(trav)
+    {     
+        if(prev)
+        {
+            if(trav->next)
+            {
+                if(((trav->val > prev->val) && (trav->val > trav->next->val)) || ((trav->val < prev->val) && (trav->val < trav->next->val)))    //Local Maxima/Minima
+                {
+                    printf("Here\r\n");
+                    if(first_critical == -1)
+                    {
+                        first_critical = index;
+                        last_critical  = index; 
+                    }
+                    else
+                    {
+                        int min_diff = index - last_critical;
+                        int max_diff = index - first_critical;
+                        last_critical = index;
+                        if(min_diff < min_dist)
+                            min_dist = min_diff;
+
+                        if(max_diff > max_dist)
+                            max_dist = max_diff;
+                    }
+                }
+
+                else
+                {
+
+                }
+            }
+        }
+        prev = trav;
+        trav = trav->next;
+        index++;
+    }
+    if(min_dist == INT_MAX)
+        min_dist = -1;
+    if(max_dist == INT_MIN)
+        max_dist = -1;
+        
+    ret_arr[0] = min_dist;
+    ret_arr[1] = max_dist;
+    return ret_arr;   
+}

@@ -1,0 +1,35 @@
+if(n < 2) return 0;
+
+    int minV = nums[0];
+int maxV = nums[0];
+
+for(int i = 1; i<n; i++)
+{
+	minV = min(minV, nums[i]);
+	maxV = max(maxV, nums[i]);
+}
+if (n == 2)
+	return abs(nums[0]-nums[1]);
+
+int gap = max(1,(maxV-minV)/(n-1));
+
+vector<int> bucket_min( n, INT_MAX);
+vector<int> bucket_max( n, INT_MIN);
+
+for(int i = 0; i < n; i++)
+{
+	int index = (nums[i] - minV)/gap;
+	bucket_min[index] = min(bucket_min[index], nums[i]);
+	bucket_max[index] = max(bucket_max[index], nums[i]);
+}
+
+int maxGap = 0;
+int lastMax = minV;
+for(int i = 0; i<n; i++)
+{
+	if(bucket_min[i]!=INT_MAX)
+		maxGap = max(maxGap, bucket_min[i] - lastMax);
+	if(bucket_max[i]!=INT_MIN)
+		lastMax = bucket_max[i];	
+}
+return maxGap;

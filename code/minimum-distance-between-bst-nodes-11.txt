@@ -1,0 +1,29 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int min(int x, int y)
+{
+    return x < y ? x : y;
+}
+void inOrderDFS(struct TreeNode* currNode, struct TreeNode** prevNode, int* minDiff)
+{
+    if(!currNode) return;
+    inOrderDFS(currNode->left, prevNode, minDiff);
+    if(*prevNode)
+        *minDiff = min(*minDiff, currNode->val - (*prevNode)->val);
+    *prevNode = currNode;
+    inOrderDFS(currNode->right, prevNode, minDiff);
+}
+int minDiffInBST(struct TreeNode* root)
+{
+    struct TreeNode* prevNode = NULL;
+    int minDiff = INT_MAX;
+    inOrderDFS(root, &prevNode, &minDiff);
+    free(prevNode);
+    return minDiff;
+}

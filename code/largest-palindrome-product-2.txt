@@ -1,0 +1,78 @@
+class Solution {
+public:
+    bool isPalindrome(unsigned long val)
+    {
+        if((val%10)!=9) return false;
+        string s=to_string(val);
+        int left=0, right=s.length()-1;
+        while(left<right)
+        {
+            if(s[left++]!=s[right--]) return false;
+        }
+        return true;
+    }
+    int largestPalindrome(int n) {
+        if(n==1) return 9;
+        unsigned long n_digits=1;
+        while(n--) n_digits*=10;
+        unsigned long candidate=0, max_offset=0;
+        long i, j;
+        for(i=1; i<n_digits; i+=2)
+        {
+            int cnt=0;
+            if(!((n_digits-i)%11))
+            {
+                unsigned long start;
+                for(j=1, start=(n_digits-i)*(n_digits-j); j<=i; j+=2)
+                {
+                    cnt++;
+                    unsigned long val=start;//(n_digits-i)*(n_digits-j);
+                    if(isPalindrome(val))
+                    {
+                        candidate=val;
+                        max_offset=n_digits-val/(n_digits-1);
+                        break;
+                    }
+                    start-=((n_digits-i)<<1);
+                }
+            }
+            else
+            {
+                unsigned long start;
+                j=n_digits-n_digits/11*11;
+                if(!(j&1)) j+=11;
+                start=(n_digits-i)*(n_digits-j);
+                int step=(n_digits-i)*22;
+                for(; j<=i+11; j+=22)
+                {
+                    cnt++;
+                    unsigned long val=start;//(n_digits-i)*(n_digits-j);
+                    start-=step;
+                    if(isPalindrome(val))
+                    {
+                        candidate=val;
+                        max_offset=n_digits-val/(n_digits-1);
+                        break;
+                    }
+                }               
+            }
+            
+            if(candidate) break;
+        }
+        for(; i<=max_offset; i+=2)
+        {
+            for(j=1; j<=i; j+=2)
+            {
+                unsigned long val=(n_digits-i)*(n_digits-j);
+                if(val<=candidate) break;
+                if(isPalindrome(val))
+                {
+                    candidate=val;
+                    max_offset=n_digits-val/(n_digits-1);
+                    break;
+                }
+            }
+        }  
+        return candidate%1337;
+    }
+};

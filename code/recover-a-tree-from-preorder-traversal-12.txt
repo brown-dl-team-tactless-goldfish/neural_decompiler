@@ -1,0 +1,55 @@
+    public class Solution
+    {
+        private TreeNode Helper(IList<(int, int)> parsedTree, int depth, ref int idx)
+        {
+            if (idx >= parsedTree.Count)
+            {
+                return null;
+            }
+
+            if (parsedTree[idx].Item1 != depth)
+            {
+                return null;
+            }
+
+            TreeNode res = new TreeNode(parsedTree[idx++].Item2);
+            res.left = Helper(parsedTree, depth + 1, ref idx);
+            res.right = Helper(parsedTree, depth + 1, ref idx);
+            return res;
+        }
+
+        public TreeNode RecoverFromPreorder(string s)
+        {
+            int number = 0;
+            int left = 0;
+            int right = 0;
+            int level = 0;
+
+            IList<(int,int)> parsedTree = new List<(int, int)>();
+
+            while (left < s.Length)
+            {
+                if (right < s.Length && (s[right] >= '0' && s[right] <= '9'))
+                {
+                    number *= 10;
+                    number += (s[right] - '0');
+                    right++;
+                    continue;
+                }
+
+                parsedTree.Add((level, number));
+                number = 0;
+                level = 0;
+                while (right < s.Length && s[right] == '-')
+                {
+                    level++;
+                    right++;
+                }
+                left = right;
+            }
+
+            int startIdx = 0;
+            var res = Helper(parsedTree, 0, ref startIdx);
+            return res;
+        }
+    }

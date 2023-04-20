@@ -1,0 +1,60 @@
+int * bild_array(int n, int **ans_per_n){
+    if (ans_per_n[n] != NULL){
+        return ans_per_n[n];
+    }
+
+    int* ans =(int*)malloc(sizeof(int)*n);
+    if (n == 1){
+        ans[0] = 1;
+    } else{
+        int j = 0;
+        int * odds = bild_array((n+1)/2,ans_per_n);
+        for (int x = 0; x < (n+1)/2; x++){
+            ans[x] = 2*odds[x] - 1;
+        }
+        
+        int * evens = bild_array(n/2,ans_per_n);
+        for (int y = 0; y < n/2; y++){
+            ans[((n+1)/2)+y] = 2*evens[y];
+        }
+    }
+    ans_per_n[n] = ans;
+    return ans;
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* beautifulArray(int n, int* returnSize){
+    int * sol =(int*) malloc(sizeof(int)*n);
+    *returnSize = n;
+    if (n == 1){
+        sol[0] = 1;
+        return sol;
+    }
+    if (n == 2){
+        sol[0] = 1;
+        sol[1] = 2;
+        return sol;
+    }
+
+    // create array in this way: -odds-evens-
+    int ** ans_per_n = (int**)malloc(sizeof(int*)*(n+1));
+    for (int i = 0; i < n + 1; i++){
+        ans_per_n[i] = NULL;
+    }
+    
+    sol = bild_array(n,ans_per_n); 
+    *returnSize = n;
+
+
+    // free
+    for (int i = 0; i < n; i++){
+        if (ans_per_n[i] != NULL){
+            free(ans_per_n[i]);
+        }
+    }
+    free(ans_per_n);
+
+    return sol;
+}

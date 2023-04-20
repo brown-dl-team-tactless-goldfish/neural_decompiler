@@ -1,0 +1,41 @@
+public int TotalStrength(int[] strength) {
+	int len = strength.Length;
+	long mod =1_000_000_007;
+
+
+	long[] prevMin = new long[len];
+	long[] nextMin = new long[len];
+	Array.Fill(nextMin, len);
+	Stack<(long,long)> st = new();
+	for(int i=0; i<len; i++){
+		while(st.Count>0 && st.Peek().Item1>strength[i]){
+			var (_, j) = st.Pop();
+			nextMin[j] = i;
+		}
+		prevMin[i] = st.Count>0?st.Peek().Item2:-1;
+		st.Push((strength[i],i));
+	}
+
+	long[] preSum  = new long[len+1];
+	long[] prePrefix = new long[len+2];
+
+	for(int i=0; i<len; i++){
+		preSum[i+1]=(preSum[i]+strength[i])%mod;
+	}
+
+	for(int i=0; i<=len; i++){
+		prePrefix[i+1]=(prePrefix[i]+preSum[i])%mod;
+	}
+
+
+	long ans=0;
+	for(int i =0;i<len;i++){
+	   ans+=(
+		   ((prePrefix[nextMin[i]+1] - prePrefix[i+1]) * (i-prevMin[i]) % mod)  + mod -
+		   ((prePrefix[i+1] - prePrefix[prevMin[i]+1]) *(nextMin[i]-i) % mod)) * strength[i]%mod;
+		ans%=mod;
+	}
+
+	return (int)(ans%mod);
+}
+    

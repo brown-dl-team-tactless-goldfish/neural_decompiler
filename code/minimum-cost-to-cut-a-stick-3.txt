@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int minCost(int T , vector<int>& C ) {
+      
+        sort( C.begin() , C.end() );
+        vector<int>A ;
+        
+        int l = 0 ;
+        
+        for( int i = 0 ; i < C.size() ; i++ )
+        {
+            A.push_back(C[i]-l);
+            l = C[i] ;
+        }
+        
+        A.push_back(T-l);
+        
+        int N = A.size();
+        
+        int P[N+1];
+        memset( P , 0 , sizeof P );
+        
+        for( int i = 0 ; i < N ; i++ )
+            P[i+1] = A[i] + P[i] ;
+        
+        
+        vector<vector<int>>t( N , vector<int>(N,INT_MAX));
+        
+        for( int i = 0 ; i < N ; i++ )
+            t[i][i] = 0 ;
+        
+        for( int L = 2 ; L <= N ; L++ )
+        for( int i = 0 ; i+L-1<N; i++ )
+        {
+            int j = i+L-1;
+            
+            for( int k = i ; k < j ; k++ )
+            {
+                  t[i][j] = min( t[i][j] , t[i][k] + t[k+1][j] + P[j+1]-P[i] );             
+            }
+        }
+        
+        return t[0][N-1] ;
+        
+    }
+};

@@ -1,0 +1,46 @@
+class Solution {
+public:
+    /*
+        redefine sort for string to make concatenated string the lexicopgraphically largest:
+            a + b > b + a
+        
+        '1' == '(', '0' == ')'
+        
+        (()()) () ()
+         ----
+         solve interval substrings recursively
+         
+         
+        - find all special binary substrings
+        - make it the lexicographically largest
+        - sort
+    */
+    string makeLargestSpecial(string str) {
+        vector<string> substrs;
+        string s;
+        int cnt = 0;
+        for (auto ch : str) {
+            s += ch;
+            if (ch == '1') cnt++;
+            else {
+                cnt--;
+                if (cnt == 0) {
+                    // find a special substring
+                    auto t = "1" + makeLargestSpecial(s.substr(1, s.size() - 2)) + "0";
+                    substrs.push_back(t);
+                    s.clear();
+                }
+            }
+        }
+        
+        sort(substrs.begin(), substrs.end(), [](string& lhs, string& rhs) {
+            return lhs + rhs > rhs + lhs;
+        });
+        
+        string res;
+        for (auto s : substrs) {
+            res += s;
+        }
+        return res;
+    }
+};

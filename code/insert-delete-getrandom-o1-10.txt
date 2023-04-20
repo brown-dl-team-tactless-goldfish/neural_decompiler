@@ -1,0 +1,43 @@
+class RandomizedSet {
+vector<int> _nums;
+map<int, int>mp;
+public:
+/** Initialize your data structure here. */
+RandomizedSet() {
+    //_nums.clear();
+    //mp.clear();
+}
+
+/** Inserts a value to the set. Returns true if the set did not already contain the specified element. */
+bool insert(int val) {
+    if(mp.find(val) == mp.end()){
+        _nums.push_back(val);
+        //_nums[_nums.size()] = val;
+        mp[val] = _nums.size() - 1;//0, ``````,n-1
+        return true;
+    }
+    return false;
+}
+
+/** Removes a value from the set. Returns true if the set contained the specified element. */
+bool remove(int val) {
+    if(mp.find(val) != mp.end()){
+        int tmp = mp[val];
+        // exchange val and the last element of vector
+        swap(_nums[tmp],_nums[_nums.size()-1]);
+        // now the last element is at the index of val, which is **tmp**;
+        _nums.pop_back();
+        //recover the exchanged element
+        mp[_nums[tmp]] = tmp;
+        mp.erase(val);
+        return true;
+    }
+    return false;
+}
+
+/** Get a random element from the set. */
+int getRandom() {
+    int ans = _nums[rand()%_nums.size()];
+    return ans;
+}
+};

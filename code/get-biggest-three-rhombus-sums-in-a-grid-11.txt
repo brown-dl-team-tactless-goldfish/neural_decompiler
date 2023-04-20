@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int mat[110][110][2];
+    vector<int> getBiggestThree(vector<vector<int>>& grid) {
+        int m = grid[0].size(), n = grid.size();
+        memset(mat, 0, sizeof(mat));
+        for (int r = 0; r < n; r++) {
+            for (int c = 0; c < m; c++) {
+                mat[r][c][0] = mat[r][c][1] = grid[r][c];
+                if (r - 1 >=0 && c -1 >=0) mat[r][c][0] += mat[r-1][c-1][0];
+                if (r - 1 >= 0 && c + 1 < m) mat[r][c][1] += mat[r-1][c+1][1];
+            }
+        }
+        set<int> sumis;
+        for (int len = 0; len < min(n, m); len++) {
+            for (int r = 0; r + 2*len < n; r++) {
+                for (int c = 0; c + len < m; c++) if (c - len < 0) continue;
+                else {
+                    if (len == 0) {
+                        sumis.insert(-grid[r][c]);
+                        continue;
+                    }
+                    int a = mat[r+len][c-len][1] - mat[r][c][1] + grid[r][c];
+                    int b = mat[r+len][c+len][0] - mat[r][c][0];
+                    int cc = mat[r + 2*len][c][0] - mat[r + len][c - len][0];
+                    int d = mat[r + 2*len][c][1] - mat[r+len][c+len][1];
+                    int sum = a + b + cc + d - grid[r + 2*len][c];
+                    sumis.insert(-sum);
+                }
+            }
+        }
+        vector<int>ret;
+        for (int i =0 ; i < 3 && !sumis.empty(); i++) {
+            ret.push_back(-(*sumis.begin()));
+            sumis.erase(sumis.begin());
+        }
+        return ret;
+    }
+};

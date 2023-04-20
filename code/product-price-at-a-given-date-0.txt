@@ -1,0 +1,13 @@
+SELECT 
+    product_id, 
+    IFNULL(new_price, 10) AS price
+FROM (SELECT DISTINCT product_id FROM Products) c 
+    LEFT JOIN (SELECT a.product_id, new_price 
+               FROM Products a, 
+                    (SELECT 
+                        product_id, 
+                        MAX(change_date) AS change_date 
+                     FROM Products 
+                     WHERE change_date <= "2019-08-16" 
+                     GROUP BY product_id) b 
+               WHERE a.product_id = b.product_id AND a.change_date = b.change_date) d USING (product_id);

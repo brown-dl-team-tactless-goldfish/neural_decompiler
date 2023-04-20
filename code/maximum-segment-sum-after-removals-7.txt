@@ -1,0 +1,108 @@
+class BIT {
+    int n;
+    vector<long long>  v;
+public:
+
+    BIT(int sz) {
+        n = sz;
+        v.resize(n + 1);
+    }
+
+    long long sum(int k) {
+        long long sum = 0;
+        while (k > 0) {
+            sum += v[k];
+            k -= k & -k;
+        }
+        return sum;
+    }
+
+    void add(int k , int x) {
+        while (k <= n) {
+            v[k] += x;
+            k += k & -k;
+        }
+    }
+
+};
+
+
+class Solution {
+public:
+int cnt = 0;
+map < int, vector<long long> > range;
+multiset<long long> s;
+
+vector<long long> maximumSegmentSum(vector<int>& nums, vector<int>& removeQueries) {
+
+    int n = nums.size();
+    vector<long long> diff(n + 1, 0), prefix(n + 1, 0),ans; //difference array
+    for (int i = 0; i < n; i++) {
+        prefix[i + 1] = prefix[i] + nums[i];
+    }
+
+    BIT T(diff.size());
+    s.insert(-prefix[n]);   //insert negative for maximum
+    range[0] = {1, n, prefix[n]};     //now follow one based indexing
+
+
+    for (int index : removeQueries) {
+        index++;
+        int currRange = T.sum(index);   //curr range of element
+
+        //dimensions of range
+        int start = range[currRange][0] , end = range[currRange][1];
+        long long currSum = range[currRange][2];
+
+
+        //remove that sum from set
+        auto it = s.find(-currSum);
+        s.erase(it);
+
+        //remove currrange from map
+        range.erase(currRange);
+
+        //partition into two parts l to index-1 and index+1 to r
+        if (start <= index - 1) {
+            cnt++;//we need new range
+            int l = start , r = index - 1;
+            long long this_range_sum = prefix[r] - prefix[l - 1];
+
+            //update the elements in l to r with new range
+            //we need to increase byt cnt-currRange times
+            T.add(r + 1, -(cnt - currRange));
+            T.add(l , cnt - currRange);
+
+            //add in set
+            s.insert(-this_range_sum);
+
+            //add in map
+            range[cnt] = {l, r, this_range_sum};
+        }
+
+        if (index + 1 <= end) {
+            cnt++;//we need new range
+            int l = index + 1 , r = end;
+            long long this_range_sum = prefix[r] - prefix[l - 1];
+
+            //update the elements in l to r with new range
+            //we need to increase byt cnt-currRange times
+            T.add(r + 1, -(cnt - currRange));
+            T.add(l , cnt - currRange);
+
+            //add in set
+            s.insert(-this_range_sum);
+
+            //add in map
+            range[cnt] = {l, r, this_range_sum};
+        }
+
+        auto itr = s.begin();
+        ans.push_back(-(*itr));
+    }
+    
+    return ans;
+
+}
+
+};

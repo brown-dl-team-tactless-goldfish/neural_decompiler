@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int minSwaps(string s) {
+        int ones = 0; 
+        for (auto c : s) {
+            if (c == '1') ++ones; 
+        }
+        int zeros = s.size() - ones; 
+        
+        if (abs(ones - zeros) > 1) return -1; // impossible 
+        
+        auto fn = [&s](char x){
+            int cnt = 0; 
+            for (auto c : s) {
+                if (x != c) ++cnt; 
+                x = x == '0' ? '1' : '0'; 
+            }
+            return cnt/2; 
+        };
+        
+        if (ones > zeros) return fn('1'); 
+        else if (ones < zeros) return fn('0'); 
+        else return min(fn('1'), fn('0'));
+    }
+};

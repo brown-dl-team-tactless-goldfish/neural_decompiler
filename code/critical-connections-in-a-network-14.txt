@@ -1,0 +1,49 @@
+class Solution {
+    vector<vector<int>> graph;
+    vector<int> time; // time of the node first visited
+    vector<int> low;  // lowest among all descent i
+    vector<vector<int>> res;
+    int cnt = 0;
+    
+    void dfs(int i, int parent) {
+        time[i] = low[i] = cnt++;
+        
+        for (auto j : graph[i]) {
+            if (j == parent) {
+                continue;
+            }
+            if (time[j] < 0) {
+                dfs(j, i);
+            }
+            
+            low[i] = min(low[i], low[j]);
+            if (time[i] < low[j]) { 
+                // if there is another connection from ancestor of i to descent of j, time[i] >= low[j]
+                // otherwise [i->j] is the only connection, then it's a bridge
+                res.push_back({i, j});
+            }
+        }
+    }
+public:
+    vector<vector<int>> criticalConnections(int n, vector<vector<int>>& connections) {
+        graph.resize(n);
+        time.resize(n, -1);
+        low.resize(n, -1);
+        for (auto c : connections) {
+            graph[c[0]].push_back(c[1]);
+            graph[c[1]].push_back(c[0]);
+        }
+        
+        int component = 0;
+        for (int i = 0; i < n; i++) {
+            if (time[i] < 0) {
+                component++;
+                if (component > 1) {
+                    return {};
+                }
+                dfs(i, -1);
+            }
+        }
+        return res;
+    }
+};

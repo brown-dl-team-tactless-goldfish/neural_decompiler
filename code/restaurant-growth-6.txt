@@ -1,0 +1,16 @@
+/* Write your T-SQL query statement below */
+with c as (
+ select visited_on, sum (amount) amount from Customer group by visited_on
+) 
+    
+    
+select c2.visited_on, 
+       sum(c1.amount) amount, 
+       round(sum(c1.amount) * 1.0/7, 2) average_amount    
+from c as c1 
+join c as c2 
+            on c1.visited_on between  dateadd(day, - 6, c2.visited_on) and c2.visited_on
+group by c2.visited_on
+having count(distinct c1.visited_on) = 7
+order by 1
+

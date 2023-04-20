@@ -1,0 +1,30 @@
+class Solution {
+static constexpr int kEpsilon = 0.00000001;
+ public:
+  int minSkips(vector<int>& dist, int speed, int hoursBefore) {
+    int n = dist.size()-1; 
+    vector<double> prev(n+1);
+    vector<double> curr(n+1);
+    for (int i = 0; i < n; ++i) {
+      double duration = static_cast<double>(dist[i]) / static_cast<double>(speed);
+      curr[0] = ceil(prev[0] + duration - kEpsilon);
+      for (int j = 1; j <= i; ++j) {
+        double dur1 = prev[j-1] + duration;
+        double dur2 = ceil(prev[j] + duration - kEpsilon);
+        curr[j] = min(dur1, dur2);
+      }
+      curr[i+1] = prev[i] + duration;
+      swap(prev, curr);
+    }
+    
+    double goal = static_cast<double>(hoursBefore) -
+        static_cast<double>(dist.back()) / static_cast<double>(speed);
+    for (int i = 0; i <= n; ++i) {
+      if (prev[i] <= goal + kEpsilon) {
+        return i;
+      }
+    }
+    
+    return -1;
+  }
+};

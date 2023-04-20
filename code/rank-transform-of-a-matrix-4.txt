@@ -1,0 +1,125 @@
+
+class Solution {
+public:
+
+#define pii pair<int,int>
+#define ff first
+#define ss second
+#define lo(i,s,e) for(int i=s; i<(int)e; i++)
+#define l(i,e)    for(int i=0; i<(int)e; i++)
+
+
+
+	pii parent[502][502]; // parent[i][j]  is the parent of the cell {i, j}
+	void build(int r, int c) {
+		l(i, r) {
+			l(j, c) {
+				parent[i][j] = {i , j};
+			}
+		}
+	}
+
+	pii findParent(pii u) {
+		return parent[u.ff][u.ss] = (parent[u.ff][u.ss] == u ? u : findParent(parent[u.ff][u.ss]));
+	}
+
+	void _union(pii u, pii v) {
+		auto pu = findParent(u);
+		auto pv = findParent(v);
+
+		parent[pv.ff][pv.ss] = pu;
+	}
+
+	vector<vector<int>> matrixRankTransform(vector<vector<int>>& mat) {
+		int r = mat.size();
+		int c = mat[0].size();
+		vector<vector<int>> ans(r, vector<int> (c));
+		build(r, c);
+
+
+		l(i, r) {
+			// map<int, pii> mp;
+			unordered_map<int, pii> mp;
+			l(j, c) {
+				int val = mat[i][j];
+				if (mp.count(val)) _union({i, j}, mp[val]);
+				mp[val] = {i, j};
+			}
+		}
+
+
+		l(j, c) {
+			// map<int, pii> mp;
+			unordered_map<int, pii> mp;
+
+			l(i, r) {
+				int val = mat[i][j];
+				if (mp.count(val)) _union({i, j}, mp[val]);
+				mp[val] = {i, j};
+			}
+		}
+
+		vector<pii> all[r][c];
+
+		// in each cell of all, we store a list of children (all those cells which belong to this group)
+
+		l(i, r) l(j, c) {
+			pii x = {i, j};
+			pii par = findParent(x);
+
+			all[par.ff][par.ss].push_back(x);
+		}
+
+
+		// this is a map that stores all the groups of cells
+		// lets say we have a lot of 7's in the matrix and there are 3 such groups of 7's (same row col)
+		// so against each value, this map stores a list of groups
+		map < int, vector<vector<pii>>> mp;
+		// unordered_map < int, vector<vector<pii>>> mp;
+
+		l(i, r) l(j, c) {
+
+			if ((int)all[i][j].size()) {
+				int val = mat[i][j];
+				mp[val].push_back(all[i][j]);
+			}
+		}
+
+		vector<int> row(r, 0), col(c, 0);
+
+		// mp stores the list of groups against each value (every value can occur in one or more than one group)
+
+		for (auto &i : mp)
+		{
+			// i.ff represents the current value
+			for (auto &j : i.ss) {
+
+				// j represents the group
+				int x = 0;
+
+				// iterating over that group to find the rank for this group (same value, same rank)
+				for (auto &k : j) {
+					int cur_i = k.ff;
+					int cur_j = k.ss;
+
+					x = max(x, 1 + max(row[cur_i], col[cur_j]));
+
+				}
+
+				// set the ranks
+				for (auto &k : j) {
+					int cur_i = k.ff;
+					int cur_j = k.ss;
+
+					ans[cur_i][cur_j] = x;
+					row[cur_i] = max(row[cur_i], x);
+					col[cur_j] = max(col[cur_j], x);
+				}
+			}
+		}
+
+		return ans;
+
+
+	}
+};

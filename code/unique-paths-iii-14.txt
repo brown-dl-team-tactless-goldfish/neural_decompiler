@@ -1,0 +1,25 @@
+int checkGrid(int ** grid, int row, int col, int x, int y, int count)
+{
+    if(x<0 || x>=row || y<0 || y>=col || grid[x][y] == -1)
+        return 0;
+    if(grid[x][y] == 2)
+        return (count == 0);
+    grid[x][y] = -1;
+    int temp = checkGrid(grid, row, col, x+1, y, count-1) + checkGrid(grid, row, col, x-1, y, count-1) + checkGrid(grid, row, col, x, y-1, count-1) + checkGrid(grid, row, col, x, y+1, count-1);
+    grid[x][y] = 0;
+    return temp;
+}
+
+int uniquePathsIII(int** grid, int gridSize, int* gridColSize){
+    int count = 1, startX = 0, startY = 0;
+    for(int i=0; i<gridSize; i++)
+        for(int j=0; j<*gridColSize; j++)
+            if(grid[i][j] == 1)
+            {
+                startX = i;
+                startY = j;
+            }
+            else if(grid[i][j] == 0)
+                count++;
+    return checkGrid(grid, gridSize, *gridColSize, startX, startY, count);  
+}

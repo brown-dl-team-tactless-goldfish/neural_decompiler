@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int longestCommonSubpath(int n, vector<vector<int>>& paths) {
+        unordered_set<ll> us;
+        int l = 0, r = 1e5 + 1;
+        while (l < r) {
+            int mid = (r + l + 1) / 2;
+            bool flag = true;
+            for (int i = 0; i < paths.size() && flag; i++) {
+                vector<int> &cur = paths[i];
+                if (mid > cur.size()) {
+                    us.clear();
+                    flag = false;
+                    break;
+                }
+                ll h = 0, dd = 1;
+                for (int j = 0; j < mid; j ++) {
+                    h = h * seed + cur[j];
+                    if (j) dd *= seed;
+                }
+                unordered_set<ll> us2;
+                if (i == 0 || us.count(h)) us2.insert(h);
+                for (int j = mid; j < cur.size(); j++) {
+                    h -= cur[j - mid] * dd;
+                    h = h * seed + cur[j];
+                    if (i == 0 || us.count(h)) us2.insert(h);
+                }
+                if (us2.empty()) flag = false;
+                else us = us2;
+            }
+            if (flag) {
+                l = mid;
+            } else {
+                r = mid -1;
+            }
+        }
+        return l;
+    }
+private:
+    using ll = unsigned long long;
+    ll seed = 1e9 + 19;
+};

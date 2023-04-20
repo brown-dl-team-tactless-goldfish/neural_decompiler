@@ -1,0 +1,54 @@
+    public int UnhappyFriends(int n, int[][] preferences, int[][] pairs) {
+        Dictionary<int,int>[] lookup = new Dictionary<int,int>[n];
+        
+        for(int i=0; i< preferences.Length; i++)
+        {
+            lookup[i] = new Dictionary<int,int>();
+            
+            for(int j=0; j< preferences[i].Length; j++)
+            {
+                lookup[i][preferences[i][j]] = j;
+            }
+        }
+        
+        Dictionary<int, int> IsPaired = new Dictionary<int, int>();
+        foreach(int[] pair in pairs)
+        {
+            IsPaired[pair[0]] = pair[1];
+            IsPaired[pair[1]] = pair[0];
+        }
+        
+        int count = 0;
+        
+        foreach(int[] pair in pairs)
+        {
+            if (IsUnhappy(preferences, lookup, IsPaired, pair[0], pair[1])) { count++; }
+            if (IsUnhappy(preferences, lookup, IsPaired, pair[1], pair[0])) { count++; }
+        }
+        
+        return count;
+    }
+    
+    private bool IsUnhappy(int[][] preferences, Dictionary<int,int>[] lookup, Dictionary<int, int> IsPaired, int first, int second) 
+    {
+        int pair;
+        int val2;
+        int val1;
+        
+        int[] crntPref = preferences[first];
+        int[] potPref;
+        
+        for(int i=0; i < crntPref.Length; i++)
+        {
+            if (crntPref[i] == second) { break; }            
+            if (!IsPaired.ContainsKey(crntPref[i])) { continue; }
+            
+            pair = IsPaired[crntPref[i]];
+            val2 = lookup[crntPref[i]][pair];
+            val1 = lookup[crntPref[i]][first];
+            
+            if (val1 < val2) { return true; }
+        }
+        
+        return false;
+    }

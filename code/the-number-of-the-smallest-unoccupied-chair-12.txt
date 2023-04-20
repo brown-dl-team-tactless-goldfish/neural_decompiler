@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int smallestChair(vector<vector<int>>& times, int target) {
+        for(int i=0; i<times.size(); i++) {
+            times[i].push_back(i);
+        }
+        sort(begin(times), end(times), [&](auto& l, auto& r) {
+            return l[0] < r[0];
+        });
+        priority_queue<pair<int, int>, vector<pair<int, int>> , greater<>> q;
+        set<int> reuse;
+        int k = 0;
+        for(auto& t: times) {
+            int s = t[0], e = t[1], idx = t[2];
+            while(not q.empty()) {
+                auto [end, seat] = q.top();
+                if(end > s)
+                    break;
+                q.pop();
+                reuse.insert(seat);
+            }
+            if(reuse.empty()) {
+                q.emplace(e, k);
+                if(target == idx) {
+                    return k;
+                }
+                ++k;
+            } else {
+                int seat = *reuse.begin();
+                reuse.erase(reuse.begin());
+                q.emplace(e, seat);
+                if(target == idx) {
+                    return seat;
+                }
+            }
+        }
+        return 0;
+    }
+};

@@ -1,0 +1,20 @@
+#define max(a, b) (a > b ? a : b)
+
+int waysToSplit(int* nums, int numsSize){
+    int n = numsSize;
+    for(int i = 1; i < n; i++)
+        nums[i] += nums[i - 1];
+    int left  = 0, mid = 1, right = 2, count = 0;
+    while(left < n - 2)
+    {
+        mid = max(mid, left + 1);
+        while(mid < n - 1 && nums[mid] < 2 * nums[left])
+            mid++;
+        right = max(mid, right);
+        while(right < n - 1 && nums[right] - nums[left] <= nums[n - 1] - nums[right])
+            right++;
+        count = (count + right - mid) % 1000000007;
+        left++;
+    }
+    return count;
+}

@@ -1,0 +1,33 @@
+public class Solution {
+    public int[] ExclusiveTime(int n, IList<string> logs) {
+        int[] res = new int[n];
+        
+         var parsedLogs = logs.Select(s => {
+            var c = s.Split(':');
+            return new {Id = int.Parse(c[0]), State = c[1], TimeStamp = int.Parse(c[2]) };
+        });
+        
+        var stack = new Stack<int>();
+        int prevTimeStamp = 0;
+        foreach (var log in parsedLogs)
+        {
+            if (log.State == "start")
+            {
+                if (stack.Any())
+                {
+                    res[stack.Peek()] += log.TimeStamp - prevTimeStamp;
+                    prevTimeStamp = log.TimeStamp;
+                }
+                
+                stack.Push(log.Id);
+            }
+            else
+            {
+                res[stack.Pop()] += log.TimeStamp - prevTimeStamp + 1;
+                prevTimeStamp = log.TimeStamp + 1;
+            }
+        }
+        
+        return res;
+    }
+}

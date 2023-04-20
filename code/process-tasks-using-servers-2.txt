@@ -1,0 +1,47 @@
+
+class Solution {
+public:
+  #define p pair<int,int>
+    vector<int> assignTasks(vector<int>& servers, vector<int>& tasks) {
+    
+      priority_queue<p,vector<p>,greater<p>>avail;
+      for(int i=0;i<servers.size();i++){
+        avail.push({servers[i],i});
+      }
+      int i=0;
+      int n=tasks.size();
+      int t=0;
+      priority_queue<p,vector<p>,greater<p>>busy;      
+      int m=tasks.size();
+      vector<int>res(m,-1);
+      while(i<n){
+        
+        while(!busy.empty() && busy.top().first<=t){
+          avail.push({servers[busy.top().second],busy.top().second});
+          busy.pop();
+        }
+     
+        while(i<=t &&i<n ){
+          if(!avail.empty()){
+            auto it =avail.top();
+            res[i]= it.second;
+            busy.push({t+tasks[i],it.second});
+            avail.pop();
+            i++;
+          }else{
+             t=max(t,busy.top().first-1);
+             break;
+          }
+          
+        }
+          
+           t++;
+        }
+      
+      
+      
+      
+  return res;
+    
+    }
+};

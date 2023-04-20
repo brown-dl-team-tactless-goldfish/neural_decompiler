@@ -1,0 +1,83 @@
+class Solution {
+public:
+    /*
+        val ^ first = second
+        val = first ^ second;
+        
+        
+        map <val, pair<i, j>>
+        
+        101101
+        
+        1
+        10
+        101
+        1011
+        10110
+        101101
+        0
+        01
+        011
+        0110
+        01101
+        1
+        11
+        110
+        1101
+        1
+        10
+        101
+        0
+        01
+        0
+        
+        
+        11110010100101001011010
+    
+    */
+       long long bin_to_dec(string x){
+        int val = 0; long long multi = 1;
+        
+        for(int i = x.size() - 1 ; i >= 0 ; i--){
+            val += multi * (x[i] - '0');
+            multi *= 2;
+        }
+        
+        return val;
+    }
+    
+    
+    vector<vector<int>> substringXorQueries(string s, vector<vector<int>>& queries) {
+        int n = s.size(), fxors = 0;;
+        vector<string>subs;
+        unordered_map<int, pair<int, int>> mp;
+        
+        // Finding if there exists a '0' in the string
+        for(int i= 0; i < n; i++)if(s[i] == '0'){mp[0] = {i, i}; break;}
+        
+        // Getting all substrings and removing the trailing zeroes
+        for(int i = 0 ; i < s.size(); i++){
+            string ss = "";
+            int count = 0;
+            if(s[i] == '1'){
+                for(int j = i ; j < s.size() && count < 32; j++){
+                    ss += s[j];
+                    count++;
+                    int val = bin_to_dec(ss);
+                    if(mp.find(val) != mp.end())continue;
+                    mp[val] = make_pair(i, j);
+                }
+            }
+        }
+        
+        // Getting the answers
+        vector<vector<int>>res;
+        for(int i = 0 ; i < queries.size() ; i++){
+            fxors = queries[i][0] ^ queries[i][1];
+            if(mp.find(fxors) != mp.end())res.push_back({mp[fxors].first, mp[fxors].second});
+            else res.push_back({-1, -1});
+        }
+        
+        return res;
+    }
+};

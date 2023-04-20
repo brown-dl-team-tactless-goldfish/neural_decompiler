@@ -1,0 +1,44 @@
+class Solution {
+public:
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        int n = nums1.size(), m = nums2.size();
+        vector<int>res(k, INT_MIN);
+        
+        for(int i=max(0, k-m);i<=min(k, n);i++)
+        {   
+            auto a = maxarray(nums1, i);
+            auto b = maxarray(nums2, k-i);
+            auto c = merge(a, b);
+            res = max(res, c);
+        }
+        return res;
+    }
+    
+    vector<int>maxarray(vector<int>&nums, int k)
+    {
+        vector<int>res(k);
+        int n = nums.size(), j = 0;
+        for(int i=0;i<n;i++)
+        {
+            int x = nums[i];
+            while(j && j + n-i > k && res[j-1] < x) j--;
+            if(j < k) res[j++] = x;
+        }
+        return res;
+    }
+    
+    vector<int>merge(vector<int>&a, vector<int>&b)
+    {
+        vector<int>res;
+        while(a.size() && b.size())
+        {
+            if(a > b) res.push_back(a[0]), a.erase(a.begin());
+            else res.push_back(b[0]), b.erase(b.begin());
+        }
+        while(a.size())
+            res.push_back(a[0]), a.erase(a.begin());
+        while(b.size())
+            res.push_back(b[0]), b.erase(b.begin());
+        return res;
+    }
+};

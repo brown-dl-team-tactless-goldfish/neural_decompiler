@@ -1,0 +1,43 @@
+class Solution {
+private:
+    string ret;
+    // can use a next position vector to optimize.
+    bool check(string&s, string& t, int k, int pos){
+        if(t.size()==0)return true;
+        int m = t.size();
+        int n = s.size();
+        if(m*k>n)return false;
+        int cnt = 0, cur = 0;
+        for(int i=pos;i<n;i++){
+            if(s[i]==t[cur]){
+                cur++;
+                if(cur==m){
+                    cnt++;
+                    cur = 0;
+                }
+            }
+            if(cnt==k-1)return true;
+        }
+        return false;
+    }
+    string path;
+    void dfs(string&s, int pos, int mask, int k){
+        if(check(s, path, k, pos)){
+            if(ret.size()<path.size() || (ret.size()==path.size()&&ret<path))ret = path;
+        } else return;
+        if(pos>=s.size()||path.size()>=7)return;
+        if(!(mask&(1<<(s[pos]-'a')))){
+            path+=s[pos];
+            dfs(s, pos+1, 0, k);
+            path.pop_back();
+        }
+        dfs(s, pos+1, mask|(1<<(s[pos]-'a')), k);
+    }
+public:
+    string longestSubsequenceRepeatedK(string s, int k) {
+        ret.clear();
+        path.clear();
+        dfs(s, 0, 0, k);
+        return ret;
+    }
+};

@@ -1,0 +1,23 @@
+int cmp(const void *a, const void *b){
+    if(*(long long *)a > *(long long *)b)
+        return -1;
+    else 
+        return 1;
+}
+
+void DFS(struct TreeNode* root, long long* sum, int depth, int* maxDepth){
+    if(!root) return;
+    if(depth > *maxDepth) *maxDepth = depth;
+    DFS(root->left, sum, depth + 1, maxDepth);
+    sum[depth] += root->val;
+    DFS(root->right, sum, depth + 1, maxDepth);
+}
+
+long long kthLargestLevelSum(struct TreeNode* root, int k){
+    long long* sum = (long long*)calloc(1e5, sizeof(long long));
+    int maxDepth = -1;
+    DFS(root, sum, 0, &maxDepth);
+    /* sorting for easy to find out the answer */
+    qsort(sum, maxDepth + 1, sizeof(long long), cmp);
+    return k > maxDepth + 1? -1 : sum[k - 1];
+}

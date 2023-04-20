@@ -1,0 +1,65 @@
+class Solution {
+public:
+    const static int MAX = 1e4 * 5 + 100;
+    int R[MAX];
+    
+    int P[2][MAX];
+    int N[2][MAX];
+
+    int len;
+    string shiftingLetters(string s, vector<vector<int>>& shifts) {
+        memset(R, 0, sizeof(MAX));
+        for (int i = 0; i < 2; i++) {
+            for (int j = 0; j < MAX; j++) {
+                P[i][j] = 0;
+                N[i][j] = 0;
+            }
+        }
+        len = s.length();
+        for (int i = 0; i < len; i++) {
+            R[i] = (int)(s[i] - 'a');
+        }
+        for (vector<int> v : shifts) {
+            if (v[2] == 1) {
+                P[0][v[0]]++;
+                P[1][v[1]]++;
+                /*
+                for (int i = v[0]; i <= v[1]; i++) {
+                    R[i]++;
+                }
+                */
+            }
+            else if (v[2] == 0) {
+                N[0][v[0]]++;
+                N[1][v[1]]++;
+                /*
+                for (int i = v[0]; i <= v[1]; i++) {
+                    R[i]--;
+                }
+                */
+            }
+        }
+        int cp = 0;
+        int cn = 0;
+        
+        for (int i = 0; i < len; i++) {
+            cp += P[0][i];
+            cn -= N[0][i];
+            R[i] += (cp + cn);
+            cp -= P[1][i];
+            cn += N[1][i];
+        }
+        
+        string res = s;
+        for (int i = 0; i < len; i++) {
+            if (R[i] < 0) {
+                int cnt = ((R[i] * -1) % 26);
+                res[i] = (char)((26 - cnt) % 26 + 'a');
+            }
+            else {
+                res[i] = (char)((R[i] % 26) + 'a');
+            }
+        }
+        return res;
+    }
+};

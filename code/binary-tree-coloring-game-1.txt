@@ -1,0 +1,50 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int treecount(struct TreeNode* root)
+{
+    if(root==NULL)
+        return 0;
+    if(root->left==NULL && root->right==NULL)
+        return 1;
+    return 1+treecount(root->left)+treecount(root->right);
+}
+void treesearch(struct TreeNode* root, int x,int *xleft,int *xright)
+{
+    if(root==NULL)
+        return;
+    if(root->val==x)
+    {
+        *xleft = treecount(root->left);
+        *xright = treecount(root->right);
+        return;
+    }
+    else
+    {
+        treesearch(root->left,x,xleft,xright);
+        treesearch(root->right,x,xleft,xright);
+    }
+}
+bool btreeGameWinningMove(struct TreeNode* root, int n, int x){
+    int xleft = 0;
+    int xright = 0;
+    treesearch(root,x,&xleft,&xright);
+    printf("%d %d %d",n-1-xleft-xright,xleft,xright);
+    if(n-1-xleft-xright>n/2)
+        return true;
+    if(xleft>n/2)
+        return true;
+    if(xright>n/2)
+        return true;
+    return false;
+//xleft,xright,notx
+//if(notx>=2/n)true
+//if(xleft>2/n)true
+//if(xright>2/n)true
+}
+

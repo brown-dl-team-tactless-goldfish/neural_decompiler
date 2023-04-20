@@ -1,0 +1,35 @@
+class Solution {
+public:
+	//if we can reach office with {speed} within given {hour} -> {} for placeholders
+    bool isPossible(vector<int> &arr, double hour, int speed){
+        double curr = 0;
+        int n = arr.size();
+        for(int i = 0 ;i < n-1 ; i++)
+            curr += ceil((float)arr[i]/speed);
+        
+        curr += ((float)arr[n-1]/speed);
+        
+        return curr<=hour;
+    }
+    int minSpeedOnTime(vector<int>& dist, double hour) {
+        int n = dist.size();
+        
+        int low = 1,high = INT_MAX;
+        int ans = INT_MAX;
+        
+        while(low <= high){
+            int mid = low + (high-low)/2;
+            if(mid == INT_MAX)
+                return -1;
+            if(isPossible(dist,hour,mid)){
+                ans = min(ans,mid);
+                high = mid-1;
+            }
+            else{
+                low = mid+1;
+            }
+        }
+        
+        return (ans == INT_MAX) ? -1 : ans;
+    }
+};

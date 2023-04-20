@@ -1,0 +1,48 @@
+struct Words
+{
+    char word[11];
+    int count;
+};
+int ladderLength(char * beginWord, char * endWord, char ** wordList, int wordListSize){
+    
+    int res=0;
+    struct Words Queue[5001];
+    char temp[11]={0};
+    strcpy(Queue[0].word,beginWord);
+    Queue[0].count = 1 ;
+    int qidx=1;
+    int idx=0,j=0;
+    int c=0,i;
+    bool *visited = (bool*)malloc(sizeof(bool)*wordListSize);
+    memset(&visited[0],0,sizeof(bool)*wordListSize);
+    while (idx < qidx)
+    {
+        strcpy(&temp[0],Queue[idx].word);
+        if (strcmp(temp,endWord) == 0)
+            return Queue[idx].count;
+        
+        for (i=0; i < wordListSize; i++)
+        {
+            if (visited[i] == 1)
+                continue;
+            c=0;
+            j=0;
+            while (temp[j]!=NULL)
+            {
+                if (temp[j]!=wordList[i][j])
+                    c++;
+                j++;
+            }
+            if (c==1)
+            {
+                strcpy(Queue[qidx].word,wordList[i]);
+                Queue[qidx].count = Queue[idx].count+1;
+                visited[i]=1;
+                qidx++;
+            }
+            
+        }
+        idx++;
+    }
+    return 0;
+}

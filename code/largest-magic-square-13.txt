@@ -1,0 +1,41 @@
+class Solution {
+    bool check(int a[], const short& n, const int& sum) {
+        for(short i = 0; i < n; ++i)
+            if (a[i] != sum) return false;
+        return true;
+    }
+    
+public:
+    int largestMagicSquare(const vector<vector<int>>& grid) {
+        short res = 1;
+        for(short i = 0; i < grid.size(); ++i)
+            for(short j = 0; j < grid[0].size(); ++j) {
+                short k = min(grid.size() - 1, i + grid[0].size() - j - 1), l = min(grid[0].size() - 1, j + grid.size() - i - 1);
+                int row[k + 1], col[l + 1], main = 0, sub = 0;
+                
+                for(short r = i; r <= k; ++r) row[r - i] = accumulate(grid[r].begin() + j, grid[r].begin() + l + 1, 0);
+                
+                for(short c = j; c <= l; ++c) {
+                    col[c - j] = 0;
+                    for(short r = i; r <= k; ++r) col[c - j] += grid[r][c];
+                }
+                
+                for(short r = i, c = j; r <= k; ++r, ++c) main += grid[r][c];
+                
+                for(short r = i, c = l; r <= k; ++r, --c) sub += grid[r][c];                
+                
+                while (main != sub || !check(row, k - i + 1, sub) || !check(col, l - j + 1, sub)) {
+                    for(short r = i; r < k; ++r) row[r - i] -= grid[r][l];
+                    for(short c = j; c < l; ++c) col[c - j] -= grid[k][c];
+                    main -= grid[k][l];
+                    sub = 0;
+                    --k;
+                    for(short r = i, c = --l; r <= k; ++r, --c) sub += grid[r][c];
+                }
+                
+                res = max(res, short(k - i + 1));
+            }
+        
+        return res;
+    }
+};

@@ -1,0 +1,35 @@
+class Solution {
+    bool helper(vector<vector<bool>>&isPalin, int k, int a, int b){
+        if(k == 1){
+            return isPalin[a][b] ;
+        }
+        for(int i = a ; i <= b-(k-1); i++){
+            if(isPalin[a][i] && helper(isPalin, k-1, i+1, b))
+                return true ;
+        }
+        return false ;
+    }
+public:
+    bool checkPartitioning(string s) {
+        int n = s.size() ;
+        vector<vector<bool>>isPalin(n, vector<bool>(n)) ;
+        //len = 1 ;
+        for(int i = 0; i < n; i++){
+            isPalin[i][i] = true ;
+        }
+        //len = 2 ;
+        for(int i = 0; i < n-1; i++){
+            isPalin[i][i+1] = (s[i] == s[i+1]) ;
+        }
+        //len > 2
+        for(int len = 3; len <= n; len++){
+            for(int i = 0; i <= n-len; i++){
+                int j = i + len -1 ;
+                if(s[i] == s[j])
+                    isPalin[i][j] = isPalin[i+1][j-1] ;
+            }
+        }
+        
+        return helper(isPalin, 3, 0, n-1) ;
+    }
+};

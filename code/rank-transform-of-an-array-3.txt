@@ -1,0 +1,49 @@
+int cmp(const void* a, const void* b) {
+  int* x = (int*)a;
+  int* y = (int*)b;
+
+  return *x - *y;
+}
+
+int search(int* a, int size, int v) {
+  int l = 0, h = size;
+  while (l < h) {
+    int mid = l + (h - l) / 2;
+    if (a[mid] == v) {
+      return mid;
+    } else if (a[mid] > v) {
+      h = mid;
+    } else {
+      l = mid;
+    }
+  }
+
+  return -1;
+}
+
+int* arrayRankTransform(int* arr, int arrSize, int* returnSize) {
+  *returnSize = arrSize;
+  int* result = malloc(sizeof(int) * arrSize);
+  if (arrSize == 0)
+    return result;
+
+  int values[arrSize], ranks[arrSize];
+  memcpy(values, arr, sizeof(values));
+  qsort(values, arrSize, sizeof(int), cmp);
+
+  ranks[0] = 1;
+  for (int i = 1; i < arrSize; i++) {
+    if (values[i] == values[i - 1]) {
+      ranks[i] = ranks[i - 1];
+    } else {
+      ranks[i] = ranks[i - 1] + 1;
+    }
+  }
+
+  for (int i = 0; i < arrSize; i++) {
+    int j = search(values, arrSize, arr[i]);
+    result[i] = ranks[j];
+  }
+
+  return result;
+}

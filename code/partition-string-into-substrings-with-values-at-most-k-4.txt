@@ -1,0 +1,20 @@
+public class Solution {
+    public int MinimumPartition(string s, int k) {
+        long current = 0;
+        int result = 1;
+
+        foreach (char c in s) {
+            int digit =  c - '0';
+
+            if (digit > k)
+                return -1;
+
+            if ((current = current * 10 + digit) > k) {
+                current = digit;
+                result += 1;
+            }
+        }
+
+        return result;     
+    }
+}

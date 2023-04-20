@@ -1,0 +1,76 @@
+//打印数组
+void printArray(int *array,int len,char *note){
+	printf("%s\n",note);
+	for(int i=0;i<len;++i)
+		printf("%d ",array[i]);
+	printf("\n");
+}
+
+//简化操作
+int *simple(int *prices,int *pricesSize){
+	int i=0;
+	for(int i=1;i<*pricesSize;++i)
+		prices[i-1] = prices[i]-prices[i-1];
+	--(*pricesSize);
+	//printArray(prices,*pricesSize,"After subtraction:");
+	bool flag = prices[0]>=0?true:false;
+	int count = 0;
+	for(int i=1;i<*pricesSize;++i){
+		if(flag){
+			if(prices[i]>=0)
+				prices[count]+=prices[i];
+			else{
+				flag = false;
+				prices[++count]=prices[i];
+			}
+		}else{
+			if(prices[i]<=0)
+				prices[count]+=prices[i];
+			else{
+				flag = true;
+				prices[++count]=prices[i];
+			}
+		}
+	}
+	*pricesSize = count+1;
+	return prices;
+}
+
+//获取当前段最大利润
+int maxProfitNow(int *prices,int pricesSize){
+	int max = 0;
+	int cur = 0;
+	for(int i=0;i<pricesSize;++i){
+		cur += prices[i];
+		if(cur<0){
+			cur = 0;
+		}
+		max = max>cur?max:cur;
+	}
+
+	return max;
+}
+
+//获取最大利润
+int maxProfit(int* prices, int pricesSize) {
+    if(pricesSize==1)   return 0;
+	//简化
+	int *simplestPrices = simple(prices,&pricesSize);
+	//printArray(simplestPrices,pricesSize,"After simple:");
+	//printf("\n");
+	int max = 0;
+	
+	for(int i=0;i<pricesSize;++i){
+		if(simplestPrices[i]<0){
+			int tmp = maxProfitNow(simplestPrices,i) + \
+					  maxProfitNow(simplestPrices+i+1,pricesSize-i-1);
+			max = tmp>max?tmp:max;
+			//printArray(prices,pricesSize,"Test");
+			//printf("%d %d--\n",i,tmp);
+		}
+	}
+	int tmp = maxProfitNow(simplestPrices,pricesSize);
+	max = tmp>max?tmp:max;
+
+	return max;
+}

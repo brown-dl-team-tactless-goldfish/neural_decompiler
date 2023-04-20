@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int maxSum(vector<int>& nums1, vector<int>& nums2) {
+        vector<vector<int>> nums{move(nums1), move(nums2)};
+        vector<unordered_map<int, int>> t(2, unordered_map<int, int>());
+        vector<int> n(2, 0);
+        for (int s = 0; s < 2; ++s) {
+            n[s] = nums[s].size();
+            for (int i = 0; i < n[s]; ++i) t[s][nums[s][i]] = i;
+        }
+
+        vector<vector<int64_t>> mc{vector<int64_t>(n[0], 0), vector<int64_t>(n[1], 0)};
+        function<int64_t(int, int)> f = [&](int i, int cur) -> int64_t {
+            if (i == n[cur]) return 0;
+            int64_t& res = mc[cur][i];
+            if (res == 0) {
+                int value = nums[cur][i];
+                res = value + f(i + 1, cur);
+                int another = cur ^ 1;
+                if (t[another].count(value)) {
+                    res = max(res, value + f(t[another][value] + 1, another));
+                }
+            }
+            return res;
+        };
+        return max(f(0, 0), f(0, 1)) % static_cast<int>(1e9 + 7);
+    }
+};

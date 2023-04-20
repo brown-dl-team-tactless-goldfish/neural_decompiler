@@ -1,0 +1,35 @@
+void dfs(int current, int parent, vector<int> &ans, vector<vector<int>> &current_node, vector<vector<int>> &graph, vector<int> &level, vector<int> &nums){
+    level[current] = level[parent] + 1;
+    int max_level = 0;
+    int res = -1;
+    for(int i=1; i<=50; i++){
+        if(current_node[i].size()>0 && __gcd(i, nums[current]) == 1 && level[current_node[i].back()] > max_level){
+            max_level = level[current_node[i].back()];
+            res = current_node[i].back();
+        }
+    }
+    ans[current] = res;
+    current_node[nums[current]].push_back(current);
+    for(auto i: graph[current]){
+        if(i!=parent){
+            dfs(i, current, ans, current_node, graph, level, nums);
+        }
+    }
+    current_node[nums[current]].pop_back();
+}
+class Solution {
+public:
+    vector<int> getCoprimes(vector<int>& nums, vector<vector<int>>& edges) {
+        vector<int> ans(nums.size(), -1);
+        vector<vector<int>> current_node(51);
+        vector<vector<int>> graph(nums.size());
+        vector<int> level(nums.size(),0);
+        for(auto edge:edges){
+            graph[edge[0]].push_back(edge[1]);
+            graph[edge[1]].push_back(edge[0]);
+        }
+        dfs(0, 0, ans, current_node, graph, level, nums);
+        return ans;
+        
+    }
+};

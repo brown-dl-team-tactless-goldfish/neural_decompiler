@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int waysToSplit(vector<int>& nums) {
+        int n = nums.size(), mod = 1e9 + 7;
+        vector<int> prefix(n, 0);
+        long count = 0;
+        prefix[0] = nums[0];
+        for (int i = 1; i < n; i++) {
+            prefix[i] = nums[i] + prefix[i - 1];
+        }
+     
+        for (int i = 0; i < n - 2; i++) {
+            int left = prefix[i];
+            int remain = prefix[n - 1] - left;
+            if (remain < left * 2) break;
+            int leftPtr = lower_bound(prefix.begin() + i + 1, prefix.end() - 1, left * 2) - prefix.begin();
+            int rightPtr = upper_bound(prefix.begin() + i + 1, prefix.end() - 1, left + remain / 2) - prefix.begin() - 1;
+            if (rightPtr - leftPtr + 1 > 0) count += rightPtr - leftPtr + 1;
+        }
+        
+        return count % mod;
+        
+    }
+};

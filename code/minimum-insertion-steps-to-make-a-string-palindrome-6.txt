@@ -1,0 +1,29 @@
+class Solution {
+public:
+    
+    int dp[501][501];
+    
+    int answer(string& s , int i , int j){
+        if(i > j)return 0;
+        if(i == j)return 1;
+        if(dp[i][j] != -1)return dp[i][j];
+        
+        int a = 0 ,  b = 0 , c = 0;
+        
+        if(s[i] == s[j]){
+            a = answer(s , i + 1 , j - 1) + 2;
+        }
+        b = answer(s , i + 1 , j);
+        c = answer(s , i , j - 1);
+        
+        return dp[i][j] = max(a , max(b,  c));
+    }
+    
+    int minInsertions(string s) {
+        ios::sync_with_stdio(0);
+        cin.tie(0);
+        int n = s.size();
+        memset(dp , -1 , sizeof(dp));
+        return n - answer(s , 0 , n - 1);
+    }
+};

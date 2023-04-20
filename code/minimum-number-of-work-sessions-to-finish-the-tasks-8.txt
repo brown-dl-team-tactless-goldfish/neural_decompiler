@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int ans=INT_MAX;
+    int minSessions(vector<int>& tasks, int sessions) {
+         vector<int> subs;
+         solve(0,tasks,subs,sessions);
+         return ans;
+    }
+    void solve(int pos,vector<int> &tasks,vector<int>&subs,int sessions) {
+           if(pos>=tasks.size()) {
+                 ans=min(ans,(int)subs.size());
+                 return; 
+           }
+           if(subs.size()>ans) return;
+           for(int set=0; set<subs.size(); set++) {
+                  if(subs[set]+tasks[pos]<=sessions) {
+                       subs[set]+=tasks[pos];
+                       solve(pos+1,tasks,subs,sessions);
+                       subs[set]-=tasks[pos];
+                  }
+           }
+           subs.push_back(tasks[pos]);
+           solve(pos+1,tasks,subs,sessions);
+           subs.pop_back();
+    }
+};

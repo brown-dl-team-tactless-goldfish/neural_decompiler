@@ -1,0 +1,86 @@
+class Solution {
+public:
+    int pow2(int num)
+    {   int cnt=0;
+        while(num%2==0)
+        {
+            cnt=cnt+1;
+            num=num/2;
+        }
+     return cnt;
+    }
+    
+    int pow5(int num)
+    {   int cnt=0;
+        while(num%5==0)
+        {
+            cnt=cnt+1;
+            num=num/5;
+        }
+     return cnt;
+    }
+    
+    int ans=0;
+    
+    int maxTrailingZeros(vector<vector<int>>& grid) {
+        
+    vector<pair<int, int>> up (grid[0].size(), std::make_pair(0,0));
+    vector<pair<int, int>> dwn (grid[0].size(), std::make_pair(0,0));
+    vector<pair<int, int>> rht (grid.size(), std::make_pair(0,0));
+    vector<pair<int, int>> lft (grid.size(), std::make_pair(0,0));
+         
+         for(int i=0;i<grid.size();i=i+1)
+        {   
+             int a=0;
+             int b=0;
+             for(int j=grid[0].size()-1;j>=0;j=j-1)
+            {
+                a=a+pow2(grid[i][j]);
+                b=b+pow5(grid[i][j]);
+            }
+             rht[i].first=a;
+             rht[i].second=b;
+             ans=max(ans,min(a,b));
+         }
+        
+         for(int i=0;i<grid[0].size();i=i+1)
+        {   
+             int a=0;
+             int b=0;
+             for(int j=grid.size()-1;j>=0;j=j-1)
+            {
+                a=a+pow2(grid[j][i]);
+                b=b+pow5(grid[j][i]);
+            }
+             dwn[i].first=a;
+             dwn[i].second=b; 
+              ans=max(ans,min(a,b));
+         }
+        
+       
+        for(int i=0;i<grid.size();i=i+1)
+        {
+            for(int j=0;j<grid[0].size();j=j+1)
+            {
+                
+                int a=pow2(grid[i][j]);
+                int b=pow5(grid[i][j]);
+                rht[i].first=rht[i].first-a;
+                rht[i].second=rht[i].second-b;
+                dwn[j].first=dwn[j].first-a;
+                dwn[j].second=dwn[j].second-b;
+                
+                ans=max(ans,min(rht[i].first+dwn[j].first+a,rht[i].second+dwn[j].second+b));
+                ans=max(ans,min(rht[i].first+up[j].first+a,rht[i].second+up[j].second+b));
+                ans=max(ans,min(lft[i].first+dwn[j].first+a,lft[i].second+dwn[j].second+b));
+                ans=max(ans,min(lft[i].first+up[j].first+a,lft[i].second+up[j].second+b));
+                
+               lft[i].first=lft[i].first+a;
+               lft[i].second=lft[i].second+b; 
+               up[j].first=up[j].first+a;
+               up[j].second=up[j].second+b;
+            }
+        }
+        return ans;
+    }
+};

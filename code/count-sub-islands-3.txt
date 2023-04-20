@@ -1,0 +1,39 @@
+// bool DFS() traverse grid2 find island
+//     when I found an island, synchronously check if all cell is 1 in gird1: return True else return False
+bool DFS(int g2_pos_x, int g2_pos_y,                   \
+         int **grid1, int grid1Size, int *grid1ColSize,\
+         int **grid2, int grid2Size, int *grid2ColSize)
+{
+    // base case
+    if (g2_pos_x < 0 || g2_pos_x >= grid2Size ||     \
+        g2_pos_y < 0 || g2_pos_y >= *grid2ColSize || \
+        grid2[g2_pos_x][g2_pos_y] == 0)
+        return true;
+    
+    // recursive steps
+    grid2[g2_pos_x][g2_pos_y] = 0; // turn it into sea
+    
+    bool res = true; /* DFS don't use continous boolean expression, it might not traverse all element */
+    res &= DFS(g2_pos_x + 0, g2_pos_y + 1, grid1, grid1Size, grid1ColSize, grid2, grid2Size, grid2ColSize);
+    res &= DFS(g2_pos_x + 1, g2_pos_y + 0, grid1, grid1Size, grid1ColSize, grid2, grid2Size, grid2ColSize);
+    res &= DFS(g2_pos_x + 0, g2_pos_y - 1, grid1, grid1Size, grid1ColSize, grid2, grid2Size, grid2ColSize);
+    res &= DFS(g2_pos_x - 1, g2_pos_y + 0, grid1, grid1Size, grid1ColSize, grid2, grid2Size, grid2ColSize);
+    
+    //(original grid2[g2_pos_x][g2_pos_y] == 1) and check (grid1[g2_pos_x][g2_pos_y] == 0)
+    if (grid1[g2_pos_x][g2_pos_y] == 0)
+        res = false; 
+    
+    return res;
+}
+
+int countSubIslands(int **grid1, int grid1Size, int *grid1ColSize, 
+                    int **grid2, int grid2Size, int *grid2ColSize) 
+{
+    int count = 0;
+    for (int i = 0; i < grid2Size; i++) 
+        for (int j = 0; j < *grid2ColSize; j++) 
+            if (grid2[i][j] == 1) 
+                if (DFS(i, j, grid1, grid1Size, grid1ColSize, grid2, grid2Size, grid2ColSize))
+                    count++;
+    return count;
+}

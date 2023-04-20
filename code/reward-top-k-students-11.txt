@@ -1,0 +1,48 @@
+class Solution {
+public:
+   bool static  comp(pair<int,int> &p1,pair<int,int> &p2)
+{
+    if (p1.second==p2.second)
+    {
+        return p1.first<p2.first;
+    }
+    return p1.second>p2.second;
+}
+    vector<int> topStudents(vector<string>& positive_feedback, vector<string>& negative_feedback, vector<string>& report, vector<int>& student_id, int k) {
+       unordered_set<string> pos;
+       unordered_set<string> neg;
+        for (string s:positive_feedback)
+            pos.insert(s);
+        for (string s:negative_feedback)
+            neg.insert(s);
+        int n=report.size();
+        vector<pair<int,int>> ans;
+        for (int i=0;i<n;i++)
+        {
+            string rep=report[i];
+            int j=0;
+            int points=0;
+            while (j<rep.size())
+            {
+                string word="";
+                while (j<rep.size() && rep[j]!=' ')
+                  word+=rep[j++];
+                j++;
+                if (pos.find(word)!=pos.end())
+                   points+=3;
+                else if (neg.find(word)!=neg.end())
+                   points-=1;
+            }
+            ans.push_back({student_id[i],points});
+        }
+
+        sort(ans.begin(),ans.end(),comp);
+        vector<int> res;
+        for (int i=0;i<k;i++)
+          res.push_back(ans[i].first);
+        return res;
+
+
+         
+    }
+};

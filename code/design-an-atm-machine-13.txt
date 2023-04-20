@@ -1,0 +1,28 @@
+class ATM {
+public:
+    map<long,long> atm;
+    vector<long> mapping={20,50,100,200,500};
+    ATM() {
+        
+    }
+    
+    void deposit(vector<int> notes) {
+        for(long i=0;i<notes.size();i++){
+            atm[mapping[i]]+=(long)notes[i];
+        }
+    }
+    
+    vector<int> withdraw(long amount) {
+        vector<int> used(5);
+        for(int i=4;i>=0;i--){
+            used[i]=min(amount/mapping[i],atm[mapping[i]]);
+            amount-=used[i]*mapping[i];
+        }
+        if(amount!=0)
+            return {-1};
+        for(int i=0;i<5;i++)
+            atm[mapping[i]]-=used[i];
+        return used;
+    }
+
+};

@@ -1,0 +1,59 @@
+class Solution {
+    public int getMaxRepetitions(String s1, int n1, String s2, int n2) {
+         HashSet<Character> h1 = new HashSet<>();
+        HashSet<Character> h2 = new HashSet<>();
+
+        for (int i = 0; i < s1.length(); i++) {
+            h1.add(s1.charAt(i));
+        }
+
+        for (int i = 0; i < s2.length(); i++) {
+            h2.add(s2.charAt(i));
+        }
+        
+        int[] lens = new int[s1.length()];
+
+        Iterator<Character> it = h2.iterator();
+        while (it.hasNext()) {
+            if (!h1.contains(it.next())) return 0;
+        }
+        
+        if (h1.size() == 1 && h2.size() == 1) {
+            return ((n1 * s1.length()) / (n2 * s2.length()));
+        }
+        
+        for (int i = 0; i < s1.length(); i++) {
+            int j = 0;
+            int c = 0;
+
+            while (j < s2.length()) {
+                if (s2.charAt(j) == s1.charAt(((i + c) % s1.length())))
+                    j++;
+                c++;
+            }
+
+            lens[i] = c - 1;
+        }
+
+        int rep = 0;
+        int total_length = s1.length() * n1;
+
+        int temp = 0;
+        int k = 0;
+        int cur = 0;
+
+        while (true) {
+            k += lens[cur] + 1;
+            if (k > total_length) break;
+
+            temp++;
+            if (temp == n2) {
+                rep++;
+                temp = 0;
+            }
+            cur = (cur + lens[cur] + 1) % s1.length();
+        }
+
+        return rep;
+    }
+}

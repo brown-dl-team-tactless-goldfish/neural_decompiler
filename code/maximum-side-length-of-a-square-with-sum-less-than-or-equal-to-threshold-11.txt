@@ -1,0 +1,45 @@
+class Solution {
+public:
+    const static int MAX = 310;
+    int R[MAX][MAX];
+    int r, c;
+    int maxSideLength(vector<vector<int>>& mat, int threshold) {
+        int r = mat.size();
+        int c = mat[0].size();
+        for (int i = 0; i < MAX; i++) {
+            for (int j = 0; j < MAX; j++) {
+                R[i][j] = 0;
+            }
+        }
+        R[1][1] = mat[0][0];
+        for (int j = 1; j < c; j++) {
+            R[1][j + 1] = R[1][j] + mat[0][j];
+        }
+        for (int i = 1; i < r; i++) {
+            R[i + 1][1] = R[i][1] + mat[i][0];
+        }
+        for (int i = 1; i < r; i++) {
+            for (int j = 1; j < c; j++) {
+                R[i + 1][j + 1] = mat[i][j] + R[i][j + 1] + R[i + 1][j] - R[i][j];
+            }
+        }
+        int res = 0;
+        for (int i = 1; i <= r; i++) {
+            for (int j = 1; j <= c; j++) {
+                int mlen = min((r - i + 1), (c - j + 1));
+                int ci = i;
+                int cj = j;
+                for (int l = 1; l <= mlen; l++) {
+                    int val = R[ci][cj] - R[ci][j - 1] - R[i - 1][cj] + R[i - 1][j - 1];
+                    if (val > threshold) {
+                        break;
+                    }
+                    res = std::max(res, l);
+                    ci++;
+                    cj++;
+                }
+            }
+        }
+        return res;
+    }
+};

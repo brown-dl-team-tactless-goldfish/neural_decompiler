@@ -1,0 +1,47 @@
+public class Solution {
+    public int MinKBitFlips(int[] numbers, int K)
+        {
+            var length = numbers.Length;
+            int index = 0;
+            int step = 0; 
+            while(index < length)
+            {
+                var current = numbers[index];
+                var isOne = current == 1; 
+                if(isOne)
+                {
+                    index++; 
+                }
+                else
+                {
+                    var outOfRange = index + K > length;
+                    if (outOfRange)
+                        return -1;
+
+                    var findFirstOne = false;
+                    var nextIndex = 0;
+                    for(int i = index; i < index + K; i++)
+                    {                      
+                        var isOneTrue = i > index && numbers[i] == 1;
+                        if(isOneTrue && !findFirstOne)
+                        {
+                            findFirstOne = true;
+                            nextIndex = i;
+                        }
+
+                        numbers[i] = isOneTrue ? 0 : 1; 
+                    }
+
+                    index = index + K;
+                    if (findFirstOne)
+                    {
+                        index = nextIndex;
+                    }
+
+                    step++;                
+                }
+            }
+
+            return step;
+        }
+}

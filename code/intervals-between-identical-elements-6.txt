@@ -1,0 +1,20 @@
+class Solution {
+public:
+    vector<long long> getDistances(vector<int>& arr) {
+        vector<long long> res(arr.size());
+        auto doit = [&] (int start_, int step_, int end_) {
+            unordered_map<int, long long> cnts, prev_idx, prev_sum;        
+            for (int i = start_; i != end_; i += step_) {
+                long long sum =  prev_sum[arr[i]] + cnts[arr[i]] * abs(i - prev_idx[arr[i]]);
+                res[i] += sum;
+                prev_sum[arr[i]] = sum;
+                cnts[arr[i]]++;
+                prev_idx[arr[i]] = i;
+            }
+        };
+        doit(0, 1, arr.size());
+        doit(arr.size() - 1, -1, -1);
+        return res;
+        
+    }
+};

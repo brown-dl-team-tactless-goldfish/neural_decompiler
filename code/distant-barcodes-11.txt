@@ -1,0 +1,39 @@
+class Solution {
+public:
+    vector<int> rearrangeBarcodes(vector<int>& barcodes) {
+        vector<int> res;
+        pair<int, int> prev{0, 0};
+        unordered_map<int, int> freqs;
+        auto comp = [](const auto& p1, const auto& p2)
+        {
+            return p1.second < p2.second;
+        };
+        
+        priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(comp)> heap(comp);
+        for (int code : barcodes)
+        {
+            ++freqs[code];
+        }
+        
+        for (const auto& pair : freqs)
+        {
+            heap.push(pair);
+        }
+        
+        while (!heap.empty() && heap.top().second > 0)
+        {
+            auto top = heap.top();
+            res.push_back(top.first);
+            heap.pop();
+            
+            if (prev.first >= 1)
+            {
+                heap.push(prev);
+            }
+            
+            prev = {top.first, top.second - 1};
+        }
+        
+        return res;
+    }
+};

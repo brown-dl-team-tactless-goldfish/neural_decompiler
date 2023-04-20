@@ -1,0 +1,50 @@
+public class Solution {
+    public bool HasValidPath(char[][] grid) {
+        if(grid[0][0]==')'||grid[grid.Length-1][grid[0].Length-1]=='(')
+            return false;
+        int[][] dir = new int[2][];
+        dir[0] = new int[]{0,1};
+        dir[1] = new int[]{1,0};
+        
+        int[][] visited= new int[grid.Length][];
+        for(int i = 0; i < grid.Length; i++)
+        {
+            visited[i] = new int[grid[0].Length];
+            for(int j = 0; j < grid[0].Length; j++)
+                visited[i][j]=200;
+        }
+        
+        Queue<(int r, int c, int val)> queue = new Queue<(int, int, int)>();
+        queue.Enqueue((0, 0, 1));
+        
+        while(queue.Count>0)
+        {
+            var cell = queue.Dequeue();
+            if(visited[cell.r][cell.c]<=cell.val)
+                continue;
+            visited[cell.r][cell.c]=cell.val;
+            if(cell.r==grid.Length-1&&cell.c==grid[0].Length-1&&cell.val==0)
+                return true;          
+            foreach(var d in dir)
+            {
+                int r = cell.r+d[0];
+                int c = cell.c+d[1];
+                int val = cell.val;
+                if(r<0||c<0||r>grid.Length-1||c>grid[0].Length-1)
+                    continue;
+                                    
+                if(grid[r][c]==')')
+                {
+                    if(val>0)
+                        queue.Enqueue((r,c,val-1));
+                }
+                else
+                {
+                    queue.Enqueue((r,c,val+1));
+                }                
+            }
+        }
+        
+        return false;
+    }
+}

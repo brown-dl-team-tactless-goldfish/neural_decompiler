@@ -1,0 +1,60 @@
+inline int charToNum(char c) {
+    return (int)(c - '0');
+}
+
+inline char intToChar(int d) {
+    return ((char)(d % 10) + '0');
+}
+
+inline int max(int x, int y) {
+    return ((x > y) ? x : y);
+}
+
+inline int min(int x, int y) {
+    return ((x < y) ? x : y);
+}
+
+char * addStrings(char * num1, char * num2){
+    const uint16_t str1Len = strlen(num1);
+    const uint16_t str2Len = strlen(num2);
+    const uint16_t maxLen = max(str1Len,str2Len);
+    const uint16_t minLen = min(str1Len,str2Len);
+    const uint8_t numStrTerm = 1;
+    const uint8_t numCarrybit = 1;
+    bool carry = 0;
+    uint16_t i = 0;
+    
+    uint16_t ansLen = maxLen + numCarrybit;
+    
+    char *ans = (char *) malloc(ansLen + numStrTerm);
+    ans[ansLen] = 0;
+
+    // From the least significat digit to the most significat digit of shortest string, add the digits.
+    for (; i < minLen; i++) {
+        int total = charToNum(num1[str1Len - i - 1]) + charToNum(num2[str2Len - i - 1]);
+        total += carry;
+        ans[ansLen - i - 1] = intToChar(total);
+        carry = (total >= 10) ? 1 : 0;
+    }
+    
+    // add any remaining digits from longer string
+    char * longStr = (str1Len > str2Len) ? num1 : num2;
+    for(; i < maxLen; i++) {
+        int total = charToNum(longStr[maxLen - i - 1]) + carry;
+        ans[ansLen - i - 1] = intToChar(total);
+        carry = (total >= 10) ? 1 : 0; 
+    }
+    
+    
+    if(carry) {
+        ans[0] = '1';
+    } else {
+        // if we don't have a carry shift each dight by 1 to remove leading zero.
+        // <= for copy termination
+        for (int ansIdx = 1; ansIdx <= ansLen; ansIdx++)
+        {
+            ans[ansIdx-1] = ans[ansIdx];
+        }
+    }
+    return ans;
+}

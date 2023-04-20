@@ -1,0 +1,43 @@
+class Solution {
+public:
+    string arrangeWords(string text) {
+        
+        // Parse and store all words from the sentence by word length in order
+        unordered_map<int,vector<string>> lengthwords;
+        string word = "";
+        int mlen = 0;
+        for (auto& c : text){
+            if (c != ' ')
+                word += c;
+            else
+                if (word.size() > 0){
+                    lengthwords[word.size()].push_back(word);
+                    mlen = (word.size() > mlen)? word.size() : mlen;
+                    word = "";
+                }
+        }
+        mlen = (word.size() > mlen)? word.size() : mlen;         //Perform the actions above for the last leftover word
+        lengthwords[word.size()].push_back(word);
+        
+        // Iterate over lengths from smallest to greatest, add words in order they were encountered
+        string ans = "";
+        for (int i = 1; i <= mlen; i++)
+            if (!lengthwords[i].empty())
+                for (auto& w : lengthwords[i]){
+                    if (ans != "" && w[0]-'a' < 0){
+                        string addword = w;
+                        addword[0] = tolower(addword[0]);
+                        ans += (addword+' ');
+                    } else if (ans == "" && w[0]-'a' >= 0){
+                        string addword = w;
+                        addword[0] = toupper(addword[0]);
+                        ans += (addword+' ');
+                    } else
+                        ans += (w+" ");   
+                }
+        
+        // Remove the last extra space and return ans
+        ans.pop_back();
+        return ans;
+    }
+};

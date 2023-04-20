@@ -1,0 +1,120 @@
+class BookMyShow {
+public:
+    
+    int max_200[256] = {0};
+    long long sum_200[256] = {0};
+    int valids[50005] = {0};
+    int n, m, g;
+    
+    BookMyShow(int nn, int mm) {
+        
+        n = nn, m = mm;
+        
+        for (int i = 0; i < n; ++i)
+            valids[i] = m;
+        
+        g = (n+199)/200;
+        
+        for (int i = 0; i < g; ++i)
+        {
+            max_200[i] = m;
+            for (int j = 200*i; j < 200*(i+1); ++j)
+            {
+                sum_200[i] += static_cast<long long>(m);
+            }
+        }
+    }
+    
+    void update(int i)
+    {
+        max_200[i] = 0;
+        sum_200[i] = 0;
+        
+        for (int j = 200*i; j < 200*(i+1); ++j)
+        {
+            sum_200[i] += valids[j];
+            max_200[i] = std::max(max_200[i], valids[j]);
+        }
+    }
+    
+    vector<int> gather(int k, int maxRow) {
+        
+        int row = -1;
+        for (int i = 0; i < maxRow/200+1; ++i)
+        {
+            if (max_200[i] >= k)
+            {
+                row = i;
+                break;
+            }
+        }
+        if (row == -1)  return {};
+        
+        for (int i = 200*row; i <= maxRow; ++i)
+        {
+            if (valids[i] >= k)
+            {
+                valids[i] -= k;
+                update(row);
+                return { i, m-valids[i]-k };
+            }
+        }
+        return {};
+    }
+    
+    bool scatter(int k, int maxRow) {
+        
+        long long sum = 0;
+        g = maxRow/200;
+        
+        for (int i = 0; i < g; ++i)
+        {
+            sum += sum_200[i];
+        }
+        for (int i = 200*g; i <= maxRow; ++i)
+        {
+            sum += valids[i];
+        }
+        if (sum < k)    return false;
+        
+        bool isEnd = false;
+        for (int i = 0; i < maxRow/200+1; ++i )
+        {
+            if (sum_200[i] == 0)
+            {
+                // no-op
+            }
+            else if (sum_200[i] < k)
+            {
+                k -= sum_200[i];
+                max_200[i] = 0;
+                sum_200[i] = 0;
+                for (int j = 200*i; j < 200*(i+1); ++j)
+                {
+                    valids[j] = 0;
+                }
+            }
+            else
+            {
+                for (int j = 200*i; j < 200*(i+1); ++j)
+                {
+                    if (k > valids[j])
+                    {
+                        k -= valids[j];
+                        valids[j] = 0;
+                    }
+                    else
+                    {
+                        valids[j] -= k;
+                        k = 0;
+                        isEnd = true;
+						break;
+                    }
+                }
+                update(i);
+            }
+            if (isEnd)  break;
+        }
+        return true;
+    }
+};

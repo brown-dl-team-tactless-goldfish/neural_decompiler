@@ -1,0 +1,87 @@
+class Solution {
+public:
+    string largestMerge(string word1, string word2) {
+        int i=0,j=0;
+        string res="";
+        int a,b;
+        while(i<word1.length() && j<word2.length()){
+            if(word1[i] > word2[j]){
+                res+=word1[i];
+                i++;
+            }
+            else if(word2[j] > word1[i]){
+                res+=word2[j];
+                j++;
+            }
+            else{
+                a=i;
+                b=j;
+                int which = -1;
+                while(a<word1.length() && b<word2.length()){
+                    if(word1[a] == word2[b]){
+                        a++;
+                        b++;
+                    }
+                    else{
+                        if(word1[a] > word2[b]){
+                            which=0;
+                        }
+                        else{
+                            which=1;
+                        }
+                        break;
+                    }
+                }
+                if( (a==word1.length() && b==word2.length()) &&which ==-1){
+                    res+=word1[i];
+                    i++;
+                }
+                else if(which == -1 && a==word1.length()){
+                    char c = word1[a-1];
+                    while(word2[b] ==c){
+                        b++;
+                    }
+                    if(word2[b] > c){
+                        res+=word2[j];
+                        j++;
+                    }
+                    else{
+                        res+=word1[i];
+                        i++;
+                    }
+                }
+                else if(which == -1 && b == word2.length()){
+                    char c = word2[b-1];
+                    while(word1[a] ==c){
+                        a++;
+                    }
+                    if(word1[a] > c){
+                        res+=word1[i];
+                        i++;
+                    }
+                    else{
+                        res+=word2[j];
+                        j++;
+                    }
+                }
+                if(which == 0){
+                    res+=word1[i];
+                    i++;
+                }
+                else if(which == 1){
+                    res+=word2[j];
+                    j++;
+                }
+            }
+        }
+        while(i<word1.length()){
+            res+=word1[i];
+            i++;
+        }
+        while(j<word2.length()){
+            res+=word2[j];
+            j++;
+        }
+        return res;
+    }
+};

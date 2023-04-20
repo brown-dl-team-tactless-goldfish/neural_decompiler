@@ -1,0 +1,34 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+struct TreeNode* findNode(struct TreeNode* root, int val){
+    if(root == NULL)
+        return NULL ;
+    if(root->val == val)
+        return root ;
+    struct TreeNode* tmp = findNode(root->left, val) ;
+    if(tmp != NULL)
+        return tmp ;
+    return findNode(root->right, val) ;    
+}
+
+int countNode(struct TreeNode* root){
+    if(root == NULL)
+        return 0 ;
+    return 1 + countNode(root->left) + countNode(root->right) ;
+}
+bool btreeGameWinningMove(struct TreeNode* root, int n, int x){
+    struct TreeNode* xNode = findNode(root, x) ;
+    int l = countNode(xNode->left) ;
+    int r = countNode(xNode->right) ;
+    
+    if(l > n/2 || r > n/2 || (n-1-l-r) > n/2)
+        return true ;
+    
+    return false ;
+}

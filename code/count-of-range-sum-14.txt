@@ -1,0 +1,67 @@
+class Solution {
+public:
+    vector <int> bit;
+    void add_one(int i) {
+        while (i < bit.size()) {
+            bit[i] += 1;
+            i += (i & -i);
+        }
+    }
+    int get(int i) {
+        int ret = 0;
+        while (i > 0) {
+            ret += bit[i];
+            i -= (i & -i);
+        }
+        return ret;
+    }
+    
+    int countRangeSum(vector<int>& a, int l, int r) {
+        // preprocessing
+        // find all shifts and save them.
+        long cur_r = r, cur_l;
+        int n = a.size();
+        vector <long> b(n, 0), c(n, 0);
+        for (int i = 0; i < n; i++) {
+            cur_r -= a[i];
+            c[i] = b[i] = cur_r - r + a[i];
+        }
+        // c's are the unsorted copy of b which we will sort
+        
+        // sort shifts and hash them to reduce numbers
+        unordered_map <int, int> m;
+        sort(b.begin(), b.end());
+        for (int i = 0; i < n; i++)
+            m[b[i]] = i + 1;
+        
+        // create prefix tree and add numbers to it one by one
+        // pull prefix sum in range
+        bit.resize(n + 1, 0);
+        int ret = 0;
+        cur_l = l;
+        cur_r = r;
+        for (int i = 0; i < n; i++) {
+            // update left and right
+            cur_l -= a[i];
+            cur_r -= a[i];
+            
+            // add +1 to the position in the index tree
+            add_one(m[c[i]]);
+        
+            // get lower and upper bound from the shifted array
+            int ll = lower_bound(b.begin(), b.end(), cur_l) - b.begin();
+            int rr = upper_bound(b.begin(), b.end(), cur_r) - b.begin();
+            
+            // check for edge cases
+            int lll = ll == n ? n : m[b[ll]] - 1;
+            int rrr = rr == 0 ? 0 : m[b[rr - 1]];
+            
+            // get sum range from [ll, rr]
+            // -prefixsum(ll - 1) + prefixsum(rr);
+            ret -= get(lll);
+            ret += get(rrr);
+        }
+        
+        return ret;
+    }
+};

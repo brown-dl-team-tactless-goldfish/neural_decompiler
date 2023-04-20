@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int ans = 0;
+    pair<int, int> go(TreeNode* n) {
+        if (!n) 
+            return {0, 0};
+        const auto [ls, ln] = go(n->left);
+        const auto [rs, rn] = go(n->right);
+        const auto s = ls + rs + n->val;
+        const auto c = ln + rn + 1;
+        
+        ans += (s / c == n->val);
+        return {s, c};
+    }
+    int averageOfSubtree(TreeNode* root) {
+        go(root);
+        return ans;
+    }
+};

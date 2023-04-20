@@ -1,0 +1,52 @@
+class Solution {
+public:
+    vector<int> prefix;
+    int K = 0;
+    vector<int> maxSumOfThreeSubarrays(vector<int>& nums, int K) {
+        int size = nums.size();
+        this->K = K;
+        prefix.resize(size);
+        vector<int> suffix(size);
+        vector<int> prev(size, -1);
+        vector<int> back(size, -1);
+        int sum = 0;
+        int sum2 = 0;
+        for(int i = 0; i < nums.size(); ++i) {
+            prefix[i] = nums[i] + (i > 0 ? prefix[i-1] : 0);
+            if(i + 1 >= K) {
+                int kSum = getPrefixSum(i-K+1);
+                if(sum < kSum) {
+                    sum = kSum;
+                    prev[i] = i;
+                }else{
+                    prev[i] = prev[i-1];
+                }
+            }
+            int j = size - 1 - i;
+            
+            suffix[j] = nums[j] + (j == size-1 ? 0 : suffix[j+1]);
+            if(size - j >= K) {
+                int kSum = suffix[j] - (j+K == size ? 0 :suffix[j+K]);
+                if(sum2 <= kSum) {
+                    sum2 = kSum;
+                    back[j] = j;
+                }else{
+                    back[j] = back[j+1];
+                }
+            }
+        }
+        vector<int> items;
+        sum = 0;
+        for(int i = K; i < size-K-K+1;++i) {
+            int res = getPrefixSum(prev[i-1] - K + 1) + getPrefixSum(i) + getPrefixSum(back[i + K]);
+            if(res > sum) {
+                sum = res;
+                items = { prev[i-1] - K + 1, i, back[i + K] };
+            }
+        }
+        return items;
+    }
+    int getPrefixSum(int begin) {
+        return prefix[begin + K - 1] - (begin > 0 ? prefix[begin-1] : 0);
+    }
+};

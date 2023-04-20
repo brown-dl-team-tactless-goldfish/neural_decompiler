@@ -1,0 +1,32 @@
+int cmpfunc (void * a, void * b) { // Comparator function to be used with qsort.
+return ( *(int*)a - *(int*)b );
+}
+
+int* successfulPairs(int* spells, int spellsSize, int* potions, int potionsSize, long long success, int* returnSize){
+
+    qsort(potions, potionsSize, sizeof(int), cmpfunc); // Sort the potions array in ascending order.
+    *returnSize = spellsSize;
+
+    // Allocate memory for the answer array.
+    int *ans = malloc(*returnSize * sizeof(int));
+
+    // Iterate through all spells.
+    for(int i = 0 ; i < spellsSize ; i++) {
+        ans[i] = 0;
+        int min = 0, max = potionsSize, mid;
+        long long temp = spells[i];
+
+        // Perform a binary search to find the position of the potion that,
+        // when multiplied by the current spell, meets or exceeds the success threshold.
+        while(max-min>0) {
+            mid = min + (max-min)/2;
+            if(temp* potions[mid] >= success) max = mid;
+            else min = mid+1;
+        }
+
+        // The number of successful pairs for the current spell is evry elements over min (included)
+        ans[i] = potionsSize - min;
+    }
+
+    return ans;
+}

@@ -1,0 +1,73 @@
+class SegTreeNode
+{
+private:
+    SegTreeNode* left = NULL;
+    SegTreeNode* right = NULL;
+    int start, end;
+    int maxVal;  // the maximum value of the range
+      
+public:        
+    SegTreeNode(int a, int b, int val)  // init for range [a,b] with val
+    {                 
+        start = a, end = b;
+        maxVal = val;
+        if (a==b)
+            return;
+        int mid = (a+b)/2;
+        left = new SegTreeNode(a, mid, val);
+        right = new SegTreeNode(mid+1, b, val);            
+        maxVal = max(left->maxVal, right->maxVal);         
+    }    
+        
+    void updateRange(int a, int val)     // set range [a,b] with val
+    {        
+        if (a < start || a > end ) // not covered by [a,b] at all
+            return;        
+        if (a == start && a == end)  // completely covered within [a,b]
+        {
+            maxVal = val;
+            return;
+        }
+        left->updateRange(a, val);
+        right->updateRange(a, val);
+        maxVal = max(left->maxVal, right->maxVal);             
+    }
+    
+    int queryRange(int a, int b)     // query the maximum value within range [a,b]
+    {
+        if (b < start || a > end )
+        {
+            return INT_MIN;  
+        }
+        if (a <= start && end <=b)
+        {
+            return maxVal;  
+        }          
+            
+        int ret = max(left->queryRange(a, b), right->queryRange(a, b));        
+        maxVal = max(left->maxVal, right->maxVal);    
+        return ret;
+    }  
+};
+
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums, int k) 
+    {
+        int x = *max_element(nums.begin(), nums.end());        
+        SegTreeNode* root = new SegTreeNode(1, x, 0);
+        
+        int ret =  0;
+        int preNum = -1 ;
+        for (auto& n: nums)
+        {   
+            if(n == preNum)
+                continue ;
+            int len = root->queryRange(max(1, n-k), max(1, n-1));
+            root->updateRange(n, len+1); 
+            ret = max(ret, len+1);   
+            preNum = n ;
+        }
+        return ret; 
+    }
+};

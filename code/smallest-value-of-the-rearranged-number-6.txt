@@ -1,0 +1,35 @@
+class Solution {
+public:
+    long long smallestNumber(long long num) {
+        bool neg = false; //handle negative and positive inputs differently - store whether num is pos/neg
+        if(num < 0){
+            neg = true;
+            num *= -1; //convert to positive value for ease of sorting digits
+        }
+        string num_string = to_string(num); //convert num to string of digits (char)
+        if(!neg){ //if the number is not negative -- sort to put smallest digits first, then switch earliest non-zero digit into first position. 
+            sort(num_string.begin(), num_string.end());
+            int zeroes = 0;
+            int index = 0;
+            while(index < num_string.size() && num_string[index] == '0'){
+                zeroes++;
+                index++;
+            }
+            if(index == num_string.size()) return 0; //if there is no non-zero digit, return 0 as the answer
+            if(index > 0){
+                num_string[0] = num_string[index];
+                num_string[index] = '0';
+            }
+        }
+        else
+            sort(num_string.begin(), num_string.end(), compareGreater); //for negative inputs, just sort w/ largest digits first
+        long long ans = atol(num_string.c_str()); //convert string to long int - must convert string to c string first
+        if(neg) ans *= -1; //restore negative sign to negative input
+        return ans; //~The Answer~
+    }
+    
+private:
+    static bool compareGreater(char&a, char&b){ //customer comparator to sort digits (characters) largest to smallest
+        return a > b;
+    }
+};

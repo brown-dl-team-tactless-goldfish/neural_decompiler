@@ -1,0 +1,228 @@
+  public class Solution
+    {
+        private void GenerateCols(StringBuilder col, int rowIdx, int m, IList<string> columns)
+        {
+            if (rowIdx == m)
+            {
+                columns.Add(col.ToString());
+                return;
+            }
+
+            col.Append(' ');
+            GenerateCols(col, rowIdx + 1, m, columns);
+            col.Remove(col.Length - 1, 1);
+
+            col.Append('i');
+            GenerateCols(col, rowIdx + 1, m, columns);
+            col.Remove(col.Length - 1, 1);
+
+            col.Append('e');
+            GenerateCols(col, rowIdx + 1, m, columns);
+            col.Remove(col.Length - 1, 1);
+        }
+
+        private int Helper(
+            IList<string> columns, 
+            IList<int> colHappiness, 
+            int m, 
+            int n, 
+            int colIdx, 
+            int colVariant, 
+            int intCount, 
+            int extCount, 
+            int?[,,,] dp, 
+            int[,] betweenRows)
+        {
+            checked
+            {
+
+                if (colIdx == n)
+                {
+                    return 0;
+                }
+
+                if (dp[colVariant, colIdx, intCount, extCount].HasValue)
+                {
+                    return dp[colVariant, colIdx, intCount, extCount].Value;
+                }
+
+                int res = 0;
+
+                var thisCol = columns[colVariant];
+                var prevInt = intCount;
+                var prevExt = extCount;
+
+                for (int i = 0; i < m; i++)
+                {
+                    if (thisCol[i] == 'i')
+                    {
+                        intCount--;
+                    }
+                    else if(thisCol[i] == 'e')
+                    {
+                        extCount--;
+                    }
+                }
+
+                if (intCount < 0 || extCount < 0)
+                {
+                    res = int.MinValue; //not enough introverts or not enough extraverts. invalid variant
+                }
+                else
+                {
+
+                    for (int i = 0; i < columns.Count; i++)
+                    {
+                        var nextCol = columns[i];
+
+                        var innerDp = Helper(columns, colHappiness, m, n, colIdx + 1, i, intCount, extCount, dp, betweenRows);
+                        if (innerDp == int.MinValue)
+                        {
+                            continue;
+                        }
+
+                        var cand = innerDp;
+                        cand += colHappiness[colVariant];
+
+                        //check connections between neighboring columns
+                        if (colIdx + 1 != n)
+                        {
+                            cand += betweenRows[colVariant, i];
+                        }
+
+                        res = Math.Max(res, cand);
+                    }
+
+
+                }
+
+                dp[colVariant, colIdx, prevInt, prevExt] = res;
+                return res;
+            }
+        }
+
+        public int GetMaxGridHappiness(int m, int n, int introvertsCount, int extrovertsCount)
+        {
+            checked
+            {
+
+                IList<string> columns = new List<string>();
+                IList<int> colHappiness = new List<int>();
+
+                GenerateCols(new StringBuilder(), 0, m, columns);
+                int[,] betweenRows = new int[columns.Count, columns.Count]; //precalculated connections between two neighboring columns. improve acceptance
+
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    var thisCol = columns[i];
+
+                    for (int j = 0; j < columns.Count; j++)
+                    {
+                        var nextCol = columns[j];
+
+                        for (int k = 0; k < m; k++)
+                        {
+                            var left = thisCol[k];
+                            var right = nextCol[k];
+
+                            if (left == 'i' && right != ' ')
+                            {
+                                betweenRows[i,j] -= 30;
+                            }
+
+                            if (left == 'e' && right != ' ')
+                            {
+                                betweenRows[i, j] += 20;
+                            }
+
+                            if (right == 'i' && left != ' ')
+                            {
+                                betweenRows[i, j] -= 30;
+                            }
+
+                            if (right == 'e' && left != ' ')
+                            {
+                                betweenRows[i, j] += 20;
+                            }
+                        }
+                    }
+                }
+
+
+                int?[,,,] dp = new int?[columns.Count,n,introvertsCount + 1,extrovertsCount + 1];
+                //dp[i,j,k,l] = max happiness when we select i-th columns as first from j-th index. and have k introverts and l extraverts remains
+
+
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    for (int j = 0; j < n; j++)
+                    {
+                        dp[i, j, 0, 0] = int.MinValue;
+                        if(i == 0)
+                        {
+                            //we can use empty column only when no introverts and extraverts remains
+                            dp[i, j, 0, 0] = 0;
+                        }
+
+                    }
+                }
+
+                //calculate happiness within single column
+                foreach (var column in columns)
+                {
+                    int sum = 0;
+                    for (int i = 0; i < column.Length; i++)
+                    {
+                        switch (column[i])
+                        {
+                            case ' ':
+                                break;
+                            case 'i':
+                                sum += 120;
+
+                                if (i - 1 >= 0 && column[i - 1] != ' ')
+                                {
+                                    sum -= 30;
+                                }
+
+                                if (i + 1 < m && column[i + 1] != ' ')
+                                {
+                                    sum -= 30;
+                                }
+
+                                break;
+                            case 'e':
+                                sum += 40;
+
+                                if (i - 1 >= 0 && column[i - 1] != ' ')
+                                {
+                                    sum += 20;
+                                }
+
+                                if (i + 1 < m && column[i + 1] != ' ')
+                                {
+                                    sum += 20;
+                                }
+
+
+                                break;
+                            default:
+                                break;
+                        }
+                    }
+
+                    colHappiness.Add(sum);
+                }
+
+                int res = 0;
+                
+                //try use every possible column as first and continue recursively
+                for (int i = 0; i < columns.Count; i++)
+                {
+                    res = Math.Max(res, Helper(columns, colHappiness, m, n, 0, i, introvertsCount, extrovertsCount, dp, betweenRows));
+                }
+
+                return res;
+            }
+        }
+    }

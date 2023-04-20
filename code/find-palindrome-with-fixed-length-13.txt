@@ -1,0 +1,40 @@
+class Solution {
+public:
+    vector<long long> kthPalindrome(vector<int>& queries, int intLength) {
+        int n = queries.size();
+        vector<long long> sol(n);
+        int len = (intLength + 1) / 2;
+        auto getLen = [] (long long v) {
+            int len = 0;
+            while (v > 0) {
+                v /= 10;
+                ++len;
+            }
+            return len;
+        };
+        auto getPal = [&] (long long v) {
+            long long value = v;
+            if (intLength & 1) {
+                value /= 10;
+            }
+            while (value > 0) {
+                int d = value % 10;
+                v = v * 10 + d;
+                value /= 10;
+            }
+            return v;
+        };
+        long long val = pow(10, len - 1);
+        for (int i = 0; i < n; i++) {
+            long long v = queries[i] - 1;
+            long long val1 = val + v;
+            if (getLen(val1) > len) {
+                sol[i] = -1;
+            }
+            else {
+                sol[i] = getPal(val1);
+            }
+        }
+        return sol;
+    }
+};

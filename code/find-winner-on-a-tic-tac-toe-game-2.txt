@@ -1,0 +1,47 @@
+char *get_winner_name(int ch) {
+	if(ch == 'o') {
+		return "A";
+	}else {
+		return "B";
+	}
+}
+char *winner(int board[3][3], int movesSize) {
+	/* Scan rows */
+	for(int i = 0; i < 3; i++) {
+		if(board[i][0] == board[i][1] && board[i][0] == board[i][2]) 
+			return get_winner_name(board[i][0]);
+	}
+	/* Scan column */
+	for(int i = 0; i < 3; i++) {
+		if(board[0][i] == board[1][i] && board[0][i] == board[2][i]) 
+			return get_winner_name(board[0][i]);
+	}
+	/* Diagonal 1*/
+	if(board[0][0] == board[1][1] && board[0][0] == board[2][2]) 
+		return get_winner_name(board[0][0]);
+	/* Diagonal 2*/
+	if(board[0][2] == board[1][1] && board[0][2] == board[2][0]) 
+		return get_winner_name(board[0][2]);
+   return movesSize == 3 * 3 ? "Draw" : "Pending";
+}
+char * tictactoe(int** moves, int movesSize, int* movesColSize){
+    /* board represents Tic tac toe board */
+	int board[3][3];
+    /* Intialize value of each cell with unique number
+        different from 'x' and 'o' */
+    for(int i = 0; i < 3; i++){
+        for(int j = 0; j < 3; j++){
+            board[i][j]= i * 3 + j;
+        }
+    }
+    /* Mark the moves on the board */
+	for(int i = 0; i < movesSize; i++) {
+		if(i % 2) {
+			board[moves[i][0]][moves[i][1]] = 'x';
+		}else {
+			board[moves[i][0]][moves[i][1]] = 'o';
+		}
+	}
+    /* Find the winner */
+	return winner(board, movesSize);
+}

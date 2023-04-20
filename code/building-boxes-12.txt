@@ -1,0 +1,97 @@
+    public class Solution
+    {
+
+        private int FindIsolated(int n)
+        {
+            if (n == 0)
+            {
+                return 0;
+            }
+
+            int l = 0;
+            int r = n;
+
+            bool CanCloseWithBorders(int cand)
+            {
+                int borders = n - cand;
+                var max = (long) (0 + borders - 1) * (long) borders / 2;
+                return max >= cand;
+            }
+
+            while (r - l > 1)
+            {
+                int mid = l + (r - l) / 2;
+                if (CanCloseWithBorders(mid))
+                {
+                    l = mid;
+                }
+                else
+                {
+                    r = mid;
+                }
+            }
+
+            if (CanCloseWithBorders(r))
+            {
+                return r;
+            }
+
+            if(CanCloseWithBorders(l))
+            {
+                return l;
+            }
+
+            return 0;
+        }
+
+        private bool CanPlace(int n, int curr)
+        {
+            while (n > 0)
+            {
+                n -= curr;
+
+                if (n <= 0)
+                {
+                    return true;
+                }
+
+
+                var isolated = FindIsolated(curr);
+                if (isolated == 0)
+                {
+                    return false;
+                }
+
+                curr = isolated;
+            }
+
+            return false;
+        }
+
+        public int MinimumBoxes(int n)
+        {
+            int l = 1;
+            int r = n;
+
+            while (r - l > 1)
+            {
+                int mid = l + (r - l) / 2;
+
+                if (CanPlace(n, mid))
+                {
+                    r = mid;
+                }
+                else
+                {
+                    l = mid;
+                }
+            }
+
+            if (CanPlace(n, l))
+            {
+                return l;
+            }
+
+            return r;
+        }
+    }

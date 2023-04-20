@@ -1,0 +1,31 @@
+int countGoodNumbers(long long n){
+    // limit is 1000000007
+    // but we may need to store 20 times this
+    // value is the course of the function
+    // even digits have 5 possible values
+    // odd digitst have 4
+    // we can pair even and odd digits into a block
+    // with 20 possible values
+    long long count = (n & 1) ? 5 : 1;
+    // if n is odd, we will have an unpaired even digit
+    // at the end with 5 possible values
+    // otherwise all the digits will be paired and we only
+    // need to consider the pairs
+    long long pairs = n / 2;
+    // this is the number of pairs of digits
+    // if there is an odd number of digits then we will have already
+    // accounted for its influence
+    // next we compute pow(20,pairs) mod 1000000007
+    // this is the number of combinations in pairs pairs
+    // multiplying this by the number of possible values in
+    // the leftover even digit, if any, will give the answer
+    long long factor = 20;
+    while (pairs) {
+        if (pairs & 1) {
+            count = (count * factor) % 1000000007;
+        }
+        pairs /= 2;
+        factor = (factor * factor) % 1000000007;
+    }
+    return count;
+}

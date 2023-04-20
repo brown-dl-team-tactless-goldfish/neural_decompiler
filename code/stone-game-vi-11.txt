@@ -1,0 +1,40 @@
+class Solution {
+private:
+    struct position {
+        int val1;
+        int val2;
+        int index;
+        position(int val1, int val2, int index): val1(val1), val2(val2), index(index){}
+    };
+    struct comp {
+        bool operator()(const position& p1, const position& p2) {
+            return p1.val2+p1.val1 < p2.val2+p2.val1;
+        }
+    };
+public:
+    int stoneGameVI(vector<int>& aliceValues, vector<int>& bobValues) {
+        priority_queue<position, vector<position>, comp> q;
+        
+        for(int i=0; i<aliceValues.size(); i++) {
+            q.push(position(aliceValues[i],bobValues[i], i));
+        }
+        
+        int aliceSum=0, bobSum=0;
+        
+        bool aliceTurn=true;
+        while(!q.empty()) {
+            position p=q.top();
+            if(aliceTurn)
+                aliceSum+=p.val1;
+            else
+                bobSum+=p.val2;
+            aliceTurn=!aliceTurn;
+            q.pop();           
+        }
+        
+        if(aliceSum==bobSum) return 0;
+        if(aliceSum > bobSum) return 1;
+        return -1;
+        
+    }
+};

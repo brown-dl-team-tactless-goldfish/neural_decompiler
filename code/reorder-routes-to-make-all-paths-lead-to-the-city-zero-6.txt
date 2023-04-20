@@ -1,0 +1,13 @@
+int dfs(vector<vector<int>> &al, int prev, int node) {
+    return accumulate(begin(al[node]), end(al[node]), 0, [&](int sum, int to) {
+        return sum + (abs(to) == prev ? 0 : dfs(al, node, abs(to)) + (to > 0));
+    });    
+}
+int minReorder(int n, vector<vector<int>>& connections) {
+    vector<vector<int>> al(n);
+    for (auto &c : connections) {
+        al[c[0]].push_back(c[1]);
+        al[c[1]].push_back(-c[0]);
+    }
+    return dfs(al, 0, 0);
+}

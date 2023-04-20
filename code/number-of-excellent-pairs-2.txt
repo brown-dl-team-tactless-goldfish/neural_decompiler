@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int cb(int v)
+    {
+        int count = 0;
+        while (v) {
+            count += v & 1;
+            v >>= 1;
+        }
+        return count;
+    }
+    int n = 0;
+    long long countExcellentPairs(vector<int>& nums, int k) {        
+        n = nums.size();
+        unordered_set<int> mp;
+        long long ans = 0;
+        vector<int> arr;
+        for (int i = 0; i < n; i++) {
+            if (mp.count(nums[i]) > 0) { continue;}
+            mp.insert(nums[i]);
+            int c = cb(nums[i]);
+            if (c + c >= k) ans++;
+            arr.push_back(c);
+        }
+        sort(arr.begin(), arr.end());
+        //cout << ans << "," << arr.size() << endl;
+        int l = 0; int r = arr.size() -1;
+        while (l < r) {
+            int v = arr[l] + arr[r];
+            if (v >= k) {
+                ans += (r - l) * 2;
+                r--;
+            } else {
+                l++;
+            }
+        }
+        return ans;
+    }
+};

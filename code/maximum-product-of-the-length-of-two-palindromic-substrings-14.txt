@@ -1,0 +1,63 @@
+void manacher(string &s, vector<int> &even_pal ){
+    int n=s.size();
+    int N=2*n+1;
+    vector<int> L(N,0);
+    L[0]=0;
+    L[1]=1;
+    
+    int C=1,R=2,diff=-1,mirr=-1;
+    for(int i=2; i<N;i++){
+        mirr=2*C-i;
+        diff=R-i;
+        if(diff>=0){
+            L[i]=min(L[mirr],diff);
+        }
+        while((i-L[i]-1)>=0 && (i+L[i]+1<=N) &&((i+L[i]+1)%2==0|| s[(i+L[i]+1)/2]==s[(i-L[i]-1)/2])){
+            L[i]++;
+        }
+        if(i+L[i]>R){
+            C=i;
+            R=i+L[i];
+        }
+    }
+    for(int i=1;i<N;i+=2){
+        even_pal.push_back(L[i]);
+    }
+}
+
+long long maxProduct(string s) {
+    vector<int> pal;
+    manacher(s,pal);
+    long long int ans=0;
+    vector< int> left(s.size(),0),right(s.size(),0);
+    
+    for(int i=0;i<pal.size();i++){
+        left[i+(pal[i]-1)/2]=max(pal[i], left[i+(pal[i]-1)/2]);
+
+    }
+    for(int i=pal.size()-2;i>=0;i--){
+        left[i]=max(left[i],left[i+1]-2);
+    }
+    //cout<<left[0]<<" ";
+    for(int i=1;i<pal.size();i++){
+        left[i]=max(left[i],left[i-1]);
+       // cout<<left[i]<<" ";
+    }
+   // cout<<endl;
+    for(int i=pal.size()-1;i>=0;i--){
+        right[i-(pal[i]-1)/2]=max(pal[i],right[i-(pal[i]-1)/2]);
+    }
+    
+    for(int i=1;i<pal.size();i++)
+        right[i]=max(right[i],right[i-1]-2);
+    for(int i=pal.size()-2;i>=0;i--){
+        right[i]=max(right[i],right[i+1]);
+        
+    }
+
+    for(int i=0;i<pal.size()-1;i++){
+        ans=max(ans,(long long)left[i]*(long long)right[i+1]);
+    }
+    return ans;
+    
+}

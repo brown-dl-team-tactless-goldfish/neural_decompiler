@@ -1,0 +1,56 @@
+class Solution {
+public:
+    /**
+     * Use dp[house][group][color] to represent the minimum cost of achieving
+     * 'group' neighborhoods after visiting 'house' house with 'color' color.
+     *
+     * The beginning point is: dp[0][1][color]
+     * The ending point is: \min_color dp[m - 1][target][color]
+     * The induction formula is: for each (group) for each (color) calculate the min of:
+     * - candidate 1: dp[house - 1][group][color]
+     * - candidate 2: dp[house - 1][group - 1][!color] (scan all colors)
+     *
+     * The complexity is: O(#subproblems * #complexity_of_each_subproblem) = O(m * target * color * color)
+     */
+    int minCost(vector<int>& houses, vector<vector<int>>& cost, int m, int n, int target) {
+        std::vector<std::vector<std::vector<int>>> dp(m, std::vector<std::vector<int>>(target + 1,
+            std::vector<int>(n, INT_MAX)));
+
+        // Baseline
+        if (houses[0]) {
+            dp[0][1][houses[0] - 1] = 0;
+        } else {
+            for (std::size_t c = 0; c < n; ++c) {
+                dp[0][1][c] = cost[0][c];
+            }
+        }
+
+        // Induction
+        for (std::size_t h = 1; h < houses.size(); ++h) {
+            for (std::size_t g = 1; g <= target; ++g) {
+                for (std::size_t c = 0; c < n; ++c) {
+                    if (houses[h] && houses[h] - 1 != c) {
+                        continue;
+                    }
+
+                    const auto candidate1 = dp[h - 1][g][c];
+
+                    int candidate2 = INT_MAX;
+                    for (std::size_t i = 0; i < n; ++i) {
+                        if (i != c) {
+                            candidate2 = std::min(candidate2, dp[h - 1][g - 1][i]);
+                        }
+                    }
+
+                    if (candidate1 < INT_MAX || candidate2 < INT_MAX) {
+                        dp[h][g][c] = std::min(candidate1, candidate2) + (houses[h] ? 0 : cost[h][c]);
+                    }
+                }
+            }
+        }
+
+        // End
+        const auto answer = std::min_element(dp[m - 1][target].begin(), dp[m - 1][target].end());
+        return *answer == INT_MAX ? -1 : *answer;
+    }
+};

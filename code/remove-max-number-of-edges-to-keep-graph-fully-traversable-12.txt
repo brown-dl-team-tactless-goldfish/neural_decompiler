@@ -1,0 +1,97 @@
+    public int MaxNumEdgesToRemove(int n, int[][] edges) {
+        
+        UnionFind uf = new UnionFind(n);
+        
+        List<int[]> Alice = new List<int[]>();
+        List<int[]> Bob = new List<int[]>();
+        int deleted = 0;
+        
+        foreach(int[] ed in edges)
+        {
+            if (ed[0] == 1) { Alice.Add(ed); }
+            else if (ed[0] == 2) { Bob.Add(ed); }
+            else if (!uf.Union(ed[1], ed[2]))
+            {
+                 deleted++;
+            }
+        }
+        
+        UnionFind alicsUF = new UnionFind(uf.Duplicate());
+        deleted += ApplyEdges(Alice, alicsUF);
+        if (alicsUF.ParentCount() != 1) { return -1; }
+        
+        UnionFind bobUF = new UnionFind(uf.Duplicate());
+        deleted += ApplyEdges(Bob, bobUF);
+        if (bobUF.ParentCount() != 1) { return -1; }
+      
+        return deleted;
+    }
+    
+    private int ApplyEdges(List<int[]> edges, UnionFind uf)
+    {
+        int deleted = 0;
+        foreach(int[] ed in edges)
+        {
+            if(!uf.Union(ed[1], ed[2]))
+            {
+                 deleted++;
+            }
+        }
+        return deleted;
+    }
+    
+    public class UnionFind
+    {
+        private int[] parent; 
+        public UnionFind(int n)
+        {
+            parent = new int[n+1];
+            for(int i=1; i<parent.Length; i++)
+            {
+                parent[i] = i;
+            }
+        }
+        
+        public UnionFind(int[] arr)
+        {
+            parent = arr;
+        }
+        
+       public int[] Duplicate()
+       {
+           int[] copy = new int[parent.Length];
+           for(int i=1; i<parent.Length; i++)
+            {
+                copy[i] = parent[i];
+            }
+           return copy;
+       }
+        
+        public int Find(int x)
+        {
+            if (parent[x] != x) { parent[x] = Find(parent[x]); }
+            return parent[x];
+        }
+        
+        public bool Union(int x, int y)
+        {
+            int px = Find(x);
+            int py = Find(y);
+            
+            if (px == py) { return false; }
+            
+            parent[py] = px;
+            
+            return true;
+        }
+        
+        public int ParentCount()
+        {
+            int count = 0;
+            for(int i=1; i < parent.Length; i++)
+            {
+                if (parent[i] == i) { count++; }
+            }
+            return count;
+        }
+    }

@@ -1,0 +1,32 @@
+int nthSuperUglyNumber(int n, int* primes, int primesSize){
+    int * index = malloc(sizeof(int) * primesSize);
+    for (int i = 0; i < primesSize; i++){
+        index[i] = 0;
+    }
+    int min;
+    int * result = malloc(sizeof(int) * n);
+    result[0] = 1;
+    for (int i  = 1; i < n; i++){
+        result[i] = 9999;
+    }
+    int i;
+    int record, mul;
+    for (i = 1; i < n; i++){
+        min = (int)0x7fffffff;
+        for (int j = 0; j < primesSize; j++){
+            mul = primes[j] * result[index[j]];
+            if (mul < min){
+                min = mul;
+                record = j;
+            }
+        }
+        if (min == result[i - 1]){
+            i--;
+        }
+        result[i] = min;
+        (index[record])++;
+    }
+    int a = result[n - 1];
+    free(result);
+    return a;
+}

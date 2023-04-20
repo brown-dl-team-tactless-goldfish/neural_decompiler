@@ -1,0 +1,33 @@
+bool graph[401][401];
+int outDegree[401];
+
+class Solution
+{
+public:
+    int minTrioDegree(int N, vector<vector<int>>& edges)
+    {
+        memset(graph, 0, sizeof graph);
+        memset(outDegree, 0, sizeof outDegree);
+        
+        // Construct Adjacency Matrix
+        // Also note outdegree for each node
+        for (const auto& edge : edges)
+            graph[edge[0]][edge[1]] = true,
+            graph[edge[1]][edge[0]] = true,
+            ++outDegree[edge[0]],
+            ++outDegree[edge[1]];
+        
+        int result = numeric_limits<int>::max();
+        for (int i = 1; i <= N; ++i)
+            for (int j = i + 1; j <= N; ++j)
+                if (graph[i][j])
+                    for (int k = j + 1; k <= N; ++k)
+                        if (graph[i][k] && graph[j][k])
+                            result = min(result, outDegree[i] + outDegree[j] + outDegree[k] - 6);
+        
+        if (result == numeric_limits<int>::max())
+            return -1;  // no trio was found
+        
+        return result;
+    }
+};

@@ -1,0 +1,29 @@
+ int maxResult(vector<int>& nums, int k) {
+        priority_queue<pair<int,int>> q;
+        
+        int n=nums.size();
+        vector<int> dp(n,0);
+        
+        
+        dp[0]=nums[0];
+        q.push({nums[0],0});
+        
+        for(int i=1;i<n;i++){
+            int largest=0;
+            
+            while(!q.empty()){
+                if(q.top().second<max(0,(i- k))){
+                    q.pop();
+                }
+                else {
+                    largest=q.top().first;
+                    break;
+                }
+            }
+            dp[i] = nums[i] + largest;
+            q.push({dp[i],i});
+        }
+        
+
+        return dp[n - 1];
+    }

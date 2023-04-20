@@ -1,0 +1,61 @@
+// judge_even(char*, int)
+bool judge_even(char* str, int len) {
+    int i = len / 2;
+    int j = 0;
+    while(j < i) {
+        if(str[j] != str[i+j])
+            return false;
+        ++j;
+    }
+    return true;
+}
+
+//judge_db3(char*, int)
+bool judge_odd(char* str, int len) {
+    int i = len / 3;
+    int j = 2 * i;
+    int k = 0;
+    while(k < i) {
+        if(str[k] != str[i+k] || str[k] != str[j+k])
+            return false;
+        ++k;
+    }
+    return true;
+}
+
+//judge_prime(char*, int)
+bool judge_prime(char* str, int len) {
+    char pre = str[0];
+    int i;
+    for(i = 1; i < len; ++i) {
+        if(str[i] != pre)
+            return false;
+        pre = str[i];
+    }
+    return true;
+}
+
+bool repeatedSubstringPattern(char* str) {
+    int len = strlen(str);
+    
+    if(1 == len) return false;
+    
+    if(len % 3 == 0 && len % 2 == 0) {
+        if(judge_db3(str, len)) return true;
+        return judge_even(str, len);
+        /* or
+         * if(judge_even(str, len)) return true;
+         * return judge_db3(str, len);
+         */
+    }
+    
+    if(len % 3 == 0) {
+        return judge_db3(str, len);
+    }
+    
+    if(len % 2 == 0) {
+        return judge_even(str, len);
+    }
+    
+    return judge_prime(str, len);
+}

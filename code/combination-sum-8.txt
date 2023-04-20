@@ -1,0 +1,30 @@
+#define MAX_RES 500
+void worker(int* candidates, int candidatesSize, int target, int candi_start, int **res, int *residx, int *tmp, int tmpidx, int* columnSizes){
+    if(target<0){
+        return;
+    }else if(!target){
+        int len = tmpidx*sizeof(int);
+        int *newres = malloc(len);
+        memcpy(newres, tmp, len);
+        res[*residx] = newres;
+        columnSizes[*residx] = tmpidx;              
+        *residx+=1;
+        return;
+    }else{
+        for(int i=candi_start;i<candidatesSize;i++){
+            tmp[tmpidx++] = candidates[i];
+            worker(candidates, candidatesSize, target-candidates[i], i, res, residx, tmp, tmpidx, columnSizes);
+            tmpidx--;//pop the last item
+        }
+        return;
+    }
+}
+int** combinationSum(int* candidates, int candidatesSize, int target, int** columnSizes, int* returnSize) {
+    int **res = malloc(MAX_RES * sizeof(int*)); //I have no idea what is the maximal number of answers
+    *columnSizes = malloc(MAX_RES * sizeof(int));
+    int residx = 0;
+    int *tmp = malloc(target*sizeof(int)); //the max length is target, e.g 1+1+1+1+...+1 =target*1
+    worker(candidates, candidatesSize, target,0, res, &residx, tmp, 0,*columnSizes);
+    *returnSize = residx;
+    return res;
+}

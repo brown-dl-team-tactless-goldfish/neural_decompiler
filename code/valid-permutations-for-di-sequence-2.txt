@@ -1,0 +1,17 @@
+int numPermsDISequence(string S) {
+   const long long mod = 1e9 + 7;
+   vector<long long> pre(S.size() + 1, 1), cur;
+   for (auto c : S) {
+      cur = vector<long long>(pre.size() - 1);
+      for (int j = 0; j < pre.size(); j++) {
+         for (int k = 0; k < pre.size(); k++) {
+            if (c == 'D' && k >= j) continue;
+            if (c == 'I' && k <= j) continue;
+            auto k1 = k > j ? k - 1 : k;
+            cur[k1] += pre[j]; cur[k1] %= mod;
+         }
+      }
+      pre = move(cur);
+   }
+   return accumulate(pre.begin(), pre.end(), 0ll) % mod;
+}

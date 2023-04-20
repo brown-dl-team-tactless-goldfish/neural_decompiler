@@ -1,0 +1,22 @@
+int longestSubarray(int* nums, int numsSize, int limit){
+    int *ptr, *end = nums + numsSize;
+    int len, minval, maxval, lastnum = 0, maxlen = 0;
+
+    for ( ; nums != end; ++nums) {
+        /* if the next beginning num is == the last beginning num,
+           the length can only be shorter, so skip. */
+        if (*nums != lastnum) {
+            minval = maxval = *nums;
+            for (ptr = nums; ptr != end; ++ptr) {
+                if (*ptr < minval) minval = *ptr;
+                if (*ptr > maxval) maxval = *ptr;
+                if (maxval - minval > limit) break;
+            }
+            len = ptr - nums;
+            if (len > maxlen) maxlen = len;
+            if (ptr == end) break;  /* can't get longer when we've already hit the end */
+        }
+        lastnum = *nums;
+    }
+    return maxlen;
+}

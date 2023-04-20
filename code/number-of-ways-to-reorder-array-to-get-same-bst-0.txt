@@ -1,0 +1,79 @@
+#define MOD 1000000007
+#define MAXN 1024
+typedef struct Node{
+    int val;
+    int left_count,right_count;
+    struct Node *left, *right;
+}Node;
+void insert(Node *root, int val){
+    if(root->val > val){
+        if(root->left == NULL){
+            Node *newnode = (Node *)malloc(sizeof(Node));
+            newnode->val = val;
+            newnode->left = NULL;
+            newnode->right = NULL;
+            newnode->left_count = 0;
+            newnode->right_count = 0;
+            root->left = newnode;
+            root->left_count++;
+            return;
+        }else{
+            root->left_count++;
+            insert(root->left, val);
+        }
+    }else if(root->val < val){
+        if(root->right == NULL){
+            Node *newnode = (Node *)malloc(sizeof(Node));
+            newnode->val = val;
+            newnode->left = NULL;
+            newnode->right = NULL;
+            newnode->left_count = 0;
+            newnode->right_count = 0;
+            root->right = newnode;
+            root->right_count++;
+            return;
+        }else{
+            root->right_count++;
+            insert(root->right, val);
+        }
+    }
+}
+void freeNode(Node *root){
+    if(root->left)freeNode(root->left);
+    if(root->right)freeNode(root->right);
+    free(root);
+}
+long long factorial[MAXN], factorial_inv[MAXN], inv[MAXN];
+
+long long Ways(Node *root){
+    if(!root)return 1;
+    if(!root->left && !root->right)return 1;
+    if(!root->left)return Ways(root->right)%MOD;
+    if(!root->right)return Ways(root->left)%MOD;
+    long long temp = factorial[root->left_count+root->right_count];
+    temp = (temp*factorial_inv[root->left_count])%MOD;
+    temp = (temp*factorial_inv[root->right_count])%MOD; // C(l+r, l)
+    return ((temp*Ways(root->left)%MOD)*Ways(root->right))%MOD;
+}
+int numOfWays(int* nums, int n){
+    factorial[0] = factorial[1] = 1;
+    factorial_inv[0] = factorial_inv[1] = 1;
+    inv[0] = inv[1] = 1;
+    for(int i=2;i<MAXN;i++){
+        factorial[i] = (factorial[i-1]*i)%MOD;
+        inv[i] = MOD - (MOD/i*inv[MOD%i])%MOD; // (i%MOD)^-1
+        factorial_inv[i] = (factorial_inv[i-1]*inv[i])%MOD;//((i!)%MOD)^-1
+    }
+    Node *root = (Node *)malloc(sizeof(Node));
+    root->val = nums[0];
+    root->left = NULL;
+    root->right = NULL;
+    root->left_count = 0;
+    root->right_count = 0;
+    for(int i=1;i<n;i++){
+        insert(root, nums[i]);
+    }
+    int ret = (int)Ways(root)-1;
+    freeNode(root);
+    return ret;
+}

@@ -1,0 +1,23 @@
+char* removeKdigits(char* num, int k) {
+    if(k==0) return num;
+    char* iter=num, *ptr=num;
+    // 1. 按原序数列筛选出升序的数, 移除乱序的k个元素, 显然是优先从高位向低位移除, 剩下的升序数列值最小
+		// 2. 处理临界情况: 全部移除, 0开头, 剩余数列过多(乱序的数字小于k)
+    while(*iter != '\0'){
+        while(k > 0 && ptr>num && *(ptr-1) > *iter){
+            ptr--;
+            k--;
+        }
+        *ptr++ = *iter;
+        iter++;
+    }
+    *ptr = '\0';
+     int len = ptr - num;
+    if(len <= k) return "0";
+    while(*num == '0'){
+        num++;
+    }
+    if(ptr-num > len -k) *(num + len - k) = '\0';
+    if(ptr == num) return "0";
+    return num;
+}

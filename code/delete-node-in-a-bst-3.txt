@@ -1,0 +1,59 @@
+/**
+ * Definition of TreeNode:
+ * class TreeNode {
+ * public:
+ *     int val;
+ *     TreeNode *left, *right;
+ *     TreeNode(int val) {
+ *         this->val = val;
+ *         this->left = this->right = NULL;
+ *     }
+ * }
+ */
+
+class Solution {
+public:
+
+    int successor(TreeNode*root){
+        if(root->left){
+            auto temp = root->left;
+            while(temp->right){
+                temp = temp->right;
+            }
+            return temp->val;
+        }
+        if(root->right){
+            auto temp = root->right;
+            while(temp->left){
+                temp = temp->left;
+            }
+            return temp->val;
+        }
+        return -1; // there is no successor.
+    }
+    TreeNode * deleteNode(TreeNode * root, int key) {
+        
+        if(!root)return nullptr;
+        if(root->val>key){
+            root->left = deleteNode(root->left, key);
+            return root;
+        }else if(root->val<key){
+            root->right = deleteNode(root->right, key);
+            return root;
+        }else{
+            int val = successor(root);
+            if(val == -1){
+                root = nullptr;
+            }else{
+                if(root->left){
+                    root->val = val;
+                    root->left = deleteNode(root->left, val);
+                }else{
+                    root->val = val;
+                    root->right = deleteNode(root->right, val);
+                }
+            }
+        }
+        return root;
+    }
+};

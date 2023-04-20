@@ -1,0 +1,108 @@
+typedef struct list{
+    char* word;
+    struct list* next;
+}group;
+
+typedef struct tree{
+    char* word;
+    struct tree* before;
+    struct tree* after;
+}group_2;
+
+group* insert_in_list(char* idea,group* old){
+    group* novo=(group*)malloc(sizeof(group));
+    novo->next=old;
+    novo->word=idea;
+    return novo;
+}
+
+void insert_in_tree(char* idea,group_2* root){
+    int val=strcmp(idea,root->word);
+    if(val==1){
+        if(root->after) insert_in_tree(idea,root->after);
+        else{ 
+            group_2* novo=(group_2*)calloc(1,sizeof(group_2));
+            novo->word=idea;
+            root->after=novo;
+        }
+    }
+    else if(val==-1){
+        if(root->before) insert_in_tree(idea,root->before);
+        else{ 
+            group_2* novo=(group_2*)calloc(1,sizeof(group_2));
+            novo->word=idea;
+            root->before=novo;
+        }
+    }
+}
+
+void empty_tree(group_2* root){
+    if(!root) return;
+    empty_tree(root->before);
+    empty_tree(root->after);
+    free(root);
+}
+
+void empty_arr(int** pairs){
+    for(int i=0;i<25;i++){
+        free(pairs[i]);
+    }
+    free(pairs);
+}
+
+void search(char* i,group_2* word_j,int* pair,int pos){
+    while(word_j){
+        int val=strcmp(i,word_j->word);
+        if(val==1) word_j=word_j->after;
+        else if(val==-1) word_j=word_j->before;
+        else {
+            pair[pos]++;
+            return;
+        }
+    }
+}
+
+long long distinctNames(char ** ideas, int ideasSize){
+    printf("%d",ideasSize);
+    group** words=(group**)calloc(sizeof(group*),26);
+    group_2** words_tree=(group_2**)calloc(sizeof(group_2*),25);
+    int* count=(int*)calloc(26,4),i;
+    int** pairs=(int**)malloc(25*sizeof(int*));
+    long long ans=0;
+    for(i=0;i<ideasSize;i++){
+        int val=ideas[i][0]-'a';
+        words[val]=insert_in_list(ideas[i]+1,words[val]);
+        count[val]++;
+        if(val) {
+            val--;
+            if(words_tree[val]) insert_in_tree(ideas[i]+1,words_tree[val]);
+            else{
+                words_tree[val]=(group_2*)calloc(1,sizeof(group_2));
+                words_tree[val]->word=ideas[i]+1;
+            }
+        }
+    }
+    for(i=0;i<25;i++){
+        pairs[i]=(int*)calloc(25,4);
+        while(words[i]){
+            for(int j=i;j<25;j++){
+                search(words[i]->word,words_tree[j],pairs[i],j);
+            }
+            group* temp=words[i];
+            words[i]=words[i]->next;
+            free(temp);
+        }
+    }
+    free(words);
+    for(i=0;i<25;i++){
+        empty_tree(words_tree[i]);
+    }
+    for(i=0;i<25;i++){
+        for(int j=i;j<25;j++){
+            ans+=2*(count[i]-pairs[i][j])*(count[j+1]-pairs[i][j]);
+        }
+    }
+    empty_arr(pairs);
+    free(count);
+    return ans;
+}

@@ -1,0 +1,46 @@
+int maxdepth(struct TreeNode* root) {
+    if (!root) return 0;
+    int L = 1 + maxdepth(root->left);
+    int R = 1 + maxdepth(root->right);
+    return (L > R ? L : R);
+}
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int findBottomLeftValue(struct TreeNode* root) {
+    int returnSize = maxdepth(root);
+    int* res = (int*)calloc(sizeof(int), returnSize);
+    int resnum = 0;
+    struct TreeNode* Q[10000];
+    int front = 0, rear = 0;
+    Q[rear++] = root;
+    
+    int cur_size = 1, next_size = 0;
+    while (front < rear) {
+        if (!cur_size) break;
+        for (int i = 0; i < cur_size; ++i) {
+            struct TreeNode* tmp = Q[front++];
+            if (i == 0) 
+                res[resnum++] = tmp->val;
+            if (tmp->left) {
+                Q[rear++] = tmp->left;
+                ++next_size;
+            }
+            if (tmp->right) {
+                Q[rear++] = tmp->right;
+                ++next_size;
+            }
+        }
+        cur_size = next_size;
+        next_size = 0;
+    }
+    int num = res[returnSize - 1];
+    free (res);
+    return num;
+}

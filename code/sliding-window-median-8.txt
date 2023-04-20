@@ -1,0 +1,27 @@
+//function next() and prev() is used to get the solution
+
+//multiset is used to store elements of window size k
+//pointer mid is always pointing to mid, 
+//when adding a new element, check if its smaller than mid or not, if yes then decreament mid
+//when removing an element, check if its smaller than mid, then increament pointer
+
+class Solution {
+public:
+    vector<double> medianSlidingWindow(vector<int>& nums, int k) {
+        vector<double> ans;
+        multiset<int> s;
+        for(int i = 0; i< k; ++i){ s.insert(nums[i]); }
+        auto mid = next(s.begin(), k/2);
+        ans.push_back((double(*mid) + double(*(prev(mid, 1-k%2))))/2);
+        int i = k; 
+        while(i < nums.size()){ 
+            s.insert(nums[i]);
+            if(nums[i] < *mid) mid--;
+            if(nums[i-k]<= *mid) mid++;
+            s.erase(s.lower_bound(nums[i-k]));
+            ans.push_back((double(*mid) + double(*(prev(mid, 1-k%2))))/2);
+            i++;
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,33 @@
+bool equalFrequency(char * word){
+    int uniq = 0;
+    int freq[26] = {0}, freqFreq[101] = {0}, l = INT_MAX, h = 0;
+    size_t len = 0;
+    for (; word[len]; len++) freq[word[len] - 'a']++;
+    for (size_t i = 0; i < 26; i++) {
+        if (freq[i] && freqFreq[freq[i]] == 0) uniq++;
+        if (freq[i]) freqFreq[freq[i]]++;
+    }
+    
+    
+    if (uniq == 1) {
+        for (int i = 0; i < 101; i++) {
+            if (freqFreq[i]) {
+                if (i == 1) return true;
+                if (freqFreq[i] == 1) return true;
+            }
+        }
+    } else if (uniq == 2) {
+        for (int i = 0; i < 101; i++) {
+            if (freqFreq[i]) {
+                if (i == 1 && freqFreq[i] == 1) return true;
+                for (int j = i + 1; j < 101; j++) {
+                    if (freqFreq[j]) {
+                        if (i + 1 == j && freqFreq[j] == 1) return true;
+                    }
+                }
+            }
+        }
+    }
+    
+    return false;
+};

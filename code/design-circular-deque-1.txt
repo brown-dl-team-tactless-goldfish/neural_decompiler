@@ -1,0 +1,91 @@
+typedef struct {
+    int *arr;
+    int size,head,rear,cnt;
+} MyCircularDeque;
+
+/** Initialize your data structure here. Set the size of the deque to be k. */
+
+MyCircularDeque* myCircularDequeCreate(int k) {
+    MyCircularDeque* obj=malloc(sizeof(MyCircularDeque));
+    obj->arr=malloc(sizeof(int)*k);
+    obj->size=k;
+    obj->head=k-1;
+    obj->rear=0;
+    obj->cnt=0;
+    return obj;
+}
+/** Checks whether the circular deque is full or not. */
+bool myCircularDequeIsFull(MyCircularDeque* obj) {
+  return obj->cnt==obj->size;
+
+}
+bool myCircularDequeIsEmpty(MyCircularDeque* obj) {
+  return obj->cnt==0;
+}
+/** Adds an item at the front of Deque. Return true if the operation is successful. */
+bool myCircularDequeInsertFront(MyCircularDeque* obj, int value) {
+  if(!myCircularDequeIsFull(obj))
+  {  
+      obj->arr[obj->head]=value;
+      obj->head=(obj->head-1+obj->size)%obj->size;
+      obj->cnt++;
+      return true;
+  }
+    return false;
+}
+
+/** Adds an item at the rear of Deque. Return true if the operation is successful. */
+bool myCircularDequeInsertLast(MyCircularDeque* obj, int value) {
+  if(!myCircularDequeIsFull(obj))
+  {  
+      obj->arr[obj->rear]=value;
+      obj->rear=(obj->rear+1)%obj->size;
+      obj->cnt++;
+      return true;
+  }
+    return false;
+}
+
+/** Deletes an item from the front of Deque. Return true if the operation is successful. */
+bool myCircularDequeDeleteFront(MyCircularDeque* obj) {
+  if(!myCircularDequeIsEmpty(obj))
+  {
+      obj->head=(obj->head+1)%obj->size;
+      obj->cnt--;
+      return true;
+  }
+    else return false;
+}
+
+/** Deletes an item from the rear of Deque. Return true if the operation is successful. */
+bool myCircularDequeDeleteLast(MyCircularDeque* obj) {
+  if(!myCircularDequeIsEmpty(obj))
+  {
+      obj->rear=(obj->rear-1+obj->size)%obj->size;
+      obj->cnt--;
+      return true;
+  }
+    else return false;
+}
+
+/** Get the front item from the deque. */
+int myCircularDequeGetFront(MyCircularDeque* obj) {
+  if(!myCircularDequeIsEmpty(obj))
+      return obj->arr[(obj->head+1)%obj->size];
+    return -1;
+}
+
+/** Get the last item from the deque. */
+int myCircularDequeGetRear(MyCircularDeque* obj) {
+  if(!myCircularDequeIsEmpty(obj))
+      return obj->arr[(obj->rear-1+obj->size)%obj->size];
+    return -1;
+}
+
+/** Checks whether the circular deque is empty or not. */
+
+
+void myCircularDequeFree(MyCircularDeque* obj) {
+    free(obj->arr);
+    free(obj);
+}

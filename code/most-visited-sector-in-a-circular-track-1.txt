@@ -1,0 +1,49 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* mostVisited(int n, int* rounds, int roundsSize, int* returnSize){
+    int sz = n + 1;
+    int hash_map[sz];
+    memset(hash_map, 0, sz * sizeof(int));
+    int max = 0;
+    int start = rounds[0], end = rounds[1];
+    bool need_round = start > end;
+    for (int i = 2; i <= roundsSize; i++)
+    {
+        need_round = start > end;
+        while (start != end + 1)
+        {
+            hash_map[start] ++;
+            if (max < hash_map[start])
+            {
+                max = hash_map[start];
+            }
+            if (++start == sz && need_round)
+            {
+                start = 1;
+            }
+        }
+        // FIXUP: start-end points
+        if (i != roundsSize)
+        {
+            hash_map[end]--;
+            start = end;
+            end = rounds[i];
+        }
+    }
+    
+    int *result = NULL;
+    int count = 0;
+    for (int i = 1; i < sz; i++)
+    {
+        if (hash_map[i] == max)
+        {
+            count++;
+            result = (int *)realloc(result, count * sizeof(int));
+            result[count - 1] = i;
+        }
+    }
+    
+    *returnSize = count;
+    return result;
+}

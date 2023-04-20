@@ -1,0 +1,86 @@
+class Solution {
+public:
+	vector<double> sampleStats(vector<int>& A) {
+		double MIN;
+		for(int i=0;i<A.size();i++)
+		{
+			if(A[i]!=0)
+			{
+				MIN=i;
+				break;
+			}
+
+		}
+
+		double MAX;
+		for(int i=A.size()-1;i>=0;i--)
+		{
+			if(A[i]!=0)
+			{
+				MAX=i;
+				break;
+			}
+		}
+
+		long long sum=0;
+		int num=0;
+		double mode;
+		int count=0;
+		for(int i=0;i<A.size();i++)
+		{
+			if(A[i]>count)
+			{
+				count=A[i];
+				mode=i;
+			}
+			sum+=i*A[i];
+			num+=A[i];
+		}
+
+		double mean=((double)sum/num);
+
+		int left=0;
+		int right=A.size()-1;
+		double med;
+		while(left<right)
+		{
+			if(A[left]<A[right])
+			{
+				A[right]-=A[left];
+				left++;
+			}
+			else if(A[right]<A[left])
+			{
+				A[left]-=A[right];
+				right--;
+			}
+			else
+			{
+				if(right-left>=2)
+				{
+					left++;
+					right--;
+				}
+				else
+				{
+					break;
+
+				}
+
+			}
+		}
+		if(A[left]>A[right])
+			med=left;
+		else if(A[right]>A[left])
+			med=right;
+		else
+			med=med=(double)((double)left+(double)right)/2;
+		vector<double> ans;
+		ans.push_back(MIN);
+		ans.push_back(MAX);
+		ans.push_back(mean);
+		ans.push_back(med);
+		ans.push_back(mode);
+		return ans;
+	}
+};

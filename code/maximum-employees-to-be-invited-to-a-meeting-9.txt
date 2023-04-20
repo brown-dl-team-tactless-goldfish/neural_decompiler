@@ -1,0 +1,52 @@
+class Solution {
+    int max_loop_size;
+    int max_comb_size;
+    
+public:
+    int maximumInvitations(vector<int>& favorite) {
+        int n = favorite.size();
+        vector<int> indegree(n);
+        for (auto i : favorite) ++indegree[i];
+        
+        // bfs + topological sort to find longest chain attached to each node
+        queue<int> q;
+        for (int i = 0; i < n; ++i) {
+            if (!indegree[i]) q.push(i) ;
+        }
+        vector<int> max_chain(n, 0);
+        int l = 1;
+        while (!q.empty()) {
+            int k = q.size();
+            while (k-- > 0) {
+                int node = q.front();
+                q.pop();
+                if(--indegree[favorite[node]] == 0) q.push(favorite[node]);
+                max_chain[favorite[node]] = max(max_chain[favorite[node]], l);
+            }
+            ++l;
+        }
+        
+        // all the chains have been removed, use dfs to find the longest loop
+        max_loop_size = 0, max_comb_size = 0;
+        vector<bool> visited(n, false);
+        for (int i = 0; i < n; ++i) {
+            int d = 0;
+            if (indegree[i] && !visited[i]) dfs(i, d, visited, favorite, max_chain);
+        }
+        return max(max_loop_size, max_comb_size);
+    }
+    
+    // find longest loop
+    void dfs(int i, int& depth, vector<bool>& visited, const vector<int>& favorite, const vector<int>& max_chain) {
+        if (visited[i]) {
+            if (depth <= 2) { // loop size <= 2
+                max_comb_size += depth + max_chain[i] + max_chain[favorite[i]];
+            } else {
+                max_loop_size = max(max_loop_size, depth);
+            }
+            return;
+        }
+        visited[i] = true;
+        dfs(favorite[i], ++depth, visited, favorite, max_chain);
+    }
+};

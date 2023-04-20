@@ -1,0 +1,115 @@
+
+char* serialize(struct TreeNode* root) {
+    
+    if (root==NULL)
+        return NULL;
+    
+    int qidx=0;
+    int i=0;
+    int strIdx=0;
+    int len=0;
+    struct TreeNode* ptr = NULL;
+    char *data = (char *)malloc(sizeof(char) * 100000);
+    memset(data,0,sizeof(char) * 100000);
+    uint64_t q[100000]={0};
+    q[qidx] = root;
+    qidx++;
+    while (i < qidx)
+    {
+        ptr = (struct TreeNode*)q[i];
+        if (ptr != NULL)
+        {
+            len = sprintf(&data[strIdx],"%d,",ptr->val);
+            strIdx=strIdx+len;
+            q[qidx] = ptr->left;
+            qidx++;
+            q[qidx] = ptr->right;
+            qidx++;
+        }
+        else
+        {
+            len = sprintf(&data[strIdx],"%d,",-1);
+            strIdx=strIdx+len;
+        }
+        
+        i++;
+    }
+    strIdx--;
+    data[strIdx]=NULL;
+    return &data[0];
+}
+struct TreeNode *create(int data)
+{
+    if (data == -1)
+        return NULL;
+    struct TreeNode *node = (struct TreeNode *)malloc(sizeof(struct TreeNode));
+    node->val = data;
+    node->left = NULL;
+    node->right = NULL;
+    return node;
+}
+
+void retereiveInt(char *data, int *arr, int *i)
+{
+    int idx=0;
+    int len=0;
+    while (data[idx]!=NULL)
+    {
+        sscanf(&data[idx],"%d,",&arr[*i]);
+        len = snprintf( NULL, 0, "%d", arr[*i]);
+        idx+=len+1;
+        *i=*i+1;
+    }
+    return;
+}
+/** Decodes your encoded data to tree. */
+struct TreeNode* deserialize(char* data) {
+ 
+    if (data == NULL)
+        return NULL;
+    
+    int node_values[100000]={0};
+    uint64_t q[100000]={0};
+    int qidx=0;
+    int pos=1;
+    int i=0;
+    int total_nodes=0;
+    struct TreeNode* ptr=NULL;
+    retereiveInt(data,&node_values[0],&total_nodes);
+    q[qidx] = create(node_values[0]);
+    qidx++;
+
+    while (i < qidx)
+    {
+        ptr = q[i];
+        if (ptr!=NULL)
+        {
+            if (pos < total_nodes)
+            {
+                ptr->left = create(node_values[pos]);
+                pos++;
+                q[qidx] = ptr->left;
+                qidx++;
+            }
+            else
+            {
+                ptr->left = NULL;
+            }
+            if (pos < total_nodes)
+            {
+                ptr->right = create(node_values[pos]);
+                pos++;
+                q[qidx] = ptr->right;
+                qidx++;
+            }
+            else
+            {
+                ptr->right = NULL;
+            }
+        }
+        i++;
+        
+    }
+    return (struct TreeNode*)q[0];
+}
+

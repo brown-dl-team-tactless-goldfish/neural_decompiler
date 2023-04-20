@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int findLengthOfShortestSubarray(vector<int>& arr) {
+        int size{(int)arr.size()}, min_{size}, i{0}, j{size-1};
+        while(i < size-1 && arr[i+1] >= arr[i]) ++i;
+        while(j > i && arr[j-1] <= arr[j]) --j;
+        
+        if(j == i) return 0;
+        
+        for(int k{0}; k <= i; ++k) {
+            auto it{std::upper_bound(arr.begin()+j, arr.end(), arr[k]-1)};
+            int dist{(int)(it-(arr.begin()+k)-1)};
+            min_ = std::min(min_, dist);
+        }
+
+        for(int k{size-1}; k >= j; --k) {
+            auto it{std::upper_bound(arr.begin(), arr.begin()+i+1, arr[k]-1)};
+            int dist{(int)(arr.begin()+k-it)};
+            min_ = std::min(min_, dist);
+        }
+        
+        return min_;
+    }
+};

@@ -1,0 +1,59 @@
+struct ListNode * merge(struct ListNode *left, struct ListNode *right) {
+    
+    
+    struct ListNode dummy;
+    struct ListNode *temp = &dummy;
+    
+    while(left != NULL && right != NULL) {
+        
+        if(left->val < right-> val) {
+            temp->next = left;
+            temp = temp->next;
+            left = left->next;
+            
+        }
+        
+        else {
+            
+            temp->next = right;
+            temp = temp->next;
+            right = right->next;
+        }
+        
+    }
+    
+        if(left == NULL)
+            temp->next = right;
+        else
+            temp->next = left;
+    
+        return dummy.next;
+}
+
+struct ListNode* sortList(struct ListNode* head){
+    
+    
+    if(head == NULL)
+        return NULL;
+    
+    if(head->next == NULL)
+        return head;
+    
+    
+    struct ListNode *mid, *slow = head, *fast = head->next;
+    
+    struct ListNode *left, *right;
+    while(fast->next && fast->next->next) {
+        
+        fast = fast->next->next;
+        slow = slow->next;
+    }
+    
+    mid = slow->next;
+    slow->next = NULL;
+    
+    left = sortList(head);
+    right = sortList(mid);
+    return merge(left,right);
+
+}

@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int dp[501][189];
+    int solve(vector<int>&a ,int start,int end,int pick)
+    {
+        //  base case
+         if(pick ==0)return 0;
+        if(start>= end)return 0;
+        int ans =-1e4;
+        if(dp[start][pick] != -1)
+            return dp[start][pick];
+        // either you exclude the current index or include the slice by decreasing no. of pick
+        int r1 = max(a[start] + solve(a,start+2,end,pick-1) , solve(a,start + 1 , end ,pick));
+        ans = max(ans,r1);
+        dp[start][pick] = ans;
+        return dp[start][pick];
+    }
+    int maxSizeSlices(vector<int>& a) {
+        int n = a.size();
+        // just go with the house robber intuition
+        memset(dp , -1,sizeof(dp));
+        int ans = solve(a,0,n-1,n/3);
+        memset(dp,-1,sizeof(dp));
+        return max(ans , solve(a,1,n,n/3));
+    }
+};

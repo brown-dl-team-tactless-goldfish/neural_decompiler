@@ -1,0 +1,51 @@
+class DinnerPlates {
+    int n;
+    vector<vector<int>> v;
+    set<int> st;    //tracks used partially filled stacks
+public:
+    DinnerPlates(int capacity) {
+        n=capacity;
+    }
+    
+    void push(int val) {
+        if(st.empty()){ //if all currently used stacks are completely full
+            v.push_back({val});
+            if(n>1)
+                st.insert(v.size()-1);
+        }
+        else{
+            v[*st.begin()].push_back(val);  //leftmost stack
+            if(v[*st.begin()].size()==n)    //erase this stack from available stacks if it is full now
+                st.erase(st.begin());
+        }
+    }
+    
+    int pop() {
+        if(v.empty())
+            return -1;
+        int ans=v.back().back();
+        v.back().pop_back();
+        clear();    //clear all the righmost empty stacks recursively
+        return ans;
+    }
+    
+    int popAtStack(int index) {
+        if(v.size()<=index || v[index].empty())
+            return -1;
+        int ans=v[index].back();
+        v[index].pop_back();
+        if(index+1==v.size())
+            clear();
+        else if(v[index].size()==n-1)
+            st.insert(index);
+        return ans;
+    }
+private:
+    void clear() {
+        while(!v.empty() && v.back().empty()){
+            v.pop_back();
+            if(st.count(v.size()))
+                st.erase(v.size());
+        }
+    }
+};

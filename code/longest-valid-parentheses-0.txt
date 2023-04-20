@@ -1,0 +1,27 @@
+int longestValidParentheses(char * s){
+    int ans = 0;
+    int len = strlen(s);
+    if (len < 2){
+        return 0;
+    }
+    int* list = malloc(sizeof(int)*(len+1));
+    list[0] = -1;
+    int count_left = 0;
+    for (int i = 0 ; i < len ; i++){
+        if (s[i] == ')'){
+            if (count_left > 0){
+                count_left--;
+                if (ans < i-list[count_left]){
+                    ans = i-list[count_left];
+                }
+            } else {
+                list[0] = i;
+            }
+        } else {
+            count_left++;
+            list[count_left] = i;
+        }
+    }
+    free(list);
+    return ans;
+}

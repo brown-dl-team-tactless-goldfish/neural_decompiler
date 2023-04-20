@@ -1,0 +1,102 @@
+#define QUEUE_SIZE 10000
+
+typedef struct
+{
+    int front;
+    int rear;
+    int size;
+    int * queue_arr;
+}Queue;
+
+
+typedef struct 
+{
+    int num_recent_requests;    //Counts the number of recent requests within a certain time frame    
+    Queue * queue;
+} RecentCounter;
+
+bool isQueueFull(Queue * queue)
+{
+    return (queue->rear == queue->size - 1) ? 1 : 0;
+}
+
+bool isQueueEmpty(Queue * queue)
+{
+    return ((queue->rear == -1) && (queue->front == -1)) ? 1 : 0;
+}
+
+void enqueue(Queue * queue, int data)
+{
+    if(isQueueFull(queue))
+        return;
+    
+    queue->queue_arr[++(queue->rear)] = data;
+    return;
+}
+
+int dequeue(Queue * queue)
+{
+    if(isQueueEmpty(queue))
+        return -1;
+    int ret_val = queue->queue_arr[++(queue->front)];
+    if(queue->front == queue->rear)
+    {
+        queue->front = -1;
+        queue->rear = -1;
+    }
+    return ret_val;
+}
+
+int peek_front(Queue * queue)
+{
+    if(isQueueEmpty(queue))
+        return -1;
+    return queue->queue_arr[queue->front+1];
+}
+
+int prev_req_range(RecentCounter * obj, int t)
+{
+    if(t > 3000)
+    {
+        while(t - peek_front(obj->queue) > 3000)
+        {
+            int deq_element = dequeue(obj->queue);
+            (obj->num_recent_requests)--;
+        }
+    }
+    return (obj->num_recent_requests);
+}
+
+RecentCounter* recentCounterCreate() 
+{
+    RecentCounter * obj = (RecentCounter *)malloc(sizeof(RecentCounter));
+    obj->num_recent_requests = 0;
+    obj->queue = (Queue *)malloc(sizeof(Queue));
+    obj->queue->front = -1;
+    obj->queue->rear = -1;
+    obj->queue->size = QUEUE_SIZE;
+    obj->queue->queue_arr = (int *)malloc(sizeof(int) * (obj->queue->size));
+    return obj;
+}
+
+int recentCounterPing(RecentCounter* obj, int t) 
+{
+    enqueue(obj->queue, t);
+    (obj->num_recent_requests)++;
+    return prev_req_range(obj, t);
+}
+
+void recentCounterFree(RecentCounter* obj) 
+{
+    free(obj->queue->queue_arr);
+    free(obj->queue);
+    free(obj);
+}
+
+/**
+ * Your RecentCounter struct will be instantiated and called as such:
+ * RecentCounter* obj = recentCounterCreate();
+ * int param_1 = recentCounterPing(obj, t);
+ 
+ * recentCounterFree(obj);
+*/

@@ -1,0 +1,33 @@
+    int left = 0, right = 0, sum = 0, ans = INT_MAX;
+    
+    vector<int> dp(arr.size(),INT_MAX);
+    
+    for(right = 0; right<arr.size(); right++)
+    {
+        sum += arr[right];
+        
+        while(sum > target)
+        {
+            sum -= arr[left];
+            left++;
+        }
+        
+        if(sum == target)
+        {
+            dp[right] = right - left + 1;
+            
+            if(left-1>= 0 && dp[left-1] != INT_MAX)
+            {
+                ans = min(ans,dp[left-1]+dp[right]);
+            }
+        }
+        
+        if(right-1>= 0)
+        {
+            dp[right] = min(dp[right],dp[right-1]);
+        }
+        
+    }
+    
+    return ans == INT_MAX? -1: ans;
+}

@@ -1,0 +1,35 @@
+class Solution {
+private:
+	void dfs(vector<vector<int>>& temp, int r, int c, int n, int m, int ele) {
+		if (r < 0 || r >= n || c < 0 || c >= m || temp[r][c] != ele) return;
+		temp[r][c] = 0;
+		dfs(temp, r - 1, c, n, m, ele);
+		dfs(temp, r, c - 1, n, m, ele);
+		dfs(temp, r, c + 1, n, m, ele);
+		dfs(temp, r + 1, c, n, m, ele);
+	}
+public:
+	vector<vector<int>> colorBorder(vector<vector<int>>& grid, int row, int col, int color) {
+		int n = grid.size();
+		int m = grid[0].size();
+		int ele = grid[row][col];
+        vector<vector<int>> temp = grid;
+		dfs(temp, row, col, n, m, ele);
+		for (int i = 0; i < n; ++i) {
+			for (int j = 0; j < m; ++j) {
+				if (i == 0 || j == 0 || i == n - 1 || j == m - 1)
+				{
+					if (temp[i][j] == 0) grid[i][j] = color;
+				}
+				else
+				{
+					if (temp[i][j] == 0 && (temp[i + 1][j] != 0 || temp[i - 1][j] !=  0 || temp[i][j + 1]!=  0 || temp[i][j - 1]!=  0))
+					{
+						grid[i][j] = color;
+					}
+				}
+			}
+		}
+		return grid;
+	}
+};

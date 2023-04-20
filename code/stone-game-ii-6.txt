@@ -1,0 +1,17 @@
+class Solution {
+public:
+    using VI = vector<int>;
+    using VVI = vector<VI>;
+    int stoneGameII(VI& A) {
+        int N = A.size();
+        VVI dp(N + 1, VI(N + 1)); // 🤔 dp[i][j] == best total possible beginning at i, taking up to max(j, k) stones
+        VI total(N + 1);
+        for (auto i{ N - 1 }; 0 <= i; --i)
+            dp[i][N] = total[i] = total[i + 1] + A[i];  // 🛑  base cases: suffix sums, ie. if j == N, then initial state of "no stones taken"
+        for (auto i{ N - 1 }; 0 <= i; --i)
+            for (auto k{ N - 1 }; 1 <= k; --k)
+                for (auto j{ 1 }; j <= 2 * k && i + j <= N; ++j)
+                    dp[i][k] = max(dp[i][k], total[i] - dp[i + j][max(j, k)]); // 🎯 max my score minus max your score
+        return dp[0][1]; // ⭐️ max total possible beginning with the first stone at i = 0 taking the best 2k stones beginning at k = 1
+    }
+};

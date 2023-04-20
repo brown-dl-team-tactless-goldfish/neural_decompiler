@@ -1,0 +1,44 @@
+vector<int> res;   
+void find(vector<int> curr, int n, int pos, vector<bool> &vis)
+{
+	if(res.size()>0) return;
+	if(pos==curr.size())
+	{
+		res = curr;
+		return;
+	}
+	if(curr[pos]!=-1) return find(curr,n,pos+1,vis);
+	for(int i=n;i>=1;i--)
+	{
+		if(res.size()>0) return;
+		if(!vis[i])
+		{
+			vis[i] = true;
+			if(i==1)
+			{
+				curr[pos] = i;
+				find(curr,n,pos+1,vis);
+				curr[pos] = -1;
+			}
+			else
+			{
+				if(pos+i<curr.size() && curr[pos+i]==-1)
+				{
+					curr[pos] = i;
+					curr[pos+i] = i;
+					find(curr,n,pos+1,vis);
+					curr[pos] = -1;
+					curr[pos+i] = -1;
+				}
+			}
+			vis[i] = false;
+		}
+	}
+}
+
+vector<int> constructDistancedSequence(int n) {
+	vector<int> curr((2*n)-1,-1);
+	vector<bool> vis(n+1,false);
+	find(curr,n,0,vis);
+	return res;
+}

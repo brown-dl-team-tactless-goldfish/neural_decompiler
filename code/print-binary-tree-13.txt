@@ -1,0 +1,19 @@
+def printTree(self, root: TreeNode) -> List[List[str]]:
+        if root is None:
+            return [[]]
+        levels_count = self.height(root)       
+        nodes_count = (1 << levels_count) - 1
+        
+        result = [["" for i in range(nodes_count)] for i in range(levels_count)]
+        shift = 1 << (levels_count - 2 if levels_count >= 2 else 0)
+        self.printTree_helper(root, result, 0, int(nodes_count / 2), int(shift)) 
+        return result
+    
+    def printTree_helper(self, root, result, r, c, shift):
+        if root == None: return
+        result[r][c] = str(root.val)
+        self.printTree_helper(root.left, result, r + 1, c - shift, int(shift / 2))
+        self.printTree_helper(root.right, result, r + 1, c + shift, int(shift / 2))
+    
+    def height(self, root: TreeNode) -> int:
+        return 0 if root is None else 1 + max(self.height(root.left), self.height(root.right))

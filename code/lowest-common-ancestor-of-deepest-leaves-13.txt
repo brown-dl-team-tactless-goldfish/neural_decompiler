@@ -1,0 +1,19 @@
+class Solution {
+public:
+    TreeNode* lcaDeepestLeaves(TreeNode* root, TreeNode* ans = nullptr) {
+        go(ans, root);
+        return ans;
+    }
+private:
+    int go(TreeNode*& ans, TreeNode* root, int i = 0, int&& max = 0) {
+        if (!root) {
+            max = std::max(max, i);
+            return i;
+        }
+        auto L = go(ans, root->left,  i + 1, move(max)),
+             R = go(ans, root->right, i + 1, move(max));
+        if (L == max && R == max)
+            ans = root;
+        return std::max(L, R);
+    }
+};

@@ -1,0 +1,33 @@
+class Solution {
+public:
+    vector<int> countSubTrees(int n, vector<vector<int>>& edges, string labels) {
+        
+        for(auto&e:edges) sort(e.begin(),e.end());
+        vector<vector<int>> mat(n, vector<int>());
+        
+        vector<bool>added(n,false);
+        for (auto& e : edges) {
+            int x=e[0],y=e[1];
+            if(added[y]) swap(x,y);
+            mat[x].push_back(y);
+            added[x]=added[y]=true;
+        }
+
+        vector<int> r(n, 0);
+        vector<int> counts(26, 0);
+        dfs(0, mat, labels, counts,r);
+
+        return r;
+    }
+
+    void dfs(int index, vector<vector<int>>& mat, string& labels, vector<int>& counts,vector<int> &r) {
+        char& c = labels[index];
+        int countOld = counts[c - 'a'];
+        
+        counts[c - 'a']++;
+
+        for (auto& next : mat[index]) dfs(next, mat, labels, counts, r);
+
+        r[index] = counts[c - 'a'] - countOld;
+    }
+};

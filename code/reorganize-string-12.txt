@@ -1,0 +1,115 @@
+/**********************************************************************************************************
+idea: we first check if it is possible to reorganize the string as the question asks by filling a histogram
+with the number of appearances of each letter in the string, then checking if there is a letter in the string 
+that appears more times than the rest of the all the letters combined plus one, because in this case there
+will always be at least two adjacent letters in the string.
+if we succeed we put first the max letter in the even places, because in the worst case the max letter
+appears (n+1)/2 times, so if we put the letter in the odd places we might end up putting it in the n-th
+place which is illegal, then we continue putting the rest of the letters alphabetically starting from the 
+next even place after the last even place with the max letter. 
+if we exceed the index n-1 we have to reassign the variable which goes through the even places to 1,
+which is the first odd place in the string. now all the even places are full and all the letters we are going
+to fill the string with has equal or less number of appearances than the max letter so we will not have an
+issue of having two adjacent letters.
+now we go through all the odd places and fill them with the rest of the letters, as long as we reach the 
+last odd place in the string the histogram will be all zeros because we filled all the n places.
+notice that we go through the even places once then the odd places once and because of that we don't
+reassign any letter we have put before.
+**********************************************************************************************************/
+
+
+#define LETTERS 26
+
+/***********************************************************************************************************
+time complexity: this function has two nested for loops. the inner and the outer loops perform constant 
+number of operations regardless of the input size, so the time complexity of this function is O(1).
+space complexity: no allocations or recursive calls are executed so the space complexity is O(1).
+***********************************************************************************************************/
+bool possible(int letters[LETTERS],char *max_letter)
+{
+	int total_other = 0;
+	int max = 0;
+	for (int i = 0; i < LETTERS; i++)
+	{
+		if (letters[i] > max)
+		{
+			max = letters[i];
+			*max_letter = 'a' + i;
+		}
+		if (letters[i])
+		{
+			for (int j = 0; j < LETTERS; j++)
+			{
+				if (j != i && letters[j])
+				{
+					total_other += letters[j];
+				}
+			}
+		}
+		if (letters[i] > total_other + 1)
+		{
+			return false;
+		}
+		total_other = 0;
+	}
+	return true;
+}
+
+/***********************************************************************************************************
+time complexity: this function has one for loops which goes through each character in the string one 
+time so it's a linear time complexity O(n), where n is the length of the string.
+space complexity: no allocations or recursive calls are executed so the space complexity is O(1).
+***********************************************************************************************************/
+void BuildHist(char* str, int* histogram)
+{
+	while (*str)
+	{
+		++histogram[*str - 'a'];
+		++str;
+	}
+}
+
+/***********************************************************************************************************
+time complexity: O(n), where n is the length of the string.
+space complexity: no allocations or recursive calls are executed so the space complexity is O(1).
+***********************************************************************************************************/
+char* reorganizeString(char* s)
+{
+	int letters[LETTERS] = { 0 };
+	char ch = 'a';
+	char* max_ch = &ch;
+	BuildHist(s, letters);   //time complexity: O(n), space complexity: O(1)
+	if (!possible(letters,max_ch))   //time complexity: O(1), space complexity: O(1)
+	{
+		s = "";
+		return s;
+	}
+	int idx = 0;
+	int len = strlen(s);
+	
+	// in the worst case this while loop will perform (n+1)/2 iterations so time complexity is O(n).
+	while (letters[ch - 'a'])   
+	{
+		s[idx] = ch;
+		idx += 2;
+		letters[ch - 'a'] -= 1;
+	}
+	
+	/* outer for loop performs constant number of opertations and while loop perform a total of n-1 iterations
+	in the worst case (in case max letter appears 1 time), so in total the time complexity is O(n).*/
+	for (int i = 0; i < LETTERS; i++)
+	{
+		while (letters[i])
+		{
+			if (idx >=len )
+			{
+				idx = 1;
+			}
+			s[idx] = 'a' + i;
+			idx += 2;
+			letters[i] -= 1;
+		}
+	}
+	return s;
+
+}

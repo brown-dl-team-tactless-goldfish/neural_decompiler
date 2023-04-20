@@ -1,0 +1,21 @@
+public int SurfaceArea(int[][] grid) {
+	var cubes = grid
+		.SelectMany((f, i) => f.Select((g, j) => (X: i, Y: j, Z: g)))
+		.SelectMany(x => Enumerable.Range(0, x.Z).Select(y => (x.X, x.Y, Z: y)))
+		.ToArray();
+
+	var set = new HashSet<(int, int, int)>(cubes);
+	var area = set.Count * 6;
+	var inside = cubes.Sum(c => GetNeighbors(c).Count(n => set.Contains(n)));
+	return area - inside;
+
+	(int, int, int)[] GetNeighbors((int, int, int) cube) {
+		var (x, y, z) = cube;
+		return new[]
+		{
+			(x - 1, y, z), (x + 1, y, z),
+			(x, y - 1, z), (x, y + 1, z),
+			(x, y, z - 1), (x, y, z + 1)
+		};
+	}
+}

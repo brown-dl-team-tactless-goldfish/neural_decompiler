@@ -1,0 +1,50 @@
+static int bFind(int* nums, int nSize, int value)
+{
+    int start = 0; 
+    int end = nSize - 1;
+    
+    while(start <= end) {
+        const int mid = (start + end)/2;
+        
+        if (nums[mid] > value) {
+            end = mid - 1;
+        } else {
+            start = mid + 1;
+        }
+    }
+    
+    return start;
+}
+
+static int lengthOfLIS(int* nums, int numsSize, int start, int multiple){
+    int length = 0;
+    int dp[numsSize];
+
+    for (int i = 0; i < numsSize; i++) {
+        const int idx = start + i*multiple;
+        
+        if (length == 0 || nums[idx] >= dp[length - 1]) {
+            dp[length++] = nums[idx];
+        } else {
+            const int replaceIdx = bFind(dp, length, nums[idx]);
+            dp[replaceIdx] = nums[idx];
+        }
+    }
+    
+    return length;
+}
+
+int kIncreasing(int* arr, int arrSize, int k){
+    const int dpSize = (arrSize + k - 1)/k;
+    int count = 0;
+
+    for (int i = 0; i < k; i++) {
+        int size = dpSize;
+        if ((arrSize % k) != 0 && i >= (arrSize % k)) {
+            size--;
+        }
+        count += lengthOfLIS(arr, size, i, k);
+    }
+    
+    return arrSize - count;
+}

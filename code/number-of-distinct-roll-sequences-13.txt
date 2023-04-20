@@ -1,0 +1,38 @@
+class Solution {
+public:
+    const int mod = 1e9 + 7;
+    void add(int& a, int b) {
+        a += b;
+        if (a >= mod) {
+            a -= mod;
+        }
+    }
+    int distinctSequences(int n) {
+        if (n == 1) return 6;
+        vector<vector<vector<int>>> dp(n + 1, vector<vector<int>> (7, vector<int> (7)));
+        for (int i = 1; i <= 6; i++) {
+            for (int j = 1; j <= 6; j++) {
+                if (i != j && __gcd(i, j) == 1) {
+                    dp[2][i][j] = 1;
+                }
+            }
+        }
+        for (int i = 2; i < n; i++) {
+            for (int lv = 1; lv <= 6; lv++) {
+                for (int plv = 1; plv <= 6; plv++) {
+                    for (int pplv = 1; pplv <= 6; pplv++) {
+                        if (lv == plv || lv == pplv || __gcd(lv, plv) != 1) continue;
+                        add(dp[i + 1][lv][plv], dp[i][plv][pplv]);
+                    }
+                }
+            }
+        }
+        int sol = 0;
+        for (int i = 1; i <= 6; i++) {
+            for (int j = 1; j <= 6; j++) {
+                add(sol, dp[n][i][j]);
+            }
+        }
+        return sol;
+    }
+};

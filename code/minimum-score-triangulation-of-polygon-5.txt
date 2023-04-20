@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int minScoreTriangulation(vector<int>& val) {
+        vector<vector<int>> dp(val.size(), vector<int>(val.size(),0));
+        for(int i=2;i<val.size();i++){
+            int r = 0; // starting row
+            int c = i; // starting col as we are solving diagonally
+            while(r < val.size() && c < val.size()){
+                dp[r][c] = INT_MAX;
+                // here we are fixing 2 points that is r'th and c'th 
+                // and we are picking points in between these points 
+                // to make a triangle and then we see how other's can be solved and checking if it is minimum
+                for(int in = r+1;in<c;in++){
+                    dp[r][c] = min(dp[r][c], dp[r][in] + dp[in][c] + val[r]*val[in]*val[c]);
+                }
+                r++; c++;
+            }
+        }
+        return dp[0][val.size()-1];
+    }
+};

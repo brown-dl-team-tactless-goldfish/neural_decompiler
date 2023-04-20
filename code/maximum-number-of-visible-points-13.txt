@@ -1,0 +1,44 @@
+int visiblePoints(vector<vector<int>>& points, int angle, vector<int>& location) 
+{
+	int count_same = 0, count = 0;
+	vector<double> angles;
+
+	// We need to count the points which are at the same location as the camera
+	// and seperate them out
+	for (auto &elem : points)
+	{
+		if (elem == location)
+		{
+			count_same++;
+		}
+		else
+		{
+			angles.push_back(atan2((elem[1] - location[1]), (elem[0] - location[0])) * 180.0/M_PI);
+		}
+	}
+
+	sort(angles.begin(), angles.end());
+
+	int i = 0, j = 0;
+	int N = angles.size();
+
+	// From the top comment, here we cannot include the points in the same location as the camera
+	// instead of counting them at the top because here we are updating the count as length between points.
+	// It won't get updated correctly if same location points are included here itself
+	while (i < N && j < N*2)
+	{
+		double angleDiff = (angles[j % N] - angles[i] + ((j >= N) ? 360.0 : 0.0));
+
+		if (angleDiff <= (double)angle)
+		{
+			count = max(count, j - i + 1);
+			j++;
+		}
+		else
+		{
+			i++;
+		}
+	}
+
+	return count_same + count;
+}

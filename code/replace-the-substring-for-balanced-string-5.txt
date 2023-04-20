@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int balancedString(string s) {
+        int n = s.size();
+        int each = n / 4;
+        unordered_map<char, int> m, pm;
+        for (char c : s) ++m[c];
+        for (auto p : m) if (p.second > each) pm.emplace(p.first, p.second - each);
+        if (pm.empty()) return 0;
+        int l = 0, r = 0;
+        int res = n;
+        while (r < n && l < n) {
+            --pm[s[r++]];
+            while (all_of(pm.begin(), pm.end(), [](auto& p) { return p.second <= 0;})) {
+                res = min(res, r - l);
+                ++pm[s[l++]];
+            }
+        }
+        return res;
+    }
+};

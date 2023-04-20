@@ -1,0 +1,51 @@
+class Solution {
+public:
+    
+    vector<int> primes = {2,3,5,7,11,13,17,19,23,29};
+    int mod = 1e9+7;
+    
+    
+    
+    int f(vector<int>& a, int i, int state, vector<vector<int>> &dp){
+        
+        if(i==a.size()){
+             return dp[i][state]=1;
+        }
+        
+        if(dp[i][state]!=-1) return dp[i][state];
+        
+        int tempState = 0, j=0, temp=a[i], dontTake = 0;
+        
+        while(j<10 && temp>1){
+            
+            if(temp%primes[j]==0){
+                int num = tempState&(1<<j);
+                if(num){
+                     dontTake = 1;
+                     break;
+                }
+                temp=temp/primes[j];
+                tempState = tempState | (1<<j);
+            }
+            else j++;
+            
+        }
+        
+        if(tempState&state){         
+             dontTake = 1;
+        }
+        
+        int newState = state|tempState;
+      
+        if(!dontTake) return dp[i][state]=(f(a,i+1,newState,dp) + f(a,i+1,state,dp))%mod;
+        else return dp[i][state]=f(a,i+1,state,dp);
+        
+    }
+    
+    int squareFreeSubsets(vector<int>& a) {
+        
+        vector<vector<int>> dp(a.size()+1, vector<int>(1025,-1));
+    
+        return f(a,0,0,dp)-1;    
+    }
+};

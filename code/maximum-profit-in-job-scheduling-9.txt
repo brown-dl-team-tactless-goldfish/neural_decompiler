@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
+        if(startTime.size() == 0) return 0;
+        vector<vector<int>> inp;
+        inp.push_back({0,0,0,0});
+        int maxp = 0;
+        for(int i = 0; i < startTime.size(); i++) {
+            vector<int> tmp{startTime[i], endTime[i], profit[i], 0};
+            inp.push_back(tmp);
+        }
+        sort(inp.begin(), inp.end(), [](vector<int> &a, vector<int> &b) {return a[1] < b[1];});
+
+        for(int j = 1; j < inp.size(); j++) {
+            int start = inp[j][0];
+            int idx = binsearch(inp, start);
+            inp[j][3] = max(maxp, inp[j][2] + inp[idx][3]);
+            maxp = inp[j][3];
+        }
+        return maxp;
+    }
+    int binsearch(vector<vector<int>> inp, int start) {
+        int l = 0 , r = inp.size()-1, m = 0;
+        while(l < r) {
+            m = (l+r)/2;
+            if(inp[m][1] == start) return m;
+            if(inp[m][1] > start) {
+                r = m;
+                continue;
+            }
+            l = m+1;
+        } 
+        return inp[l][1] > start ? --l : l;
+    }
+};

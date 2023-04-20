@@ -1,0 +1,46 @@
+class Solution {
+public:
+    const long long INF = 1e16 + 7;
+    long long minimumDifference(vector<int>& nums) {
+        int n = nums.size();
+        int len = n / 3;
+        vector<long long> left(n);
+        vector<long long> right(n);
+        multiset<int> l;
+        multiset<int> r;
+        left[0] = nums[0];
+        l.insert(nums[0]);
+        for(int i = 1; i < n; i++) {
+            int le = i + 1;
+            l.insert(nums[i]);
+            if(le <= len) {
+                left[i] = left[i - 1] + nums[i];
+            }
+            else {
+                int val = *prev(l.end());
+                left[i] = left[i - 1] + nums[i] - val;
+                l.erase(l.lower_bound(val));
+            
+            }
+        }
+        right[n - 1] = nums[n - 1];
+        r.insert(nums[n - 1]);
+        for(int i = n - 2; i >= 0; i--) {
+            int le = n - i;
+            r.insert(nums[i]);
+            if(le <= len) {
+                right[i] = right[i + 1] + nums[i];
+            }
+            else {
+                int val = *r.begin();
+                right[i] = right[i + 1] + nums[i] - val;
+                r.erase(r.lower_bound(val));
+            }
+        }
+        long long sol = INF;
+        for(int i = len - 1; i < n - len; i++) {
+            sol = min(sol, left[i] - right[i + 1]);
+        }
+        return sol;
+    }
+};

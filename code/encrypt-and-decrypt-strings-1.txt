@@ -1,0 +1,53 @@
+class Encrypter {
+public:
+    vector<char>& k;
+    vector<string>& v;
+    vector<string>& st;
+    vector<int> ch;
+    map<string, set<char>> mp;
+    Encrypter(vector<char>& keys, vector<string>& values, vector<string>& dictionary): k{keys}, v{values}, st{dictionary} {
+        ch.resize(26);
+        for (int i = 0; i < (int) keys.size(); i++) {
+            ch[keys[i] - 'a'] = i;
+        }
+        for (int i = 0; i < (int) values.size(); i++) {
+            mp[values[i]].insert(k[i]);
+        }
+    }
+    
+    string encrypt(string word1) {
+        string en = "";
+        for (char c : word1) {
+            int pos = ch[c - 'a'];
+            en += v[pos];
+        }
+        return en;
+    }
+    
+    int decrypt(string s) {
+        int n = s.size();
+        int count = 0;
+        for (string& s1 : st) {
+            int pos = 0;
+            if (s1.size() != n / 2) continue;
+            bool flag = true;
+            for (int i = 0; i < n; i += 2) {
+                char c = s1[pos];
+                if (mp[s.substr(i, 2)].count(c) == 0) {
+                    flag = false;
+                    break;
+                }
+                ++pos;
+            }
+            if (flag) ++count;
+        }
+        return count;
+    }
+};
+
+/**
+ * Your Encrypter object will be instantiated and called as such:
+ * Encrypter* obj = new Encrypter(keys, values, dictionary);
+ * string param_1 = obj->encrypt(word1);
+ * int param_2 = obj->decrypt(word2);
+ */

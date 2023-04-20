@@ -1,0 +1,62 @@
+typedef struct Trie
+{
+    struct Trie* children[2]; 
+} Trie;
+
+Trie* TrieInit(){
+    Trie* trie=(Trie*)malloc(sizeof(Trie));
+    memset(trie->children,0,sizeof(Trie*)*2);
+    return trie;
+}
+
+void TrieDestory(Trie *trie){
+    for(int i=0;i<2;i++){
+        if(trie->children[i]){
+            TrieDestory(trie->children[i]);
+        }
+    }
+    free(trie);
+}
+
+void TrieInsert(Trie *trie,int val){
+    Trie *iteration=trie;
+    for(int i=31; i>=0; i--) {
+        uint32_t z;
+        z = UINT32_C(1) << i;
+        bool b = val & z;
+        if (!iteration->children[b]) iteration->children[b] = TrieInit();
+        iteration = iteration->children[b];
+    }
+}
+int query(Trie *trie,int val) {
+    Trie *iteration=trie;
+    long res = 0;
+    for(int i=31; i>=0; i--) {
+        uint32_t z;
+        z = UINT32_C(1) << i;
+        bool b = val & z; // 0x0011 -> find 1100
+       
+        if (!iteration->children[!b]) iteration = iteration->children[b];
+        else {
+            iteration = iteration->children[!b];
+            res |= 1 << i;
+        }
+    }
+    return (int)res;
+}
+int max(int a,int b){
+    return a>b?a:b;
+}
+
+int findMaximumXOR(int* nums, int numsSize){
+    struct Trie *trie=TrieInit();
+    for(int i=0;i<numsSize;i++){
+        TrieInsert(trie,nums[i]);
+    }
+    int ans=0;
+    for(int i=0;i<numsSize;i++){
+        ans=max(ans,query(trie,nums[i]));
+    }
+    free(trie);
+    return ans;
+}

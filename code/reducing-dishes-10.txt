@@ -1,0 +1,35 @@
+// Time: O(n^3)
+// Memory: O(n^2)
+// f[i][t]: Only cook t dishes(consuming t units of time), 
+// the maximum value that can be obtained from the first i dishes (t<=i+1).
+
+int max(int i, int j) {
+    return i>j ? i : j;
+}
+
+int maxx(int i, int j, int k) {
+    return max(i, max(j, k));
+}
+
+int Cmp(const void * a, const void * b) {
+    return *(int*)a - *(int*)b;
+}
+
+int maxSatisfaction(int* a, int n){
+    int f[n+2][n+2];
+    memset(f, 0 , sizeof(f));
+    qsort(a, n, sizeof(int), Cmp);
+    f[0][1] = a[0];  
+    
+    for (int i=1; i<n; i++)
+        for (int t=1; t<=i+1; t++) {
+            f[i][t] = f[i-1][t-1]+a[i]*t;
+            for (int j=t-1; j<i; j++) 
+                f[i][t] = maxx(f[i][t], f[j][t], f[j][t-1]+a[i]*t);
+        }  
+            
+    int ans = 0;
+    for (int t=0; t<=n; t++)
+        ans = max(f[n-1][t], ans);
+    return ans;
+}

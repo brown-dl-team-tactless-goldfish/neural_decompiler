@@ -1,0 +1,43 @@
+
+
+struct num {
+        int max;
+        int cnt;
+};
+
+int findNumberOfLIS(int* nums, int numsSize)
+{
+        struct num *dp = malloc(sizeof(struct num) * numsSize);
+  
+        int i, j;
+        int tmp;
+        for (i = 0; i < numsSize; i++) {
+                dp[i].cnt = 1;
+                dp[i].max = 1;
+                
+                for (j = 0; j < i; j++) {
+                        if (nums[i] > nums[j]) {
+                                tmp = 1 + dp[j].max;
+                                if (tmp > dp[i].max) {
+                                        dp[i].max = tmp;
+                                        dp[i].cnt = dp[j].cnt;
+                                } else if (tmp == dp[i].max) {
+                                        dp[i].cnt += dp[j].cnt;
+                                }
+                        }
+                }
+        }
+        
+        int max = 0;
+        int cnt = 0;
+        for (i = 0; i < numsSize; i++) {
+                if (dp[i].max > max) {
+                        max = dp[i].max;
+                        cnt = dp[i].cnt;
+                } else if (dp[i].max == max) {
+                        cnt += dp[i].cnt;
+                }
+        }
+        
+        return cnt;
+}

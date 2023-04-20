@@ -1,0 +1,67 @@
+int backtracking(char *s, int k);
+int engine(char *s, char *ls, char *rs, int k);
+int longestSubstring(char * s, int k){
+
+    return backtracking(s,k);
+}
+
+
+int backtracking(char *s, int k)
+{
+    int r1=0;int r2=0;
+    char ls[8000]={0};
+    char rs[8000]={0};
+    int c = engine(s,&ls[0],&rs[0],k);
+    if (c != -1)
+    {
+        return c;
+    }
+    r1 = backtracking(ls,k);
+    r2 = backtracking(rs,k);
+    if (r1 > r2)
+    {
+        return r1;
+    }
+    else
+    {
+        return r2;
+    }
+}
+
+int engine(char *s, char *ls, char *rs, int k)
+{
+    int freq[26]={0};
+    int i;
+    int fidx;
+    int len = strlen(s);
+    if (len < k)
+    {
+        return 0;
+    }
+    for (i=0; i < len; i++)
+    {
+        fidx = s[i]-'a';
+        freq[fidx]+=1;
+    }
+    for (i=0; i < len; i++)
+    {
+        fidx = s[i]-'a';
+        if (freq[fidx] != 0 && freq[fidx] < k)
+        {
+            break;
+        }
+    }
+    if (i >= len)
+    {
+        return len;
+    }
+    char d = s[i];
+    while (s[i] == d)
+    {    
+        s[i] = NULL;
+        i++;
+    }
+    strcpy(ls,&s[0]);
+    strcpy(rs,&s[i]);
+    return -1;
+}

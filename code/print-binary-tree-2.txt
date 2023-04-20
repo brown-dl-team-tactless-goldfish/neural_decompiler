@@ -1,0 +1,44 @@
+if (!root)
+    return;
+
+blk = (struct Block *) calloc (1, sizeof (struct Block));
+pos = col_size / (1 << (level + 1));
+blk->node = pointer;
+blk->pos = pos;
+enQueue(q, blk);
+prev_pos = 0;
+cur_pos = 0;
+
+while (q->count) {
+    printf("level=%d\n", level);
+    size = q->count;
+    //pos = col_size / (1 << (level + 2));
+    for (i = 0; i < size; i++) {
+        blk = deQueue(q);
+        pointer = blk->node;
+        printf("val=%d, pos=%d\n", pointer->val, blk->pos);
+        
+        cur_pos = blk->pos;
+        fill_before_pos(level, prev_pos, cur_pos, pointer->val);
+        
+        
+        if (pointer->left) {
+            pos = cur_pos - (1 << (num_level - level - 2));
+            enQueueHelper(q, pointer->left, pos);
+        }
+
+        if (pointer->right) {
+            pos = cur_pos + (1 << (num_level - level - 2));
+            enQueueHelper(q, pointer->right, pos);
+        }
+        
+        prev_pos = cur_pos + 1;
+        
+        free(blk);
+    }
+    
+    fill_remaining(level, cur_pos + 1);
+    level ++;
+    prev_pos = 0;
+    cur_pos = 0;
+ }

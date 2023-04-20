@@ -1,0 +1,129 @@
+struct mydata {
+    char *s;
+    int index;
+};
+int cmp1(void *a,void *b){
+    char x =*(char*)a;
+    char y=*(char *)b;
+    if(x>y) return 1;
+    if(x<y) return -1;
+    return 0;
+
+}
+int cmp2(void *a,void *b){
+    struct mydata *x =*(struct mydata **)a;
+    struct mydata *y =*(struct mydata **)b;
+    return strcmp(x->s,y->s);
+}
+
+
+char *** groupAnagrams(char ** strs, int strsSize, int* returnSize, int** returnColumnSizes){
+
+    char ***ret=NULL;
+    int *retC=NULL;
+    int count=0;
+    
+    ret=malloc(sizeof(char**)*strsSize);
+    retC=malloc(sizeof(int)*strsSize);
+
+    struct mydata **mstrs=malloc(sizeof(struct mydata *)*strsSize);
+
+    for(int i=0;i<strsSize;i++){
+        mstrs[i]=malloc(sizeof(struct mydata));
+        mstrs[i]->index=i;
+        mstrs[i]->s=malloc(strlen(strs[i])+1);
+        strcpy(mstrs[i]->s,strs[i]);
+        qsort(mstrs[i]->s,strlen(strs[i]),sizeof(strs[0][0]),cmp1);
+    }
+    qsort(mstrs,strsSize,sizeof(mstrs[0]),cmp2);
+
+    int start=0;
+    for(int i=0;i<strsSize;i++){
+        int check=0;
+        if(i!=(strsSize-1))
+            check=strcmp(mstrs[i]->s,mstrs[i+1]->s);
+
+        if(check || (i==(strsSize-1)) ){
+            char **tmp=malloc(sizeof(char *)*(i-start+1));
+            int cc=0;
+            for(int j=start;j<=i;j++){
+                tmp[cc]=strs[mstrs[j]->index];
+                cc++;
+            }
+            start=i+1;
+            count++;
+            ret[count-1]=tmp;
+            retC[count-1]=cc;
+            *returnSize=count;
+        }
+    }
+    *returnColumnSizes=retC;
+    for(int i=0;i<strsSize;i++){
+        free(mstrs[i]->s);
+        free(mstrs[i]);
+    }
+    free(mstrs);
+    return ret;
+}
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+ /*
+ struct mydata {
+     int hasht[26];
+     int nums;
+     char **link;
+ };
+
+char *** groupAnagrams(char ** strs, int strsSize, int* returnSize, int** returnColumnSizes){
+
+    struct mydata *record=malloc(sizeof(struct mydata)*strsSize);
+
+    int empty=0;
+    for(int i=0;i<strsSize;i++){
+        memset(record[i].hasht,0,sizeof(int)*26);
+        for(int j=0;j<strlen(strs[i]);j++)
+            record[i].hasht[strs[i][j]-'a']++;
+        record[i].nums=1;
+        for(int j=0;i>0 && j<i;j++){
+            if(record[j].nums==0)
+                continue;
+            int k=0;
+            for(k=0;k<26;k++){
+                if(record[i].hasht[k]!=record[j].hasht[k])
+                    break;
+            }
+            if(k==26){
+                record[j].link[record[j].nums]=strs[i];
+                record[j].nums++;
+                record[i].nums=0;
+                empty++;
+                break;
+            }
+        }
+        if(record[i].nums!=0){
+            record[i].link=malloc(sizeof(char *)*strsSize);
+            record[i].link[0]=strs[i];
+        }
+    }
+
+    *returnSize=strsSize-empty;
+    int count=0;
+    char ***ret=malloc(sizeof(char **)*(*returnSize));
+    int *retC=malloc(sizeof(int)*(*returnSize));
+    for(int i=0;i<strsSize;i++){
+        if(record[i].nums==0)
+            continue;
+        ret[count]=record[i].link;
+        retC[count]=record[i].nums;
+        count++;
+    }
+
+    *returnColumnSizes=retC;
+    return ret;
+
+}
+*/

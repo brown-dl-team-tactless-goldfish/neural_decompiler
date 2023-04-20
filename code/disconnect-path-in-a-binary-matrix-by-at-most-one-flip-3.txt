@@ -1,0 +1,31 @@
+class Solution {
+public:
+    bool isPossibleToCutPath(vector<vector<int>>& grid) {
+        int m = grid.size(),n = grid[0].size();
+        vector<vector<bool>> vis(m, vector<bool>(n, false));
+        queue<pair<int, int>> q;
+        vis[0][0] = true;
+        q.push({0, 0});
+        while(!q.empty()){
+            if (q.front().first == m - 1 && q.front().second == n - 1)
+                return false;
+            else if (q.size() == 1 && !(q.front().first == 0 && q.front().second == 0) && !(q.front().first == m - 1 && q.front().second == n - 1))
+                return true;
+            int s = q.size();
+            while(s--){
+                pair<int, int> tmp = q.front();
+                q.pop();
+                int x = tmp.first, y = tmp.second;
+                if (x + 1 < m && grid[x + 1][y] == 1 && !vis[x + 1][y]) {
+                    vis[x + 1][y] = true;
+                    q.push({x + 1, y});
+                }
+                if (y + 1 < n && grid[x][y + 1] == 1 && !vis[x][y + 1]) {
+                    vis[x][y + 1] = true;
+                    q.push({x, y + 1});
+                }
+            }
+        }
+        return true;
+    }
+};

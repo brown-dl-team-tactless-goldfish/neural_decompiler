@@ -1,0 +1,17 @@
+class Solution {
+public:
+  int maxTwoEvents(vector<vector<int>>& e) {
+    int a = 0, k = 0;
+    sort(e.begin(),e.end(), [](vector<int>&a, vector<int>&b)->bool{return a[0] < b[0];});
+    
+    priority_queue< pair<int,int>, vector<pair<int,int>>, greater<pair<int,int>> > q;        //data, value;
+    
+    for(auto &v:e){
+      while(!q.empty() && q.top().first < v[0]) {k = max(k, q.top().second ); q.pop();}
+      q.push({v[1], v[2]});
+      a = max(a, v[2] + k); 
+    }
+    
+    return a;
+  }
+};

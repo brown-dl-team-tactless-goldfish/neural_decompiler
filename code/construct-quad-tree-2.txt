@@ -1,0 +1,32 @@
+class Solution {
+    bool isSame(vector<vector<int>>& grid, int a, int b, int c, int d) {
+        for (int i = a; i <= c; i++) {
+            for (int j = b; j <= d; j++) {
+                if (grid[i][j] != grid[a][b])
+                    return false;
+            }
+        }
+        return true;
+    }
+    Node* constructUtil(vector<vector<int>>& grid, int a, int b, int c, int d) {
+        if (a > c || b > d) return NULL;
+        if (isSame(grid, a, b, c, d)) {
+            Node* r = new Node(grid[a][b], true, NULL, NULL, NULL, NULL);
+            return r;
+        }
+        
+        Node* tl = constructUtil(grid, a,  b, a + ((c-a)/2), b + ((d-b)/2));
+        Node* tr = constructUtil(grid, a, b + ((d-b)/2) + 1, a + ((c-a)/2), d);
+        Node* bl = constructUtil(grid, a + ((c-a)/2) + 1, b, c, b + ((d-b)/2));
+        Node* br = constructUtil(grid, a + ((c-a)/2) + 1, b + ((d-b)/2) + 1, c, d);
+        
+        Node* r = new Node(grid[a][b], false, tl, tr, bl, br);
+        return r;
+    }
+public:
+    Node* construct(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        return constructUtil(grid, 0, 0, m-1, n-1);
+    }
+};

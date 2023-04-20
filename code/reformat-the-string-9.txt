@@ -1,0 +1,57 @@
+    public class Solution
+    {
+        public string Reformat(string s)
+        {
+            StringBuilder sb = new StringBuilder();
+            Stack<char> digits = new Stack<char>();
+            Stack<char> letters = new Stack<char>();
+
+            foreach (var c in s)
+            {
+                if (c >= '0' && c <= '9')
+                {
+                    digits.Push(c);
+                }
+                else
+                {
+                    letters.Push(c);;
+                }
+            }
+
+            while (digits.Count != 0 || letters.Count != 0)
+            {
+                if (sb.Length != 0 && digits.Count == 0 && sb[sb.Length - 1] >= 'a' && sb[sb.Length - 1] <= 'z')
+                {
+                    return "";
+                }
+
+                if (sb.Length != 0 && letters.Count == 0 && sb[sb.Length - 1] >= '0' && sb[sb.Length - 1] <= '9')
+                {
+                    return "";
+                }
+
+                if (sb.Length == 0)
+                {
+                    var max = digits;
+                    if (letters.Count > max.Count)
+                    {
+                        max = letters;
+                    }
+
+                    sb.Append(max.Pop());
+                    continue;
+                }
+
+                if (sb[sb.Length - 1] >= '0' && sb[sb.Length - 1] <= '9')
+                {
+                    sb.Append(letters.Pop());
+                    continue;
+                }
+
+                sb.Append(digits.Pop());
+            }
+
+
+            return sb.ToString();
+        }
+    }

@@ -1,0 +1,80 @@
+class Solution
+{
+public:
+    string smallestStringWithSwaps(string s, vector<vector<int>>& pairs);
+};
+
+class Graph
+{
+    public:
+    int vertex;
+    vector<vector<int>> adj; 
+    vector<bool> visited;
+    int cc_no = 0;
+    vector<int> cc;
+    
+    Graph(int vertex)
+    {
+        this->vertex = vertex;
+        adj.resize(vertex);
+        visited.resize(vertex);
+        cc.resize(vertex);
+    }
+    
+    void addEdge(int u, int v);
+    void dfs(int source);
+    void dfsWrapper();
+};
+
+void Graph :: addEdge(int u, int v)
+{
+    adj[u].push_back(v);
+    adj[v].push_back(u);
+}
+
+void Graph :: dfs(int source)
+{
+    cc[source] = cc_no;
+    visited[source] = true;
+    
+    for(auto ele : adj[source])
+        if(!visited[ele])
+            dfs(ele);
+}
+
+void Graph :: dfsWrapper()
+{
+    for(int i = 0; i < vertex; i++)
+        if(!visited[i])
+            dfs(i), cc_no++;
+}
+
+string Solution :: smallestStringWithSwaps(string str, vector<vector<int>>& pairs)
+{
+    int n = str.length();
+    Graph g(n);
+    
+    for(auto &row_vec : pairs)
+        g.addEdge(row_vec[0], row_vec[1]);
+    
+    g.dfsWrapper();
+    
+    map<int, vector<int>> record;
+    
+    for(int i = 0; i < n; i++)
+        record[g.cc[i]].push_back(i);
+    
+    for(auto ele : record)
+    {
+        string s = "";
+        for(auto index : ele.second)
+            s += str[index];
+        
+        sort(s.begin(), s.end());
+        int counter = 0;
+        for(auto index : ele.second)
+            str[index] = s[counter++];
+    }
+    
+    return str;
+}

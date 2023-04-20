@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<int> fullBloomFlowers(vector<vector<int>>& flowers, vector<int>& persons) {
+        int n = persons.size(), m = flowers.size();
+        map<int, vector<int>> d2p;
+        for (int i = 0; i < n; i++)
+            d2p[persons[i]].push_back(i);
+        sort(flowers.begin(), flowers.end());
+        priority_queue<int, vector<int>, greater<int>> q;
+        int j = 0;
+        vector<int> ans(n, 0);
+        for (auto& d : d2p)
+        {
+            int i = d.first;
+            while (j < m && flowers[j][0] <= i)
+            {
+                q.push(flowers[j][1]);
+                j++;
+            }
+            while (!q.empty() && q.top() < i)
+                q.pop();
+            int k = q.size();
+            for (auto& p : d.second)
+                ans[p] = k;
+        }
+        return ans;
+    }
+};

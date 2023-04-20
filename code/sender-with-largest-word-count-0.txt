@@ -1,0 +1,143 @@
+typedef struct{
+    unsigned int   val; 
+    char*  str;
+    int   count;
+}Dictory;
+
+
+unsigned int RSHash(char *str)
+{
+	unsigned int b = 378551;
+	unsigned int a = 63689;
+	unsigned int hash = 0;
+
+	while (*str)
+	{
+		hash = hash * a + (*str++);
+		a *= b;
+	}
+
+	return (hash & 0x7FFFFFFF);
+}
+
+int cmpfunc(const void* a, const void* b){
+    Dictory A = **(Dictory**)a; 
+    Dictory B = **(Dictory**)b;
+    if(A.count == B.count)
+        return strcmp(A.str, B.str); 
+    
+    return A.count - B.count;
+}
+
+char * largestWordCount(char ** messages, int messagesSize, char ** senders, int sendersSize){
+    int n = sendersSize;
+    int* words = calloc(n , sizeof(int));
+    //>>> caculate words for each messages[i] 
+    for(int i = 0; i < n; i++){
+        int len = strlen(messages[i]);
+        if(len == 0){
+            words[i] = 0;
+            continue;
+        }
+        words[i] = 1;
+        for(int j = 0; j < len; j++){
+            if(messages[i][j] == ' ')
+                words[i]++;
+        }
+    }
+    //<<<
+    Dictory** hash = malloc(n * sizeof(Dictory*));
+    for(int i = 0; i < n; i++){
+        hash[i] = malloc( sizeof(Dictory)) ;
+        hash[i]->count = 0;   
+    }
+
+    //iterate each senders[i], build up hash table, keep udate max and maxData table.
+    int max = 0;
+    Dictory** maxData = malloc(n * sizeof(Dictory*));
+    int pos = 0;
+    
+    for(int i = 0; i < n; i++){
+        unsigned int H = RSHash(senders[i]);
+        if(hash[H % n]->count == 0){
+            hash[H % n]->count = words[i];
+            int len = strlen( senders[i] );
+            hash[H % n]->str = malloc( (len + 1) * sizeof(char) );
+            strcpy(hash[H % n]->str , senders[i] ); 
+            hash[H % n]->val = H;
+            
+            if( hash[H % n]->count  == max){
+                maxData[pos] = hash[H % n] ;
+                pos++;
+            }
+            
+            if( hash[H % n]->count  > max){
+                pos = 0;
+                max =  hash[H % n]->count;
+                maxData[pos] = hash[H % n] ;
+                pos++;
+            }
+        }
+        else if(hash[H % n]->val == H){
+            hash[H % n]->count  +=  words[i]; 
+            if( hash[H % n]->count  == max){
+                maxData[pos] = hash[H % n] ;
+                pos++;
+            }
+            
+            if( hash[H % n]->count  > max){
+                pos = 0;
+                max =  hash[H % n]->count;
+                maxData[pos] = hash[H % n] ;
+                pos++;
+            }
+        }
+        else{
+            int k = (H + 1) % n;
+            bool doneFlag = false;
+            while(hash[k]->count != 0){
+                if(hash[k]->val == H){ 
+                    hash[k]->count +=  words[i]; 
+                    if( hash[k]->count  == max){
+                        maxData[pos] = hash[k] ;
+                        pos++;
+                    }
+
+                    if( hash[k]->count  > max){
+                        pos = 0;
+                        max =  hash[k]->count;
+                        maxData[pos] = hash[k] ;
+                        pos++;
+                    }                    
+                    doneFlag = true;
+                    break;
+                }
+                k = (k + 1) % n;
+            }
+            if(doneFlag == false){
+                hash[k]->val = H;
+                hash[k]->count = words[i];
+                int len = strlen( senders[i] );
+                hash[k]->str = malloc( (len + 1) * sizeof(char) );
+                strcpy(hash[k]->str , senders[i] ); 
+                
+                if( hash[k]->count  == max){
+                    maxData[pos] = hash[k] ;
+                    pos++;
+                }
+
+                if( hash[k]->count  > max){
+                    pos = 0;
+                    max =  hash[k]->count;
+                    maxData[pos] = hash[k] ;
+                    pos++;
+                }
+            }
+        }
+    }
+    //sort maxData
+    qsort(maxData, pos, sizeof(Dictory*), cmpfunc) ;
+
+    return maxData[pos-1]->str;
+
+}

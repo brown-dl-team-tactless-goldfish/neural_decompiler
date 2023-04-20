@@ -1,0 +1,50 @@
+    int minimumMoves(vector<vector<int>>& g) {
+        set<vector<int>> v;
+        queue<vector<int>> q;
+        
+        q.push({0, 0, 0, 1});
+        v.insert({0, 0, 0, 1});
+        
+        int n = g.size();
+        
+        vector<int> target = {n-1, n-2, n-1, n-1};
+        
+        int step = 0;
+        while(!q.empty()) {
+            for(int sz = q.size(); sz > 0; sz--) {
+                vector<int> t = q.front();
+                q.pop();
+                if(t == target) return step;
+                
+                if(t[0] == t[2]) {//==
+                    if(t[3]+1 < n && g[t[2]][t[3]+1] == 0) {//right
+                        vector<int> t1 = {t[2], t[3], t[2], t[3]+1};
+                        if(!v.count(t1)) {v.insert(t1); q.push(t1);}
+                    }
+                    if(t[0]+1 < n && g[t[0]+1][t[1]] == 0 && g[t[2]+1][t[3]] == 0) {//clock
+                        vector<int> t2 = {t[0], t[1], t[0]+1, t[1]};
+                        if(!v.count(t2)) {v.insert(t2); q.push(t2);}
+                    }
+                    if(t[0]+1 < n && g[t[0]+1][t[1]] == 0 && g[t[0]+1][t[3]] == 0) {//down
+                        vector<int> t3 = {t[0]+1, t[1], t[0]+1, t[3]};
+                        if(!v.count(t3)) {v.insert(t3); q.push(t3);}
+                    }                    
+                } else {//||
+                    if(t[2]+1 < n && g[t[2]+1][t[3]] == 0) {//down
+                        vector<int> t4 = {t[2], t[3], t[2]+1, t[3]};
+                        if(!v.count(t4)) {v.insert(t4); q.push(t4);}
+                    }
+                    if(t[1]+1 < n && g[t[0]][t[1]+1] == 0 && g[t[2]][t[3]+1] == 0) {//anti clock
+                        vector<int> t5 = {t[0], t[1], t[0], t[1]+1};
+                        if(!v.count(t5)) {v.insert(t5); q.push(t5);}
+                    }
+                    if(t[1]+1 < n && g[t[0]][t[1]+1] == 0 && g[t[2]][t[3]+1] == 0) {//right
+                        vector<int> t6 = {t[0], t[1]+1, t[2], t[3]+1};
+                        if(!v.count(t6)) {v.insert(t6); q.push(t6);}
+                    }                         
+                }
+            }
+            step++;
+        }
+        return -1;
+    }

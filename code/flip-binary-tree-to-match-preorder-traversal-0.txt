@@ -1,0 +1,37 @@
+int voyIdx;
+bool IsOver;
+
+void swap(struct TreeNode* root, struct TreeNode* nodeL, struct TreeNode* nodeR, int* res, int* returnSize) {
+    struct TreeNode* temp = nodeL;
+    root->left = nodeR;
+    root->right = temp;
+    res[(*returnSize)++] = root->val;
+}
+
+void dfs(struct TreeNode* root, int* voyage, int* res, int* returnSize) {
+    if(!root || IsOver == true) return;
+    if(root->val == voyage[voyIdx]) {
+        if(root->left && root->right) {
+            if(root->left->val != voyage[voyIdx+1]) {
+                swap(root, root->left, root->right, res, returnSize);
+            }
+        }
+    }
+    if(root->val != voyage[voyIdx]) {
+        (*returnSize) = 1;
+        res[0] = -1;
+        IsOver = true;
+        return;
+    }
+    voyIdx++;
+    dfs(root->left, voyage, res, returnSize);
+    dfs(root->right, voyage, res, returnSize);
+}
+
+int* flipMatchVoyage(struct TreeNode* root, int* voyage, int voyageSize, int* returnSize) {
+    int* res = (int*) malloc(100 * sizeof(int));
+    *returnSize = 0;
+    voyIdx = 0, IsOver = false;
+    dfs(root, voyage, res, returnSize);
+    return res;
+}

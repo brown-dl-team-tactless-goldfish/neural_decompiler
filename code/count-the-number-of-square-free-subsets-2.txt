@@ -1,0 +1,57 @@
+class Solution {
+public:
+    
+    int mod=1000000007;
+    long long dp[1000][1025][2];
+    long long count(int j,int mask,vector<int>&res,int x){
+        
+        if(j==res.size()){
+        
+            if(x==0)return 0;
+            return 1;
+        }
+        if(dp[j][mask][x]!=-1)return dp[j][mask][x];
+        
+        long long ans=0ll;
+        
+        if(res[j]==-1){
+            return dp[j][mask][x]=count(j+1,mask,res,x);
+        }
+        
+        ans=count(j+1,mask,res,x);
+        
+        if((mask&res[j])==0){
+         ans= ((ans%mod)+count(j+1,mask|res[j],res,1)%mod)%mod;
+        }
+        
+        return dp[j][mask][x]=ans;
+       
+    }
+    
+    int squareFreeSubsets(vector<int>& nums) {
+        vector<int>prime{2,3,5,7,11,13,17,19,23,29};
+        vector<int>res;
+        int n= nums.size();
+        memset(dp,-1,sizeof(dp));
+        for(int i=0;i<n;i++){
+            int x=nums[i];
+            int j=0;
+            int mask=0;
+            while(x!=1){
+                int k=0;
+                while(x%prime[j]==0){
+                    mask=(mask|(1<<j));
+                    x=x/prime[j];
+                    k++;
+                }
+                if(k>1){
+                    mask=-1;
+                    break;
+                }
+                j++;
+            }
+            res.push_back(mask);
+        }
+        return count(0,0,res,0);
+    }
+};

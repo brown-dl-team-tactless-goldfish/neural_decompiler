@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int getcost(int startAt, int moveCost, int pushCost, string& str) {
+        if(str.empty()) return INT_MAX;
+        int ret = 0;
+        for(auto &c : str) {
+            if(c - '0' == startAt) ret += pushCost;
+            else {
+                ret += moveCost + pushCost;
+                startAt = c - '0';
+            }
+        }
+        return ret;
+    }
+    
+    int minCostSetTime(int startAt, int moveCost, int pushCost, int targetSeconds) {
+        int min = targetSeconds  / 60;
+        int sec = targetSeconds  % 60;
+        
+        if(min > 99) {
+            min = 99;
+            sec += 60;
+        }
+        
+        // convert time to string ignoring starting 0's
+        string str1(""), str2("");
+        
+        if(min) {
+            if(sec < 10)    str1 = to_string(min) + "0" + to_string(sec);
+            else            str1 = to_string(min) + to_string(sec);
+        } else {
+            str1 = to_string(sec);
+        }
+        
+        if(min && sec < 40) {
+            if(min-1)   str2 = to_string(min-1) + to_string(sec+60);
+            else        str2 = to_string(sec+60);
+        }
+        
+        int x = getcost(startAt, moveCost,pushCost, str1);
+        int y = getcost(startAt, moveCost, pushCost, str2);
+        
+        return std::min(x, y);
+    }
+};

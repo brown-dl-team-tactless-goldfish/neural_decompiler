@@ -1,0 +1,33 @@
+public class Cashier 
+{
+    int n;
+    int discount;
+    Dictionary<int, int> prodToPriceMap;
+    int count;
+    
+    public Cashier(int n, int discount, int[] products, int[] prices) 
+    {
+        this.n = n;
+        this.discount = discount;
+        prodToPriceMap = new Dictionary<int, int>();
+        for(int i = 0; i < products.Length; i++)
+            prodToPriceMap[products[i]] = prices[i];
+        this.count = 0;
+    }
+    
+    public double GetBill(int[] product, int[] amount) 
+    {
+        count++;
+        double bill = 0;
+        for(int i = 0; i < product.Length; i++)
+            bill += prodToPriceMap[product[i]] * amount[i];
+        
+        if(count == n)
+        {
+            count = 0;
+            bill = bill - (bill * (double) discount) / 100.00;
+        }
+        
+        return bill;
+    }
+}

@@ -1,0 +1,82 @@
+class Solution {
+public:
+    struct cmp {
+        bool operator()(const pair<pair<int, int>, int>& p1, const pair<pair<int, int>, int>& p2) {
+            return p1.second > p2.second;
+        }
+    };
+    
+    int dir[4][2] = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
+    
+    bool isValid(int r, int c, vector<vector<int>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        
+        return r >= 0 && r < n && c >= 0 && c < m;
+    }
+    
+    vector<int> maxPoints(vector<vector<int>>& grid, vector<int>& queries) {
+        priority_queue<pair<pair<int, int>, int>, vector<pair<pair<int, int>, int>>, cmp> q;
+        
+        int n = grid.size();
+        int m = grid[0].size();
+        vector<vector<int> > dis(n, vector<int>(m, INT_MAX));
+        vector<vector<bool> > f(n, vector<bool>(m, false));
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                dis[i][j] = INT_MAX;
+            }
+        }
+        
+        q.push({{0, 0}, grid[0][0]});
+        dis[0][0] = grid[0][0];
+        
+        while (!q.empty()) {
+            pair<pair<int, int>, int> nodePair = q.top();
+            q.pop();
+            
+            int r = nodePair.first.first;
+            int c = nodePair.first.second;
+            
+            if (f[r][c]) continue;
+            
+            int wt = nodePair.second;
+            //cout<<r<<" "<<c<<" "<<wt<<endl;
+            for (int d = 0; d < 4; d++) {
+                int n_r = r + dir[d][0];
+                int n_c = c + dir[d][1];
+                
+                if (isValid(n_r, n_c, grid) && !f[n_r][n_c] && dis[n_r][n_c] > max(wt, grid[n_r][n_c])) {
+                    dis[n_r][n_c] = max(wt, grid[n_r][n_c]);
+                    q.push({{n_r, n_c}, dis[n_r][n_c]});
+                }
+            }
+            f[r][c] = true;
+        }
+        
+        vector<int> values;
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                //cout<<dis[i][j]<<" ";
+                values.push_back(dis[i][j]);
+            }
+            //cout<<endl;
+        }
+        
+        sort(values.begin(), values.end());
+        
+        int k = queries.size();
+        
+        vector<int> ans(k, 0);
+        
+        for (int i = 0; i < k; i++) {
+            int idx = (int)(lower_bound(values.begin(), values.end(), queries[i]) - values.begin());
+            idx--;
+            ans[i] = idx + 1;
+        }
+        
+        return ans;
+    }
+};

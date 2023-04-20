@@ -1,0 +1,73 @@
+// refactor 1
+class Solution {
+public:
+    using VI = vector<int>;
+    using VVI = vector<VI>;
+    int maxSumDivThree(VI& A) {
+        int N = A.size();
+        VI pre(3);
+        for (auto i{ 1 }; i <= N; ++i) {
+            VI cur{ pre };
+            for (auto j{ 0 }; j < 3; ++j) {
+                auto x = A[i - 1] + pre[j];
+                auto k = x % 3;
+                cur[k] = max(cur[k], x);
+            }
+            swap(pre, cur);
+        }
+        return pre[0];
+    }
+};
+
+// refactor 2
+class Solution {
+public:
+    using VI = vector<int>;
+    using VVI = vector<VI>;
+    int maxSumDivThree(VI& A) {
+        VI pre(3);
+        for (auto x: A) {
+            VI cur{ pre };
+            for (auto j{ 0 }; j < 3; ++j) {
+                auto y = x + pre[j];
+                auto k = y % 3;
+                cur[k] = max(cur[k], y);
+            }
+            swap(pre, cur);
+        }
+        return pre[0];
+    }
+};
+
+// refactor 3
+class Solution {
+public:
+    using VI = vector<int>;
+    using VVI = vector<VI>;
+    int maxSumDivThree(VI& A) {
+        VI pre(3);
+        for (auto x: A) {
+            VI cur{ pre };
+            for (auto y: pre)
+                cur[(x + y) % 3] = max(cur[(x + y) % 3], x + y);
+            swap(pre, cur);
+        }
+        return pre[0];
+    }
+};
+
+// refactor 4
+class Solution {
+public:
+    using VI = vector<int>;
+    using VVI = vector<VI>;
+    int maxSumDivThree(VI& A) {
+        VI cur(3);
+        for (auto x: A) {
+            VI pre{ cur };
+            for (auto y: pre)
+                cur[(x + y) % 3] = max(cur[(x + y) % 3], x + y);
+        }
+        return cur[0];
+    }
+};

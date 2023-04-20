@@ -1,0 +1,43 @@
+class DetectSquares {
+private:
+    unordered_map<int, int>pointCount ; //{point, count}
+public:
+    DetectSquares() {
+        
+    }
+    
+    void add(vector<int> point) {
+        int hash = (point[0] << 10) + point[1] ;
+        pointCount[hash]++ ;
+    }
+    
+    int count(vector<int> point) {
+        int x1 = point[0] ;
+        int y1 = point[1] ;
+        int hash1 = (x1 <<10) + y1 ;
+        int ret = 0 ;
+        for(auto& [hash3, count3] : pointCount){
+            int x3 = (hash3 >> 10) ;
+            int y3 = hash3 & 1023 ;
+            if(hash3!= hash1 && abs(x1-x3) == abs(y1-y3)){
+                int hash2 = (x1 << 10) + y3 ;
+                int hash4 = (x3 << 10) + y1 ;
+                if(pointCount.find(hash2) != pointCount.end()\
+                   && pointCount.find(hash4) != pointCount.end())
+                {
+                    int count2 =  pointCount[hash2] ;
+                    int count4 =  pointCount[hash4] ;
+                    ret += count3 * count2 * count4 ;
+                } 
+            } 
+        }
+        return ret ;
+    }
+};
+
+/**
+ * Your DetectSquares object will be instantiated and called as such:
+ * DetectSquares* obj = new DetectSquares();
+ * obj->add(point);
+ * int param_2 = obj->count(point);
+ */

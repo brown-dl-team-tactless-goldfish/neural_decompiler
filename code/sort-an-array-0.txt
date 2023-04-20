@@ -1,0 +1,74 @@
+void MergeProcedure(int arr[], int start, int mid, int end)
+{
+	int i = 0;
+	int j = 0;
+	int k = 0;
+
+	// arr[start + k] when k = 0
+	// arr[k] when k = start
+
+	int size1 = mid - start + 1; // [start, mid] 
+	int size2 = end - mid; // (mid, end] 
+
+	int* arr1 = (int*)malloc(size1 * sizeof(int));
+	int* arr2 = (int*)malloc(size2 * sizeof(int));
+
+	for (int i = 0; i < size1; i++)
+		arr1[i] = arr[start + i]; //**
+	for (int i = 0; i < size2; i++)
+		arr2[i] = arr[mid + 1 + i]; // **
+
+	while (1)
+	{
+		if (arr1[i] <= arr2[j])
+		{
+			arr[start + k] = arr1[i];
+			i++;
+			k++;
+			if (i == size1)
+			{
+				while (j < size2) 
+				{
+					arr[start + k] = arr2[j];
+					j++;
+					k++;
+				}
+				break;
+			}
+		}
+		else
+		{
+			arr[start + k] = arr2[j];
+			k++;
+			j++;
+			if (j == size2)
+			{
+				while (i < size1)
+				{
+					arr[start + k] = arr1[i];
+					i++;
+					k++;
+				}
+				break;
+			}
+		}
+	}
+}
+
+void Merge(int arr[], int start, int end)
+{
+	if (start < end)
+	{
+		int mid = (start + end) / 2;
+
+		Merge(arr, start, mid);
+		Merge(arr, mid + 1, end);
+		MergeProcedure(arr, start, mid, end);
+	}
+}
+
+int* sortArray(int* nums, int numsSize, int* returnSize){
+  *returnSize=numsSize;  
+  Merge(nums, 0, numsSize-1);
+  return nums;
+}

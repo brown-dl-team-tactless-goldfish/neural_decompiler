@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int stoneGameVI(vector<int>& aliceValues, vector<int>& bobValues) {
+        // A player's optimal strategy is to: 
+        // 1) maximize the value from available stones of him/her own, AND
+        // 2) minimize the value from available stones of the opponent.
+        // To achieve the goal, we need to check the sum of aliceValues[i] + bobValues[i]
+        // in each turn. We go through each index i and find out the max value of aliceValues[i]
+        // + bobValues[i], and pick that index. We can use priority queue to sort the indices
+        // based on the sum of the values first, and then play the game until the end.
+        int size = aliceValues.size(), alice = 0, bob = 0;
+        vector<int> indices(aliceValues.size());
+        for (int i = 0; i < size; ++i)
+        {
+            indices[i] = i; // store all indices
+        }
+        
+        sort(indices.begin(), indices.end(), [&](int i, int j) // sort indices based on sum of alice and bob's value
+             {
+                 return aliceValues[i] + bobValues[i] > aliceValues[j] + bobValues[j];
+             });
+        
+        for (int i = 0; i < size; i += 2)
+        {
+            alice += aliceValues[indices[i]]; // alice's turn
+            bob += i + 1 < size ? bobValues[indices[i + 1]] : 0; // bob's turn
+        }
+        
+        return alice < bob ? -1 : alice == bob ? 0 : 1; 
+    }
+};

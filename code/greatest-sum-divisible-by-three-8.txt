@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int maxSumDivThree(vector<int>& nums) {
+        int len = nums.size();
+        int a = -1e9,b = -1e9,c = -1e9;
+        for(int i = len-1;i>=0;i--){
+            if(nums[i]%3==0){
+                a = max(a+nums[i],nums[i]);
+                b = max(b+nums[i],b);
+                c = max(c+nums[i],c);
+            }
+            else if(nums[i]%3==1){
+                int bb = b;
+                b = max(b,max(a+nums[i],nums[i]));
+                a = max(a,c+nums[i]);
+                c = max(c,bb+nums[i]);
+            }
+            else {
+                int cc = c;
+                c = max(c,max(nums[i],a+nums[i]));
+                a = max(a,b+nums[i]);
+                b = max(b,cc+nums[i]);
+            }
+        }
+        return max(a,0);
+    }
+};

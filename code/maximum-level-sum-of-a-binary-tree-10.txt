@@ -1,0 +1,30 @@
+class Solution:
+    def maxLevelSum(self, root: TreeNode) -> int:
+        data = {}
+        
+        def helper(curNode, curLevel):
+            if (curNode == None):
+                return 
+            
+            if (curLevel not in data):
+                data[curLevel] = curNode.val
+            else:
+                data[curLevel] += curNode.val
+                
+            helper(curNode.left, curLevel + 1)
+            helper(curNode.right, curLevel + 1)
+            
+        helper(root, 1)
+        
+        print ("data = ", data)
+        
+        maxVal = max(data.values())
+        
+        res = float('inf')
+        for k, v in data.items():
+            if (v == maxVal and k < res):
+                res = k
+                
+        print ("res = ", res)
+        
+        return res

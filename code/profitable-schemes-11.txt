@@ -1,0 +1,27 @@
+using VI=vector<int>;
+class Solution {
+public:
+    int profitableSchemes(int size, int target, VI& group, VI& profit, int ans=0) {
+        DFS(group,profit,target,size,ans);
+        return ans;
+    }
+private:
+    void DFS(const VI& group, const VI& profit, const int target, int size, int& ans,
+             int beg=0, int&& sum=0, VI&& path={}, unordered_set<int>&& V={}){
+        for (int i=beg; i<(int)group.size(); ++i){
+            if (!V.insert(i).second)
+                continue;
+            path.push_back(i);
+            sum+=profit[i];
+            size-=group[i];
+            if (sum >= target && size >= 0)
+                ++ans;
+            if (size > 0)
+                DFS(group,profit,target,size,ans,i+1,move(sum),move(path),move(V));
+            V.erase(i);
+            path.pop_back();
+            sum-=profit[i];
+            size+=group[i];
+        }
+    }
+};

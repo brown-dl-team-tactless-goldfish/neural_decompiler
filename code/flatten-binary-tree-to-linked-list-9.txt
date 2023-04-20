@@ -1,0 +1,32 @@
+void travel(struct TreeNode *root, struct TreeNode **curr){
+    struct TreeNode *newNode= (struct TreeNode *) malloc(sizeof(struct TreeNode));
+    // ret[*idx] = root->val;
+    
+    newNode->val = root->val;
+    newNode->left = NULL;
+    newNode->right = NULL;
+    (*curr)->right = newNode;
+    *curr = (*curr)->right;
+    
+    if (root->left) {
+        travel(root->left, curr);
+    }
+    if (root->right) {
+        travel(root->right, curr);
+    }
+}
+
+void flatten(struct TreeNode* root){
+     if (root == NULL) {
+        return;
+    }
+    
+    struct TreeNode *ret_head = (struct TreeNode *) malloc(sizeof(struct TreeNode));
+    struct TreeNode *curr = ret_head;
+    
+    travel(root, &curr);
+    
+    root->left = NULL;
+    root->right = ret_head->right->right;
+   
+}

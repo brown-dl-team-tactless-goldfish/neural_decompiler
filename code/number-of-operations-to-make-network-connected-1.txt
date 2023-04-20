@@ -1,0 +1,31 @@
+int find(int* map, int val) {
+    if(map[val] == 0) return val;
+    return find(map, map[val]);
+}
+
+int makeConnected(int n, int** connections, int connectionsSize, int* connectionsColSize){
+    
+    int* map = (int *) calloc(n, sizeof(int)), count = 0, mapcount=0;
+    if((n-1) > connectionsSize) return -1;
+    
+    for(int i = 0; i < connectionsSize; i++) {
+        for(int j = 0; j < (connectionsColSize[i]-1); j++) {
+            int x = find(map, connections[i][j]);
+            int y = find(map, connections[i][j+1]);
+            if(x == y) {
+                count++;
+                
+            }
+            else {
+                map[x] = y;
+                mapcount++;
+            }
+        }
+    }
+    
+    
+    mapcount = n - mapcount - 1;
+    if(count >= mapcount) return mapcount;
+    
+    return count;
+}

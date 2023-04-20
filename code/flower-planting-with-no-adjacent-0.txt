@@ -1,0 +1,61 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int cmp(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+
+int* gardenNoAdj(int n, int** paths, int pathsSize, int* pathsColSize, int* returnSize){
+    // Initializa graph
+    int** graph = calloc(n+1, sizeof(int*));
+    for(int i = 0; i <= n; i++){
+        graph[i] = calloc(3, sizeof(int));
+    }
+
+    // Create adjacent paths' graph
+    for(int i = 0; i < pathsSize; i++){
+        int j = 0;
+        while(graph[(paths[i][0])][j]!=0){ 
+            j++;
+        }
+        graph[paths[i][0]][j] = paths[i][1];
+        j = 0;
+        while(graph[(paths[i][1])][j]!=0){ 
+            j++;
+        }
+        graph[paths[i][1]][j] = paths[i][0];
+    }
+    int* ans = calloc(n, sizeof(int));
+    int cantTake[3];
+    int cantTakeSize;
+
+    // For each garden, check wich type of flower we can plant
+    for(int i = 1; i <=n; i++){
+        cantTakeSize = 0;
+
+        // Store types we can't plant
+        for(int j = 0; j<3 && graph[i][j]!=0; j++){
+            if(ans[graph[i][j]-1]!=0){
+                cantTake[cantTakeSize++] = ans[graph[i][j]-1];
+            }
+        }
+        free(graph[i]);
+
+        // Find wich type we can take
+        qsort(cantTake, cantTakeSize, sizeof(int), cmp);
+        int type = 1, idx = 0;
+
+        while(idx<cantTakeSize){
+            if(cantTake[idx]!=type) break;
+            while(idx<cantTakeSize && cantTake[idx]==type){
+                idx++;
+            }
+            type++;
+        }
+        ans[i-1] = type;
+    }
+    
+    free(graph);
+    *returnSize = n;
+    return ans;
+}

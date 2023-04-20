@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int intersectionSizeTwo(vector<vector<int>>& intervals) {
+        // sort the intervals
+        vector<pair<int, int>> v;
+        for (auto& p : intervals) v.push_back(make_pair(p[0], p[1]));
+        sort(v.begin(), v.end());
+        
+        // remove useless intervals
+        vector<pair<int, int>> u;
+        for (auto& p : v) {
+            while (!u.empty() && p.second <= u.back().second) u.pop_back();
+            u.push_back(p);
+        }
+        
+        // greedy
+        // first, select the last two number in interval u[0]
+        vector<int> result(2, u[0].second);
+        result[0]--;
+        
+        for (auto& p : u) {
+            //for each interval, discuss whether the last two numbers in [result] would make current interval "valid". if not, add the last one or two numbers of the current interval
+            int a = *(result.end() - 2);
+            int b = *(result.end() - 1);
+            if (a >= p.first) continue;
+            if (b < p.first) {
+                // push the last two numbers
+                result.push_back(p.second - 1);
+            }
+            // else push the last one number
+            result.push_back(p.second);
+        }
+        return result.size();
+    }
+};

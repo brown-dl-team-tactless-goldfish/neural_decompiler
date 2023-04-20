@@ -1,0 +1,117 @@
+#include <stdlib.h>
+#include <pthread.h>
+#include <assert.h>
+#include <stdio.h>
+
+// void printFizz() { printf("Fizz\n"); }
+// void printBuzz() { printf("Buzz\n"); }
+// void printFizzBuzz() { printf("FizzBuzz\n"); }
+// void printNumber(int i) { printf("%d\n", i); }
+
+typedef struct
+{
+    pthread_mutex_t mutex;
+    pthread_cond_t cond_fizz;
+    pthread_cond_t cond_buzz;
+    pthread_cond_t cond_number;
+    pthread_cond_t cond_fizzbuzz;
+
+    int n;
+    int i;
+} FizzBuzz;
+
+FizzBuzz *fizzBuzzCreate(int n)
+{
+    FizzBuzz *obj = (FizzBuzz *)malloc(sizeof(FizzBuzz));
+    obj->n = n;
+    obj->i = 1;
+
+    assert(n >= 1);
+
+    pthread_mutex_init(&obj->mutex, NULL);
+    pthread_cond_init(&obj->cond_fizz, NULL);
+    pthread_cond_init(&obj->cond_buzz, NULL);
+    pthread_cond_init(&obj->cond_number, NULL);
+    pthread_cond_init(&obj->cond_fizzbuzz, NULL);
+
+    return obj;
+}
+
+int is_fizz(int i) { return i % 3 == 0 && i % 5 != 0; }
+int is_buzz(int i) { return i % 3 != 0 && i % 5 == 0; }
+int is_fizzbuzz(int i) { return i % 3 == 0 && i % 5 == 0; }
+int is_number(int i) { return i % 3 != 0 && i % 5 != 0; }
+
+void next(FizzBuzz *obj)
+{
+    if (is_fizz(obj->i))
+    {
+        pthread_cond_signal(&obj->cond_fizz);
+    }
+    else if (is_buzz(obj->i))
+    {
+        pthread_cond_signal(&obj->cond_buzz);
+    }
+    else if (is_fizzbuzz(obj->i))
+    {
+        pthread_cond_signal(&obj->cond_fizzbuzz);
+    }
+    else
+    {
+        pthread_cond_signal(&obj->cond_number);
+    }
+}
+
+#define BROADCAST_ALL()                              \
+    {                                                \
+        pthread_cond_broadcast(&obj->cond_fizz);     \
+        pthread_cond_broadcast(&obj->cond_buzz);     \
+        pthread_cond_broadcast(&obj->cond_fizzbuzz); \
+        pthread_cond_broadcast(&obj->cond_number);   \
+    }
+
+
+#define CALL_PRINT_ARGS_true(print_func, arg) print_func(arg);
+#define CALL_PRINT_ARGS_false(print_func, arg) print_func();
+
+#define ROUTINE(fizzbuzz_type, fizzbuzz_check, print_func, pass_arg)                  \
+    void fizzbuzz_type(FizzBuzz *obj)                                       \
+    {                                                                       \
+        while (1)                                                           \
+        {                                                                   \
+            pthread_mutex_lock(&obj->mutex);                                \
+            while (obj->i <= obj->n && !fizzbuzz_check(obj->i))                                 \
+            {                                                               \
+                pthread_cond_wait(&obj->cond_##fizzbuzz_type, &obj->mutex); \
+            }                                                               \
+            if (obj->i <= obj->n)                                            \
+            {                                                               \
+                CALL_PRINT_ARGS_##pass_arg(print_func, obj->i);\
+                obj->i++;                                                   \
+                next(obj);                                                  \
+                pthread_mutex_unlock(&obj->mutex);                          \
+            }                                                               \
+            else                                                            \
+            {                                                               \
+                BROADCAST_ALL();                                            \
+                pthread_mutex_unlock(&obj->mutex);                          \
+                break;                                                      \
+            }                                                               \
+        }                                                                   \
+    }
+
+
+ROUTINE(fizz, is_fizz, printFizz, false)
+ROUTINE(buzz, is_buzz, printBuzz, false)
+ROUTINE(fizzbuzz, is_fizzbuzz, printFizzBuzz, false)
+ROUTINE(number, is_number, printNumber, true)
+
+void fizzBuzzFree(FizzBuzz *obj)
+{
+    pthread_cond_destroy(&obj->cond_fizz);
+    pthread_cond_destroy(&obj->cond_buzz);
+    pthread_cond_destroy(&obj->cond_fizzbuzz);
+    pthread_cond_destroy(&obj->cond_number);
+    pthread_mutex_destroy(&obj->mutex);
+    free(obj);
+}

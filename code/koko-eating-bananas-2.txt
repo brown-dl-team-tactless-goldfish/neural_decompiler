@@ -1,0 +1,37 @@
+int max(int x, int y)
+{
+    return x > y ? x : y;
+}
+
+int ceilDiv(int x, int y)
+{
+    return x / y + (x % y != 0);
+}
+
+bool isValid(int* piles, int pilesSize, int h, int amountPerHour)
+{
+    int timeTaken = 0;
+    for(int i = 0; i < pilesSize; i++)
+    {
+        timeTaken += ceilDiv(piles[i], amountPerHour);
+    }
+    return timeTaken <= h;
+}
+
+int minEatingSpeed(int* piles, int pilesSize, int h)
+{
+    int left = 1;
+    int right = piles[0];
+    for(int i = 0; i < pilesSize; i++)
+        right = max(right, piles[i]);
+    
+    while(left < right)
+    {
+        int mid = left + (right - left) / 2;
+        if(isValid(piles, pilesSize, h, mid))
+            right = mid;
+        else
+            left = mid + 1;
+    }
+    return left;
+}

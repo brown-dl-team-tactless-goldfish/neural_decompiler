@@ -1,0 +1,85 @@
+class Solution {
+    class RollingHash
+    {
+        private final static int base = 11;
+        private final static int mod = 1_000_000_007;
+        private long[] hash;
+        private long[] pow;
+
+        public RollingHash(String str)
+        {
+            hash = new long[str.length() + 1];
+            pow = new long[str.length() + 1];
+            pow[0] = 1;
+            for (int i = 1; i <= str.length(); i++)
+            {
+                int c = str.charAt(i - 1);
+                hash[i] = (hash[i - 1] * base + c) % mod;
+                pow[i] = (pow[i - 1] * base) % mod;
+            }
+        }
+
+        // [from, to]
+        public int getHash(int from, int to)
+        {
+            long h = hash[to + 1];
+            h -= hash[from] * pow[to - from + 1] % mod;
+            if (h < 0) h += mod;
+            return (int)h;
+        }
+    }
+
+    private static final int mod = 1_000_000_007;
+    private RollingHash rh;
+    // dp[index][len]: number of valid splits for substring starting from index
+    //                 with the first group AT LEAST of length len
+    private int[][] dp;
+    private char[] arr;
+
+    private int getLcp(int a, int b) {
+        int low = 0, high = arr.length - b;
+        while (low < high) {
+            int mid = (low + high) / 2;
+            if (rh.getHash(a, a + mid) == rh.getHash(b, b + mid)) {
+                low = mid + 1;
+            }
+            else {
+                high = mid;
+            }
+        }
+        return low;
+    }
+
+    private int solve(int cur, int len) {
+        if (cur + len > arr.length) return 0;
+        if (dp[cur][len] == -1) {
+            if (arr[cur] == '0') dp[cur][len] = 0;
+            else if (cur + len == arr.length) dp[cur][len] = 1;
+            else {
+                dp[cur][len] = solve(cur, len + 1);
+                if (cur + len * 2 <= arr.length) {
+                    // find the longest common prefix for substrings starting from cur and cur + len
+                    int next = cur + len, lcp = getLcp(cur, cur + len), nextLen = len;
+                    // if lcp is shorter than the current length,
+                    // at the first mismatching pos for both substrings
+                    // if arr[pos_cur] > arr[pos_next], we know substring [cur, pos_cur) is greater than [next, pos_next)
+                    // so we know (next, len) will not be a valid sub solution, and we should start from (next, len + 1)
+                    if (lcp < len && arr[cur + lcp] > arr[next + lcp]) nextLen++;
+                    dp[cur][len] = (dp[cur][len] + solve(next, nextLen)) % mod;
+                }
+            }
+        }
+        return dp[cur][len];
+    }
+
+    public int numberOfCombinations(String num) {
+        rh = new RollingHash(num);
+        arr = num.toCharArray();
+        dp = new int[arr.length][arr.length + 1];
+        for (int[] a : dp) {
+            Arrays.fill(a, -1);
+        }
+        int res = solve(0, 1);
+        return res;
+    }
+}

@@ -1,0 +1,54 @@
+class Solution {
+public:
+    int ans=0;
+    int m,n;
+    int max_count;
+    int start_i,start_j;
+    vector <pair<int,int>> dir= {{1,0},{0,1},{-1,0},{0,-1}};
+    void DFS(int i,int j,vector<vector<int>>& grid,vector<vector<int>>& visited,int count)
+    {
+        if(grid[i][j]== 2 )
+        {
+            if(count==max_count )
+                ans++;
+                return;
+            return;
+        } 
+        for(auto it:dir)
+        {   int ni = i+it.first;
+            int nj = j+it.second;
+            if(ni<0 || nj<0 || ni>=m || nj>=n || visited[ni][nj])
+                continue;
+            visited[ni][nj]=1;
+            DFS(ni,nj,grid,visited,count+1);
+            visited[ni][nj]=0;
+        }
+    }
+    
+    int uniquePathsIII(vector<vector<int>>& grid) {
+        m = grid.size();
+        n=  grid[0].size();
+        int no_of_obs=0;
+        vector <vector<int>> visited(m,vector<int>(n,0));
+        for(int i=0;i<m;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                if(grid[i][j]==-1)
+                {
+                    visited[i][j]=1;
+                    no_of_obs++;
+                }
+                else if(grid[i][j]==1)
+                {
+                    start_i= i;
+                    start_j= j;
+                }
+            }
+        }
+        max_count = m*n - no_of_obs;
+        visited[start_i][start_j]=1;
+        DFS(start_i,start_j,grid,visited,1);
+        return ans;
+    }
+};

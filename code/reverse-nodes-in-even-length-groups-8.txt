@@ -1,0 +1,35 @@
+// OJ: https://leetcode.com/problems/reverse-nodes-in-even-length-groups/
+// Author: github.com/lzl124631x
+// Time: O(N)
+// Space: O(1)
+class Solution {
+    int getLength(ListNode *head) {
+        int len = 0;
+        for (; head; head = head->next) ++len;
+        return len;
+    }
+public:
+    ListNode* reverseEvenLengthGroups(ListNode* head) {
+        ListNode dummy, *tail = &dummy;
+        for (int i = 0, total = getLength(head); head; ++i) {
+            int len = min(total, i + 1); // the length of the current section
+            ListNode *newTail = NULL; // The new tail if we need to reverse the current section
+            for (int j = 0; j < len && head; ++j) {
+                auto p = head;
+                head = head->next;
+                if (len % 2) { // direct append
+                    tail->next = p;
+                    tail = p;
+                } else { // append in reverse order
+                    if (newTail == NULL) newTail = p;
+                    p->next = tail->next; 
+                    tail->next = p;
+                }
+            }
+            if (newTail) tail = newTail;
+            tail->next = NULL;
+            total -= len;
+        }
+        return dummy.next;
+    }
+};

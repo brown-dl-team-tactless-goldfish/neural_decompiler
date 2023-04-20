@@ -1,0 +1,55 @@
+unordered_set<string> checked;
+map<string, string> lookup;
+    
+bool pyramidTransition(string bottom, vector<string>& allowed) {
+    for (string s : allowed){
+        lookup[s.substr(0, 2)] +=s[2];
+    }
+    
+    return pyramidTransition(bottom);
+}
+
+bool pyramidTransition(string bottom){
+
+    if (bottom.size() == 2){
+        return lookup.find(bottom) != lookup.end();
+    }
+    
+    vector<string> icons(bottom.size() - 1);
+    
+    for (int i = 0; i < bottom.size() - 1; ++i){
+        string key = bottom.substr(i, 2);
+        if (lookup.find(key) == lookup.end()){
+            return false;
+        }
+        icons[i] = lookup[key];
+    }
+    
+    string str;
+    return check(str, icons, 0);
+}
+
+bool check(string str, vector<string>&icons, int start){
+    if (start == icons.size()){ 
+        if (checked.find(str) == checked.end()){
+            if (pyramidTransition(str)){
+                return true;
+            }else{
+                checked.insert(str);
+                return false;
+            }
+        }else{
+            return false;
+        }
+    }
+    
+    for (char c : icons[start]){
+        string str1 = str + c;
+        if (check(str1, icons, start + 1)){
+            return true;
+        }
+    }
+        
+    return false;
+        
+}

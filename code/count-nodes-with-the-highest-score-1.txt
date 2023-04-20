@@ -1,0 +1,60 @@
+int dfs(const int **children, int *childrenCnt, int parentsSize, int parent, unsigned long long *max, int *highest_score_nodes) {
+	if (NULL == children || NULL == max || NULL == highest_score_nodes) return 0;
+    int *child = children[parent];
+    unsigned long long score = 0;
+    int grandchild_cnt[2] = {0 ,0};
+    for (int i = 0; i < childrenCnt[parent]; i++) {
+        // to calculate the number of grandchildren of two children.
+        grandchild_cnt[i] = dfs(children, childrenCnt, parentsSize, child[i], max, highest_score_nodes);
+        // ignore empty subtree
+        if (score == 0) score = grandchild_cnt[i];
+        else if (grandchild_cnt[i]) score *= grandchild_cnt[i];
+    }
+
+    int subtree_nodes_num = grandchild_cnt[0] + grandchild_cnt[1] + 1; // 1 is parent node.
+    int remaining_nodes_num = parentsSize - subtree_nodes_num;
+    if (score == 0) score = remaining_nodes_num;
+    else if (remaining_nodes_num) score *= remaining_nodes_num;
+
+    if (score > *max) {
+        *max = score;
+        *highest_score_nodes = 1;
+    } else if (score == *max) (*highest_score_nodes)++; // PAY ATTENTION to THE indirect memory access
+
+    return subtree_nodes_num;
+}
+
+
+int countHighestScoreNodes(int* parents, int parentsSize){
+	if (NULL == parents) return 0;
+    
+	unsigned long long max = 0;
+	int highest_score_nodes = 0;
+    int **children = (int**)calloc(parentsSize, sizeof(int*));
+    if (NULL == children) return 0;
+    int childrenCnt[parentsSize];
+    for (int i = 0; i < parentsSize; i++) {
+        children[i] = (int*)calloc(2, sizeof(int));
+        if (NULL == children[i]) {
+            for (int j = 0; j < i; j++) free(children[j]);
+            free(children);
+            return 0;
+        }
+        childrenCnt[i] = 0;
+    }
+
+    for (int i = 1; i < parentsSize; i++) {
+        if (childrenCnt[parents[i]] >= 2) {
+            printf("3rd child in binary tree?!\n");
+            continue;
+        }
+        children[parents[i]][childrenCnt[parents[i]]++] = i;
+    }
+
+	dfs(children, childrenCnt, parentsSize, 0, &max, &highest_score_nodes);
+
+    for (int i = 0; i < parentsSize; i++) free(children[i]);
+    free(children);
+
+	return highest_score_nodes;
+}

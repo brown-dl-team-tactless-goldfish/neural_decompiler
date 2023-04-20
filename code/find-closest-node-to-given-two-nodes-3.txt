@@ -1,0 +1,65 @@
+#define MAX(a, b) (a>b?a:b)
+
+// BF Search on Graph
+void BF(int* edges, int n, int* dist, bool* visited, int node){
+    int* queue = calloc(n, sizeof(int)), last = 0, first = 0, cur;
+    dist[node] = 0;
+    visited[node] = true;
+    queue[last++] = node;
+    // While we can reach other nodes
+    while(first!=last){
+        cur = queue[first++];
+        // Since you don't want loops and -1 isn't a node
+        // You will only continue doing BF to all other nodes
+        if(edges[cur]!=-1 && !visited[edges[cur]]){
+            dist[edges[cur]] = dist[cur] + 1;
+            visited[edges[cur]] = true;
+            queue[last++] = edges[cur];
+        }
+    }
+
+    free(queue);
+}
+
+int closestMeetingNode(int* edges, int edgesSize, int node1, int node2){
+    // Arrays to keep distance from nodes 1 and 2
+    int* distNode1 = calloc(edgesSize, sizeof(int));
+    int* distNode2 = calloc(edgesSize, sizeof(int));
+    for(int i = 0; i < edgesSize; i++){
+        distNode1[i] = -1;
+        distNode2[i] = -1;
+    }
+    bool* visited = calloc(edgesSize, sizeof(bool));
+    
+    // Do a BF from both nodes and store the distance of the reached nodes
+    BF(edges, edgesSize, distNode1, visited, node1);
+    memset(visited, false, sizeof(bool)*edgesSize);
+    BF(edges, edgesSize, distNode2, visited, node2);
+    free(visited);
+    
+    int ans = 0, max1 = MAX(distNode1[0], distNode2[0]), max2;
+    
+    // For each node reached by both node 1 and 2
+    // Select the one with the minimun distance
+    // between the max distance of that node
+    // Example:
+    // Node 5 has distances 1 and 2, so it's maximum distance is 2
+    // Node 6 has distance 0 and 3, so it's maximum distance is 3
+    // So, you need to select Node 5 as your answer
+    for(int i = 0; i < edgesSize; i++){
+        if(distNode1[i]==-1 || distNode2[i]==-1) continue;
+        max2 = MAX(distNode1[i], distNode2[i]);
+        if(distNode1[ans]==-1 || distNode2[ans]==-1 || max2<max1){
+            ans = i;
+            max1 = max2;
+        }
+    }
+
+    // Since we are selecting an arbitrary node as ans in it's initialization
+    // We need to make sure that after the loop is completed ans is a valid node
+    // Or else it means we couldn't find an answer between all nodes
+    if(distNode1[ans]==-1 || distNode2[ans]==-1) return -1;
+    free(distNode1);
+    free(distNode2);
+    return ans;
+}

@@ -1,0 +1,52 @@
+
+#define MAX_SIZE 10001
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* nextLargerNodes(struct ListNode* head, int* returnSize){
+    struct ListNode* temp = head;
+    int* result = (int*)calloc(MAX_SIZE,sizeof(int));
+    int* stack = (int*)calloc(MAX_SIZE,sizeof(int));
+    int* pos = (int*)calloc(MAX_SIZE,sizeof(int));
+    int depth = 0;
+    int idx=0;
+    
+    while(temp)
+    {
+        if((depth==0) || (stack[depth-1] > temp->val))
+        {
+            stack[depth] = temp->val;
+            pos[depth] = idx;
+            depth++;
+        }
+        else
+        {
+            while((depth>0) && (stack[depth-1] < temp->val))
+            {
+                result[pos[depth-1]] = temp->val;
+                depth--;
+            }
+            
+            stack[depth] = temp->val;
+            pos[depth] = idx;
+            depth++;
+        }
+        temp = temp->next;
+        idx++;
+    }
+    
+    *returnSize = idx;
+    free(stack);
+    free(pos);
+    return result;
+}

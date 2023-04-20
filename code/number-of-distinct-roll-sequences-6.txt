@@ -1,0 +1,52 @@
+class Solution {
+public:
+    int distinctSequences(int n) {
+        static const vector<vector<int>> kEdges = {
+            {},  // for convenience.
+            {2, 3, 4, 5, 6},  // remove 1 by rule 2.
+            {1, 3, 5},
+            {1, 2, 4, 5},
+            {1, 3, 5},
+            {1, 2, 3, 4, 6},
+            {1, 5},
+        };
+        
+        static constexpr long kMod = 1e9 + 7;
+        
+        if (n == 0) {
+            return 0;
+        }
+        
+        long dp[2][7][7] = {0};
+        int index = 0;
+        for (int i = 1; i <= 6; ++i) {
+            dp[0][0][i] = 1;
+        }
+        
+        --n;
+        for (; n > 0; --n) {
+            int prev = index;
+            index = !index;
+            memset(dp[index], 0, sizeof(dp[index]));
+            
+            for (int i = 0; i <= 6; ++i) {
+                for (int j = 0; j <= 6; ++j) {
+                    for (auto k : kEdges[j]) {
+                        if (i == k) {
+                            continue;
+                        }
+                        dp[index][j][k] = (dp[index][j][k] + dp[prev][i][j]) % kMod;
+                    }
+                }
+            }
+        }
+        
+        long ret = 0;
+        for (int i = 0; i <= 6; ++i) {
+            for (int j = 0; j <= 6; ++j) {
+                ret = (ret + dp[index][i][j]) % kMod;
+            }
+        }
+        return ret;
+    }
+};

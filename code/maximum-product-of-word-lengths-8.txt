@@ -1,0 +1,34 @@
+	void hash_init(char word[], int hash_int[],int hash_index)
+{
+	hash_int[hash_index] = 0;
+	for (int i = 0; '\0' != word[i]; i++)
+	{
+		int add_value = (1 << (((int)word[i]) - 97));
+		if ((hash_int[hash_index] - (hash_int[hash_index] ^ add_value)) != add_value)
+			hash_int[hash_index] += 1 << (((int)word[i]) - 97);
+	}
+}
+
+int maxProduct(char** words, int wordsSize) {
+
+	int hash_int[10000];
+	int max = 0;
+
+	for (int i = 0; i < wordsSize; i++)
+	{	
+		hash_init(words[i], hash_int, i);
+	}
+	for (int i = 0; i < wordsSize; i++)
+	{
+		for (int j = i+1; j < wordsSize; j++)
+		{
+			if ((hash_int[i] & hash_int[j]) == 0)
+			{
+				int temp=strlen(words[j])*strlen(words[i]);
+				if (max < temp)
+					max = temp;
+			}
+		}
+	}	
+	return max;
+}

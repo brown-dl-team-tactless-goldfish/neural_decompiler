@@ -1,0 +1,39 @@
+class Solution {
+public:
+    vector<int>travel ;
+    vector<string> rem ;
+    int getTime(char c , int bound){
+        int timer = 0 ;
+        
+        for(int i = 0 ; i <= bound ; ++i ){
+            //count for number of chars of c 
+            int cnt = count(begin(rem[i]),end(rem[i]),c) ;
+            timer += cnt ;
+            if(i != bound and i < travel.size()) timer += travel[i] ;
+        }
+        
+        return timer ;
+    }
+    
+    int garbageCollection(vector<string>& rem, vector<int>& travel) {
+        this->rem = rem ;
+        this->travel = travel ;
+        int mi = 0 , gi = 0 ,pi = 0 ;
+        
+        for(int i = rem.size() - 1 ; i >= 0 ; --i ){
+            int M = count(begin(rem[i]),end(rem[i]),'M') ;
+            int P = count(begin(rem[i]),end(rem[i]),'P') ;
+            int G = count(begin(rem[i]),end(rem[i]),'G') ;
+            
+            if(M and !mi) mi = i ;
+            if(P and !pi) pi = i ;
+            if(G and !gi) gi = i ;
+        }
+        
+        int M = getTime('M',mi) ; 
+        int P = getTime('P',pi) ;
+        int G = getTime('G',gi) ;
+        
+        return  M + P + G ;
+    }
+};

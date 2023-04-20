@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int tallestBillboard(vector<int>& in) {
+        if (in.empty()) return 0;
+        unordered_map<int, unordered_map<int, int>> dp;
+        dp[0][0] = 0;
+        dp[0][in[0]] = 0;
+
+        for (int i = 1; i < in.size(); ++i) {
+            int h = in[i];
+			
+            unordered_map<int, int> prev = dp[i-1];
+
+            for (const auto& p : prev) {
+                int k = p.first;
+
+                dp[i][k] = max(dp[i][k], prev[k]); // not use h
+                dp[i][k+h] = max(dp[i][k+h], prev[k]); // use h to increase diff
+                dp[i][abs(k-h)] = max(dp[i][abs(k-h)], prev[k] + min(k, h)); // use h to reduce diff
+            }
+        }
+
+        return dp[in.size()-1][0];
+    }
+};

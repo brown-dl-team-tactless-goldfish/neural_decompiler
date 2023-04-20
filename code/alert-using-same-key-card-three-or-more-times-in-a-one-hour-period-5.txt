@@ -1,0 +1,18 @@
+vector<string> alertNames(vector<string>& keyName, vector<string>& keyTime) {
+	map<string,vector<string>> m;
+	vector<string> ans;
+	const int n = keyName.size();
+	for(int i=0;i<n;++i)    m[keyName[i]].push_back(keyTime[i]);
+	for(auto &[key,value]:m){
+		sort(value.begin(),value.end());
+		for(int i=0;i<value.size()-2;++i){
+			int hourDiff = stoi(value[i+2].substr(0,2))-stoi(value[i].substr(0,2));
+			int minDiff = stoi(value[i+2].substr(3,2))-stoi(value[i].substr(3,2));
+			if(hourDiff*60+minDiff<=60){
+				ans.push_back(key);
+				break;
+			}
+		}
+	}
+	return ans;
+}

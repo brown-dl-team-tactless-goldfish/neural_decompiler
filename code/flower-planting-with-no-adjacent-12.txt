@@ -1,0 +1,42 @@
+class Solution {
+public:
+    void color(vector<vector<int>>& arr,vector<int>& res,int node)
+    {
+        vector<bool> c(5,0);
+        for(auto k:arr[node])
+        {
+            if(res[k]!=-1)
+                c[res[k]]=1;
+        }
+        for(int i=1;i<=4;i++){
+            if(c[i]==0){
+                res[node]=i;
+                // cout<<node<<" "<<i<<endl;
+                return ;
+            }
+        }
+    }
+    vector<int> gardenNoAdj(int n, vector<vector<int>>& paths) {
+        vector<vector<int>> arr(n);
+        for(auto v:paths)
+        {
+            arr[v[0]-1].push_back(v[1]-1);
+            arr[v[1]-1].push_back(v[0]-1);
+        }
+        vector<int> res(n,-1);
+        for(int i=0;i<n;i++)
+            if(res[i]==-1)
+                dfs(arr,n,res,i);
+        return res;
+    }
+    void dfs(vector<vector<int>>& arr,int n,vector<int>& res,int node)
+    {
+        //color the node
+        color(arr,res,node);
+        for(auto adj:arr[node])
+        {
+            if(res[adj]==-1)
+                dfs(arr,n,res,adj);
+        }
+    }
+};

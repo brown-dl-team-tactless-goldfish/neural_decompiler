@@ -1,0 +1,53 @@
+class Solution {
+public:
+    typedef long long ll; 
+    ll dp[101][101];
+    ll solver(int i,int j,vector<int>&rob,vector<int>&pos,vector<int>&lim,int n,int m)
+    {
+          // i --> ith robot      rob[i]--> position of ith robot
+          // j --> jth factory    pos[j]--> position of jth factory
+          // lim[j] --> limit of jth factor 
+             
+      
+        if(i==n)
+         return 0;
+
+        if(j==m)
+         return 1e18;
+
+        if(dp[i][j]!=-1)
+          return dp[i][j];
+
+        ll ans=LLONG_MAX;
+        ll res=0;
+
+        ans=min(ans,solver(i,j+1,rob,pos,lim,n,m)); // no robot assinged to jth factor
+        for(int k=i,l=0;l<lim[j] && k<n;k++,l++)// l+1 number of robots are assinged to jth factory
+        {
+           res+=abs(rob[k]-pos[j]);
+           ans=min(ans,solver(k+1,j+1,rob,pos,lim,n,m)+res);
+        }
+
+        return dp[i][j]=ans;
+    }
+    long long minimumTotalDistance(vector<int>& rob, vector<vector<int>>& factory) {
+        sort(rob.begin(),rob.end());
+        sort(factory.begin(),factory.end(),[](vector<int>&a,vector<int>&b)
+        {
+            return a[0]<b[0];
+        });
+
+        vector<int>pos;
+        vector<int>lim;
+
+        int m=factory.size();
+
+        for(int i=0;i<m;i++)
+        {
+            pos.push_back(factory[i][0]);
+            lim.push_back(factory[i][1]);
+        }
+        memset(dp,-1,sizeof(dp));
+        return solver(0,0,rob,pos,lim,rob.size(),factory.size());
+    }
+};

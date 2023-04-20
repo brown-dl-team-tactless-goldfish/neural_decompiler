@@ -1,0 +1,17 @@
+const int mod = 1E9 + 7;
+class Solution {
+public:
+    int numWays(string s) {
+        int64_t n = s.size();
+        vector<int> acc{0};
+        for (char c : s) acc.push_back(acc.back() + (c == '1'));
+        if (acc.back() % 3 != 0) return 0;
+        if (acc.back() == 0) return (n - 1) * (n - 2) / 2 % mod;
+        int each = acc.back() / 3;
+        auto p = equal_range(acc.begin(), acc.end(), each);
+        int64_t first = p.second - p.first;
+        p = equal_range(acc.begin(), acc.end(), each * 2);
+        int64_t second = p.second - p.first;
+        return first * second % mod;
+    }
+};

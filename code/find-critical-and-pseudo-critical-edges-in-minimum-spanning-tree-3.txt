@@ -1,0 +1,98 @@
+class Solution {
+    // Helper functions for union & find.
+    int find(vector<int>& g, int i) {
+        if(g[i] == i) return i;
+        g[i] = find(g, g[i]);
+        return g[i];
+    }
+    
+    void merge(vector<int>& g, int i, int j) {
+        i = find(g, i);
+        j = find(g, j);
+        g[j] = i;
+    }
+    
+public:
+    vector<vector<int>> findCriticalAndPseudoCriticalEdges(int n, vector<vector<int>>& edges) {
+        // keep the index of each edges, as we'll shuffle the orders by sorting.
+        for(int i=0; i<edges.size(); i++) {
+            edges[i].push_back(i);
+        }
+        
+        auto comp = [](vector<int>& v1, vector<int>& v2) {
+            return v1[2] < v2[2];
+        };
+        // sort the edges based on weights.
+        sort(edges.begin(), edges.end(), comp);
+
+        vector<int> empty = {};
+        
+        // get the length (summed weights) of the MST.
+        int length = MST(edges, n, empty);
+        
+        vector<vector<int>> ans;
+        vector<int> critical;
+        vector<int> pseudo;
+        for(int i=0; i<edges.size(); i++) {
+            vector<int> e = edges[i];
+            edges.erase(edges.begin() + i);
+            
+            int cri = MST(edges, n, empty);
+            // If removing one edge results in MST with higher length, add that edge to the critical set.
+            if(cri > length) {
+                critical.push_back(e[3]);
+            } else {   
+                // otherwise, if have/remove that edge does not change the length of MST, add that edge to the pseudo set.
+                int pse = MST(edges, n, e);
+                if(pse == length) {
+                    pseudo.push_back(e[3]);
+                }
+            }
+            
+            edges.insert(edges.begin() + i, e);
+        }
+        
+        ans.push_back(critical);
+        ans.push_back(pseudo);
+        return ans;
+    }
+    
+    // Util function for finding minimum spanning tree. the "include" refers to the edge that has to be included in the MST.
+    int MST(vector<vector<int>>& edges, int n, vector<int>& include) {
+        // Init the graph for union find.
+        vector<int> g(n, 0);
+        for(int i=0; i<n; ++i) g[i] = i;
+        
+        // If the "include" edge is set, fill it into the MST.
+        int res =0, cnt = 0;
+        if(include.size() > 0) {
+            res += include[2];
+            cnt = 1;
+            merge(g, include[0], include[1]);
+        }
+        
+        // Iterate over edges, always pick the edge with smallest weight.        
+        int idx = 0;
+        while(cnt < n-1 && idx < edges.size()) {
+            auto v = edges[idx];
+            int x = find(g, v[0]);
+            int y = find(g, v[1]);
+            
+            // if the 2 nodes of the edge are already connected, skip.
+            if(x == y) {
+                idx++;
+                continue;
+            }
+            
+            // otherwise, union the 2 nodes, and we have one more edge in the MST.
+            merge(g, x, y);
+            cnt++;
+            res += v[2];
+            idx++;
+        }
+        
+        // If the MST has less than n-1 edges, meaning the graph is not connected. 
+        if(cnt < n - 1) return INT_MAX;
+        return res;
+    }
+};

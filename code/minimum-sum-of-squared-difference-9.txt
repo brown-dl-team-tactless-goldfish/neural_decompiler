@@ -1,0 +1,32 @@
+class Solution {
+public:
+    long long minSumSquareDiff(vector<int>& nums1, vector<int>& nums2, int k1, int k2) {
+        int n = nums1.size();
+        vector<long long> arr(n);
+        for(int i = 0; i < n; i++) {
+            arr[i] = abs(nums1[i]-nums2[i]);
+        }
+        sort(arr.begin(), arr.end());
+        long long cnt = 1, val = arr[n-1];
+        long long ans = 0, total = k1+k2;
+        for(int i = n-2; i >= 0; i--) {
+            int d = val-arr[i];
+            if(total >= cnt*d) {
+                total -= cnt*d;
+                val = arr[i];
+                cnt++;
+            } else {
+                for(int j = 0; j <= i; j++) {
+                    ans += arr[j]*arr[j];
+                }
+                break;
+            }
+        }
+        int q = total/cnt;
+        int r = total%cnt;
+        val -= q;
+        if(val <= 0) return ans;
+        ans += val*val*(cnt-r) + (val-1)*(val-1)*r;
+        return ans;
+    }
+};

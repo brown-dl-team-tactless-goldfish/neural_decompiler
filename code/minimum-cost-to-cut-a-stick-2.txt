@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int memo[102][102];
+    int cutit(vector<int>& c/*uts*/, int bi/*egin*/, int ei/*nd of stick*/) {
+        int mr = INT_MAX, cost = c[ei] - c[bi]; if (cost <= 1) return 0;
+        if (memo[bi][ei]) return memo[bi][ei];
+        for (int x = bi+1; x < ei; x++) {
+            mr = min(mr, cutit(c, bi, x) + cutit(c, x, ei) + cost);
+        }
+        if (mr == INT_MAX) return 0;
+        memo[bi][ei] = mr;
+        return mr;
+    }
+    
+    int minCost(int n, vector<int>& cuts) {
+        cuts.push_back(0), cuts.push_back(n);
+        sort (cuts.begin(), cuts.end());
+        return cutit(cuts, 0, cuts.size() - 1);
+    }
+};

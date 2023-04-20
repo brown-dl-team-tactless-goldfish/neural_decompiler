@@ -1,0 +1,57 @@
+public int binSearch(int[] A, int i, int j , int k){
+    if(i>=j){
+        return -1;
+    }
+    if(A[i]>k){
+        return i;
+    }
+    while(j-i>1){
+        int mid = (i+j)/2;
+        int midVal = A[mid];
+        if(k<midVal){
+             j= mid;
+        }
+        else{
+            i = mid;
+        }
+    }
+    
+    if(j<A.length){
+        return j;
+    }
+    return -1;
+}
+public int[] advantageCount(int[] A, final int[] B) {
+    Integer[] C  = new Integer[B.length];
+    for(int i=0;i<B.length;i++){
+        C[i] = i;
+    }
+
+    Arrays.sort(A);
+    Arrays.sort(C, new Comparator<Integer>(){
+        public int compare(Integer a, Integer b){
+            return B[a] - B[b];
+        }
+    });
+    
+    int[] ret = new int[A.length];
+    int prev = 0;
+    int l = C.length-1;
+    int t = 0;
+    for(t=0;t<C.length;t++){
+        int k = binSearch(A, prev, A.length, B[C[t]]);
+        if(k==-1){
+            break;
+        }
+        for(int j=prev;j<k;j++){
+            ret[C[l--]] = A[j];
+        }
+        ret[C[t]] = A[k];
+        prev = k+1;
+    }
+    for(int j=prev;j<A.length;j++){
+        ret[C[l--]] = A[j];
+    }
+
+    return ret;
+}

@@ -1,0 +1,63 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+struct status {
+    int depth;
+    int half;
+};
+
+bool isCompleteNode(struct TreeNode *root, int row, struct status *status) {
+    if (root->left == NULL && root->right) {
+        return false;
+    }
+
+    if (root->left && root->right) {
+        if (!isCompleteNode(root->left, row + 1, status)) {
+            return false;
+        }
+
+        if (!isCompleteNode(root->right, row + 1, status)) {
+            return false;
+        }
+
+        return true;
+    }
+
+    if (root->left || row != status->depth) {
+        if (row != status->depth - 1) {
+            return false;
+        }
+
+        if (status->half) {
+            return false;
+        }
+
+        status->half = 1;
+        status->depth--;
+
+        return true;
+    }
+
+    return true;
+}
+
+bool isCompleteTree(struct TreeNode *root) {
+    int index = 0;
+    struct status status = { .depth = 0, .half = 0 };
+    
+    for (struct TreeNode *node = root; node = node->left; node && node->left) {
+        status.depth++;
+    }
+
+    if (!isCompleteNode(root, index, &status)) {
+        return false;
+    }
+
+    return true;
+}

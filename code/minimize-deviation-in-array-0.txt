@@ -1,0 +1,70 @@
+#define SWAP(x, y) (x ^= y ^= x ^= y)
+#define MIN(a,b) ((a<b)? a:b)
+
+void checkBigger(int *h, int posi){
+    for(int comp; posi >= 4; posi = comp){
+        comp = (posi>>2<<1)+1;
+        if(h[posi] > h[comp])
+            SWAP(h[posi], h[comp]);
+        else break;
+    }
+}
+void checkSmaller(int *h, int posi){
+    for(int comp; posi >= 4; posi = comp){
+        comp = posi>>2<<1;
+        if(h[posi] < h[comp])
+            SWAP(h[posi], h[comp]);
+        else break;
+    }
+}
+void insert(int *h, int top, int data){
+    h[top] = data;
+    if(!(top&1)){           //is left
+        if(h[top] > h[top>>1])
+            checkBigger(h,top);
+        else
+            checkSmaller(h,top);
+    }
+    else{                       //is right
+        if(h[top] < h[top-1]){
+            SWAP(h[top], h[top-1]);
+            checkSmaller(h,top-1);
+        }
+        else  checkBigger(h,top);
+    }
+}
+
+void deleteMax(int *h, int *top){
+    h[3] = h[(*top)--];
+    int par = 3, chi = 5;
+    while (chi <= (*top)){
+        if(chi+2 <= (*top) && h[chi+2]>h[chi])  //選較大的
+            chi += 2;
+        if(h[chi] > h[par]){
+            SWAP(h[chi], h[par]);
+            par = chi;
+            chi = (chi<<1)-1;
+        }
+        else break;
+    }
+    if(h[par] < h[par-1])
+        SWAP(h[par], h[par-1]);
+}
+
+int minimumDeviation(int* nums, int size){
+    int h[size+2], top=1, ans;  //heap, the h[0] & h[1] is no number
+    for(int i=0; i<size; i++){
+        if(nums[i]&1)    //is odd
+            nums[i] <<= 1;
+        insert(h, ++top, nums[i]);
+    }
+    
+    ans = h[3]-h[2];
+    while (!(h[3]&1)){    //while the max value is even 
+        int t = h[3]>>1;
+        deleteMax(h, &top);
+        insert(h, ++top, t);
+        ans = MIN(ans, h[3]-h[2]);
+    }
+    return ans;
+}

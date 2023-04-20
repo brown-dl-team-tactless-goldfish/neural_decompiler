@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int removeStones(vector<vector<int>>& stones) {
+        int groups = 0, size = stones.size();
+        vector<bool> visited(size, false);
+        
+        for (int i = 0; i < stones.size(); ++i)
+        {
+            if (!visited[i])
+            {
+                ++groups;
+                dfs(stones, i, visited);
+            }
+        }
+        
+        return size - groups;
+    }
+    
+private:
+    void dfs(vector<vector<int>>& stones, int pos, vector<bool>& visited)
+    {
+        int x = stones[pos][0], y = stones[pos][1];
+        visited[pos] = true;
+        for (int i = 0; i < stones.size(); ++i)
+        {
+            if ((stones[i][0] == x || stones[i][1] == y) && !visited[i])
+            {
+                dfs(stones, i, visited);
+            }
+        }
+    }
+};

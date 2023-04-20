@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int minSubarray(vector<int>& nums, int p) 
+    {
+        int sum=0,n=nums.size(),res=n;
+        for(int i=0;i<n;i++)
+        {
+            sum=(sum+nums[i])%p;
+            if(sum==0)
+                res=min(res,n-i-1);
+        }
+        if(sum==0)
+            return 0;
+        //Now find the subarray of min len whose sum(subarray)%p==k
+        int k=sum;
+        sum=0;
+        unordered_map<int,int>m;
+        for(int i=0;i<n;i++)
+        {
+            sum=(sum+nums[i])%p;
+            if(sum==k)
+                res=min(res,i+1);
+            else
+            {
+                int d=(sum-k+p)%p;
+                if(m.find(d)!=m.end())
+                    res=min(res,i-m[d]);
+            }
+            m[sum]=i;
+        }
+        return res==n?-1:res;
+    }
+};

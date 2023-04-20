@@ -1,0 +1,63 @@
+
+
+class Solution {
+public:
+    int n;
+    vector<int> adj[100005];
+    unordered_set<int> g[100005];
+    unordered_map<int, int> mem[100005];
+    int res = 0;
+    int K;
+        
+    int64_t DFS2(int u, int p)
+    {
+        int64_t ret = 0;
+        for (auto& v : adj[u])
+        {
+            if (v == p) continue;
+            
+            if (mem[u].count(v) != 0) ret += mem[u][v];
+            else
+            {
+                int64_t cnt = 0;
+                if (g[u].count(v) != 0)
+                {
+                    ++cnt;
+                }
+                cnt += DFS2(v, u);
+                mem[u][v] = cnt;
+                ret += cnt;
+            }
+        }        
+        return ret;
+    }
+    
+    void Visit(int u, int p)
+    {
+        int64_t cnt = DFS2(u, -1);
+        if (cnt >= K) ++res;       
+        for (auto& v : adj[u])
+        {
+            if (v == p) continue;
+            Visit(v, u);
+        }
+    }
+    
+    int rootCount(vector<vector<int>>& edges, vector<vector<int>>& guesses, int k) {
+        K = k;
+        n = edges.size() + 1;        
+        for (auto& e : edges)
+        {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);                        
+        }        
+        for (auto& e : guesses)
+        {
+            g[e[0]].insert(e[1]);
+        }
+        
+        Visit(0, -1);        
+        
+        return res;
+    }
+};

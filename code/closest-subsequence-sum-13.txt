@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int ans = INT_MAX ;
+    void solve(int i , int end , vector<int>& nums, vector<int>&v , int sum ){
+        if(i > end){
+            v.push_back(sum) ;
+            return ;
+        }
+        solve(i+1,end,nums,v,sum + nums[i] ) ;
+        solve(i+1,end,nums,v,sum) ;
+    }
+    
+    int minAbsDifference(vector<int>& nums, int goal) {
+        
+        vector<int>v1,v2 ;
+        int n = nums.size() ;
+        solve(0,n/2,nums,v1,0) ;
+        solve((n/2) + 1 , n-1 ,nums,v2,0) ;
+        
+        sort(begin(v2),end(v2)) ;
+        
+        for(auto &x : v1){
+            int target = goal - x ;
+            auto it = upper_bound(begin(v2),end(v2),target) ;
+            if(it == end(v2)) it = prev(it) ;
+            ans = min(ans,abs(target - *it)) ;
+            if(it != begin(v2)) ans = min(ans,abs(target- *prev(it))) ;
+            if(ans == 0 ) break ; //important optimization 
+        }
+        
+        return ans ;
+    }
+};

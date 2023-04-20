@@ -1,0 +1,36 @@
+//max possible array: 12000 + 1 (null) + 12000/K (dashes)
+//int retLen = 12000 + 12000/K; //lol test case had 44152 length (> 12000 in the spec)
+int sLen = strlen(S);
+int retLen = sLen + sLen/K;
+char *pRet = (char *)malloc(retLen + 1); //add null terminator
+
+int k = 0;
+int writeOffs = retLen-1;
+int readOffs = strlen(S);
+while(--readOffs >= 0)
+{
+    //read last character
+    char c = S[readOffs];
+    
+    if (c != '-')
+    {
+        pRet[writeOffs] = toupper(c);
+        writeOffs--;
+        k++;
+    }
+    
+    if (k == K)
+    {
+        pRet[writeOffs] = '-';
+        writeOffs--;
+        k = 0;
+    }
+    //printf("%s\n", (char *)(&pRet[writeOffs+1]));
+}
+
+pRet[retLen] = '\0';
+writeOffs++;
+if (pRet[writeOffs] == '-')
+    return &pRet[writeOffs+1];
+
+return &pRet[writeOffs];

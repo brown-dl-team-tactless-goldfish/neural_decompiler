@@ -1,0 +1,47 @@
+
+int g_cnt;
+
+void seq(char* tiles, char* flag, int depth, int max)
+{
+    int i;
+    char hash[26] = {0,};
+    
+    if(depth == max){
+        g_cnt++;
+        return;
+    }
+   
+    for(i=0; tiles[i]; i++){
+        if(flag[i]){
+            continue;
+        }
+        
+        if(hash[tiles[i]-'A']){
+            continue;
+        }
+        hash[tiles[i]-'A'] = 1;
+        
+        flag[i] = 1;
+        seq(tiles, flag, depth+1, max);
+        flag[i] = 0;
+    }
+}
+
+int numTilePossibilities(char * tiles){
+    int i, len;
+    char flag[7] = {0,};
+    
+    g_cnt = 0;
+
+    len = 0;
+    while(tiles[len]){
+        len++;
+    }
+    
+    for(i=1; i<=len; i++){
+        memset(flag, 0, sizeof(flag));
+        seq(tiles, flag, 0, i);
+    }
+    
+    return g_cnt;
+}

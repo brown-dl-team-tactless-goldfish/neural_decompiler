@@ -1,0 +1,46 @@
+void find_left(struct Node* root,struct Node* child){
+    if (root->right!=NULL){
+        child->next = root->right;}
+    else{
+        find_right(root,child);
+    }
+}
+void find_right(struct Node* root,struct Node* child){
+    if (root->next!=NULL){
+        if (root->next->left!=NULL){
+        child->next = root->next->left;}
+        else if (root->next->right!=NULL){
+            child->next = root->next->right;
+        }
+        else{
+            find_right(root->next,child);
+        }}
+    else{
+        printf("%d",child->val);
+        child->next = NULL;
+    }
+}
+void travel(struct Node* root,struct Node* left,struct Node* right){
+    if(left==NULL&&right==NULL)return;
+    else if(left!=NULL&&right==NULL){
+        find_left(root,left);
+        travel(left,left->left,left->right);
+    }
+    else if(left==NULL&&right!=NULL){
+        find_right(root,right);
+        travel(right,right->left,right->right);
+    }
+    else{
+    find_right(root,right);
+    find_left(root,left);
+    travel(right,right->left,right->right);
+    travel(left,left->left,left->right);}
+}
+
+
+struct Node* connect(struct Node* root) {
+    if(root==NULL){return root;}
+	root->next = NULL;
+    travel(root,root->left,root->right);
+    return root;
+}

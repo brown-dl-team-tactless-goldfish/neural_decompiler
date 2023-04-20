@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int minSwaps(vector<int>& nums) {
+        int len=nums.size();
+        
+        //[1,1,0,0,1]
+        int ones=0; //count the total ones in the nums
+        ones+=nums[0];
+        for(int i=1;i<len;i++)
+        {
+            ones+=nums[i];
+            nums[i]+=nums[i-1];
+        }
+        
+        if(ones==0)
+            return 0;
+        //now for every subarray of size ones find the swaps and get min of it
+        int mini=INT_MAX;
+        for(int i=0;i<len;i++)
+        {
+            //if the subarray is out of bounds get the remaining ele from the beginning
+            int curr;
+            if((i+ones-1)>=len)
+            {
+                curr=nums[len-1]- nums[i-1];
+                curr+=nums[(i+ones-1)-len];
+                
+            }
+            else{
+                curr=nums[i+ones-1];
+                if(i>0)
+                    curr-=nums[i-1];
+            }
+            //curr stores the number of ones in the current subarray
+            mini=min(mini,ones-curr);
+        }
+        return mini;
+    }
+};

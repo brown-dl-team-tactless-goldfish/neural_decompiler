@@ -1,0 +1,29 @@
+class Solution { // BFS
+public://Time/Space: O(N); O(N)
+    vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
+        if(n < 2) return {0};
+        vector<vector<int>> g(n);
+        vector<int> indegrees(n, 0);
+        for(const auto& e: edges){
+            g[e[0]].emplace_back(e[1]);
+            g[e[1]].emplace_back(e[0]);
+            indegrees[e[0]]++;
+            indegrees[e[1]]++;
+        }        
+     
+        vector<int> q, level;
+        for(int i = 0; i < n; i++)
+            if(indegrees[i] == 1) q.emplace_back(i);
+        for(int step = 0; !q.empty(); ++step){            
+            for(int sz = q.size(); sz > 0; sz--){                
+                auto cur = q[sz - 1];
+                for(const auto& next: g[cur])
+                    if(--indegrees[next] == 1)
+                        level.emplace_back(next);
+            }            
+            if(level.empty()) break;
+            swap(q, level);level.clear();
+        }
+        return q;
+    }
+};

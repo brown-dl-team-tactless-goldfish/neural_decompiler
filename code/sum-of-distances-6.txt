@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<long long> distance(vector<int>& nums) {
+        unordered_map<int, vector<long long>> mp;
+        for (int i = 0; i < nums.size(); i++) {
+            mp[nums[i]].push_back(i);
+        }
+        vector<long long> res(nums.size(),0);
+        for(auto it:mp){
+            int value=it.first;
+            if (it.second.size() != 1 ){
+                vector<long long>&temp=it.second;
+                int n=temp.size();
+                  long long prefixSum = 0, suffixSum=0;
+                for(int k:temp)
+                    suffixSum+=k;
+              suffixSum-=temp[0];
+                for (int i=0;i<n;i++) {
+                    res[temp[i]] += i*temp[i] - prefixSum + suffixSum - (n-i-1)*temp[i];
+                    prefixSum += temp[i];
+                    if(i<n-1) suffixSum -= temp[i+1];
+                }
+            }
+        }
+        return res;
+    }
+};

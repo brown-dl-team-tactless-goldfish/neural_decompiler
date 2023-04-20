@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int maxSumTwoNoOverlap(vector<int>& nums, int firstLen, int secondLen) {
+        int len=nums.size();
+        //change nums to preifx sum
+        for(int i=1;i<len;i++)
+        {
+            nums[i]+=nums[i-1];
+        }
+        int res=INT_MIN;
+        //let the firstLen subarray occurs first 
+        solve(nums,len,firstLen,secondLen,res);
+        
+        //let the secondLen Subarray occurs first
+        solve(nums,len,secondLen,firstLen,res);
+        return res;
+    }
+    void solve(vector<int>& nums,int len,int firstLen,int secondLen,int& res)
+    {
+        //get the max sum of left subarray with length firstLen and sum with the current right sub array 
+        int left=nums[firstLen-1];
+        res=max(res,left+nums[firstLen+secondLen-1]-nums[firstLen-1]);
+        for(int i=firstLen+1;i<=len-secondLen;i++)
+        {
+            left=max(left,nums[i-1]-nums[i-firstLen-1]);
+            //the current right sub array
+            res=max(res,left+nums[i+secondLen-1]-nums[i-1]);
+        }
+    }
+};

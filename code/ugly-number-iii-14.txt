@@ -1,0 +1,24 @@
+class Solution {
+public:
+    // 返回不大于m的ugly number
+    long long numOfUglyNumberWithUpperLimit(long m, long a, long b, long c) {
+        long long lcm_ab = std::lcm(a, b);
+        long long lcm_ac = std::lcm(a, c);
+        long long lcm_bc = std::lcm(b, c);
+        long long lcm_abc = std::lcm(a, std::lcm(b, c));
+        return (m / a + m / b + m / c - m / lcm_ab - m / lcm_ac - m / lcm_bc + m / lcm_abc);
+    }
+    int nthUglyNumber(int n, int a, int b, int c) {
+        long long l = 1;
+        long long u = 2 * 1e9;
+        while (l <= u) {
+            long long m = (l + u) / 2;
+            if (numOfUglyNumberWithUpperLimit(m, a, b, c) >= n) {
+                u = m - 1;
+            } else {
+                l = m + 1;
+            }
+        }
+        return (int)l;
+    }
+};

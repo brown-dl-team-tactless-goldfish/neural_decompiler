@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int f(int ind, int &n, vector<int> &a, vector<int> &dp) {
+        if(ind==n) return 1;
+        if(dp[ind] != -1) return dp[ind];
+        int ans=0;
+        if(ind+1<n) {
+            if(a[ind]==a[ind+1]) 
+                ans = max(ans, f(ind+2, n, a, dp));
+        }
+        if(ind+2<n) {
+            if(a[ind]==a[ind+1] && a[ind+1]==a[ind+2]) 
+                ans=max(ans, f(ind+3, n, a, dp));
+            else if(a[ind+1]-a[ind]==1 && a[ind+2]-a[ind+1]==1) 
+                ans=max(ans, f(ind+3, n, a, dp));
+        }
+        return dp[ind] = ans;
+    }
+    
+    bool validPartition(vector<int>& a) {
+        int ind=0, n=a.size();
+        vector<int> dp(n, -1);
+        return f(ind, n, a, dp);
+    }
+};

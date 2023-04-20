@@ -1,0 +1,62 @@
+public int MinNumberOfFrogs(string croakOfFrogs)
+{
+	Dictionary<char, int> croaks = new Dictionary<char, int>()
+	{
+		['c'] = 0,
+		['r'] = 0,
+		['o'] = 0,
+		['a'] = 0,
+		['k'] = 0
+	};
+
+	int frogCount = 0;
+	int currentCount;
+
+	foreach (char c in croakOfFrogs)
+	{
+		croaks[c]++;
+
+		if (c == 'c')
+		{
+			currentCount = croaks['c'];
+			foreach (var k in croaks.Keys)
+			{
+				if (croaks[k] > currentCount)
+				{
+					return -1;
+				}
+			}
+
+			frogCount = Math.Max(frogCount, currentCount);
+		}
+
+		if (c == 'k')
+		{
+			var keys = croaks.Keys.ToList();
+			foreach (var k in keys)
+			{
+				if (croaks[k] > 0)
+				{
+					croaks[k]--;
+				}
+				else
+				{
+					return -1;
+				}
+			}
+		}
+	}
+
+
+	// Check if there are any incomplete croaks
+	currentCount = croaks['c'];
+	foreach (var k in croaks.Keys)
+	{
+		if (croaks[k] != currentCount)
+		{
+			return -1;
+		}
+	}
+
+	return frogCount;
+}

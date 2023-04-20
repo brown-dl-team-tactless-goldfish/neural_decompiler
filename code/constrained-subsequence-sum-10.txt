@@ -1,0 +1,30 @@
+public class Solution {
+    public int ConstrainedSubsetSum(int[] nums, int k) {
+        
+        int n = nums.Length;
+        LinkedList<(int max, int indx)> queue = new LinkedList<(int max, int indx)>();
+        
+        int maxSum = int.MinValue; 
+        
+        for(int i=0; i<n; i++)
+        {
+            if(queue.Count > 0 && i - queue.First.Value.indx > k)
+                queue.RemoveFirst();
+            
+            int curSum = 0;
+            if(queue.Count > 0)
+                curSum = queue.First().max;
+            
+            curSum = Math.Max(curSum + nums[i], nums[i]);
+            
+            maxSum = Math.Max(maxSum, curSum);
+            
+            while(queue.Count > 0 && queue.Last.Value.max < curSum)
+                queue.RemoveLast();
+            
+            queue.AddLast((curSum, i));
+        }
+        
+        return maxSum;
+    }
+}

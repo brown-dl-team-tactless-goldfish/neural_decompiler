@@ -1,0 +1,43 @@
+In this problem we have to make a series such that number have factors belonging only to give Prime array. Lets take an example of [2,5,11].
+In this case our ugly series will be: 1, 2, 4, 5, 8, 10, 11, 16, 20 & so on.
+In general this series can be denoted as:
+0)1 as universal ugly number
+1)2 = 2x1 = 2 x ugly[0]
+2)4 = 2x2 = 2 x ugly[1]
+3)5 = 5x1 = 5 x ugly[0]
+4)8 = 2x4 = 2 x ugly[2]
+5)10= 5x2 = 5 x ugly[1] = 2 x ugly[3]
+6)11= 11x1= 11x ugly[0]
+7)16= 2x8 = 2 x ugly[4]
+8)20= 5x4 = 5 x ugly[2] = 2x10 = 2 x ugly[5]
+9)22= 11x2= 11x ugly[1] = 2 x ugly[6]
+and so on.....
+Here we can find the relation that new ugly number will be minimum of prime[i]x(ugly number at last[i]) where last[i] denotes the position which was used earlier with prime[i] to get ugly number. Also for ugly numbers where there are common factors like 10, 20 last value for both the primes needs to be updated.
+In this way we can find following relation:
+ugly[i] = min of all(prime[j] x ugly_at_last[j])
+ugly[i] = min(P[j]*ugly[last[j]]) for all 0<=j<PrimeSize
+
+int nthSuperUglyNumber(int n, int *P, int pS) {
+    int i, j, min;
+    int u[1000000], last[100]={0,};
+//  int *last, *u;
+//  last = calloc(sizeof(int), pS);
+//  u = malloc(sizeof(int)*n);
+    u[0] = 1;
+    for(i=1; i<n; i++)
+    {
+        u[i] = u[last[0]]*P[0];0
+        for(j=1; j<pS; j++)
+        {
+            min = P[j]*u[last[j]];
+            u[i] = u[i]<min ? u[i]:min ;
+        }
+        for(j=0; j<pS; j++)
+            if(u[i] == P[j]*u[last[j]])
+                last[j]++;
+    }
+    min = u[n-1];
+//  free(last);
+//  free(u);
+    return min;
+}

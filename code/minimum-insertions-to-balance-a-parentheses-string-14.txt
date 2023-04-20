@@ -1,0 +1,54 @@
+class Solution {
+public:
+    int minInsertions(string s) {
+        string s_new = "";
+        char prev = '*';
+        // pre-process string
+        // replace '))' -> ']' in a greedy way
+        // Ex - ')))' -? '])'
+        
+        for(auto c : s){
+            if(c == '(')
+                s_new += c;
+            else if(prev == ')')
+                s_new[s_new.size()-1] = ']';
+            else
+                s_new += ')';
+            prev = s_new[s_new.size()-1] == ']' ? '*' : c;
+        }        
+        /*
+        parse through a string using a stack
+        cache the '('.
+        if ')' - see if prev was a '(' --> insertion++ else insertion+=2
+        if ']' - see if prev was a '(' --> pop else insertion+=1
+        */
+        
+        stack<string> h;
+        int val = 0;
+        
+        for(auto c : s_new){
+            if (c == '(')
+                h.push("(");
+            else if(c == ')'){
+                if(!h.empty() && h.top() == "("){
+                    h.pop();
+                    val++;
+                }
+                else
+                    val+=2;
+            }
+            else{
+                if(!h.empty() && h.top() =="(")
+                    h.pop();
+                else
+                    val++;
+            }
+        }
+        // remaining entries in stack are unmatched
+        // '(' each req 2 insertions.
+        if(!h.empty())
+            val += 2*h.size();
+        
+        return val;
+    }
+};

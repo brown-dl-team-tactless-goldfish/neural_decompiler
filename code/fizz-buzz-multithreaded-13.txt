@@ -1,0 +1,59 @@
+class FizzBuzz {
+private:
+    int n;
+    mutex mtx;
+    int count;
+public:
+    FizzBuzz(int n) {
+        this->n = n;
+        this->count = 1;
+    }
+
+    // printFizz() outputs "fizz".
+    void fizz(function<void()> printFizz) {
+        while (1) {
+            unique_lock<mutex> lck(mtx);
+            if (count > n) break;
+            if (count % 3 == 0 && count % 5 != 0) {
+                printFizz();
+                count++;
+            }
+        }
+    }
+
+    // printBuzz() outputs "buzz".
+    void buzz(function<void()> printBuzz) {
+        while (1) {
+            unique_lock<mutex> lck(mtx);
+            if (count > n) break;
+            if (count % 5 == 0 && count % 3 != 0) {
+                printBuzz();
+                count++;
+            }
+        }
+    }
+
+    // printFizzBuzz() outputs "fizzbuzz".
+	void fizzbuzz(function<void()> printFizzBuzz) {
+        while (1) {
+            unique_lock<mutex> lck(mtx);
+            if (count > n) break;
+            if (count % 3 == 0 && count % 5 == 0) {
+                printFizzBuzz();
+                count++;
+            }
+        }
+    }
+
+    // printNumber(x) outputs "x", where x is an integer.
+    void number(function<void(int)> printNumber) {
+        while (1) {
+            unique_lock<mutex> lck(mtx);
+            if (count > n) break;
+            if (count % 3 != 0 && count % 5 != 0) {
+                printNumber(count);
+                count++;
+            }
+        }
+    }
+};

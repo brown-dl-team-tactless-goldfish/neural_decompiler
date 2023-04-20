@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int findRotateSteps(string ring, string key) {
+        vector<vector<int>> v(26);
+        unordered_map<int, int> memo;
+        int n = ring.size();
+        for (int i = 0; i < n; i++) {
+            v[ring[i]-'a'].push_back(i);
+        }
+        
+        return dfs(v, n, 0, key, 0, memo);
+    }
+    
+    int dfs(vector<vector<int>>& v, int n, int offset, string& key, int cur, unordered_map<int, int>& memo) {
+        if (cur == key.size()) return 0;
+        int k = cur + ((offset % n) << 8);
+        if (memo.count(k)) return memo[k];
+        int res = INT_MAX;
+        for (auto x : v[key[cur]-'a']) {
+            x = (x+offset) % n;
+            res = min(res, min(x, n-x)+1+dfs(v, n, offset+n-x, key, cur+1, memo));
+        }
+        memo[k] = res;
+        return res;
+    }
+};

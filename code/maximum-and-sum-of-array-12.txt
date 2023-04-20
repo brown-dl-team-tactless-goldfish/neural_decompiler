@@ -1,0 +1,41 @@
+class Solution {
+public:
+	int n;
+	int dp[18][1 << 9][1 << 9];
+    vector<int> a;
+    int numSlots;
+	int solve(int i, int mask1, int mask2) {
+		if (i >= n) return 0;
+
+		if (dp[i][mask1][mask2] != -1) return dp[i][mask1][mask2];
+
+        int ans = INT_MIN;
+		for (int j = 0; j < numSlots; j++) {
+
+			if ((mask1 & (1 << j))) {
+				ans = max(ans, (a[i] & (j + 1)) + solve(i + 1, mask1 ^ (1 << j), mask2));
+			}
+
+			if ((mask2 & (1 << j))) {
+				ans = max(ans, ((a[i]) & (j + 1)) + solve(i + 1, mask1, mask2 ^ (1 << j)));
+			}
+		}
+
+		return dp[i][mask1][mask2] = ans;
+
+	}
+
+
+	int maximumANDSum(vector<int>& nums, int numSlots1) {
+		n = nums.size();
+        a = nums;
+        a = nums;
+        numSlots = numSlots1;
+		int initialMask = ((1 << numSlots) - 1);
+        
+		memset(dp, -1, sizeof(dp));
+
+		return solve(0, initialMask, initialMask);
+
+	}
+};

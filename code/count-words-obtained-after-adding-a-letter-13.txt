@@ -1,0 +1,43 @@
+class Solution {
+private:
+    inline bool isSignificant(uint32_t bitmap, int pos) {
+        return bitmap & (1U << pos);
+    }
+    
+    inline uint32_t resetBit(uint32_t bitmap, int pos) {
+        return bitmap & (~(1U << pos));
+    }
+    
+    inline uint32_t setBit(uint32_t bitmap, int pos) {
+        return bitmap | (1U << pos);
+    }
+	
+    inline uint32_t getBitmap(string &s) {
+        uint32_t bitmap = 0x0;
+        for (auto &c : s) {
+            bitmap = setBit(bitmap, c - 'a');
+        }
+        return bitmap;
+    }
+    
+public:
+    int wordCount(vector<string>& startWords, vector<string>& targetWords) {
+        int ret_val = 0;
+        unordered_set<uint32_t> pool;
+        for (string &s : startWords) {
+            pool.insert(getBitmap(s));
+        }
+         
+        for (string &s : targetWords) {
+            const uint32_t bitmap = getBitmap(s);
+            for (int i = 0; i < 26; ++i) {
+                if (isSignificant(bitmap, i) && pool.count(resetBit(bitmap, i)) > 0) {
+                    ++ret_val;
+                    break;
+                }
+            }
+        }
+        
+        return ret_val;
+    }
+};

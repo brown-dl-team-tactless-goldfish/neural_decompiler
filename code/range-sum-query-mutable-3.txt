@@ -1,0 +1,46 @@
+We can maintain commulative sum of whole array in the sum variable of the structure. While updating the value we can simply update the ith value and sum. But in case of finding range of sum, we will check whether range i to j is less than half of array size or not. If it is less than half of array size we can simply find the range sum by adding values from i to j. If the range i to j is more than half of array size then we will find sum from 0 to i-1 and from j+1 to last and subtract this diff from commulative sum.
+
+#define NArr struct NumArray
+struct NumArray {
+    int *a;
+    int aS;
+    int sum;
+};
+struct NumArray* NumArrayCreate(int* nums, int nS) {
+    NArr *p;
+    int i;
+    p = malloc(sizeof(NArr));
+    p->aS = nS;
+    p->sum = 0;
+    p->a = malloc(sizeof(int)*nS);
+    for(i=0; i<nS; i++)
+    {
+        p->a[i] = nums[i];
+        p->sum += nums[i];
+    }
+    return p;
+}
+void update(struct NumArray* p, int i, int val) {
+    p->sum = p->sum + val - p->a[i];
+    p->a[i] = val;
+}
+int sumRange(struct NumArray* p, int i, int j) {
+    int k, x=0;
+    if(j-i <= p->aS/2)
+        for(k=i; k<=j; k++)
+            x += p->a[k];
+    else
+    {
+        for(k=0; k<i; k++)
+            x += p->a[k];
+        for(k=j+1; k<p->aS; k++)
+            x += p->a[k];
+        x = p->sum - x;
+    }
+    return x;
+}
+void NumArrayFree(struct NumArray* p) {
+    p->aS = 0;
+    free(p->a);
+    free(p);
+}

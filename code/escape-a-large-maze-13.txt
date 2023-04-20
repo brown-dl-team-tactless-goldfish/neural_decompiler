@@ -1,0 +1,218 @@
+////////// Direction //////////
+
+struct Direction {
+  int x;
+  int y;
+};
+
+constexpr array<Direction, 8> DIRECTIONS = {{
+  {-1, -1}, {0, -1}, {+1, -1},
+  {-1,  0},          {+1,  0},
+  {-1, +1}, {0, +1}, {+1, +1}
+}};
+
+////////// Relation //////////
+
+enum Relation {
+  NO_RELATION,
+  OVER,
+  RIGHT,
+  UNDER,
+  LEFT
+};
+
+////////// Pass //////////
+
+struct Pass {
+  Relation  before;
+  Direction d;
+  Relation  after;
+  
+  int clockDirection() const {
+    switch (after) {
+      case OVER:  return  d.x;
+      case RIGHT: return -d.y;
+      case UNDER: return -d.x;
+      case LEFT:  return  d.y;
+      default: assert(false and "unreachable code");
+    }
+  }
+  
+  bool cancelledBy(const Pass& b) const {
+    if (after == b.after) return false;
+    if ((b.before == OVER || b.before == UNDER) && d.x + b.d.x == 0) return true;
+    if ((b.before == LEFT || b.before == RIGHT) && d.y + b.d.y == 0) return true;
+    return false;
+  }
+  
+  bool augmentedBy(const Pass& b) const {
+    if (after == b.after)       return false;
+    if (b.after == NO_RELATION) return false;
+    return true;
+  }
+};
+
+////////// Solution //////////
+
+constexpr int64_t SIZE = 1000002; // 1e6 as specified + room for outer walls
+
+class Solution {
+public:
+  bool isEscapePossible(vector<vector<int>>& bl, vector<int>& src, vector<int>& trg) {
+    iosHackery();
+    
+    // Store / preprocess input
+    sx = src[0] + 1;
+    sy = src[1] + 1;
+    tx = trg[0] + 1;
+    ty = trg[1] + 1;
+    for (auto& xy : bl) {
+      xy[0]++;
+      xy[1]++;
+      blocks.insert(xy[0] * SIZE + xy[1]);
+      if (xy[0] == 1) {
+        blocks    .insert(0 * SIZE + xy[1]);
+        wallBlocks.insert(0 * SIZE + xy[1]);
+      } else if (xy[0] == SIZE - 2) {
+        blocks    .insert((SIZE - 1) * SIZE + xy[1]);
+        wallBlocks.insert((SIZE - 1) * SIZE + xy[1]);
+      } else if (xy[1] == 1) {
+        blocks    .insert(xy[0] * SIZE + 0);
+        wallBlocks.insert(xy[0] * SIZE + 0);
+      } else if (xy[1] == SIZE - 2) {
+        blocks    .insert(xy[0] * SIZE + (SIZE - 1));
+        wallBlocks.insert(xy[0] * SIZE + (SIZE - 1));
+      }
+    }
+    
+    // Follow all block-chains, checking whether they separate source from target
+    for (auto block : wallBlocks)
+      if (chainSeparatesPoints(block))
+        return false;
+    for (auto block : blocks)
+      if (chainSeparatesPoints(block))
+        return false;
+    
+    // Yay! Escape!
+    return true;
+  }
+  
+private:
+  // input
+  int sx;  int sy;
+  int tx;  int ty;
+  std::unordered_set<int64_t> blocks;
+  
+  // constructed blocks inside walls, adjacent to other blocks
+  std::unordered_set<int64_t> wallBlocks;
+  
+  // global bookkeeping
+  std::unordered_set<int64_t> visited;
+  
+  // single traversal bookkeeping
+  struct PassIterators { int s; int t; };
+  std::unordered_map<int64_t, PassIterators> visitedRecently;
+  std::vector<Pass> sPasses;
+  std::vector<Pass> tPasses;
+  bool wallStart;
+  
+  // to wring a bit of extra speed out of this
+  void iosHackery() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+  }
+  
+  // starting investigation of a chain
+  bool chainSeparatesPoints(int64_t block) {
+    if (visited.count(block))
+      return false;
+    wallStart = !!wallBlocks.count(block);
+    sPasses = {{NO_RELATION, {0, 0}, NO_RELATION}};
+    tPasses = {{NO_RELATION, {0, 0}, NO_RELATION}};
+    int x = block / SIZE;
+    int y = block % SIZE;
+    return chainSeparatesPoints(NO_RELATION, NO_RELATION, {0, 0}, x, y);
+  }
+  
+  // continuing investigation of a chain, recursively
+  bool chainSeparatesPoints(Relation sBefore, Relation tBefore, Direction d, int x, int y) {
+    // Process passes
+    auto getRelation = [x, y](int rx, int ry) -> Relation {
+      if (x == rx) return ry < y ? OVER : UNDER;
+      if (y == ry) return rx < x ? RIGHT : LEFT;
+      return NO_RELATION;
+    };
+    auto sRelation = getRelation(sx, sy);
+    auto tRelation = getRelation(tx, ty);
+    Pass sPass = {sBefore, d, sRelation};
+    Pass tPass = {tBefore, d, tRelation};
+    if (sPasses.back().cancelledBy(sPass)) sPasses.pop_back();
+    if (sPasses.back().augmentedBy(sPass)) sPasses.push_back(sPass);
+    if (tPasses.back().cancelledBy(tPass)) tPasses.pop_back();
+    if (tPasses.back().augmentedBy(tPass)) tPasses.push_back(tPass);
+    
+    int64_t block = x * SIZE + y;
+    
+    // When hitting a wall, or a previously visited block, check for separation
+    if (visitedRecently.count(block))
+      return checkSeparation(visitedRecently[block].s, visitedRecently[block].t);
+    if (wallBlocks.count(block) && !(d.x == 0 && d.y == 0))
+      return wallStart && checkSeparation(1, 1);
+    
+    // Visit neighbouring blocks, continuing the chain
+    visited.insert(block);
+    visitedRecently[block] = { sPasses.size() - 1, tPasses.size() - 1 };
+    for (auto d : DIRECTIONS) {
+      int nx = x + d.x;
+      int ny = y + d.y;
+      int64_t nblock = nx * SIZE + ny;
+      if (blocks.count(nblock))
+        if (chainSeparatesPoints(sRelation, tRelation, d, nx, ny))
+          return true;
+    }
+    visitedRecently.erase(block);
+    
+    //
+    return false;
+  }
+  
+  // Given a sequence of block-passes for source and target,
+  // determine whether that section of chain effectively
+  // separates the two.
+  bool checkSeparation (int s, int t) {
+    int sEnd = sPasses.size();
+    int tEnd = tPasses.size();
+    
+    if (s != sEnd && sPasses[s].after == NO_RELATION) ++s;
+    if (t != tEnd && tPasses[t].after == NO_RELATION) ++t;
+    
+    if (s == sEnd) {
+      if (tEnd - t <= 1)
+        return false;
+      if (tEnd - t >= 3)
+        return true;
+      switch (tPasses[t].after) {
+        case OVER:  return ty < sy;
+        case RIGHT: return tx < sx;
+        case UNDER: return ty > sy;
+        case LEFT:  return tx > sx;
+        default: assert(false and "unreachable code");
+      }
+    } else if (t == tEnd) {
+      if (sEnd - s <= 1)
+        return false;
+      if (sEnd - s >= 3)
+        return true;
+      switch (sPasses[s].after) {
+        case OVER:  return sy < ty;
+        case RIGHT: return sx < tx;
+        case UNDER: return sy > ty;
+        case LEFT:  return sx > tx;
+        default: assert(false and "unreachable code");
+      }
+    } else {
+      return sPasses[s].clockDirection() != tPasses[t].clockDirection();
+    }
+  }
+};

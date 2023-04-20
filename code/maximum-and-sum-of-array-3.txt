@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int maximumANDSum(vector<int>& nums, int ns) {
+        queue<array<int, 2>> q;
+        q.push({0, 0});
+        unordered_map<int, int> m;
+        for(int i : nums) {
+            m.clear();
+            while(!q.empty()) {
+                auto h = q.front();
+                q.pop();
+                for(int j = 0; j < ns; j++) {
+                    int t = (h[0] >> (2 * j)) & 3;
+                    if(t < 2) {
+                        int key = h[0] + (1 << (2 * j));
+                        m[key] = max(m[key], h[1] + (i & (j + 1)));
+                    }
+                }
+            }
+            for(auto& t : m) q.push({t.first, t.second});
+        }
+        int res = 0;
+        for(auto& t : m) res = max(res, t.second);
+        return res;
+    }
+};

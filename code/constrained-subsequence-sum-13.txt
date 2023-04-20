@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int constrainedSubsetSum(vector<int>& nums, int k) {
+        //use  a max heap
+        priority_queue<pair<int,int>> pq;
+        vector<int> dp(nums.size());
+        int maxi=INT_MIN;
+        for(int i=0;i<nums.size();i++)
+        {
+            //remove the indices which are less than i-k
+            while(!pq.empty() && pq.top().second<i-k)
+                pq.pop();
+            dp[i]=nums[i];
+            //get the max sum from previous i-k subarray 
+            if(!pq.empty())
+                dp[i]=max(dp[i],nums[i]+pq.top().first);
+            
+            //update the maxi value
+            maxi=max(maxi,dp[i]);
+            pq.push({dp[i],i});
+        }
+        return maxi;
+    }
+};

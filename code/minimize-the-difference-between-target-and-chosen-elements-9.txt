@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int t[5001][71];
+    int row, col;
+    
+    int find(vector<vector<int>>& mat, int row, int sum, int& target)
+    {
+        if(row <= 0)
+            return abs(sum-target);
+        
+       if(t[sum][row]!=-1)
+           return t[sum][row];
+        
+        int minDiff = INT_MAX;
+        for(int j=0; j<col; j++)
+        {
+            minDiff = min(minDiff, find(mat, row-1, sum+mat[row-1][j], target));
+        }
+        return t[sum][row] = minDiff;
+    }
+    int minimizeTheDifference(vector<vector<int>>& mat, int target) {
+        memset(t,-1,sizeof(t));
+        row = mat.size();
+        col = mat[0].size();
+        return find(mat, row, 0, target);
+        
+    }
+};

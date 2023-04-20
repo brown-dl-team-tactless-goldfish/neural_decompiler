@@ -1,0 +1,35 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int logCompare(char** plog1, char** plog2){
+    int i = 0, j = 0;
+    while((*plog1)[i] != ' ') i++; //find the first 'space'
+    while((*plog2)[j] != ' ') j++;
+    
+    return strcmp(*plog1 + i + 1, *plog2 + j + 1);
+}
+
+char** reorderLogFiles(char** logs, int logsSize, int* returnSize) {
+    int i, j;
+    i = j = logsSize - 1;
+    int spacePos = 0;
+    char* tempPtr = NULL;
+    while(i >= 0){
+        spacePos = 0;
+        while(logs[i][spacePos] != ' ') spacePos++;
+        
+        if(isdigit(logs[i][++spacePos])){
+            tempPtr = logs[j];
+            logs[j] = logs[i];
+            logs[i] = tempPtr;
+            j--;
+        }
+        i--;
+    }
+    
+    qsort(logs, j + 1, sizeof(logs[0]), logCompare);
+    
+    *returnSize = logsSize;
+    return logs;
+}

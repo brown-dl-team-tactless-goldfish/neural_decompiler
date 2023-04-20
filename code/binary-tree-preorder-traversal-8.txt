@@ -1,0 +1,53 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+#define SIZE 100
+int* preorderTraversal(struct TreeNode* root, int* returnSize) {
+    struct TreeNode **stack=(struct TreeNode **)malloc(sizeof(struct TreeNode *)*SIZE);
+    int *ret=(int*)malloc(sizeof(int)*SIZE);
+    int *left=(int*)malloc(sizeof(int)*SIZE);
+    int *right=(int*)malloc(sizeof(int)*SIZE);
+    *returnSize=0;
+    int count=0;
+    if(root!=NULL){
+        stack[count]=root;
+        left[count]=0;
+        right[count]=0;
+        count++; 
+        ret[(*returnSize)]=stack[count-1]->val;
+        (*returnSize)++;
+    }
+    while(count!=0){
+        while(stack[count-1]->left!=NULL&&left[count-1]==0){
+            left[count-1]++;
+            stack[count]=stack[count-1]->left;
+            left[count]=0;
+            right[count]=0;
+            count++;
+            ret[(*returnSize)]=stack[count-1]->val;
+            (*returnSize)++;
+        } 
+        if(stack[count-1]->right!=NULL&&right[count-1]==0){
+            right[count-1]++;
+            stack[count]=stack[count-1]->right;
+            left[count]=0;
+            right[count]=0;
+            count++;
+            ret[(*returnSize)]=stack[count-1]->val;
+            (*returnSize)++;
+        }
+        else{
+            count--;
+        }
+    }
+    return ret;
+}

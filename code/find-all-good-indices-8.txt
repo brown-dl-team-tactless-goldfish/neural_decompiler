@@ -1,0 +1,24 @@
+class Solution {
+public:
+    vector<int> goodIndices(vector<int>& nums, int k) {
+        int L=0, n = nums.size();
+        vector<int> NI = vector<int>(n+1,1); //NI[i] is non-increasing number  with index i
+        vector<int> ND = vector<int>(n+1,1);//ND[i] is non-descreasing number with index i
+        nums.push_back(INT_MIN); //last element is put for processing dummy 
+		//Step 1. figure out non-increasing number array and non-descreasing number array
+        for(int i = 1; i<n+1;i++) {
+            if(nums[i-1]>=nums[i]) NI[i] = NI[i-1]+1;
+            if(nums[i-1]<=nums[i]) {
+                ND[i] = ND[i-1]+1;
+            } else {
+                for(int j = L;j<=i-1;j++) ND[j] = ND[i-1] - ND[j] + 1;
+                L = i;
+            }
+        }
+		//Step 2. Use NI & DI to collect the index that satisfy our problem.
+        vector<int> ans;
+        for(int i = k; i<n-k;i++) 
+            if(NI[i-1]>=k && ND[i+1]>=k) ans.push_back(i);    
+        return ans;   
+    }
+};

@@ -1,0 +1,36 @@
+/*** Inutuion, whenever we want to know min or max for a given node in a positon, since we don't know what lies ahead, so it is always best to travesre twice forward and backward, once we do that we can take the final decision 
+
+Here idea is the same, traverse preorder left-right and capture the max height seen so far befor the node is visited. Do the same reverse right - left and compare the previous captured heights. Now since we have seen both the side we can confidently give the result which is maximum height seen before visiting a particular node.
+***/
+
+class Solution {
+public:
+    int maxH = 0;
+    int height[100001];
+    void preOrder(TreeNode* node, bool rev, int level) {
+        if (!node) return;
+        height[node->val] = max(height[node->val],maxH);
+        maxH = max(maxH,level);
+        int curH = 0;
+        if (rev) {
+            preOrder(node->right,rev,level+1);
+            preOrder(node->left,rev,level+1);
+        } else {
+            preOrder(node->left,rev,level+1);
+            preOrder(node->right,rev,level+1);
+        }
+        return;
+    }
+    vector<int> treeQueries(TreeNode* root, vector<int>& queries) {
+        preOrder(root,false,0);
+        maxH = 0;
+        preOrder(root,true,0);
+        int n = queries.size();
+        vector<int> result(n,0);
+        for (int i = 0; i < n; i++) {
+            result[i] = height[queries[i]];
+        }
+        return result;
+        
+    }
+};

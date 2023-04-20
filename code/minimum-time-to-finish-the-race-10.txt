@@ -1,0 +1,119 @@
+class Solution {
+public:
+    typedef long long int64;
+
+    int minimumFinishTime(vector<vector<int>>& tires, int changeTime, int numLaps) {
+        // dp[i] = min time to complete i laps 
+        // dp[i] = min(dp[i], dp[j] + changeTime + dp[i - j]) //  0 <= j < i
+        
+        // using fi = 1, ri = 2 in 18 laps without change time taken >= 1e5
+        // hence after 18 continous min, its better to change the tire to minimize time 
+        int numTires = tires.size();
+        
+        int64 withoutChange[25][numTires]; 
+        for(int i = 0; i < 25; i++) {
+            for(int j = 0; j < numTires; j++) {
+                withoutChange[i][j] = INT_MAX;
+            }
+        }
+        for(int j = 0; j < numTires; j++) { // j = tire using which laps to cover
+            for(int i = 0; i <= min(numLaps,  20); i++) { // i = no of continuous laps to cover
+                if(i == 0) {
+                    withoutChange[i][j] = 0;
+                } else {
+                    if(tires[j][0] * pow(tires[j][1], i - 1) >= INT_MAX || withoutChange[i- 1][j] + tires[j][0] * (int64)pow(tires[j][1], i - 1) >= INT_MAX) {
+                        break;
+                    }
+                    withoutChange[i][j] = withoutChange[i - 1][j] + tires[j][0] * (int64)pow(tires[j][1], i - 1);
+                }
+            }
+        }
+        int64 dp[numLaps + 1];
+        for(int i = 0; i <= numLaps; i++) {
+            dp[i] = INT_MAX;
+        }
+        dp[0] = 0;
+        for(int i = 1; i <= numLaps; i++) { // i = currentLap to cover
+            if(i <= 20) {
+                for(int k = 0; k < numTires; k++) { // k = tire using which continous laps was done
+                    dp[i] = min(dp[i], withoutChange[i][k]);
+                }
+            }
+            for(int j = i - 1; j >= max(0, i - 20); j--) { // j = max continuous laps done using a tire
+                dp[i] = min(dp[i], dp[j] + changeTime + dp[i - j]);
+            }
+        }
+        return dp[numLaps];
+    }
+};
+
+
+
+
+----------------------------------------------------------------------
+
+// INITIAL THOUGHT PROCESS :
+
+class Solution {
+public:
+    int minimumFinishTime(vector<vector<int>>& tires, int changeTime, int numLaps) {
+        // dp[0] = 0
+        // dp[i] min time to finish i laps
+        // dp[i] = dp[i - 1] + min time to cover current lapse
+        // min time to cover current lapse depends on
+        // tire to be used now, for how long tire already in use
+        // if new tire then add change time else use formula fi * ri^(x-1)
+        // states : [i lapse to complete][tire to use for current lapse][how long already in use continuously]
+        int n = tires.size();
+        //vector<vector<vector<int>>> dp(numLaps + 1, vector<vector<<int>>>(n, vector<int> (numLaps + 1, INT_MAX)));
+        long long dp[numLaps + 1][n][numLaps + 1];
+        for(int i = 0; i <= numLaps; i++) {
+            for(int j = 0; j < n; j++) {
+                for(int k = 0; k <= numLaps; k++) {
+                    dp[i][j][k] = INT_MAX;
+                }
+            }
+        }
+        for(int i = 0; i < n; i++) {
+            dp[1][i][1] = tires[i][0]; 
+        }
+
+        for(int i = 2; i <= numLaps; i++) { // covering each lap one by one, trying to cover ith lap
+            for(int j = 0; j < n; j++) { // trying each tire for current ith lap
+                for(int k = 0; k < i; k++) { // tire j is already used for k consecutive laps
+                    if(k == 0) { // ie new j tire is being used now
+                        for(int pj = 0; pj < n; pj++) { // tire used in previous lap
+                            for(int pk = 0; pk < i; pk++) { // consecutive laps usage of prev tire
+                                if(dp[i - 1][pj][pk] > INT_MAX) continue;
+                                dp[i][j][1] = min(dp[i][j][1], dp[i - 1][pj][pk] + changeTime + tires[j][0]);
+                            }
+                        } 
+                    } else {
+                        if(dp[i - 1][j][k] > INT_MAX || (tires[j][0] * pow(tires[j][1], k) > INT_MAX)) {
+                            break;
+                        }
+                        dp[i][j][k + 1] = min(dp[i][j][k + 1], dp[i - 1][j][k] + tires[j][0] * (long long)pow(tires[j][1], k));
+                    }
+                }
+            }
+        }
+
+        // for(int i = 1; i <= numLaps; i++) {
+        //     for(int j = 0; j < n; j++) {
+        //         for(int k = 0; k <= numLaps; k++) {
+        //             cout << dp[i][j][k] << " ";
+        //         }  
+        //     }
+        //     cout << endl;
+        // }
+
+        long long ans = INT_MAX;
+        for(int j = 0; j < n; j++) {
+            for(int k = 0; k <= numLaps; k++) {
+                ans = min(ans, dp[numLaps][j][k]);
+            }
+        }
+
+        return ans;
+    }
+};

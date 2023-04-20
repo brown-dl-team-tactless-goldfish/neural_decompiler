@@ -1,0 +1,42 @@
+public class Solution 
+{
+    public IList<IList<int>> ReconstructMatrix(int upper, int lower, int[] colsum) 
+    {
+        int[] top = new int[colsum.Length], bottom = new int[colsum.Length];
+        for(int i = 0; i < colsum.Length; i++)
+        {
+            if(colsum[i] == 2)
+            {
+                top[i] = 1;
+                bottom[i] = 1;
+                upper--;
+                lower--;
+            }
+        }
+        
+        for(int i = 0; i < colsum.Length; i++)
+        {
+            if(colsum[i] == 1)
+            {
+                if(upper > 0)
+                {
+                    top[i] = 1;
+                    bottom[i] = 0;
+                    upper--;
+                }
+                else if(lower > 0)
+                {
+                    top[i] = 0;
+                    bottom[i] = 1;
+                    lower--;
+                }
+                else
+                {
+                    return new List<IList<int>>();
+                }
+            }
+        }
+        
+        return (lower != 0 || upper != 0) ? new List<IList<int>>() : new List<IList<int>>(){top, bottom};
+    }
+}

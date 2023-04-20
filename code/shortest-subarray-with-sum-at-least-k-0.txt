@@ -1,0 +1,20 @@
+int shortestSubarray(int* A, int ASize, int K)
+{
+    int shortest_sub_length = ASize + 1;
+    int **mat = malloc(sizeof(int*) * ASize);
+	
+    for (size_t i = 0; i < ASize; i++)
+    {
+        mat[i] = malloc(sizeof(int) * ASize);
+		
+        for (size_t j = i; j < ASize; j++)
+        {
+            mat[i][j] = j == i ? A[i] : mat[i][j - 1] + A[j];
+            
+            shortest_sub_length = (mat[i][j] >= K && shortest_sub_length > j - i + 1) ? j - i + 1 : shortest_sub_length;
+            
+        }
+    }
+    
+    return shortest_sub_length == ASize + 1 ? -1 : shortest_sub_length;
+}

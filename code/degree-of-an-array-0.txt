@@ -1,0 +1,21 @@
+int findShortestSubArray(int* nums, int numsSize){
+    int temp[50000][3] = {0};
+    int result = INT_MAX, max = 1;
+    for(int i=0; i<numsSize; i++)
+        if(temp[nums[i]][0] == 0)
+        {
+            temp[nums[i]][0] = 1;
+            temp[nums[i]][1] = i;
+            temp[nums[i]][2] = i;
+        }
+        else
+        {
+            temp[nums[i]][0]++;
+            temp[nums[i]][2] = i;
+            if(max < temp[nums[i]][0]) max = temp[nums[i]][0];
+        }
+    for(int i=0; i<numsSize; i++)
+        if(max == temp[nums[i]][0] && result > temp[nums[i]][2]-temp[nums[i]][1] + 1)
+            result = temp[nums[i]][2]-temp[nums[i]][1] + 1;
+    return result;
+}

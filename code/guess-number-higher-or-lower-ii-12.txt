@@ -1,0 +1,21 @@
+    unordered_map<int, unordered_map<int, int>> dp;
+    
+    int getMoneyAmount(int n) {
+        
+        return rec(1, n);
+    }
+    
+    int rec(int lo, int hi) {
+        
+        if(lo >= hi) return 0;
+        if(dp[lo].count(hi)) return dp[lo][hi];
+        int ret = INT_MAX;
+        
+        for(int i = lo ; i <= hi ; i++) {
+            
+            int tmp = i + max(rec(lo, i - 1), rec(i + 1, hi));
+            ret = min(ret, tmp);
+        }
+        
+        return dp[lo][hi] = ret;
+    }

@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<TreeNode*> findDuplicateSubtrees(TreeNode* root) {
+      std::vector<TreeNode*> result;
+      std::unordered_map<std::string, int> store;
+      duplicateSubtrees(root, result, store);
+      return result;
+    }
+private:
+    std::string duplicateSubtrees(TreeNode* root, std::vector<TreeNode*>& result, std::unordered_map<std::string, int>& store) {
+      if (root == nullptr) {
+        return "";
+      }
+      auto left = duplicateSubtrees(root->left, result, store);
+      auto right = duplicateSubtrees(root->right, result, store);
+      auto encode = "l" + left + std::to_string(root->val) + right + "r";
+      auto iter = store.find(encode);
+      if (iter == store.end()) {
+        store.emplace(encode, 1);
+        return encode;
+      }
+      if (iter->second == 1) {
+        result.push_back(root);
+      }
+      iter->second += 1;
+      return encode;
+    }
+};

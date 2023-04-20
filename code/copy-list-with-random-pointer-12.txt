@@ -1,0 +1,85 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     struct Node *next;
+ *     struct Node *random;
+ * };
+ */
+struct Node *generate_node(int val) {
+    struct Node *node = malloc(sizeof(struct Node));
+    memset(node, 0, sizeof(struct Node));
+    node->val = val;
+
+    return node;
+}
+
+#define HASH_SIZE   (1200)
+
+typedef struct _myhash_t {
+    size_t old_addr;
+    size_t new_addr;
+} myhash_t;
+
+void add_to_hash(myhash_t *map, size_t old_addr, size_t new_addr) {
+    // Using open addressing to collect map
+    int index = old_addr % HASH_SIZE;
+    int cnt = 0;
+    while(map[index].old_addr != 0) {
+        index++;
+        if(index == HASH_SIZE) index = 0;
+        if(++cnt > HASH_SIZE) return;
+    }
+    map[index].old_addr = old_addr;
+    map[index].new_addr = new_addr;
+}
+
+size_t search_hash(myhash_t *map, size_t old_addr) {
+    // Using open addressing to search
+    int index = old_addr % HASH_SIZE;
+    int cnt = 0;
+    while(map[index].old_addr != old_addr) {
+        index++;
+        if(index == HASH_SIZE) index = 0;
+        if(++cnt > HASH_SIZE) return;
+    }
+    
+    return map[index].new_addr;
+}
+
+struct Node *copyRandomList(struct Node *head) {
+    if(head == NULL) return NULL;
+    struct Node *copy_head = generate_node(head->val);
+    struct Node *temp = copy_head;
+    struct Node *old_temp = head->next;
+
+    myhash_t *map = malloc(sizeof(myhash_t)*HASH_SIZE);
+    memset(map, 0, sizeof(myhash_t)*HASH_SIZE);
+
+    add_to_hash(map, (size_t)head, copy_head);
+    
+    while(old_temp!=NULL) {
+        temp->next = generate_node(old_temp->val);
+        temp = temp->next;
+        add_to_hash(map, (size_t)old_temp, (size_t)temp);
+        // printf("%x,%x\n", (size_t)old_temp, (size_t)temp);
+        old_temp = old_temp->next;
+    }
+
+    // pointer to random
+    temp = copy_head;
+    old_temp = head;
+
+    while(old_temp != NULL) {
+        if(old_temp->random == NULL) temp->random = NULL;
+        else {
+            temp->random = search_hash(map, old_temp->random);
+        }
+
+        old_temp = old_temp->next;
+        temp = temp->next;
+    }
+
+
+    return copy_head;
+}

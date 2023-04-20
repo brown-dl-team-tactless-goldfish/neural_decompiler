@@ -1,0 +1,33 @@
+using System.Text.RegularExpressions;
+
+public class Solution 
+{
+    private IEnumerable<int> Digits(string s, int n) 
+    {
+        int integer = Int32.Parse(Regex.Match(s, @"\d+").ToString());
+        string nonRepeating = Regex.Match(s + '.', @"\.(\d*)").Result("$1");
+        string repeating = Regex.Match(s + "(0)", @"\((\d+)").Result("$1");
+        
+        if (repeating.First() == '9' && repeating.Distinct().Count() == 1)
+        {
+            int pow = (int) Math.Pow(10, nonRepeating.Length);
+            int nonRepeatingAsInt = String.IsNullOrEmpty(nonRepeating) ? 0 : Int32.Parse(nonRepeating);
+            int temp = integer * pow + nonRepeatingAsInt + 1;
+            integer = temp / pow;
+            nonRepeating = nonRepeating == "" ? "" : (temp % pow).ToString().PadLeft(nonRepeating.Length, '0');
+            repeating = "0";
+        }
+        
+        yield return integer;
+        
+        foreach (char c in nonRepeating) 
+            yield return c - '0';
+        
+        n -= nonRepeating.Length + 1;
+        for (int i = 0; i < n; ++i) 
+            yield return repeating[i % repeating.Length] - '0';
+    }
+    
+    public bool IsRationalEqual(string s, string t)
+        => Digits(s, 20).SequenceEqual(Digits(t, 20));
+}

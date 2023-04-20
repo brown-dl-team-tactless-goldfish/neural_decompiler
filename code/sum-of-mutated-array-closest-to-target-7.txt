@@ -1,0 +1,29 @@
+public class Solution 
+{
+    public int FindBestValue(int[] arr, int target)
+    {
+        int start = 0, end = target;
+        if(target == 0) return 0;
+        while(start < end)
+        {
+            var mid = start + (end - start) / 2;
+            if(Replace(arr, mid) < target)
+                start = mid + 1;
+            else
+                end = mid;
+        }
+        
+        if(Math.Abs(target - Replace(arr, start)) < Math.Abs(target - Replace(arr, start - 1)))
+           return start;
+        return start - 1;
+    }
+    
+    private int Replace(int[] arr, int val)
+    {
+        var copy = (int[]) arr.Clone();
+        for(int i = 0; i < copy.Length; i++)
+            if(copy[i] > val)
+                copy[i] = val;
+        return copy.Sum();
+    }
+}

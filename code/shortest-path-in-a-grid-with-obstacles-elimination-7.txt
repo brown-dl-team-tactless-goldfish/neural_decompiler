@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int shortestPath(vector<vector<int>>& grid, int k) {
+        int rows = grid.size();
+        int cols = grid.front().size();
+        if (k >= (rows + cols -2)) return rows+cols-2; // manhattan distance
+        unordered_map<string, unordered_map<int, int>> visited; //<"row_col", <remaining k, distance>>
+        vector<vector<int>> dir {{-1,0},{0,-1},{1,0},{0,1}};
+        queue<vector<int>> q;
+        q.push({0,0,k,0}); //<row, cols, remaining of k, step>
+        int step = 1;
+        int len = INT_MAX;
+        while (!q.empty())
+        {
+            int sz = q.size();
+            for(int i=0; i<sz; i++)
+            {
+                auto curr = q.front(); q.pop();
+                if (curr[0] == rows-1 && curr[1] == cols-1)
+                                len = min(len, step-1);
+                for(const auto& d : dir)
+                {
+                    int r = curr[0]+d[0];
+                    int c = curr[1]+d[1];
+                    int rem = curr[2];
+                    if (r>=0 && r<rows && c>=0 && c<cols)
+                    {                        
+                        string key = to_string(r)+"_"+to_string(c);
+                        int re = grid[r][c] == 1 ? rem-1 : rem;
+                        if (rem < 0 || (visited.count(key) && visited[key].count(re) && visited[key][re] <= step))
+                            continue;
+                        else
+                        {
+                            if (r == rows-1 && c == cols-1)
+                                len = min(len, step);
+                            visited[key][re] = step;
+                            q.push({r,c,re,step});
+                        }
+                    }
+                }
+            }
+            step++;
+        }
+        return len == INT_MAX ? -1 : len;
+    }
+};

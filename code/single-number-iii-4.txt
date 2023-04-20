@@ -1,0 +1,37 @@
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* singleNumber(int* nums, int numsSize, int* returnSize){
+    int fullXOR = 0;
+    for (int i = 0; i < numsSize; i++) {
+        fullXOR ^= nums[i];
+    }
+
+    int firstOne = 0;
+    while (fullXOR) {
+        if (fullXOR & 1 == 1) {
+            break;
+        }
+        firstOne++;
+        fullXOR = fullXOR >> 1;
+    }
+    // notice : use (uint32_t)1 to move left 31 bits instead of 1 
+    int mask = (uint32_t)1 << firstOne;
+    
+    int uniqOne = 0;
+    int uniqTwo = 0;
+	// use mask to separate two groups
+    for (int i = 0; i < numsSize; i++) {
+        if (nums[i] & mask) {
+            uniqOne ^= nums[i];
+        } else {
+            uniqTwo ^= nums[i];
+        }
+    }
+    int *result = (int *)malloc(sizeof(int) * 2);
+    result[0] = uniqOne;
+    result[1] = uniqTwo;
+    *returnSize = 2;
+    return result;
+}

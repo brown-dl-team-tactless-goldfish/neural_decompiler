@@ -1,0 +1,33 @@
+int minimumOperations(vector<int>& nums, int start, int goal) {
+        unordered_map <int,int> visited; // to check which node i had visited
+        queue <pair<int,int>> q;  // queue of pair which stores the node and the step size
+        q.push({start,0});
+        visited[start] = 1;
+        while(!q.empty()){
+            pair<int,int> temp = q.front();
+            q.pop();
+            
+            int ele = temp.first;
+            int count = temp.second;
+            
+            for(auto num:nums){
+                int add = ele+num,sub = ele-num,xr = ele^num;
+                if(add == goal || sub == goal || xr==goal) 
+                    return count+1;
+                
+                if(add>=0 && add<=1000 && visited[add]==0){
+                    q.push({add,count+1});
+                    visited[add]=1;
+                }
+                if(sub>=0 && sub<=1000 && visited[sub]==0){
+                    q.push({sub,count+1});
+                    visited[sub] = 1;
+                }
+                if(xr>=0 && xr<=1000 && visited[xr]==0){
+                    q.push({xr,count+1});
+                    visited[xr] = 1;
+                }
+            }
+        }
+        return -1;
+    }

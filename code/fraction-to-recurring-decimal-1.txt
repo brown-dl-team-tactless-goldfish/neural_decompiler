@@ -1,0 +1,95 @@
+long abs1(long a){
+    return a < 0 ? -a : a;
+}
+
+long repIndex(long* arr, long len, long num){
+    for(int i = 0; i < len; i++){
+        if(arr[i] == num)
+            return i;
+    }
+    return -1;
+}
+
+int length(int num){
+    int len = num == 0 ? 1 : 0;
+    while(num != 0){
+        num /= 10;
+        len ++;
+    }
+    return len;
+}
+
+char * fractionToDecimal(int numerator, int denominator){   //Assume: 1  6  Result: 0.1(6)
+    long num = numerator, den = denominator;                //cast to long                    
+    long integer = num / den;  //0
+    
+    int sign = 0;
+    int iLen = length(integer);                             //1
+    
+    // Set positive for all
+    if((long)num * den < 0){
+        sign = 1;
+        integer = -integer;
+        num = abs1(num);
+        den = abs1(den);
+    }
+    
+//=========================================================================================
+    bool repeat = 0;
+    int fLen = 0, index = -1;                               //fLen: Fraction length, index: repeat at index (0.16666 -> index = 1)
+    if(num % den){                                          //mod is not 0
+        fLen ++;                                            //if mod is not 0, it has dot.
+        int maxUnrepeated = length(den) + 1 /*2*/, realUnrepeated = 0;
+        long *mods = malloc(maxUnrepeated * sizeof(long));  //Store unrepeated mods * 10. In the case of 1/6, it would be 1 * 10 and 4 * 10.
+        long n = num % den * 10;                            //0.16666 -> n = 10
+        do{
+            if(realUnrepeated < maxUnrepeated){
+                mods[realUnrepeated] = n;
+                realUnrepeated ++;
+            }
+            fLen ++;
+            n = n % den * 10;
+            index = repIndex(mods, realUnrepeated, n);      //0.16666 -> index = 1
+            if(index != -1){                                //if index != -1, n is found in mods[] 
+                repeat = 1;
+                fLen += 2;                                  //()
+                break;
+            }
+        }while(n);
+    }
+//=========================================================================================
+    int len = sign + iLen + fLen;                           //0.1(6) -> 0 + 1 + 5
+    char* r = malloc((len + 1) * sizeof(char)), *p = r;
+
+    //copy sign
+    if(sign) *p++ = '-';
+    
+    //copy integer
+    for(int i = iLen - 1; i >= 0; i--){
+        p[i] = (integer % 10) + '0';
+        integer /= 10;
+    }
+    
+    if(fLen){
+        p += iLen;                                         //move the pointer to the fractional part
+        *p++ = '.';
+    }
+
+    if(repeat){
+        p[index] = '(';
+        r[len - 1] = ')';
+        fLen -= 3;
+    }
+    
+    //copy fraction
+    long n = num, mod;
+    for(int i = 0; i < fLen; i++){
+        mod = n % den; //4
+        n = mod * 10;
+        if(p[i]=='(')p++;
+        p[i] = n / den + '0';
+    }
+    
+    r[len] = '\0';
+    return r;
+}

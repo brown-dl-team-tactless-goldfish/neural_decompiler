@@ -1,0 +1,70 @@
+class TrieNode{
+public:
+    // children[0] - children[25] use to repersent 'a' - 'z'
+    // children[26] use to repersent '/'
+    TrieNode* children[27];
+    bool is_end;
+    TrieNode(){
+        for(int i=0;i<sizeof(children)/sizeof(TrieNode*);i++) children[i] = nullptr;
+        is_end = false;
+    }
+};
+class Solution {
+    TrieNode * root;
+public:
+    vector<string> removeSubfolders(vector<string>& folder) {
+        if((int)folder.size()==0) return {};
+        else{
+            // Build the Trie.
+            root = new TrieNode();
+            std::vector<std::string>result;
+            for(int i=0;i<(int)folder.size();i++){
+                TrieNode* temp = root;
+                for(int j=0;j<(int)folder[i].length();j++){
+                    // determine if ch is english char or '/'
+                    int next = (folder[i][j]>='a'&&folder[i][j]<='z' ? folder[i][j]-'a':26);
+                    if(!temp->children[next]) temp->children[next] = new TrieNode();
+                    temp = temp->children[next];
+                }
+                temp->is_end = true;
+            }
+            std::string temp ="";
+            DFS(root,temp,result);
+            return result;
+        }
+    }
+    void DFS(TrieNode*temp_root,std::string& temp,std::vector<std::string>&result){
+        if(temp_root->is_end){
+            // If current path is a path for a root folder,
+            // add it to the result.
+            result.push_back(temp);
+            // If current path is a path for a root folder,
+            // its child also can be a path for another root folder.
+            // e.g, Test case: ["/a/b/c","/a/b/ca","/a/b/c/a","/a/b/d"]
+            // "/a/b/c" is a path for a root folder,
+            // "/a/b/ca" is also a path for a root folder.
+            // However, "a/b/c/a" is consider a sub-folder for "/a/b/c" 
+            // Therefore, DFS all the children node unless for children[26], which is '/'.
+            for(int i=0;i<sizeof(temp_root->children)/sizeof(TrieNode*)-1;i++){
+                if(temp_root->children[i]){
+                    temp.push_back(i+'a');
+                    DFS(temp_root->children[i],temp,result);
+                    // Backtracking
+                    temp.pop_back();
+                }
+            }
+        }
+        else{
+            for(int i=0;i<sizeof(temp_root->children)/sizeof(TrieNode*);i++){
+                if(temp_root->children[i])
+                {
+                    // If i in range[0-25] => append english char,
+                    // else append '/' to string.
+                    temp.push_back((i>=0&&i<=25)?i+'a':'/');
+                    DFS(temp_root->children[i],temp,result);
+                    temp.pop_back();
+                }
+            }
+        }
+    }
+};

@@ -1,0 +1,75 @@
+class Solution {
+public:
+    using PII = pair<int,int>;
+    int maximumScore(vector<int>& scores, vector<vector<int>>& edges) {
+        int n=scores.size();
+        vector<vector<int> > e(n);
+        for(vector<int> &t:edges)
+        {
+            e[t[0]].push_back(t[1]);
+            e[t[1]].push_back(t[0]);
+        }
+        for(int i=0;i<n;i++)
+        {
+            priority_queue<PII,vector<PII>,less<>>pq;
+            for(int j=0;j<e[i].size();j++)
+            {
+                pq.push({scores[e[i][j]],e[i][j]});
+            }
+            e[i].clear();
+            while(!pq.empty())
+            {
+                e[i].push_back(pq.top().second);
+                pq.pop();
+            }
+        }
+        int res=-1;
+        for(vector<int> &t:edges)
+        {
+            int n1=t[0],n2=t[1];
+            int s=scores[n1]+scores[n2];
+            if(e[n1].size()==1||e[n2].size()==1) continue;
+            int i=0,j=0;
+            while(i<e[n1].size())
+            {
+                if(e[n1][i]!=n2)break;
+                i++;
+            }
+            while(j<e[n2].size())
+            {
+                if(e[n2][j]!=n1)break;
+                j++;
+            }
+            if(i<e[n1].size() && j<e[n2].size())
+            {
+                if(e[n1][i]!=e[n2][j])
+                {
+                    res=max(res,s+scores[e[n1][i]]+scores[e[n2][j]]);     
+                }
+                else
+                {
+                    int i1=i+1,j1=j+1;
+                    while(i1<e[n1].size())
+                    {
+                        if(e[n1][i1]!=n2)break;
+                        i1++;
+                    }
+                    while(j1<e[n2].size())
+                    {
+                        if(e[n2][j1]!=n1)break;
+                        j1++;
+                    }
+                    if(i1<e[n1].size())
+                    {
+                        res=max(res,s+scores[e[n1][i1]]+scores[e[n2][j]]);   
+                    }
+                    if(j1<e[n2].size())
+                    {
+                        res=max(res,s+scores[e[n1][i]]+scores[e[n2][j1]]); 
+                    }
+                }
+            }
+        }
+        return res;
+    }
+};

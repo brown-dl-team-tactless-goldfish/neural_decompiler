@@ -1,0 +1,37 @@
+    public ListNode RemoveNodes(ListNode head) 
+    {
+        //index - value - to remove
+        List<(int, int, bool)> nodeValues = new List<(int, int, bool)>();
+        ListNode curr = head;
+        int index = 0;
+        while (curr!= null)
+        {
+            nodeValues.Add((index++, curr.val, false));
+            curr = curr.next;
+        }
+        
+        int n = nodeValues.Count;
+        int currMax= 0;
+        for (int i = n-1; i >= 0; i--)
+        {
+            if (currMax > nodeValues[i].Item2)
+                nodeValues[i] = (nodeValues[i].Item1, nodeValues[i].Item2, true);
+            else
+                currMax = nodeValues[i].Item2;
+        }
+
+        ListNode newHead = new ListNode();
+        ListNode prev = newHead;
+        curr = head;
+        for (int i = 0; i < n; i++)
+        {
+            if (!nodeValues[i].Item3)
+            {
+                prev.next = curr;
+                prev = curr;
+            }
+            curr = curr.next;
+            prev.next = null;
+        }
+        return newHead.next;
+    }

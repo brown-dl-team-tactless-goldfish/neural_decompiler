@@ -1,0 +1,21 @@
+class Solution {
+public:
+int minTaps(int n, vector<int> &ar)
+{
+    for(int i=1;i<=n;i++){
+        ar[max(0,i-ar[i])]=max(min(n,i+ar[i]),ar[max(0,i-ar[i])]);
+    }
+    //  apply jump game 2 over 'ar'
+    int ans=0,mx=0,cur=0;
+    for(int i=0;i<=n;i++){
+        if(i==cur){
+            ans++;
+            cur=max(mx,min(n,ar[i]));
+            if(cur==n) return ans;
+        }
+        else if(i>cur) return -1;
+        mx=min(n,max(mx,ar[i]));
+    }
+    return ans;
+}
+};

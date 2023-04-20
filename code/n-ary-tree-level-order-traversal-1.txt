@@ -1,0 +1,70 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     int numChildren;
+ *     struct Node** children;
+ * };
+ */
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+
+void getTreeLevel(struct Node* root, int* maxLevel, int currLevel){
+    //printf("%d\n",currLevel);
+    if(*maxLevel<currLevel){
+        *maxLevel=currLevel;
+    } 
+    
+    if(root==NULL){
+        return;
+    }
+    
+    if(currLevel==0 && root->numChildren==0){
+        *maxLevel=1;
+        return;
+    }
+    if(currLevel==0)
+        currLevel=1;
+    
+        
+    for(int i=0; i < root->numChildren; i++){
+        
+        getTreeLevel(root->children[i], maxLevel, currLevel+1);
+        
+    }
+        
+
+}
+
+void BFS(struct Node* root, int** ans, int* ansCol, int curLevel){
+    if(!root) return;
+    
+    ans[curLevel][ansCol[curLevel]++]=root->val;
+    for(int i=0; i < root->numChildren; i++){
+        BFS(root->children[i], ans, ansCol, curLevel+1);
+    }
+
+}
+
+int** levelOrder(struct Node* root, int* returnSize, int** returnColumnSizes) {
+    *returnSize=0;
+    
+    getTreeLevel(root, returnSize, 0);
+    
+
+    int** ans=malloc(sizeof(int*)*(*returnSize));
+    
+    for(int i=0; i<(*returnSize); i++){
+        ans[i]=malloc(sizeof(int)*5000);
+    }
+    
+    *returnColumnSizes=calloc(sizeof(int),(*returnSize));
+    
+    BFS(root, ans, *returnColumnSizes, 0);
+    
+    return ans;
+}

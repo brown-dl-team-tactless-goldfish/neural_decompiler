@@ -1,0 +1,107 @@
+
+
+int numRookCaptures(char** board, int boardSize, int* boardColSize)
+{
+    //Find the rownumber and row colums where the rook is located.
+    int i,j, no_of_captures=0;
+
+    int rook_row_num=0, rook_col_num = 0, rook_pos_found=0;
+    
+    for(i=0; i<boardSize; i++)
+    {
+        for(j=0; j<boardSize; j++)
+        {
+            if( *(*(board+i)+j) == 'R')
+            {
+                rook_row_num = i;
+                rook_col_num = j;
+                rook_pos_found = 1;
+                break;
+            }
+        }
+        
+        if(rook_pos_found == 1)
+            break;
+    }
+    
+    //printf("rook row : %d, rook col : %d \n", rook_row_num, rook_col_num);
+    
+    int dir = 0;    //0->North, 1->South, 2->East, 3->West
+    
+    for(dir=0; dir<=3; dir++)
+    {
+        if(dir == 0)    //Moves Towards North
+        {
+            for(i=rook_row_num-1; i>=0; i--)
+            {
+                if( *(*(board+i)+rook_col_num)  == 'p')
+                {
+                     no_of_captures++; 
+                     break;
+                }
+                
+                else if( *(*(board+i)+rook_col_num)  == 'B')
+                {
+                    break;
+                }
+            }
+        }
+        
+        else if(dir == 1)    //Moves Towards South
+        {
+            for(i=rook_row_num+1; i<boardSize; i++)
+            {
+                if( *(*(board+i)+rook_col_num)  == 'p')
+                {
+                     no_of_captures++; 
+                     break;
+                }
+                
+                else if( *(*(board+i)+rook_col_num)  == 'B')
+                {
+                    break;
+                }
+            }
+        }
+        
+        else if(dir == 2)    //Moves Towards East
+        {
+            for(i=rook_col_num+1; i<boardSize; i++)
+            {
+                if( *(*(board+rook_row_num)+i)  == 'p')
+                {
+                     no_of_captures++; 
+                     break;
+                }
+                
+                else if( *(*(board+rook_row_num)+i)  == 'B')
+                {
+                    break;
+                }
+            }
+        }
+        
+        else if(dir == 3)    //Moves Towards West
+        {
+            for(i=rook_col_num-1; i>=0; i--)
+            {
+                if( *(*(board+rook_row_num)+i)  == 'p')
+                {
+                     no_of_captures++; 
+                     break;
+                }
+                
+                else if( *(*(board+rook_row_num)+i)  == 'B')
+                {
+                    break;
+                }
+            }
+        }
+        
+        
+    }
+    
+    return no_of_captures;
+    
+}
+

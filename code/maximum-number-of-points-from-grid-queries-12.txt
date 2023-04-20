@@ -1,0 +1,41 @@
+#define tp tuple<int, int, int>
+vector<pair<int, int>> dir = {{0,1},{1,0},{0,-1},{-1,0}};
+class Solution {
+public:
+    vector<int> maxPoints(vector<vector<int>>& grid, vector<int>& queries) {
+        priority_queue<tp> pq;  // (-grid[i][j], i, j)
+        int cur = 0, n = grid.size(), m = grid[0].size();
+        vector<int> sizes;
+        // sizes[q] is the answer for query with max value q
+        // means the max points you can get (starting from top-left) strictly less than q
+        pq.push({-grid[0][0], 0, 0});
+        grid[0][0] = -1;
+        
+        while (!pq.empty()) {
+            // lowest value in the grid will be popped
+            auto [val, i, j] = pq.top();
+            val = -val; // getting the original value
+            pq.pop();
+            // while this node is not includable, increase size
+            // queries x <= val, will have cur nodes
+            while (sizes.size() <= val)
+                sizes.push_back(cur);
+            // increase the number of nodes that have been included
+            ++cur;
+            for (auto [x, y]: dir) {
+                x += i, y += j;
+                if (x<0 || y<0 || x==n || y==m) continue;
+                if (grid[x][y] < 0) continue;
+                pq.push({-grid[x][y], x, y});
+                grid[x][y] = -1;
+            }
+        }
+        sizes.push_back(cur);
+        
+        int s = sizes.size();
+        vector<int> ans;
+        for (int q: queries)
+            ans.push_back(sizes[min(q, s-1)]);
+        return ans;
+    }
+};

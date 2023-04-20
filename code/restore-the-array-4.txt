@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int mod=1000000007;
+    int numberOfArrays(string s, int k) {
+        vector<long>dp(s.size(),-1);
+        return (int)(dfs(dp,s,k,0));
+    }
+    
+    long dfs(vector<long>&dp,string& s,int &k,int index){
+        if(index>=s.size()){
+            return 1;
+        }
+        if(s[index]=='0')return 0;
+        if(dp[index]!=-1)return dp[index];
+        long res=0;
+        long long num=0;
+        for(int i=index;i<s.size();i++){
+            num=num*10+(s[i]-'0');
+            if(num>k)break;
+            res+=dfs(dp,s,k,i+1);
+            res%=mod;
+        }
+        dp[index]=res;
+        return res;
+    }
+};

@@ -1,0 +1,68 @@
+public:
+    int calcBas(int x, int y, int bas){
+        int ret = 0;
+        -- x;
+        while(x)
+            ret -= (x /= bas);
+        while(y)
+            ret += (y /= bas);
+        return ret;
+    }
+    int calcZeros(int x, int y){
+        return min(calcBas(x, y, 2), calcBas(x, y, 5));
+    }
+    string toFixedString(int x){
+        string ret = "";
+        for(int i=0; i<5; i++){
+            ret = (char)((x % 10) + '0') + ret;
+            x /= 10;
+        }
+        return ret;
+    }
+    string abbreviateProduct(int left, int right) {
+        int Z = calcZeros(left, right);
+        long long x = 1;
+        bool sCalc = true;
+        int eZ = Z, fZ = Z;
+        for(int i=left; i<=right; i++){
+            int X = i;
+            while(X % 2 == 0 && eZ)
+                X /= 2, -- eZ;
+            while(X % 5 == 0 && fZ)
+                X /= 5, -- fZ;
+            x *= X;
+            if(x >= 1e10){
+                sCalc = false;
+                break;
+            }
+        }
+        if(sCalc)
+            return to_string(x) + 'e' + to_string(Z);
+        long long las = 1;
+        eZ = Z, fZ = Z;
+        for(int i=left; i<=right; i++){
+            int X = i;
+            while(X % 2 == 0 && eZ)
+                X /= 2, -- eZ;
+            while(X % 5 == 0 && fZ)
+                X /= 5, -- fZ;
+            las *= X;
+            las %= 100000;
+        }
+        long long fir = 1;
+        eZ = Z, fZ = Z;
+        for(int i=left; i<=right; i++){
+            int X = i;
+            while(X % 2 == 0 && eZ)
+                X /= 2, -- eZ;
+            while(X % 5 == 0 && fZ)
+                X /= 5, -- fZ;
+            fir *= X;
+            while(fir >= 1e12)
+                fir /= 10;
+        }
+        while(fir >= 1e5)
+            fir /= 10;
+        return to_string(fir) + "..." + toFixedString(las) + 'e' + to_string(Z);
+    }
+};

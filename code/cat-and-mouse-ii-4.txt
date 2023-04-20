@@ -1,0 +1,56 @@
+class Solution {
+public:
+    int dx[4] = {1 , 0 , -1 , 0};
+    int dy[4] = {0 , 1 , 0 , -1};
+    int dp[9][9][9][9][2][100];
+    int dfs(int cx , int cy , int mx , int my , vector<string> &a , int c , int ms , bool turn , int n , int m , int mm) {
+        if(mm > 70) return false;
+        if(cx == mx && cy == my) return false;
+        if(a[cx][cy] == 'F') return false;
+        if(a[mx][my] == 'F') return true;
+        if(dp[cx][cy][mx][my][turn][mm] != -1) return dp[cx][cy][mx][my][turn][mm];
+        for(int i=0 ; i<4 ; i++) {
+            if(turn) {
+                for(int j=0 ; j<=ms ; j++) {
+                    int nx = mx + dx[i]*j;
+                    int ny = my + dy[i]*j;
+                    if(nx >= 0 && ny >= 0 && nx < n && ny < m && a[nx][ny] != '#') {
+                        if(dfs(cx , cy , nx , ny , a , c , ms , !turn , n , m , mm + 1)) return dp[cx][cy][mx][my][turn][mm] = true;
+                    } else {
+                        break;
+                    }
+                }
+            } else {
+                for(int j=0 ; j<=c ; j++) {
+                    int nx = cx + dx[i]*j;
+                    int ny = cy + dy[i]*j;
+                    if(nx >= 0 && ny >= 0 && nx < n && ny < m && a[nx][ny] != '#') {
+                        if(!dfs(nx , ny , mx , my , a , c , ms , !turn , n , m , mm)) return dp[cx][cy][mx][my][turn][mm] = false;
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        if(turn) return dp[cx][cy][mx][my][turn][mm] = false;
+        return dp[cx][cy][mx][my][turn][mm] = true;
+    }
+    bool canMouseWin(vector<string> &a, int c , int ms) {
+        int n = a.size() , m = a[0].size();
+        int ci , cj , mi , mj;
+        for(int i=0 ; i<n ; i++) {
+            for(int j=0 ; j<m ; j++) {
+                if(a[i][j] == 'C') {
+                    ci = i;
+                    cj = j;
+                }
+                if(a[i][j] == 'M') {
+                    mi = i;
+                    mj = j;
+                }
+            }
+        }
+        memset(dp , -1 , sizeof(dp));
+        return dfs(ci , cj , mi , mj , a , c , ms , true , n , m , 0);
+    }
+};

@@ -1,0 +1,53 @@
+class CombinationIterator {
+public:
+    string s, last, st;
+    set<pair<char, int>>ss;
+    int n, k,gen=0;
+    CombinationIterator(string characters, int combinationLength) {
+        n = characters.length();
+        k = combinationLength;
+        s = characters;
+        last = characters.substr(n - k, k);
+        st = s.substr(0, k);
+        for (int i = 0; i < n; i++)
+            ss.insert({s[i], i});
+    }
+
+    string next() {
+        if(gen==0)
+        {
+            gen++;
+            return st;
+        }
+        int c = 0, in, pt;
+        for (int i = k - 1; i >= 0; i--)
+        {
+            if (st[i] == last[i])
+                c++;
+            else
+            {
+                set<pair<char,int>>::iterator it = ss.upper_bound({st[i], -1 *1000000000000ll});
+                if (it == ss.end())
+                    return "";
+                else
+                {
+                    st[i] = it->first;
+                    pt = i;
+                    in = it->second;
+                    break;
+                }
+            }
+        }
+if(c==k)
+    return "";
+        in++;
+        pt++;
+        for (int i = in; i < in + c; i++)
+            st[pt++] = s[i];
+        return st;
+    }
+
+    bool hasNext() {
+        return !(st == last);
+    }
+};

@@ -1,0 +1,41 @@
+void swap(int* xp, int* yp)
+{
+    int temp = *xp;
+    *xp = *yp;
+    *yp = temp;
+}
+
+char * bestHand(int* ranks, int ranksSize, char* suits, int suitsSize){
+    bool isFlush = true;
+    bool isThree = false;
+    bool isPair = false;
+    
+    for(int i = 1; i<suitsSize;i++){
+        if(suits[i] != suits[i-1])
+            isFlush = false;
+            
+    }
+    if(isFlush == true)
+        return "Flush";
+    
+    for(int i = 0; i< ranksSize;i++){
+        for (int j = 0; j < ranksSize - i - 1; j++){
+            if (ranks[j] > ranks[j + 1])
+                swap(&ranks[j], &ranks[j + 1]);
+        }
+    }
+    for(int i = 2;i<ranksSize;i++){
+        if(ranks[i] == ranks[i-1] && ranks[i-1] == ranks[i-2]){
+            return "Three of a Kind";
+        }
+    }
+    
+        for(int i = 1;i<ranksSize;i++){
+        if(ranks[i] == ranks[i-1]){
+            return "Pair";
+        }
+    }
+    
+    return "High Card";
+    
+}

@@ -1,0 +1,63 @@
+      /**
+       * Note: The returned array must be malloced, assume caller calls free().
+       */
+      int* sortByBits(int* arr, int arrSize, int* returnSize)
+      {
+          int temp;
+          int* bits = (int*)calloc(arrSize , sizeof(int));
+          int* copyarr = (int*)calloc(arrSize , sizeof(int));
+      
+          // count ones
+          
+          for ( int i = 0 ; i < arrSize ; i++)
+          {
+              copyarr[i] = arr[i];
+                  while ( arr[i] > 0 )
+                  {
+                      if ( arr[i] & 1u)
+                      {
+                          bits[i]++;
+                      }
+                      
+                      
+                      arr[i] = arr[i] >> 1;
+                  }
+          }
+          
+          // sorting the array
+          
+          for ( int i = 0 ; i < arrSize-1 ; i++ )
+          {
+              for ( int j = i+1 ; j < arrSize ; j++ )
+              {
+                  if ( bits[i] > bits[j] )
+                  {
+                      //sort bits;
+                      temp = bits[i];
+                      bits[i] = bits[j];
+                      bits[j] = temp;
+                      
+                      temp = copyarr[i];
+                      copyarr[i] = copyarr[j];
+                      copyarr[j] = temp;
+                      
+                  }
+                  else if  (( copyarr[i] > copyarr[j] ) && bits[i] == bits[j])
+                  {
+                      //sort bits; 
+                      temp = bits[i];
+                      bits[i] = bits[j];
+                      bits[j] = temp;
+                      
+                      temp = copyarr[i];
+                      copyarr[i] = copyarr[j];
+                      copyarr[j] = temp;
+                  }
+              }
+          }
+              
+              
+              *returnSize = arrSize;
+          return copyarr;
+      
+      }

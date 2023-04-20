@@ -1,0 +1,229 @@
+		public class Solution
+		{
+
+			private long FindNegative(List<long> p1, List<long> p2, List<long> n1, List<long> n2, long k)
+			{
+				p1.Sort();
+				p2.Sort();
+				n1.Sort();
+				n2.Sort();
+
+				p1.Reverse();
+				p2.Reverse();
+				n1.Reverse();
+				n2.Reverse();
+
+				long l = long.MinValue;
+				long r = -1;
+
+				while (r - l > 1)
+				{
+					var mid = l + (r - l) / 2;
+					if (CalculateNegProdsCount(p1, p2, n1, n2, -mid) >= k)
+					{
+						r = mid;
+					}
+					else
+					{
+						l = mid;
+					}
+				}
+
+				if (CalculateNegProdsCount(p1, p2, n1, n2, -l) < k)
+				{
+					return r;
+				}
+
+				return l;
+			}
+
+
+			private long CalculatePosProdsCount(List<long> l1, List<long> l2, long cand)
+			{
+				if (l1.Count == 0 || l2.Count == 0)
+				{
+					return 0;
+				}
+				long c = 0;
+				for (int i = 0; i < l1.Count; i++)
+				{
+					int l = 0;
+					int r = l2.Count - 1;
+
+					while (r - l > 1)
+					{
+						int mid = l + (r - l) / 2;
+						if (l1[i] * l2[mid] > cand)
+						{
+							r = mid;
+						}
+						else
+						{
+							l = mid;
+						}
+					}
+
+					if (l1[i] * l2[r] <= cand)
+					{
+						c += (r + 1);
+					}
+					else if(l1[i] * l2[l] <= cand)
+					{
+						c += (l + 1);
+					}
+				}
+
+				return c;
+			}
+
+
+			private long CalculateNegProdsCount(List<long> l1, List<long> l2, long cand)
+			{
+				if (l1.Count == 0 || l2.Count == 0)
+				{
+					return 0;
+				}
+
+				long c = 0;
+				for (int i = 0; i < l1.Count; i++)
+				{
+					int l = 0;
+					int r = l2.Count - 1;
+
+					while (r - l > 1)
+					{
+						int mid = l + (r - l) / 2;
+						if (l1[i] * l2[mid] < cand)
+						{
+							r = mid;
+						}
+						else
+						{
+							l = mid;
+						}
+					}
+
+					if (l1[i] * l2[r] >= cand)
+					{
+						c += (r + 1);
+					}
+					else if (l1[i] * l2[l] >= cand)
+					{
+						c += (l + 1);
+					}
+				}
+
+				return c;
+			}
+
+			private long CalculateNegProdsCount(List<long> p1, List<long> p2, List<long> n1, List<long> n2, long cand)
+			{
+				long c1 = CalculateNegProdsCount(p1, n2, cand);
+				long c2 = CalculateNegProdsCount(n1, p2, cand);
+				return c1 + c2;
+			}
+
+			private long CalculatePosProdsCount(List<long> p1, List<long> p2, List<long> n1, List<long> n2, long cand)
+			{
+				long c1 = CalculatePosProdsCount(p1, p2, cand);
+				long c2 = CalculatePosProdsCount(n1, n2, cand);
+				return c1 + c2;
+			}
+			private long FindPositive(List<long> p1, List<long> p2, List<long> n1, List<long> n2, long k)
+			{
+				p1.Sort();
+				p2.Sort();
+				n1.Sort();
+				n2.Sort();
+
+				long l = 1;
+				long r = long.MaxValue;
+
+				while (r-l > 1)
+				{
+					var mid = l + (r - l) / 2;
+					if (CalculatePosProdsCount(p1, p2, n1, n2, mid) >= k)
+					{
+						r = mid;
+					}
+					else
+					{
+						l = mid;
+					}
+				}
+
+				if (CalculatePosProdsCount(p1, p2, n1, n2, l) < k)
+				{
+					return r;
+				}
+
+				return l;
+
+			}
+
+			public long KthSmallestProduct(int[] nums1, int[] nums2, long k)
+			{
+				List<long> p1 = new List<long>(nums1.Length);
+				List<long> n1 = new List<long>(nums1.Length);
+				List<long> p2 = new List<long>(nums2.Length);
+				List<long> n2 = new List<long>(nums2.Length);
+
+				long z1 = 0, z2 = 0;
+
+				foreach (var num in nums1)
+				{
+					if (num == 0)
+					{
+						z1++;
+					}
+
+					if (num > 0)
+					{
+						p1.Add(num);
+					}
+
+					if (num < 0)
+					{
+						n1.Add(-num);
+					}
+				}
+
+
+				foreach (var num in nums2)
+				{
+					if (num == 0)
+					{
+						z2++;
+					}
+
+					if (num > 0)
+					{
+						p2.Add(num);
+					}
+
+					if (num < 0)
+					{
+						n2.Add(-num);
+					}
+				}
+
+				long negativePairs = p1.Count * n2.Count + p2.Count * n1.Count;
+				long zeroPairs = z1 * (p2.Count + n2.Count) + z2 * (p1.Count + n1.Count) + z1 * z2;
+
+				if (k <= negativePairs)
+				{
+					return FindNegative(p1, p2, n1, n2, k);
+				}
+
+				k -= negativePairs;
+
+				if (k <= zeroPairs)
+				{
+					return 0;
+				}
+
+				k -= zeroPairs;
+				return FindPositive(p1, p2, n1, n2, k);
+
+			}
+		}

@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<int> findOriginalArray(vector<int>& changed) {
+        map<int, int> m; 
+        for (auto & i : changed){
+            m[i]++; 
+        }
+        if (m[0] != 0 && m[0]%2 == 1) return {}; 
+        map<int, int> res;
+        res[0] = m[0] / 2; 
+        // remove zero; 
+        m[0] = 0; 
+        // other values; 
+        // from the big to the small one 
+        for (auto it = m.rbegin(); it!= m.rend(); it++){
+            if (it->second == 0) continue; 
+            if (it->first % 2 == 1 || m[it->first / 2] < it->second) return {}; 
+            // the count the values; 
+            res[it->first / 2] += it->second; 
+            m[it->first / 2] -= it->second; 
+            
+        }
+        // for a
+        vector<int> ans; 
+        for (auto & i : res){
+            vector<int> tmp (i.second, i.first); 
+            ans.insert (ans.end(), tmp.begin(), tmp.end());
+        }
+        return ans; 
+    }
+};

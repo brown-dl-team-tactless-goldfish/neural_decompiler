@@ -1,0 +1,51 @@
+typedef long long ll;
+
+long long minimalKSum(vector<int> &nums1, int k1) {
+    
+    ll ans = 0;
+    ll n = nums1.size();
+    
+    // update the given values into long long
+    ll k = (ll) k1;
+    vector<ll> nums;
+    for(int i=0;i<nums1.size();i++){
+        ll c = (ll) nums1[i];
+        nums.push_back(c);
+    }
+    
+    sort(nums.begin(), nums.end());
+    
+    for(int i=0;i<nums.size();i++){
+        
+        if(k <= 0) break;
+        
+        if(i == 0){
+            
+            ll num = nums[i] - 1;
+            ll temp = min(k, num);
+            
+            k -= temp;
+            ans += (temp*(temp + 1))/2;
+            
+        }else{
+            
+            if(nums[i] == nums[i-1]) continue;
+            
+            ll num = nums[i] - nums[i-1] - 1;
+            ll temp = nums[i-1] + min(k, num);
+            
+            k -= min(k, num);
+            ans += {(temp*(temp + 1))/2 - (nums[i-1]*(nums[i-1] + 1))/2};
+        }
+    }
+
+    
+    if(k > 0){
+        
+        ll temp = nums[n-1] + k;
+        ans += {(temp*(temp + 1))/2 - (nums[n-1]*(nums[n-1] + 1))/2};
+    }
+    
+    return ans;
+    
+}

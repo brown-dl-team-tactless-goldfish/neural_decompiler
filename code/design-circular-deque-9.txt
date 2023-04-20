@@ -1,0 +1,190 @@
+typedef struct myCircularDequeNode{
+    int data;
+    struct myCircularDequeNode* next;
+    struct myCircularDequeNode* prev;
+} MyCircularDequeNode;
+
+typedef struct {
+    int slots_occupied;
+    int max_capacity;
+    MyCircularDequeNode* front;
+    MyCircularDequeNode* rear;
+} MyCircularDeque;
+
+// prototypes..
+bool myCircularDequeIsFull(MyCircularDeque* obj);
+bool myCircularDequeIsEmpty(MyCircularDeque* obj);
+
+MyCircularDeque* myCircularDequeCreate(int k) {
+    MyCircularDeque* my_deque = malloc (sizeof(MyCircularDeque));
+    my_deque->slots_occupied = 0;
+    my_deque->max_capacity = k;
+    my_deque->front = NULL;
+    my_deque->rear  = NULL;
+    return my_deque;
+}
+
+MyCircularDequeNode* createMyCircularDequeNode(int data) {
+    MyCircularDequeNode* current = malloc (sizeof(MyCircularDequeNode));
+    current->data = data;
+    current->prev = NULL;
+    current->next = NULL;
+    return current;
+}
+
+bool myCircularDequeInsertFront(MyCircularDeque* obj, int value) {
+    bool ret_val = false;
+    
+    MyCircularDequeNode* current = createMyCircularDequeNode(value);
+    if (obj->slots_occupied == obj->max_capacity) {
+        printf("We are at capacity. Cannot accept %d.", value);
+        return ret_val;
+    }
+    if (obj->slots_occupied == 0) {
+        obj->front = current;
+        obj->rear  = current;
+    } else {
+        MyCircularDequeNode* previous_head = obj->front;
+        obj->front = current;
+        current->next = previous_head;
+        previous_head->prev = current;
+    }
+    obj->slots_occupied++;
+    ret_val = true;
+    return ret_val;
+}
+
+bool myCircularDequeInsertLast(MyCircularDeque* obj, int value) {
+    bool ret_val = false;
+    
+    MyCircularDequeNode* current = createMyCircularDequeNode(value);
+    if (obj->slots_occupied == obj->max_capacity) {
+        printf("We are at capacity. Cannot accept %d.", value);
+        return ret_val;
+    }
+    if (obj->slots_occupied == 0) {
+        obj->rear = current;
+        obj->front  = current;
+    } else {
+        MyCircularDequeNode* previous_rear = obj->rear;
+        obj->rear = current;
+        current->prev = previous_rear;
+        previous_rear->next = current;
+    }
+    obj->slots_occupied++;
+    ret_val = true;
+    return ret_val;
+}
+
+bool myCircularDequeDeleteFront(MyCircularDeque* obj) {
+    bool ret_val = false;
+
+    if (obj->slots_occupied == 0) {
+        printf("We are at 0 capacity. Cannot delete data.");
+        return ret_val;
+    }
+    
+    if (obj->slots_occupied == 1) {
+        MyCircularDequeNode* delete_me = obj->front;
+        obj->front = NULL;
+        obj->rear  = NULL;
+        free(delete_me);
+    }
+    else { // > 1...
+        MyCircularDequeNode* previous_head = obj->front;
+        obj->front = obj->front->next;
+        obj->front->prev = NULL;
+        free(previous_head);
+    }
+
+    obj->slots_occupied--;
+    ret_val = true;
+    return ret_val;
+}
+
+bool myCircularDequeDeleteLast(MyCircularDeque* obj) {
+    bool ret_val = false;
+
+    if (obj->slots_occupied == 0) {
+        printf("We are at 0 capacity. Cannot delete data.");
+        return ret_val;
+    }
+
+    if (obj->slots_occupied == 1) {
+        MyCircularDequeNode* delete_me = obj->rear;
+        obj->rear  = NULL;
+        obj->front = NULL;
+        free(delete_me);
+    }
+    else { // > 1...
+        MyCircularDequeNode* previous_rear = obj->rear;
+        obj->rear = obj->rear->prev;
+        obj->rear->next = NULL;
+        free(previous_rear);
+    }
+
+    obj->slots_occupied--;
+    ret_val = true;
+    return ret_val;   
+
+}
+
+int myCircularDequeGetFront(MyCircularDeque* obj) {
+    int ret_val = -1;
+    if (obj->slots_occupied >= 1) {
+        ret_val = obj->front->data;
+    }
+    return ret_val;
+}
+
+int myCircularDequeGetRear(MyCircularDeque* obj) {
+    int ret_val = -1;
+    if (obj->slots_occupied >= 1) {
+        ret_val = obj->rear->data;
+    }
+    return ret_val;
+}
+
+bool myCircularDequeIsEmpty(MyCircularDeque* obj) {
+    bool ret_val = false;
+    if (obj->slots_occupied == 0) {
+        ret_val = true;
+    }
+    return ret_val;
+}
+
+bool myCircularDequeIsFull(MyCircularDeque* obj) {
+    bool ret_val = false;
+    if (obj->slots_occupied == obj->max_capacity) {
+        ret_val = true;
+    }
+    return ret_val;
+}
+
+void myCircularDequeFree(MyCircularDeque* obj) {
+    while (obj->slots_occupied != 0) {
+        myCircularDequeDeleteFront(obj);
+    }
+}
+
+/**
+ * Your MyCircularDeque struct will be instantiated and called as such:
+ * MyCircularDeque* obj = myCircularDequeCreate(k);
+ * bool param_1 = myCircularDequeInsertFront(obj, value);
+ 
+ * bool param_2 = myCircularDequeInsertLast(obj, value);
+ 
+ * bool param_3 = myCircularDequeDeleteFront(obj);
+ 
+ * bool param_4 = myCircularDequeDeleteLast(obj);
+ 
+ * int param_5 = myCircularDequeGetFront(obj);
+ 
+ * int param_6 = myCircularDequeGetRear(obj);
+ 
+ * bool param_7 = myCircularDequeIsEmpty(obj);
+ 
+ * bool param_8 = myCircularDequeIsFull(obj);
+ 
+ * myCircularDequeFree(obj);
+*/

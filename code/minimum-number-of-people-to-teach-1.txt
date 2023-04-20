@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int minimumTeachings(int n, vector<vector<int>>& languages, vector<vector<int>>& friendships) {
+        int minCount = INT_MAX;
+        map<pair<int, int>, bool> mp;
+        map<pair<int, int>, bool> canComm;
+        for (int i = 0; i < languages.size(); i++) {
+            for (auto& val : languages[i]) {
+                mp[{i + 1, val}] = true;
+            }
+        }
+                
+        for (auto& fr : friendships) {
+            if (canComm.find({fr[0], fr[1]}) != canComm.end()) continue;
+            canComm[{fr[0], fr[1]}] = false;
+            for (auto& ln : languages[fr[0] - 1]) {
+                if (mp[{fr[1], ln}]) {
+                    canComm[{fr[0], fr[1]}] = true;
+                    break;
+                }
+            }
+        }
+        
+        for (int i = 1; i <= n; i++) {
+            int count = 0;
+            map<pair<int, int>, bool> tmpmp;
+
+            for (auto& fr : friendships) {
+                if (canComm[{fr[0], fr[1]}]) continue;
+                for (auto& val : fr) {
+                    if (!mp[{val, i}]) {
+                        if (!tmpmp[{val, i}]) {
+                            tmpmp[{val, i}] = true;
+                            count++;
+                        }
+                    }
+                }
+            }
+
+            minCount = min(minCount, count);
+        }
+                    
+        return minCount;
+    }
+};

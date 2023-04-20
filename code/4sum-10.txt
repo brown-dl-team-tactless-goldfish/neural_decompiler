@@ -1,0 +1,53 @@
+if(numsSize<4)
+{
+    *returnSize = re_size;
+    return re;
+}
+qsort(nums, numsSize, sizeof(int), cmp);
+
+tail_sum2 = nums[numsSize-1]+nums[numsSize-2];
+tail_sum3 = tail_sum2+nums[numsSize-3];
+for(i=0; i<numsSize-3&&nums[i]+nums[i+1]+nums[i+2]+nums[i+3]<=target; i++)
+{
+    if(i>0&&nums[i]==nums[i-1])continue;
+    if(nums[i]+tail_sum3<target)continue;
+
+    for(j=i+1; j<numsSize-2&&nums[i]+nums[j]+nums[j+1]+nums[j+2]<=target; j++)
+    {
+        int sum = target-nums[i]-nums[j];
+        int head,tail;
+
+        if(j>i+1&&nums[j]==nums[j-1])continue;
+        if(nums[i]+nums[j]+tail_sum2<target)continue;
+
+        head = j+1;
+        tail = numsSize-1;
+        while(head<tail)
+        {
+            if(nums[head]+nums[tail]==sum)
+            {
+                re[re_size] = (int*)malloc(4*sizeof(int));
+                re[re_size][0] = nums[i];
+                re[re_size][1] = nums[j];
+                re[re_size][2] = nums[head];
+                re[re_size][3] = nums[tail];
+                re_size++;
+
+                head++,tail--;
+                while(head<tail&&nums[head]==nums[head-1])head++;
+                while(head<tail&&nums[tail]==nums[tail+1])tail--;
+            }
+            else if(nums[head]+nums[tail]<sum)
+            {
+                head++;
+            }
+            else
+            {
+                tail--;
+            }
+        }
+    }
+}
+
+*returnSize = re_size;
+return re;

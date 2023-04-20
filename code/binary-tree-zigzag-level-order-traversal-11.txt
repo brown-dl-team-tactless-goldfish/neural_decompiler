@@ -1,0 +1,130 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+
+/** use linked list to implement stack **/
+struct StackNode
+{
+  struct TreeNode *node; /** item **/
+  struct StackNode *next; /** next item **/
+};
+
+struct Stack
+{
+  int nums; /** how many items in the stack **/
+  struct StackNode *top; /** stack top **/
+};
+
+/** Push on Stack *ptr **/
+void Push(struct TreeNode *root, struct Stack *ptr)
+{
+  if(root == NULL || ptr == NULL) return;
+  struct StackNode *new = malloc(sizeof(struct StackNode));
+  new->node = root;
+  new->next = ptr->top;
+  ptr->nums += 1;
+  ptr->top = new;
+}
+
+/** Pop on Stack *ptr **/
+struct TreeNode *Pop(struct Stack *ptr)
+{
+  struct TreeNode *val = ptr->top->node;
+  ptr->top = ptr->top->next;
+  ptr->nums -= 1;
+  return val;
+}
+
+/** how many levels of the tree **/
+int countLevel(struct TreeNode *root)
+{
+  if (root == NULL)
+    return 0;
+  int i = countLevel(root->left) + 1;
+  int j = countLevel(root->right) + 1;
+  if (i > j)
+    return i;
+  else
+    return j;
+}
+
+int** zigzagLevelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes)
+{
+  /* tree == NULL */
+  if(root == NULL) {
+    *returnSize = 0;
+    *returnColumnSizes = malloc(sizeof(int));
+    **returnColumnSizes = 0;
+    return NULL;
+  }
+
+  /* Initialize */
+  int level = 0, totalLevel = countLevel(root);
+  int **result = malloc(sizeof(int *) * totalLevel);
+  *returnSize = totalLevel;
+  *returnColumnSizes = malloc(sizeof(int) * totalLevel);
+  int *rcs = *returnColumnSizes;
+
+  struct TreeNode *temp = NULL;
+  int i = 0;
+  
+  struct Stack *stack1 = malloc(sizeof(struct Stack));
+  struct Stack *stack2 = malloc(sizeof(struct Stack));
+  stack1->nums = 0;
+  stack1->top = NULL;
+  stack2->nums = 0;
+  stack2->top = NULL;
+
+  /* level 0 */
+  Push(root, stack1);
+
+  /* level > 0 */
+  while (stack1->nums > 0 || stack2->nums > 0)
+  {
+    if (stack1->nums > 0)
+    {
+      rcs[level] = stack1->nums;
+      result[level] = malloc(sizeof(int) * stack1->nums);
+      i = 0;
+      while (stack1->nums > 0)
+      {
+        temp = Pop(stack1);
+        if(temp->left != NULL)
+          Push(temp->left, stack2);
+        if(temp->right != NULL)
+          Push(temp->right, stack2);
+        result[level][i] = temp->val;
+        i++;
+      }
+    }
+    else /** stack2->nums > 0 **/
+    {
+      rcs[level] = stack2->nums;
+      result[level] = malloc(sizeof(int) * stack2->nums);
+      i = 0;
+      while (stack2->nums > 0)
+      {
+        temp = Pop(stack2);
+        if(temp->right != NULL)
+          Push(temp->right, stack1);
+        if(temp->left != NULL)
+          Push(temp->left, stack1);
+        result[level][i] = temp->val;
+        i++;
+      }
+    }
+    level++;
+  }
+
+  return result;
+}

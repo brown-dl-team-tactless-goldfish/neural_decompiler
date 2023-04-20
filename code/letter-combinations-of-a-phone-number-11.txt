@@ -1,0 +1,40 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char **map;
+
+void generate(char *digits, int d_idx, int n, char *cur_str, int c_idx, int *res_idx, char **result) {
+    if (d_idx == n) {
+        strcpy(result[*res_idx], cur_str);
+        *res_idx += 1;
+        return;
+    }
+    char *str = map[digits[d_idx]-'0'];
+    for (int i = 0; i < strlen(str); i++) {
+        cur_str[c_idx] = str[i];
+        generate(digits, d_idx+1, n, cur_str, c_idx+1, res_idx, result);
+        cur_str[c_idx] = 0;
+    }
+}
+
+char ** letterCombinations(char * digits, int* returnSize){
+    int n = strlen(digits);
+    if (!n) {
+        *returnSize = 0;
+        return NULL;
+    }
+    char *m[] = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+    map = m;
+    *returnSize = 1;
+    for (int i = 0; i < n; i++) {
+        int x = digits[i]-'0';
+        *returnSize *= strlen(m[x]);
+    }
+    char **result = calloc(*returnSize+1, sizeof(char*));
+    for (int i = 0; i < *returnSize; i++) result[i] = calloc(n+1, sizeof(char));
+    char *res0 = calloc(n+1,sizeof(char));
+    int i = 0, j = 0, res_idx = 0;
+    generate(digits, 0, n, res0, 0, &res_idx, result);
+    free(res0);
+    return result;
+}

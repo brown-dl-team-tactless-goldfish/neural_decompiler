@@ -1,0 +1,33 @@
+#define ll long long
+class Solution {
+    vector<int> fib;
+public:
+    int minFibonacciNumbers(ll K) 
+    { 
+        int count = 0, j = fib.size() - 1;  // Start from largest possible fibonacci number
+        while (K) { 
+            count += (K / fib[j]);  // Take out as much as possible
+            K %= (fib[j]);  // Remaining K
+            j--; 
+        } 
+        return count; 
+    } 
+    void generateFibonacci(ll K)
+    {
+        int i = 3;
+        fib.push_back(0);  // initial values
+        fib.push_back(1);  
+        fib.push_back(1); 
+        while (true) { 
+            ll c = fib[i - 1] + fib[i - 2]; 
+            if (c > K)  // no need to process ahead
+                return; 
+            fib.push_back(c); 
+            i++; 
+        } 
+    }
+    int findMinFibonacciNumbers(int k) {
+        generateFibonacci(k);
+        return minFibonacciNumbers(k);
+    }
+};

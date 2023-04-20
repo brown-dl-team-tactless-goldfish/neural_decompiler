@@ -1,0 +1,55 @@
+const int mod = 1e9+7;
+int pascal[10000][15];
+bool pred = false;
+class Solution {
+    void pre() { // calculate pascal triangle for combinatorics
+        pascal[0][0] = pascal[1][0] = pascal[1][1] = 1;
+        for (int i = 2; i < 10000; i++) {
+            pascal[i][0] = 1;
+            if (i < 15) pascal[i][i] = 1;
+            for (int j = 1; j < min(i, 15); j++) {
+                pascal[i][j] = (pascal[i-1][j-1]+pascal[i-1][j])%mod;
+            }
+        }
+        
+    }
+    
+public:
+    int idealArrays(int n, int mv) {        
+        if (!pred) {
+            pre();
+            pred = true;
+        }
+        
+        // 2^0, 2^1, 2^2, .... 2^13 < 10000 < 2^14
+        // we have depth 14 at most for the search graph
+        // it means that we have 14 distinct integers at most for a size 10000 ideal array
+        int maxn = min(n, 14);
+        auto dp = new int*[maxn];
+        for (int i = 0; i < maxn; i++) {
+            dp[i] = new int[mv+1];
+            fill_n(dp[i], mv+1, -1);
+        }
+        int ans = 0;
+        // ideal arrays with value start from 1, 2, ..., maxValue
+        for (int v = 1; v <= mv; v++) 
+            ans = (ans+dfs(0, n, v, mv, dp))%mod;
+        return ans;
+    }
+
+    // ith node, size n array, current val, maxval, dp
+    int dfs(int i, int n, int v, int mv, int** dp) {   
+        if (i+1 == n) return 1; // number of distinct values is equal to the desired array size
+        if (dp[i][v] != -1) return dp[i][v];
+        
+        // res: use (i+1) distinct values to form a size n ideal array
+        // the use v as the rest of values
+        // ex: i = 1, n = 3, v = 2 => [1, 2, 2]
+        int res = pascal[n-1][i]; 
+        // enumerate the next distinct value
+        for (int m = 2; m*v <= mv; m++) {
+            res = (res+dfs(i+1, n, m*v, mv, dp))%mod;
+        }
+        return dp[i][v] = res;
+    }
+};

@@ -1,0 +1,33 @@
+public class Solution {
+    
+    private readonly Dictionary<int, List<int>> m_Known = new();
+    
+    public int[] SmallestTrimmedNumbers(string[] nums, int[][] queries) {
+     int[] result = new int[queries.Length];
+
+      for (int qIndex = 0; qIndex < queries.Length; ++qIndex) {
+        int k = queries[qIndex][0];
+        int trim = queries[qIndex][1];
+
+        if (m_Known.TryGetValue(trim, out var knownList)) {
+          result[qIndex] = knownList[k - 1];
+
+          continue;
+        }
+
+        List<int> list = nums
+            .Select((item, index) => (value: item[^trim..], index: index))
+            .OrderBy(item => item.value)
+            .ThenBy(item => item.index)
+            .Select(item => item.index)
+            .ToList();
+
+        m_Known.Add(trim, list);
+
+        result[qIndex] = list[k - 1];
+      }
+
+      return result;
+    }
+    
+}

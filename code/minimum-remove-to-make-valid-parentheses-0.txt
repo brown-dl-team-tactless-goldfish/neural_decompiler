@@ -1,0 +1,37 @@
+char * minRemoveToMakeValid(char * s1){
+    int i,j;
+    int lc,rc;
+    int l = strlen(s1);
+    char* s=malloc(sizeof(char)*(l+1));
+    strcpy(s,s1);
+    lc=rc=0;
+	// Starting from the end removing redundent opening bracket '('
+    for(i=l-1; i>=0; i--)
+    {
+        if (s[i] == ')') rc++;
+        if (s[i] == '(') lc++;
+        if (lc >rc)
+        {
+            s[i]=0;   // in this point just erase it
+            lc--;       // update counter after erasing 
+        }
+    }
+    lc=rc=0;
+	// Starting from the begining removing redundent closing bracket ')'
+	// also reducing spaces 
+    for(i=0,j=0; i<l; i++)
+    {
+        if (s[i] == ')') rc++;
+        if (s[i] == '(') lc++;
+        if (rc>lc)
+        {
+            rc--;      // update counter after erasing          
+        }
+        else  if (s[i])    // remove '\0' from first pass  
+        {                
+          s[j++]=s[i];  //  copy the leftover characters to the left (reassemble the string)
+        }
+    }
+    s[j] = 0;  // close the the string
+    return(s);
+}

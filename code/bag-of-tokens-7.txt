@@ -1,0 +1,28 @@
+int bagOfTokensScore(int* tokens, int tokensSize, int power)
+{
+    int score = 0;
+
+
+    qsort(tokens, tokensSize, sizeof(int), cmpInt);
+
+    while(tokensSize > 0) {
+        if(power >= tokens[0]) {
+            /* increase score by playing the smallest token face up */
+            power -= tokens[0];
+            score++;
+            tokens++, tokensSize--;
+            continue;
+        }
+        if(score > 0 && tokensSize >= 2 && tokens[tokensSize-1] > tokens[0]) {
+            /* increase power while not decrease the score
+             * by simultaneously playing the biggest token face down
+             * AND the smallest token face up
+             */
+            power += tokens[tokensSize-1] - tokens[0];
+            tokens++, tokensSize -= 2;
+            continue;
+        }
+        break;
+    }
+    return score;
+}

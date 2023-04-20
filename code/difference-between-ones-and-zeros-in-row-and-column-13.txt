@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<vector<int>> onesMinusZeros(vector<vector<int>>& grid) {
+        int n = grid.size(), m = grid[0].size();
+        vector<vector<int>> ans(n,vector<int>(m));
+        vector<pair<int,int>> row, col;
+        for(int i=0; i<n; ++i){
+            pair<int,int> count{0,0};
+            for(int j=0; j<m; ++j){
+                grid[i][j] ? count.second++ : count.first++;
+            }
+            row.push_back(count);
+        }
+        for(int i=0; i<m; ++i){
+            pair<int,int> count{0,0};
+            for(int j=0; j<n; ++j){
+                grid[j][i] ? count.second++ : count.first++;
+            }
+            col.push_back(count);
+        }
+        for(int i=0; i<n; ++i){
+            for(int j=0; j<m; ++j){
+                ans[i][j] = row[i].second + col[j].second - row[i].first - col[j].first;
+            }
+        }
+        return ans;
+    }
+};

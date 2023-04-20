@@ -1,0 +1,35 @@
+class Solution {
+public:
+    vector<unordered_map<int,int>> dp;
+    int ans=INT_MIN;
+    int fun(vector<int>& nums,int& k,int l,int gap){
+        
+        if(l==nums.size()) return 0;
+        if(dp[l].count(gap)) return dp[l][gap];
+        
+        if(nums[l]>=0) return dp[l][gap]=max(nums[l]+fun(nums,k,l+1,0),nums[l]);
+        
+
+        if(gap==k-1){
+            int a=nums[l]+fun(nums,k,l+1,0);
+            int b=fun(nums,k,l+1,0);
+            ans=max(ans,b);
+            return dp[l][gap]=max(a,0);
+        }
+        return dp[l][gap]=max(nums[l]+fun(nums,k,l+1,0),fun(nums,k,l+1,gap+1)); 
+    }
+    int constrainedSubsetSum(vector<int>& nums, int k) {
+       dp.resize(100001);
+        if(k==1){
+            int sum=0;
+            for(auto n:nums){
+                sum+=n;
+                if(sum<n) sum=n;
+                ans=max(ans,sum);
+            }
+            return ans;
+        }
+       ans=max(ans,fun(nums,k,0,0));
+        return ans;
+    }
+};

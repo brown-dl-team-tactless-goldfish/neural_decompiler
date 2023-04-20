@@ -1,0 +1,17 @@
+public class Solution
+{
+    public int StoneGameVII(int[] stones)
+    {
+        int sum = stones.Sum();
+        return Max(stones, 0, stones.Length - 1, sum, new int[stones.Length, stones.Length]);
+    }
+
+    private int Max(int[] stones, int i, int j, int sum, int[,] memo)
+    {
+        if (i == j) return 0;
+        if (memo[i, j] > 0) return memo[i, j];
+        return memo[i, j] = Math.Max(
+            sum - stones[i] - Max(stones, i + 1, j, sum - stones[i], memo), 
+            sum - stones[j] - Max(stones, i, j - 1, sum - stones[j], memo));
+    }
+}

@@ -1,0 +1,30 @@
+public string SubStrHash(string s, int power, int m, int k, int hashValue)
+{
+	var len = s.Length;
+	var val = new int[len];
+	var startIdx = 0;
+
+	for (int i = 0; i < len; i++)
+		val[i] = (s[i] - 'a' + 1);
+
+	long hash = 0;
+	long p = 1;
+	for(int i=len-k; i<len; i++)
+	{
+		hash = (hash + val[i] * p);
+		if(i < len-1)   //we will need the value power^(k-1) later in the code
+			p = (p * power) % m;
+	}
+
+	if(hash % m == hashValue)
+		startIdx = len-k;
+
+	for(int i=len-k-1; i>=0; i--)
+	{
+		hash = ((hash % m) - (val[i+k]*p % m) + m) * power + val[i];
+		if(hash % m == hashValue)
+			startIdx = i;   //we need to continue since we're asked to return THE FIRST substring
+	}
+
+	return s.Substring(startIdx, k);
+}

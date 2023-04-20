@@ -1,0 +1,50 @@
+class Solution {
+public:
+    typedef long long ll;
+    long long big = 1e9 + 7;
+    int countSpecialSubsequences(vector<int>& nums) {
+        int n = nums.size();
+		
+		// twos[i] mean the subsequence of '2's that start from index i. (has only '2')
+        vector<ll> twos(n, 0);
+        ll pow = 1;
+        for(int i=n-1; i>=0; i--) {
+            if(nums[i] == 2) {
+                pow = (pow * 2) % big;
+                twos[i] = pow - 1;
+            }
+        }
+        
+		// ones[i] mean the subsequence of '1's that start from index i. (has '1' and '2', with all '1's appear before any '2's).
+        vector<ll> ones(n, 0);
+        ll maxtwo = 0;
+        ll sum  = 0;
+        for(int i=n-1; i>=0; i--) {
+            if(nums[i] == 2) {
+                maxtwo = twos[i];
+            } else if(nums[i] == 1) {
+                ones[i] = (sum + maxtwo) % big;
+                sum = (sum + ones[i]) % big;
+            }
+        }
+
+        // zeros[i] mean the subsequence of '0's that start from index i. (satisfy the problems criteria).
+        vector<ll> zeros(n, 0);
+        ll sumone = 0;
+        sum  = 0;
+        for(int i=n-1; i>=0; i--) {
+            if(nums[i] == 1) {
+                sumone = (sumone + ones[i]) % big;
+            } else if(nums[i] == 0) {
+                zeros[i] = (sum + sumone) % big;
+                sum = (sum + zeros[i]) % big;
+            }
+        }
+
+        ll ans = 0;
+        for(auto a: zeros) {
+            ans += a;
+        }
+        return ans % big;
+    }
+};

@@ -1,0 +1,29 @@
+#define MAX(a,b) (a > b) ? a : b
+#define MIN(a,b) (a < b) ? a : b
+
+#define NUM_OF_DIGITS 9
+#define N NUM_OF_DIGITS
+#define ARR_SIZE (N * N - N * (N - 1) / 2)
+
+static inline int calcOffset(int x, int y) {
+    int min = MIN(x,y);
+    int max = MAX(x,y);
+    return (min - 1) * N + (max - 1 - min * (min - 1) / 2);
+}
+
+int numEquivDominoPairs(int** dominoes, int dominoesSize, int* dominoesColSize){
+    int arr[ARR_SIZE] = {0};
+    int result = 0;
+    int offset;
+
+    for (int i = 0; i < dominoesSize; i++) {
+        offset = calcOffset(dominoes[i][0], dominoes[i][1]);
+        arr[offset]++;
+    }
+
+    for (int i = 0; i < ARR_SIZE; i++) {
+        result += (arr[i] > 1) ? (arr[i] * (arr[i] - 1) / 2) : 0;
+    }
+
+    return result;
+}

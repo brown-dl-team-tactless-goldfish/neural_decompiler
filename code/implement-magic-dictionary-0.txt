@@ -1,0 +1,97 @@
+
+// ELF Hash Function
+unsigned int ELFHash(char *str)
+{
+    unsigned int b = 378551;
+    unsigned int a = 63689;
+    unsigned int hash = 0;
+
+    while (*str)
+    {
+        hash = hash * a + (*str++);
+        a *= b;
+    }
+
+    return (hash & 0x7FFFFFFF);
+}
+
+typedef struct data{
+  unsigned int val;
+  char c;
+}data;
+
+typedef struct {
+    data** hashTable;
+    int size;
+} MagicDictionary;
+
+
+MagicDictionary* magicDictionaryCreate() {
+    MagicDictionary* ret = malloc( sizeof (MagicDictionary) );
+    return ret;
+}
+
+
+
+void insertHashTable(data** hashTable, int size, char* str, char c){
+    unsigned int val = ELFHash(str);
+    int d = val % size;
+    while(1){
+        if(hashTable[d] == NULL){
+            hashTable[d] = malloc(sizeof(data));
+            hashTable[d]->val = val;
+            hashTable[d]->c = c;
+            break;
+        }
+        else{
+            if(hashTable[d]->val == val && hashTable[d]->c == c)
+                break;
+        }
+        d++;
+    }
+}
+void magicDictionaryBuildDict(MagicDictionary* obj, char ** dictionary, int dictionarySize) {
+    int cn = 0;
+    for(int i = 0; i < dictionarySize; i++){
+        cn += strlen(dictionary[i]) + 1;
+    }
+    obj->size = cn * 20;
+    obj->hashTable = calloc(obj->size , sizeof(data*));
+    for(int i = 0; i < dictionarySize; i++){
+        for(int j = 0; j < strlen(dictionary[i]); j++){
+            char c = dictionary[i][j];
+            dictionary[i][j] = '*';
+            insertHashTable(obj->hashTable, obj->size, dictionary[i], c);
+            dictionary[i][j] = c;
+        }
+    }
+}
+
+bool magicDictionarySearch(MagicDictionary* obj, char * searchWord) {
+      unsigned int val = ELFHash(searchWord);
+      int d = val % obj->size;
+
+      for(int i = 0; i < strlen(searchWord); i++){
+          char c = searchWord[i];
+          searchWord[i] = '*';
+          int val = ELFHash(searchWord);
+          int d = val % obj->size;
+          while(1){
+            if(obj->hashTable[d] == NULL)
+                break;
+            if(obj->hashTable[d]->val == val && obj->hashTable[d]->c != c )
+                return true;
+            d++;
+          }  
+          searchWord[i] = c;
+      }  
+    return false;
+}
+
+void magicDictionaryFree(MagicDictionary* obj) {
+    for(int i = 0; i < obj->size; i++){
+        free(obj->hashTable[i]);
+    }
+    free(obj->hashTable);
+    free(obj);
+}

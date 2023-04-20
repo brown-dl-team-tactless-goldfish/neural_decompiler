@@ -1,0 +1,48 @@
+bool ok(vector<int>& pos,int mid, int m)
+{
+    int placed_at = 0, count = 1;
+    
+    for(int i=1; i<pos.size(); i++)
+    {
+        if(pos[i] - pos[placed_at] >= mid)
+        {
+            count++;
+            
+            placed_at = i;
+        }
+        
+        if(count == m)
+        {
+            return true;
+        }
+    }
+    
+    return false;
+    
+}
+int maxDistance(vector<int>& position, int m)
+{
+    sort(position.begin(),position.end());
+    
+    int n = position.size(), res = -1;
+    
+    int low = 1, high = position[n-1] - position[0];
+    
+    while(low<=high)
+    {
+        int mid = low + (high-low) / 2;
+        
+        if(ok(position,mid, m))
+        {
+            res = mid;
+            
+            low = mid + 1;  
+        }
+        else
+        {
+            high = mid-1;
+        }
+    }
+    
+    return res;
+}

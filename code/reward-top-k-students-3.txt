@@ -1,0 +1,30 @@
+public class Solution {
+    public IList<int> TopStudents(string[] positive_feedback, string[] negative_feedback, string[] report, int[] student_id, int k) {
+        var positiveWords = new HashSet<string>(positive_feedback);
+        var negativeWords = new HashSet<string>(negative_feedback);
+        var points = new int[report.Length][];
+        for (var i = 0; i < points.Length; i++)
+            points[i] = new int[2];
+
+        for (var i = 0; i < report.Length; i++) 
+        {
+            points[i][1] = student_id[i];
+            var words = report[i].Split(" ");
+            foreach (var word in words)
+            {
+                if (positiveWords.Contains(word))
+                    points[i][0] += 3;
+                else if (negativeWords.Contains(word))
+                    points[i][0]--;
+            }
+        }
+
+        Array.Sort(points, (a, b) => a[0] == b[0] ? a[1] - b[1] : b[0] - a[0]);
+        var res = new List<int>();
+        var j = 0;
+        for (var i = 0; i < k; i++)
+            res.Add(points[j++][1]);
+
+        return res;
+    }
+}

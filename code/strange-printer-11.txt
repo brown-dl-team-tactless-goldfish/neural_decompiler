@@ -1,0 +1,64 @@
+class Solution {
+public:
+    int dp[101][101];
+    int strangePrinter(string s) {
+         memset(dp,-1,sizeof(dp));
+         return solve(0,(int)s.size()-1,s);
+    }
+    int solve(int L,int R,string &s) {
+         if(L>R) return 0;
+         if(dp[L][R]!=-1) return dp[L][R]; 
+         int i = L;
+         while(i+1<=R && s[i] == s[i+1]) i++;
+         int left_operation = 1 + solve(i+1,R,s) , overlap_operation = INT_MAX;
+         for(int k = i+1; k<=R; k++) {
+               if(s[i] == s[k]) overlap_operation = min(overlap_operation , solve(i+1,k-1,s) + solve(k,R,s));
+         }
+        return dp[L][R] = min(left_operation,overlap_operation);
+    }
+};
+
+/*
+
+aaaabca abdda
+
+aaaabca abdda
+
+
+for every L ... R we can make range of equal chars
+
+
+.... ** .. *
+
+
+ if a range has same chars , answer is 1
+ 
+ 
+ ab
+ 
+ solve for a subrange first then compute a bigger range
+ a b....a d b
+
+ b .....a 
+ 
+ b  aaa.. a
+
+ b + 1 +() + ()
+ 
+ 
+ 
+ aaaabdcadbd
+ L = 0 , i = 4
+ 
+  aaaa bdc adbad
+ left_operation = aaaa(1) + bdcadb(x)   => 1 + solve(i,R)
+ 
+ overlap_operation = aaaa aaaa db , aaaa + (bdc)....a + adb
+ 
+ aaaa aaa adbd
+ 
+ => solve(i,k-1) + solve(k,R)
+ 
+ min(left_operation,overlap_operation)
+
+*/

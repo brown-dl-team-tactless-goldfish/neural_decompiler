@@ -1,0 +1,31 @@
+int findShortestSubArray(vector<int>& nums) {
+
+	int n = nums.size();
+	if (!n) return 0;
+	unordered_map<int, pair<int, pair<int, int>>>m;
+	for (int i = 0; i < n; i++) {
+		if (m.find(nums[i]) == m.end())
+			m[nums[i]].second.first = i;
+		else
+			m[nums[i]].second.second = i;
+        m[nums[i]].first++;
+	}
+	
+	int maxval = INT_MIN;
+	for (auto it = m.begin(); it != m.end(); it++)
+			maxval = max(maxval, it->second.first);
+
+    unordered_set<int>s;
+    for (int i = 0; i < n; i++) {
+        if (maxval == m[nums[i]].first)
+            s.insert(nums[i]);
+    }
+    
+	int ans = INT_MAX;
+	for (auto it = s.begin(); it != s.end(); it++) {
+		if (m[*it].second.second - m[*it].second.first >= 0)
+			ans = min(ans, m[*it].second.second - m[*it].second.first + 1);
+	}
+	
+    return (ans != INT_MAX) ? ans : 0;
+}

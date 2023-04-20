@@ -1,0 +1,88 @@
+class Solution {
+public:
+    int findCrossingTime(int n, int k, vector<vector<int>>& time) {
+        
+        // Optimal Data structure to store the least efficient workers ready to cross the bridge at both sides.
+        priority_queue<pair<int,int>>left_bank;   // efficiency , index
+        priority_queue<pair<int,int>>right_bank; // efficiency , index
+        
+        // Optimal Data structure to store the workers waiting for the bridge after picking and putting operations.
+        priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>>left_wait;  // time , index
+        priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>>right_wait; // time , index
+        
+        // Insert all the workers (acc to their efficiency) ready to cross the bridge on the left bank.
+        for(int i=0;i<k;i++){
+            left_bank.push({time[i][0]+time[i][2],i});
+        }
+        
+        // What are the conditions when we need to stop the process. Let's have a look quickly :
+        
+        // condition 1. When some workers are on the right bank , either ready to cross the bridge , or picking the old warehouse boxes from there.
+        
+        // condition 2. When all the old boxes are not placed at the new warehouses.
+        
+        int timer = 0;
+        
+        // Exit Condition
+        while((right_bank.size()+right_wait.size()) || (n>0)){
+            
+            // Check all the workers who are done with putting the boxes at the new warehouse and become ready to cross the bridge again from left to right.
+            
+            while(left_wait.size() && left_wait.top().first <= timer){
+                int i = left_wait.top().second;
+                left_wait.pop();
+                left_bank.push({time[i][0]+time[i][2],i});
+            }
+            
+            // Check all the workers who are done with picking up the boxes from the old warehouse and bexome ready to cross the bridge again from right to left.
+            
+            while(right_wait.size() && right_wait.top().first <= timer){
+                int i = right_wait.top().second;
+                right_wait.pop();
+                right_bank.push({time[i][0]+time[i][2],i});
+            }
+            
+            // First priority is to check if there are ready to move workers on the right bank.
+            if(right_bank.size()){
+                
+                int i = right_bank.top().second;
+                right_bank.pop();
+                timer += time[i][2];
+                left_wait.push({timer+time[i][3],i});
+                
+            }
+            
+            // Second priority is to check if there are ready to move workers on the left bank.
+            else{
+                
+                // This is the most crucial corner case 
+                // If there are some workers ready to move from left to right and we are done with exchanging all the boxes , should we allow them to use the bridge ??? No.
+                if(left_bank.size() && n){
+                    
+                    int i = left_bank.top().second;
+                    left_bank.pop();
+                    timer += time[i][0];
+                    right_wait.push({timer+time[i][1],i});
+                    n--;
+                    
+                }
+                else{
+                    
+                    timer = INT_MAX;
+                    if(left_wait.size() && n){
+                        timer = min(timer,left_wait.top().first);
+                    }
+                    if(right_wait.size()){
+                        timer = min(timer,right_wait.top().first);
+                    }
+                    
+                }
+                
+            }
+            
+        }
+        
+        return timer;
+        
+    }
+};

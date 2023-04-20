@@ -1,0 +1,56 @@
+char * alphabetBoardPath(char * target){
+    char map[26][2] = {0};
+    int i = 0;
+    for (; i < 26; i++) {
+        map[i][0] = i % 5;
+        map[i][1] = i / 5;
+    }
+    char *pv, *pt;
+    pv = &"a";
+    pt = target;
+    char *ans = (char*)malloc(100*sizeof(char));
+    int ansSize = 100;
+    i = 0;
+    while(*pt) {
+        if (ansSize - i < 11) {
+            ansSize += 11;
+            char* newAns = (char*)realloc(ans, ansSize*sizeof(char));
+            if (newAns) ans = newAns;
+        }
+        int j = (int)(*pt) - (int)('a');
+        int k = (int)(*pv) - (int)('a');
+        int disx = map[j][0] - map[k][0];
+        int disy = map[j][1] - map[k][1];
+		// 'L' shall be put before 'D'  in case *pt is 'z'
+		// 'U' shall be put before 'R'  in case *pv is 'z'
+        if (disx < 0) {
+            while(disx) {
+                ans[i++] = 'L';
+                disx++;
+            }
+        }
+        if (disy > 0) {
+            while(disy) {
+                ans[i++] = 'D';
+                disy--;
+            }
+        }
+        if (disy < 0) {
+            while(disy) {
+                ans[i++] = 'U';
+                disy++;
+            }
+        }
+        if (disx > 0) {
+            while(disx) {
+                ans[i++] = 'R';
+                disx--;
+            }
+        }
+        ans[i++] = '!';
+        pv = pt;
+        pt++;
+    }
+    ans[i] = '\0';
+    return ans;
+}

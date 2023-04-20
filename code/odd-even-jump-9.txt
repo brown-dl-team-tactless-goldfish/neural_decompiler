@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int dp[20001][2];
+    vector<int>odd,even;
+    bool get(int i,int jump,vector<int>&arr)
+    {
+        if(i==arr.size()-1)
+            return true;
+        if(dp[i][jump]!=-1)
+            return dp[i][jump];
+        bool res=false;
+        vector<int>&temp=jump?odd:even;
+        if(temp[i]!=-1)
+            res=get(temp[i],jump^1,arr);
+        return dp[i][jump]=res;
+    }
+    int oddEvenJumps(vector<int>& arr) 
+    {
+        int n=arr.size();
+        odd=even=vector<int>(n,-1);
+        set<int>s;
+        unordered_map<int,int>ind;
+        for(int i=n-1;i>=0;i--)
+        {
+            auto it=s.lower_bound(arr[i]);
+            if(it!=s.end())
+            {
+                odd[i]=ind[(*it)];
+            }
+            it=s.upper_bound(arr[i]);
+            if(it!=s.begin())
+            {
+                it--;
+                even[i]=ind[(*it)];
+            }
+            ind[arr[i]]=i;
+            s.insert(arr[i]);
+        }
+        memset(dp,-1,sizeof(dp));
+        int res=0;
+        for(int i=0;i<n;i++)
+            res+=get(i,1,arr);
+        return res;
+    }
+};

@@ -1,0 +1,61 @@
+public class Solution {
+    public int MinimizeTheDifference(int[][] mat, int target) {
+        HashSet<int> crnt = new HashSet<int>();
+        HashSet<int> prev = new HashSet<int>();
+        HashSet<int> temp;
+        
+        int next = int.MaxValue;
+        
+        for(int i=0; i< mat[0].Length; i++)
+        {
+            if (mat[0][i] >= target) 
+            { 
+                next = Math.Min(next, mat[0][i]); // keep smallest bigger number
+            }
+            else
+            {
+                crnt.Add(mat[0][i]); // add all smaller
+            }
+        }
+        
+        int prevNext = next;
+        for(int i=1; i < mat.Length; i++)
+        {
+            prevNext = next;  
+            next = int.MaxValue;
+            
+            temp = prev;
+            prev = crnt;
+            crnt = temp;
+            crnt.Clear();
+            
+            for(int j=0; j < mat[i].Length; j++)
+            {
+                if (prevNext + mat[i][j] >= target)
+                {
+                   next = Math.Min(next, prevNext + mat[i][j]);
+                }
+                foreach(int val in prev)
+                {
+                    if (val + mat[i][j] >= target)
+                    {
+                       next = Math.Min(next, val + mat[i][j]); 
+                    }
+                    else
+                    {
+                        crnt.Add(val + mat[i][j]);
+                    }
+                }
+            }
+        }
+        
+        int result = next - target;
+        
+        foreach(int val in crnt)
+        {
+            if (Math.Abs(val - target) < result) { result = Math.Abs(val - target); }
+        }
+        
+        return result;
+    }
+}

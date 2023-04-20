@@ -1,0 +1,36 @@
+int lastStoneWeight(int* stones, int stonesSize){
+    int i,max=stones[0];
+    for(i=0;i<stonesSize;i++)
+        if(stones[i]>max)
+            max=stones[i];
+    
+    int*tally=calloc(max,sizeof(int));
+    
+    for(i=0;i<stonesSize;i++)
+        tally[stones[i]-1]++;
+    
+    int stone1,stone2;
+    max--;
+    while(stonesSize!=1 && stonesSize!=0){
+        stone1=max;
+        while(tally[stone1]==0)
+            stone1--;
+        max=stone1;
+        tally[stone1]--;
+        stone2=stone1;
+        while(tally[stone2]==0)
+            stone2--;
+        tally[stone2]--;
+        if(stone1==stone2)
+            stonesSize-=2;
+        else{
+            tally[stone1-stone2-1]++;
+            stonesSize--;
+        }
+    }
+    if(stonesSize==1)
+        for(i=0;i<=max;i++)
+            if(tally[i]!=0)
+                return i+1;
+    return 0;
+}

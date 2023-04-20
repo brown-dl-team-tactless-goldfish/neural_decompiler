@@ -1,0 +1,18 @@
+public class Solution {
+    public IList<int> SequentialDigits(int low, int high) {
+        var seq = "123456789";
+        var n = low.ToString().Length;
+        var m = high.ToString().Length;
+        return Enumerable
+            .Range(n, m - n + 1)
+            .Select(i => Enumerable
+                    .Range(0, seq.Length - i + 1)
+                    .Select(j => seq
+                            .Skip(j)
+                            .Take(i)
+                            .Aggregate(0, (acc, x) => acc * 10 + x - '0')))
+            .SelectMany(x => x)
+            .Where(x => low <= x && x <= high)
+            .ToList();
+    }
+}

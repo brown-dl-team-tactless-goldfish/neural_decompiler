@@ -1,0 +1,30 @@
+Node* construct(vector<vector<int>>& grid) {
+	int r = grid.size();
+	if (r == 0)
+		return nullptr;
+			
+	int c = grid[0].size();		
+	return quardTreeHelper(0, 0, r, c, grid);
+}
+
+Node* quardTreeHelper(int r1, int c1, int r2, int c2, vector<vector<int>>& grid) {
+	
+    int val = grid[r1][c1];
+	for (int r = r1; r < r2; r++) {
+		for (int c = c1; c < c2; c++) {
+			if (grid[r][c] != val) {
+				int r_mid = r1 + (r2 - r1) / 2;
+				int c_mid = c1 + (c2 - c1) / 2;
+
+				Node* node = new Node();
+                node->val = NULL;
+				node->isLeaf = false;
+				node->topLeft = quardTreeHelper(r1, c1, r_mid, c_mid, grid);
+				node->topRight = quardTreeHelper(r1, c_mid, r_mid, c2, grid);
+				node->bottomLeft = quardTreeHelper(r_mid, c1, r2, c_mid, grid);
+				node->bottomRight = quardTreeHelper(r_mid, c_mid, r2, c2, grid);
+				return node;
+			}
+		}
+	}
+	return new Node(grid[r1][c1] != 0, true, nullptr, nullptr, nullptr, nullptr);

@@ -1,0 +1,73 @@
+class Solution {
+public:
+    int minimumTeachings(int n, vector<vector<int>>& languages, vector<vector<int>>& friendships) {
+        
+        int m = languages.size(); // No of Users
+        // Make a map , which users knows what all languages
+        
+        vector<vector<int>>knows(m,vector<int>(n,0));
+        
+        for(int i = 0; i < m; i++){
+            for(auto x : languages[i]){
+                knows[i][x-1] = 1;
+            }
+        }
+        
+        // Brute Force approach
+        // Check if two friends can speak , if they cant , teach them a language
+        // which lang to teach ?
+        // do brute force and find out the lang which gives the minimum answer
+        
+        // I am using this memosization , beocoz same query (friendship) can asked wice
+        // u-->v and v--->u
+        int mem[m][m];
+        memset(mem,-1,sizeof(mem));
+        
+        int ans = INT_MAX;
+        for(int i = 1; i <= n ; i++){
+            // we see , either lang i gives us minimum answer
+            // users array is to check whether user j is processed already for lang i.
+            vector<int>users(m,0);
+            int curr = 0;
+            for(auto x:friendships){
+                int yes = 0;
+                // check if friends x[0] and x[1] can speak
+                if(mem[x[0]-1][x[1]-1] != -1){
+                    yes = mem[x[0]-1][x[1]-1];
+                }
+                else{
+                    for(int j = 0; j < n; j++){
+                       if(knows[x[0]-1][j] && knows[x[1]-1][j]){
+                           yes = 1;
+                           
+                           break;
+                       }
+                    }
+                }
+                
+                mem[x[0]-1][x[1]-1] = yes;
+                // yes = 1, No need to teach them.
+                if(yes){
+                    continue;
+                }
+                else{
+                    // check if x[0] && x[1] knows lang i
+                    // if they dont know, teach them.
+                    if(!knows[x[0]-1][i-1] && !users[x[0]-1]){
+                        curr += 1;
+                        users[x[0]-1] = 1;
+                    }
+                     if(!knows[x[1]-1][i-1] && !users[x[1]-1]){
+                        curr += 1;
+                        users[x[1]-1] = 1;
+                    }
+                }
+            }
+            
+            ans = min(ans,curr);
+            
+        }
+        
+        return ans;
+    }
+};

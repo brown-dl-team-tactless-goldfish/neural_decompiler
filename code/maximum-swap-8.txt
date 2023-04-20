@@ -1,0 +1,65 @@
+#include <stdint.h>
+#include <stdbool.h>
+#include <math.h>
+#include <bits.h>
+typedef struct {
+    int swap;
+    int index;
+}swap_t;
+
+int maximumSwap( int num ) {
+    int tmp = num / 10;
+    swap_t swapCandidate;
+    swap_t swapCandidate2;
+    int extracted;
+    int prevExtracted = num % 10;
+    int count = 0;
+    int lastIndex = 0;
+
+    if ( num < 10 ) return num;
+
+    swapCandidate.swap = -1;
+
+    do {
+        extracted = tmp % 10;
+                
+        tmp /= 10;
+        if ( ( extracted < prevExtracted ) && ( swapCandidate.swap < prevExtracted ) )
+        {
+            swapCandidate.swap = prevExtracted;
+            swapCandidate.index = lastIndex;
+        }
+        
+        count++;
+        if( extracted != prevExtracted) lastIndex = count;
+        prevExtracted = extracted;
+
+    } while ( tmp != 0 );
+    
+
+    if ( swapCandidate.swap == -1 ) return num;
+
+    tmp = num / (int)pow(10, swapCandidate.index + 1);
+    count = swapCandidate.index + 1;
+    do {
+        extracted = tmp % 10;
+        tmp /= 10;
+
+        if ( swapCandidate.swap > extracted )
+        {
+            swapCandidate2.swap = extracted;
+            swapCandidate2.index = count;
+        }
+
+        count++;
+    } while ( tmp != 0 );
+
+    num -= swapCandidate.swap*( int )pow( 10, swapCandidate.index  );
+    num -= swapCandidate2.swap*( int )pow( 10, swapCandidate2.index  );
+
+    num += swapCandidate.swap*( int )pow( 10, swapCandidate2.index  );
+    num += swapCandidate2.swap*( int )pow( 10, swapCandidate.index  );
+
+    return num;
+}
+

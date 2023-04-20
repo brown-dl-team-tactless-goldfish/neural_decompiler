@@ -1,0 +1,25 @@
+class Solution {
+public:
+    bool isPossible(vector<int>& A) {
+        if(A.size()==1)return A[0]==1;
+        priority_queue<int>pq;
+        long sum=0;
+        for(int i:A){
+            sum+=i;pq.push(i);
+        }
+        while(pq.top()!=1){
+            int front=pq.top();
+            pq.pop();
+            long remain=sum-front;
+            if(front-remain<1)return false;
+            long mod=front/remain;
+            long tosub=mod*remain;
+            if(front%remain==0)tosub-=remain;
+            sum-=tosub;
+            front-=tosub;
+            pq.push(front);
+        }
+        return true;
+        
+    }
+};

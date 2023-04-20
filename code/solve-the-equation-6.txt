@@ -1,0 +1,30 @@
+class Solution {
+public:
+    string solveEquation(string e0) {
+        vector<string> lr = split(e0, "=", true);
+        for(string& side : lr) if(side[0] != '-') side.insert(0, "+");
+        unordered_map<char, char> invert {{'-','+'}, {'+','-'}};
+        for(char& c : lr[1]) if(invert.count(c)) c = invert[c];
+        string e = lr[0] + lr[1];
+        
+        vector<string> sign = split(e, "[+-]", false), term = split(e, "[+-]", true);
+        int c = 0, o = 0;
+        
+        for(int i=0; i<term.size(); i++){
+            string t = term[i], s = sign[i];
+            if(t[0] == 'x') t.insert(0, "1");
+            (t.back() == 'x' ? c : o) += stoi(s + t);
+        }
+        
+        if(c == 0) return o ? "No solution" : "Infinite solutions";
+        return "x=" + to_string(-o/c);
+    }
+    
+    vector<string> split(const string& s, const string& srgx, bool delim){
+        vector<string> res;
+        regex rgx (srgx);
+        res.insert(res.end(), sregex_token_iterator(s.begin(), s.end(), rgx, -delim), sregex_token_iterator());
+        res.erase(remove(res.begin(), res.end(), "") , res.end());
+        return res;
+    }
+};

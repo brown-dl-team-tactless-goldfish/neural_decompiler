@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int numDecodings(string s) {
+        if (s.size() == 0) return 0;
+        vector<long> a(s.size() + 1);
+        if (s[0] == '0') a[1] = 0;
+        else if (s[0] == '*') a[1] = 9;
+        else a[1] = 1;
+        auto N = 1000000007;
+        a[0] = 1;
+        for (int i = 2; i <= s.size(); i++){
+            auto c1 = s[i - 2];
+            auto c2 = s[i - 1];
+            long sum = 0;
+            if (c1 == '1'){
+                if (c2 == '*') sum = 9 * a[i - 2] % N;
+                else sum = a[i - 2];
+            }
+            else if (c1 == '2'){
+                if (c2 == '*') sum = 6 * a[i - 2] % N;
+                else {
+                    if (c2 <= '6') sum = a[i - 2];
+                }
+            }
+            else if (c1 == '*'){
+                if (c2 == '*') sum = 15 * a[i - 2] % N;
+                else {
+                    if (c2 <= '6') sum = 2 * a[i - 2] %N;
+                    else sum = a[i - 2];
+                }
+            }
+            if (c2 == '*') sum = (sum + 9 * a[i - 1]) %N;
+            else if (c2 != '0') sum = (sum + a[i - 1]) %N;
+            a[i] = sum;
+        }
+        return a[s.size()];
+    }
+};

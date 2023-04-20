@@ -1,0 +1,83 @@
+class Solution {
+public:
+	vector<int> sub_xor;
+	vector<vector<int>> g;
+
+	vector<int> a;
+	int t = 0;
+	vector<int> t_in;
+	vector<int> t_out;
+	vector<int> parent;
+
+
+	bool isAncestor(int u, int v) {
+		bool res = t_in[u] < t_in[v] && t_out[u] >= t_out[v];
+        return res;
+	}
+
+	int XOR(int u, int par) {
+		sub_xor[u] = a[u];
+		t_in[u] = ++t;
+		for (int v : g[u]) {
+			parent[v] = u;
+			if (v != par) sub_xor[u] ^= XOR(v, u);
+		}
+		t_out[u] = t;
+		return sub_xor[u];
+	}
+
+	int minimumScore(vector<int>& a, vector<vector<int>>& edges) {
+		int n = a.size();
+		sub_xor.resize(n, 0);
+		t_in.resize(n, 0);
+		t_out.resize(n, 0);
+		parent.resize(n, -1);
+
+		this->a = a;
+		g.resize(n);
+
+		int T = 0;
+		for (int x : a) T ^= x;
+
+		for (auto e : edges) {
+			g[e[0]].push_back(e[1]);
+			g[e[1]].push_back(e[0]);
+		}
+
+		XOR(0, -1);
+		int ans = INT_MAX;
+
+		for (int i = 1; i < n; i++) {
+			for (int j = i + 1; j < n; j++) {
+                // if(i == j) continue;
+				if (isAncestor(i, j)) {
+					int u = i, v = j;
+					int u_xor = sub_xor[u];
+					int v_xor = sub_xor[v];
+					u_xor ^= v_xor;
+					int t = T ^ u_xor ^ v_xor;
+					ans = min(ans, max(u_xor, max(v_xor, t)) - min(u_xor, min(v_xor, t)));
+
+				} else if (isAncestor(j, i)) {
+					int u = j, v = i;
+
+					int u_xor = sub_xor[u];
+					int v_xor = sub_xor[v];
+					u_xor ^= v_xor;
+					int t = T ^ u_xor ^ v_xor;
+					ans = min(ans, max(u_xor, max(v_xor, t)) - min(u_xor, min(v_xor, t)));
+
+				} else {
+					int u = i, v = j;
+					int u_xor = sub_xor[u];
+					int v_xor = sub_xor[v];
+					int t = T ^ u_xor ^ v_xor;
+					ans = min(ans, max(u_xor, max(v_xor, t)) - min(u_xor, min(v_xor, t)));
+
+				}
+			}
+		}
+
+		return ans;
+	}
+};

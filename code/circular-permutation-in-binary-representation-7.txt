@@ -1,0 +1,33 @@
+class Solution {
+public:
+    vector<int> Per(int n){
+        if(n == 1)
+            return {0, 1};
+        
+        vector<int> tmp = Per(n-1);
+        vector<int> ret(tmp.begin(), tmp.end());
+        
+        int most_sig = pow(2, n-1);
+        for(int i=tmp.size()-1; i >=0; --i){
+            int val = most_sig + tmp[i];
+            ret.push_back(val);
+        }
+        return ret;
+    }
+
+    vector<int> circularPermutation(int n, int start) {
+        vector<int> tmp = Per(n);
+        
+        int ind = -1;
+        for(int i=0; i<tmp.size(); ++i){
+            if(tmp[i] == start){
+                ind = i;
+                break;
+            }
+        }
+        vector<int> ret(tmp.size());
+        copy(tmp.begin()+ind, tmp.end(), ret.begin());
+        copy(tmp.begin(), tmp.begin()+ind, ret.end()-ind);
+        return ret;
+    }
+};

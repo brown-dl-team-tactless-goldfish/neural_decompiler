@@ -1,0 +1,32 @@
+char * getHint(char * secret, char * guess){    
+    int cows = 0, bulls = 0;
+    //monitor numbers present in secret in string and guess string
+    //since maximum number of numbers in units place is 0-9 (10)
+    int* TABLE_SECRET = (int*)calloc(10,sizeof(int));
+    int* TABLE_GUESS =  (int*)calloc(10,sizeof(int));
+    
+    //mechanism to count cows
+    for(int index =0 ; index < strlen(secret); index++){
+        //condtion to check bulls ie number of numbers which are repeated 
+        if(secret[index] == guess[index]){bulls++;}
+        //condtion to consider when number is not in postion 
+        else{
+            //populate guess and secret string table
+            TABLE_SECRET[secret[index] - '0']++;
+            TABLE_GUESS[guess[index] - '0']++;
+        }
+    }
+    //cosnider the values of occurance of individual number add sum it with cows value
+    for(int tbl_cmp =0; tbl_cmp < 10; tbl_cmp++){
+        cows += (TABLE_SECRET[tbl_cmp] < TABLE_GUESS[tbl_cmp]) ? TABLE_SECRET[tbl_cmp] : TABLE_GUESS[tbl_cmp];   
+    }
+    //clean
+    free(TABLE_SECRET);
+    free(TABLE_GUESS);
+    
+    //return mechanims
+    // %dA%dB  BULLS and COWS
+    char* RETURN_STRING = (char*)malloc(sizeof(char)*40);
+    sprintf(RETURN_STRING,"%dA%dB",bulls,cows);
+    return RETURN_STRING;
+}

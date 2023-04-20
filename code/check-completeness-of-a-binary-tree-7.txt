@@ -1,0 +1,60 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def isCompleteTree(self, root: TreeNode) -> bool:
+        
+        maps = {}
+        
+        def helper(curNode, curLevel):
+            if (curNode == None):
+                if (curLevel not in maps):
+                    maps[curLevel] = ["#"]
+                else:
+                    maps[curLevel].append("#")                
+                
+                return
+            
+            if (curLevel not in maps):
+                maps[curLevel] = [curNode.val]
+            else:
+                maps[curLevel].append(curNode.val)
+                
+            helper(curNode.left, curLevel + 1)
+            helper(curNode.right, curLevel + 1)
+                
+        helper(root, 0)
+        print ("maps = ", maps)
+        
+        cnt_line_with_null = 0
+                
+        for k, v in maps.items():
+            print ("k = ", k, " v = ", v)
+            
+            if ("#" not in v):
+                continue
+            else:
+                cnt_line_with_null += 1
+                
+                if (cnt_line_with_null > 2):
+                    # print ("cnt_line_with_null = ", cnt_line_with_null)
+                    # print ("return False here")
+                    return False
+                
+                idx = v.index("#")
+                print ("idx = ", idx)
+                
+                tmpA = v[idx:]
+                print ("tmpA = ", tmpA)
+                
+                tmpA_set = set(tmpA)
+                print ("tmpA_set = ", tmpA_set)
+                
+                if (len(tmpA_set) != 1):
+                    return False
+                
+        return True
+            

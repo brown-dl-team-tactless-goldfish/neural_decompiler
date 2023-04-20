@@ -1,0 +1,39 @@
+class Solution {
+public:
+    string largestNumber(vector<int>& A, int T) {
+        string res="";
+        vector<vector<int>>dp(A.size()+1,vector(T+1,-2));
+        int r=A.size();
+        int c=T;
+        for(int i=0;i<dp.size();i++)dp[i][0]=0;
+        
+        for(int i=1;i<dp.size();i++){
+            int val=A[i-1];
+            for(int j=1;j<dp[0].size();j++){
+                if(val>j){
+                    dp[i][j]=dp[i-1][j];
+                }
+                else{
+                    int x=dp[i-1][j];
+                    if(dp[i][j-val]!=-2)x=max(x,1+dp[i][j-val]);
+                    dp[i][j]=x;
+                }
+            }
+        }
+        if(dp[r][c]==-2)return "0";
+        while(r>0&&c>0){
+            int val=A[r-1];
+            if(val>c){
+                r--;
+            }else{
+                if(dp[r][c-val]==dp[r][c]-1){
+                    res+=to_string(r);
+                    c-=val;
+                }else{
+                    r--;
+                }
+            }
+        }
+        return res;
+    }
+};

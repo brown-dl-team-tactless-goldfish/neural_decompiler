@@ -1,0 +1,52 @@
+class Solution {
+    public boolean isAdditiveNumber(String num) {
+        int len = num.length();
+        for(int i=1;i<len;i++){
+            for(int j=i+1;j<=len-i;j++){
+                long n1 = validate(num.substring(0,i));
+                long n2 = validate(num.substring(i,j));
+                if(n1 == -1 || n2 == -1) continue;
+                if(isValid(n1, n2, j, num)) return true; 
+            }
+        }
+        return false;
+    }
+    
+
+    private boolean isValid(long n1, long n2, int start, String num){
+        if(start  == num.length()) {
+            return true;
+        }
+
+        long sum = n1 + n2;
+        String sumStr = Long.toString(sum);
+        if(sumStr.length() + start > num.length()) return false;
+
+        String exactValue =   num.substring(start, start+ sumStr.length());
+        if(sumStr.equals(exactValue))
+            return isValid(n2, sum, start +sumStr.length() , num);
+        else 
+            return false;    
+    }
+
+    private long validate(String s){
+        if(s.charAt(0) == '0' && s.length() > 1) return -1;
+        try{
+            return Long.parseLong(s);
+        }catch(NumberFormatException e){
+            return -1;
+        }
+    }
+ 
+}
+
+/**
+    2 3 1 4 3 7 5 1
+n1=2 , n2=3
+check ()
+n1=2
+    n2=31
+    check
+    n2=314
+
+ */

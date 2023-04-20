@@ -1,0 +1,86 @@
+struct Node{
+	int length;  //the length of the file or the directory (including one \t)
+	char *file_dir_name;   // the name of the directory or the file
+	struct Node *link;
+}*top;
+
+int lengthLongestPath(char* input) {
+        initialize_stack();         /*Initialize the top of stack*/
+	int total_indent=0;    //the number of indent 
+	int max_length=0,last_length=0;
+	
+    char *split = strtok(input,"\n");
+    while(split!=NULL)
+    {
+    	int current_indent=0;         /*the indent of every file or every directory*/
+		for(;*split=='\t';split++,current_indent++);       /*count the number of indent of every file or every directory*/
+		if(current_indent!=0)    /*if the file or the directory has \t*/ 
+			split--;      /*we need to go back so that strlen(split) contains one \t*/
+		
+    	if(current_indent == total_indent)
+    	{
+    		push(split);
+    		total_indent++;
+    		max_length += strlen(split);
+    		
+		}
+		else if(current_indent < total_indent)
+		{
+			while(current_indent < total_indent)
+			{
+				max_length -=pop();
+				total_indent--;
+			}
+			push(split);
+    		total_indent++;
+    		max_length += strlen(split);
+		}
+		if(strpbrk(split,"."))     /*determine whether there is a file*/
+			last_length = max_length>last_length?max_length:last_length;
+		
+    	split = strtok(NULL,"\n");
+    }
+    
+	return last_length;
+}
+void initialize_stack(void)
+{
+	top = (struct Node *)malloc(sizeof(struct Node));
+	if(top==NULL)
+	{
+		printf("Out of Memory!\n");
+		return;
+	}
+	top->link = NULL;
+}
+void push(char *dir_file)
+{
+	struct Node *node = (struct Node *)malloc(sizeof(struct Node)),*tmp=top;
+	if(node==NULL)
+	{
+		printf("Out of Memory!\n");
+		return;
+	}
+	node->length = strlen(dir_file);
+	node->file_dir_name = dir_file;
+	node->link = NULL;
+	while(tmp->link!=NULL)
+		tmp = tmp->link;
+	
+	tmp->link = node;
+}
+
+int pop(void)
+{
+	int popped_length;    /*the lenght of popped file or popped directory*/
+	struct Node *node = top->link,*pre=top;
+	while(node->link!=NULL)
+	{
+		pre = node;
+		node = node->link;
+	}
+	popped_length = node->length;
+	pre->link = NULL;
+	free(node);
+	return popped_length;
+}

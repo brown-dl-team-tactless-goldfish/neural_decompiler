@@ -1,0 +1,44 @@
+#define EPSILON     0.00000001
+bool backtrack(double *cards, int size) {
+    if(size == 1) return fabs(cards[0] - 24) < EPSILON;
+    double *tCards = NULL;
+    for(int i = 0; i + 1 < size; i++) {
+        for(int j = i + 1; j < size; j++) {
+            int nSize = size - 1, tSize = 0;
+            tCards = calloc(sizeof(double), nSize);
+            for(int k = 0; k < size; k++)
+                if(k != i && k != j)    tCards[tSize++] = cards[k];
+            
+            // apply all operators for ith and jth cards
+            tCards[tSize++] = cards[i] + cards[j];
+            if(backtrack(tCards, tSize)) return true;
+            tSize--;
+            tCards[tSize++] = cards[i] - cards[j];
+            if(backtrack(tCards, tSize)) return true;
+            tSize--;
+            tCards[tSize++] = cards[j] - cards[i];
+            if(backtrack(tCards, tSize)) return true;
+            tSize--;
+            tCards[tSize++] = cards[i] * cards[j];
+            if(backtrack(tCards, tSize)) return true;
+            tSize--;
+            tCards[tSize++] = cards[i] / cards[j];
+            if(backtrack(tCards, tSize)) return true;
+            tSize--;
+            tCards[tSize++] = cards[j] / cards[i];
+            if(backtrack(tCards, tSize)) return true;            
+        }
+    }
+    if(tCards) free(tCards);
+    return false;
+}
+
+bool judgePoint24(int* cards, int cardsSize){
+    double *tCards = calloc(sizeof(double), cardsSize);
+    for(int i = 0; i < cardsSize; i++)
+        tCards[i] = cards[i];
+    
+    bool res =  backtrack(tCards, cardsSize);
+    free(tCards);
+    return res;
+}

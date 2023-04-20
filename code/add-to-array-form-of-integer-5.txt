@@ -1,0 +1,41 @@
+int* addToArrayForm(int* num, int ns, int k, int* rs){
+
+    int r;
+    int i = ns -1;
+    
+   for(int j = i; j > 0; j--)
+   {
+       r = k % 10;
+       num[j] += r;
+       k = k - r; k = k/10;
+       if(num[j] > 9)
+        {
+            num[j] -= 10;
+            num[j-1] += 1;
+        }
+   }
+    num[0] += k;    
+    *rs = ns;
+    
+    if(num[0] > 9)
+    {
+       int* q = malloc(20022*sizeof(int)); memset(q, 0, 20022*sizeof(int));
+       int a = num[0]; int i = 0;
+       while(a > 0)
+       {
+           int r = a % 10;
+           q[i++] = r; 
+           a -= r; a /= 10;
+       }
+        for(int j = 0; j < i/2; j++)
+        {
+            int temp = q[j];
+            q[j] = q[i-j-1]; // ?
+            q[i-j-1] = temp;
+        }
+        memcpy(q+i, num+1, (ns-1)*sizeof(int));
+        *rs = i+ns-1;
+        return q;
+    }
+    return num;
+}

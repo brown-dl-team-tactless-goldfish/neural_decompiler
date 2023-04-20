@@ -1,0 +1,24 @@
+class Solution {
+public:
+    vector<vector<int>> allCellsDistOrder(int R, int C, int r0, int c0) 
+    {
+        vector<vector<int>> out;
+        out.reserve(R * C);
+        out.push_back({r0,c0});
+        for (int dist = 1; out.size() < R*C; ++dist) 
+        {   
+            for (int rmin = r0 - dist, r = max(rmin, 0)  , c = c0 - rmin + r; r < r0 && c < C ; ++r, ++c)
+                out.push_back({r,c});
+            
+            for (int cmax = c0 + dist, c = min(cmax, C-1), r = r0 + cmax - c; c > c0 && r < R ; ++r, --c)
+                out.push_back({r,c});
+            
+            for (int rmax = r0 + dist, r = min(rmax, R-1), c = c0 - rmax + r; r > r0 && c >= 0; --r, --c)
+                out.push_back({r,c});
+
+            for (int cmin = c0 - dist, c = max(cmin, 0)  , r = r0 + cmin - c; c < c0 && r >= 0; --r, ++c)
+                out.push_back({r,c});
+        }
+        return out;
+    }
+};

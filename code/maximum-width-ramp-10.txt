@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int maxWidthRamp(vector<int>& nums) {
+        stack<int> stdec;
+        deque<int> dq;
+        int n = nums.size();
+        for(int i = 0; i < n; i++)
+        {
+            if(!stdec.empty())
+            {
+                if(nums[stdec.top()] >= nums[i])
+                    stdec.push(i);
+            }
+            else
+            {
+                stdec.push(i);   
+            }
+        }
+        for(int i = n-1; i >= 0; i--)
+        {
+            if(!dq.empty())
+            {
+                if(nums[dq.front()] <= nums[i])
+                    dq.push_front(i);
+            }
+            else
+            {
+                dq.push_front(i);
+            }
+        }
+        int ans = 0;
+        while(!dq.empty() && !stdec.empty() && dq.back() >= stdec.top())
+        {
+            while(!stdec.empty() && nums[stdec.top()] <= nums[dq.back()])
+            {
+                ans = max(dq.back()-stdec.top(), ans);
+                stdec.pop();
+            }
+            dq.pop_back();
+        }
+        return ans;
+    }
+};

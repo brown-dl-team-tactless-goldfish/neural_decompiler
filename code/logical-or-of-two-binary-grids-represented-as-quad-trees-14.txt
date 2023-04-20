@@ -1,0 +1,52 @@
+class Solution{
+public:
+    Node* intersect(Node* quadTree1, Node* quadTree2) {
+        if(quadTree1->isLeaf && quadTree2->isLeaf){
+            Node* newnode1;
+            if(quadTree1->val==quadTree2->val){
+                newnode1=quadTree1;
+                return newnode1;
+            }
+            else{
+                newnode1=new Node(1,true);
+                return newnode1;
+            }
+        }
+        if(quadTree1->isLeaf){
+            Node* newnode1;
+            if(quadTree1->val==1) newnode1=quadTree1;
+            else{
+                newnode1=quadTree2;
+            }
+            return newnode1;
+        }
+        if(quadTree2->isLeaf){
+            Node* newnode1;
+            if(quadTree2->val==1) newnode1=quadTree2;
+            else{
+                newnode1=quadTree1;
+            }
+            return newnode1;
+        }
+        Node* newnode=new Node();
+        newnode->topLeft=intersect(quadTree1->topLeft,quadTree2->topLeft);
+        newnode->topRight=intersect(quadTree1->topRight,quadTree2->topRight);
+        newnode->bottomLeft=intersect(quadTree1->bottomLeft,quadTree2->bottomLeft);
+        newnode->bottomRight=intersect(quadTree1->bottomRight,quadTree2->bottomRight);
+        int u=newnode->topLeft->val+newnode->topRight->val+newnode->bottomLeft->val+newnode->bottomRight->val;
+        Node* newnode2=new Node();
+        if(newnode->topLeft->isLeaf && newnode->topRight->isLeaf && newnode->bottomLeft->isLeaf && newnode->bottomRight->isLeaf){
+        if(u==0){
+            newnode2->isLeaf=true;
+            newnode2->val=0;
+            return newnode2;
+        }
+        else if(u==4){
+            newnode2->isLeaf=true;
+            newnode2->val=1;
+            return newnode2;
+        }
+        }
+        return newnode;
+    }
+};

@@ -1,0 +1,43 @@
+#include <ext/pb_ds/assoc_container.hpp>
+#include <ext/pb_ds/tree_policy.hpp>
+using namespace __gnu_pbds;
+
+struct Node{
+    string name;
+    int score;
+};
+
+template<class T> struct cmp{
+    bool operator()(T a, T b){
+        if(a.score != b.score) return a.score > b.score;
+         return a.name < b.name;
+    };
+};
+
+template<class T> using oset = tree<T, null_type, cmp<T>, rb_tree_tag, tree_order_statistics_node_update>;
+// less: it is the basic for comparison of two function. Use less_equal for ordered multiset.
+// order_of_key(k): Number of items strictly smaller than k
+// find_by_order(k): kth element in a set (counting from zero) 
+
+class SORTracker {
+public:
+    oset<Node> s;
+    int k=0;
+    SORTracker() {
+    }
+    
+    void add(string name, int score) {
+        s.insert({name,score});
+    }
+    
+    string get() {
+        return s.find_by_order(k++)->name;
+    }
+};
+
+/**
+ * Your SORTracker object will be instantiated and called as such:
+ * SORTracker* obj = new SORTracker();
+ * obj->add(name,score);
+ * string param_2 = obj->get();
+ */

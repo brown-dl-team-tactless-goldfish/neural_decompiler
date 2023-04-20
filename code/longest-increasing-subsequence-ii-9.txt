@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int lengthOfLIS(vector<int>& nums, int k) {
+        n = *max_element(begin(nums), end(nums))+1;
+        for (int num: nums) {
+            int d = get_max(max(0, num-k), num-1) + 1;
+            ans = max(ans, d);
+            update(num, d);
+        }
+        return ans;
+    }
+private:
+    int n, t[200005] = {}, ans = 1;
+    
+    void update(int i, int val) {
+        for (t[i+=n] = val; i > 0; i >>= 1)
+            t[i>>1] = max(t[i], t[i^1]);
+    }
+    
+    int get_max(int i, int j) {
+        int ret = 0;
+        for (i += n, j += n; i <= j; i >>= 1, j >>= 1) {
+            if (i & 1) ret = max(ret, t[i++]);
+            if (!(j & 1)) ret = max(ret, t[j--]);
+        }
+        return ret;
+    }
+};

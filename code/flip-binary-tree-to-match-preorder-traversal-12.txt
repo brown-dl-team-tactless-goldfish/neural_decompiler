@@ -1,0 +1,74 @@
+   public class Solution
+    {
+        private void Helper(TreeNode node, int[] voyage, ref int vIdx, IList<int> res)
+        {
+            if (vIdx == -1)
+            {
+                return;
+            }
+
+            if (node == null)
+            {
+                return;
+            }
+
+            if (node.val != voyage[vIdx])
+            {
+                vIdx = -1;
+                return;
+            }
+
+            vIdx++;
+
+            if (vIdx == voyage.Length)
+            {
+                return;
+            }
+
+
+            if (node.left != null && node.right != null)
+            {
+                if (node.left != null && node.left.val == voyage[vIdx])
+                {
+                    //no flip
+                    Helper(node.left, voyage, ref vIdx, res);
+                    Helper(node.right, voyage, ref vIdx, res);
+                    return;
+                }
+
+
+                //flip
+                res.Add(node.val);
+                var tmp = node.left;
+                node.left = node.right;
+                node.right = tmp;
+
+                if (node.left != null && node.left.val == voyage[vIdx])
+                {
+                    Helper(node.left, voyage, ref vIdx, res);
+                    Helper(node.right, voyage, ref vIdx, res);
+                    return;
+                }
+
+
+                vIdx = -1;
+                return;
+            }
+
+            Helper(node.left, voyage, ref vIdx, res);
+            Helper(node.right, voyage, ref vIdx, res);
+        }
+
+        public IList<int> FlipMatchVoyage(TreeNode root, int[] voyage)
+        {
+            IList<int> res = new List<int>();
+            int vIdx = 0;
+            Helper(root, voyage, ref vIdx, res);
+            if (vIdx < 0)
+            {
+                res.Clear();
+                res.Add(-1);
+            }
+            return res;
+        }
+    }

@@ -1,0 +1,26 @@
+
+int max(int a, int b){
+    return a > b ? a : b;
+}
+
+int candies[1000000];
+
+int candy(int* ratings, int ratingsSize){
+    for (int i = 0; i < ratingsSize; i++){
+        candies[i] = 1;
+    }
+    for (int i = 1; i < ratingsSize; i++){
+        if(ratings[i] > ratings[i-1]){
+            candies[i] = candies[i-1] + 1;
+        }
+    }
+    int sum = 0;
+    for (int i = ratingsSize - 2; i >= 0 ; i--){
+        if (ratings[i] > ratings[i+1]){
+            candies[i] = max(candies[i], candies[i+1] + 1 );
+        }
+        sum += candies[i];
+    }
+    sum += candies[ratingsSize - 1]; 
+    return sum;
+}

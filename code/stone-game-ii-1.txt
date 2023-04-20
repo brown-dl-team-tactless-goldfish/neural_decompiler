@@ -1,0 +1,34 @@
+class Solution {
+public:
+    int stoneGameII(vector<int>& piles) {
+        int N = piles.size();
+        vector< vector< vector<int> > > dp(N + 1, vector< vector<int> >(N + 1,   vector<int>(2, -1)   )  );     
+        return playGame(piles, 0, 1, 1, dp);
+    }
+    
+    int playGame(vector<int>& piles, int start, int m, int isAlex, vector<vector<vector<int>>>& dp) {
+        if (start >= piles.size())
+            return 0;
+        
+        if (dp[start][m][isAlex] != -1)
+            return dp[start][m][isAlex];
+        
+        int maxScore = isAlex ? numeric_limits<int>::min() : numeric_limits<int>::max();
+        
+        int currSum = 0;
+        
+        for (int x = start; x < piles.size() && x < start + 2 * m; ++x) {
+            currSum += piles[x];
+            
+            int next = playGame(piles, x + 1, max(m, x - start + 1), !isAlex, dp);
+            
+            if (isAlex) {
+                maxScore = max(maxScore, next + currSum);
+            } else {
+                maxScore = min(maxScore, next);
+            }
+        }
+        
+        return dp[start][m][isAlex] = maxScore;
+    }
+};

@@ -1,0 +1,46 @@
+class Solution {
+public:
+
+    void insertAtTail(Node* &head,Node* &tail,int val){
+        Node* newNode = new Node(val);
+        if(head==NULL || tail==NULL){
+            head=newNode;
+            tail=newNode;
+            return;
+        }
+        tail->next=newNode;
+        tail=newNode;
+    }
+
+    Node* copyRandomList(Node* head) {
+        Node* temp=head;
+        Node* cloneHead=NULL;
+        Node* cloneTail=NULL;
+
+        while(temp!=NULL){
+            insertAtTail(cloneHead,cloneTail,temp->val);
+            temp = temp->next;
+        }
+
+        map<Node*,Node*> mp;
+        temp=head;
+        Node* clonetemp = cloneHead;
+        while(temp!=NULL){
+            mp[temp]=clonetemp;
+            temp = temp->next;
+            clonetemp = clonetemp->next;
+        }
+
+        temp=head;
+        clonetemp=cloneHead;
+
+        while(temp!=NULL){
+            clonetemp->random = mp[temp->random];
+            temp = temp->next;
+            clonetemp = clonetemp->next;
+        }
+        
+        return cloneHead;
+
+    }
+};

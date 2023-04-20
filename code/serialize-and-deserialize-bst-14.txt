@@ -1,0 +1,54 @@
+class Codec {
+public:
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        string encoded="";
+        dfs(root,encoded);
+        return encoded;
+    }
+    
+    void dfs(TreeNode* node, string& encoded)
+    {
+        if(node==nullptr)
+            return;
+        
+        encoded+=to_string(node->val)+"#";
+        dfs(node->left,encoded);
+        dfs(node->right,encoded);
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        vector<TreeNode*> nodes;
+        int i=0;
+        auto pos=data.find("#");
+        while(pos!=string::npos)
+        {
+            nodes.push_back(new TreeNode(stoi(data.substr(i,pos-i))));
+            i=pos+1;
+            pos=data.find("#",i);
+        }
+        
+        TreeNode* root=reconstruct(nodes,0,nodes.size()-1);
+        return root;
+    }
+    
+    TreeNode* reconstruct(vector<TreeNode*>& nodes, int i, int j)
+    {
+        if(i>j) return nullptr;
+        if(i==j) return nodes[i];
+        
+        TreeNode* root=nodes[i];
+        int c=i+1;
+        while(c<=j && nodes[c]->val<nodes[i]->val) c++;
+    
+        if(c-1>i) root->left=reconstruct(nodes,i+1,c-1);
+        root->right=reconstruct(nodes,c,j);
+        return root;
+    }
+};
+
+// Your Codec object will be instantiated and called as such:
+// Codec codec;
+// codec.deserialize(codec.serialize(root));

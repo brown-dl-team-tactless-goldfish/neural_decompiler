@@ -1,0 +1,157 @@
+#define HASH_SIZE 20001
+
+struct file {
+    char fname[256];
+    char data[3000];
+    int size;
+    struct file *next;
+};
+
+struct hash_map {
+    int key;
+    int nums;
+    struct file *files;
+};
+
+struct hash_head {
+    int map_size;
+    struct hash_map *map;
+};
+
+unsigned long timeStart, timeStart1;
+unsigned long timeStop;
+
+struct file *create_file(char *path, char *contents) {
+    char name[256];
+    struct file *file = (struct file *)calloc(1, sizeof(struct file));
+
+    sscanf(contents, "%[^(](%[^)]", name, file->data);
+    sprintf(file->fname, "%s/%s", path, name);
+    file->size = strlen(file->data);
+    //printf("file fname: %s, file data: %s\n", file->fname, file->data);
+
+    return file;
+}
+
+struct hash_head *create_maphead(int size) {
+    struct hash_head *head = calloc(1, sizeof(struct hash_head));
+    head->map_size = size;
+    head->map = calloc(size, sizeof(struct hash_map));
+
+    return head;
+}
+
+unsigned long get_time()  
+{  
+    struct timespec ts;  
+
+    clock_gettime(CLOCK_MONOTONIC, &ts);  
+
+    return (ts.tv_sec * 1000 + ts.tv_nsec / 1000000);  
+}  
+
+int get_hashidx(struct hash_head *head, char *data) {
+    unsigned long h = 0;
+    char *k = data;
+
+    while (*k) {
+	    h = (h << 4) + *k++;
+	    unsigned long g = h & 0xF0000000L;
+	    if (g) {
+	        h ^= g >> 24;
+	    }
+	    h &= ~g;
+    }
+
+    return h % head->map_size;
+}
+
+void insert_hash(struct hash_head *head, struct file *new, int idx) {
+    struct hash_map *map = head->map;
+    struct file *file = map[idx].files;
+    //printf("idx: %d\n", idx);
+
+    if (file == NULL) {
+        file = calloc(1, sizeof(struct file));
+        file->next = new;
+        map[idx].files = file;
+	    map[idx].key = idx;
+	    map[idx].nums++;
+        goto out;
+    }
+
+    if (file->next->size == new->size && strcmp(file->next->data, new->data) == 0) {
+        new->next = file->next;
+	    file->next = new;
+	    map[idx].key = idx;
+	    map[idx].nums++;
+	    goto out;
+    } else {
+	    //printf("conflicts, find a new hash node\n");
+	    insert_hash(head, new, ++idx >= head->map_size ? 0 : idx);
+    }
+    
+out:
+    return;
+}
+
+void parse_data(char *data, struct hash_head *head) {
+    char path[256] = "", buf[4096] = "";
+    char *token = NULL, *p = NULL;
+    char *delim = " ";
+
+    strncpy(buf, data, sizeof(buf));
+    token = strtok(buf, delim);
+    if (token) {
+	    strcpy(path, token);
+	    for (int i = 0; token; i++) {
+	        struct file *file = NULL;
+	        token = strtok(NULL, delim);
+	        if (!token) break;
+	        file = create_file(path, token);
+	        int idx = get_hashidx(head, file->data);
+	        insert_hash(head, file, idx);
+	    }
+    }
+}
+
+char ***findDuplicate(char ** paths, int pathsSize, int* returnSize, int** returnColumnSizes){
+    struct hash_head *head = create_maphead(HASH_SIZE);
+    int *columnSize = NULL;
+    char ***set = NULL;
+    int row = 0;
+    
+    timeStart = get_time();
+    for (int i = 0; i < pathsSize; i++) {
+	    parse_data(paths[i], head);
+    }
+    
+    for (int i = 0; i < head->map_size; i++) {
+	    struct hash_map *map = &head->map[i];
+	    if (map->nums >= 2) {
+	        char **array = NULL;
+	        set = realloc(set, ++row * sizeof(char **)); 
+	        columnSize = realloc(columnSize, row * sizeof(int));
+	        columnSize[row-1] = map->nums;
+	        
+	        struct file *file = map->files->next;
+            int k;
+            for (k = 0; file; k++, file = file->next);
+            array = malloc(k * sizeof(char *));
+            
+            //printf("[");
+            file = map->files->next;
+	        for (int j = 0; file; j++, file = file->next) {
+                array[j] = file->fname;
+		        //printf("\"%s\" ", array[j]);
+		        set[row-1] = array;
+	        }
+            //printf("],\n");    
+	    }
+    }
+
+    *returnSize = row;     
+    *returnColumnSizes = columnSize;
+
+    return set;
+}

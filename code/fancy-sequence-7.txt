@@ -1,0 +1,107 @@
+class Fancy {
+public:
+    #define LL long long
+    int seg[100001*4];
+    LL addlag[100001*4];
+    LL mullag[100001*4];
+    int arr[100001];
+    int curidx;
+    const int mod=1E9+7;
+    Fancy() {
+        curidx=0;
+        for(int i=0;i<100001*4;i++) mullag[i]=1;
+    }
+    
+    void append(int val) {
+        arr[curidx]=val;
+        curidx++;
+    }
+    
+    void addAll(int inc) {
+        update_add(0,0,100000, 0,curidx-1, inc);
+    }
+    
+    void update_add(int idx, int left, int right, int uleft, int uright, int val){
+        if(uleft>right || uright<left) return ;
+        if(uleft<=left && uright>=right){
+            addlag[idx] +=val;
+            addlag[idx]%=mod;
+            return ;
+        }
+        pushdown(idx);
+        int mid=(left+right)/2;
+        update_add(idx*2+1,left,mid,uleft,uright,val);
+        update_add(idx*2+2,mid+1,right,uleft,uright,val);
+    }
+    
+    void pushdown(int idx){
+        if(mullag[idx]>1){
+            mullag[idx*2+1]*=mullag[idx];
+            mullag[idx*2+1]%=mod;
+            mullag[idx*2+2]*=mullag[idx];
+            mullag[idx*2+2]%=mod;
+            addlag[idx*2+1]*=mullag[idx];
+            addlag[idx*2+1]%=mod;
+            addlag[idx*2+2]*=mullag[idx];
+            addlag[idx*2+2]%=mod;
+            mullag[idx]=1;
+        }
+        if(addlag[idx]>0){
+            addlag[idx*2+1]+=addlag[idx];
+            addlag[idx*2+1]%=mod;
+            addlag[idx*2+2]+=addlag[idx];
+            addlag[idx*2+2]%=mod;
+            addlag[idx]=0;
+        }
+    }
+    
+    void multAll(int m) {
+        update_mul(0,0,100000, 0,curidx-1, m);    
+    }
+    
+    void update_mul(int idx, int left, int right, int uleft, int uright, int val){
+        if(uleft>right || uright<left) return ;
+        if(uleft<=left && uright>=right){
+            addlag[idx]*=val;
+            addlag[idx]%=mod;
+            mullag[idx]*=val;
+            mullag[idx]%=mod;
+            return ;
+        }
+        pushdown(idx);
+        int mid=(left+right)/2;
+        update_mul(idx*2+1,left,mid,uleft,uright,val);
+        update_mul(idx*2+2,mid+1,right,uleft,uright,val);
+    }
+    
+    
+    int getIndex(int idx) {
+        if(idx>=curidx) return -1;
+        getval(0,0,100000,idx);
+        return res;
+    }
+    
+    LL res;
+    void getval(int idx, int left, int right, int fidx){
+        if(fidx<left || fidx>right) return ;
+        if(left==right){
+            res=arr[fidx]*mullag[idx]%mod+addlag[idx];
+            res%=mod;
+            return ;
+        }
+        pushdown(idx);
+        int mid=(left+right)/2;
+        getval(idx*2+1,left,mid,fidx);
+        getval(idx*2+2,mid+1,right,fidx);
+        
+    }
+};
+
+/**
+ * Your Fancy object will be instantiated and called as such:
+ * Fancy* obj = new Fancy();
+ * obj->append(val);
+ * obj->addAll(inc);
+ * obj->multAll(m);
+ * int param_4 = obj->getIndex(idx);
+ */

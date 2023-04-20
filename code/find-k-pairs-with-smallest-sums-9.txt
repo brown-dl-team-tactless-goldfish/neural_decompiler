@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<vector<int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+        vector<int> small = nums1, big = nums2;
+    
+        vector<vector<int>> answer;
+        
+        if(!nums1.size() or !nums2.size()) return answer;
+        
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        
+        for (int i=0; i<small.size(); i++){
+            pq.push({small[i]+big[0], i, 0});
+        }
+        
+        while(!pq.empty() and answer.size() < k){
+            auto top = pq.top();
+            pq.pop();
+            answer.push_back({small[top[1]], big[top[2]]});
+            if(top[2]+1 < big.size()){
+                pq.push({small[top[1]]+big[top[2]+1], top[1], top[2]+1});
+            }
+        }
+        
+        return answer;
+    }
+};

@@ -1,0 +1,45 @@
+void dfs(int v,int p,vector<int> g[],vector<int> &dis){
+    dis[v]=1;
+    for(auto i: g[v]){
+        if(i==p) continue;
+        dfs(i,v,g,dis);
+        dis[v]+=dis[i];
+    }
+}
+int countHighestScoreNodes(vector<int>& p) {
+    int n=p.size();
+    vector<int> g[n];
+    vector<int> dis(n,0);
+    for(int i=1;i<n;i++){
+        g[p[i]].push_back(i);
+        g[i].push_back(p[i]);
+    }
+    dfs(0,-1,g,dis);
+    // for(auto i: dis){
+    //     cout<<i<<" ";
+    // }
+    vector<long long> ans(n,0);
+    long long c=1;
+    for(int i=0;i<n;i++){
+        if(p[i]==0){
+            c*=dis[i];
+        }
+    }
+    ans[0]=c;
+    for(int i=1;i<n;i++){
+        ans[i]=(p.size()-dis[i]);
+        for(auto cc: g[i]){
+            if(cc==p[i]) continue;
+            ans[i]*=(dis[cc]*1LL);
+        }
+    }
+    map<long long ,int> m;
+    for(int i=0;i<n;i++){
+        m[ans[i]]++;
+    }
+    long long d=-1;
+    for(auto i: m){
+        d=max(d,i.first);
+    }
+    return m[d];
+}

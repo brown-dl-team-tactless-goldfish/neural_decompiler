@@ -1,0 +1,25 @@
+long long dp[101][101][101];
+long long solve(int i, int j, vector<int> &robot, vector<vector<int>> &factory, int lim){
+    if(i<0){
+        return 0;
+    }
+    if(dp[i][j][lim] != -1){
+        return dp[i][j][lim];
+    }       
+    long long ans = 1e18;
+    if(lim > 0){
+        ans = min(ans, abs(factory[j][0]-robot[i]) + solve(i-1, j, robot, factory, lim-1));
+    }       
+    if(j-1 >= 0){
+        ans = min(ans, solve(i, j-1, robot, factory, factory[j-1][1]));
+    }
+    return dp[i][j][lim] = ans;
+}
+long long minimumTotalDistance(vector<int> &robot, vector<vector<int>> &factory) {
+    int n = robot.size();
+    int m = factory.size();
+    sort(robot.begin(), robot.end());
+    sort(factory.begin(), factory.end());
+    memset(dp, -1, sizeof(dp));
+    return solve(n-1, m-1, robot, factory, factory[m-1][1]);
+}

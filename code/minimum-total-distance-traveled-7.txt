@@ -1,0 +1,51 @@
+using ll = long long;
+const int N = 105;
+const ll INF = 1000000000000000ll;
+ll dp[N][N];
+class Solution {
+public:
+    long long minimumTotalDistance(vector<int>& a, vector<vector<int>>& b) {
+        sort(a.begin(), a.end());
+        sort(b.begin(), b.end());
+        int n = a.size(), m = b.size();
+        for(int i = 0; i <= n; i++) {
+            for(int j = 0; j <= m; j++) {
+                dp[i][j] = -1;
+            }
+        }
+        
+        ll res = dfs(a, b, 0, 0);
+        return res;
+    }
+    
+    ll dfs(vector<int>& a, vector<vector<int>>& b, int i, int j) {
+        if(i >= a.size()) {
+            return 0;
+        }
+        
+        if(j >= b.size()) {
+            return INF;
+        }
+        
+        if(dp[i][j] != -1) {
+            return dp[i][j];
+        }
+        vector<int>& fa = b[j];
+        int p = fa[0], lim = fa[1];
+        int cnt = 0;
+        ll sum = 0;
+        ll res = INF;
+        
+        res = min(res, dfs(a, b, i, j + 1));
+        for(int idx = i; idx < a.size(); idx++) {
+            cnt ++;
+            if(cnt > lim) break;
+            sum += abs(a[idx] - p);
+            res = min(res, sum + dfs(a, b, idx + 1, j + 1));
+        }
+
+        return dp[i][j] = res;
+    }
+    
+    
+};

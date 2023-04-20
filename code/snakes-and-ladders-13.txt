@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int n, end;
+    int snakesAndLadders(vector<vector<int>>& b) {
+        n = b.size(), end = n * n - 1;
+        vector<vector<bool>> vis(n, vector<bool>(n));
+        vis[0][0] = true;
+        queue<int> q;
+        int count = 0;
+        reverse(b.begin(), b.end());
+        for(int i = 1; i < n; i += 2)
+            reverse(b[i].begin(), b[i].end());
+        q.push(0);
+        int level = 0;
+        while(!q.empty()){
+            int sz = q.size();
+            level++;
+            while(sz--){
+                int start = q.front(); q.pop();
+                for(int i = 1; i <= 6; i++){
+                    int temp = start + i, r = temp / n, c = temp % n;
+                    if(b[r][c] != -1){
+                        temp = b[r][c] - 1, r = temp / n, c = temp % n;
+                    }
+                    if(temp > end || vis[r][c]) continue;
+                    vis[r][c] = true;
+                    
+                    if(temp == end) return level;
+                    q.push(temp);
+                }
+            }
+        }
+        return -1;
+    }
+};

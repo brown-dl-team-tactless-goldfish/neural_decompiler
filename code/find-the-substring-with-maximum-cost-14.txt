@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int maximumCostSubstring(string s, string chars, vector<int>& vals) {
+        vector<int>cost(26) ;
+        for(int i = 0; i < 26; i++)
+            cost[i] = i+1 ;
+        for(int i = 0; i < chars.size() ; i++){
+            cost[chars[i] - 'a'] = vals[i] ; 
+        }
+        
+    int curSum = cost[s[0] - 'a'], maxSum = cost[s[0] - 'a'] ;
+    
+    for(int i = 1; i < s.size(); i++) {
+    // if including currentNum is -ve then currentSum start with currentNum
+        curSum = max(cost[s[i] -'a'], curSum + cost[s[i] -'a']);
+        maxSum = max(maxSum, curSum);
+    }
+    return (maxSum < 0) ? 0 : maxSum;
+        
+    }
+};

@@ -1,0 +1,55 @@
+class Solution {
+public:
+    vector<int> topStudents(vector<string>& positive_feedback, vector<string>& negative_feedback, vector<string>& report, vector<int>& student_id, int k) {
+        unordered_set<string> pf;
+        unordered_set<string> nf;
+        for(auto it:positive_feedback)
+            pf.insert(it);
+        for(auto it:negative_feedback)
+            nf.insert(it);
+        
+        vector<pair<int,int>> tmp;
+        
+        for(int i=0;i<student_id.size();i++){
+            int score = 0;
+            string rep = report[i];
+            string it="";
+            for(auto i:rep){
+                if(i!=' '){
+                    it+=i;
+                }
+                else{
+                    score+=func(it,pf,nf);
+                    it="";
+                }
+            }
+            score+=func(it,pf,nf);
+            tmp.push_back({student_id[i],score});
+        }
+        sort(tmp.begin(),tmp.end(),cmp);
+        vector<int> ans;
+        for(int i=0;i<k;i++){
+            ans.push_back(tmp[i].first);
+        }
+        return ans;
+        
+    }
+private:
+    int func(string s,unordered_set<string>& pf,unordered_set<string>& nf){
+        if(pf.find(s)!=pf.end())
+            return 3;
+        if(nf.find(s)!=nf.end())
+            return -1;
+        return 0;
+    }
+    
+    static bool cmp(pair<int,int>& A,pair<int,int>& B){
+        if(A.second>B.second)
+            return true;
+        if(A.second==B.second)
+            return A.first<B.first;
+        return false;
+    }
+    
+    
+};

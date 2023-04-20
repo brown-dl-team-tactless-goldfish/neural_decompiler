@@ -1,0 +1,70 @@
+using System.Collections.Extension;
+
+public class Solution {
+    const int N = (int)1e5 + 1, M = (int)1e3 + 1, mod = (int)1e9 + 7;
+    int[] h = new int[N], ne = new int[N], e = new int[N];
+    Map<(int, int), long> map = new();
+    Map<int, long> pow = new();
+    long[] f = new long[N];
+    int idx = 0;
+    public int WaysToBuildRooms(int[] prevRoom) {
+        Array.Fill(h, -1);
+        Array.Fill(f, 1);
+        for(int i = 1; i < prevRoom.Length; i++){
+            int u = prevRoom[i], v = i;
+            e[idx] = v; ne[idx] = h[u]; h[u] = idx++;
+        }
+        for(int i = 1; i <= prevRoom.Length; i++)
+            pow[i] = Pow(i, mod - 2);
+
+        long Combinations(int n, int k) {
+            if(map.ContainsKey((n, k))) return map[(n, k)];
+            if (k == 0 || k == n)  return 1;
+            if (k > n)  return 0;
+            long res = 1;
+            for (int i = 1; i <= k; i++)
+                res = (n - k + i) * pow[i] % mod * res % mod;
+            return map[(n, k)] = res;
+        }
+
+        long Pow(long a, long b){
+            long res = 1;
+            while(b != 0){
+                if((b & 1) != 0) res = res * a % mod;
+                a = a * a % mod;
+                b >>= 1;
+            }
+            return res;
+        }
+      
+        int Dfs(int u){
+            int cnt = 0;
+            for(int i = h[u]; i != -1; i = ne[i]){
+                int j = e[i], c = Dfs(j);
+                cnt += c;
+                f[j] = f[j] * Combinations(cnt, c) % mod;
+            }
+            return cnt + 1;
+        }
+        Dfs(0);
+        for(int i = 1; i < f.Length; i++)
+            f[i] = f[i - 1] * f[i] % mod;
+        return (int)f[N - 1];
+    }
+}
+
+namespace System.Collections.Extension{
+    using System.Collections.Generic;
+    using System.Diagnostics;
+    using System;
+    
+    public class Map<TKey, TValue> : Dictionary<TKey, TValue>{
+        public new TValue this[TKey key]{
+        get{
+            TValue val;
+            return TryGetValue(key, out val) ? val : default(TValue);
+        }
+        set { base[key] = value; }
+        }
+    }
+}

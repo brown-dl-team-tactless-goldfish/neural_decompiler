@@ -1,0 +1,27 @@
+public class Solution {
+    public int MaxStarSum(int[] vals, int[][] edges, int k) {
+        Dictionary<int, List<int>> graph = Enumerable
+            .Range(0, vals.Length)
+            .ToDictionary(i => i, i => new List<int>());
+
+        foreach (var edge in edges) {
+            int a = edge[0];
+            int b = edge[1];
+
+            graph[a].Add(b);
+            graph[b].Add(a);
+        }
+
+        int result = vals.Max();
+
+        for (int node = 0; node < vals.Length; ++node) 
+            result = Math.Max(result, vals[node] + graph[node]
+                .Select(e => vals[e])
+                .Where(e => e > 0)
+                .OrderByDescending(e => e)
+                .Take(k)
+                .Sum());
+
+        return result;
+    }
+}

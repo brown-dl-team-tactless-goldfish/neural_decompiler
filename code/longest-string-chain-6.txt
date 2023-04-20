@@ -1,0 +1,51 @@
+
+class Solution {
+public:
+    
+    static bool custC(const string &a, const string &b)
+    {
+        return (a.size() < b.size());
+    }
+    int longestStrChain(vector<string>& words) {
+        if(!words.size())
+            return 0;
+        vector<int>dp (words.size(), 1);
+        sort(words.begin(), words.end(), custC);
+        unordered_map<string, int> m;  // store ascii counts of each string
+        for(auto &word : words)
+        {
+            int sum = 0;
+            for(auto &c : word)
+                sum += (int)c;
+            m[word] = sum;
+        }
+        int res = INT_MIN;
+        for(int i = 1; i < words.size(); i++)
+        {
+            for(int j = 0; j < i; j++)
+            {
+                if(words[i].size() == words[j].size() + 1)
+                {
+                    
+                    int diff = m[words[i]] - m[words[j]]; 
+                    if(diff >= 'a' and diff <= 'z')
+                    {
+                        char c = (char)diff;
+                        string temp1 = words[i];
+                        string temp2 = words[j]; temp2.push_back(c);
+                        sort(temp1.begin(), temp1.end());
+                        sort(temp2.begin(), temp2.end());
+                    
+                        if(temp1 == temp2)
+                        {
+
+                            dp[i] = max(dp[i], dp[j] + 1);
+                            res = max(res, dp[i]);
+                        }
+                    }
+                }
+            }
+        }
+        return res != INT_MIN ? res : 1;
+    }
+};

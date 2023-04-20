@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int maxDiff(int num) {
+        string s = to_string(num);
+        
+        string mx = s, mn = s; // maximum and minimum possible number after swap.
+        for(int i=0; i<=9; i++) {
+		    // swap all occurance of char c.
+            char c = '0' + i;
+            string big = s, small = s;
+            
+			// if c appears at the beginning (1st digit), it cannot be swapped to '0', therefore the minimum possible swap is '1'.
+            char swap = s[0] == c ? '1' : '0';
+            for(int j=0; j<s.size(); j++) {
+                if(s[j] == c) {
+                    big[j] = '9';
+                    small[j] = swap;
+                }
+            }
+            mx = max(mx, big);
+            if(small[0] != '0') mn = min(mn, small);
+        }
+        
+        int big = stoi(mx), small = stoi(mn);
+        return big - small;
+    }
+};

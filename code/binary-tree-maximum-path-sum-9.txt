@@ -1,0 +1,31 @@
+int helper(struct TreeNode* root, int* max){
+
+    int left = 0;
+    int right = 0;
+    
+    if(root == NULL)
+        return 0;
+    
+    left = helper(root->left, max);
+    if(left<0)
+        left = 0;
+    right = helper(root->right, max);
+    if(right<0)
+        right = 0;
+    
+    if(*max < (left + right + root->val))
+        *max = left + right + root->val;
+    
+    if(left>right)
+        return left + root->val;
+    else
+        return right + root->val;
+}
+
+int maxPathSum(struct TreeNode* root){
+    int maxVal = INT_MIN;
+
+    helper(root, &maxVal);
+    
+    return maxVal;
+}

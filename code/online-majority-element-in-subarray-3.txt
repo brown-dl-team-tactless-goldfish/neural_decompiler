@@ -1,0 +1,33 @@
+public class MajorityChecker 
+{
+	Dictionary<int, List<int>> indexMap;
+    public MajorityChecker(int[] arr)
+	{
+         indexMap = new Dictionary<int, List<int>>();
+		 for(int i = 0; i < arr.Length; i++)
+		 {
+		 	var num = arr[i];
+			if(!indexMap.ContainsKey(num)) 
+				indexMap[num] = new List<int>();
+			indexMap[num].Add(i);
+		 }
+    }
+	
+    public int Query(int left, int right, int threshold) 
+	{
+		foreach(var kvp in indexMap)
+		{
+			if(kvp.Value.Count >= threshold)
+			{
+				var list = kvp.Value;
+				int start = list.BinarySearch(left), end = list.BinarySearch(right);
+				if(start < 0) start = ~start;
+				if(end < 0) end = ~end - 1;
+				if(end - start + 1 >= threshold)
+					return kvp.Key;
+			}
+		}
+		
+		return -1;
+    }
+}

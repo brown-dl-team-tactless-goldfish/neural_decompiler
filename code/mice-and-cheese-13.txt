@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int miceAndCheese(vector<int>& reward1, vector<int>& reward2, int k) {
+        vector<vector<int>> diffs(reward1.size(), vector<int>(2, 0));
+        for(int i = 0; i < reward1.size(); i++){
+            diffs[i][0] = reward1[i] - reward2[i];
+            diffs[i][1] = i;
+        }
+        sort(diffs.begin(), diffs.end());
+        int ans = 0;
+
+        for(int i = diffs.size() - 1; i >= diffs.size()-k && i >= 0; i--)
+            ans += reward1[diffs[i][1]];
+        
+        for(int i = diffs.size() - k - 1; i >= 0; i--)
+            ans += reward2[diffs[i][1]];
+        return ans;
+    }
+};

@@ -1,0 +1,32 @@
+public class Solution {
+    public int SubarraysDivByK(int[] nums, int k) {
+        
+        if(nums == null || nums.Length == 0)
+            return 0;
+        
+        int runningSum = 0, remainder = 0, cnt = 0;
+        Dictionary<int,int> dic = new Dictionary<int,int>();
+        dic.Add(0,1);
+        foreach(var num in nums)
+        {
+            runningSum += num;
+
+            // remainder = runningSum % k;
+            // if(remainder < 0)
+            //     remainder += k;
+                        
+            // handle the case in which runningSum % k is negative
+            remainder = (runningSum % k + k) % k;
+
+            if(dic.ContainsKey(remainder))
+            {
+                cnt += dic[remainder];          
+                dic[remainder]++;
+            }
+            else
+                dic.Add(remainder,1);
+        }
+        
+        return cnt;
+    }
+}

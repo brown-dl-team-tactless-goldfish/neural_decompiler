@@ -1,0 +1,132 @@
+
+
+#define QEUEU_MAX 20000
+
+typedef struct myQueue{
+    int cur;
+    int dep;
+}myQueue;
+
+myQueue *myqueue = NULL;
+int * visited = NULL;
+
+int front = 0;
+int tail = 0;
+
+void createQueue(int queue_size, int visited_size)
+{
+    myqueue = calloc(queue_size, sizeof(myQueue));
+    visited = calloc(visited_size, sizeof(int));
+    
+    front = 0;
+    tail = 0;
+}
+void enqueue( int cur, int dep )
+{
+    visited[cur] = 1;
+    if(front == QEUEU_MAX)
+    {   
+        printf(" queue is full \n" );
+        return;
+    }
+    myqueue[front].cur = cur;
+    myqueue[front].dep = dep;
+    front++;
+}
+
+myQueue dequeue(void)
+{
+    myQueue ret;
+    ret.cur = -1;
+    ret.dep = -1;
+    if(tail == front)
+    {
+//        printf("queue is empty\n");
+        return ret;
+    }
+//    printf("dequeue %d %d\n", myqueue[tail].cur, myqueue[tail].dep);
+    ret = myqueue[tail];
+    tail++;
+    return ret;
+}
+
+bool isSame(char *a, char *b)
+{
+    int i =0;
+    int cnt =0;
+    while(a[i]!='\0')
+    {
+        if(a[i]!=b[i]) cnt++;
+        if(cnt ==2) return false;
+        i++;
+    }
+    return true;
+    #if 0
+    int len = strlen(a);
+    char * tmp_a = calloc(len+2, sizeof(char));
+    char * tmp_b = calloc(len+2, sizeof(char));
+    for(int i=0; i < len; i++)
+    {
+        memcpy(tmp_a, a, sizeof(char)*len);
+        memcpy(tmp_b, b, sizeof(char)*len);
+
+        tmp_a[i]='*';
+        tmp_b[i]='*';
+       
+        if(!strcmp(tmp_a , tmp_b))
+            return true;
+    }
+    return false;
+    #endif
+}
+
+int ladderLength(char* beginWord, char* endWord, char** wordList, int wordListSize) {
+    
+    int ret = 0;
+    
+    int flag = 0;
+    int dest = 0;
+    for(int i =0; i < wordListSize; i++)
+    {
+        if(!strcmp(endWord, wordList[i]))
+        {
+            dest = i;
+            flag++;
+        }
+            
+    }
+    if(flag == 0)
+        return 0;  // didnot include the endWord in wordList.
+    
+    createQueue(QEUEU_MAX, wordListSize);
+    
+    // BFS 구현..
+    for(int i =0; i < wordListSize; i++)
+    {
+        if(isSame(beginWord, wordList[i]))
+        {
+            if(i == dest) return 2;
+            enqueue(i, 2);  // set visited in enqueue.
+        }
+    }
+    
+    //dequeue, myqueue.cur, myqueue.dep
+    while(1)
+    {
+        myQueue tmp = dequeue();
+        
+        for(int i =0; i < wordListSize; i++)
+        {
+           if(visited[i]==0 && isSame(wordList[tmp.cur], wordList[i]))
+            {
+//               printf("--- enqueue\n");
+                if(i == dest) return tmp.dep+1;
+                enqueue(i, tmp.dep+1);  // set visited in enqueue.
+            } 
+        }
+        
+        if(front == tail)
+            break;
+    }
+    return 0;
+}

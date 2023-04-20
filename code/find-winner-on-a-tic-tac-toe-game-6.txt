@@ -1,0 +1,58 @@
+char * AWin = "A";
+char * BWin = "B";
+char * Draw = "Draw";
+char * Pending = "Pending";
+
+char * tictactoe(int** moves, int movesSize, int* movesColSize){
+    int AMoves[8] = {0};
+    int BMoves[8] = {0};;
+    bool ATurn = true;
+    for(int i = 0; i < movesSize; i++)
+    {
+        int x = moves[i][0];
+        int y = moves[i][1];
+        int *moveMask; 
+        if(ATurn)
+        {
+            moveMask = &AMoves[0];
+        }
+        else
+        {
+            moveMask = &BMoves[0];
+        }
+        moveMask[x] |= 0x1 <<y; 
+        moveMask[3+y] |= 0x1 <<x; 
+        if(x==y)
+        {
+            moveMask[6] |= 0x1 << x;
+            if(x==1)
+            {
+                moveMask[7] |= 0x1 << x;
+            }
+        }
+        else if(x+y == 2)
+        {
+            moveMask[7] |= 0x1 << x;
+        }
+        ATurn = !ATurn;
+    }
+    for(int i = 0; i < 8; i++)
+    {
+        if(AMoves[i] == 7)
+        {
+            return AWin;
+        }
+        if(BMoves[i] == 7)
+        {
+            return BWin;
+        }
+    }
+    if(movesSize == 9)
+    {
+        return Draw;
+    }
+    else
+    {
+        return Pending;
+    }
+}

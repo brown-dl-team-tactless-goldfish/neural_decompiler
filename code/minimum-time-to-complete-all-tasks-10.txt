@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int findMinimumTime(vector<vector<int>>& tasks) {
+        int n = tasks.size();
+        
+        // Sort wrt end-time
+        sort(tasks.begin(), tasks.end(), [](vector<int> &v1, vector<int> &v2){
+           return v1[1] < v2[1]; 
+        });
+        
+        int ans = 0;
+        
+        // Binary vector, that shows if the computer is On/ Off at time = d
+        vector<int> worktime(2001, 0);
+        for (int i = 0; i < tasks.size(); i++)
+        {
+            vector<int> ct = tasks[i];
+            int s = ct[0], e = ct[1], t = ct[2];
+            cout << s << " " << e << " " << t << endl;
+            
+            // Find if there are some slots already when computer is On
+            for (int d = s; d <= e; d++)
+            {
+                t -= worktime[d];
+                if (t == 0)
+                    break;
+            }
+            
+            // If still some work for given task is remaing, we need to fill more slots from worktime
+            if (t > 0)
+            {
+                ans += t;
+                for (int j = e; j >= s && t > 0; j--)
+                {
+                    if (worktime[j] == 0)
+                    {
+                        t--;
+                        worktime[j]++;
+                    }
+                }
+            }
+            
+        }
+        return ans;
+    }
+};

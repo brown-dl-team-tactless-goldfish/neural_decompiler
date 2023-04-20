@@ -1,0 +1,97 @@
+class Solution {
+public:
+    long long gcdExtended(long long a, long long b, long long* x, long long* y) {
+        // Base Case
+        if (a == 0) {
+            *x = 0, * y = 1;
+            return b;
+        }
+
+        // To store results of recursive call
+        long long x1, y1;
+        long long gcd = gcdExtended(b % a, a, &x1, &y1);
+
+        // Update x and y using results of recursive
+        // call
+        *x = y1 - (b / a) * x1;
+        *y = x1;
+        return gcd;
+    }
+
+    // Function to find modulo inverse of a
+    long long modInverse(long long a, long long m) {
+        long long x, y;
+        long long g = gcdExtended(a, m, &x, &y);
+        if (g != 1) {
+            return -1;
+        } else {
+            // m is added to handle negative x
+            int res = (x % m + m) % m;
+            return res;
+        }
+    }
+    
+    const int MOD = 1e9 + 7;
+    int maxi = 1e5 + 10;
+    vector<long long> fact;
+    vector<long long> inv;
+
+    void pre() {
+        fact.resize(maxi);
+        inv.resize(maxi);
+        
+        fact[0] = 1;
+        fact[1] = 1;
+        fact[2] = 2;
+        for(int i = 3; i < maxi; i++) {
+            fact[i] = (i * fact[i-1]) % MOD;
+        }
+        
+        for(int i = 0; i < maxi; i++) {
+            inv[i] = modInverse(fact[i], MOD);
+        }
+    }
+    
+    vector<string> extract(string& str) {
+        pre();
+        int n = str.size();
+        int i = 0;
+        vector<string> res;
+        string temp = "";
+        while(i < n) {
+            while(i < n && str[i] == ' ') i++;
+            while(i < n && str[i] != ' ') {
+                temp.push_back(str[i]);
+                i++;
+            }
+            if(temp.size()) res.push_back(temp);
+            temp = "";
+        }
+        return res;
+    }
+    
+    int countAnagrams(string &s) {
+        vector<string> words = extract(s);
+        vector<long long> temp;
+        for(auto &word: words) {
+            int len = word.size();
+            vector<int> freq(26);
+            for(char ch: word) freq[ch - 'a']++;
+            
+            int res = fact[len];
+            for(auto it: freq) {
+                res = (res * inv[it] + MOD) % MOD;
+            }
+            temp.push_back(res);
+        }
+    
+        long long res = 1;
+        
+        for(auto it: temp) {
+            res *= it;
+            res %= MOD;
+        }
+        
+        return res;
+    }
+};

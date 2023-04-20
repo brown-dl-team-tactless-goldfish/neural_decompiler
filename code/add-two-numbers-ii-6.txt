@@ -1,0 +1,55 @@
+
+int getLen(struct ListNode* l) {
+    int len = 0;
+    struct ListNode *p = l;
+    while (p != NULL) {
+        len = len + 1;
+        p = p->next;
+    }
+    return len;
+}
+
+struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2) {
+    int len1 = getLen(l1), len2 = getLen(l2);
+    int* stack1 = calloc(len1, sizeof(int));
+    int* stack2 = calloc(len2, sizeof(int));
+    int top1 = -1, top2 = -1;
+    while (l1 != NULL) {
+        stack1[++top1] = l1->val;
+        l1 = l1->next;
+    }
+    while (l2 != NULL) {
+        stack2[++top2] = l2->val;
+        l2 = l2->next;
+    }
+    bool flag = true;
+    int a, b, sum, Cout = 0;
+    struct ListNode *p = malloc(sizeof(struct ListNode));
+    p->next = NULL;
+    while (top1 != -1 || top2 != -1) {
+        a = top1 == -1 ? 0 : stack1[top1--];
+        b = top2 == -1 ? 0 : stack2[top2--];
+        sum = a + b + Cout;
+        Cout = sum / 10;
+        sum = sum - Cout * 10;
+        
+        if (flag) {
+            p->val = sum;
+            flag = false;
+            continue;
+        }
+        struct ListNode *now = malloc(sizeof(struct ListNode));
+        now->val = sum;
+        now->next = p;
+        p = now;
+    }
+    if (Cout) {
+        struct ListNode *now = malloc(sizeof(struct ListNode));
+        now->val = Cout;
+        now->next = p;
+        p = now;
+    }
+    free(stack1);
+    free(stack2);
+    return p;
+}

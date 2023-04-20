@@ -1,0 +1,43 @@
+public class Solution {
+    public string ShiftingLetters(string s, int[][] shifts) {
+        int[] pSum = new int[s.Length]; // will store prefix sum after scanline stores shifting info at each index
+        for(int i = 0; i < shifts.GetLength(0); i++){ // perform scanline algorithm
+            if(shifts[i][2] == 1){ //if range to be shifted forward increment start index decrement one after end index
+                pSum[shifts[i][0]]++;
+                if(shifts[i][1] != s.Length-1){ // ensure index not out of bounds
+                    pSum[shifts[i][1]+1]--;
+                }
+            }else{ // shift backward so do opposite inc/dec
+                pSum[shifts[i][0]]--;
+                if(shifts[i][1] != s.Length-1){
+                    pSum[shifts[i][1]+1]++;
+                }
+            }
+        }
+        for(int i = 1; i < pSum.Length; i++){ // get prefix sum array using shifting data just collected
+            pSum[i] = pSum[i]+pSum[i-1];
+        }
+        int val;
+        int itr = 0; // to keep track of current index for pSum
+        string retStr = "";
+        foreach(char c in s){
+            if(Math.Abs(pSum[itr]) > 26){ // ensure shift is not above 26 due to redundancy and adjust accordingly
+                if(pSum[itr] < 0){
+                    pSum[itr] = -1*(Math.Abs(pSum[itr])%26);
+                }else{
+                    pSum[itr] = (Math.Abs(pSum[itr])%26);
+                }
+            }
+            val = (int) c + pSum[itr]; // adjust ascii value according to shift at index
+            if(val < 97){ // add or subtract 26 to get ascii val to intended character if needed
+                retStr += (char)(val+26);
+            }else if(val > 122){
+                retStr += (char)(val-26);
+            }else{
+                retStr += (char)val;
+            }
+            itr++; 
+        }
+        return retStr;
+    }
+}

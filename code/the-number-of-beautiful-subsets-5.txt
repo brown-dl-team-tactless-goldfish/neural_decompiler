@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int beautifulSubsets(vector<int>& nums, int k) {
+        unordered_map<int,vector<int>> mp;     //[[elm%k]-> [e1,e2,e3,.....en]]
+
+        for(auto x:nums){
+            mp[x%k].push_back(x);
+        }
+        
+        int ans=1;
+        for(auto [_,v]:mp){
+            map<int,int> mp1;
+            for(auto x:v){
+                mp1[x]++;
+            }
+
+            int prev_elm=INT_MIN, prevElmNotTaken=1,prevElmTaken=0,currElmNotTaken=0,currElmTaken=0;
+
+            for(auto [elm,freq]:mp1){
+                int poss_sub=pow(2,freq)-1;
+                
+                if(prev_elm+k==elm){
+                    currElmNotTaken=prevElmNotTaken+prevElmTaken;
+                    currElmTaken=prevElmNotTaken*poss_sub;
+                }   
+                else{
+                    currElmNotTaken=prevElmNotTaken+prevElmTaken;
+                    currElmTaken=(prevElmNotTaken+prevElmTaken)*poss_sub;
+                }
+
+                prevElmNotTaken=currElmNotTaken;
+                prevElmTaken=currElmTaken;
+                prev_elm=elm;
+            }
+            ans*=(currElmNotTaken+currElmTaken);
+        }
+        return ans-1;
+    }
+};

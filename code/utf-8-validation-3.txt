@@ -1,0 +1,19 @@
+bool validUtf8(int* data, int dataSize) {
+    int idx = 0;
+    while (idx < dataSize) {
+        if(data[idx] >> 7 == 0) idx++;
+        else if(data[idx] >> 3 == 0x1E) {
+            if(data[idx + 1] >> 6 != 2 || data[idx + 2] >> 6 != 2 || data[idx + 3] >> 6 != 2) return false;
+            idx += 4;
+        } else if(data[idx] >> 4 == 0xE) {
+            if(data[idx + 1] >> 6 != 2 || data[idx + 2] >> 6 != 2) return false;
+            idx += 3;
+        } else if(data[idx] >> 5 == 0x6) {
+            if(data[idx + 1] >> 6 != 2) return false;
+            idx += 2;
+        } else {
+            return false;
+        }
+    }
+    return true;
+}

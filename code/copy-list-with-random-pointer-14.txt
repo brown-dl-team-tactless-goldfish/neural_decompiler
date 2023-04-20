@@ -1,0 +1,82 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     struct Node *next;
+ *     struct Node *random;
+ * };
+ */
+struct Node* getNewNode(int val)
+{
+    struct Node* newNode = (struct Node* ) malloc(sizeof(struct Node));
+    newNode->val = val;
+    newNode->next = NULL;
+    newNode->random = NULL;
+        
+    return newNode;
+}
+struct Node* copyRandomList(struct Node* head) {
+    struct Node* cpHead = head;
+    struct Node* newHead = NULL;
+    struct Node* newHeadcp = NULL;
+    struct Node* tempcp = NULL;   
+    
+    int idx = 0;
+    long nodeMap[1000] = {0};
+    long newNodeMap[1000] = {0};
+    long nodeRandomMap[1000] = {0};
+        
+    if(head == NULL)
+        return NULL;
+/*
+    Creating the new node just with next and creating the map for the address of the original Link List
+*/
+    while(cpHead)
+    {
+        if(newHeadcp != NULL)
+            tempcp = newHeadcp;
+        newHeadcp = getNewNode(cpHead->val);
+        newNodeMap[idx] = newHeadcp;
+        if(tempcp != NULL)
+            tempcp->next = newHeadcp;
+
+        if(newHead == NULL)
+            newHead = newHeadcp;
+        
+        nodeMap[idx] = cpHead;
+        cpHead = cpHead->next;
+        idx++;
+    }
+    
+    cpHead = head;
+    idx = 0;
+/*
+    Creating the node number e.g. 0,1,2,3 etc. Map with the address
+*/    
+    while(cpHead)
+    {
+        for(int i = 0; i < 1000; i++)
+        {
+            if(cpHead->random == nodeMap[i])
+            {
+                nodeRandomMap[idx] = i;
+                break;
+            }
+        }
+        idx++;
+        cpHead = cpHead->next;
+    }
+    
+/*
+    Used the node number map generated to create the reference in the new copy node
+*/  
+    cpHead = newHead;
+    idx = 0;
+    while(cpHead)
+    {
+        cpHead->random = newNodeMap[nodeRandomMap[idx]];
+        idx++;
+        cpHead = cpHead->next;
+    }   
+	return newHead;
+}

@@ -1,0 +1,68 @@
+public class Solution {
+    public int MagnificentSets(int n, int[][] edges) {
+        List<int>[] g = new List<int>[n+1];
+        for(int i = 0; i <= n; i++) g[i] = new List<int>();
+        foreach(int[] edge in edges){
+            g[edge[0]].Add(edge[1]);
+            g[edge[1]].Add(edge[0]);
+        }
+        int maxGroups = 0;
+        List<IList<int>> components = GetComponents(n, g);
+        foreach(IList<int> component in components){
+            int maxGroupsLocal = 0;
+            foreach(int v in component){
+                int groups = bfs(v, g);
+                if(groups == -1) return -1;
+                maxGroupsLocal = Math.Max(maxGroupsLocal, groups);
+            }
+            maxGroups += maxGroupsLocal;
+        }
+        return maxGroups;
+    }
+    private List<IList<int>> GetComponents(int n, List<int>[] g){
+        List<IList<int>> components = new();
+        HashSet<int> visited = new();
+        for(int i = 1; i <= n; i++){
+            if(visited.Add(i)){
+                List<int> component = new();
+                dfs(i, component, g, visited);
+                components.Add(component);
+            }
+        }
+        return components;
+    }
+    private void dfs(int start, List<int> component, List<int>[] g, HashSet<int> visited){
+        component.Add(start);
+        foreach(int next in g[start]){
+            if(visited.Add(next)){
+                dfs(next, component, g, visited);
+            }
+        }
+    }
+    private int bfs(int start, List<int>[] g){
+        int groups = 0;
+        HashSet<int> visited = new(), previous = new();
+        Queue<int> queue = new();
+        queue.Enqueue(start);
+        visited.Add(start);
+        previous.Add(start);
+        while(queue.Count > 0){
+            int size = queue.Count;
+            HashSet<int> current = new HashSet<int>();
+            for(int i = 0; i < size; i++){
+                int curr = queue.Dequeue();
+                foreach(int next in g[curr]){
+                    if(previous.Contains(next)) 
+                        return -1;
+                    if(visited.Add(next)){
+                        current.Add(next);
+                        queue.Enqueue(next);
+                    }
+                }
+            }
+            previous = current;
+            groups++;
+        }
+        return groups;
+    }
+}

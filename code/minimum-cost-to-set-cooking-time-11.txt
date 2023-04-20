@@ -1,0 +1,74 @@
+class Solution {
+public:
+    int getDigits(int minutes){
+        int c = 0;
+        while(minutes){
+            minutes /= 10;
+            c++;
+        }
+        return c;
+    }
+    vector<int> getDigitsArr(int minutes, int seconds){
+        vector<int> A(4,0);
+        int i = 0;
+        while(seconds){
+            int digit = seconds%10;
+            A[i++] = digit;
+            seconds /= 10;
+        }
+        i = 2;
+        while(minutes){
+            int digit = minutes%10;
+            A[i++] = digit;
+            minutes /= 10;
+        }
+        reverse(A.begin(), A.end());
+        return A;
+    }
+    int getMinimumByAppendingZeros(vector<int>A,int startAt, int moveCost, int pushCost) {
+        bool noMoreComputationReq = false;
+        int ans = INT_MAX;
+        for(int i = 0; i < 4; i++){
+            if(A[i] != 0){
+                if(i == 0) noMoreComputationReq = true;
+                int cost = 0;
+                int prev = startAt;
+                for(int j = i; j < 4; j++){
+                    if(A[j] != prev) cost += moveCost;
+                    cost += pushCost;
+                    prev = A[j];
+                }
+                ans = cost;
+                break;
+            }
+        }
+        for(int i = 0; i < 4; i++){
+            cout<<A[i]<<" ";
+        }
+        cout<<endl;
+        return ans;
+    }
+    int minCostSetTime(int startAt, int moveCost, int pushCost, int targetSeconds) {
+        int minutes = targetSeconds/60;
+        int seconds = targetSeconds%60;
+        int digitsInMinutes = getDigits(minutes);
+        int digitsInSeconds = getDigits(seconds);
+        if(digitsInMinutes == 0){
+            vector<int>A = getDigitsArr(minutes, seconds);
+            return getMinimumByAppendingZeros(A, startAt, moveCost, pushCost);
+        } else if (digitsInMinutes <= 2 ){
+            vector<int> A = getDigitsArr(minutes, seconds);
+            int ans = getMinimumByAppendingZeros(A, startAt, moveCost, pushCost);
+            bool secondsExpandable = ((seconds + 60) <= 99);
+            if(secondsExpandable){
+                A = getDigitsArr(minutes - 1, seconds + 60);
+                ans = min(ans, getMinimumByAppendingZeros(A, startAt, moveCost, pushCost));
+            }
+            return ans;
+        } else {
+            vector<int> A = getDigitsArr(minutes - 1, seconds + 60);
+            int ans = getMinimumByAppendingZeros(A, startAt, moveCost, pushCost);
+            return ans;
+        }
+    }
+};

@@ -1,0 +1,90 @@
+/**
+ * Return an array of arrays of size *returnSize.//row
+ * The sizes of the arrays are returned as *columnSizes array.//col size for each row
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+//global declrations
+struct queue{
+    int i;
+    int j;
+    struct queue* next;
+};
+struct queue *head = NULL;
+struct queue *tail = NULL;
+void pop(){
+    if(head != NULL){
+        head = head->next;
+    }
+   // printf("popped\n");
+    
+}
+void push(struct queue* q){
+    //printf("recieved: %d %d\n", q->i, q->j);
+    
+    if(head == NULL){
+        head = q;
+        tail = q;
+        head->next = NULL;
+        tail->next = NULL;
+    }
+    else{
+    tail->next = q;
+    tail = q;
+    tail->next = NULL;
+    }
+     //printf("pushed: %d %d\n", tail->i, tail->j);
+}
+int **array;
+int** updateMatrix(int** matrix, int matrixRowSize, int matrixColSize, int** columnSizes, int* returnSize) {
+    int row, col, row_a, col_a, res = 0, res_n = 10;   
+    int i, j;
+    struct queue **q;
+    int dir[4][2] = {{-1,0}, {1,0}, {0,-1}, {0,1}};
+    array = (int**)malloc(sizeof(int *) * matrixRowSize);
+    q = (struct queue**)malloc(sizeof(struct queue*) * matrixRowSize); //do not forget to free; try if not add a function
+    for(i = 0; i < matrixRowSize; i++){
+        array[i] = (int *)malloc(sizeof(int) * matrixColSize);
+        q[i] = (struct queue*)malloc(sizeof(struct queue) * matrixColSize); //do not forget to free; try if not add a function
+    }
+    //returnSize = (int *)malloc(sizeof(int));
+    *returnSize = matrixRowSize;
+    *columnSizes = (int *)malloc(sizeof(int) * matrixRowSize); // equivalent to columnsize[0] malloc(no of rows)
+    for(i=0; i < matrixRowSize; i++){
+        columnSizes[0][i] = matrixColSize;
+    }
+   //BFS Algorithm
+    //fill it in with 0 and INT_MAX
+    for (i = 0; i < matrixRowSize; i++){
+        for(j = 0; j < matrixColSize; j++){
+            if(matrix[i][j]){
+                array[i][j] = INT_MAX;
+                q[i][j].i = i;
+                q[i][j].j = j;       
+            }
+            else{
+                array[i][j] = 0;
+                q[i][j].i = i;
+                q[i][j].j = j;               
+                push(&q[i][j]); //add it to queue of 0's
+
+            }
+        } 
+    }
+    while(head != NULL){
+        int new_r, new_c;
+        for (i = 0; i < 4; i++){
+            new_r = head->i + dir[i][0];
+            new_c = head->j + dir[i][1];
+            if( new_r >= 0 && new_c >= 0 && new_r < matrixRowSize && new_c < matrixColSize){
+                if(array[new_r][new_c] > array[head->i][head->j]+1){
+                    array[new_r][new_c] = array[head->i][head->j] + 1;
+                    push(&q[new_r][new_c]); //add it in the rear;
+                }
+            }
+
+        }
+        pop(); //clear the front
+   
+    }
+    return array;
+}

@@ -1,0 +1,74 @@
+
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+char *** groupAnagrams(char ** strs, int strsSize, int* returnSize, int** returnColumnSizes){
+    if(strs==NULL)
+        return NULL;
+    int (*t)[strsSize]=(int (*)[])malloc(sizeof(int)*strsSize*strsSize);
+    int tsize=0;
+    int tr[strsSize];
+    int tn[strsSize];
+    for(int i=0;i<strsSize;i++)
+    {
+        tr[i]=0;
+        for(int j=0;j<strsSize;j++)
+        {
+            t[i][j]=0;
+        }
+    }
+    for(int i=0;i<strsSize;i++)
+    {
+        int num=0;
+        for(int j=0;j<strlen(strs[i]);j++)
+        {
+            float f=(float)(strs[i][j]-'a'+1)/(strs[i][j]-'a'+1+53);
+            num+=(int)(f*100000000);
+        }
+        printf("%d\n",num);
+        int flag=0;
+        for(int j=0;j<tsize;j++)
+        {
+            if(tn[j]==num)
+            {
+                t[j][tr[j]]=i;
+                tr[j]++;
+                flag=1;
+                break;
+            }
+        }
+        if(flag==0)
+        {
+            tn[tsize]=num;
+            t[tsize][0]=i;
+            tr[tsize]++;
+            tsize++;
+        }
+    }
+    *returnSize=tsize;
+    char ***ret=(char***)malloc(sizeof(char**)*tsize);
+    *returnColumnSizes=(int *)malloc(sizeof(int)*tsize);
+    for(int i=0;i<tsize;i++)
+    {
+        ret[i]=(char **)malloc(sizeof(char *)*tr[i]);
+        (*returnColumnSizes)[i]=tr[i];
+        for(int j=0;j<tr[i];j++)
+        {
+            ret[i][j]=(char*)malloc(sizeof(char)*strlen(strs[t[i][j]])+1);
+            strcpy(ret[i][j],strs[t[i][j]]);
+            printf("%s\n",ret[i][j]);
+        }
+    }
+    for(int i=0;i<strsSize;i++)
+    {
+        for(int j=0;j<strsSize;j++)
+        {
+        }
+        printf("\n");
+    }
+    free(t);
+    return ret;
+}

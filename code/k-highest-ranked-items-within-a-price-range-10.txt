@@ -1,0 +1,80 @@
+class Solution {
+public:
+    int dx[4] = {0,0,1,-1};
+    int dy[4] = {1,-1,0,0};
+
+    bool isValid(int x,int y,vector<vector<int>>& grid,vector<vector<int>>& dist)
+    {
+        int n = grid.size();
+        int m = grid[0].size();
+        if(x>=0 && y>=0 && x<n && y<m && grid[x][y]!=0 && dist[x][y]==-1)
+        return true;
+        return false;
+    }
+    void bfs(vector<vector<int>>& dist,vector<vector<int>>& grid,int row,int col)
+    {
+        dist[row][col] = 0;
+        int n = grid.size();
+        int m = grid[0].size();
+        queue<pair<int,int>> q;
+        q.push({row,col});
+        while(!q.empty())
+        {
+            int siz = q.size();
+            for(int i=0;i<siz;i++)
+            {
+                int r = q.front().first;
+                int c = q.front().second;
+                q.pop();
+                for(int j=0;j<4;j++)
+                {
+                    int nr = r+dx[j];
+                    int nc = c+dy[j];
+                    if(isValid(nr,nc,grid,dist))
+                    {
+                        dist[nr][nc] = dist[r][c]+1;
+                        q.push({nr,nc});
+                    }
+                }
+            }
+        }
+    }
+    vector<vector<int>> highestRankedKItems(vector<vector<int>>& grid, vector<int>& pricing, vector<int>& start, int k) {
+        int low = pricing[0];
+        int high = pricing[1];
+        int n = grid.size();
+        int m = grid[0].size();
+        int r = start[0];
+        int c = start[1];
+        vector<vector<int>> dist(n,vector<int>(m,-1));
+        bfs(dist,grid,r,c);
+        priority_queue<vector<int>> pq;
+        for(int i=0;i<n;i++)
+        {
+            for(int j=0;j<m;j++)
+            {
+                if(grid[i][j]==0 || dist[i][j]==-1)
+                continue;
+                if(grid[i][j]>=low && grid[i][j]<=high)
+                {
+                    int dis = dist[i][j];
+                    int price = grid[i][j];
+                    int row = i;
+                    int col = j;
+                    pq.push({dis,price,row,col,i,j});
+                    if(pq.size()>k)
+                    pq.pop();
+                }
+            }
+        }
+        vector<vector<int>> ans;
+        while(!pq.empty())
+        {
+            auto node = pq.top();
+            pq.pop();
+            ans.push_back({node[4],node[5]});
+        }
+        reverse(ans.begin(),ans.end());
+        return ans;
+    }
+};

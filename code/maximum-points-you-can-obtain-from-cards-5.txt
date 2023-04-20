@@ -1,0 +1,35 @@
+#define MAX(x, y) ((x) > (y) ? (x) : (y))
+
+int maxScore(int* cardPoints, int cardPointsSize, int k){
+    int sum=0, max;
+    int i, e=cardPointsSize-1;
+    
+    // take sume of last K cards
+    for (i=0;i<k;i++){
+        sum += cardPoints[e--];
+    }
+    // if we only have K cards in array, return this sum
+    if(k == cardPointsSize){
+        return sum;
+    }
+    max = sum;
+    // let's iterate over first K cards
+    for(i=0;i<k;i++){
+        // lets swap Kth card from end with Kth card from beginning of array
+        // e.g. if K=  5, lets swap (cardPointsSize-1)th card with Kth card
+        // next swap (cardPointsSize-2)th card with (K-1)th card
+        // next swap (cardPointsSize-3)th card with (K-2)th card
+        
+        // remove kth card from end
+        sum -= cardPoints[++e];
+        // add its corresponding Kth card from beginning
+        sum += cardPoints[i];
+        
+        // take max of current points tally and previous points tally
+        // want the maximum of the two
+        max = MAX(max, sum);
+    }
+    
+    // return the maximum found
+    return max;
+}

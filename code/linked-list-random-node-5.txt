@@ -1,0 +1,40 @@
+int listLength(struct ListNode* head) {
+    int length = 1;
+    struct ListNode *node = head;
+    while (node->next) {
+        node = node->next;
+        length++;
+    }
+    return length;
+}
+
+Solution* solutionCreate(struct ListNode* head) {
+    Solution *solution = (Solution *) malloc(sizeof(Solution));
+    solution->head = head;
+    solution->length = listLength(solution->head);
+    return solution;
+}
+
+/** Returns a random node's value. */
+int solutionGetRandom(Solution* obj) {
+    srand(time(NULL));
+    int steps = rand() % obj->length;
+    struct ListNode *node = obj->head;
+    for (int i=0; i < steps; i++) {
+        node = node->next;
+    }
+    return node->val;
+}
+
+void freeList(struct ListNode* head) {
+    struct ListNode *node = head;
+    if (node->next) {
+        freeList(node->next);
+    }
+    free(node);
+}
+
+void solutionFree(Solution* obj) {
+    freeList(obj->head);
+    free(obj);
+}

@@ -1,0 +1,69 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char** commonChars(char** A, int ASize, int* returnSize) {
+    //1，记录第一组字符串中字符出现的次数，并保存在数组中
+    //2，遍历剩下的字符串，如果某个字符在数组中存在，字符串中不存在，则将数组中的对应字符出现次数清零
+    //3，如果字符在数组中存在，字符串中也存在，需要比较两者的次数。把次数少的保存在数组中
+    //4，遍历数组，得到返回指针空间的大小
+    //5，长度有效，动态分配相应大小的存储空间（二级指针内存分配，先分配指针，再给每个指针分配内存）
+    //6, 遍历数组，取出有效index，转换成字符串并写入对应的内存空间并返回
+    int tmp[26] = {0};
+    if (!A || !ASize) {
+        return NULL;
+    }
+    int i, j, k, len_of_string, ret_len = 0, len = 0, tmp_num, cnt = 0;
+    len_of_string = strlen(A[0]);
+    for (i = 0; i < len_of_string; i++) {
+        tmp[A[0][i] - 'a']++;
+    }
+    if (ASize > 1) {
+        for (i = 1; i < ASize; i++) {
+            len_of_string = strlen(A[i]);
+            for (k = 0; k < 26; k++) {
+                if (tmp[k]) {
+                    for (j = 0; j < len_of_string; j++) {
+                        if (k == A[i][j] - 'a') {
+                            cnt++;
+                        }
+                    }
+                    if (cnt != tmp[k]) {
+                        if (cnt) {
+                            if (tmp[k] > cnt) {
+                                tmp[k] = cnt;
+                            }
+                        } else 
+                            tmp[k] = 0;
+                    }
+                    cnt = 0;
+                }
+            }
+        }
+    }
+    for (i = 0; i < 26; i++) {
+        tmp_num = tmp[i];
+        while (tmp_num--)
+            ret_len++;
+    }
+    if (ret_len) {
+        *returnSize = ret_len;
+        char** ret;
+        ret = (char*) malloc(sizeof(char*) * ret_len);
+        for (i = 0; i < ret_len; i++) {
+            ret[i] = (char*) malloc (sizeof(char) * 2);
+        }
+        char* s = (char*) malloc (sizeof(char) * 2);
+        for (i = 0; i < 26; i++) {
+            tmp_num = tmp[i];
+            while (tmp_num--) {
+                sprintf(s, "%c", i + 'a');
+                memcpy(ret[len], s, 2);
+                len++;
+            }
+        }
+        free(s);
+        return ret;
+    }
+    return NULL;
+}

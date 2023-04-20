@@ -1,0 +1,53 @@
+typedef struct pos
+{
+    int x;
+    int y;
+} position;
+
+inline char get_direction(char rotate, char current_direction)
+{
+    switch (current_direction)
+    {
+        case 'N':
+            return rotate == 'L' ? 'W' : 'E';
+        case 'S':
+            return rotate == 'L' ? 'E' : 'W';
+        case 'W':
+            return rotate == 'L' ? 'S' : 'N';
+        default:
+            return rotate == 'L' ? 'N' : 'S';
+    }
+}
+
+bool isRobotBounded(char * instructions){
+    size_t len = strlen(instructions);
+    position location = {0, 0};
+    char direction = 'N';
+    for (int i = 0; i < len; i++)
+    {
+        char ins = instructions[i];
+        if (ins != 'G')
+        {
+            direction = get_direction(ins, direction);
+        }
+        else
+        {
+            switch (direction)
+            {
+                case 'N':
+                    location.y++;
+                    break;
+                case 'S':
+                    location.y--;
+                    break;
+                case 'W':
+                    location.x--;
+                    break;
+                default:
+                    location.x++;
+            }
+        }
+    }
+
+    return direction != 'N' || (location.x == 0 && location.y == 0);
+}

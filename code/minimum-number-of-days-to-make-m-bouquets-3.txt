@@ -1,0 +1,43 @@
+	bool helper(vector<int>& arr, int m, int k, int x)
+    {
+        int count = 0;
+        int c = 0;
+        for(int i=0; i<arr.size(); i++)
+        {
+            if(c==k)
+            {
+                c=0;
+                count++;
+            }   
+            if(arr[i]<=x)
+                c++;
+            else
+                c = 0;
+            if(count>=m)
+                return true;
+        }
+        if(c==k)
+            count++;
+        return count>=m;
+    }
+        
+    int minDays(vector<int>& bloomDay, int m, int k) {
+        int start=INT_MAX, end=INT_MIN, mid;
+        if(bloomDay.size()<k*m)
+            return -1;
+        for(auto i : bloomDay)
+        {
+            start = min(start, i);
+            end = max(end, i);
+        }
+        while(start<end)
+        {
+            mid = start + (end-start)/2;
+            bool p = helper(bloomDay, m, k, mid);
+            if(p)
+                end = mid;
+            else
+                start = mid + 1;      
+        }
+        return start;
+    }

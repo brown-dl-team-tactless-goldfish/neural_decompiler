@@ -1,0 +1,65 @@
+int* decrypt(int* code, int codeSize, int k, int* returnSize){
+    
+    int *ptr=(int*)malloc(sizeof(int)*codeSize);
+    *returnSize=codeSize;
+    
+    int i,j;
+    
+    for(i=0;i<codeSize;i++)
+    {
+        int sum=0;
+        if(k>0)
+        {
+            if(i+k<codeSize)
+            {
+                for(j=i+1;j<=i+k;j++)
+                {
+                    sum=sum+code[j];
+                }
+                ptr[i]=sum;
+            }
+            else
+            {
+                for(j=i+1;j<codeSize;j++)
+                {
+                    sum=sum+code[j];
+                }
+                for(j=0;j<i+k+1-codeSize;j++)
+                {
+                    sum=sum+code[j];
+                }
+                ptr[i]=sum;
+            }
+        }
+        else if(k==0)
+        {
+            ptr[i]=0;
+        }
+        else
+        {
+            if(i+k>=0)
+            {
+                for(j=i+k;j<i;j++)
+                {
+                    sum=sum+code[j];
+                }
+                ptr[i]=sum;
+            }
+            else
+            {
+                for(j=0;j<i;j++)
+                {
+                    sum=sum+code[j];
+                }
+                for(j=codeSize-(abs(k)-i);j<codeSize;j++)
+                {
+                    sum=sum+code[j];
+                }
+                ptr[i]=sum;
+            }
+        }
+    }
+    
+    return ptr;
+
+}

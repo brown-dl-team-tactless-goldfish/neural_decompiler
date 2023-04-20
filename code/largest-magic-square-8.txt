@@ -1,0 +1,76 @@
+class Solution {
+public:
+    static int largestMagicSquare(const vector<vector<int>> &grid) {
+        if (grid.empty()) return 0;
+        const int m = grid.size(), n = grid[0].size();
+
+        int byRow[m][n], byColumn[m][n], byDiagonal1[m][n], byDiagonal2[m][n];
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                int x = grid[i][j];
+                byColumn[i][j] = (i ? byColumn[i - 1][j] : 0) + x;
+                byRow[i][j] = (j ? byRow[i][j - 1] : 0) + x;
+                byDiagonal1[i][j] = (i && j ? byDiagonal1[i - 1][j - 1] : 0) + x;
+                byDiagonal2[i][j] = (i && j + 1 < n ? byDiagonal2[i - 1][j + 1] : 0) + x;
+            }
+        }
+
+        for (int side = min(m, n); side > 1; --side) {
+            uint8_t mark[m][n]; // will be 0,1,2,3 only
+            memset(mark, 0, sizeof mark);
+
+            // bottom = right = diagonal1 = diagonal2
+            for (int i = side - 1; i < m; ++i) {
+                for (int j = side - 1; j < n; ++j) {
+                    int s = byRow[i][j] - (j >= side ? byRow[i][j - side] : 0);
+                    int s1 = byColumn[i][j] - (i >= side ? byColumn[i - side][j] : 0);
+                    int s2 = byDiagonal1[i][j] -
+                             (i >= side && j >= side ? byDiagonal1[i - side][j - side] : 0);
+                    int s3 = byDiagonal2[i][j - side + 1] -
+                             (i >= side && j + 1 != n ? byDiagonal2[i - side][j + 1] : 0);
+                    if (s == s1 && s == s2 && s == s3) ++mark[i][j];
+                }
+            }
+            // calculate the number equals to previous consecutive columns
+            for (int i = side - 1; i < m; ++i) {
+                int h = i - side;
+                int c = 0;
+                int value;
+                for (int j = 0; j < n; ++j) {
+                    int s = byColumn[i][j] - (h >= 0 ? byColumn[h][j] : 0);
+                    if (c == 0 || value != s) {
+                        value = s;
+                        c = 1;
+                    } else {
+                        ++c;
+                    }
+                    if (c >= side) ++mark[i][j];
+                }
+            }
+            // calculate the number equals to previous consecutive rows
+            for (int j = side - 1; j < n; ++j) {
+                int t = j - side;
+                int c = 0;
+                int value;
+                for (int i = 0; i < m; ++i) {
+                    int s = byRow[i][j] - (t >= 0 ? byRow[i][t] : 0);
+                    if (c == 0 || value != s) {
+                        value = s;
+                        c = 1;
+                    } else {
+                        ++c;
+                    }
+                    if (c >= side) ++mark[i][j];
+                }
+            }
+            for (auto &&v: mark) {
+                for (int x: v) {
+                    if (x >= 3) {
+                        return side;
+                    }
+                }
+            }
+        }
+        return 1;
+    }
+};

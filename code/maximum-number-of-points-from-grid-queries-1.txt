@@ -1,0 +1,61 @@
+public class Solution 
+{
+    public int[] MaxPoints(int[][] grid, int[] queries)
+    {
+        int m = grid.Length;
+        int n = grid[0].Length;
+
+        int[][] direction = new int[][] { new int[] { -1, 0 }, new int[] { 1, 0 }, new int[] { 0, 1 }, new int[] { 0, -1 } };
+
+
+        int[] sortedQueries = queries.OrderBy(q => q).ToArray();
+        //int[] => row & column   - int => Value 
+        PriorityQueue<int[], int> pq = new PriorityQueue<int[], int>();
+        pq.Enqueue(new int[] { 0, 0, grid[0][0] }, grid[0][0]);
+        grid[0][0] = 0;
+
+        //queryValue - Maximum
+        Dictionary<int, int> qMax = new Dictionary<int, int>();
+        int counter = 0;
+        for (int i = 0; i < sortedQueries.Length; i++)
+        {
+            if (qMax.ContainsKey(sortedQueries[i]))
+                continue;
+
+            while (pq.Count > 0 && pq.Peek()[2] < sortedQueries[i])
+            {
+                counter++;
+                int[] cur = pq.Dequeue();
+                int r = cur[0];
+                int c = cur[1];
+
+
+                foreach (int[] dir in direction)
+                {
+                    int newR = r + dir[0];
+                    int newC = c + dir[1];
+                    if (IsValid(newR, newC, m, n, grid))
+                    {
+                        pq.Enqueue(new int[] { newR, newC, grid[newR][newC] }, grid[newR][newC]);
+                        grid[newR][newC] = 0;
+                    }
+                }
+            }
+            qMax.Add(sortedQueries[i], counter);
+        }
+
+        int[] result = new int[queries.Length];
+        for (int i = 0; i < queries.Length; i++)
+        {
+            result[i] = qMax[queries[i]];
+        }
+        return result;
+    }
+
+    private bool IsValid(int newR, int newC, int m, int n, int[][] grid)
+    {
+        if (newR >= 0 && newC >= 0 && newR < m && newC < n && grid[newR][newC] != 0)
+            return true;
+        return false;
+    }
+}

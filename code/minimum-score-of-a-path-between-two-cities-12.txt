@@ -1,0 +1,20 @@
+class Solution {
+public:
+    
+    int minScore(int n, vector<vector<int>>& roads) {
+        int res = INT_MAX;
+        vector<int> root(n+1);
+        for(int i = 0; i <= n; i++) root[i] = i;
+        auto findP = [&](int t) {
+            while(t != root[t]) {
+                root[t] = root[root[t]];
+                t = root[t];
+            }
+            return t;
+        };
+        for(auto & r : roads) root[findP(r[0])] = findP(r[1]);
+        int p = findP(1);
+        for(auto & r : roads) if(findP(r[1]) == p) res = min(res, r[2]);
+        return res;
+    }
+};

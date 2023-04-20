@@ -1,0 +1,49 @@
+public class Solution {
+    private int res = 0;
+    
+    public int MinTime(int n, int[][] edges, IList<bool> hasApple) {
+        List<int>[] g = new List<int>[n];
+        
+        foreach (var item in edges)
+        {
+            if (g[item[0]] == null)
+                g[item[0]] = new List<int>();
+            
+            g[item[0]].Add(item[1]);
+            
+            if (g[item[1]] == null)
+                g[item[1]] = new List<int>();
+            
+            g[item[1]].Add(item[0]);
+        }
+        
+        DFS(g, hasApple, 0, 0, new bool[n]);
+        
+        return res * 2;
+    }
+    
+    private bool DFS(List<int>[] g, IList<bool> hasApple, int cur, int time, bool[] visited)
+    {
+        int count = 0;
+        
+        visited[cur] = true;
+        
+        if (g[cur] != null)
+            foreach (var item in g[cur])
+             if (!visited[item] && DFS(g, hasApple, item, time + 1, visited))
+                 count++;
+        
+        if (count > 1)
+            res -= time * (count - 1);
+            
+        if (hasApple[cur])
+        {
+            if (count == 0)
+                res += time;
+            
+            return true;
+        }
+        
+        return count > 0;
+    }
+}

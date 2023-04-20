@@ -1,0 +1,59 @@
+bool operate(bool f,bool s,char optr){
+        return (optr=='&')?f&&s:f||s;}
+    
+    bool parseBoolExpr(string exp) {
+      string newexp = "";  
+       
+        for(char c : exp){
+           if(c != ',')   newexp += c;}
+        
+     bool result = true;
+     
+     stack<char> operands,operators;
+        
+     char optr;
+     
+    int i=0; 
+    while(i < newexp.length()){
+        
+        if(newexp[i]=='!' || newexp[i]=='|' || newexp[i]=='&'){
+           
+            operators.push(newexp[i]);
+            i++;
+            
+        }
+        else if(newexp[i] == ')'){
+            
+         optr = operators.top();operators.pop();
+         result = operands.top()=='t'?true:false;
+         operands.pop();
+         
+        if(optr != '!'){
+             
+           while(operands.top() != '('){
+             
+             bool temp = operands.top()=='t'?true:false;
+             operands.pop();
+             result = operate(result,temp,optr);
+           
+           }
+            
+         }
+         else
+             result = !result;
+
+         operands.pop();
+         operands.push(result?'t':'f');   
+        i++;
+        }
+        else{    
+            
+            operands.push(newexp[i]);
+            i++;
+
+        }
+    }
+        result = operands.top()=='t'?true:false;
+        operands.pop();
+        return result;
+ }

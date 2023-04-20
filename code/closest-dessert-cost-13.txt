@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int ans = INT_MAX,m;
+    int closestCost(vector<int>& base, vector<int>& topping, int tar) {
+        m = topping.size();
+        for(int i = 0; i < base.size(); i++)
+            helper(base,topping,tar,base[i],0);
+        return ans;
+    }
+    void helper(vector<int>& base, vector<int>& topping, int tar,int sum,int j) {
+        if(abs(sum - tar) < abs(ans-tar)){
+            ans = sum;
+        } 
+        else if(abs(sum - tar) == abs(ans - tar)) {
+            ans = min(ans,sum);
+        }
+        if( j >= m || sum >= tar) return;
+        
+        for(int k = 0; k < 3; k++) {
+            sum += (topping[j]*k);
+            helper(base,topping,tar,sum,j+1);
+            sum -= (topping[j]*k);
+        }
+    }
+};

@@ -1,0 +1,45 @@
+class Solution {
+public:
+    vector<string> printVertically(string s) {
+       stringstream ss(s); //convert my_string into string stream
+       vector<string> tokens;
+       string temp_str;
+
+        while(getline(ss, temp_str, ' ')){ //use a single whitespace as delim for cutting string
+          tokens.push_back(temp_str);
+            }    
+        // for(auto&it:tokens)cout<<it<<" this is from tokens"<<endl;
+        
+        int col = 0;
+        vector<string>ans;
+        for(auto&it:tokens)ans.push_back(it);
+        int maxLen = 0;
+        for(auto&it:tokens)
+            maxLen = max(maxLen, (int)it.length());
+        for(auto&it:ans){
+            if(it.length()<maxLen){
+                int diff = maxLen - it.length();
+                it = it + string(diff, ' '); // just apppend the whitepsace
+            }
+        }
+        vector<string>fin;
+        int row = tokens.size();
+        for(int i = 0; i<maxLen; i++){
+            string t = "";
+            for(int j = 0; j<row; j++){
+                t = t + string(1, ans[j][i]);
+            }
+            fin.push_back(t);
+        }
+        for(auto&it:fin){
+            int j = it.length()-1;
+            while(it[j] == ' '){
+                --j;
+            }
+            it = it.substr(0, ++j);
+        }
+        return fin;
+        
+        
+    }
+};

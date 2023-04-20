@@ -1,0 +1,59 @@
+#define ALPHABETSIZE 26
+struct trie_node {
+	int superstring_cnt;
+	struct trie_node *children[ALPHABETSIZE];
+	trie_node() {
+		superstring_cnt = 0;
+		for(int i = 0; i < ALPHABETSIZE; ++i) {
+			children[i] = nullptr;
+		}
+	}
+};
+
+class Trie {
+public:
+	trie_node *root;
+	Trie() {
+		root = new trie_node();
+	}
+	void insert(string &word) {
+		trie_node * cur = root;
+		for(char c : word) {
+			if(cur->children[c-'a'] == nullptr) {
+				cur->children[c-'a'] = new trie_node();
+			}
+			cur = cur->children[c-'a'];
+			++cur->superstring_cnt;
+		}
+	}
+	int score(string &prefix) {
+		trie_node *cur = root;
+		int my_score = 0;
+		for(char c : prefix) {
+			if(cur == nullptr) break;
+			cur = cur->children[c-'a'];
+			my_score += ((cur != nullptr) ? cur->superstring_cnt : 0);
+		}
+		return my_score;
+	}
+};
+
+class Solution {
+public:
+	vector<int> sumPrefixScores(vector<string> &words) {
+		Trie t;
+		int n = words.size();
+
+		for(string &w : words) {
+			t.insert(w);
+		}
+
+		unordered_map<string, int> prefix2cnt;
+		vector<int> res(n, 0);
+
+		for(int i = 0; i < n; ++i) {
+			res[i] = t.score(words[i]);
+        }
+        return res;
+    }
+};

@@ -1,0 +1,126 @@
+void src1todest (int* havebeen, int now, int dest, int* now_place, int** edges, int edgesSize, long long weight, long long** src_to_x_w, int* mon, int count, long long* x_to_end_w){
+    if (havebeen[now] > 0){
+        return;
+    }
+    if (now == dest){
+        for (int i = 0 ; i < count ; i++){
+            if (x_to_end_w[mon[i]] == 0 || x_to_end_w[mon[i]] > weight - src_to_x_w[0][mon[i]]) {
+                x_to_end_w[mon[i]] = weight - src_to_x_w[0][mon[i]];
+            } 
+        }
+    }
+    if (src_to_x_w[0][now] == 0 || src_to_x_w[0][now] > weight){
+        src_to_x_w[0][now] = weight;
+    } else {
+        return;
+    }
+    
+    if (now == dest){
+        return;
+    }
+    havebeen[now]++;
+    mon[count] = now;
+    
+    for (int i = now_place[now] ; i < edgesSize && edges[i][0] == now ; i++){
+        if (i == now_place[now] || edges[i][1] != edges[i-1][1]){
+            src1todest(havebeen, edges[i][1], dest, now_place, edges, edgesSize, weight+edges[i][2], src_to_x_w, mon, count+1, x_to_end_w);
+        }
+    }
+    havebeen[now]--;
+    return;
+}
+
+
+
+void src2toEnd(int* havebeen, int now, int End, int* now_place, int** edges, int edgesSize, long long weight, long long** src_to_x_w, long long* x_to_end_w, long long* ans, int src1, int src2){
+    if (havebeen[now] > 0){
+        return;
+    }
+    if (src_to_x_w[1][now] == 0 || src_to_x_w[1][now] > weight){
+        src_to_x_w[1][now] = weight;
+        if (x_to_end_w[now] != 0){
+            long long w = src_to_x_w[0][now] < src_to_x_w[0][End] ? weight+x_to_end_w[now]+src_to_x_w[0][now] : weight+x_to_end_w[now]+src_to_x_w[0][End];
+            if (*ans == -1 || *ans > w){
+                *ans = w;
+            }
+        }
+    } else {
+        return;
+    }
+    
+    if (now == End){
+        long long w;
+        if (havebeen[src1] == 0){
+            if (src_to_x_w[0][src2] > 0) {
+                w = weight + src_to_x_w[0][src2];
+            } else {
+                w = weight + src_to_x_w[0][End];
+            }
+        } else {
+            w = src_to_x_w[1][src1] + src_to_x_w[0][End];
+        }
+        if (*ans == -1 || *ans > w){
+            *ans = w;
+        }
+        return;
+    }
+    
+    
+    havebeen[now]++;
+    for (int i = now_place[now] ; i < edgesSize && edges[i][0] == now ; i++){
+        if (i == now_place[now] || edges[i][1] != edges[i-1][1]){
+            src2toEnd(havebeen, edges[i][1], End, now_place, edges, edgesSize, weight+edges[i][2], src_to_x_w, x_to_end_w, ans, src1, src2);
+        }
+    }
+    havebeen[now]--;
+    return;
+}
+
+
+int comp(const void** a, const void** b){
+    if ((*(int**)a)[0] == (*(int**)b)[0]){
+        if ((*(int**)a)[1] == (*(int**)b)[1]){
+            return (*(int**)a)[2] - (*(int**)b)[2];
+        }
+        return (*(int**)a)[1] - (*(int**)b)[1];
+    }
+    return (*(int**)a)[0] - (*(int**)b)[0];
+}
+
+
+long long minimumWeight(int n, int** edges, int edgesSize, int* edgesColSize, int src1, int src2, int dest){
+    if (edgesSize == 0){
+        return -1;
+    }
+    qsort(edges,edgesSize,sizeof(int*),comp);
+    
+    int now_place[100000] = {0};
+    
+    long long** src_to_x_w = malloc(sizeof(long long*)*2);
+    for (int i = 0 ; i < 2 ; i++){
+        src_to_x_w[i] = calloc(n,sizeof(long long));
+    }
+    
+    long long x_to_end_w[100000] = {0};
+    
+    int a = 0;
+    while (edges[a][0] == edges[0][0]){
+        a++;
+    }
+    for (int i = a ; i < edgesSize ; i++){
+        if (now_place[edges[i][0]] == 0){
+            now_place[edges[i][0]] = i;
+        }
+    }
+    
+    int havebeen[100000] = {0};
+    int mon[100000] = {0};
+    long long ans = -1;
+    src1todest (havebeen, src1, dest, now_place, edges, edgesSize, 0, src_to_x_w, mon, 0, x_to_end_w);
+    if (x_to_end_w[src1] == 0){
+        return -1;
+    }
+    src2toEnd(havebeen, src2, dest, now_place, edges, edgesSize, 0, src_to_x_w, x_to_end_w, &ans, src1, src2);
+   
+    return ans;
+}

@@ -1,0 +1,49 @@
+class Solution {
+public:
+    vector<string> splitMessage(string message, int limit) {
+        int m = message.size();
+        
+        // search for minimum parts number
+        int l = 1, r = m+1;
+        while (l < r) {
+            int mid = l + (r - l) / 2;
+            if (check(mid, m, limit)) r = mid;
+            else l = mid+1;
+        }
+        
+        // parts = l
+        vector<string> res;
+        if (l == m+1) return res;
+        
+        // build result from parts
+        int cur_index = 0;
+        int parts_size = to_string(l).size();
+        string parts_str = to_string(l);
+        for (int p = 1; p <= l; p++) {
+            int used = 2 + to_string(p).size() + 1 + parts_size;
+            int rem = limit - used;
+            
+            string tmp = message.substr(cur_index, rem) + "<" + to_string(p) + "/" + parts_str + ">";
+            res.push_back(tmp);
+            
+            cur_index += rem;
+        }
+        
+        return res;
+    }
+    
+    bool check(int parts, int n, int limit) {
+        int part = 0;
+        int parts_size = to_string(parts).size();
+        while (n > 0) {
+            part++;
+            int used = 2 + to_string(part).size() + 1 + parts_size;
+            int rem = limit - used;
+            
+            if (rem <= 0) return false;
+            n -= rem;
+        }
+        
+        return part <= parts;
+    }
+};

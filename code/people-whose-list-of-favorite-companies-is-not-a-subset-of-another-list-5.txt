@@ -1,0 +1,55 @@
+class Solution {
+public:
+    
+    struct trie {
+        trie *child[26];
+        vector<int> people;
+    };
+
+    trie *root;
+
+    void insert(string& s, int index) {
+        trie *temp = root;
+        for (int i = 0; i < s.length(); i++) {
+            if (temp -> child[s[i] - 'a'] == NULL)
+                temp -> child[s[i] - 'a'] = new trie();
+            temp = temp -> child[s[i] - 'a'];
+        }
+        temp -> people.push_back(index);
+    }
+
+    void addIndex(string& s, int a[]) {
+        trie *temp = root;
+        for (int i = 0; i < s.length(); i++)
+            temp = temp -> child[s[i] - 'a'];
+        for (int i = 0; i < temp -> people.size(); i++)
+            a[temp -> people[i]]++;
+    }
+
+    vector<int> peopleIndexes(vector<vector<string>>& favouriteCompanies) {
+        root = new trie();
+        for (int i = 0; i < favouriteCompanies.size(); i++)
+            for (auto s : favouriteCompanies[i])
+                insert(s, i);
+        vector<int> ans;
+        for (int i = 0; i < favouriteCompanies.size(); i++) {
+            int a[favouriteCompanies.size()];
+            memset(a, 0, sizeof(a));
+            for (auto s : favouriteCompanies[i])
+                addIndex(s, a);
+            bool possible = true;
+            for (int j = 0; j < favouriteCompanies.size(); j++) {
+                if (i == j)
+                    continue;
+                if (a[j] == favouriteCompanies[i].size()) {
+                    possible = false;
+                    break;
+                }
+            }
+            if (possible)
+                ans.push_back(i);
+        }
+        return ans;
+    }
+
+};

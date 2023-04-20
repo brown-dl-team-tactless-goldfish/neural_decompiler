@@ -1,0 +1,57 @@
+class Solution {
+public:
+    vector<vector<int>> getAncestors(int n, vector<vector<int>>& edges) {
+        vector<int> graph[n];
+        int arr[n];
+        memset(arr,0,sizeof(arr));
+        
+        for(auto it: edges){
+            arr[it[1]]+=1;
+            graph[it[0]].push_back(it[1]);
+        }
+        
+        queue<int> q;
+        vector<int> res;
+        
+        for(int i=0;i<n;i++){
+            if(arr[i]==0)
+            {
+                q.push(i);
+                res.push_back(i);
+            }
+        }
+        
+        while(!q.empty())
+        {
+            int f = q.front();
+            q.pop();
+            for(auto it : graph[f]){
+                arr[it]-=1;
+                if(arr[it]==0)
+                {
+                    q.push(it);
+                    res.push_back(it);
+                }
+            }
+        }
+        vector<unordered_set<int>> ans(n);
+        vector<vector<int>> fans;
+        
+        for(int i=0 ; i<n ; i++){
+            int val = res[i];
+            for(auto it : graph[val]){
+                ans[it].insert(val);
+                for(auto it2: ans[val]) ans[it].insert(it2);
+            }
+        }
+        
+        for(auto it: ans){
+            vector<int> temp;
+            for(auto it2: it) temp.push_back(it2);
+            sort(temp.begin(),temp.end());
+            fans.push_back(temp);
+        }
+        
+        return fans;
+    }
+};

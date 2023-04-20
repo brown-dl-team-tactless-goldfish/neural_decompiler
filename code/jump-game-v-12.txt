@@ -1,0 +1,25 @@
+int maxJumps(vector<int>& a, int d) {
+
+   int n = a.size(), ans = 0;
+
+   set<int> s, t;
+   for (int i = 0; i < n; ++i) {
+      bool l = i == 0   || a[i] <= a[i - 1];
+      bool r = i == n-1 || a[i] <= a[i + 1];
+      if (l && r) s.insert(i);
+   }
+
+   while (not s.empty()) {
+      ++ans;
+      for (auto e : s) {
+         for (int i = e - 1; i >= max(0, e - d); --i)
+            if (a[i] > a[e]) { t.insert(i); break; }
+         for (int i = e + 1; i <= min(n - 1, e + d); ++i)
+            if (a[i] > a[e]) { t.insert(i); break; }
+      }
+      s = t;
+      t.clear();
+   }
+
+   return ans;
+}

@@ -1,0 +1,27 @@
+class Solution {
+public:
+        using ll = long long;
+        ll countQuadruplets(vector<int>& A) {
+        ll res = 0, N = A.size();
+        vector<vector<int>> lessThan(N, vector<int>(N, 0)), greaterThan(N, vector<int>(N, 0));
+        for(int i = 0; i < N; i++) {
+            for(int j = i-1, count = 0; j >= 0; j--) {
+                if(A[i] > A[j]) count++;
+                lessThan[j][i] = count;
+            }
+        }
+        for(int i = 0; i < N; i++) {
+            for(int j = i+1, count = 0; j < N; j++) {
+                if(A[j] > A[i]) count++;
+                greaterThan[i][j] = count;
+            }
+        }
+
+        for(int i = 0; i < N; i++) {
+            for(int j = i+1; j < N; j++) {
+                if(A[j] < A[i]) res += (lessThan[0][j]-lessThan[i][j])*(greaterThan[i][N-1]-greaterThan[i][j]);
+            }
+        }
+        return res;
+    }
+};

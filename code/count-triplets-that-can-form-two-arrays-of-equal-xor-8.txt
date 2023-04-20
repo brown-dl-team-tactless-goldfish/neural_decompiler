@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int countTriplets(vector<int>& arr) {
+      //This problem can be solved considering as analogous to a prefix sum problem,
+      // where we were asked to find i, j, k such i < j <= k and sum from [i to j-1] = sum from [j to k]
+      // That problem can be solved by prefix sum as : Pre[j-1]-Pre[i-1] = Pre[k]-Pre[j-1]
+      // or after rearranging: 2*Pre[j-1] = Pre[k] + Pre[i-1]
+        
+        
+      //Similarly, here
+      // we will obtain prefix XOR array, Pre, then
+      // Pre[j-1]^Pre[i-1] = Pre[j-1]^Pre[k]
+      // or after xoring both sides with, Pre[j-1], we get: Pre[k] = Pre[i-1]
+      // So find all i, k where Pre[i-1] = Pre[k], and calculate number of js possible for these i,k values
+      //finally sum all possible j values and return :)  
+        
+        
+        
+      int n = arr.size();
+      for(int i=1; i<n; i++) arr[i] = arr[i]^arr[i-1];
+       
+      int ans = 0;  
+      for(int i=0; i<n; i++)
+          for(int k=i+1; k<n; k++) {
+              if((i and arr[k] == arr[i-1]) or (!i and arr[k] == 0)) {
+                 //calculating number of j possible
+                 ans += (k - i); 
+              }
+          }
+        
+      return ans;  
+    }
+};

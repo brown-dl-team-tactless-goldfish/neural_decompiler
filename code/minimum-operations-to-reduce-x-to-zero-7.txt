@@ -1,0 +1,33 @@
+    int minOperations(vector<int>& nums, int x) {
+        // record the sum from the left to a map, and record the correspoding length
+        // then iterate from back, if the sum from back plus a sum from left can be x
+        // record the left + right length, and find the smallest number of it
+        unordered_map<int, int> leftSum;
+        leftSum[0] = 0;
+        int sum = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            sum += nums[i];
+            if (sum > x) {
+                break;
+            }
+            leftSum[sum] = i + 1;
+        }
+        // if the sum from left can be x, record the length
+        int res = INT_MAX;
+        if (leftSum.find(x) != leftSum.end()) {
+            res = leftSum[x];
+        }
+        sum = 0;
+        for (int i = nums.size() - 1; i >= 0; i--) {
+            sum += nums[i];
+            int counterpart = x - sum;
+            if (counterpart < 0) {
+                break;
+            }
+            if (leftSum.find(counterpart) != leftSum.end() && i + 1 > leftSum[counterpart]) {
+                int length = leftSum[counterpart] + nums.size() - i;
+                res = min(res, length);
+            }
+        }
+        return res == INT_MAX ? -1 : res;
+    }

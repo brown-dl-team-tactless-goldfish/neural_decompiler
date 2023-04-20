@@ -1,0 +1,51 @@
+#include <stdio.h>
+#include <malloc.h>
+
+int kthSmallest(int** matrix, int matrixSize, int* matrixColSize, int k) {
+	if (matrixSize == 0 || *matrixColSize == 0) {
+		return -1;
+	}
+	int left = matrix[0][0];
+	int right = matrix[matrixSize - 1][*matrixColSize - 1];
+	while (left < right) {
+		int count = 0;
+		int mid = (left + right) / 2;
+		for (int i = 0; i < matrixSize; i++) {
+			int j = 0;
+			for (; j < *matrixColSize; j++) {
+				if (matrix[i][j] > mid) {
+					break;
+				}
+			}
+			count += j;
+		}
+		if (count < k) {
+			left = mid + 1;
+		}
+		else {
+			right = mid;
+		}
+	}
+	return left; // return right
+}
+
+/* TEST */
+int main() {
+	int matrixSize = 3;
+	int matrixColSize = 3;
+	int **matrix = (int **)malloc(sizeof(int *) * matrixSize);
+	for (int i = 0; i < matrixSize; i++) {
+		matrix[i] = (int *)malloc(sizeof(int) * matrixColSize);
+	}
+	matrix[0][0] = 1;
+	matrix[0][1] = 5;
+	matrix[0][2] = 9;
+	matrix[1][0] = 10;
+	matrix[1][1] = 11;
+	matrix[1][2] = 13;
+	matrix[2][0] = 12;
+	matrix[2][1] = 13;
+	matrix[2][2] = 15;
+	printf("%d\n", kthSmallest(matrix, matrixSize, &matrixColSize, 8));
+	return 0;
+} 

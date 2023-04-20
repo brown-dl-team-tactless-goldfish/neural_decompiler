@@ -1,0 +1,24 @@
+    int maxCandies(vector<int>& status, vector<int>& candies, vector<vector<int>>& keys, vector<vector<int>>& containedBoxes, vector<int>& initialBoxes) {
+        int sum = 0;
+        queue<int> q;
+        unordered_set<int> to_do_bx;
+        for(auto b : initialBoxes) {
+            if(status[b] == 1) {
+                q.push(b);
+                status[b] = -1;
+            } else {
+                to_do_bx.insert(b);
+            }
+        }
+        
+        while(!q.empty()) {
+            int cur = q.front();
+            q.pop();
+            to_do_bx.erase(cur);
+            sum += candies[cur];
+            for(auto cand : containedBoxes[cur]) to_do_bx.insert(cand);
+            for(auto k : keys[cur]) if(status[k] == 0) status[k] = 1;
+            for(auto c : to_do_bx) if(status[c] == 1) {status[c] = -1; q.push(c);}
+        }
+        return sum;
+    }

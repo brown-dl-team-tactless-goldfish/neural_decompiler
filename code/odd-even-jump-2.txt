@@ -1,0 +1,20 @@
+    int oddEvenJumps(vector<int>& A) {
+        int N = A.size(), res = 1;
+        vector<vector<bool>> dp(N, vector<bool>(2, false));
+        dp[N-1][0] = true;
+        dp[N-1][1] = true;
+        
+        map<int, int> map;
+        map[A[N-1]] = N-1;
+        
+        for(int i = N-2; i >= 0; i--) {
+            auto l = map.lower_bound(A[i]), r = map.upper_bound(A[i]);
+            if(l != map.end()) dp[i][1] = dp[l->second][0];
+            if(r != map.begin()) dp[i][0] = dp[(--r)->second][1];
+            
+            map[A[i]] = i;
+            if(dp[i][1]) res++;
+        }
+        
+        return res;
+    }

@@ -1,0 +1,44 @@
+int min(int a, int b) {
+    return a + (b-a) * (b<a);
+}
+
+int minCostRec(int dayNum, int *days, int daysSize, 
+                           int *costs, int *memo) {
+    int cost1, cost2, cost3, i;
+    if (dayNum >= daysSize) {
+        return 0;
+    }
+    if (memo[dayNum+1] < 0) {
+        memo[dayNum+1] = minCostRec(dayNum+1, days, 
+                daysSize, costs, memo);
+    }
+    cost1 = costs[0] + memo[dayNum+1];
+            
+    for (i = dayNum; i < daysSize; ++i) {
+        if (days[i] - days[dayNum] >= 7) {
+            break;
+        }
+    }
+    if (memo[i] < 0) {
+        memo[i] = minCostRec(i, days, daysSize, costs, memo);
+    }
+    cost2 = costs[1] + memo[i];
+    for (i = dayNum; i < daysSize; ++i) {
+        if (days[i] - days[dayNum] >= 30) {
+            break;
+        }
+    }
+    if (memo[i] < 0) {
+        memo[i] = minCostRec(i, days, daysSize, costs, memo);
+    }
+    cost3 = costs[2] + memo[i];
+    return min(cost1, min(cost2, cost3));
+}
+
+int mincostTickets(int* days, int daysSize, int* costs, int costsSize) {
+    int i, memo[daysSize+1];
+    for (i = 0; i <= daysSize; ++i) {
+        memo[i] = -1;
+    }
+    return minCostRec(0, days, daysSize, costs, memo);
+}

@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int n;
+    vector <int> matchsticks;
+    
+    int target = 0;
+    bool generate(int level,int a,int b,int c, int d){
+        // if all match stick used and all sides have sum of target we return true
+        if(level == n){
+            return a == target && b == target && c == target && d == target; 
+        }
+        
+        // trying to add current stick to side a
+        if(a+matchsticks[level]<=target){
+           if(generate(level+1,a+matchsticks[level],b,c,d)) return true;
+        }
+        
+        // trying to add current stick to side b
+        if(b+matchsticks[level]<=target){
+            if(generate(level+1,a,b+matchsticks[level],c,d)) return true;
+        }
+        
+        // trying to add current stick to side c
+        if(c+matchsticks[level]<=target){
+           if(generate(level+1,a,b,c+matchsticks[level],d)) return true;
+        }
+        
+        // trying to add current stick to side d
+        if(d+matchsticks[level]<=target){
+           if(generate(level+1,a,b,c,d+matchsticks[level])) return true;
+        }
+        
+        // if none of them works return false
+        return false;
+    }
+    
+    bool makesquare(vector<int>& _matchsticks) {
+        matchsticks = _matchsticks;
+        n = matchsticks.size();
+        int sm=0;
+        for(int i=0;i<n;i++) sm+=matchsticks[i];
+        // if sum is not divisible by 4 then its not possible
+        if(sm%4 !=0) return false;
+        
+        // each side has to become sum by 4
+        target = sm/4;
+        sort(matchsticks.rbegin(),matchsticks.rend());
+        return generate(0,0,0,0,0);
+        }
+    };

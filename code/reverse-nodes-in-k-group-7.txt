@@ -1,0 +1,38 @@
+struct ListNode* howmanynext(struct ListNode* head, int k){
+    int now = 1;
+    while (now != k){
+        if (head == NULL){
+            return NULL;
+        }
+        head = head->next;
+        now++;
+    }
+    return head;
+}
+
+void upsidedown(struct ListNode* head, int k) {
+    if (k == 1){
+        return;
+    }
+    upsidedown(head->next, k-1);
+    head->next->next = head;
+    return;
+}
+
+void remake(struct ListNode* head, int k, struct ListNode* first){
+    struct ListNode* nextround = first->next;
+    upsidedown(head, k);
+    struct ListNode* nextroundfirst = howmanynext(nextround, k);
+    if (nextroundfirst != NULL){
+        head->next = nextroundfirst;
+        remake(nextround, k, nextroundfirst);
+    } else head->next = nextround;
+}
+
+struct ListNode* reverseKGroup(struct ListNode* head, int k){
+    struct ListNode* first = howmanynext(head, k);
+    if (first != NULL){
+        remake(head, k, first);
+    }
+    return first;
+}

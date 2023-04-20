@@ -1,0 +1,136 @@
+       public class Solution
+    {
+        public int[] CountPairs(int n, int[][] edges, int[] queries)
+        {
+            checked
+            {
+                IDictionary<int, IDictionary<int, int>> graph = new Dictionary<int, IDictionary<int, int>>();
+                int[] res = new int[queries.Length];
+
+                int[] deg = new int[n];
+
+                foreach (var e in edges)
+                {
+                    var n1 = e[0] - 1;
+                    var n2 = e[1] - 1;
+
+                    if (!graph.ContainsKey(n1))
+                    {
+                        graph[n1] = new Dictionary<int, int>();
+                    }
+
+                    if (!graph.ContainsKey(n2))
+                    {
+                        graph[n2] = new Dictionary<int, int>();
+                    }
+
+                    if (!graph[n1].ContainsKey(n2))
+                    {
+                        graph[n1][n2] = 0;
+                    }
+
+                    if (!graph[n2].ContainsKey(n1))
+                    {
+                        graph[n2][n1] = 0;
+                    }
+
+                    graph[n1][n2]++;
+                    graph[n2][n1]++;
+
+                    deg[n1]++;
+                    deg[n2]++;
+                }
+
+                (int vert, int d)[] data = new (int vert, int d)[n];
+                for (int i = 0; i < n; i++)
+                {
+                    data[i] = (i, deg[i]);
+                }
+
+                Array.Sort(data, (d1, d2) =>
+                {
+                    var cmp = d1.d.CompareTo(d2.d);
+                    if (cmp != 0)
+                    {
+                        return cmp;
+                    }
+
+                    return d1.vert.CompareTo(d2.vert);
+                });
+
+                IDictionary<int, int> idxMap = new Dictionary<int, int>();
+                for (int i = 0; i < n; i++)
+                {
+                    idxMap[data[i].vert] = i;
+                }
+
+                for (int i = 0; i < queries.Length; i++)
+                {
+                    var cnt = queries[i];
+
+                    for (int j = 0; j < n; j++)
+                    {
+                        var a = data[j].d;
+                        var vert = data[j].vert;
+                        var x = cnt - a;
+
+                        int l = j + 1;
+                        int r = n - 1;
+
+                        if (l <= r)
+                        {
+                            while (r - l > 1)
+                            {
+                                int mid = l + (r - l) / 2;
+                                if (data[mid].d <= x)
+                                {
+                                    l = mid;
+                                }
+                                else
+                                {
+                                    r = mid;
+                                }
+                            }
+
+                            int found = -1;
+                            if (data[l].d > x)
+                            {
+                                found = l;
+                            }
+
+                            if (found < 0)
+                            {
+                                if (data[r].d > x)
+                                {
+                                    found = r;
+                                }
+                            }
+
+                            if (found >= 0)
+                            {
+                                int greaterCount = n - found;
+                                res[i] += greaterCount;
+
+                                if (graph.ContainsKey(vert))
+                                {
+                                    foreach (var v2c in graph[vert])
+                                    {
+                                        if (idxMap[v2c.Key] >= found)
+                                        {
+                                            if ((a + deg[v2c.Key] > cnt) && (a + deg[v2c.Key] - v2c.Value <= cnt))
+                                            {
+                                                res[i]--;
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    }
+                }
+
+                return res;
+            }
+        }
+    }

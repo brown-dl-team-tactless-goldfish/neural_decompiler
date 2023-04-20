@@ -1,0 +1,43 @@
+class Solution {
+public:
+    long long dp[10001][7][7] = {};
+    
+    int distinctSequences(int n) {
+        memset(dp, -1, sizeof(dp));
+        long long ans = 0, mod = 1e9 + 7;
+        vector<vector<int>> ns(7);
+        for (int i = 1; i <= 6; i++)
+            for (int j = i + 1; j <= 6; j++)
+                if (__gcd(i, j) == 1)
+                {
+                    ns[i].push_back(j);
+                    ns[j].push_back(i);
+                }
+        for (int i = 1; i <= 6; i++)
+            ans = (ans + dfs(i, 0, ns, mod, n)) % mod;
+        return ans;
+    }
+    
+private: 
+    int dfs(int cur, int prev, vector<vector<int>>& ns, long long mod, int n)
+    {
+        if (n == 1)
+        {
+            if (dp[n][prev][cur] == -1)
+                dp[n][prev][cur] = 1;
+            return dp[n][prev][cur];
+        }
+        if (dp[n][prev][cur] == -1)
+        {
+            long long ans = 0;
+            for (auto& nxt : ns[cur])
+            {
+                if (nxt == prev)
+                    continue;
+                ans += dfs(nxt, cur, ns, mod, n - 1);
+            }
+            dp[n][prev][cur] = ans % mod;
+        }    
+        return dp[n][prev][cur];
+    }
+};

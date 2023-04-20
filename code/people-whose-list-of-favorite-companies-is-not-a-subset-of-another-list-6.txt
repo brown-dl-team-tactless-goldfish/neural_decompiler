@@ -1,0 +1,30 @@
+class Solution {
+public:
+    vector<int> peopleIndexes(vector<vector<string>>& fc) {
+        // store set of lists that contain a company in a bitmask
+        // since number of lists is <= 100, we need two (as one is 64 bits max)
+        unordered_map<string,long long> bmap1;
+        unordered_map<string,long long> bmap2;
+        for(int i = 0; i < fc.size();i++) {
+            for (string & c : fc[i]) {
+                if (i < 60) bmap1[c] |= 1LL<<i;
+                else bmap2[c] |= 1LL<<(i-60);
+            }
+        }
+        vector<int> res;
+        // now we iterate over all companies in a list and check that set intersection (&)
+        // size is 1 if unique
+        for(int i = 0; i < fc.size();i++) {
+            long long b1 = (1LL<<60)-1;
+            long long b2 = b1;
+            for (string & c : fc[i]) {
+                b1 &= bmap1[c];
+                b2 &= bmap2[c];
+            }
+            if (__builtin_popcountll(b1) + __builtin_popcountll(b2) == 1) {
+                res.push_back(i);
+            }
+        }
+        return res;
+    }
+};

@@ -1,0 +1,63 @@
+int ans,crnt,other;
+int rt;
+int dfs(int u,int pv,vector<int>& a, vector<vector<int>>& g,vector<int>& sz,vector<int>& prnt)
+{
+    sz[u] = a[u];
+    prnt[u] = pv;
+    for(int i:g[u])
+    {
+        if(i==pv)continue;
+        sz[u]^=dfs(i,u,a,g,sz,prnt);
+    }
+    return sz[u];
+}
+int dfs1(int u,int pv,vector<int>& a, vector<vector<int>>& g)
+{
+    int res = a[u];
+    for(int i:g[u])
+    {
+        if(i==pv)continue;
+        res^=dfs1(i,u,a,g);
+    }
+    int rem = crnt^res;
+    int mx = max({rem,res,other});
+    int mn = min({rem,res,other});
+    if(rt!=u)ans = min(ans,mx-mn);
+    return res;
+}
+class Solution {
+public:
+    int minimumScore(vector<int>& a, vector<vector<int>>& e) {
+        int n = a.size();
+        vector<vector<int>> g(n);
+        for(int i=0;i<n-1;i++)
+        {
+            g[e[i][0]].push_back(e[i][1]);
+            g[e[i][1]].push_back(e[i][0]);
+        }
+        vector<int> sz(n,0);
+        vector<int> prnt(n);
+        int all = dfs(0,-1,a,g,sz,prnt);
+        int res = INT_MAX;
+        for(int i=0;i<n-1;i++)
+        {
+            int c = e[i][0] , p = e[i][1];
+            if(prnt[p]==c)swap(c,p);
+            //for child
+            ans = INT_MAX;
+            rt = c;
+            crnt = sz[c];
+            other = all^crnt;
+            dfs1(c,p,a,g);
+            res = min(ans,res);
+            ///for prnt
+            ans = INT_MAX;
+            rt = p;
+            crnt = all^sz[c];
+            other = sz[c];
+            dfs1(p,c,a,g);
+            res = min(ans,res);
+        }
+        return res;
+    }
+};

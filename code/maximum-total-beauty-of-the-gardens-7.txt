@@ -1,0 +1,10 @@
+long long maximumBeauty(vector<int> &A, long long y, int c, int b, int a) {
+    long long res = 0, x = 0, k = 0, n = A.size();
+    sort(A.begin(), A.end());
+    for (; k < n && A[k] < c; x += A[k++]);
+    for (long long i = k, j = k; j > 0 && y >= 0; y -= c - A[--j]) {
+        for (; i > j || i > 0 && x + y < A[i - 1] * i; x -= A[--i]);
+        res = max(res, min((x + y) / i, (long long)c - 1) * a + (n - j) * b);
+    }
+    return y < 0 ? res : max(res, n * b);
+}

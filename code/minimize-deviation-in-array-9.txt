@@ -1,0 +1,58 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace _1675_minimize_deviation_in_array
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var minimum = MinimumDeviation(new int[]{1, 2, 3, 4});
+            var minimum2 = MinimumDeviation(new int[] { 4, 1, 5, 20, 3 });
+        }
+
+        /// <summary>
+        /// study code:
+        /// https://leetcode.com/problems/minimize-deviation-in-array/discuss/1042102/C-sorted-set-explained
+        /// </summary>
+        /// <param name="nums"></param>
+        /// <returns></returns>
+        public static int MinimumDeviation(int[] nums)
+        {
+            var n = nums.Length;
+            var set = new SortedSet<int>();
+
+            //step 1: convert all numbers to its maximum possible values
+            for (int i = 0; i < nums.Length; i++)
+            {
+                if (nums[i] % 2 == 0)
+                {
+                    set.Add(nums[i]); // already maximum value
+                }
+                else
+                {
+                    set.Add(nums[i] * 2); // maximum value of odd number
+                }
+            }
+
+            var min = set.Max - set.Min;
+
+            ///step 2: while the maximum value is divisiable by 2, divide and repeat with the resulting maximum value. 
+            while (set.Max % 2 == 0)
+            {
+                var max = set.Max;
+
+                set.Remove(max);
+
+                set.Add(max / 2);
+
+                min = Math.Min(min, set.Max - set.Min);
+            }
+
+            return min;
+        }
+    }
+}

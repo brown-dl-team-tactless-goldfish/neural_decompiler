@@ -1,0 +1,20 @@
+    int maxDistance(vector<int>& pos, int m) {
+        sort(pos.begin(), pos.end());
+        int l=1, r= 1 + (pos.back() - pos.front()) / (m-1);
+        while(l+1<r){
+            auto mid = (l+r)/2;
+            if(able(pos, m, mid)) l = mid;
+            else r = mid;
+        }
+        return l;
+    }
+    
+    bool able(const vector<int>& v, int m, int d){
+        int x = v[0];
+        while(--m){
+            auto it = lower_bound(v.begin(), v.end(), x+d);
+            if(it == v.end()) return false;
+            x = *it;
+        }
+        return true;
+    }

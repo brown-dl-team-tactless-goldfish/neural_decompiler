@@ -1,0 +1,37 @@
+pair<int,int>compute(vector<int>v,int start,int end,map<pair<int,int>,pair<int,int>>&dp)
+{
+    if(start==end)
+    {
+        return dp[{start,end}]={v[start],0};
+    }
+    if(dp.find({start,end})!=dp.end())
+    {
+        return dp[{start,end}];
+    }
+    int maxLeaf=INT_MIN,minSum=INT_MAX;
+    for(int i=start;i<end;i++)
+    {
+        if(dp.find({start,i})==dp.end())
+        {
+            dp[{start,i}]=compute(v,start,i,dp);
+        }
+        if(dp.find({i+1,end})==dp.end())
+        {
+            dp[{i+1,end}]=compute(v,i+1,end,dp);
+        }
+        auto left=dp[{start,i}];
+        auto right=dp[{i+1,end}];
+        maxLeaf=max(left.first,right.first);
+        minSum=min(minSum,left.first*right.first+left.second+right.second);
+    }
+    return dp[{start,end}]={maxLeaf,minSum};
+}
+class Solution 
+{
+public:
+    int mctFromLeafValues(vector<int>& arr) 
+    {
+        map<pair<int,int>,pair<int,int>>dp;
+        return compute(arr,0,arr.size()-1,dp).second;
+    }
+};

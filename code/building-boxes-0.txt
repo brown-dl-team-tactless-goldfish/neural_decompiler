@@ -1,0 +1,17 @@
+#include <math.h>
+typedef unsigned long long int ull;
+ull tri(ull n) { return (n*(n+1))/2; }
+ull tet(ull n) { return (n*(n+1)*(n+2))/6; }
+ull invtri(ull n) { return (ull) sqrt(n*2); }
+ull invtet(ull n) { return (ull) pow(n*6, 0.33333); }
+
+int minimumBoxes(int n){
+    ull wag, wag2, rem;
+    wag = invtet(n); // approximate
+    if(tet(wag) > n) wag--;
+    if(tet(wag) == n) return tri(wag);
+    rem = n-tet(wag);
+    wag2 = invtri(rem); // approximate
+    if((tet(wag) + tri(wag2)) < n) wag2++;
+    return  (int) (tri(wag) + wag2);
+}

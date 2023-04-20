@@ -1,0 +1,69 @@
+typedef struct Node {
+    float d;
+    int *pts;
+    struct Node *next;
+} Node;
+
+float dist(int *pnt){
+    return sqrt(pow((0 - pnt[0]),2) + pow((0 - pnt[1]),2));
+}
+
+void insert(Node *root, Node *prev, Node *elm){
+    // Inserts a node in ascending order.
+    
+    if (root == NULL){
+        prev->next = elm;
+        return;
+    } 
+    
+    if (elm->d < root->d){
+        elm->next = root;
+        prev->next = elm; 
+        return;
+    }
+    
+    insert(root->next, root, elm);
+}
+
+int** kClosest(int** points, int pointsRowSize, int *pointsColSizes, int K, int* *columnSizes, int* returnSize) {
+    *(columnSizes) = malloc(sizeof(int) * K);
+    *returnSize = K;
+    int* *ans = malloc(sizeof(int*) * K);
+    
+    Node *root = malloc(sizeof(Node));
+    root->d = dist(points[0]);
+    root->pts = points[0];
+    root->next = NULL;
+    
+    Node *node;
+    
+    for(int n = 1; n < pointsRowSize; n++) {
+        
+        node = malloc(sizeof(Node));
+        node->d = dist(points[n]);
+        node->pts = points[n];
+        node->next = NULL;
+        
+        if (node->d < root->d) {
+            node->next = root;
+            root = node;
+            continue;
+        }
+        
+        insert(root, NULL, node);
+    }
+    
+    for(int n = 0; n < K; n++) {
+        (*columnSizes)[n] = 2;
+        
+        ans[n] = root->pts;
+        
+        Node *temp = root;
+        
+        root = root->next; 
+        
+        free(temp);
+    } 
+    
+    return ans;
+}

@@ -1,0 +1,19 @@
+class Solution {
+public:
+    bool dfs(vector<int>& nums, int l, int r, int lx, int rx, int type) {
+        if (l > r)
+            return lx >= rx;
+        
+        if (type == 0) // player 1 chooses
+            return dfs(nums, l + 1, r, lx + nums[l], rx, !type) ||
+                   dfs(nums, l, r - 1, lx + nums[r], rx, !type);
+        else // player 2 chooses
+            return dfs(nums, l + 1, r, lx, rx + nums[l], !type) &&
+                   dfs(nums, l, r - 1, lx, rx + nums[r], !type);
+    }
+    
+    bool PredictTheWinner(vector<int>& nums) {
+        int N = int(nums.size());
+        return dfs(nums, 0, N - 1, 0, 0, 0);
+    }
+};

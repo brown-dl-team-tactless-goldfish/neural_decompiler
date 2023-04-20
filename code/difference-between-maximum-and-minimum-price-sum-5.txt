@@ -1,0 +1,58 @@
+class Solution {
+public:
+  
+long long dfs(int v,vector<vector<int>>&g,map< pair<int,int> ,long long>&m,vector<bool>&vis,vector<int>& p)
+    {
+       vis[v]=true;
+        long long mx=0;
+        for(auto child : g[v])
+        {
+            
+            
+            if(vis[child])continue;
+            
+            long long l;
+            if(m.find({v,child})==m.end())
+            {
+                l=dfs(child,g,m,vis,p);
+                 m[{v,child}]=l;
+            }
+             else
+              l=m[{v,child}];
+            
+            mx=max(mx,l);         
+        }
+   
+        return mx+p[v];      
+    }
+    long long maxOutput(int n, vector<vector<int>>& e, vector<int>& p) {
+       
+      map< pair<int,int> ,long long>m;
+      vector<vector<int>>g(p.size(),vector<int>());
+        
+     for(int i=0;i<e.size();i++)
+     {
+         g[e[i][0]].push_back(e[i][1]);
+         
+         g[e[i][1]].push_back(e[i][0]);
+     }
+        
+        
+     for(int i=0;i<p.size();i++)
+     {
+         vector<bool>vis(p.size(),false);
+         dfs(i,g,m,vis,p); 
+     }
+        
+      long long ans=0;
+     
+    for(auto it=m.begin();it!=m.end();it++)
+    {
+      
+        if((long long)it->second>ans)
+            ans=it->second;
+              
+    }    
+        return ans;
+    }
+};

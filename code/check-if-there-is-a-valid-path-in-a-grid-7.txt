@@ -1,0 +1,46 @@
+		public bool HasValidPath(int[][] grid) {
+            int[][][] move = new int[7][][];
+            for (int i = 0; i < 7; i++) move[i] = new int[4][];
+            move[1][0] = new int[] { 0, 1, 0 };
+            move[1][2] = new int[] { 0, -1, 2 };
+            move[2][1] = new int[] { 1, 0, 1 };
+            move[2][3] = new int[] { -1, 0, 3 };
+            move[3][0] = new int[] { 1, 0, 1 };
+            move[3][3] = new int[] { 0, -1, 2 };
+            move[4][2] = new int[] { 1, 0, 1 };
+            move[4][3] = new int[] { 0, 1, 0 };
+            move[5][0] = new int[] { -1, 0, 3 };
+            move[5][1] = new int[] { 0, -1, 2 };
+            move[6][1] = new int[] { 0, 1, 0 };
+            move[6][2] = new int[] { -1, 0, 3 };
+
+            int[][] start = new int[][] {
+                new int[] {  },
+                new int[] { 0 },
+                new int[] { 1 },
+                new int[] { 0 },
+                new int[] { 2, 3 },
+                new int[] { 0 },
+                new int[] { 1 }
+            };
+            
+            int n = grid.Length, m = grid[0].Length;
+            foreach(int dir in start[grid[0][0]]) {
+                int x = 0, y = 0;
+                int d = dir;
+                bool[][] seen = new bool[n][];
+                for (int i = 0; i < n; i++) seen[i] = new bool[m];
+                while (true) {
+                    if (seen[x][y]) break;
+                    seen[x][y] = true;
+                    if (move[grid[x][y]][d] == null) break;
+                    if (x == n - 1 && y == m - 1) return true;
+                    var mv = move[grid[x][y]][d];
+                    x += mv[0];
+                    y += mv[1];
+                    d = mv[2];
+                    if (x < 0 || x >= n || y < 0 || y >= m) break;
+                }
+            }
+            return false;
+        }

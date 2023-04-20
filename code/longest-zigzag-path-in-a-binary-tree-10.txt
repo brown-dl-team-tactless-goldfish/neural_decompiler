@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int longestZigZag(TreeNode* root) {
+        int ans = 0;
+        helper(root->left, true, ans);
+        helper(root->right, false, ans);
+        return ans;
+    }
+    
+    int helper(TreeNode* root, bool left, int& ans) {
+        if(!root) return 0;
+        
+        int l = helper(root->left, true, ans);
+        int r = helper(root->right, false, ans);
+        
+        if(left) {
+            ans = max(ans, r+1);
+            ans = max(ans, l);
+            return r+1;
+        } else {
+            ans = max(ans, l+1);
+            ans = max(ans, r);
+            return l+1;
+        }
+    }
+};

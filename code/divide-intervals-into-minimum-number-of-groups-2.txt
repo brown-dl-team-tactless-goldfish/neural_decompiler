@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int minGroups(vector<vector<int>>& intervals) {       
+        vector<pair<int, int>> v;
+        for (const vector<int>& interval: intervals) {
+            v.push_back({interval[0], 1});
+            v.push_back({interval[1], -1});
+        }
+        
+        sort(v.begin(), v.end(), [](const pair<int, int>& a, const pair<int, int>& b){
+            if (a.first == b.first) {
+                return a.second > b.second;
+            }
+            return a.first < b.first;
+        });
+        
+        int count = 0;
+        int maxCount = 0;
+        for (const pair<int, int>& p: v) {
+            count += p.second;
+            if (maxCount < count) {
+                maxCount = count;
+            }
+        }
+        
+        return maxCount;
+    }
+};

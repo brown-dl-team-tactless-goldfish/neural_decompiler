@@ -1,0 +1,40 @@
+private:
+    // square of segment(p1, p2) length 
+    long lenSq(vector<int>& p1, vector<int>& p2) {
+      return (p1[0] - p2[0]) * (p1[0] - p2[0]) + (p1[1] - p2[1]) * (p1[1] - p2[1]);
+    }
+  
+public:
+    double minAreaFreeRect(vector<vector<int>>& pts) 
+    {
+      // PtGroups: (len^2, 2*xc, 2*yc)-> {{x1,y1},...} 
+      // where segment (x1,y)-(x2,y2) has length len and center (xc,yc)
+      unordered_map<string, vector<vector<int>>> PtGroups; // group by center and length 
+      
+      for (int j = 1; j < pts.size(); j++) 
+        for (int i = 0; i < j; i++) 
+        {
+          int xc2 = pts[i][0]+pts[j][0];
+          int yc2 = pts[i][1]+pts[j][1];
+          long distSq = lenSq(pts[i], pts[j]);
+          string key = to_string(distSq) + " " + to_string(xc2) + " " + to_string(yc2);
+          PtGroups[key].push_back(pts[i]); // just need one end point
+        }
+      
+      long minAreaSq = LONG_MAX;
+      for (auto& p : PtGroups) {
+        stringstream key(p.first);
+        string tmp; key >> tmp;
+        long distSq = stol(tmp);
+        
+        for (int j = 1; j < p.second.size(); j++)
+          for (int i = 0; i < j; i++)
+          {
+            auto p1 = p.second[i];
+            auto p2 = p.second[j];
+            minAreaSq = min(minAreaSq, lenSq(p1,p2)*(distSq - lenSq(p1,p2))); // using Pythagoras's Theorem
+          }
+      }
+      
+      return minAreaSq == LONG_MAX? 0 : sqrt(minAreaSq);
+    }

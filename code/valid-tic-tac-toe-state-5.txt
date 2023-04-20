@@ -1,0 +1,30 @@
+bool validTicTacToe(char** board, int boardSize) {
+    int Xcount = 0, Ocount = 0;
+    int Xwin = 0, Owin = 0;
+    int row[3] = {0};
+    int col[3] = {0};
+    int diag[3] = {0};
+    for (int i = 0; i < boardSize; ++i) {
+        for (int j = 0; j < boardSize; ++j) {
+            if (board[i][j] == 'X') {++Xcount; ++row[i]; ++col[j];}
+            if (board[i][j] == 'O') {++Ocount; --row[i]; --col[j];}
+        }
+        if (board[i][i] == 'X') ++diag[0];
+        if (board[i][i] == 'O') --diag[0];
+        if (board[i][2-i] == 'X') ++diag[1];
+        if (board[i][2-i] == 'O') --diag[1];
+    }
+    if (Ocount > Xcount || Ocount > 4 || Xcount > 5 || Xcount - Ocount > 1) return 0;
+    if (Xcount < 3) return 1;
+    for (int i = 0; i < boardSize; ++i) {
+        if (row[i] == 3) ++Xwin;
+        if (row[i] == -3) ++Owin;
+        if (col[i] == 3) ++Xwin;
+        if (col[i] == -3) ++Owin;
+        if (diag[i] == 3) ++Xwin;
+        if (diag[i] == -3) ++Owin;
+    }
+    if (Xwin && Owin) return 0;
+    if (Xwin || Owin) return Xwin ? Xcount > Ocount : Xcount == Ocount;
+    return 1;
+}

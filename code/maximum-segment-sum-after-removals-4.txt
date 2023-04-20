@@ -1,0 +1,35 @@
+class Solution:
+    def maximumSegmentSum(self, nums: List[int], queries: List[int]) -> List[int]:
+        n=len(nums)
+        queries=[(i,val) for i,val in enumerate(queries)]
+        queries=queries[::-1]
+        ans=[-1]*n
+        parent=[i for i in range(n)]
+        size=[num for num in nums]
+        def find(x):
+            if parent[x]==x:
+                return parent[x],size[x]
+            parent[x],size[x]=find(parent[x])
+            return parent[x],size[x]
+        def union(x,y):
+            r1,_=find(x)
+            r2,_=find(y)
+            if r1!=r2:
+                parent[r2]=r1
+                size[r1]+=size[r2]
+        mmax=0
+        seen=[0]*n
+        for idx,i in queries:
+            ans[idx]=mmax
+            if i-1>=0 and seen[i-1]:
+                union(i-1,i)
+                _,res=find(i-1)
+                mmax=max(mmax,res)
+            if i+1<n and seen[i+1]:
+                union(i,i+1)
+                _,res=find(i+1)
+                mmax=max(mmax,res)
+            mmax=max(mmax,size[i])
+            seen[i]=1
+        return ans
+        

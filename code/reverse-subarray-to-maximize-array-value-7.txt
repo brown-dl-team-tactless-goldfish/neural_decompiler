@@ -1,0 +1,52 @@
+class Solution {
+public:
+    int maxValueAfterReverse(vector<int>& A) {
+        int res=0;
+        int total=0;
+        for(int i=1;i<A.size();i++){
+            res+=abs(A[i]-A[i-1]);
+            total+=abs(A[i]-A[i-1]);
+        }
+        //case 1
+        for(int i=1;i<A.size();i++){
+            res=max(res,total-abs(A[i]-A[i-1])+abs(A[A.size()-1]-A[i-1]));
+        }
+        //case 2
+        for(int i=A.size()-2;i>=0;i--){
+            res=max(res,total-abs(A[i]-A[i+1])+abs(A[0]-A[i+1]));
+        }
+        //remaining case
+        //1 : c-a+d-b =>-a-b  c+d
+        //2:  c-a+b-d
+        //3:  a-c+d-b
+        //4.  a-c+b-d
+        //cout<<res<<endl;
+        int l1=INT_MIN,l2=INT_MIN,l3=INT_MIN,l4=INT_MIN;
+        int r1=INT_MIN,r2=INT_MIN,r3=INT_MIN,r4=INT_MIN;
+        for(int i=1;i<A.size()-1;i++){
+            int a=A[i-1];
+            int b=A[i];
+            int c=A[i];
+            int d=A[i+1];
+           
+            l1=max(l1,-a-b-abs(a-b));
+            r1=max(r1,c+d-abs(c-d));
+            res=max(res,total+l1+r1);
+            
+            l2=max(l2,-a+b-abs(a-b));
+            r2=max(r2,c-d-abs(c-d));
+            res=max(res,total+l2+r2);
+            
+            l3=max(l3,a-b-abs(a-b));
+            r3=max(r3,d-c-abs(c-d));
+            res=max(res,total+l3+r3);
+            
+            l4=max(l4,a+b-abs(a-b));
+            r4=max(r4,-c-d-abs(c-d));
+            res=max(res,total+l4+r4);
+            
+        }
+        return res;
+        
+    }
+};

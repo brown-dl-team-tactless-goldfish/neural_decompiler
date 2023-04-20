@@ -1,0 +1,61 @@
+#define ll long long
+
+class Solution {
+
+    bool isPossible(vector<int>& a, vector<int>& b,  ll midVal, ll k) {
+        ll cnt = 0;
+        for(auto num: a) {
+            if(num >= 0) { // smallest products will be on left side
+                
+                ll l = 0, h = b.size() - 1, res = -1;
+                while(l <= h) {
+                    ll mid = (l + h) / 2;
+
+                    if((long long) b[mid] * num <= midVal) {
+                        l = mid + 1;
+                        res = mid; // go higher because ve * -ve = -ve;
+                    } else
+                        h = mid - 1;
+                }
+                
+                cnt += res + 1; // left side to maximum side
+                
+            } else { // smallest products will be on right side
+     
+                ll l = 0, h = b.size() - 1, res = b.size();
+                while(l <= h) {
+                    ll mid = (l + h) / 2;
+
+                    if((long long) b[mid] * num <= midVal) {
+                        h = mid - 1;
+                        res = mid; // go lower because -ve * +ve = -ve
+                    } else
+                        l = mid + 1;
+                }
+                
+                cnt += b.size() - res; // left side to maximum side
+                
+            }
+        }
+
+        return cnt >= k;
+    }
+
+public:
+    ll kthSmallestProduct(vector<int>& a, vector<int>& b, ll k) {
+        ll low = -1e10;
+        ll high = 1e10; 
+        ll res = 0;
+
+        while(low <= high) {
+            ll mid = (low + high) / 2;
+            if(isPossible(a, b, mid, k)) {
+                res = mid;
+                high = mid - 1;
+            } else
+                low = mid + 1;
+        }
+
+        return res;
+    }
+};

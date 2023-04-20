@@ -1,0 +1,40 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* executeInstructions(int n, int* startPos, int startPosSize, char * s, int* returnSize){
+    int len = strlen(s) ;
+    int* ans = malloc( len * sizeof(int) ) ;
+    //D, U, R, L
+    int move[4][2] = {{1, 0}, {-1, 0}, {0,1}, {0,-1}} ;
+    for(int i = 0; i < len; i++){
+        int step = 0 ;
+        int r = startPos[0] ;
+        int c = startPos[1] ;
+        for(int j = i; j < len; j++){
+            if(s[j] == 'D'){
+                r += move[0][0] ;
+                c += move[0][1] ;
+            }
+            else if(s[j] == 'U'){
+                r += move[1][0] ;
+                c += move[1][1] ;
+            }
+            else if(s[j] == 'R'){
+                r += move[2][0] ;
+                c += move[2][1] ;
+            }
+            else if(s[j] == 'L'){
+                r += move[3][0] ;
+                c += move[3][1] ;
+            }
+            
+            if(r >= 0 && r < n && c >=0 && c < n)
+                step++;
+            else
+                break ;
+        }
+        ans[i] = step ;
+    }
+    *returnSize = len ;
+    return ans ;
+}

@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int r ,c ;
+    int dp[101][101][1001] ;
+    bool solve(int x , int y , vector<vector<char>>&grid , int open ){
+        if(x >= r || y >= c) return false ;
+        open += grid[x][y] == '(' ? 1 : -1 ;
+        if(open < 0) return false ;
+        if(x == r - 1 and y == c - 1 ) return (open == 0) ;
+        
+        if(dp[x][y][open] != -1) return dp[x][y][open] ;
+        
+        bool path1 = solve(x,y+1,grid,open) ;
+        bool path2 = solve(x+1,y,grid,open) ;
+        return dp[x][y][open] = (path1 or path2) ;
+        
+    }
+    bool hasValidPath(vector<vector<char>>& grid) {
+        r = grid.size() ;
+        c = grid[0].size() ;
+        memset(dp,-1,sizeof(dp)) ;
+        return solve(0,0,grid,0) ;
+    }
+};

@@ -1,0 +1,45 @@
+public class Solution {
+    public int[] CountSubgraphsForEachDiameter(int n, int[][] edges) {
+        List<int>[] graph = new List<int>[n];
+        for(int i = 0; i < n; i++)
+            graph[i] = new List<int>();
+        foreach(int[] e in edges)
+        {
+            graph[e[0]-1].Add(e[1]-1);
+            graph[e[1]-1].Add(e[0]-1);
+        }
+        
+        int[] res = new int[n-1];
+        for(int mask = 1; mask < 1 << n; mask++)
+        {
+            int x = 0, visited = 0, max = 0;
+            while((mask & 1 << x) == 0)
+                x++;
+            MaxDiameter(x, -1, graph, mask, ref visited, ref max);   
+            if(mask == visited && max > 0)
+                res[max-1]++;
+        }
+        return res;
+    }
+    
+    private int MaxDiameter(int x, int p, List<int>[] graph, int mask, ref int visited, ref int max)
+    {
+        int max1 = 0, max2 = 0;
+        visited |= 1 << x;
+        foreach(int next in graph[x])
+        {
+            if(next == p || (mask & 1 << next) == 0) continue;
+            int d = MaxDiameter(next, x, graph, mask, ref visited, ref max) + 1;
+            if(d > max1)
+            {
+                max2 = max1;
+                max1 = d;
+            }
+            else if (d > max2)
+                max2 = d;
+        }
+        
+        max = Math.Max(max, max1 + max2);
+        return max1;
+    }
+}

@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int kthSmallest(vector<vector<int>>& mat, int k) {
+        vector<int> scanline{0};
+        int col = mat.front().size();
+        for (auto& row : mat) {
+            vector<int> tmp;
+            for (int i : scanline) {
+                for (int j : row) {
+                    tmp.push_back(i + j);
+                }
+            }
+            sort(tmp.begin(), tmp.end());
+            tmp.resize(min(k, (int)scanline.size() * col));
+            swap(tmp, scanline);
+        }
+        return scanline.back();
+    }
+};

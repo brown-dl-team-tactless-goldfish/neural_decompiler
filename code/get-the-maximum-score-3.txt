@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int maxSum(vector<int>& nums1, vector<int>& nums2) {
+        long long sum = 0;
+        int i=0, j=0;
+        while(oneStep(nums1, nums2, i, j, sum));
+        return sum % (long long)(1e9+7);
+    }
+    
+    bool oneStep(vector<int>& nums1, vector<int>& nums2, int& i, int& j, long long& sum){
+        auto sum1 = sum, sum2 = sum;
+        while(i<nums1.size() && j<nums2.size()){
+            if(nums1[i] == nums2[j]){
+                sum = max(sum1, sum2) + nums1[i];
+                i++, j++;
+                return true;
+            }
+            else if(nums1[i] < nums2[j]) sum1 += nums1[i++];
+            else sum2 += nums2[j++];
+        }
+        while(i < nums1.size()) sum1 += nums1[i++];
+        while(j < nums2.size()) sum2 += nums2[j++];
+        sum = max(sum1, sum2);
+        return false;
+    }
+};

@@ -1,0 +1,60 @@
+// whenever we see a digit or [, push the current contents into stack untill we see ]
+// if we see ], keep popping untill we see digit. Append the conent that many times and push it back to stack
+public class Solution {
+    public string DecodeString(string s) {
+        if(string.IsNullOrEmpty(s))
+            return s;
+        
+        var decodeStack = new Stack<string>(s.Length);
+        var decodedString = new StringBuilder();
+        var i = 0;
+        while(i < s.Length)
+        {
+            var c = s[i];
+            if(c  == ']')
+            {
+                // not using string builder as append at start will push all the contents
+                // to the end which is not performant
+                var linkedList = new LinkedList<string>();
+                // Pop from the stack and create string and push it back
+                var topElem = decodeStack.Pop();
+                while(topElem != "[")
+                {
+                    linkedList.AddFirst(topElem);
+                    topElem = decodeStack.Pop();
+                }
+                
+                // Remove the bracket
+                var count = Convert.ToInt32(decodeStack.Pop());
+                var strVal = string.Join("", linkedList);
+                decodeStack.Push(string.Concat(Enumerable.Repeat(strVal, count)));
+            }
+            else if(char.IsDigit(c))
+            {
+                var count = 0;
+                while(i < s.Length - 1 && char.IsDigit(c))
+                {
+                    count = count * 10 + Convert.ToInt32(c - '0');
+                    c = s[++i];
+                };
+        
+                i--;
+                decodeStack.Push(count.ToString());
+            }
+            else
+            {
+                decodeStack.Push(c.ToString());
+            } 
+            
+            i++;
+        }
+        
+        var finalStr = new LinkedList<string>();
+        foreach(var str in decodeStack)
+        {
+            finalStr.AddFirst((string)str);
+        }
+        
+        return string.Join("", finalStr);
+    }
+}

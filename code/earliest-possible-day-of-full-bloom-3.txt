@@ -1,0 +1,38 @@
+# define SWAP(x, y) {int t; t = x; x = y; y = t;} 
+# define MAX(a, b) ((a) > (b)? (a): (b))
+void quickSort(int*, int*, int, int); 
+
+int earliestFullBloom(int* plantTime, int plantTimeSize, int* growTime, int growTimeSize){
+    // Quick sort growTime in descending order 
+    // This is our planting order due to greedy strategy
+    quickSort(growTime, plantTime, 0, growTimeSize-1); 
+    // Calculate the bloom time in each planting and find the maxima
+    int acc_plant = 0; // accumulate the plantTime
+    int max = 0;
+    for (int i = 0; i < growTimeSize; i++) {
+        acc_plant += plantTime[i];
+        int temp = acc_plant + growTime[i];
+        max = MAX(max, temp);
+    }
+    return max;
+}
+
+void quickSort(int *main, int *attached, int left, int right) {
+    // "main" array: the main array we are sorting
+    // "attached" array: the array we are moving corresponding to the main array
+    if(left < right) { 
+        int pivot = main[(left+right)/2]; 
+        int i = left - 1; 
+        int j = right + 1; 
+
+        while(1) { 
+            while(main[++i] > pivot) ;
+            while(main[--j] < pivot) ;
+            if(i >= j) break; 
+            SWAP(main[i], main[j]);
+            SWAP(attached[i], attached[j]);
+        } 
+        quickSort(main, attached, left, i-1);
+        quickSort(main, attached, j+1, right);
+    } 
+} 

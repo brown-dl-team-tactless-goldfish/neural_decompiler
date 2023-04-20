@@ -1,0 +1,86 @@
+class Solution {
+public:
+    unordered_map<int, int> mp;
+    unordered_map<int, int> mp1;
+    vector<int> parent;
+    vector<int> gn;
+    int n;
+    int tomask(string& s) {
+        int m = 0;
+        for (auto& c : s) {
+            int bit = 1 << (c - 'a');
+            m |= bit;
+        }
+        return m;
+    }
+    int find(int p) {
+        if (parent[p] == -1) return p;
+        parent[p] = find(parent[p]);
+        return parent[p];
+    }
+    int un(int a, int b) {
+        int pa = find(a);
+        int pb = find(b);
+        if (pa == pb) return pa;
+        parent[pb] = pa;
+        gn[pa] += gn[pb];
+        return pa;
+    }
+    vector<int> groupStrings(vector<string>& ws) {
+
+        n =ws.size();
+        parent = vector<int>(n, -1);
+        gn = vector<int>(n, 1);
+        int cnt = 0;
+        int mg = 0;
+        
+        for (int i = 0; i < n; i++)
+        {
+            string& w = ws[i];
+            int m = tomask(w);
+            if (mp.count(m) > 0) {
+                int p = mp[m];
+                un(p, i);
+                continue;
+            }
+            int cur = i;
+            mp[m] = cur;
+            for (int j = 0; j < w.size(); j++)
+            {
+                char c = w[j];
+                int bit = 1 << (c - 'a');
+                int m1 = m ^ bit;
+                if (mp1.count(m1) > 0) {
+                    int p = mp1[m1];
+                    cur = un(p, cur);
+                    continue;
+                }
+                
+                mp1[m1] = cur;
+            }
+        }
+        
+        for (int i = 0; i < n; i++) {
+            string& w = ws[i];
+            int m = tomask(w);
+            for (int j = 0; j < w.size(); j++)
+            {
+                char c = w[j];
+                int bit = 1 << (c - 'a');
+                int m1 = m ^ bit;
+                if (mp.count(m1)) {
+                    int p = mp[m1];
+                    un(p, i);
+                }
+            }
+        }
+        
+        for (int i = 0; i < n; i++)
+        {
+            if (parent[i] != -1) continue;
+            cnt++;
+            mg = max(mg, gn[i]);
+        }
+        return {cnt, mg};
+    }
+};

@@ -1,0 +1,16 @@
+int cmp(const void *a, const void *b){ return (*(char*)a - *(char*)b); }
+char * orderlyQueue(char * s, int k){
+    if(k>1)
+        qsort(s, strlen(s), sizeof(char), cmp);
+    else{
+        int len = strlen(s), minIdx = 0;
+        char* res = (char*)calloc(len*2, sizeof(char));
+        memcpy(res, s, sizeof(char)*len);
+        for(int i = 0; i < len; i++){
+            res[len+i] = s[i];
+            minIdx = (strncmp(res+minIdx, res+i+1, len) <= 0)? minIdx : i+1; /* str1 < str2 */
+        }
+        memcpy(s, res+minIdx, sizeof(char)*len);
+    }
+    return s;
+}

@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int Count(string path){
+        int c = 0;
+        for(int i = 0; i < path.length();i++){
+            if(path[i]=='('){
+                c++;
+            }
+        }
+        return c;
+    }
+    vector<vector<string>> findDuplicate(vector<string>& paths) {
+        unordered_map<string,vector<string>> m;
+        for(int i = 0; i < paths.size();i++){
+            int c = Count(paths[i]);
+            string dir = paths[i];
+            for(int j = 0; j < c;j++){
+                int mainpathend = dir.find(" ");
+                int midpathend = dir.find("(");
+                int contentend = dir.find(")");
+                string mainpath = dir.substr(0,mainpathend-1-0+1);
+                string midpath = dir.substr(mainpathend+1,(midpathend)-(mainpathend+1));
+                string content = dir.substr(midpathend+1,(contentend)-(midpathend+1));
+                string push = mainpath+"/"+midpath;
+                dir = dir.substr(0,mainpathend-1-0+1)+dir.substr(contentend+1);
+                m[content].push_back(push);
+            }   
+        }
+        vector<vector<string>> ans;
+            
+        for(auto v : m){
+            if((v.second).size() > 1){
+                ans.push_back(v.second);
+            }
+        }
+         
+        return ans;
+    }
+};

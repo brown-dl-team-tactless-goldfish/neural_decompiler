@@ -1,0 +1,49 @@
+
+
+
+typedef struct {
+    int prerpduct[40001];
+    int cur;
+    int lastZero;
+} ProductOfNumbers;
+
+
+ProductOfNumbers* productOfNumbersCreate() {
+    ProductOfNumbers* ret = malloc(sizeof(ProductOfNumbers));
+    ret->prerpduct[0] = 1;
+    ret->cur = 0;
+    ret->lastZero = -1;
+    return ret;
+}
+
+void productOfNumbersAdd(ProductOfNumbers* obj, int num) {
+
+    if(num == 0){
+        obj->lastZero = obj->cur;
+        obj->prerpduct[ obj->cur + 1 ] = 1;
+    }
+    else{
+        obj->prerpduct[ obj->cur + 1] = obj->prerpduct[ obj->cur ]  * num ;
+    }
+    obj->cur++;
+}
+
+int productOfNumbersGetProduct(ProductOfNumbers* obj, int k) {
+    if(obj->lastZero >= obj->cur - k)
+        return 0;
+    return obj->prerpduct[obj->cur] / obj->prerpduct[obj->cur - k];
+}
+
+void productOfNumbersFree(ProductOfNumbers* obj) {
+    
+}
+
+/**
+ * Your ProductOfNumbers struct will be instantiated and called as such:
+ * ProductOfNumbers* obj = productOfNumbersCreate();
+ * productOfNumbersAdd(obj, num);
+ 
+ * int param_2 = productOfNumbersGetProduct(obj, k);
+ 
+ * productOfNumbersFree(obj);
+*/

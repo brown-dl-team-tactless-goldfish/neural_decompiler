@@ -1,0 +1,36 @@
+int kthSmallest(int** matrix, int matrixSize, int* matrixColSize, int k){
+// Use a maxheap of size K to hold the K smallest elements. 
+// H is the heap array,
+// HP is the heap pointer that tells us how many elements are in it, 
+// P, C, S are indices into this, for parent, child, and sibling,
+// PV, CV, SV are the values of the heap entries at those index positions.
+int h[k],hp=0,p,pv,c,cv,s,sv;
+int i,j;   
+    for (i=0;i<matrixSize;i++) {
+        for (j=0;j<matrixSize;j++) {
+            cv = matrix[i][j];                                    
+            if (hp<k) {                         // heap not yet full:
+                c = hp++; h[c] = cv;            // add at bottom  
+                while (c>0) {                   // and bubble up  
+                    p = (c-1)>>1; pv = h[p];                      
+                    if (pv>=cv) break;          // position found 
+                    h[c] = pv; h[c = p] = cv;  
+                }                              
+            } else {                            // heap full:
+                if (cv>=h[0]) break;            // incoming element too big.
+                h[p = 0] = pv = cv;             // replace top
+                while ((c = (p<<1)+1)<hp) {     // and bubble down
+                    cv = h[c]; s = c+1;               
+                    if (s<hp) {                       
+                        sv = h[s]; if (sv>cv) {cv = sv; c = s;}
+                    }                                 
+                    if (cv<=pv) break;                
+                    h[p] = cv; h[p = c] = pv;         
+                }                                     
+            }
+        }
+    }
+// Now that all rows of the matrix have been processed, the heap-top
+// has the biggest of the K smallest elements, which is what we want.
+    return h[0];
+}

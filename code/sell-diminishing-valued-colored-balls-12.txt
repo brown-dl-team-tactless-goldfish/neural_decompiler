@@ -1,0 +1,32 @@
+class Solution {
+private: map<int, int, greater<>> map;
+public:
+    bool valid(int m, int order){
+        for(auto &[n, count] : map){
+            if(n <= m) break;
+            order -= (long) count * (n - m);
+            if(order <= 0) return true;
+        }
+        return order <= 0;
+    }
+    
+    int maxProfit(vector<int>& inventory, int orders) {
+        long res = 0, mod = 1e9 + 7, l = 0, r = *max_element(inventory.begin(), inventory.end());
+        for(int num : inventory){
+            map[num]++;
+        }
+        while(l <= r){
+            long m = (l + r) / 2;
+            if(valid(m, orders)) l = m + 1;
+            else r = m - 1;
+        }
+        
+        for(auto &[n, count] : map){
+            if(n <= l) break;
+            orders -= count * (n - l);
+            res = (res + (n + l + 1) * (n - l) / 2 % mod * count % mod) % mod;
+        }
+        if(orders) res = (res + l * orders % mod) % mod;
+        return res;
+    }
+};

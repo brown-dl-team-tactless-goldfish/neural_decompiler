@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int swimInWater(vector<vector<int>>& grid) {
+        priority_queue<tuple<int, int, int>, vector<tuple<int, int, int>>, greater<tuple<int, int, int>>> pq;
+        pq.emplace(grid[0][0], 0, 0);
+        int n = grid.size();
+        vector<vector<bool>> v(n, vector<bool>(n));
+        v[0][0] = true;
+        pair<int, int> dir[] = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        for (; !pq.empty(); ) {
+            auto [t, r, c] = pq.top();
+            pq.pop();
+            if (r == n - 1 && c == n - 1) return t;
+            for (auto &d : dir) {
+                auto [i, j] = d;
+                int nr = r + i, nc = c + j;
+                if (min(nr, nc) >= 0 && max(nr, nc) < n && !v[nr][nc]) {
+                    v[nr][nc] = true;
+                    pq.emplace(max(t, grid[nr][nc]), nr, nc);
+                }
+            }
+        }
+        return -1;
+    }
+};

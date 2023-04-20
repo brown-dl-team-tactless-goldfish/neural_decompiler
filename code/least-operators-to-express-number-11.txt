@@ -1,0 +1,43 @@
+class Solution {
+public:
+//took help from this article : 
+    //https://leetcode.com/problems/least-operators-to-express-number/discuss/208445/c%2B%2B-recursive-easy-to-understand
+    int leastOpsExpressTarget(int x, int target) {
+        //if target is less than x, we can only have values like :
+        // x-(x/x) - (x/x) - (x/x)... or (x/x)+(x/x)+(x/x)... etc
+        //take eg of x=7, target=3
+        if(target<x){
+            return min((x-target)*2,target*2-1);
+        }
+        if(x==target){
+            return 0;
+        }
+        long long int sum=x;
+        int ans=0;
+        
+        //greedily get to the closest number such that x>target and then perform either 
+        // x/x or x-x etc operations to reduce the number.
+        while(sum<target){
+            ans++;
+            sum*=x;
+        }
+        //at this point temp is greater than or equal to target
+        
+        if(sum==target){
+            return ans;
+        }
+        
+        //now we have two choices to reduce the number 
+        //either we can make new target = sum-target (but, this can only work if target<sum-  target else the value of newtarget will just keep on increasing and it will end up in an infinite recursion - eg: x=6, target =15)
+        
+        // or we can make target-sum/x
+        int op1=INT_MAX, op2=INT_MAX;
+        if(sum-target<target){
+            op1=leastOpsExpressTarget(x,sum-target) + ans;
+        }
+        op2=leastOpsExpressTarget(x,target-(sum/x) ) + ans -1;  
+        //why -1 here? consider case x=5, target = 113, now our sums=125. but what if we want to go only till 25? so we need to do sum/x and reduce one operation as well hence the -1.
+        
+        return min(op1,op2)+1;  // because whatever ans we will get from the recursion, we need to either +/-* with our sum, so 1 more operator reqd.
+    }
+};

@@ -1,0 +1,54 @@
+class Solution {
+    void rem(vector<vector<int>> &adj, int u, int v){  // Remove the edge u-v
+        int nodePair[] = {u, v};
+        for(int i=0; i<=1; i++){
+            for(auto it = adj[nodePair[i]].begin(); it != adj[nodePair[i]].end(); it++){
+                if(*it == nodePair[i^1]){
+                    adj[nodePair[i]].erase(it);
+                    break;
+                }
+            }
+        }
+    }
+
+
+public:
+    int collectTheCoins(vector<int>& coins, vector<vector<int>>& edges) {
+        if(accumulate(coins.begin(), coins.end(), 0) <= 1)    return 0;
+
+        int n = coins.size(), ans = edges.size();
+        vector<vector<int>> adj(n);
+        for(auto e : edges){
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+
+        // Round 0 -> Remove leaves with no coins.  Round 1 & 2 (Leaves with coins are remaining only) -> Transfer coin to parents and remove the leaves
+        for(int round=0; round<3; round++){ 
+            vector<int> leaves;
+
+            for(int i=0; i<n; i++){
+                if(adj[i].size() == 1){  // Leaf node
+                    if(round == 0 && coins[i] > 0)    continue;
+                    leaves.push_back(i);
+                }
+            }
+
+            for(auto node : leaves){
+                do{
+                    int parent = adj[node][0];
+                    rem(adj, parent, node);
+                    ans--;  // 1 edge removed
+
+                    if(round >= 1)    coins[parent] = 1;  // Coin transfered to parent
+
+                    node = parent;  // Only for Round-0 : if the parent becomes leaf node (need to remove it).
+                }
+                while(coins[node] == 0 && adj[node].size() == 1);  // Leaf node with no coin
+            }
+            // For Round 1 & 2 the while loop runs only once
+        }
+
+        return max(0, ans*2);  // ans -> Remaining edges (and every edge will be traversed twice)
+    }
+};

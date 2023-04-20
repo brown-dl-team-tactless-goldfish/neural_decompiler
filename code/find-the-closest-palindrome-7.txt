@@ -1,0 +1,60 @@
+string mathop(const string &s1, const string &s2, bool is_plus)
+{
+    string result;
+    for (int i1 = s1.size() - 1, i2 = s2.size() - 1, c = 0; i1 >= 0 || i2 >= 0 || c != 0; -- i1, -- i2)
+    {
+        int c1 = i1 < 0 ? 0 : s1[i1] - '0';
+        int c2 = i2 < 0 ? 0 : s2[i2] - '0';
+        int d = is_plus ?  c1 + c2 + c : c1 - c2 -c;
+        c = is_plus ? d >= 10 : d < 0;
+        result.push_back((d + 10) % 10 + '0');
+    }
+    result.resize(result.find_last_not_of('0') + 1);
+    reverse(result.begin(), result.end());
+    return result.empty() ? "0" : result;
+}
+string operator+(const string &s1, const string &s2)
+{
+    return mathop(s1, s2, true);
+}
+string operator-(const string &s1, const string &s2 )
+{   
+   return mathop(s1, s2, false);
+}
+bool operator<(const string &s1, const string &s2 )
+{
+    if (s1.size() != s2.size())
+        return s1.size() < s2.size();
+    for (int i = 0; i < s1.size(); ++i)
+        if (s1[i] != s2[i])
+            return s1[i] < s2[i];
+    return false;
+}
+class Solution {
+    string palindromify(const string & s, int tag = 0)
+    {
+        string result(s);
+        string midone (s.size()/2 + 1, '0');
+        midone[0] = '1';
+        if (tag > 0)
+            result = s + midone;
+        else if (tag < 0)
+        {
+            result = s - midone;
+            if (result.size() % 2 == 1 && s.size() % 2 == 0) 
+                result[result.size()/2] = '9'; //Special case here.
+        }
+        for (int i = 0; i <= result.size()/2. - 1; ++i)
+            result[result.size() - 1 - i] = result[i];
+        return result;
+    }
+public:
+    string nearestPalindromic(string s) {
+        string p = palindromify(s);
+        string higher = s < p ? p : palindromify(s, 1);
+        string lower = p < s ? p : palindromify(s, -1);
+        string diff_higher = higher - s;
+        string diff_lower = s - lower;
+        return diff_higher < diff_lower ? higher : lower;
+    }
+};

@@ -1,0 +1,24 @@
+int numSubmatrixSumTarget(int** matrix, int matrixSize, int* matrixColSize, int target){
+	int ret = 0, sum;
+	int prefixSum[matrixSize + 1][matrixColSize[0]];
+	
+    for (int i = 0; i < matrixSize; i++)
+		for (int j = 0; j < matrixColSize[0]; j++)
+			prefixSum[i + 1][j] = prefixSum[i][j] + matrix[i][j];
+
+	for (int i = 0; i < matrixSize; i++) {
+		for (int j = i + 1; j <= matrixSize; j++) {
+			for (int k = 0; k < matrixColSize[0]; k++) {
+				sum = 0;
+				for (int l = k; l < matrixColSize[0]; l++) {
+					sum += prefixSum[j][l] - prefixSum[i][l];
+					if (sum == target){
+						ret++;
+					}
+				}
+			}
+        }
+    }
+
+	return ret;
+}

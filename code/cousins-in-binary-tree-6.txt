@@ -1,0 +1,29 @@
+typedef struct Solution{
+    int depth;
+    struct TreeNode* anc;
+}info;
+
+info* depthF(struct TreeNode* anc, struct TreeNode* node, int val, int depth){
+    if(node==NULL) return NULL;
+    if(node->val==val){
+        info* result=(info*)malloc(sizeof(info));
+        result->depth=depth;
+        result->anc=anc;
+        return result;
+    }
+    info* l = depthF(node,node->left,val,depth+1);
+    info* r = depthF(node,node->right,val,depth+1);
+    
+    if(l) return l;
+    else if(r) return r;
+    return NULL;
+}
+
+bool isCousins(struct TreeNode* root, int x, int y){
+    info* l = depthF(root, root,x,0);
+    info* r = depthF(root, root,y,0);
+    bool ans=(l->anc!=r->anc)&&(l->depth==r->depth);
+    free(l);
+    free(r);
+    return ans;
+}

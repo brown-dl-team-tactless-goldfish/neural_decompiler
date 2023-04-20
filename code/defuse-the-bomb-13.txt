@@ -1,0 +1,17 @@
+vector<int> decrypt(vector<int>& code, int k) {
+	int len = code.size();
+	vector<int> res(len);
+	if (k == 0)
+		return res;
+
+	int left = k > 0? 1 : len + k;
+	int right = k > 0? k : len - 1;
+	int sum = accumulate(code.begin() + left, code.begin() + right + 1, 0);
+	for (int i = 0; i < len; ++i) {
+		res[i] = sum;
+		sum -= code[left++ % len];
+		sum += code[++right % len];
+	}
+
+	return res;
+}

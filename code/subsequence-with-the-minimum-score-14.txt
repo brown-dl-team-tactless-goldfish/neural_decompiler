@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int minimumScore(string s, string t) {
+        int m=s.length(),n=t.length();
+        vector<int> prefix(m,0);
+        vector<int> suffix(m,0);
+        
+        int i=0,idx=0;  //iterate on t from front -> store max char which can be matched
+        for(;idx<n && i<m;i++){
+            if(i!=0) prefix[i]=prefix[i-1];
+            if(s[i]==t[idx]){
+                prefix[i]++;
+                idx++;
+            }
+        }
+        while(i<m) prefix[i++]=prefix[i-1];
+        
+        i=m-1,idx=n-1;    //iterate on t from backward
+        for(i;idx>=0 && i>=0;i--){
+            if(i!=m-1) suffix[i]=suffix[i+1];
+            if(s[i]==t[idx]){
+                suffix[i]++;
+                idx--;
+            }
+        }
+        while(i>=0) suffix[i--]=suffix[i+1];
+        
+        int ans=INT_MAX;
+        for(int i=1;i<m-1;i++){
+            ans=min(ans,n-prefix[i]-suffix[i+1]);
+        }
+        ans=min(ans,n-suffix[0]);
+        ans=min(ans,n-prefix[m-1]);
+        return max(0,ans);
+    }
+};

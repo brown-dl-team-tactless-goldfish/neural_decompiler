@@ -1,0 +1,18 @@
+	var movesToStamp = function(stamp, target) {
+		//pattern = (?!___..._)(a|_)...(c|_)     
+		let pattern = '(?!' + '_'.repeat(stamp.length) + ')' + 
+				  stamp.split('').map(cur => `(${cur}|_)`).join("");
+
+		let stack = []; 
+
+		for(let flag = true; flag;){
+			flag = false;
+			target = target.replace(RegExp(pattern), (matched, ...args) => {
+				flag = true;
+				stack.push(args.at(-2))
+				return '_'.repeat(matched.length)
+			});
+		}
+
+		return target.split('').every(c => c=='_') ? stack.reverse() : [];
+	};

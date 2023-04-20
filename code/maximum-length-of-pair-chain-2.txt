@@ -1,0 +1,25 @@
+#define max(a,b) (a > b ? a : b)
+
+int cmpfunc (const void **a, const void **b) {
+    int *A = *a;
+    int *B = *b;
+
+    return A[1] - B[1];
+}
+
+int findLongestChain(int** pairs, int pairsSize, int pairsColSize) {
+    if (!pairs || !pairsSize)
+        return 0;
+
+    int i, j, *dp = (int*)malloc(sizeof(int) * pairsSize);
+    for (i = 0; i < pairsSize; i++)
+        dp[i] = 1;
+
+    qsort(pairs, pairsSize, sizeof(int*), cmpfunc);
+
+    for (i = 0; i < pairsSize; i++) 
+        for (j = 0; j < i; j++) 
+            dp[i] = ((pairs[i][0] > pairs[j][1])) ? max(dp[i], dp[j] + 1) : max(dp[i], dp[j]);
+
+    return dp[pairsSize - 1];
+}

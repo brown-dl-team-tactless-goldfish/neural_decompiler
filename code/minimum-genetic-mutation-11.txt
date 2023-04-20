@@ -1,0 +1,45 @@
+class Solution {
+    unordered_set<string> dict;
+    unordered_set<string> visited;
+    int result = INT32_MAX;
+public:
+    void mutate(string& s, int idx) {
+        char& c = s[idx];
+        if (c == 'A') c = 'C';
+        else if (c == 'C') c = 'T';
+        else if (c == 'T') c = 'G';
+        else if (c == 'G') c = 'A';
+    }
+    
+    void search(string start, string end, int depth = 0) {
+         if (start == end) {
+            result = depth;
+            return;
+        }
+        if (depth >= result) return;
+        
+        for (int i = 0; i < start.length(); i++) {
+            string m = start;
+            for (int j = 0; j < 4; j++) {
+                mutate(m, i);
+
+                if (dict.find(m) == dict.end()) continue;
+                if (visited.find(m) != visited.end()) continue;
+                
+                visited.insert(m);
+                search(m, end, depth + 1);
+                visited.erase(m);
+            }
+        }
+    }
+    
+    int minMutation(string start, string end, vector<string>& bank) {
+        if (start == end) return 0;
+        
+        dict = unordered_set<string>(bank.begin(), bank.end());
+        if (dict.find(end) == dict.end()) return -1;
+        search(start, end);
+        
+        return result == INT32_MAX ? -1 : result;
+    }
+};

@@ -1,0 +1,111 @@
+#include <stdint.h>
+#include <stdbool.h>
+
+static bool dfs( int * color, int * nbDislikes, int ** dislikeArray, int p );
+
+void cleanUp( int N, int * color, int * nbDislikes, int ** dislikeArray )
+{
+    for ( int i = 0; i < N;i++ )
+    {
+        if ( dislikeArray[i] != NULL )
+        {
+            free( dislikeArray[i] );
+        }
+    }
+
+    free( color );
+    free( nbDislikes );
+    free( dislikeArray );
+}
+
+bool possibleBipartition( int N, int** dislikes, int dislikesSize, int* dislikesColSize ) {
+    int * color = malloc( sizeof( int ) *N );
+    int * nbDislikes = malloc( N * sizeof( int ) );
+    int ** dislikeArray = malloc( sizeof( int * ) *N );
+    int a, b;
+    bool result;
+
+    memset( nbDislikes, 0, N * sizeof( int ) );
+    memset( color, 0, N * sizeof( int ) );
+    for ( int i = 0; i < dislikesSize;i++ )
+    {
+        nbDislikes[dislikes[i][0] - 1]++;
+        nbDislikes[dislikes[i][1] - 1]++;
+    }
+
+    for ( int i = 0; i < N;i++ )
+    {
+        if ( nbDislikes[i] > 0 )
+        {
+            dislikeArray[i] = malloc( nbDislikes[i] * sizeof( int ) );
+        }
+        else
+        {
+            dislikeArray[i] = NULL;
+        }
+    }
+
+    memset( nbDislikes, 0, sizeof( int )*N );
+    for ( int i = 0; i < dislikesSize;i++ )
+    {
+        a = dislikes[i][0] - 1;
+        b = dislikes[i][1] - 1;
+
+        dislikeArray[a][nbDislikes[a]] = b;
+        dislikeArray[b][nbDislikes[b]] = a;
+
+        nbDislikes[a]++;
+        nbDislikes[b]++;
+    }
+    
+    for ( int i = 0; i < N;i++ )
+    {
+        if ( color[i] != 0 ) continue;
+
+        color[i] = 1;
+        result = dfs( color, nbDislikes, dislikeArray, i );
+        if ( result == false )
+        {
+            cleanUp( N, color, nbDislikes, dislikeArray );
+            return false;
+        }
+
+    }  
+
+        cleanUp( N, color, nbDislikes, dislikeArray );
+    return true;
+}
+
+bool dfs( int * color, int * nbDislikes, int ** dislikeArray, int p )
+{
+    int disliked;
+
+    if (dislikeArray[p] == NULL) return true;
+
+    for ( int i = 0; i < nbDislikes[p]; i++ )
+    {
+        disliked = dislikeArray[p][i];
+
+        if ( color[disliked] == color[p] )
+            return false;
+
+        if ( color[disliked] == 0 )
+        {
+            if ( color[p] == 2 )
+            {
+                color[disliked] = 1;
+            }
+            else
+            {
+                color[disliked] = 2;
+            }
+
+            if ( dfs( color, nbDislikes, dislikeArray, disliked ) == false )
+            {
+                return false;
+            }
+        }
+    }
+
+    return true;
+}

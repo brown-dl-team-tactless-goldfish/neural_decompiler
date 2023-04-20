@@ -1,0 +1,58 @@
+/*
+    time 20 - 25 mins....
+    immediately thought of level order traversal, but also wanted to keep track of final level and current level,
+    realized not needed 10 mins before....
+    
+*/
+public class CBTInserter {
+    TreeNode head;
+    //Time O(1)
+    public CBTInserter(TreeNode root) {
+        head = root;
+    }
+    
+    /*
+        practice all our traversals for full binary tree
+    */
+    public int Insert(int v) {
+        var node = new TreeNode(v);
+        return lvlOrderTraversal(node);   
+    }
+    
+    //time O(n) where n is number of nodes...
+    public int lvlOrderTraversal(TreeNode node){
+        var q = new Queue<TreeNode>();
+        q.Enqueue(head);
+        int currLevel = 1;
+        
+        while(q.Count > 0){
+            int size = q.Count;
+            int cnt = 0;
+            for(int i=0; i < size; i++){
+                var x = q.Dequeue();
+                if(x.left == null){
+                    x.left = node;
+                    return x.val;
+                }else{
+                    q.Enqueue(x.left);
+                }
+                
+                if(x.right == null){
+                    x.right = node;
+                    return x.val;
+                }else{
+                    q.Enqueue(x.right);
+                }
+                
+            }
+            currLevel++;
+        }
+        //never reach
+        return -1;
+    }
+    
+    //Time O(1);
+    public TreeNode Get_root() {
+        return head;
+    }
+}

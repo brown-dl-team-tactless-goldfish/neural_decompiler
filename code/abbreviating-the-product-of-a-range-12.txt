@@ -1,0 +1,58 @@
+class Solution {
+public:
+    string abbreviateProduct(int left, int right) {
+        // Find trailing zeros.
+        int five_cnts = 0, two_cnts = 0;
+        for (int d = left; d <= right; ++d) {
+            int val = d;            
+            while ((val % 5) == 0) {
+                val /= 5;
+                ++five_cnts;
+            }
+            two_cnts += __builtin_popcount((d - 1) & (d ^ (d - 1)));
+        }
+        const int zero_cnts = std::min(five_cnts, two_cnts);
+         
+        // Compute trailing digits and the full version when we have no more than 10 digits.
+        int64_t trailing = 1, full = 1;
+        constexpr int64_t kModTrailing = 1E5;
+        constexpr int64_t kModFull = 1E10;
+        five_cnts = two_cnts = zero_cnts;
+        for (int64_t d = left; d <= right; ++d) {
+            auto val = d;
+            while ((five_cnts > 0) && (val % 5 == 0)) {
+                val /= 5;
+                --five_cnts;
+            }
+            while ((two_cnts > 0) && (val % 2 == 0)) {
+                val /= 2;
+                --two_cnts;
+            }
+            trailing = (trailing * val) % kModTrailing;
+            full = (full * val) % kModFull;
+        }
+        
+        // Find how many digits the result has (after removing trailing zeros).
+        double log_prod = 0;
+        for (double d = left; d <= right; ++d) {
+            log_prod += std::log10(d);
+        }        
+        constexpr double kPrec = 1E-9;
+        const int num_digits = 1 + std::floor(log_prod + kPrec) - zero_cnts;        
+
+        std::ostringstream sout;
+        if (num_digits > 10) {
+            const auto frac = log_prod - std::floor(log_prod + kPrec);
+            auto base = std::pow(10, frac);
+            for (int k = 1; k < 5; ++k) {
+                base *= 10;
+            }
+            const int64_t leading = std::floor(base + kPrec);
+            sout << leading << "..." << setw(5) << setfill('0') << trailing;
+        } else {
+            sout << full;
+        }
+        sout << "e" << zero_cnts;        
+        return sout.str();
+    }
+};

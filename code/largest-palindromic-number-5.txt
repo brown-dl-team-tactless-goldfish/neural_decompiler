@@ -1,0 +1,21 @@
+class Solution {
+public:
+    string largestPalindromic(string num) {
+        int cnt[128] = {};
+        for (char c: num) cnt[c]++;
+        string half = "";
+        for (char c = '9'; c >= '0'; c--) {
+            half.append(cnt[c]/2, c);
+        }
+        if (!half.empty() && half[0] == '0') half.clear();
+        string middle = "";
+        for (char c = '9'; c >= '0'; c--) {
+            if (cnt[c]&1) {
+                middle = string(1, c);
+                break;
+            }
+        }
+        if (middle.empty() && half.empty()) return "0";
+        return half + middle + string(rbegin(half), rend(half));
+    }
+};

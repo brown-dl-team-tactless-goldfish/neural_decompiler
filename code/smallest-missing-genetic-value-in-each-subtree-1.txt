@@ -1,0 +1,32 @@
+class Solution {
+    void dfs(int x, const vector<int>&nums, const vector<vector<int>> &con, vector<int> &p, vector<int> &start, vector<int> &end, int& t) {
+        start[x] = t++;
+        if (nums[x] < p.size()) {
+            p[nums[x]] = x;
+        }
+        for (int y : con[x]) {
+            dfs(y, nums, con, p, start, end, t);
+        }
+        end[x] = t++;
+        
+    }
+public:
+    vector<int> smallestMissingValueSubtree(vector<int>& parents, vector<int>& nums) {
+        const int n = nums.size();
+        vector<vector<int>> con(n);
+        for (int i = 1; i < n; ++i) {
+            con[parents[i]].push_back(i);
+        }
+        vector<int> p(n + 2, -1), start(n), end(n);
+        int t = 0;
+        dfs(0, nums, con, p, start, end, t);
+        vector<int> r(n, 1);
+        for (int i = 2, f = p[1]; i < p.size() && f >= 0; ++i) {
+            while (f >= 0 && (p[i] < 0 || start[f] > start[p[i]] || end[f] < end[p[i]])) {
+                r[f] = i;
+                f = parents[f];
+            }            
+        }
+        return r;
+    }
+};

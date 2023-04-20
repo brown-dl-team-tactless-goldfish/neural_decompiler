@@ -1,0 +1,46 @@
+#define pii pair<int,int>
+#define pipii pair<int,pii>
+#define F first
+#define S second
+class Solution {
+public:
+    int x[4] = {0, 0, -1, 1};
+    int y[4] = {1, -1, 0, 0};
+    bool isValidLocation(int i, int j, int n, int m)
+    {
+        return (i>=0 && j>=0 && i<n && j<m);
+    }
+    int minimumObstacles(vector<vector<int>>& grid) {
+        int n = grid.size(), m = grid[0].size();
+        priority_queue<pipii, vector<pipii>, greater<pipii>> q;
+        vector<vector<bool>> vis(n, vector<bool>(m, false));
+        q.push({0, {0, 0}});
+        vis[0][0] = true;
+        while(!q.empty())
+        {
+            pipii front = q.top();
+            q.pop();
+            
+            if(front.S.F == n-1 && front.S.S == m-1)
+                return front.F;
+            
+            for(int k=0; k<4; k++)
+            {
+                int cx = front.S.F + x[k];
+                int cy = front.S.S + y[k];
+                
+                if(isValidLocation(cx, cy, n, m) && !vis[cx][cy])
+                {
+                    vis[cx][cy] = true;
+                    
+                    if(grid[cx][cy])
+                        q.push({front.F+1, {cx, cy}});
+                    else
+                        q.push({front.F, {cx, cy}});
+                }
+            }
+        }
+        
+        return -1;
+    }
+};

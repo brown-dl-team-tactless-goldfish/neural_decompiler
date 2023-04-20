@@ -1,0 +1,57 @@
+vector<int> parent;
+
+int find_parent(int v)
+{
+    if(parent[v] == -1)
+    {
+        return v;
+    }
+    
+    return parent[v] = find_parent(parent[v]);
+}
+
+bool static comp(vector<int>&v1, vector<int>&v2)
+{
+    return v1[2] < v2[2];
+}
+int minCostConnectPoints(vector<vector<int>>& points)
+{
+    int sz = points.size(), edges = 0, res = 0;
+    
+    parent.resize(sz,-1);
+    
+    vector<vector<int>> cost;
+    
+    for(int i=0; i<sz; i++)
+    {
+        for(int j=i+1; j<sz; j++)
+        {
+            auto &x= points[i], &y = points[j];
+            
+            int dist = abs(x[0] - y[0]) + abs(x[1] - y[1]);
+            
+            cost.push_back({i,j,dist});
+        }
+    }
+    
+    sort(cost.begin(),cost.end(),comp);
+    
+    for(int i=0; i<cost.size() && edges < sz-1; i++)
+    {
+        int a = cost[i][0], b = cost[i][1], c = cost[i][2];
+        
+        int p1 = find_parent(a);
+        int p2 = find_parent(b);
+        
+        if(p1 != p2)
+        {
+            parent[p2] = p1;
+            
+            res += c;
+            
+            edges++;
+        }
+    }
+    
+    return res;
+}

@@ -1,0 +1,71 @@
+class Solution {
+public:
+    const static int INTMAX = 1e9 + 10;
+    const static int MAX = 2010;
+    int M[MAX][MAX];
+    vector<int> a2 = {};
+    int makeArrayIncreasing(vector<int>& arr1, vector<int>& arr2) {
+        set<int> S = {};
+        a2.push_back(-1);
+        for (int v : arr2) {
+            S.insert(v);
+        }
+        arr1.insert(arr1.begin(), -1);
+        for (int sv : S) {
+            a2.push_back(sv);
+        }
+        int C = arr1.size();
+        int R = a2.size();
+        int prev, cur;
+        int ridx;
+        int rcurmin;
+        for (int c = 1; c < C; c++) {
+            prev = arr1[c - 1];
+            cur = arr1[c];
+            M[0][c] = INTMAX;
+            if (cur > prev) {
+                M[0][c] = min(M[0][c], M[0][c - 1]);
+                for (int r = 1; r < R; r++) {
+                    if (a2[r] >= cur)
+                        break;
+                    M[0][c] = min(M[0][c], M[r][c - 1]);
+                }
+            }
+            else {
+                for (int r = 1; r < R; r++) {
+                    if (a2[r] >= cur)
+                        break;
+                    M[0][c] = min(M[0][c], M[r][c - 1]);
+                }
+            }
+            M[1][c] = INTMAX;
+            if (a2[1] > arr1[c - 1]) {
+                M[1][c] = min(M[1][c], M[0][c - 1] + 1);
+            }
+            ridx = 1;
+            rcurmin = M[ridx][c - 1] + 1;
+            for (int r = 2; r < R; r++) {
+                M[r][c] = INTMAX;
+                if (a2[r] > arr1[c - 1]) {
+                    M[r][c] = min(M[r][c], M[0][c - 1] + 1);
+                }
+                M[r][c] = min(M[r][c], rcurmin);
+                ridx++;
+                rcurmin = min(M[ridx][c - 1] + 1, rcurmin);
+            }
+        }
+        int res = -1;
+        int rc = C - 1;
+        for (int rr = 0; rr < R; rr++) {
+            if (M[rr][rc] < INTMAX) {
+                if (res == -1) {
+                    res = M[rr][rc];
+                }
+                else {
+                    res = min(M[rr][rc], res);
+                }
+            }
+        }
+        return res;
+    }
+};

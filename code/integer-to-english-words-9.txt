@@ -1,0 +1,38 @@
+class Solution {
+public:
+void toWords(string &res, int x,vector<string> &lib,vector<string> &lib2){
+    int k,h,t,o;
+    o=x%10;
+    t=(x/10)%10;
+    h=(x/100)%10;
+    k=x/1000;
+    if (k) res+=lib[k-1]+" Thousand ";
+    if (h) res+=lib[h-1]+" Hundred ";
+    if (t>=2){ 
+        res+=lib2[t-2]+" ";
+        if (o) res+=lib[o-1]+" ";
+    }else{
+        if (t*10+o) res+=lib[t*10+o-1]+" ";
+    }
+}
+string numberToWords(int num) {
+    vector<string> lib={"One", "Two","Three","Four","Five","Six","Seven","Eight","Nine","Ten","Eleven",
+        "Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"};
+    vector<string> lib2={"Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"};
+    int a,b,c,d;
+    a = num%1000;
+    b = (num/1000)%1000;
+    c = (num/1000000)%1000;
+    d = (num/1000000000)%1000;
+    string res;
+    if (d) {toWords(res,d,lib,lib2);res+="Billion ";}
+    if (c) {toWords(res,c,lib,lib2);res+="Million ";}
+    if (b) {toWords(res,b,lib,lib2);res+="Thousand ";}
+    if (a) toWords(res,a,lib,lib2);
+    if (res.empty()) return "Zero";
+    else {
+        res.erase(res.size()-1);  //delete the last space.
+        return res;
+    }
+}
+};

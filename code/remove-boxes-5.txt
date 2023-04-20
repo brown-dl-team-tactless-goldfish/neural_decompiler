@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int removeBoxes(vector<int>& boxes) {
+        int n = boxes.size();
+        unordered_map<int, int> dp;
+        return box_helper(boxes, dp, 0, n-1, 0);
+    }
+private:
+    int box_helper(vector<int>& boxes, unordered_map<int, int>& dp, int l, int r, int k){
+        if (l > r) return 0;
+        while (l < r && boxes[r] == boxes[r-1]) { 
+           r--; 
+           k++;
+        }
+        int key = (l*100+r)*100+k;
+        if (dp.count(key)) return dp[key];
+        int ans = box_helper(boxes, dp, l, r-1, 0) + (k+1)*(k+1);
+        for (int i = l; i < r; i++){
+            if (boxes[i] == boxes[r]) {
+               while (boxes[i+1] == boxes[r]) 
+                   i++;
+               ans = max(ans, box_helper(boxes, dp, l, i, k+1) + box_helper(boxes, dp, i+1, r-1, 0));
+            }
+        }
+        dp[key] = ans;
+        return ans;
+    }
+};

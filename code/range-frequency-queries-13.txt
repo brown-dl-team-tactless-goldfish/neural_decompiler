@@ -1,0 +1,19 @@
+class RangeFreqQuery {
+public:
+    vector<vector<int>> vec;
+    RangeFreqQuery(vector<int>& arr) {
+        vec.clear();
+        vec.resize(10001);
+        for(int i=0;i<arr.size();i++) vec[arr[i]].push_back(i);
+    }
+    
+    int query(int left, int right, int value) {
+        if(vec[value].size()==0) return 0;
+        int i=0,n=vec[value].size();
+        int it1=upper_bound(vec[value].begin(),vec[value].end(),left-1) - vec[value].begin();
+        int it2=lower_bound(vec[value].begin(),vec[value].end(),right) - vec[value].begin();
+        if(it1==n || vec[value][it1]>right) return 0;
+        if(it2==n || vec[value][it2]>right) it2--;
+        return it2-it1+1;
+    }
+};

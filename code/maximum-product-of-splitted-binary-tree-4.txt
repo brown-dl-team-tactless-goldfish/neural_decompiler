@@ -1,0 +1,41 @@
+class Solution {
+public:
+    // returns the sum of subtree, also stores all sums in a vector
+    int get_sum(TreeNode* at, vector<int>& sums) {
+        if (!at) {
+            return 0;
+        }    
+        int res = at->val + get_sum(at->left, sums) + get_sum(at->right, sums);
+        sums.push_back(res);
+        return res;
+    }
+    // returns the closest element to the target
+    int find_closest(vector<int>& nums, double target) {
+        sort(nums.begin(), nums.end()); 
+        // find the first element greater than or equal to target
+        int left = 0;
+        int right = nums.size() - 1;
+        while (left < right) {
+            int mid = left + (right - left) / 2;
+            if (target <= nums[mid]) {
+                right = mid;
+            } else {
+                left = mid + 1;
+            }
+        }
+        int i = nums[left] > target? left : right;
+        // compare with previous to find the closest
+        if (i == 0 || abs(nums[i] - target) < abs(nums[i - 1] - target)) {
+            return nums[i];
+        } else {
+            return nums[i - 1];
+        }
+    }
+    int maxProduct(TreeNode* root) {
+        vector<int> sums; // stores all subtrees' sums
+        int total = get_sum(root, sums);       
+        int closest = find_closest(sums, (double)total / 2);
+        long prod = (long) closest * ((long)total - (long) closest);
+        return prod % (int) (1e9 + 7);
+    }
+};

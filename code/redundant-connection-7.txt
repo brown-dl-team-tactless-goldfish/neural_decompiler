@@ -1,0 +1,27 @@
+/*
+This is a typical union find question we just group unlikes into grupw as soon as u see a 2 groups that are like ouptput them.
+*/
+
+
+    int find(int x,vector<int> &parent)
+    {
+        return parent[x]==x?x:find(parent[x],parent);
+    }
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        int N=edges.size();
+        vector<int> groups(N+1);
+        for(int i=1;i<=N;i++)groups[i]=i;
+        for(auto &x:edges)
+        {
+            int group1=find(x[0],groups);
+            int group2=find(x[1],groups);
+            if(group1!=group2)
+            {
+                groups[group2]=group1;
+            }
+            else
+                return{min(x[0],x[1]),max(x[0],x[1])};
+        }
+        return {};
+    }
+

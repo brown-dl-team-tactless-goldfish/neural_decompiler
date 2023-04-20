@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int longestAwesome(string s) {
+        string key(10, '0');
+        unordered_map<string, vector<int>> mp;
+        mp[key].push_back(-1);
+        
+        for(int i=0; i<s.size(); i++) {
+            int a = s[i] - '0';
+            if(key[a] == '0') key[a] = '1';
+            else key[a] = '0';
+            mp[key].push_back(i);
+        }
+        
+        int ans = 1;
+        for(auto &[k, v] : mp) {
+            if(v.size() > 1) ans = max(ans, v.back() - v[0]);
+            
+            string cp = k;
+            for(int j=0; j<10; ++j) {
+                string cp = k;
+                if(k[j] == '1') cp[j] = '0';
+                else cp[j] = '1';
+                
+                if(mp.count(cp)) {
+                    auto v2 = mp[cp];
+                    ans = max(ans, v.back() - v2[0]);
+                    ans = max(ans, v2.back() - v[0]);
+                }
+            }
+        }
+        
+        return ans;
+    }
+};

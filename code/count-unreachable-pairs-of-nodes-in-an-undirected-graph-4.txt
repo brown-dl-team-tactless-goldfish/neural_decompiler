@@ -1,0 +1,37 @@
+class Solution {
+    fun countPairs(n: Int, edges: Array<IntArray>): Long {
+        val adjacencyMap = hashMapOf<Int, MutableList<Int>>()
+        val visitedNodes = BooleanArray(n) { false }
+        for (edge in edges) {
+            adjacencyMap[edge[0]] = adjacencyMap.getOrDefault(edge[0], mutableListOf())
+            adjacencyMap[edge[0]]!!.add(edge[1])
+            adjacencyMap[edge[1]] = adjacencyMap.getOrDefault(edge[1], mutableListOf())
+            adjacencyMap[edge[1]]!!.add(edge[0])
+        }
+        var totalPairs = 0L
+        var sizeOfComponent = 0
+        var remainingNodes = n
+        for (i in 0 until n) {
+            if (!visitedNodes[i]) {
+                sizeOfComponent = dfs(i, visitedNodes, adjacencyMap)
+                totalPairs += sizeOfComponent.toLong() * (remainingNodes - sizeOfComponent)
+                remainingNodes -= sizeOfComponent
+            }
+        }
+        return totalPairs
+    }
+
+    fun dfs(node: Int, visitedNodes: BooleanArray, adjacenctMap: Map<Int, MutableList<Int>>): Int {
+        visitedNodes[node] = true
+        var count = 1
+        if (!adjacenctMap.contains(node)) {
+            return count
+        }
+        for (neighbour in adjacenctMap[node]!!) {
+            if (!visitedNodes[neighbour]){
+                count += dfs(neighbour, visitedNodes, adjacenctMap)
+            }
+        }
+        return count
+    }
+}

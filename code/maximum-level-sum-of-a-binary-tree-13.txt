@@ -1,0 +1,48 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+#define MAX_DEPTH 10000
+struct treeCalculationResult {
+    int levelSums[MAX_DEPTH];
+    int levelCount;
+};
+
+static void processNodeMaxLevelSum(struct TreeNode* node, struct treeCalculationResult* calcResultBuf, int level)
+{
+    calcResultBuf->levelSums[level - 1] += node->val;
+    if(calcResultBuf->levelCount < level)
+    {
+        calcResultBuf->levelCount = level;
+    }
+    if(node->left != NULL)
+    {
+        processNodeMaxLevelSum(node->left, calcResultBuf, level + 1);
+    }
+    if(node->right != NULL)
+    {
+        processNodeMaxLevelSum(node->right, calcResultBuf, level + 1);
+    }   
+}
+
+int maxLevelSum(struct TreeNode* root)
+{
+    struct treeCalculationResult analysisResult = { 0 };
+    analysisResult.levelCount = 1;
+    processNodeMaxLevelSum(root, &analysisResult,1);
+    int maxSumVal = analysisResult.levelSums[0];
+    int maxSumIndex = 0; // level = maxSumIndex + 1
+    for(int i = 1; i < analysisResult.levelCount; i++)
+    {
+        if(analysisResult.levelSums[i] > maxSumVal)
+        {
+            maxSumIndex = i;
+            maxSumVal = analysisResult.levelSums[i];
+        }
+    }
+    return maxSumIndex + 1;
+}

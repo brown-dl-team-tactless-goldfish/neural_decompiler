@@ -1,0 +1,35 @@
+struct pair {
+    int val;
+    int idx;
+};
+
+#define ll long long
+
+int cmp(const void* a, const void* b) {
+    const struct pair pa = *(const struct pair*) a;
+    const struct pair pb = *(const struct pair*) b;
+    if (pa.val == pb.val) return pa.idx - pb.idx;
+    return pa.val - pb.val;
+}
+
+long long findScore(int* nums, int numsSize) {
+    if (numsSize == 1) return (ll)nums[0];
+    struct pair* arr = (struct pair*) calloc(numsSize, sizeof(struct pair));
+    bool* IsMarked = (bool*) calloc(numsSize, sizeof(bool));
+    for (int i = 0; i < numsSize; i++) {
+        arr[i].val = nums[i];
+        arr[i].idx = i;
+    }
+    qsort(arr, numsSize, sizeof(struct pair), cmp);  
+    ll ans = 0;
+    for (int i = 0; i < numsSize; i++) {
+        if (IsMarked[arr[i].idx] == false) {
+            ans += arr[i].val;
+            if (arr[i].idx + 1 < numsSize) IsMarked[arr[i].idx + 1] = true;
+            if (arr[i].idx - 1 >= 0) IsMarked[arr[i].idx - 1] = true;
+        }
+    }
+    free(arr);
+    free(IsMarked);
+    return ans;
+}

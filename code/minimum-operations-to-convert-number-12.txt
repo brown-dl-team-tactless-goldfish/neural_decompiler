@@ -1,0 +1,18 @@
+class Solution:
+    def minimumOperations(self, nums: List[int], start: int, goal: int) -> int:
+        q = collections.deque([(start, 0)])
+        visited = {start}
+        
+        while q:
+            x, count = q.popleft()
+            count += 1
+            for num in nums:
+                for newX in (x + num, x - num, x ^ num):
+                    if newX == goal:
+                        return count
+                    if newX < 0 or 1000 < newX or newX in visited:
+                        continue
+                    visited.add(newX)
+                    q.append((newX, count))
+        
+        return -1

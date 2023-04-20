@@ -1,0 +1,32 @@
+class Solution {
+public:
+int solve_tab(vector<vector<int>> &piles, int k)
+{
+    int n = piles.size();
+    vector<vector<int>> dp(n + 1, vector<int>(k + 1, 0));
+
+    // last row and first column initialized with 0
+    // for idx use r and for k use c
+    for (int r = n - 1; r >= 0; r--)
+    {
+        for (int c = 1; c <= k; c++)
+        {
+            int ans = INT_MIN;
+            int s = 0;
+            int res = dp[r+1][c];// if not choosing rth pile
+            for(int j=0; j<piles[r].size() && j<=c-1; j++)
+            {
+                s = s+piles[r][j];
+                ans = max({ ans, s+dp[r+1][c-(j+1)] , res });
+            }
+            if(ans<0) dp[r][c] = 0;
+            else dp[r][c] = ans;
+        }
+    }
+    return dp[0][k];
+}
+int maxValueOfCoins(vector<vector<int>> &piles, int k)
+{
+    return solve_tab(piles, k);
+}
+};

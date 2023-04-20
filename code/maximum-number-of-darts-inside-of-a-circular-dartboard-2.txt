@@ -1,0 +1,39 @@
+public class Solution 
+{
+    public int NumPoints(int[][] points, int r) 
+    {
+        int n = points.Length, res = 1;
+        for(int i=0; i<n; i++)
+        {
+            for(int j=i+1; j<n; j++)
+            {
+                double[] a = new double[]{points[i][0], points[i][1]}, b = new double[]{points[j][0], points[j][1]};
+                if(Dist(a, b) <= 2*r)
+                {
+                    var center = FindCenter(a, b, (double)r);
+                    int cur = 2;
+                    for(int k=0; k<n; k++) 
+                        if(k!=i && k!=j)
+                            if(Dist(center, new double[]{points[k][0], points[k][1]})<=r)
+                                cur++;
+                    res = Math.Max(res, cur);                    
+                }
+            }
+        }
+        
+        return res;
+    }
+    
+    public double[] FindCenter(double[] a, double[] b, double r)
+    {
+        double[] mid = new double[2] {(a[0]+b[0])/2, (a[1]+b[1])/2};
+        double angle = Math.Atan2(a[0]-b[0],b[1]-a[1]);
+        double d = Math.Sqrt(r*r-Math.Pow(Dist(a,mid),2));
+        return new double[2]{mid[0]+d*Math.Cos(angle), mid[1]+d*Math.Sin(angle)};
+    }
+    
+    public double Dist(double[] a, double[] b)
+    {
+        return Math.Sqrt(Math.Pow(a[0]-b[0],2) + Math.Pow(a[1]-b[1],2));
+    }
+}

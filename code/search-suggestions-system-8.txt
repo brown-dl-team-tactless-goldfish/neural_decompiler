@@ -1,0 +1,15 @@
+int cmp(const void *x, const void *y){
+    return strcmp(*(const char **)x, *(const char **)y);
+}
+
+char *** suggestedProducts(char ** products, int productsSize, char * searchWord, int* returnSize, int** returnColumnSizes){
+    char ***a = malloc(sizeof(char **[1000]));
+    int *cols = *returnColumnSizes = malloc(sizeof(int [1000])), n = 0;
+    qsort(products, productsSize, sizeof(char *), cmp);
+    for (int j = 0, k = 0 ; searchWord[j++] ; cols[n++] = k, k = 0) {
+        a[n] = malloc(sizeof(char *[3]));
+        for (int i = 0 ; i < productsSize && k < 3 ; i++)
+            !strncmp(searchWord, products[i], j) ? a[n][k++] = products[i] : 0;
+    }
+    return *returnSize = n, a;
+}

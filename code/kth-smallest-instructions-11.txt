@@ -1,0 +1,40 @@
+class Solution {
+    
+    int combi(int n, int r) {
+                
+        int num = n;
+        int den = min(n-r, r);
+        
+        int sm = 1;
+        int i;
+        
+        for(i=1;i<=den;i++) {
+            sm = (sm * num)/i;
+            num--;
+        }        
+        return sm;
+    }
+    
+    string solve(int h, int v, int k) {
+        if(h==0) {
+            return string(v,'V');
+        }
+        if(v==0) {
+            return string(h, 'H');
+        }
+        
+        int c = combi(h+v-1,h-1);
+        
+        if(k>c) {
+            return 'V'+solve(h, v-1, k-c);
+        } else {
+            return 'H'+solve(h-1, v, k);
+        }
+    }
+    
+    
+public:
+    string kthSmallestPath(vector<int>& destination, int k) {
+        return solve(destination[1],destination[0],k);
+    }
+};

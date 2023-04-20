@@ -1,0 +1,30 @@
+class Solution {
+    void dfs(int node, vector<int> adj[], vector<int> &vis, string &s, vector<int> &idx, string &str) {
+        vis[node] = 1;
+        idx.push_back(node);
+        str.push_back(s[node]);
+        for(int ad : adj[node]) {
+            if(!vis[ad]) dfs(ad, adj, vis, s, idx, str);
+        }
+    }
+public:
+    string smallestStringWithSwaps(string s, vector<vector<int>>& pairs) {
+        vector<int> adj[s.size()];
+        for(auto e : pairs) adj[e[0]].push_back(e[1]), adj[e[1]].push_back(e[0]);
+
+        vector<int> vis(s.size(), 0);
+        string ans = s;
+        for(int i=0; i<s.size(); i++) {
+            if(!vis[i]) {
+                vector<int> idx;
+                string str;
+                dfs(i, adj, vis, s, idx, str);
+                int p = 0;
+                sort(idx.begin(), idx.end());
+                sort(str.begin(), str.end());
+                for(int j : idx) ans[j] = str[p++];
+            }
+        }
+        return ans;
+    }
+};

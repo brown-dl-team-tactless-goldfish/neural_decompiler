@@ -1,0 +1,43 @@
+public class Solution
+{
+    public double FrogPosition(int n, int[][] edges, int t, int target) 
+    {
+        var graph = new Dictionary<int, HashSet<int>>();
+        for(int i = 1; i <= n; i++)
+            graph[i] = new HashSet<int>();
+        
+        foreach(var edge in edges)
+        {
+            int u = edge[0], v = edge[1];
+            graph[u].Add(v);
+            graph[v].Add(u);
+        }
+        
+        var dp = new double[n + 1];
+        var visited = new bool[n + 1];
+        visited[1] = true;
+        dp[1] = 1.0;
+        
+        for(int i = 1; i <= t; i++)
+        {
+            var dpTemp = new double[n + 1];
+            for(int j = 1; j <= n; j++)
+            {
+                if(dp[j] != 0)
+                {
+                    var notVisited = graph[j].Where(x => !visited[x]).ToList();
+                    foreach(var child in notVisited)
+                    {
+                        dpTemp[child] = dp[j] / notVisited.Count();
+                        visited[child] = true;
+                    }
+                    if(notVisited.Count() == 0)
+                        dpTemp[j] = dp[j];
+                }
+            }
+            dp = dpTemp;
+        }
+        
+        return dp[target];
+    }
+}

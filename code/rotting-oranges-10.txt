@@ -1,0 +1,121 @@
+#define EMPTY 0
+#define FRESH 1
+#define ROTTEN 2
+
+typedef struct Snode {
+    void *data;
+    struct Snode *next;
+} Snode;
+
+typedef struct Queue {
+    Snode *head;
+    Snode *tail;
+} Queue;
+
+void initQueue(Queue *queue) {
+    queue->head = NULL;
+    queue->tail = NULL;
+}
+
+void enqueue(Queue *queue, void *n) {
+    Snode *c = malloc(sizeof(Snode));
+    c->data = n;
+    c->next = NULL;
+    if (queue->head == NULL) {
+        queue->head = c;
+    } else {
+        queue->tail->next = c;
+    }
+    queue->tail = c;
+}
+
+void *dequeue(Queue *queue) {
+    void *n;
+    Snode *t = queue->head;
+    if (t != NULL) {
+        queue->head = t->next;
+        n = t->data;
+        free(t);
+        return n;
+    }
+    return NULL;
+}
+
+int isEmpty(Queue *queue) {
+    return queue->head == NULL;
+}
+
+typedef struct {
+    int row;
+    int col;
+} Pair;
+
+int orangesRotting(int** grid, int gridSize, int* gridColSize){
+    Queue *primary, *secondary, *t;
+    Pair *p, *q;
+    int i, j, count=0;
+    primary = malloc(sizeof(Queue));
+    secondary = malloc(sizeof(Queue));
+    initQueue(primary);
+    initQueue(secondary);
+    for (i = 0; i < gridSize; ++i) {
+        for (j = 0; j < *gridColSize; ++j) {
+            if (grid[i][j] == ROTTEN) {
+                p = malloc(sizeof(Pair));
+                p->row = i;
+                p->col = j;
+                enqueue(primary,(void*) p);
+            }
+        }
+    }
+    while (!isEmpty(primary)) {
+        while (!isEmpty(primary)) {
+            p = (Pair *) dequeue(primary);
+            i = p->row;
+            j = p->col;
+            if (i > 0 && grid[i-1][j] == FRESH) {
+                grid[i-1][j] = ROTTEN;
+                q = malloc(sizeof(Pair));
+                q->row = i-1;
+                q->col = j;
+                enqueue(secondary, (void*) q);
+            }
+            if (i < gridSize-1 && grid[i+1][j] == FRESH) {
+                grid[i+1][j] = ROTTEN;
+                q = malloc(sizeof(Pair));
+                q->row = i+1;
+                q->col = j;
+                enqueue(secondary, (void*) q);
+            }
+            if (j > 0 && grid[i][j-1] == FRESH) {
+                grid[i][j-1] = ROTTEN;
+                q = malloc(sizeof(Pair));
+                q->row = i;
+                q->col = j-1;
+                enqueue(secondary, (void*) q);
+            }
+            if (j < *gridColSize-1 && grid[i][j+1] == FRESH) {
+                grid[i][j+1] = ROTTEN;
+                q = malloc(sizeof(Pair));
+                q->row = i;
+                q->col = j+1;
+                enqueue(secondary, (void*) q);
+            }
+            free(p);
+        }
+        if (!isEmpty(secondary)) {
+            ++count;
+        }
+        t = primary;
+        primary = secondary;
+        secondary = t;
+    }
+    for (i = 0; i < gridSize; ++i) {
+        for (j = 0; j < *gridColSize; ++j) {
+            if (grid[i][j] == FRESH) {
+                return -1;
+            }
+        }
+    }
+    return count;
+}

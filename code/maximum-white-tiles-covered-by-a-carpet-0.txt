@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int maximumWhiteTiles(vector<vector<int>>& tiles, int carpetLen) {
+        int n = tiles.size(), maxv = INT_MIN, minv = INT_MAX;
+        long c = 0, ans = 0;
+        for (int i = 0; i < n; i++)
+        {
+            maxv = max(maxv, tiles[i][1]);
+            minv = min(minv, tiles[i][0]);
+        }
+        int m = (maxv + 1) - minv + 1; 
+        if (carpetLen >= m - 1)
+        {
+            for (auto& t : tiles)
+                ans += (t[1] - t[0] + 1);
+            return ans;
+        }
+        vector<int> prefix(m + 1, 0);
+        for (auto& t : tiles)
+        {
+            prefix[t[0] - minv + 1] += 1;
+            prefix[t[1] - minv + 2] -= 1; 
+        }
+        for (int i = 1; i <= m; i++)
+        {
+            c += prefix[i];
+            prefix[i] = prefix[i - 1] + c;
+        }
+        for (int i = 1; i + carpetLen - 1 <= m; i++)
+        {
+            long k = prefix[i + carpetLen - 1] - prefix[i - 1];
+            ans = max(ans, k);
+        }
+        return ans;
+    }
+};

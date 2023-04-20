@@ -1,0 +1,35 @@
+    memset(dp,-1,sizeof dp) ;
+    
+    cuts.push_back(0) ;
+    cuts.push_back(n) ;
+    
+    sort(cuts.begin(),cuts.end()) ;
+    
+    return get_ans( cuts , 1 , cuts.size() - 2 , n ) ;
+    
+}
+
+int get_ans( vector<int>&cuts , int l,int r , int& n ){
+    
+    if( l > r )return 0 ;
+    
+    if( dp[l][r] != -1 )return dp[l][r] ;
+    
+    int ans = 1e9 + 5 ;
+    
+    int cost = n - cuts[l-1] - ( n -  cuts[r+1] ) ;
+    
+    
+    for(int i=l;i<=r;i++){
+        
+        ans = min( ans , cost +  get_ans( cuts , l , i - 1 , n  ) + get_ans(cuts,i+1,r,n)  ) ;
+          
+        
+    }
+    
+    return dp[l][r] = ans ;
+    
+    
+    
+}
+

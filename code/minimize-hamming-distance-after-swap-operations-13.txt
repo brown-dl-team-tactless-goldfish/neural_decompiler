@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int minimumHammingDistance(vector<int>& source, vector<int>& target, vector<vector<int>>& allowedSwaps) {
+        const int n = source.size();
+        vroot.resize(n);
+        iota(vroot.begin(), vroot.end(), 0);
+        for(auto& v : allowedSwaps) connect(v[0], v[1]);
+        unordered_map<int, unordered_map<int,int>> cnt; //root index, count target number in the union
+        for(int i=0;i<n;i++){
+            cnt[root(i)][target[i]]++;
+        }
+        int res = 0;
+        for(int i=0;i<n;i++){
+            int x = source[i];
+            auto& countXInTarget = cnt[root(i)][x];
+            if(countXInTarget > 0) countXInTarget--;
+            else res++;
+        }
+        return res;
+    }
+    
+    void connect(int i, int j){
+        auto ri = root(i), rj = root(j);
+        vroot[ri] = rj;
+    }
+    
+    int root(int i){
+        if(vroot[i] != i) vroot[i] = root(vroot[i]);
+        return vroot[i];
+    }
+    
+    vector<int> vroot;
+};

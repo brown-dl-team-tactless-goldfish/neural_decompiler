@@ -1,0 +1,40 @@
+class Solution {
+public:
+    
+    vector<pair<int, int>> dirs = {{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+    int r,c;
+    int nearestExit(vector<vector<char>>& maze, vector<int>& entrance) {
+        r = maze.size(); c = maze[0].size();
+        vector<vector<bool>> visited(r, vector<bool>(c, false));
+        queue<pair<int, int>> Q;                             
+        Q.push({entrance[0], entrance[1]});
+        visited[entrance[0]][entrance[1]] = 1;
+        int distance = 0;
+        while(!Q.empty()) {
+            int n = Q.size();
+            while(n--) {
+                auto [ui, uj] = Q.front(); Q.pop();
+                if(isEdge(ui, uj) && distance != 0)
+                    return distance;
+                for(auto& [di, dj] : dirs) {
+                    int i = ui + di, j = uj + dj;
+                    if(isValid(i,j) && !visited[i][j] && maze[i][j] == '.') {
+                        Q.push({i, j});
+                        visited[i][j] = true;
+                    }
+                }
+            }
+            distance++;
+        }
+        return -1;
+    }
+    
+    bool isEdge(int i, int j) {
+        return i == 0 || i == (r-1) || j == 0 || j == (c-1);
+    }
+    
+    bool isValid(int i, int j) {
+        return i >= 0 && j >= 0 && i < r && j < c; 
+    }
+    
+};

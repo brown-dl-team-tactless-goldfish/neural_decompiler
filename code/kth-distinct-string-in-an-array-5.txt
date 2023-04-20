@@ -1,0 +1,34 @@
+char * kthDistinct(char ** arr, int arrSize, int k){
+  int * isDistinct = malloc(sizeof(int) * arrSize);
+  for (size_t i = 0; i < arrSize; i++)
+  {
+    isDistinct[i] = 1;
+  }
+
+  for (size_t i = 0; i < arrSize; i++)
+  {
+    if (isDistinct[i] == 1) // 他跟他以前的都不相同
+    {
+      for (size_t j = i+1; j < arrSize; j++)
+      {
+        if (isDistinct[j] == 1) // 他跟比較對象以前的都不相同
+        {
+          if (strcmp(arr[i], arr[j]) == 0) // 他跟比較對象相同
+          {
+            isDistinct[i] = 0; // 將兩者皆設為0
+            isDistinct[j] = 0;
+          }
+        }
+      }
+      if (isDistinct[i] == 1) // 他跟別人都不相同
+      {
+        k--;
+        if (k == 0)
+        {
+          return arr[i]; // 即為 k th distinct array
+        }
+      }
+    }
+  }
+  return ""; // 無相符答案
+}

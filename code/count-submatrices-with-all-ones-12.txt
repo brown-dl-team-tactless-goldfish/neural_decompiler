@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int numSubmat(vector<vector<int>>& mat) {
+        int n = mat.size();
+        int m = mat[0].size(); 
+        for(int col = 0 ; col < m ; ++col){
+        	for(int row = 0 ; row < n ; ++row){
+        		if(mat[row][col] == 0) continue;
+        		if(row > 0) mat[row][col]+= mat[row-1][col]; 
+        	}
+        }
+        int ans = 0; 
+        for(int i = 0 ; i < n ; ++i){
+        	vector<int> hist;  
+        	for(int j = 0 ; j < m ; ++j){
+        		hist.push_back(mat[i][j]);
+        	}
+        	for(int j = 0 ; j < m ; ++j){
+        		int minn = 1e9; 
+        		for(int k = j ; k < m ; ++k){
+        			minn = min(minn , hist[k]);
+                    ans = ans + minn  ; 
+        		}
+        	}
+        }
+
+        return ans ;
+
+    }
+};

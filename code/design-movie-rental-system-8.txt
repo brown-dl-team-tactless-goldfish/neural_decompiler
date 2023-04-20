@@ -1,0 +1,43 @@
+map<int, set<pair<int,int> > > store; // map of movie v/s stores {price, store id}
+map<pair<int,int>, int> prices; // map of {movie, shop} v/s price
+set<tuple<int,int,int> > rents; // rented data {price, shop, movie};
+int tar = 5;
+
+MovieRentingSystem(int n, vector<vector<int>>& entries) {
+    for(auto ent : entries){
+        store[ent[1]].insert({ent[2], ent[0]});
+        prices[{ent[1],ent[0]}] = ent[2];
+    }
+}
+
+vector<int> search(int movie) {
+    vector<int> ans;
+    for(auto st: store[movie]){
+        ans.push_back(st.second);
+        if(ans.size() == tar) break;
+    }
+    return ans;
+}
+
+void rent(int shop, int movie) {
+    int price = prices[{movie, shop}];
+    store[movie].erase({price, shop});
+    rents.insert({price, shop, movie});
+}
+
+void drop(int shop, int movie) {
+    int price = prices[{movie, shop}];
+    store[movie].insert({price, shop});
+    rents.erase({price, shop, movie});
+}
+
+vector<vector<int>> report() {
+    vector<vector<int> >ans;
+    for(auto rented : rents){
+        int shop = get<1> (rented);
+        int movie = get<2> (rented);
+        ans.push_back({shop, movie});
+        if(ans.size() == tar) break;
+    }
+    return ans;
+}

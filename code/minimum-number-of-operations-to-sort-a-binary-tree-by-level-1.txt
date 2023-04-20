@@ -1,0 +1,53 @@
+#define MAX_POINT 100001
+#define MAX_SAME_LEVEL 65536
+
+int comp(const int* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+
+int minimumOperations(struct TreeNode* root){
+    struct TreeNode* list[MAX_POINT];
+    
+    int number[MAX_SAME_LEVEL];
+    int increasing[MAX_SAME_LEVEL];
+    int switch_number[MAX_POINT];
+    
+    int num_count = 0;
+    int point = 0;
+    list[0] = root;
+    int count = 1;
+    int ans = 0;
+    while (point < count){
+        num_count = 0;
+        for (int end = count ; point < end ; point++){
+            if (list[point]->left != NULL){
+                number[num_count] = list[point]->left->val;
+                increasing[num_count] = number[num_count];
+                num_count++;
+                list[count] = list[point]->left;
+                count++;
+            }
+            if (list[point]->right != NULL){
+                number[num_count] = list[point]->right->val;
+                increasing[num_count] = number[num_count];
+                num_count++;
+                list[count] = list[point]->right;
+                count++;
+            }
+        }
+        qsort(increasing, num_count, sizeof(int), comp);
+        for (int i = 0 ; i < num_count ;){
+            if (increasing[i] != number[i]){
+                if (increasing[i] < number[i]){
+                    ans++;
+                    switch_number[increasing[i]] = number[i];
+                } else {
+                    number[i] = switch_number[number[i]];
+                    continue;
+                }
+            }
+            i++;
+        }
+    }
+    return ans;
+}

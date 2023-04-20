@@ -1,0 +1,58 @@
+    public class RLEIterator
+    {
+        private readonly int[] _nums;
+        private int _count;
+        private int _idx;
+
+        public RLEIterator(int[] nums)
+        {
+            _nums = nums;
+            _idx = -2;
+            _count = 0;
+            Move();
+        }
+
+        private void Move()
+        {
+            while (true)
+            {
+                if (_count == 0)
+                {
+                    _idx += 2;
+                    if (_idx < _nums.Length - 1)
+                    {
+                        _count = _nums[_idx];
+                    }
+                    else
+                    {
+                        break;
+                    }
+                    continue;
+                }
+
+                break;
+            }
+        }
+
+        public int Next(int n)
+        {
+            int last = -1;
+
+            while (n > 0)
+            {
+                if (_idx >= _nums.Length)
+                {
+                    last = -1;
+                    break;
+                }
+
+                int min = Math.Min(_count, n);
+                _count -= min;
+                last = _nums[_idx + 1];
+                Move();
+                n -= min;
+            }
+
+            return last;
+        }
+    }

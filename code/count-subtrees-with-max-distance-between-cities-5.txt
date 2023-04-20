@@ -1,0 +1,54 @@
+class Solution {
+public:
+  int res=0;//for each subset max distance
+  int sz=0;//to check whether every node of the subset in connected or not
+  int dfs(int node,int mask,vector<vector<int>>&adj){
+    
+    int max_dia=0;//for the current node max diameter i.e max length including the current node
+    sz++;
+      for(auto x:adj[node]){
+        if(mask&(1<<(x-1))){
+          int dia= 1+dfs(x,mask^(1<<(x-1)),adj);
+          res=max(res,dia+max_dia);
+          max_dia=max(max_dia,dia);
+
+        }
+      }
+    return max_dia;
+    
+  }
+  
+    vector<int> countSubgraphsForEachDiameter(int n, vector<vector<int>>& edges) {
+        
+      vector<vector<int>>adj(n+1);
+      for(int i=0;i<edges.size();i++){
+        
+        adj[edges[i][0]].push_back(edges[i][1]);
+        adj[edges[i][1]].push_back(edges[i][0]);
+        
+      }
+      
+      vector<int>v(n-1,0);
+      
+      for(int i=0;i<(1<<n);i++){
+        for(int j=0;j<=n-1;j++){
+          if(i&(1<<j)){
+            res=0;
+            sz=0;
+            dfs(j+1,i^(1<<j),adj);
+            //sz== __builtin_popcount(i) is used to check number of set bits in the current subset
+            if(res>0 && sz== __builtin_popcount(i)){
+            v[res-1]++;
+            }
+            //break  statement is used because we are just picking the first node present in the subset and then simply calculating the longest distance in the current subset 
+//therefore doesn't make  any sense by calculating longest path from every node as the result will be same for the same subset
+            break;
+          }
+        }
+      }
+      
+      return v;
+      
+      
+    }
+};

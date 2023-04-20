@@ -1,0 +1,27 @@
+class Solution {
+    int helper(vector<int> &a , vector<int> &b) {
+        return (a[0] - b[0])*(a[0] - b[0]) + (a[1] - b[1])*(a[1] - b[1]);
+    }
+public:
+    int numberOfBoomerangs(vector<vector<int>>& points) {
+        int n = points.size();
+        if (n < 3) return 0;
+        unordered_map<int, int> hash;
+        int ans = 0;
+
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                if (i == j) continue;
+                auto dis = helper(points[i], points[j]);
+                hash[dis]++;
+            }
+
+            for (auto &item : hash) {
+                ans += item.second * (item.second - 1);
+            }
+            hash.clear();
+        }
+
+        return ans;
+    }
+};

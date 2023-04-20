@@ -1,0 +1,67 @@
+char * minimizeResult(char * expression){  // one * (two + three) * four
+    int len = strlen(expression);
+    int two[9];
+    int three[11];
+    int one[9];
+    int four[11];
+    int add = 0;
+    while (expression[add] != '+'){
+        add++;
+    }
+    two[add-1] = expression[add-1]-48;
+    int ten = 10;
+    for (int i = add-2 ; i >= 0 ; i--){
+        two[i] = two[i+1] + ten*(expression[i]-48);
+        ten *= 10;
+    }
+    
+    one[0] = 1;
+    ten /= 10;
+    for (int i = 1 ; i < add ; i++){
+        one[i] = two[0]/ten;
+        ten /= 10;
+    }
+    three[add+2] = expression[add+1]-48;
+    for (int i = add+3 ; i <= len ; i++){
+        three[i] = 10*three[i-1] + (expression[i-1]-48);
+        ten *= 10;
+    }
+    four[add+2] = three[len]%ten;
+    ten /= 10;
+    for (int i = add+3 ; i < len ; i++){
+        four[i] = three[len]%ten;
+        ten /= 10;
+    }
+    four[len] = 1;
+    int l, r;
+    int max = INT_MAX;
+    int now;
+    for (int i = 0 ; i < add ; i++){
+        for (int j = add+2 ; j <= len ; j++){
+            now = one[i]*(two[i]+three[j])*four[j];
+            if (now < max){
+                l = i;
+                r = j;
+                max = now;
+            }
+        }
+    }
+    char* ans = malloc(sizeof(char)*(len+3));
+    now = 0;
+    r++;
+    ans[len+2] = '\0';
+    len += 3;
+    int i = 0;
+    while (now < len){
+        if (now == l){
+            ans[now] = '(';
+        } else if (now == r){
+            ans[now] = ')';
+        } else {
+            ans[now] = expression[i];;
+            i++;
+        }
+        now++;
+    }
+    return ans;
+}

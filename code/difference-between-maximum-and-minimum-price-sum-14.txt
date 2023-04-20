@@ -1,0 +1,82 @@
+class Solution {
+    vector<long long> best, new_best;
+    vector<vector<int>> adj;
+    
+    // finding the max answer possible from the children of each node.
+    long long dfs1(int curr, int par, vector<int> &price) {
+        for(int child: adj[curr]) {
+            if(child != par) {
+                best[curr] = max(best[curr], dfs1(child, curr, price));
+            }
+        }
+        best[curr] += price[curr];
+        return best[curr];
+    }
+    
+    // reiterating on all nodes keeping the best_answer from the parent
+    void dfs2(int curr, int par, long long par_best, vector<int> &price) {
+        new_best[curr] = max(best[curr], par_best + price[curr]);
+        
+        /*
+            A little twist here, let's say curr node has more than 1 child then we need to find the best answer from all the children and while going to each child we will send the best answer from the children and from the parent. But whatif, I'm going to child c and the child which gave the best answer is also child c, this would be a disaster. Right?
+            So, I've splitted the solution of this problem in two parts.
+            Part 1: find a child c, that is giving the best answer and go to all the children of curr node except child c.
+            Part 2: find the best answer from the children of current node except c, and go to c.
+        
+        */
+        
+        // Part 1: 
+        int best_child = -1;
+        long long best_child_ans = 0;
+        for(int child: adj[curr]) {
+            if(child != par && best_child_ans < best[child]) {
+                best_child_ans = best[child];
+                best_child = child;
+            }
+        }
+        
+        // going to all the children except the child giving best_answer
+        for(int child: adj[curr]) {
+            if(child != par && child != best_child) {
+                dfs2(child, curr, max(par_best, best_child_ans) + price[curr], price);
+            }
+        }
+        
+        // Part 2: Goto the child that give the best answer in part 1.
+        if(best_child != -1) { // current node has more than one child
+            long long best_ans = 0;
+            for(int child: adj[curr]) {
+                if(child != par && child != best_child) {
+                    best_ans = max(best_ans, best[child]);
+                }
+            }
+            dfs2(best_child, curr, max(par_best, best_ans) + price[curr], price);
+        }
+    }
+    
+public:
+    long long maxOutput(int n, vector<vector<int>>& edges, vector<int>& price) {
+        // Initializing the arrays and creating a graph
+        best = vector<long long> (n, 0);
+        new_best = vector<long long> (n, 0);
+        adj = vector<vector<int>> (n);
+        for(vector<int> edge: edges) {
+            adj[edge[0]].push_back(edge[1]);
+            adj[edge[1]].push_back(edge[0]);
+        }
+        dfs1(0, -1, price);
+        dfs2(0, -1, 0, price);
+        
+        // The Final Part: Iterating to all the leaf nodes of the graph.
+        // Why Only Leaf Nodes? Because, the longest path in a graph(containing all positive ) would be from a leaf node to another leaf node. Think!!. Simple, Right?
+        // and minimum path from this leaf node would contain this node only.
+        long long mx = 0;
+        for(int i=0; i<n; i++) {
+            if(adj[i].size() == 1) {
+                mx = max(mx, new_best[i] - price[i]);
+            }
+        }
+        
+        return mx;
+    }
+};

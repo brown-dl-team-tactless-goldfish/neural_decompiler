@@ -1,0 +1,30 @@
+#include <string.h>
+
+char* removeDuplicateLetters(char* s) {
+	char o[1000];
+	int i, oLength;
+	int letterCount[26] = {0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0};
+	int inOutput[26] = { 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0 };
+	int sLength = strlen(s);
+
+	inOutput[s[0] - 97] = 1;
+	o[0] = s[0];
+	letterCount[s[0] - 97]--;
+	o[1] = '\0';
+	for (i = 0; i < sLength; i++) letterCount[s[i] - 97]++;
+	for (i = 1; i < sLength; i++) {
+		letterCount[s[i] - 97]--;
+		if (inOutput[s[i] - 97] == 1) continue;
+		oLength = strlen(o);
+		while (s[i] < o[oLength - 1] && o[0] != '\0' && letterCount[o[oLength - 1] - 97] > 0) {
+			inOutput[o[oLength - 1] - 97] = 0;
+			o[oLength - 1] = '\0';
+			oLength = strlen(o);
+		}	
+		o[oLength + 1] = '\0';
+		o[oLength] = s[i];
+		inOutput[s[i] - 97] = 1;
+	}
+
+	return o;
+}

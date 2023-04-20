@@ -1,0 +1,120 @@
+#include <atomic>
+#include <future>
+#include <thread>
+
+class Semaphore {
+    struct ListHead {
+        ListHead* prev;
+        ListHead* next;
+
+        ListHead() : prev{this}, next{this} {}
+
+        void prepend(ListHead* node) {
+            next->prev = node;
+            node->next = next;
+            node->prev = this;
+            next = node;
+        }
+
+        void append(ListHead* node) {
+            prev->next = node;
+            node->prev = prev;
+            node->next = this;
+            prev = node;
+        }
+
+        void unlink() {
+            auto prev_node = prev;
+            auto next_node = next;
+
+            prev_node->next = next_node;
+            next_node->prev = prev_node;
+        }
+
+        bool empty() const noexcept {
+            return prev == this and next == this;
+        }
+    };
+
+    struct WaitNode : ListHead {
+        std::promise<void> p;
+    };
+
+    struct SpinLock {
+        std::atomic_bool spin{false};
+
+        constexpr void lock() noexcept {
+            while (spin.exchange(true, std::memory_order_acquire)) {
+                while (spin.load(std::memory_order_relaxed))
+                    std::this_thread::sleep_for(30us);
+            }
+        }
+
+        constexpr void unlock() noexcept {
+            spin.store(false, std::memory_order_release);
+        }
+    };
+
+    ListHead head;
+    SpinLock mtx;
+    int count;
+    
+    public:
+    Semaphore(int count = 1) : head{}, mtx{},count{count} {}
+
+    void wait() noexcept {
+        mtx.lock();
+        if (count > 0) {
+            count --;
+            mtx.unlock();
+        } else {
+            WaitNode nd;
+            head.append(&nd);
+            mtx.unlock();
+            nd.p.get_future().wait();
+        }
+    }
+
+    void signal() noexcept {
+        mtx.lock();
+        if (not head.empty()) {
+            WaitNode* nd = (WaitNode*)head.next;
+            nd->unlink();
+            mtx.unlock();
+            nd->p.set_value();
+        } else {
+            count++;
+            mtx.unlock();
+        }
+    }
+};
+
+class DiningPhilosophers {
+    Semaphore bound{4};
+    Semaphore s[5];
+public:
+    DiningPhilosophers() { }
+
+    void wantsToEat(int philosopher,
+                    function<void()> pickLeftFork,
+                    function<void()> pickRightFork,
+                    function<void()> eat,
+                    function<void()> putLeftFork,
+                    function<void()> putRightFork) {
+        const auto left = philosopher;
+        const auto right = (philosopher + 1) % 5;
+        bound.wait();
+        s[left].wait();
+        s[right].wait();
+
+        pickLeftFork();
+        pickRightFork();
+        eat();
+        putLeftFork();
+        putRightFork();
+        
+        s[left].signal();
+        s[right].signal();
+        bound.signal();
+    }
+};

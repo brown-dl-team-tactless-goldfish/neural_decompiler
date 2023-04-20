@@ -1,0 +1,38 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int prev;
+
+int traverse(struct TreeNode *root){
+    if(root->left){
+        if(root->left->val > root->right->val){
+            if(prev == root->val) prev = root->left->val;
+            else prev = (prev > root->left->val) ? root->left->val : prev;
+            traverse(root->right);
+        }
+        else if(root->right->val > root->left->val){
+            if(prev == root->val) prev = root->right->val;
+            else prev = (prev > root->right->val) ? root->right->val : prev;
+            traverse(root->left);
+        }
+        else {
+            traverse(root->left);
+            traverse(root->right);
+        }
+        
+    }
+    return prev;
+}
+
+int findSecondMinimumValue(struct TreeNode* root){
+    if(root->left == NULL && root->right == NULL) return -1;
+    prev = root->val;
+    return (traverse(root) != root->val) ? prev : -1; 
+}
+
+

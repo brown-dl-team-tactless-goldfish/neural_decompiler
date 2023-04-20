@@ -1,0 +1,48 @@
+    unordered_map<int,int> mp;
+    int time(string &x){
+        int a = x[0]-'0';
+        int b = x[1]-'0';
+        int c = x[3]-'0';
+        int d = x[4]-'0';
+        
+        int hr = a*10+b;
+        int mint = c*10+d;
+        
+        return hr*60+mint;
+    }
+    
+    int findMinDifference(vector<string>& tp) {
+        for(auto &x: tp){
+            int n = time(x);
+            mp[n]++;
+        }
+        vector<int> v(1440,0);
+        for(auto &x: mp){
+            if(x.second >=2)
+                return 0;
+            else v[x.first] = 1;
+        }
+        int n = v.size(), cnt=1500;
+        int diff = INT_MAX;
+        for(int i=0;i<n;i++){
+            if(v[i] == 1){
+                diff = min(diff,cnt);
+                cnt=0;
+            }
+            ++cnt;
+        }
+        int posf=0, i=0;
+        while(v[i++]!=1)
+            ++posf;
+        int posl=n-1, j=n-1;
+        while(v[j--]!=1)
+            --posl;
+        
+        int count=0;
+        while(posl!=posf){
+            ++count;
+            posl = (posl+1)%n;
+        }
+        
+        return (int)min(diff,count);
+    }

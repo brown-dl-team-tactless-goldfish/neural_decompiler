@@ -1,0 +1,93 @@
+typedef struct {
+    int n;
+    int c;
+    char z;
+    pthread_cond_t even;
+    pthread_cond_t odd;
+    pthread_cond_t zero;
+    pthread_mutex_t mut;
+} ZeroEvenOdd;
+
+ZeroEvenOdd* zeroEvenOddCreate(int n) {
+    ZeroEvenOdd* obj = (ZeroEvenOdd*) malloc(sizeof(ZeroEvenOdd));
+    obj->n = n;
+    obj->c = 1;
+    obj->z = 1;
+    pthread_mutex_init(&obj->mut, NULL);
+    pthread_cond_init(&obj->odd, NULL);
+    pthread_cond_init(&obj->even, NULL);
+    pthread_cond_init(&obj->zero, NULL);
+    return obj;
+}
+
+// You may call global function `void printNumber(int x)`
+// to output "x", where x is an integer.
+
+void zero(ZeroEvenOdd* obj) {
+    if(obj->n <= 0) return ; 
+    while(1)
+    {
+        pthread_mutex_lock(&obj->mut);
+        while(!(obj->z == 1)) pthread_cond_wait(&obj->zero, &obj->mut);
+        obj->z ^= 1;
+        printNumber(0);
+        if(obj->c %2 == 0)
+        {
+            pthread_cond_signal(&obj->even);
+        }
+        else
+        {
+            pthread_cond_signal(&obj->odd);
+        }
+        
+        if(obj->c >= obj->n) 
+        {
+           pthread_mutex_unlock(&obj->mut);
+           break;
+        }
+        
+        pthread_mutex_unlock(&obj->mut);
+    }
+}
+
+void even(ZeroEvenOdd* obj) {
+    if(obj->n <= 1) return ;
+    while(1)
+    {
+        pthread_mutex_lock(&obj->mut);
+        while(!(obj->c % 2 == 0 && obj->z != 1)) 
+            pthread_cond_wait(&obj->even, &obj->mut);
+        printNumber(obj->c);
+        obj->z ^= 1;
+        obj->c++;
+        pthread_cond_broadcast(&obj->zero);
+        if(obj->c >= obj->n) {
+            pthread_mutex_unlock(&obj->mut);
+            break;
+        }
+        pthread_mutex_unlock(&obj->mut);
+    }
+}
+
+void odd(ZeroEvenOdd* obj) {
+    if(obj->n <= 0) return ;
+    while(1)
+    {
+        pthread_mutex_lock(&obj->mut);
+        while(!(obj->c % 2 == 1 && obj->z != 1)) 
+            pthread_cond_wait(&obj->odd, &obj->mut);
+        printNumber(obj->c);
+        obj->z ^= 1;
+        obj->c++;
+        pthread_cond_broadcast(&obj->zero);
+        if(obj->c >= obj->n) {
+            pthread_mutex_unlock(&obj->mut);
+            break;
+        }
+        pthread_mutex_unlock(&obj->mut);        
+    }
+}
+
+void zeroEvenOddFree(ZeroEvenOdd* obj) {
+    
+}

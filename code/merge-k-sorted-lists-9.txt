@@ -1,0 +1,30 @@
+struct ListNode* mergeKLists(struct ListNode** lists, int listsSize){
+	struct ListNode dummy_head;
+	struct ListNode *cur = &dummy_head;
+	bool done = false;
+
+	cur->next = NULL;
+    
+	while(!done) {
+		struct ListNode *s = NULL;
+		int s_val = INT_MAX;
+		int s_idx = 0;
+		done = true;
+		for(int i = 0; i < listsSize; i++) {
+			if(lists[i] != NULL) {
+				if(lists[i]->val < s_val) {
+					s_val = lists[i]->val;
+					s = lists[i];
+					s_idx = i;
+				}
+				done = false;
+			}
+		}
+		if(!done) {
+			cur->next = s;
+			lists[s_idx] = lists[s_idx]->next;
+			cur = cur->next;
+		}
+	}
+	return dummy_head.next;
+}

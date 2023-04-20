@@ -1,0 +1,5 @@
+select s.student_id,s.student_name,b.subject_name,ifnull(cnt,0) as attended_exams
+from students s
+cross join subjects b
+left join (select student_id,subject_name,count(*)  as cnt from examinations group by student_id,subject_name) c on s.student_id = c.student_id and b.subject_name = c.subject_name
+order by s.student_id,b.subject_name

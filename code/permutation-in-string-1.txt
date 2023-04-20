@@ -1,0 +1,44 @@
+bool isMatch(int *arr1, int *arr2);
+
+bool checkInclusion(char * s1, char * s2){
+    
+    int s1Length = strlen(s1);
+    int s2Length = strlen(s2);
+    
+    if (s1Length > s2Length)
+        return false;
+    
+    int *hashTable1 = malloc(26*sizeof(int));
+    int *hashTable2 = malloc(26*sizeof(int));
+    
+    int i;
+    for (i=0; i<s1Length; i++){
+        hashTable1[s1[i]-'a']++;
+        hashTable2[s2[i]-'a']++;  //to make sure the amount of the element is identical
+    }
+    
+    for (i=0; i<(s2Length-s1Length+1); i++){  // "+1"
+        
+        if (isMatch(hashTable1, hashTable2))
+            return true;
+        
+        // the location of this line is pretty important
+        if (i == (s2Length - s1Length))
+            break;
+        
+        hashTable2[s2[i+s1Length]-'a']++;
+        hashTable2[s2[i]-'a']--;
+    
+    }
+
+    return false;
+}
+
+bool isMatch(int *arr1, int *arr2){
+    int i;
+    for (i=0; i<26; i++){
+        if (arr1[i] != arr2[i])
+            return false;
+    }
+    return true;
+}

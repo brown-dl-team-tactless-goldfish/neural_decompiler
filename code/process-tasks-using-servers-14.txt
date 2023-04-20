@@ -1,0 +1,43 @@
+#define pii pair<int, int>
+#define vi vector<int>
+class Solution {
+public:
+    vi assignTasks(vi&weight, vi& task) {
+        int n=weight.size(), m = task.size(), curr_time; //curr_time = Time below which servers are considered available
+        
+        vi time(n, 0), res;   //time records the time of server when it is becoming free
+        priority_queue<pii, vector<pii>, greater<pii> > av, wor; //available servers & working servers
+        
+        //fill available with all servers, sorted by weight and then index
+        for(int i=0; i<n; i++)
+            av.push({weight[i], i} );
+        
+        //process each task one by one
+        for(int ptr = 0; ptr<m; ptr++){
+            
+            //deciding curr_time
+            if(!av.empty() ) 
+                curr_time = time[av.top().second];
+            else
+                curr_time = wor.top().first;
+            
+            //updating curr_time
+            curr_time = max(curr_time, ptr);
+            
+            //Now transfer the servers that will finish working before or on curr_time to av from wor
+            while(!wor.empty() && wor.top().first<=curr_time){
+                pii tmp = wor.top(); wor.pop();
+                
+                av.push({weight[tmp.second], tmp.second});
+                time[tmp.second] = curr_time;
+            }
+            
+            //Now just assing to ptr
+            pii tmp = av.top();
+            wor.push({curr_time+task[ptr], tmp.second} );
+            av.pop();
+            res.push_back(tmp.second);
+        }
+        return res;
+    }
+};

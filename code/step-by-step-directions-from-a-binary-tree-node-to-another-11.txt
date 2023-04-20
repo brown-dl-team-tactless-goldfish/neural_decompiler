@@ -1,0 +1,84 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    string getDirections(TreeNode* root, int startValue, int destValue) {
+        TreeNode* startNode{getNode(root, startValue)};
+        TreeNode* destNode{getNode(root, destValue)};
+        TreeNode* lca = getLCA(root, startNode, destNode);
+        string LCA2start{};
+        string LCA2dest{};
+        return reversePath(getPath(lca, startNode, LCA2start)) + getPath(lca, destNode, LCA2dest);
+    }
+    
+private:
+    TreeNode* getLCA(TreeNode* root, TreeNode* startNode, TreeNode* destNode){
+        if(!root || root == startNode || root == destNode){
+            return root;
+        }
+        
+        TreeNode* left = getLCA(root->left, startNode, destNode);
+        TreeNode* right = getLCA(root->right, startNode, destNode);
+        if(left && right){
+            return root;
+        }
+        return left ? left : right;
+    }
+    
+    TreeNode* getNode(TreeNode* node, int targetVal){
+        if(!node){
+            return nullptr;
+        }
+        
+        if(node->val == targetVal){
+            return node;
+        }
+        TreeNode* left = getNode(node->left,  targetVal);
+        TreeNode* right = getNode(node->right, targetVal);
+        return left ? left : right;
+    }
+    
+    string getPath(TreeNode* start, TreeNode* end, string& current){
+        if(!start){
+            return "";
+        }
+        if(start == end){
+            return current;
+        }
+        current += 'L';
+        string left = getPath(start->left, end, current);
+        if(!left.empty()){
+            return left;
+        }
+        current.pop_back();
+        current += 'R';
+        string right = getPath(start->right, end, current);
+        if(!right.empty()){
+            return right;
+        }
+        current.pop_back();
+        return "";
+    }
+    
+    string reversePath(string path){
+        string ans{};
+        for(const auto& c:path){
+            if(c == 'L' || c =='R'){
+                ans += 'U';
+            }
+            else{
+                ans += c;
+            }
+        }
+        return ans;
+    }
+};

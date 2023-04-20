@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int latestDayToCross(int r, int c, vector<vector<int>>& F) {
+        int l = 0, h = F.size()-1, dir[5] = {0, 1, 0, -1, 0};
+
+        auto check = [&](int m) {
+            vector<vector<int>> g(r, vector<int>(c, 0));
+            queue<pair<int, int>> q;
+            for(int i = 0; i <= m; i++) g[F[i][0]-1][F[i][1]-1] = 1;
+            for(int j = 0; j < c; j++) if(!g[0][j]) {
+                g[0][j] = 1;
+                q.push({0, j});
+            }
+
+            while(!q.empty()) {
+                auto [i, j] = q.front(); q.pop();
+                for(int d = 0; d < 4; d++) {
+                    int x = i + dir[d], y = j + dir[d+1];
+                    if(x < 0 || y < 0 || x == r || y == c || g[x][y]) continue;
+                    if(x == r-1) return true;
+                    q.push({x, y});
+                    g[x][y] = 1;
+                }
+            }
+            return false;
+        };
+
+        while(l < h) {
+            int m = l + (h-l+1)/2;
+            if(check(m)) {
+                l = m;
+            } else {
+                h = m-1;
+            }
+        }
+        return l+1;
+    }
+};

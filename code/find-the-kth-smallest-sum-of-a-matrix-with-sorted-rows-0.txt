@@ -1,0 +1,113 @@
+public class Solution 
+{
+    public int KthSmallest(int[][] mat, int k) 
+    {
+        int rows = mat.Length, cols = mat[0].Length;
+        var pq = new PriorityQueue<int>((x, y) => y - x);
+        for (int c = 0; c < cols; c++) 
+        {
+            pq.Enqueue(mat[0][c]);
+            if (pq.Count > k) 
+                pq.Dequeue();
+        }
+
+        for (int r = 1; r < rows; r++) 
+        {
+            var nextPq = new PriorityQueue<int>((x, y) => y - x);
+            while(pq.Count != 0)
+            {
+                int i = pq.Dequeue();
+                for (int c = 0; c < cols; c++) 
+                {
+                    nextPq.Enqueue(i + mat[r][c]);
+                    if (nextPq.Count > k) 
+                        nextPq.Dequeue();
+                }
+            }
+
+            pq = nextPq;
+        }
+
+        return pq.Dequeue();
+        
+    }
+}
+
+
+public class PriorityQueue<T>
+{
+    private List<T> data;
+
+    private readonly Comparison<T> comparison;
+
+    public PriorityQueue(Comparison<T> comparison) // var pq = new PriorityQueue<int>((x, y) => x - y);
+    {
+        this.data = new List<T>();
+        this.comparison = comparison;
+    }
+
+    public int Count => this.data.Count;
+
+    public void Enqueue(T item)
+    {
+        this.data.Add(item);
+        Swim(data.Count - 1);
+    }
+
+    public T Dequeue()
+    {
+        if (this.Count == 0) throw new Exception("Unable to Dequeue() from an empty queue.");
+        var result = this.data[0];
+        this.data[0] = this.data[this.data.Count - 1];
+        this.data.RemoveAt(this.data.Count - 1);
+        Sink(0);
+        return result;
+    }
+
+    public void Clear()
+    {
+        this.data = new List<T>();
+    }
+
+    public T Peek()
+    {
+        if (this.Count == 0) throw new Exception("Unable to Peek() from an empty queue.");
+        return this.data[0];
+    }
+
+    private void SwapData(int index1, int index2)
+    {
+        var temp = this.data[index1];
+        this.data[index1] = this.data[index2];
+        this.data[index2] = temp;
+    }
+
+    private int Parent(int i)
+    {
+        return (i - 1) / 2; 
+    }
+
+    private void Swim(int curr)
+    {
+        while (curr > 0 && this.comparison(data[curr], data[Parent(curr)]) < 0)
+        {
+            SwapData(curr, Parent(curr));
+            curr = Parent(curr);
+        }
+    }
+
+    private void Sink(int curr)
+    {
+        int count = this.data.Count;
+        while ( 2 * curr + 1 < count)
+        {
+            int next = 2 * curr + 1;
+            if (next + 1 < count && comparison(data[next], data[next + 1]) > 0) 
+                next++;
+            if (comparison(data[curr], data[next]) <= 0) 
+                break;
+            SwapData(curr, next);
+            curr = next;
+        }
+    }
+}

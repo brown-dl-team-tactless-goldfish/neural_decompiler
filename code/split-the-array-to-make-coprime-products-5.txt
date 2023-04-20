@@ -1,0 +1,29 @@
+    int findValidSplit(vector<int>& A) {
+        unordered_map<int, int> cnt;
+        for(auto e : A) {
+            for(int d = 2, t = sqrt(e); d <= min(e, t); d++) {
+                if(e%d == 0) cnt[d]++;
+                while(e%d == 0) e /= d;
+            }
+            if(e > 1) cnt[e]++;
+        }
+        
+        unordered_set<int> left;
+        for(int i = 0; i <= (int)A.size()-2; i++) {
+            int e = A[i];
+            for(int d = 2, t = sqrt(e); d <= min(e, t); d++) {
+                if(e%d == 0) {
+                    if(--cnt[d]) left.insert(d);
+                    else left.erase(d);
+                }
+                while(e%d == 0) e /= d;
+            }
+            if(e > 1)  {
+                if(--cnt[e]) left.insert(e);
+                else left.erase(e);
+            }
+            
+            if(left.size() == 0) return i;
+        }
+        return -1;
+    }

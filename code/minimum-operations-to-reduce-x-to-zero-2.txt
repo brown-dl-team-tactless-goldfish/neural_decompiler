@@ -1,0 +1,57 @@
+int minOperations(int* nums, int numsSize, int x){
+    int *frontsum = calloc(numsSize+1,sizeof(int)); //0,nums[0],.....
+    int *backsum = calloc(numsSize+1,sizeof(int));  //
+    if(nums==NULL||numsSize==0)
+        return -1;
+    if(numsSize==1)
+        if(nums[0]!=x)  
+            return -1;
+        else
+            return 1;
+    for(int i=0;i<numsSize;i++)
+    {
+        frontsum[i+1]+=nums[i]+frontsum[i];
+    }
+    for(int i=numsSize-1;i>=0;i--)
+    {
+        backsum[i]+=nums[i]+backsum[i+1];
+    }
+    
+    // for(int i=0;i<=numsSize;i++)
+    // {
+    //     printf("%d ",frontsum[i]);
+    // }
+    // printf("\n");
+    // for(int i=0;i<=numsSize;i++)
+    // {
+    //     printf("%d ",backsum[i]);
+    // }
+    // printf("\n");
+    
+    int left = 0;
+    int right = numsSize;
+    int min = INT_MAX;
+    while(frontsum[left]<x && left<numsSize){
+        left++;
+    }
+    if(frontsum[left]<x)    return -1;
+    if(frontsum[left]==x) min = left;
+    while(backsum[right]<x){
+        while(backsum[right]+frontsum[left]>x)
+        {
+            left--;
+        }
+        if(backsum[right]+frontsum[left]==x && left+numsSize-right<min)
+        {
+            min = left+numsSize-right;
+        } 
+        right--;
+    }
+    if(backsum[right]==x && numsSize-right<min)
+        min = numsSize-right;
+    
+    if(min==INT_MAX)
+        return -1;
+    else
+        return min;
+}

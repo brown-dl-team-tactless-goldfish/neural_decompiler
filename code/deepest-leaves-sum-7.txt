@@ -1,0 +1,84 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+typedef struct TreeNode * queue_data_t;
+
+typedef enum queue_er_em {
+    QUEUE_OK = 0,
+    QUEUE_EMPTY = 1,
+    QUEUE_FULL = 2,
+    QUEUE_ERROR = 0xFF
+} queue_er_em;
+
+typedef struct _queue_t {
+    queue_data_t *value;
+    int buf_size;
+    int offer_i;
+    int poll_i;
+    int count;
+} queue_t;
+
+queue_t *create_queue(int buf_size) {
+    queue_t *queue = malloc(sizeof(queue_t));
+    memset(queue, 0, sizeof(queue_t));
+    queue->buf_size = buf_size;
+    queue->value = malloc(buf_size*sizeof(queue_data_t));
+    memset(queue->value, 0, buf_size*sizeof(queue_data_t));
+
+    return queue;
+}
+
+queue_er_em offer_queue(queue_t *queue, queue_data_t *tdata) {
+    assert(queue->count < queue->buf_size);
+    if(queue->count >= queue->buf_size) return QUEUE_ERROR;
+    memcpy(&queue->value[queue->offer_i++], tdata, sizeof(queue_data_t));
+    if(queue->offer_i == queue->buf_size) queue->offer_i = 0;
+    queue->count++;
+    return QUEUE_OK;
+}
+
+queue_er_em poll_queue(queue_t *queue, queue_data_t *rdata) {
+    assert(queue->count > 0);
+    if(queue->count < 1) return QUEUE_EMPTY;
+    memcpy(rdata, &queue->value[queue->poll_i++], sizeof(queue_data_t));
+    if(queue->poll_i == queue->buf_size) queue->poll_i = 0;
+    queue->count--;
+    return QUEUE_OK;
+}
+
+inline int get_queue_data_count(queue_t *queue) {
+    return queue->count;
+}
+
+bool is_queue_empty(queue_t *queue) {
+    return !(queue->count!=0);
+}
+
+int deepestLeavesSum(struct TreeNode *node) {
+    if(node == NULL) return 0;
+    int result = 0;
+    queue_t *buf = create_queue(5000);
+    offer_queue(buf, &node);
+
+    while(!is_queue_empty(buf)) {
+        int count = get_queue_data_count(buf);
+        result = 0;
+
+        for(int i=0;i<count;i++) {
+            poll_queue(buf, &node);
+            result += node->val;
+
+            if(node->left != 0) offer_queue(buf, &node->left);
+            if(node->right != 0) offer_queue(buf, &node->right);
+        }
+    }
+
+    return result;
+}

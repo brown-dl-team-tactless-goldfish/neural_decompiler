@@ -1,0 +1,31 @@
+//counting sort + tracking of how many of each modulus + overall sum
+int counts[10] = {0}, mod_buckets[3] = {0}, sum = 0;
+for(int i = 0; i < digitsSize; ++i)
+{
+    sum += digits[i];
+    counts[digits[i]] += 1;
+    mod_buckets[digits[i]%3] += 1;
+}
+
+//adjust counts if the sum is not already divisible by three
+if(sum % 3 != 0)
+	//check if we can get rid of a single number matching current remainder
+    if(mod_buckets[sum % 3] > 0)
+        mod_buckets[sum % 3] -= 1;
+	//otherwise we need to remove two numbers with the other non-zero remainder
+    else
+        mod_buckets[3 - (sum % 3)]-=2;
+
+//handle special case of zero to avoid returning "00..00"
+if(sum == 0||sum ==1||sum==2)
+    counts[0] = 1;
+
+//put in digits largest first, limited by their count in
+//the input and by how many are allowed from their modulus
+for(int i = 9; i >= 0; --i)
+    while(counts[i]-- > 0 && mod_buckets[i%3]-- > 0)
+        *ptr++ = '0'+i;
+
+//null terminate the string
+*ptr='\0';
+return ret;

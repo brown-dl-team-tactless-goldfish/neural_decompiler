@@ -1,0 +1,51 @@
+class Solution:
+
+    def simple(self, total: int, cost1: int, cost2: int) -> int:
+        return sum(rest // cost1 + 1
+                   for rest in range(total, -1, -cost2))
+    
+    def improved(self, total: int, cost1: int, cost2: int) -> int:
+        c, C = sorted([cost1, cost2])
+        return sum(rest // c + 1
+                   for rest in range(total, -1, -C))
+
+    def fast1(self, total: int, cost1: int, cost2: int) -> int:
+        c, C = sorted([cost1, cost2])
+        blocksize = c * C
+        blocks, partial = divmod(total, blocksize)
+        result = sum(rest // c + 1
+                     for rest in range(partial, -1, -C))
+        if blocks:
+            blocksum = sum(rest // c + 1
+                           for rest in range(total, total - blocksize, -C))
+            result += blocks * blocksum - blocksize * comb(blocks, 2)
+        return result
+
+    def fast2(self, total: int, cost1: int, cost2: int) -> int:
+        c, C = sorted([cost1, cost2])
+        blocksize = c * C
+        return sum(
+            (rest//c+1) * blocks + C * comb(blocks, 2)
+            for rest in range(total % C, min(blocksize, total+1), C)
+            for blocks in [(total-rest) // blocksize + 1]
+        )
+
+    def waysToBuyPensPencils(self, total: int, cost1: int, cost2: int, timess=defaultdict(lambda: [0] * 5), testcase=[0]) -> int:
+        solutions = self.simple, self.improved, self.fast1, self.fast2
+        expect = dummy = object()
+        from time import perf_counter as time
+        for i in range(5):
+            for solution in solutions:
+                start = time()
+                result = solution(total, cost1, cost2)
+                end = time()
+                if expect is dummy:
+                    expect = result
+                assert result == expect
+                timess[solution.__name__][i] += end - start
+        testcase[0] += 1
+        if testcase[0] == 145:
+            for name, times in timess.items():
+                print(f'{name:8}', *(f'{t*1e3:7.2f} ms' for t in sorted(times)[:3]))
+            return
+        return result

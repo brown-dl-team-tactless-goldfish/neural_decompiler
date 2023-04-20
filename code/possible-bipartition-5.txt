@@ -1,0 +1,102 @@
+typedef struct ListEntry_ {
+    int * data;
+    size_t actual_size;
+    size_t alloc_size;
+} ListEntry;
+
+#define INIT_ALLOC 16
+#define COLOR_BLUE 0x02
+#define COLOR_RED 0x01
+
+ListEntry * list_init()
+{
+    ListEntry * entry = malloc(sizeof(ListEntry));
+    entry->actual_size = 0;
+    entry->alloc_size = INIT_ALLOC;
+    entry->data = malloc(entry->alloc_size * sizeof(int));
+    return entry;
+}
+
+void list_append(ListEntry * entry, int val)
+{
+    if (entry->actual_size == entry->alloc_size)
+    {
+        // alloc a 2x large space on overflow
+        size_t new_size = entry->alloc_size << 1;
+        int * old_data = entry->data;
+        int * new_data = malloc(new_size * sizeof(int));
+        // tried realloc() but dont know why it causes RuntimeError
+        memcpy(new_data, old_data, entry->actual_size * sizeof(int));
+        free(old_data);
+        entry->data = new_data;
+        entry->alloc_size = new_size;
+    }
+    entry->data[entry->actual_size++] = val;
+}
+
+bool color_adjacency(int current, ListEntry* * adjacency, unsigned char * colored)
+{
+    unsigned char current_color = colored[current] == COLOR_RED ? COLOR_RED : COLOR_BLUE;
+    size_t adjacency_size = adjacency[current]->actual_size;
+    int * cur_adj_data = adjacency[current]->data;
+
+    // explore neighbours, if not colored, color it and continue dfs
+    // if colored and color is different from current, ignore
+    // if next and current have same color, return false
+    for (size_t i = 0; i < adjacency_size; i++)
+    {
+        int next = cur_adj_data[i];
+        unsigned char next_color = colored[next];
+        if (next_color)
+        {
+            if (next_color == current_color)
+            {
+                return false;
+            }
+            // else the colored neighbour vertes has a different color, which is valid
+        }
+        else
+        {
+            // the `next` vertex is uncolored.
+            colored[next] = current_color == COLOR_RED ? COLOR_BLUE : COLOR_RED;
+            // color the `next` vertex with a different color.
+            if (!color_adjacency(next, adjacency, colored))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+bool possibleBipartition(int n, int** dislikes, int dislikesSize, int* dislikesColSize){
+    if (n == 1) return true;
+    if (n == 2) return (dislikesSize == 0);
+    unsigned char * colored = calloc(n, sizeof(unsigned char));
+    ListEntry* * adjacency = malloc(n * sizeof(ListEntry *));
+    for (int i = 0; i < n; i++)
+    {
+        adjacency[i] = list_init();
+    }
+
+    for (int i = 0; i < dislikesSize; i++)
+    {
+        int dislike_a = dislikes[i][0] - 1;
+        int dislike_b = dislikes[i][1] - 1;
+        list_append(adjacency[dislike_a], dislike_b);
+        list_append(adjacency[dislike_b], dislike_a);
+    }
+
+    for (int i = 0; i < n; i++)
+    {
+        if (!colored[i])
+        {
+            colored[i] = COLOR_RED;
+            if (!color_adjacency(i, adjacency, colored))
+            {
+                return false;
+            }
+        }
+    }
+    return true;
+}

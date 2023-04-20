@@ -1,0 +1,60 @@
+char * reformatDate(char * date){
+    int n = strlen(date);
+    int yy = 0, mm = 0, dd = 0;
+    char* month[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"} ;
+    for(int i = n-4; i < n; i++){
+        yy = yy * 10 + date[i] - '0';
+    }
+    dd = date[0] -'0';
+    if(date[1] >= '0' && date[1] <= '9')
+        dd = dd*10 + date[1] -'0';
+    int p, k;
+    for(p = 0; p < n; p++){
+        if(date[p] ==' ')
+            break;
+    }
+    for(k = p+1; k <n ;k++){
+        if(date[k] == ' '){
+            date[k] = '\0';
+            break;
+        }
+    }
+    
+    for(int i = 0; i < 12; i++){
+        if(strcmp(month[i], &date[p+1]) == 0 ){            
+            mm = i+1;
+            break;
+        }    
+    }
+   // printf("mm = %d, dd = %d ", mm , dd) ;
+    char* ans = malloc(11 );
+    ans[10] ='\0' ;
+    ans[0] = yy/1000 +'0';
+    yy %= 1000;
+    ans[1] = yy/100 +'0';
+    yy %= 100;
+    ans[2] = yy/10 +'0';
+    yy %= 10;
+    ans[3] = yy +'0';
+    ans[4] = '-' ;
+    if(mm >= 10){
+        ans[5] = mm/10 +'0';
+        mm %= 10;
+        ans[6] = mm + '0';
+    }
+    else{
+        ans[5] = '0';
+        ans[6] = mm +'0' ;
+    }
+    ans[7] ='-' ;
+    if(dd >= 10){
+        ans[8] = dd/10 +'0';
+        dd %= 10;
+        ans[9] = dd + '0';
+    }
+    else{
+        ans[8] = '0';
+        ans[9] = dd +'0' ;
+    }    
+    return ans;
+}

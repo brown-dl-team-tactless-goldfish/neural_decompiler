@@ -1,0 +1,82 @@
+typedef struct {
+    int key;
+    struct ListNode *ptr;
+    UT_hash_handle hh;
+}node;
+typedef struct{
+    int val;
+    int *next;
+}ListNode;
+typedef struct {
+    int pos;
+    int step;
+}status;
+
+int minJumps(int* arr, int arrSize){
+
+    if (arrSize <= 1) return 0;
+
+    status obj[arrSize];
+    int visit[arrSize];
+    memset(visit, 0, arrSize*sizeof(int));
+    node *hash = NULL, *s;
+
+    struct ListNode *tp;
+
+    //add all into hash and linked list
+    for (int i = 0; i < arrSize; i++) {
+        HASH_FIND_INT(hash, &arr[i], s);
+        if (!s) {
+            s = (node*)calloc(1, sizeof(node));
+            s->key = arr[i];
+            HASH_ADD_INT(hash, key, s);
+        }
+        tp = (struct ListNode*)calloc(1, sizeof(struct ListNode));
+        tp->val = i;
+        tp->next = s->ptr;
+        s->ptr = tp;
+    } 
+
+    // initialization
+    int top = 1, left = 0, pos, val; 
+    obj[0].step = obj[0].pos = 0;
+    visit[0] = 1;
+
+    while (left < top) {
+        if (obj[left].pos == arrSize-1)//done
+            break;
+        
+        val = arr[obj[left].pos];
+        HASH_FIND_INT(hash, &val, s);        
+        if (s) {
+            tp = s->ptr; 
+            while (tp) {
+                pos = tp->val;
+                if (!visit[pos]) {
+                    visit[pos] = 1;
+                    obj[top].step = obj[left].step + 1;
+                    obj[top].pos = pos;
+                    top++;
+                } 
+                tp = tp->next;
+            }
+            HASH_DEL(hash, s);
+        }
+
+        for (int i = 0; i < 2; i++) {
+            pos = obj[left].pos + (i ? 1 : -1);
+            if (pos < 0 || pos >= arrSize)//jump outside
+                continue;
+            if (visit[pos])//visited
+                continue;
+            obj[top].step = obj[left].step + 1;
+            obj[top].pos = pos;
+            visit[pos] = 1;
+            top++;
+        }
+
+        left++;
+    }
+    free(tp);
+    return obj[left].step; 
+}

@@ -1,0 +1,44 @@
+class Solution {
+    vector<int> v;
+    int n;
+    int dp[50005][2];
+    int helper(int start, int turn) {
+        if (start>=n) return 0;
+        if (dp[start][turn]!=-INT_MAX)
+            return dp[start][turn];
+        int bestScore = 0;
+        if (turn==0) {
+            bestScore = v[start] + helper(start+1, 1-turn);
+            for (int i=start+1; i<min(n, start+3); i++) {
+                int currScore = accumulate(v.begin()+start, v.begin()+i+1, 0);
+                currScore += helper(i+1, 1-turn);
+                if (currScore>bestScore)
+                    bestScore = currScore;
+            }
+        } else if (turn==1) {
+            bestScore = -v[start] + helper(start+1, 1-turn);
+            for (int i=start+1; i<min(n, start+3); i++) {
+                int currScore = -accumulate(v.begin()+start, v.begin()+i+1, 0);
+                currScore += helper(i+1, 1-turn);
+                if (currScore<bestScore)
+                    bestScore = currScore;
+            }           
+        }
+        //cout << "start, turn, score = " << start << ", " << turn << ", " << bestScore << endl;
+        dp[start][turn] = bestScore;
+        return bestScore;
+    }
+public:
+    string stoneGameIII(vector<int>& stoneValue) {
+        v = stoneValue;
+        n = stoneValue.size();
+        for (int i=0; i<50005; i++)
+            for (int j=0; j<2; j++)
+                dp[i][j] = -INT_MAX;
+        int score = helper(0, 0);
+        cout << "score = " << score << endl;
+        if (score==0) return "Tie";
+        else if (score>0) return "Alice";
+        else return "Bob";
+    }
+};

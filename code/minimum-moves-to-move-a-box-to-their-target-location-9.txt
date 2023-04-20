@@ -1,0 +1,115 @@
+class Solution {
+private:
+    struct BoardState {
+    public:
+        int bR, bC;
+        int wR, wC;
+        
+        BoardState(int _bR, int _bC, int _wR, int _wC) {
+            bR = _bR;
+            bC = _bC;
+            wR = _wR;
+            wC = _wC;
+        }
+    };
+    
+    const int dir[5] = {0, 1, 0, -1, 0};
+    int rSize, cSize;
+    
+    bool inBound(int r, int c) {
+        return (r >= 0 && c >= 0 && r < rSize && c < cSize);
+    }
+    
+    // This part of the code uses BFS to try find from which direction we can push the box
+    void bfsWorker(vector<bool> &pushDir, vector<vector<char>> &grid, BoardState &s) {
+        vector<vector<bool>> memo (rSize, vector<bool>(cSize, false));
+        queue<pair<int, int>> bfsQ;
+        
+        bfsQ.emplace(s.wR, s.wC);
+        memo[s.wR][s.wC] = true;
+        
+        while (!bfsQ.empty()) {
+            int currR = bfsQ.front().first;
+            int currC = bfsQ.front().second;
+            bfsQ.pop();
+            
+            for (int i = 0; i < 4; i++) {
+                int nextR = currR + dir[i];
+                int nextC = currC + dir[i + 1];
+                if (inBound(nextR, nextC)) {
+                    if (nextR == s.bR && nextC == s.bC) {
+                        pushDir[i] = true;
+                    } else if (!memo[nextR][nextC] && grid[nextR][nextC] != '#') {
+                        bfsQ.emplace(nextR, nextC);
+                        memo[nextR][nextC] = true;
+                    }
+                }
+            }
+        }
+    }
+public:
+    int minPushBox(vector<vector<char>>& grid) {
+        int initWR, initWC; // initial worker coordinates
+        int initBR, initBC; // initial box coordinates
+        int tarR, tarC;     // target coordinates
+        
+        // Find initial locations
+        rSize = grid.size();
+        cSize = grid[0].size();
+        for (int r = 0; r < rSize; r++) {
+            for (int c = 0; c < cSize; c++) {
+                switch (grid[r][c]) {
+                    case 'B':
+                        initBR = r;
+                        initBC = c;
+                        break;
+                    case 'T':
+                        tarR = r;
+                        tarC = c;
+                        break;
+                    case 'S':
+                        initWR = r;
+                        initWC = c;
+                        break;
+                    default:
+                        break;
+                }
+            }
+        }
+        
+        // Use BFS to search location of the box
+        // Note that a box can travel the same direction, but to reduce duplicated calculations
+        // we have to memoize the direciton where the box is pushed from to the current slot
+        queue<BoardState> bfsQ;
+        vector<vector<vector<bool>>> memo(rSize, vector<vector<bool>>(cSize, vector<bool>(4, false)));
+        
+        bfsQ.emplace(initBR, initBC, initWR, initWC);
+        
+        int steps = 0;
+        while (!bfsQ.empty()) {
+            int currQSize = bfsQ.size();
+            while (currQSize-- > 0) {
+                BoardState currState = bfsQ.front();
+                bfsQ.pop();
+                
+                if (currState.bR == tarR && currState.bC == tarC)
+                    return steps;
+                
+                vector<bool> pushDir(4, false); // direction we can push from
+                bfsWorker(pushDir, grid, currState);
+                
+                for (int i = 0; i < 4; i++) {
+                    if (!pushDir[i]) continue;
+                    int nextBR = currState.bR + dir[i];
+                    int nextBC = currState.bC + dir[i + 1];
+                    if (inBound(nextBR, nextBC) && !memo[nextBR][nextBC][i] && grid[nextBR][nextBC] != '#') {
+                        memo[nextBR][nextBC][i] = true;
+                        bfsQ.emplace(nextBR, nextBC, currState.bR, currState.bC);
+                    }
+                }
+            }
+            steps++;
+        }
+        return -1;
+    }
+};

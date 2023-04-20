@@ -1,0 +1,33 @@
+class Solution {
+    bool ispossible(int mid, long long k, vector<int>& candies)
+    {
+        long long pos = 0;
+        for(int i = 0; i < candies.size(); i++)
+        {
+            pos += candies[i]/mid;
+            if(pos >= k)
+                return true;
+        }
+        return false;
+    }
+public:
+    int maximumCandies(vector<int>& candies, long long k) {
+        int r = 0, l = 1, ans= 0;
+        for(int &num : candies)
+            r = max(num, r);
+        while(l <= r)
+        {
+            int mid = l + (r-l)/2;
+            if(ispossible(mid, k, candies))
+            {
+                ans = mid;
+                l = mid+1;
+            }
+            else
+            {
+                r = mid-1;
+            }
+        }
+        return ans;
+    }
+};

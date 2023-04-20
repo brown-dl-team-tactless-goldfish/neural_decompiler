@@ -1,0 +1,249 @@
+public class Solution 
+{
+	public int MinPushBox(char[][] grid)
+	{
+		Point target = new Point();
+		Point startBox = new Point();
+		Point startPerson = new Point();
+		for (int r = 0; r < grid.Length; ++r)
+		{
+			for (int c = 0; c < grid[r].Length; ++c)
+			{
+				if (grid[r][c] == 'T')
+					target = new Point(r, c);
+				else if (grid[r][c] == 'S')
+					startPerson = new Point(r, c);
+				else if (grid[r][c] == 'B')
+					startBox = new Point(r, c);
+			}
+		}
+
+		var heap = new Heap<State>((n1, n2) => n1.Priority.CompareTo(n2.Priority));
+		var costSoFar = new Dictionary<(Point, Point), int>();
+
+		heap.Insert(new State { Priority = this.Heurestic(startBox, target), Box = startBox, Person = startPerson });
+		costSoFar[(startBox, startPerson)] = 0;
+
+		while (heap.Count > 0)
+		{
+			var state = heap.RemoveMin();
+
+			if (state.Box == target)
+				return state.Moves;
+
+			for (int dr = -1; dr <= 1; dr++)
+			{
+				for (int dc = -1; dc <= 1; dc++)
+				{
+					if ((dr == 0 && dc == 0) || (dr != 0 && dc != 0))
+						continue;
+
+					var newPersonLocation = new Point(state.Person.Row + dr, state.Person.Col + dc);
+					if (!this.CanMove(newPersonLocation, grid))
+						continue;
+
+					var currentState = (state.Box, state.Person);
+
+					if (newPersonLocation == state.Box)
+					{
+						var newBoxLocation = new Point(state.Box.Row + dr, state.Box.Col + dc);
+						if (!this.CanMove(newBoxLocation, grid))
+							continue;
+
+						var nextState = (newBoxLocation, newPersonLocation);
+						var newCost = costSoFar[currentState] + 1;
+						if (!costSoFar.ContainsKey(nextState) || newCost < costSoFar[nextState])
+						{
+							costSoFar[nextState] = newCost;
+							int priority = newCost + this.Heurestic(newBoxLocation, target);
+							heap.Insert(new State { Box = newBoxLocation, Person = newPersonLocation, Moves = state.Moves + 1, Priority = priority });
+						}
+					}
+					else
+					{
+						var nextState = (state.Box, newPersonLocation);
+						var newCost = costSoFar[currentState];
+						if (!costSoFar.ContainsKey(nextState) || newCost < costSoFar[nextState])
+						{
+							costSoFar[nextState] = newCost;
+							int priority = newCost + this.Heurestic(state.Box, target);
+							heap.Insert(new State { Box = state.Box, Person = newPersonLocation, Moves = state.Moves, Priority = priority });
+						}
+					}
+				}
+			}
+		}
+
+		return -1;
+	}
+
+	private bool CanMove(Point point, char[][] grid)
+	{
+		bool invalidLocation =
+			point.Row < 0 ||
+			point.Row >= grid.Length ||
+			point.Col < 0 ||
+			point.Col >= grid[0].Length ||
+			grid[point.Row][point.Col] == '#';
+
+		return !invalidLocation;
+	}
+
+	private int Heurestic(Point box, Point target) => Math.Abs(box.Row - target.Row) + Math.Abs(box.Col - target.Col);
+
+	public struct Point : IEquatable<Point>
+	{
+		public Point(int row, int col) => (this.Row, this.Col) = (row, col);
+
+		public int Row { get; set; }
+
+		public int Col { get; set; }
+
+		public static bool operator ==(Point p1, Point p2) => p1.Equals(p2);
+
+		public static bool operator !=(Point p1, Point p2) => !p1.Equals(p2);
+
+		public bool Equals(Point other) => this.Row == other.Row && this.Col == other.Col;
+
+		public override bool Equals(object obj) => base.Equals(obj);
+
+		public override int GetHashCode() => HashCode.Combine(Row, Col);
+	}
+
+	public class State : IComparable<State>
+	{
+		public int Priority { get; set; }
+		public int Moves { get; set; }
+		public Point Box { get; set; }
+		public Point Person { get; set; }
+
+		public int CompareTo(State other) => this.Priority.CompareTo(other.Priority);
+	}
+		
+    public class Heap<T>
+    {
+        private readonly List<T> list = new List<T>();
+
+        private readonly Comparison<T> compare;
+
+        public Heap(Comparison<T> compare) => this.compare = compare;
+
+        public T Min
+        {
+            get => this.list[0];
+        }
+
+        public int Count
+        {
+            get => this.list.Count;
+        }
+
+        public void Insert(T item)
+        {
+            this.list.Add(item);
+            this.FixHeapUp();
+        }
+
+        public void Build(IList<T> items)
+        {
+            this.list.Clear();
+            this.list.AddRange(items);
+
+            int parentIndex = this.GetParentIndex(items.Count - 1);
+            int index;
+            for (index = items.Count - 1; index >= 0; --index)
+            {
+                if (index != parentIndex)
+                    break;
+            }
+
+            for (int i = index; i >= 0; --i)
+                this.FixHeapDown(i);
+        }
+
+        public T RemoveMin()
+        {
+            T min = this.list[0];
+
+            if (this.list.Count == 1)
+            {
+                this.list.Clear();
+            }
+            else
+            {
+                this.list[0] = this.list[this.list.Count - 1];
+                this.list.RemoveAt(this.list.Count - 1);
+                this.FixHeapDown(0);
+            }
+
+            return min;
+        }
+
+        private int GetParentIndex(int index) => (index - 1) / 2;
+
+        private int GetLeftChildIndex(int index)
+        {
+            int leftIndex = 2 * index + 1;
+            if (leftIndex >= this.list.Count)
+                leftIndex = -1;
+            return leftIndex;
+        }
+
+        private int GetRightChildIndex(int index)
+        {
+            int rightIndex = 2 * index + 2;
+            if (rightIndex >= this.list.Count)
+                rightIndex = -1;
+            return rightIndex;
+        }
+
+        private void Swap(int i1, int i2)
+        {
+            T tmp = this.list[i1];
+            this.list[i1] = this.list[i2];
+            this.list[i2] = tmp;
+        }
+
+        private void FixHeapUp()
+        {
+            int i = this.list.Count - 1;
+            int parentIndex = this.GetParentIndex(i);
+
+            while (i != 0 && this.compare(this.list[parentIndex], this.list[i]) > 0)
+            {
+                this.Swap(parentIndex, i);
+                i = this.GetParentIndex(i);
+                parentIndex = this.GetParentIndex(i);
+            }
+        }
+
+        private void FixHeapDown(int rootIndex)
+        {
+            int leftChildIndex = this.GetLeftChildIndex(rootIndex);
+            int rightChildIndex = this.GetRightChildIndex(rootIndex);
+
+            int smallestIndex = rootIndex;
+
+            if (leftChildIndex != -1 && rightChildIndex != -1)
+            {
+                smallestIndex = this.compare(this.list[leftChildIndex], this.list[rightChildIndex]) < 0
+                    ? leftChildIndex
+                    : rightChildIndex;
+            }
+            else if (leftChildIndex != -1)
+                smallestIndex = leftChildIndex;
+            else if (rightChildIndex != -1)
+                smallestIndex = rightChildIndex;
+
+            smallestIndex = this.compare(this.list[smallestIndex], this.list[rootIndex]) < 0
+                ? smallestIndex
+                : rootIndex;
+
+            if (smallestIndex == rootIndex)
+                return;
+
+            this.Swap(smallestIndex, rootIndex);
+            this.FixHeapDown(smallestIndex);
+        }
+    }    
+}

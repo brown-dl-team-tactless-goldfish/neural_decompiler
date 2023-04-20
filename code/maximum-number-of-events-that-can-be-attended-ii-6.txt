@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int maxValue(vector<vector<int>>& events, int k) {
+        vector<vector<int>> val(k + 1, vector<int>(events.size() + 1));
+        sort(events.begin(), events.end(), [&](vector<int>& a, vector<int> &b){
+            return a[1] < b[1];
+        });
+        
+        auto upper_bound = [&](int time) {
+            int l = 0, r = events.size() - 1;
+            while (l < r) {
+                int m = l + (r - l) / 2;
+                if (events[m][1] <= time) {
+                    l = m + 1;
+                } else {
+                    r = m;
+                }
+            }
+            return l - (events[l][1] > time);
+        };
+
+        for (int i = 1; i <= k; ++i) {
+            for (int j = 1; j <= events.size(); ++j) {
+                int l = events[j - 1][0], r = events[j - 1][1], v = events[j - 1][2];
+                int sl = upper_bound(l - 1);
+                val[i][j] = max(val[i - 1][sl + 1] + v, val[i][j - 1]);
+            }
+        }
+
+        return val.back().back();
+    }
+};

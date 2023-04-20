@@ -1,0 +1,28 @@
+class Solution {
+public:
+    double distance(int x1, int x2, int y1, int y2) {
+        return (double)sqrt((x1 - x2)*(x1 - x2) + (y1 - y2)*(y1 - y2));
+    }
+    vector<int> bestCoordinate(vector<vector<int>>& towers, int radius) {
+        sort(towers.begin(), towers.end(), [](auto &a, auto &b){
+            return (a[0] == b[0] ? a[1] < b[1] : a[0] < b[0]);
+        });
+        int mx = 0.0;
+        int x1 = -1, y1 = -1;
+        for(auto &t : towers) {
+            int nq = 0;
+            for(auto &t1 : towers) {
+                double dist = distance(t[0], t1[0], t[1], t1[1]);
+                if(dist > (double)radius) continue;
+                double sq = t1[2]/(dist + 1);
+                nq += sq;
+            }
+            if(nq > mx) {
+                mx = nq;
+                x1 = t[0];
+                y1 = t[1];
+            }
+        }
+        return {x1, y1};
+    }
+};

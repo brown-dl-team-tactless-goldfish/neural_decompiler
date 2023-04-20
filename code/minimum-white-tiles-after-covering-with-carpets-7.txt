@@ -1,0 +1,74 @@
+// 2D DP:
+// Let f[i][j] represent the min # of while tiles remaining in floor[0..i]
+// after applying j carpets.
+// let z be the carpet length, and c be numCarpets.
+// Then we have:
+// f[i][j] is the min of:
+//  (a) f[i-1][j], if floor[i] is not white.
+//  otherwise:
+//  (b) f[i-z][j-1], when use 1 carpet to cover floor[i-z+1...i]
+//  (c) 1 + f[i-1][j],  when we deliberately don't cover [i].
+//
+// TODO: Use two rolling dp-rows to reduce space complexity to O(n) from O(n*c).
+class Solution {
+public:
+    int minimumWhiteTiles(const string& floor, int numCarpets, int carpetLen) {
+        const int n = floor.size();
+        const int c = numCarpets;
+        const int z = carpetLen;
+
+        // enough carpets to cover all tiles?
+        if (c * z >= n) {
+            return 0; // all tiles, including white tiles, are covered by carpets.
+        }
+
+        // prefix sum for counting the white tiles in O(1) time by using O(n) space.
+        vector<int> prefixSum(n);
+        {
+            prefixSum[0] = floor[0] == '1' ? 1 : 0;
+            for (int i = 1; i < n; ++i) {
+                prefixSum[i] = prefixSum[i - 1] + (floor[i] == '1' ? 1 : 0);
+            }
+        }
+
+        // enough carpets for all white tiles?
+        if (prefixSum.back() <= c) {
+            return 0;
+        }
+        // Let f[i][j] represent the min # of while tiles remaining in floor[0..i]
+        // after applying j carpets.
+        // let z be the carpet length, and c be numCarpets.
+        vector<vector<int>> f(n, vector<int>(c + 1, n + 1));
+        // initialize f[0][...]
+        f[0][0] = prefixSum[0];
+        for (int j = 1; j <= c; ++j) {
+            f[0][j] = 0; // one carpet is enough to cover the first tile
+        }
+
+        // General case
+        // f[i][j] is the min of:
+        //  (a) f[i-1][j], if floor[i] is not white.
+        //  otherwise:
+        //  (b) f[i-z][j-1], when use 1 carpet to cover floor[i-z+1...i]
+        //  (c) 1 + f[i-1][j],  when we deliberately don't cover [i].
+        for (int i = 1; i < n; ++i) {
+            f[i][0] = prefixSum[i];
+            for (int j = 1; j <= c; ++j) {
+                if (IsWhiteTile(floor, i)) {
+                    // (i-z) is the pos before the carpet whose right-side is at [i].
+                    f[i][j] =
+                            min(i - z >= 0 ? f[i - z][j - 1] : 0, //
+                                1 + f[i - 1][j]);
+                } else { // black tile --> no need to cover with carpet
+                    f[i][j] = f[i - 1][j];
+                }
+            }
+        }
+        return f[n - 1][c];
+    }
+
+private:
+    static inline bool IsWhiteTile(const string& floor, int i) {
+        return floor[i] == '1';
+    }
+};

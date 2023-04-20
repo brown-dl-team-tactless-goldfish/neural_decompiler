@@ -1,0 +1,60 @@
+    public class Solution
+    {
+        public int MaxSideLength(int[][] mat, int threshold)
+        {
+            checked
+            {
+
+                int n = mat.Length;
+                int m = mat[0].Length;
+                int minSize = Math.Min(n, m);
+
+                long[,] sums = new long[n, m];
+                for (int i = 0; i < n; i++)
+                {
+                    long sum = 0;
+                    for (int j = 0; j < m; j++)
+                    {
+                        sum += mat[i][j];
+                        sums[i, j] = sum + (i > 0 ? sums[i - 1, j] : 0);
+                    }
+                }
+
+                for (int length = minSize; length >= 1; length--)
+                {
+                    for (int i = length - 1; i < n; i++)
+                    {
+                        int excludeRow = i - length;
+
+                        for (int j = length - 1; j < m; j++)
+                        {
+                            long sum = sums[i, j];
+                            int excludeCol = j - length;
+
+                            if (excludeRow >= 0)
+                            {
+                                sum -= sums[excludeRow, j];
+                            }
+
+                            if (excludeCol >= 0)
+                            {
+                                sum -= sums[i, excludeCol];
+                            }
+
+                            if (excludeCol >= 0 && excludeRow >= 0)
+                            {
+                                sum += sums[excludeRow, excludeCol];
+                            }
+
+                            if (sum <= threshold)
+                            {
+                                return length;
+                            }
+                        }
+                    }
+                }
+
+                return 0;
+            }
+        }
+    }

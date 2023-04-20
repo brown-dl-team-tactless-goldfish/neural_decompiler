@@ -1,0 +1,25 @@
+class Solution {
+    map<int, map<int, vector<int>>> allrows;
+    void traverse(TreeNode *n, int r, int c) {
+        if (n == nullptr)
+            return;
+        allrows[r][c].push_back(n->val);
+        traverse(n->left, r + 1, c - 1);
+        traverse(n->right, r + 1, c + 1);
+    }
+public:
+    vector<vector<int>> verticalTraversal(TreeNode* root) {
+        traverse(root, 0, 0);
+        map<int, vector<int>> columns;
+        for (auto&[rowid, onerow] : allrows) {
+            for (auto&[colid, values] : onerow) {
+                sort(values.begin(), values.end());
+                columns[colid].insert(columns[colid].end(), values.begin(), values.end());
+            }
+        }
+        vector<vector<int>> res;
+        for (auto&[colid, values] : columns)
+            res.push_back(values);
+        return res;
+    }
+};

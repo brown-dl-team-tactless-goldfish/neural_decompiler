@@ -1,0 +1,165 @@
+class Solution {
+public:
+    /***
+     * How many ways are there to decode s, where digits are mapped to letters and 
+     * '*' represents any nonzero digit?
+     * A -> 1
+     * B -> 2
+     * C -> 3
+     * ...
+     * Y -> 25
+     * Z -> 26
+     ***/
+    int numDecodings(string s) {
+        if(s.empty()) {
+            return 0;
+        }
+        
+        setup(s); // create membership functions and set member
+        // work from naive -> optimal solution
+        // return rec(); // recursive brute force
+        // return iter(); // iterative dynamic programming from recursion
+        return opt(); // getting rid of linear space from dp
+    }
+    
+    /***
+     * DP + constant space
+     ***/
+    int opt() {
+        int nnext = 0, next = 1, res = 0; // observed in iter solution that only last two states needed
+        for(
+            int idx = m_sz - 1; 
+            idx >= 0; 
+            idx--, nnext = next, next = res
+        ) {
+            res = calculate(idx, next, nnext);
+        }
+        
+        return res;
+    }
+    
+    /***
+     * Iterative dynamic programming approach
+     ***/
+    int iter() {
+        vector<int> dp(m_sz + 2, 0); // dp[i] = # ways starting from index i and have one extra for convenience
+        dp[m_sz] = 1;
+        for(int idx = m_sz - 1; idx >= 0; idx--) {
+            dp[idx] = calculate(idx, dp[idx + 1], dp[idx + 2]);
+        }
+        
+        return dp[0];
+    }
+    
+    /***
+     * Brute force recursive approach
+     ***/
+    int rec() {
+        return solve(0);
+    }
+    
+    /***
+     * # decoded ways from s[idx:end]
+     ***/
+    int solve(int idx) {
+        if(idx == m_sz) {
+            return 1;
+        }
+        
+        int next = solve(idx + 1);
+        int nnext = (idx + 2 <= m_sz) ? solve(idx + 2) : 0; // two states ahead
+        return calculate(idx, next, nnext);
+    }
+    
+    /***
+     * Heart of the logic - compute ways(decoded[idx:end]) from consecutive terms
+     ***/
+    int calculate(const int &idx, const int &next, const int &nnext) {
+        if(get(idx) != '*' && outside(get(idx), '1', '9')) { // update state and zero out
+            return 0;
+        }
+
+        int res = 0;
+        int curr = 0, multiplier = 1;
+        switch(get(idx)) {
+            case '*':
+                curr = add(m_one(idx, nnext), m_two(idx, nnext));
+                multiplier = 9; // can take on [1-9]
+                break;
+            case '1':
+                curr = m_one(idx, nnext);
+                break;
+            case '2':
+                curr = m_two(idx, nnext);
+                break;
+        }
+
+        res = add(curr, mult(multiplier, next));        
+        return res;
+    }
+private:
+    /***
+     * Setup member variables
+     ***/
+    void setup(const string &s) {
+        // set members
+        m_p_encoded = &s;
+        m_sz = s.size();
+        
+        // create logic template function
+        auto logic = [this](const int &idx, const int &factor, const char &left, const char &right) {
+            if(idx + 1 == m_sz || 
+               (
+                   outside(get(idx + 1), left, right) && 
+                   get(idx + 1) != '*')
+               ) {
+                return 0;
+            }
+
+            return mult(get(idx + 1) == '*' ? (right - left) : 1, factor); // works because [left, right] includes a single value that '*' does NOT want to include (i.e '0')
+        };
+        
+        // create logic functions from template
+        m_one = [logic](const int &idx, const int &factor) { 
+            return logic(idx, factor, '0', '9'); 
+        };        
+        
+        m_two =  [logic](const int &idx, const int &factor) { 
+            return logic(idx, factor, '0', '6'); 
+        };
+    }
+    
+    /***
+     * Return specified index of the encoded string. Assumes index is within range
+     ***/
+    char get(const int &idx) const  {
+        return (*m_p_encoded)[idx];
+    }
+    
+    /***
+     * modular addition
+     ***/
+    static int add(const int &x, const int &y) {
+        return (x + y) % LG;
+    }
+    
+    /***
+     * modular multiplication - note that long long is needed because temporary result can overflow
+     ***/
+    static int mult(const long long int &x, const long long int &y) {
+        return (x * y) % LG;
+    }
+    
+    /***
+     * Returns true if c is outside the range defined (endpoints considered within range)
+     ***/
+    static bool outside(const int &c, const int &left, const int &right) {
+        return c < left || c > right;
+    }
+    
+    function<int(const int &idx, const int &factor)> m_one; // function for concatenating '1' + digit
+    function<int(const int &idx, const int &factor)> m_two; // function for concatenating '2' + digit
+    const string *m_p_encoded; // pointer to encoded string
+    int m_sz;                  // size of encoded string
+    static const int LG = 1000000007;
+};

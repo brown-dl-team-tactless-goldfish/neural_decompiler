@@ -1,0 +1,25 @@
+class Solution {
+public:
+    static constexpr int month[] = {0,31,28,31,30,31,30,31,31,30,31,30,31};
+    
+    bool LeapYear(int y) {
+        return y % 100 ? y % 4 == 0 : y % 400 == 0;
+    }
+    
+    int day(const string& date) {
+        int d = 0, m = 0, y = 0;
+        sscanf(date.c_str(), "%d-%d-%d", &y, &m, &d);
+        for (int i = 1971; i < y; ++i) {
+            d += 365 + LeapYear(i);
+        }
+       
+        for (int i = 1; i < m; ++i) {
+            d += month[i] + (i == 2 && LeapYear(y));
+        }
+        return d;
+    }
+    
+    int daysBetweenDates(string date1, string date2) {
+        return abs(day(date1) - day(date2));
+    }
+};

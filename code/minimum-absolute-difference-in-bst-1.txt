@@ -1,0 +1,56 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+ 
+inline 
+int minThree(int a, int b, int c)
+{ 
+    int temp = (a>b ? b : a) ;
+    return temp > c ? c : temp;
+}
+
+inline 
+int minTwo(int a, int b)
+{ 
+    return (a>b ? b : a) ;
+}
+/*
+int getMinimumDifference(struct TreeNode* root) {
+    if(root == NULL) return INT_MAX;
+    int minL = INT_MAX, minR = INT_MAX;
+    if(root->left) minL =  min( root->val - (root->left)->val,  getMinimumDifference(root->left));
+    if(root->right) minR = min( (root->right)->val - root->val,  getMinimumDifference(root->right));
+    return min(minL, minR);
+}*/
+
+int getMinimumDifference(struct TreeNode* root) {
+    if(root == NULL) return INT_MAX;
+    
+    int minL = INT_MAX, minR = INT_MAX;
+    
+    if(root->left){
+        struct TreeNode *p = root->left; struct TreeNode *q = p;
+        while(p->right){
+            p = p->right;
+            if(p) q = p;
+        }
+        minL = minThree(root->val - (root->left)->val, root->val - q -> val, getMinimumDifference(root->left));
+    }
+    
+    if(root->right){
+        struct TreeNode *p = root->right; struct TreeNode *q = p;
+        while(p->left){
+            p = p->left;
+            if(p) q = p;
+        }
+        minR = minThree((root->right)->val - root->val, q->val - root-> val, getMinimumDifference(root->right));
+    }
+
+    
+    return minTwo(minL, minR);
+}

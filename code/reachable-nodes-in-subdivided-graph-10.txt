@@ -1,0 +1,47 @@
+class Solution {
+public:
+    typedef pair<int, int> pp;
+    int reachableNodes(vector<vector<int>>& edges, int maxMoves, int n) {
+        vector<int> dist(n, 1e9 + 100000);
+        dist[0] = 0;
+        vector<unordered_map<int, int> > mx(n, unordered_map<int, int>());
+        for(auto& e: edges) {
+            mx[e[0]][e[1]] = e[2] + 1;
+            mx[e[1]][e[0]] = e[2] + 1;
+        }
+        
+        // pp: {dist, idx}
+        priority_queue<pp, vector<pp>, greater<pp> > pq;
+        pq.push({0, 0});
+        unordered_set<int> visited;
+        while(!pq.empty()) {
+            auto p = pq.top();
+            pq.pop();
+            visited.insert(p.second);
+            
+            for(auto& [k, v]: mx[p.second]) {
+                if(!visited.count(k) && dist[p.second] + v < dist[k]) {
+                    dist[k] = dist[p.second] + v;
+                    pq.push({dist[k], k});
+                }
+            }
+        }
+        
+        int ans = 0;
+        for(auto& d : dist) {
+            if(d <= maxMoves) ++ans;
+        }
+        for(auto& e: edges) {
+            int l = 0, r = 0;
+            if(dist[e[0]] <= maxMoves) {
+                l = min(maxMoves - dist[e[0]], e[2]);
+            }
+            if(dist[e[1]] <= maxMoves) {
+                r = min(maxMoves - dist[e[1]], e[2]);
+            }
+            ans += min(l + r, e[2]);
+        }
+        
+        return ans;
+    }
+};

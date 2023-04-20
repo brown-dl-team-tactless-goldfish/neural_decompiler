@@ -1,0 +1,49 @@
+//
+//  This solution does not use any CPU-consuming inefficient busy-waiting in terms of spinlocks which does
+//  not count as lock-less anyway(for obvious reasons!) as some claim. Instead, it uses less-overhead simple 
+//  semaphore-based solution.
+//
+//  NOTE : This can also be solved using mutexes instead of semaphores with exactly the same below logic.
+//
+
+#include <semaphore.h>
+
+#define MAX_P 5
+
+class DiningPhilosophers {
+    sem_t s[MAX_P]; // semaphores = forks
+    
+public:
+    DiningPhilosophers() {
+        for (int i = 0 ; i < MAX_P ; i++)
+            sem_init(&s[i], 0, 1);
+    }
+    
+    void wantsToEat(int philosopher,
+                    function<void()> pickLeftFork,
+                    function<void()> pickRightFork,
+                    function<void()> eat,
+                    function<void()> putLeftFork,
+                    function<void()> putRightFork) {
+        int i = philosopher, j = (philosopher + 1) % MAX_P; // cyclic
+        sem_wait(&s[i]);        
+        sem_wait(&s[j]);
+        pickLeftFork();
+        pickRightFork();        // pickup complete
+        eat();
+        putRightFork();        
+        putLeftFork();          // put-down complete
+        sem_post(&s[j]);        
+        sem_post(&s[i]);        
+    }
+};
+
+
+
+
+
+
+
+
+
+

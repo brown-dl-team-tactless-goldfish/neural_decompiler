@@ -1,0 +1,32 @@
+struct PeekingIterator {
+  struct Iterator* iterator;
+  int hasPeeked;
+  int last_value;
+};
+
+struct PeekingIterator* Constructor(struct Iterator* iter) {
+    struct PeekingIterator* piter = malloc(sizeof(struct PeekingIterator));
+    piter->iterator = iter;
+    piter->hasPeeked = false;
+    return piter;
+}
+
+int peek(struct PeekingIterator* obj) {
+  if (!obj->hasPeeked) {
+    obj->last_value = (obj->iterator->next)();
+    obj->hasPeeked = true;
+  }
+  return obj->last_value;
+}
+
+int next(struct PeekingIterator* obj) {
+  if (obj->hasPeeked) {
+    obj->hasPeeked = false;
+    return obj->last_value;
+  }
+  return (obj->iterator->next)();
+}
+
+bool hasNext(struct PeekingIterator* obj) {
+  return (obj->hasPeeked || (obj->iterator->hasNext)());
+}

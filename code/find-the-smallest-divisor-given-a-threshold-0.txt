@@ -1,0 +1,26 @@
+int divide(int* nums, int numsSize, double k){
+    int ret =0 ;
+    for(int i = 0; i < numsSize; i++){
+        ret += ceil(nums[i]/k);
+    }
+    return ret;
+}
+
+int cmpfunc(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+
+int smallestDivisor(int* nums, int numsSize, int threshold){ 
+    qsort(nums, numsSize, sizeof(int), cmpfunc);
+    int left = 1, right = 1000000;
+    int mid;
+    while(left < right){
+        mid = (left + right) / 2;
+        if(divide(nums, numsSize, mid) <= threshold)
+            right = mid;
+        else
+            left = mid + 1;
+    }
+    mid = (left + right) / 2;
+    return mid;
+}

@@ -1,0 +1,81 @@
+class Solution 
+{
+public:
+    ListNode *add(ListNode **head,int val)
+    {
+        ListNode *new_node=new ListNode(val);
+        if(!(*head))
+        {
+            new_node->next=*head;
+            *head=new_node;
+        }
+        else
+        {
+            ListNode *tmp=*head;
+            while(tmp->next)
+            {
+                tmp=tmp->next;
+            }
+            tmp->next=new_node;
+        }
+        return *head;
+    }
+    void helper(vector<int>&v,int s,int e)
+    {
+        for(int i=s;i<=e;i++)
+        {
+            v[i]=2000;
+        }
+    }
+    ListNode* removeZeroSumSublists(ListNode* head) 
+    {
+        if(!head)
+        {
+            return NULL;
+        }
+        vector<int>v;
+        ListNode *tmp=head;
+        while(tmp)
+        {
+            v.push_back(tmp->val);
+            tmp=tmp->next;
+        }
+        int curr_sum=0;
+        unordered_map<int,int>m;
+        vector<pair<int,int>>index;
+        for(int i=0;i<v.size();i++)
+        {
+            curr_sum+=v[i];
+            if(curr_sum==0)
+            {
+                index.push_back({0,i});
+            }
+            if(m.find(curr_sum)!=m.end())
+            {
+                index.push_back({m[curr_sum]+1,i});
+            }
+            m[curr_sum]=i;
+        }
+        sort(index.begin(),index.end());
+        int i=0;
+        while(i<index.size())
+        {
+            helper(v,index[i].first,index[i].second);
+            int x=index[i].second;
+            while(i+1<index.size() && index[i+1].first<=x)
+            {
+                i++;
+            }
+            i++;
+        }
+        ListNode *new_head=NULL;
+        for(int i=0;i<v.size();i++)
+        {
+            if(v[i]!=2000)
+            {
+                new_head=add(&new_head,v[i]);
+            }
+        }
+        return new_head;
+    }
+};

@@ -1,0 +1,60 @@
+class Solution {
+public:
+    int maximumScore(vector<int>& scores, vector<vector<int>>& edges) {
+        
+        const int n = scores.size();
+        
+        vector<vector<int>> graph(n);
+        for (auto &edge : edges)
+        {
+            graph[edge[0]].push_back(edge[1]);
+            graph[edge[1]].push_back(edge[0]);
+        }
+        
+        for (auto &vec : graph)
+        {
+            std::sort(vec.begin(), vec.end(), [&](int a, int b) {
+                return scores[a] > scores[b];
+            });
+        }
+        
+        int res = -1;
+        
+        for (auto &edge : edges)
+        {
+            int x = edge[0], y = edge[1];
+            vector<int> c1, c2;
+            
+            vector<int> &v1 = graph[x];
+            vector<int> &v2 = graph[y];
+            
+            for (int i = 0; i < v1.size() && c1.size() < 2; ++i)
+            {
+                if (v1[i] != y)
+                    c1.push_back(v1[i]);
+            }
+            
+            for (int i = 0; i < v2.size() && c2.size() < 2; ++i)
+            {
+                if (v2[i] != x)
+                    c2.push_back(v2[i]);
+            }
+            
+            if (c1.empty() || c2.empty())   continue;
+            
+            int s = scores[x] + scores[y];
+            
+            if (c1[0] != c2[0])
+                res = std::max(res, s + scores[c1[0]] + scores[c2[0]]);
+            else
+            {
+                if (c1.size() > 1)
+                    res = std::max(res, s + scores[c1[0]] + scores[c1[1]]);
+                
+                if (c2.size() > 1)
+                    res = std::max(res, s + scores[c2[0]] + scores[c2[1]]);
+            }
+        }
+        return res;
+    }
+};

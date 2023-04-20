@@ -1,0 +1,81 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <unistd.h>
+#include <string.h>
+
+// Strcuture to store word and level in the queue
+typedef struct {
+    char *word;
+    int level;
+} node;
+
+// Queue structure used to put elements those found with one letter differernce 
+typedef struct {
+    node  *q;
+    int head;
+    int tail;
+} q_t;
+
+
+// Function to calculate if there is only one character difference between two words
+int one_diff(char *a, char *b) {
+    int diff = 0;
+    while (*a && diff <= 1) {
+        diff += (*a != *b) ? 1 : 0;
+        a ++; b ++;
+    }
+    return diff == 1 ? 1 : 0;
+}
+
+
+int bfs(q_t *q, char *end, char **dict, int sz, int *v) {
+    int i, d;
+    char *a, *b;
+    
+    while(q->head != q->tail) {
+        // Iterate each element in queue and find all words those are one letter difference
+        // For next words the level is one more. It is like a tree traversal in BFS
+        q->tail++;
+        a = q->q[q->tail].word;
+        d = q->q[q->tail].level;
+        for (i=0; i<sz ; i++) {
+            if (!v[i]) {
+                // If this word is not already visited that means it is not in queue
+                b = dict[i];
+                if (one_diff(a,b)) {
+                    if (!strcmp(b, end)) {
+                        // found the word
+                        return (d+1);
+                    }
+                    q->head++;
+                    q->q[q->head].word = b;
+                    q->q[q->head].level = d+1;
+                    v[i] = 1;
+                }
+            }
+        }
+    }
+    return 0;
+}
+int ladderLength(char* beginWord, char* endWord, char** wordList, int wordListSize) {
+    q_t q;
+    // Array for marking if we have visited a word already
+    int *v = calloc(wordListSize, sizeof(int));
+    int count;
+    if (!beginWord || !endWord || wordListSize <=0) {
+        return 0;
+    }
+    // Source word is not in list hence queue size is one more than worldlist size
+    q.q = calloc(wordListSize+1, sizeof(node));
+    q.head = q.tail = -1;
+    // Add source word in queue to start with then we iterate and keep adding words into list 
+    // where only one character is different until found the endword. Also maintain the level
+    // in queue node.
+    q.head++;
+    q.q[q.head].word = beginWord;
+    q.q[q.head].level = 1;
+    count = bfs(&q, endWord, wordList, wordListSize, v);
+    free(q.q);
+    free(v);
+    return count;
+}

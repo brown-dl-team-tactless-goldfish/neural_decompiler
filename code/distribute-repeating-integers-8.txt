@@ -1,0 +1,26 @@
+class Solution {
+public:
+    bool solve(int pos , vector<int>&freq , vector<int>&Q ){
+        if(pos >= Q.size()) return true ;
+        
+        for(int i = 0 ; i < freq.size() ; ++i ){
+            if(freq[i] < Q[pos]) continue  ;
+            
+            freq[i] -= Q[pos] ;
+            if(solve(pos + 1 , freq,Q)) return true ;
+            freq[i] += Q[pos] ;
+        }
+        
+        return false ;
+        
+    }
+    bool canDistribute(vector<int>& nums, vector<int>& Q) {
+        int f[1001] = {} ;
+        for(auto &x : nums) ++f[x] ;
+        vector<int> freq ; 
+        for(auto &x : f) if(x) freq.push_back(x) ;
+		//Keep larger frequencies first
+        sort(rbegin(Q),rend(Q)) ;
+        return solve(0,freq,Q) ;
+    }
+};

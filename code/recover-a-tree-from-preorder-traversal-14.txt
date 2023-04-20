@@ -1,0 +1,62 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    stack<pair<TreeNode*, int>> st;
+    TreeNode* recoverFromPreorder(string S) {
+        int val = 0, cnt = 0;
+        TreeNode* root = nullptr;
+        if(parseString(S, val, cnt))
+            root = new TreeNode(val);
+        else return nullptr;
+        st.push(make_pair(root, cnt));
+        makeTree(S);
+        return root;
+    }
+    void makeTree(const string &s) {
+        int val = 0, cnt = 0;
+        auto stringcpy = s;
+        while(parseString(stringcpy, val, cnt)) {
+            auto topNode = st.top();
+            TreeNode* newNode = new TreeNode(val);
+            if (cnt > topNode.second) {
+                topNode.first->left = newNode;
+                st.push(make_pair(newNode, cnt));
+            }
+            else {
+                while(st.top().second >= cnt) 
+                    st.pop();
+                topNode = st.top();
+                topNode.first->right = newNode;
+                st.pop();
+                st.push(make_pair(newNode, cnt));
+            }
+        }
+    }
+    bool parseString(string &s, int &val, int &cnt) {
+        if(s.size() == 0) return false;
+        if(s[0] != '-') {
+            size_t first = s.find("-");
+            if(first == string::npos) first = (int) s.size();
+            val = stoi(s.substr(0, (int) first));
+            s = s.substr(first);
+            cnt =  0;
+        }
+        else {
+            size_t first = s.find_first_not_of("-");
+            cnt = first;
+            size_t second = s.find("-", first);
+            if(second == string::npos) second = (int) s.size();
+            val = stoi(s.substr(first, (int) second - (int) first));
+            s = s.substr(second);
+        }
+        return true;
+    }
+};

@@ -1,0 +1,42 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int treeLevel(struct TreeNode* root){
+    int leftlv = 0;
+    int rightlv = 0;
+    if(root==NULL)
+        return 0;
+    if(root->left==NULL&& root->right==NULL)
+        return 1;
+    leftlv = treeLevel(root->left);
+    rightlv = treeLevel(root->right);
+    return (leftlv>rightlv)?leftlv+1:rightlv+1;
+}
+struct TreeNode* helper(struct TreeNode* root){
+    int leftlv = 0;
+    int rightlv = 0;
+    printf("%d\n",root->val);
+    if(root==NULL)
+        return root;
+    if(root->left==NULL&& root->right==NULL)
+        return root;
+    leftlv = treeLevel(root->left);
+    rightlv = treeLevel(root->right);
+    if(leftlv==rightlv)
+        return root;
+    else
+        return (leftlv>rightlv)?helper(root->left):helper(root->right);
+}
+struct TreeNode* lcaDeepestLeaves(struct TreeNode* root){
+    if(root==NULL)
+        return root;
+    if(root->left==NULL&& root->right==NULL)
+        return root;
+    else
+        return helper(root);
+}

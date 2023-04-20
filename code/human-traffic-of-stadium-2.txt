@@ -1,0 +1,17 @@
+WITH CTE AS (
+SELECT a.id as r1, b.id as r2, c.id as r3 FROM 
+Stadium a LEFT JOIN Stadium b ON b.id - a.id = 1
+LEFT JOIN Stadium c on c.id - a.id = 2
+WHERE a.people >= 100 and b.people >= 100 and c.people >= 100
+),
+
+CTE1 AS (
+SELECT r1 FROM CTE
+UNION
+SELECT r2 FROM CTE
+UNION
+SELECT r3 FROM CTE
+)
+
+SELECT id, visit_date, people FROM Stadium WHERE id in (SELECT r1 FROM CTE1)
+Order by visit_date

@@ -1,0 +1,69 @@
+class Solution {
+private:
+    void getNextL(vector<int> &arr, vector<int> &nextL) {
+        map<int, int> numMap; // {value, index}
+        numMap[arr.back()] = arr.size() - 1;
+        for (int i = arr.size() - 2; i >= 0; i--) {
+            auto it = numMap.lower_bound(arr[i]);
+            if (it == numMap.end()) {
+                nextL[i] = -1;
+            } else {
+                nextL[i] = it->second;
+            }
+            numMap[arr[i]] = i; // smallest index, so update even if the number exists
+        }
+    }
+    
+    void getNextS(vector<int> &arr, vector<int> &nextS) {
+        map<int, int> numMap; // {value, index}
+        numMap[arr.back()] = arr.size() - 1;
+        for (int i = arr.size() - 2; i >= 0; i--) {
+            auto it = numMap.upper_bound(arr[i]);
+            if (it == numMap.begin()) {
+                nextS[i] = - 1;
+            } else {
+                nextS[i] = prev(it)->second;
+            }
+            numMap[arr[i]] = i;
+        }
+    }
+    
+    // recursive
+    bool canTravel(int start, int step, vector<int> &arr, vector<int> &nextL, vector<int> &nextS, vector<vector<int8_t>> &dp) {
+        if (start == arr.size() - 1) return true;
+        
+        int oddStep = step & 1;
+        if (dp[start][oddStep] >= 0) return dp[start][oddStep];
+        
+        if (oddStep) { // odd, find next greater
+            if (nextL[start] == -1) {
+                dp[start][oddStep] = false;
+            } else {
+                dp[start][oddStep] = canTravel(nextL[start], step + 1, arr, nextL, nextS, dp);
+            }
+        } else { // even, find next smaller
+            if (nextS[start] == -1) {
+                dp[start][oddStep] = false;
+            } else {
+                dp[start][oddStep] = canTravel(nextS[start], step + 1, arr, nextL, nextS, dp);
+            }
+        }
+        return dp[start][oddStep];
+    }
+public:
+    int oddEvenJumps(vector<int>& arr) {
+        
+        vector<int> nextL(arr.size(), -1);
+        vector<int> nextS(arr.size(), -1);
+        
+        getNextL(arr, nextL);
+        getNextS(arr, nextS);
+        
+        vector<vector<int8_t>> dp(arr.size(), vector<int8_t>(2, -1)); // -1 = unvisited, 0 = cannot go, 1 = can go
+        int res = 0;
+        for (int i = 0; i < arr.size(); i++) {
+            res += canTravel(i, 1, arr, nextL, nextS, dp);
+        }
+        return res;
+    }
+};

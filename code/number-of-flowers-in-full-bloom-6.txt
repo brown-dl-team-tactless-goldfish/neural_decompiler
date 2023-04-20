@@ -1,0 +1,118 @@
+#include <iostream>
+#include <vector>
+#include <set>
+#include <map>
+#include <unordered_map>
+#define ll long long
+
+using namespace std;
+class segment_tree {
+	private:
+		int MAX_N;
+		vector<ll> sum; 
+		vector<ll> lazy;
+
+		// void build(int l, int r, int rt, vector<int>& original) {
+		// 	if (l == r) {
+		// 		sum[rt] = original[l - 1];
+		// 		return;
+		// 	}
+		// 	build(l, (l + r) >> 1, rt << 1, original);
+		// 	build((l + r) >> 1 | 1, r, rt << 1 | 1, original);
+		// 	push_up(rt);
+		// }
+
+		inline void push_up(int &rt) {
+			sum[rt] = sum[rt << 1] + sum[rt << 1 | 1];
+		}
+
+		void push_down(int rt, int ln, int rn) {
+			if (lazy[rt]) {
+				lazy[rt << 1] += lazy[rt];
+				lazy[rt << 1 | 1] += lazy[rt];
+				sum[rt << 1] += lazy[rt] * ln;
+				sum[rt << 1 | 1] += lazy[rt] * rn;
+				lazy[rt] = 0;
+			}
+		}
+
+		void add_in(int L, int R, ll C, int l, int r, int rt) {
+			if (l >= L && r <= R) {
+				sum[rt] += C * (l - r + 1);
+				lazy[rt] += C;
+				return;
+			}
+			int mid = (l + r) >> 1;
+			push_down(rt, mid - l + 1, r - mid);
+			if (L <= mid) {
+				add_in(L, R, C, l, mid, rt << 1);
+			}
+			if (R >= mid + 1) {
+				add_in(L, R, C, mid + 1, r, rt << 1 | 1);
+			}
+			push_up(rt);
+		}
+
+		ll query(int i, int l, int r, int rt) {
+			if (l == r) {
+				return sum[rt];
+			}
+			int mid = (l + r) >> 1;
+			push_down(rt, l - mid + 1, r - mid);
+			if (i <= mid) {
+				return query(i, l, mid, rt << 1);
+			} else {
+				return query(i, mid + 1, r, rt << 1 | 1);
+			}
+		}
+
+	public:	
+		segment_tree(int N) {
+			MAX_N = N + 1;
+			sum = vector<ll>(MAX_N << 2, 0);
+			lazy = vector<ll>(MAX_N << 2, 0);
+		}
+
+		// segment_tree(vector<int>& nums) {
+		// 	MAX_N = nums.size() + 1;
+		// 	sum = vector<ll>(MAX_N << 2, 0);
+		// 	lazy = vector<ll>(MAX_N << 2, 0);
+		// 	build(1, MAX_N - 1, 1, nums);
+		// }
+
+		void add(int L, int R, ll C) {
+			add_in(L, R, C, 1, MAX_N - 1, 1);
+		}
+
+		ll get(int i) {
+			return query(i, 1, MAX_N - 1, 1);
+		}
+};
+class Solution {
+public:
+    vector<int> fullBloomFlowers(vector<vector<int> >& flowers, vector<int>& persons) {
+        set<ll> rbt;
+		unordered_map<ll, ll> mp;
+		for (auto i = 0; i < flowers.size(); i++) {
+			rbt.insert((ll)flowers[i][0]);
+			rbt.insert((ll)flowers[i][1]);
+		}
+		for (auto i = 0; i < persons.size(); i++) {
+			rbt.insert((ll)persons[i]);
+		}
+		ll curr = 1;
+		for (auto itr = rbt.begin(); itr != rbt.end(); itr++) {
+			mp[(ll)(*itr)] = curr++;
+		}
+		segment_tree st(rbt.size());
+		for (int i = 0; i < flowers.size(); i++) {
+			st.add((ll)mp[flowers[i][0]], (ll)mp[flowers[i][1]], 1);
+		}
+		vector<int> res(persons.size(), 0);
+		for (int i = 0; i < res.size(); i++) {
+			res[i] = st.get(mp[persons[i]]);
+		}
+		return res;
+
+    }
+};

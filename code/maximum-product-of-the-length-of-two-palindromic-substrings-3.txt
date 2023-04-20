@@ -1,0 +1,32 @@
+class Solution {
+public:
+    using ll = long long;
+    ll maxProduct(string s0) {
+      int n = s0.size();
+      string s(n*2+1, '-');
+      for (int i = 0; i < n; ++i) s[2*i+1] = s0[i];
+      vector<int> DP(s.size(), 0), L(n, 0), R(n, 0);
+      auto update = [&](int i, int len) {
+        int j = (i-1)/2, h = len/2;
+        int l = j-h, r = j+h;
+        if (s[i] != '-') L[r] = max(L[r], len), R[l] = max(R[l], len);
+        DP[i] = len;
+      };
+      for (int i = 0, r = 0, c = 0; i < s.size(); ++i) {
+        auto& len = DP[i];
+        if (i < r) update(i, min(DP[2*c-i], r-i));
+        while (i+len+1 < s.size() && i-len-1 >= 0 && s[i+len+1] == s[i-len-1]) {
+          update(i, len+1);
+        }
+        if (i+len > r) c = i, r = i+len;
+      }
+      for (int i = R.size()-2; i >= 0; --i) {
+        R[i] = max(R[i], R[i+1]);
+      }
+      ll res = 0;
+      for (int i = 1; i < n; ++i) {
+        res = max(res, (ll)L[i-1]*R[i]);
+      }
+      return res;
+    }
+};

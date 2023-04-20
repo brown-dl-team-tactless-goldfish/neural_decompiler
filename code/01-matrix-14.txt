@@ -1,0 +1,32 @@
+
+var updateMatrix = function(mat) {
+    const rows = mat.length;
+    if (rows < 1)  return [];
+    const cols = mat[0].length;
+
+    // iterate through the matrix forward
+    for (let rI = 0; rI < rows; rI++) {
+        for (let cI = 0; cI < cols; cI++) {
+            if (mat[rI][cI] !== 0) {
+                mat[rI][cI] = Infinity;
+            }
+            
+            // check if one of the (previous) neighbors we've seen already has a distance
+            if (rI > 0) mat[rI][cI] = Math.min(mat[rI][cI], mat[rI - 1][cI] + 1)
+            if (cI > 0) mat[rI][cI] = Math.min(mat[rI][cI], mat[rI][cI - 1] + 1)
+        }
+    }
+    
+    // iterate through the matrix backwards
+    for (let rI = rows - 1; rI >= 0; rI--) {
+        for (let cI = cols - 1; cI >= 0; cI--) {
+            if (mat[rI][cI] === 0) continue;
+            
+            // check if one of the (next) neighbors we've seen already has a distance
+            if (rI < rows - 1) mat[rI][cI] = Math.min(mat[rI][cI], mat[rI + 1][cI] + 1)
+            if (cI < cols - 1) mat[rI][cI] = Math.min(mat[rI][cI], mat[rI][cI + 1] + 1)
+        }
+    }    
+
+    return mat;
+};

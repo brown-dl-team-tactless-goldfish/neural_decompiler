@@ -1,0 +1,44 @@
+    double minAreaFreeRect(vector<vector<int>>& points) {
+        // the basic idea is to find all middle point of any pair of points
+        // and we will also need to get the distance of every pair of points
+        // for any pair of line segments, if they can intersect and the intersect point is the middle point for both line segments, and the length of these two line segments are the same, then this pair of line segments are the diagonals of a rectangle
+        // if two points are (x1, y1) and (x2, y2), for storing the accurate middle point position
+        // we just do (x1 + x2, y1 + y2) without dividing them by two
+        // similarly, for computing distance, we won't do sqrt operation
+        // since we want to use middle point as the key for a map, if we store the middle point as pair, we can't use unordered_map, so we can convert the middle point pair as a unsigned long value.
+        int size = points.size();
+        // middlePoints's key is an encoded middle point pair value, value is an unordered_map, with the square of distance as the key and a vector of two end points as value.
+        unordered_map<unsigned long, unordered_map<int, vector<vector<int>>>> middlePoints;
+        for (int i = 0; i < size; i++) {
+            for (int j = i + 1; j < size; j++) {
+                int middleX_2 = points[i][0] + points[j][0];
+                int middleY_2 = points[i][1] + points[j][1];
+                unsigned long encodedKey = (unsigned long)middleX_2 << 32;
+                encodedKey += middleY_2;
+                int dSquare = distanceSquare(points[i][0], points[i][1], points[j][0], points[j][1]);
+                middlePoints[encodedKey][dSquare].push_back({points[i][0], points[i][1], points[j][0], points[j][1]});
+            }
+        }
+        double result = DBL_MAX;
+        for (auto& middleData : middlePoints) {
+            for (auto& disData : middleData.second) {
+                // compute the area of every square, but we can compute the square feet in the end
+                // so we store the square of the area in the result first
+                for (int i = 0; i < disData.second.size(); i++) {
+                    for (int j = i + 1; j < disData.second.size(); j++) {
+                        double w = distanceSquare(disData.second[i][0], disData.second[i][1], disData.second[j][0], disData.second[j][1]);
+                        double h = distanceSquare(disData.second[i][0], disData.second[i][1], disData.second[j][2], disData.second[j][3]);
+                        double area = w * h;
+                        result = min(result, area);
+                    }
+                }
+            }
+        }
+        return result == DBL_MAX ? 0 : sqrt(result);
+    }
+    
+    int distanceSquare(int& x0, int& y0, int& x1, int& y1) {
+        int dx = x1 - x0;
+        int dy = y1 - y0;
+        return dx * dx + dy * dy;
+    }

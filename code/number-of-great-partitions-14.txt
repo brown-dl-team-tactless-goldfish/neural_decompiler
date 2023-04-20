@@ -1,0 +1,20 @@
+class Solution:
+    def countPartitions(self, nums: List[int], k: int) -> int:
+        n=len(nums)
+        mod=10**9+7
+        Sum=sum(nums)
+        @cache
+        def dp(idx,ssum):
+            if idx==n:
+                if ssum<k and Sum-ssum<k: return 1
+                return 2
+            ans=0
+            #take sum
+            if ssum+nums[idx]<k:
+                ans+=dp(idx+1,ssum+nums[idx])
+            #dont take
+            ans+=dp(idx+1,ssum)
+            return ans%mod
+        return (pow(2,n,mod)-dp(0,0))%mod
+            
+            

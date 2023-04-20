@@ -1,0 +1,43 @@
+void swap(int* arr, int start, int end) {
+    while(start < end) {
+        int tmp = arr[start];
+        arr[start] = arr[end];
+        arr[end] = tmp;
+        start++;
+        end--;    
+    }
+}
+
+int findlen(struct ListNode* head) {
+    int tmp = 0;
+    struct ListNode* fast = head;
+    while(fast != NULL && fast->next != NULL) {
+        tmp++;
+        fast = fast->next->next;
+    }
+    return (fast == NULL) ? (2*tmp) : (2*tmp+1);
+}
+
+struct ListNode* reverseKGroup(struct ListNode* head, int k) {
+    int len = findlen(head);
+    struct ListNode* tmp = head;
+    int* arr = (int*) malloc(len * sizeof(int));
+    for(int i = 0; i < len; i++) {
+        arr[i] = tmp->val;
+        tmp = tmp->next;
+    }
+    int count = len / k, start = 0, end = k-1;
+    while(count > 0) {
+        swap(arr, start, end);
+        start += k;
+        end += k;
+        count--;
+    }
+    tmp = head;
+    for(int i = 0; i < len; i++) {
+        tmp->val = arr[i];
+        tmp = tmp->next;
+    }
+    free(arr);
+    return head;
+}

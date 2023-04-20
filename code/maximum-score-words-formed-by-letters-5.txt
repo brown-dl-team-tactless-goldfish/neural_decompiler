@@ -1,0 +1,70 @@
+public int MaxScoreWords(string[] words, char[] letters, int[] score) 
+{
+	int GetScore(char c) => score[c - 'a'];
+
+	var letterLookup = letters.ToLookup(x => x).ToDictionary(x => x.Key, x => x.Count());
+
+	Dictionary<string, int> wordScores = new Dictionary<string, int>();
+
+	int ScoreWord(string word)
+	{
+		if(!wordScores.ContainsKey(word))
+		{
+			wordScores[word] = word.Select(GetScore).Sum();
+		}
+		return wordScores[word];
+	}
+
+
+	bool CanRemove(Dictionary<char, int> lookup, string word)
+	{
+		foreach(var k in word.ToLookup(x => x))
+		{
+			if(lookup.GetValueOrDefault(k.Key) < k.Count()) return false;
+		}
+		return true;
+	}
+
+	int Remove(IDictionary<char, int> lookup, string word)
+	{
+		foreach(var c in word)
+		{
+			lookup[c]--;
+		}
+		return ScoreWord(word);
+	}
+
+	int Append(IDictionary<char, int> lookup, string word)
+	{
+		foreach(var c in word)
+		{
+			lookup[c]++;
+		}
+		return ScoreWord(word);
+	}
+
+	int maxScore = 0;
+	void DFS(int index, Dictionary<char, int> remainder, int currentScore)
+	{
+		if(index == words.Length)
+		{
+			maxScore = Math.Max(currentScore, maxScore);
+			return;
+		}
+
+		var currentWord = words[index];
+
+		if(CanRemove(remainder, currentWord))
+		{
+			currentScore += Remove(remainder, currentWord);
+			DFS(index + 1, remainder, currentScore);
+			currentScore -= Append(remainder, currentWord);
+		}
+
+		DFS(index + 1, remainder, currentScore);
+	}
+
+	DFS(0, letterLookup, 0);
+
+	return maxScore;
+}

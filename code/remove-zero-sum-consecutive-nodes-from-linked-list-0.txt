@@ -1,0 +1,36 @@
+#define MAX_NODES 1000
+
+// Using prefix sum
+struct ListNode *
+removeZeroSumSublists(struct ListNode *head)
+{
+    struct node {
+        struct ListNode *curr;
+        int sum;
+    };
+    struct ListNode dummy = {
+        .val  = 0,
+        .next = head,
+    };
+    struct node prefixSum[MAX_NODES + 1] = {{0}};
+    int sum                              = 0;
+    int size                             = 0;
+    struct ListNode *curr                = &dummy;
+    while (curr) {
+        sum                 += curr->val;
+        prefixSum[size].sum  = sum;
+        prefixSum[size].curr = curr;
+        size++;
+        curr = curr->next;
+    }
+    for (int i = 0; i < size; i++) {
+        for (int j = size - 1; j > i; j--) {
+            if (prefixSum[i].sum == prefixSum[j].sum) {
+                prefixSum[i].curr->next = prefixSum[j].curr->next;
+                i                       = j;
+                break;
+            }
+        }
+    }
+    return dummy.next;
+}

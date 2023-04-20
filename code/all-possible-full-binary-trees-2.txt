@@ -1,0 +1,32 @@
+struct TreeNode *newTreeNode(int val)
+{
+    struct TreeNode *tmp = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    tmp->val = val;
+    tmp->left = tmp->right = NULL;
+    
+    return tmp;
+}
+struct TreeNode** allPossibleFBT(int N, int* returnSize) {
+    struct TreeNode **res = (struct TreeNode**)malloc(sizeof(struct TreeNode*));
+    if (N == 1) {
+        struct TreeNode* root = newTreeNode(0);
+        res = realloc(res, sizeof(struct TreeNode) * ((*returnSize) + 1));
+        res[(*returnSize)++] = root;
+        return res;
+    }
+    for (int i = 1; i <= N - 2; i += 2) {
+        int lsize = 0, rsize = 0;
+        struct TreeNode** l = allPossibleFBT(i, &lsize);
+        struct TreeNode** r = allPossibleFBT(N - 1 - i, &rsize);
+        for (int j = 0; j < lsize; ++j) {
+            for (int k = 0; k < rsize; ++k) {
+                struct TreeNode* root = newTreeNode(0);
+                root -> left = l[j];
+                root -> right = r[k];
+                res = realloc(res, sizeof(struct TreeNode) * ((*returnSize) + 1));
+                res[(*returnSize)++] = root;
+            }
+        }
+    }     
+    return res;    
+}

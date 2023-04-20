@@ -1,0 +1,40 @@
+using ll = long long;
+const int off = 3e4+5;
+const int nax = 1e5+5;
+int bits[nax];
+class Solution {
+public:
+    void add(int x) {
+        x += off;
+        while (x < nax) {
+            bits[x]++;
+            x += x&-x;
+        }
+    }
+    
+    ll q(int x) {
+        x += off;
+        ll s = 0;
+        while (x > 0) {
+            s += bits[x];
+            x -= x&-x;
+        }
+        return s;
+    }
+    
+    long long numberOfPairs(vector<int>& a, vector<int>& b, int diff) {
+        int n = a.size();
+        memset(bits, 0, sizeof(bits));
+        int p = 0;
+        ll ans = 0;
+        
+        for (int i = 0; i < n; i++) {
+            if (i > 0)
+                add(a[i-1]-b[i-1]);
+            
+            ll v = a[i]-b[i]+diff;
+            ans += q(v);
+        }
+        return ans;
+    }
+};

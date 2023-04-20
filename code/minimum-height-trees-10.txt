@@ -1,0 +1,62 @@
+#define ll long long
+#define vb vector<bool>
+#define vi vector<int>
+#define vl vector<long long>
+#define vvb vector<vector<bool>>
+#define vvi vector<vector<int>>
+#define vvl vector<vector<long long>>
+#define pii pair<int,int>
+#define all(i) i.begin(),i.end()
+#define f(i,s,e) for(int i = s; i < e; i++)
+#define b(i,s,e) for(int i = s; i >= e; i--)
+inline int getMid(int i,int j) { return i+(j-i)/2; }
+#define debugVec(arr) cout << "\nDebugger-> " << #arr  << "(" << arr.size() << ")" << ": "; for(auto i:arr) cout << i << " "; cout << endl;
+#define debugVecFormatted(arr,format) cout << "\nDebugger-> " << #arr  << "(" << arr.size() << ")" << ": "; for(auto i:arr) cout << format << " "; cout << endl;
+#define debugVar(a) cout << "\nDebugger-> " << #a << ": " << a << endl;
+#define debug2Vars(a,b) cout << "\nDebugger-> " << #a << ": " << a << ", " << #b << ": " << b << endl;
+#define debug3Vars(a,b,c) cout << "\nDebugger-> " << #a << ": " << a << ", " << #b << ": " << b  << ", " << #c << ": " << c << endl;
+
+class Solution {
+public:
+    vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
+        if(n == 1) return {0};
+        
+        vvi adj(n);
+        vi deg(n,0);
+        for(auto &e:edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+            deg[e[0]]++; deg[e[1]]++;
+        }
+
+        queue<int> q;
+        f(i,0,n) {
+            if(deg[i] == 1) q.push(i);
+        }
+
+        int nodes = n;
+        while(nodes > 2) {
+            int sz = q.size();
+            unordered_set<int> pushed;
+            f(t,0,sz) {
+                int fnode = q.front(); q.pop();
+                deg[fnode] = 0; nodes--;
+                for(int i:adj[fnode]) {
+                    if(deg[i] and !pushed.count(i)) {
+                        deg[i]--;
+                        if(deg[i] == 1) {
+                            q.push(i); pushed.insert(i);
+                        }
+                    }
+                }
+            }
+        }
+
+        vi res;
+        while(!q.empty()) {
+            res.push_back(q.front()); q.pop();
+        }
+
+        return res;
+    }
+};

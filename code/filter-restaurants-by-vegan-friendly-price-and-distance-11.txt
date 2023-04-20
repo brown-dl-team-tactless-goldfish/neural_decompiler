@@ -1,0 +1,29 @@
+class Solution {
+public:
+    vector<int> filterRestaurants(vector<vector<int>>& restaurants, int veganFriendly, int maxPrice, int maxDistance) {
+        // Filter first, then sort.
+        vector<vector<int>> filterRes;
+        vector<int> res;
+        
+        for (const auto& r : restaurants)
+        {
+            if ((veganFriendly && !r[2]) || (r[3] > maxPrice) || (r[4] > maxDistance))
+            {
+                continue;
+            }
+            filterRes.push_back(r);
+        }
+        
+        sort(filterRes.begin(), filterRes.end(),
+            [](const auto& r1, const auto& r2)
+             {
+                 return r1[1] > r2[1] || (r1[1] == r2[1] && r1[0] > r2[0]);
+             });
+        
+        for (const auto& r : filterRes)
+        {
+            res.push_back(r[0]);
+        }
+        return res;
+    }
+};

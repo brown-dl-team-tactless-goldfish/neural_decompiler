@@ -1,0 +1,58 @@
+class LockingTree {
+    vector<vector<int>> children;
+    vector<int> par;
+    int *lockedBy=new int[2001];
+   public:
+   void dfs(int num,bool &lockedDes){
+       if(lockedBy[num]!=-1){
+           lockedDes=true;
+           lockedBy[num]=-1;
+       }
+       for(int i=0;i<children[num].size();i++){
+           dfs(children[num][i],lockedDes);
+       }
+   }
+
+    LockingTree(vector<int>& parent) {
+        while (children.size()) children.pop_back();
+        for(int i=0;i<parent.size();i++) children.push_back({});
+        for(int i=1;i<parent.size();i++) children[parent[i]].push_back(i);
+        par=parent;
+        for(int i=0;i<=2000;i++) lockedBy[i]=-1;
+    }
+
+    bool lock(int num, int user) {
+        if(lockedBy[num]==-1){
+            lockedBy[num]=user;
+            return true;
+        }
+        return false;
+    }
+
+    bool unlock(int num, int user) {
+        if(lockedBy[num]==user){
+            lockedBy[num]=-1;
+            return true;
+        }
+        return false;
+    }
+
+    bool upgrade(int num, int user) {
+        if(lockedBy[num]!=-1) return false;
+        bool lockedAnc=false;
+        int i=num;
+        while (i!=-1){
+            if(lockedBy[i]!=-1){
+                lockedAnc=true;
+                break;
+            }
+            i=par[i];
+        }
+        if(lockedAnc) return false;
+        // now all ancestors are unlocked
+        bool lockedDes=false;
+        dfs(num,lockedDes);
+        if(lockedDes) lockedBy[num]=user;
+        return lockedDes;        
+    }
+};

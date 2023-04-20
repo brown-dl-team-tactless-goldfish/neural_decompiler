@@ -1,0 +1,50 @@
+#define ARRAY_SIZE(arr) (sizeof(arr) / sizeof((arr)[0]))
+
+void merge(int array[], int l, int m, int r) {
+  int sizeL = m - l + 1, sizeR = r - m;
+  int left[sizeL], right[sizeR];
+
+  // Create L ← A[l..m]
+  memcpy(left, array + l, sizeof(int) * sizeL);
+  // Create R ← A[m+1..r]
+  memcpy(right, array + m + 1, sizeof(int) * sizeR);
+
+  // Merge A[l..r] in order from L and R (insert sort)
+  int i = 0, j = 0, k = l;
+  while (i < sizeL && j < sizeR) {
+    array[k++] = (left[i] <= right[j]) ?
+        left[i++] : right[j++];
+  }
+
+  // finish copying element A[m..r]
+  while (i < sizeL) {
+    array[k++] = left[i++];
+  }
+  while (j < sizeR) {
+    array[k++] = right[j++];
+  }
+}
+
+void mergeSortHelper(int arr[], int l, int r) {
+  if (l < r) {
+    int m = l + (r - l) / 2;
+   
+    // Sort first and second halves
+    mergeSortHelper(arr, l, m);
+    mergeSortHelper(arr, m + 1, r);
+  
+    merge(arr, l, m, r);
+  }  
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* sortArray(int* nums, int numsSize, int* returnSize) {
+    *returnSize = numsSize;
+    int *result = malloc(sizeof(int) * numsSize);
+    memcpy(result, nums, sizeof(int) * numsSize);
+
+    mergeSortHelper(result, 0, numsSize -1);
+    return result;
+}

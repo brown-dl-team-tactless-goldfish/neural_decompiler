@@ -1,0 +1,20 @@
+struct TreeNode* findTreeVal(struct TreeNode* s,int num){
+    if(s==NULL) return NULL;
+    if(s->val==num) return s;
+    struct TreeNode*lefttmp=findTreeVal(s->left,num);
+    struct TreeNode*righttmp=findTreeVal(s->right,num);
+    if(lefttmp) return lefttmp;
+    else if(righttmp) return righttmp;
+    else return NULL;
+}
+bool isEqual(struct TreeNode* tmp, struct TreeNode* t){
+    if(tmp!=NULL&&t!=NULL) return (tmp->val==t->val)&&isEqual(tmp->left,t->left)&&isEqual(tmp->right,t->right);
+    else if(tmp!=NULL&&t==NULL) return false;
+    else if(tmp==NULL&&t!=NULL) return false;
+    else return true;
+}
+bool isSubtree(struct TreeNode* s, struct TreeNode* t) {
+    struct TreeNode* tmp=findTreeVal(s,t->val);
+    if(tmp==NULL) return false;
+    else return isEqual(tmp,t)||isSubtree(s->left,t)||isSubtree(s->right,t);
+}

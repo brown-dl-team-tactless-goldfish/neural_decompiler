@@ -1,0 +1,22 @@
+typedef struct PeekingIterator {
+    struct Iterator *it;
+    int c, hp;
+} piter;
+
+struct PeekingIterator* Constructor(struct Iterator* iter) {
+    piter *pi = calloc(1, sizeof *pi);
+    pi->it = iter;
+    return pi;
+}
+
+int peek(struct PeekingIterator* obj) {
+    return obj->hp ? obj->c : (obj->hp = 1, obj->c = obj->it->next());
+}
+
+int next(struct PeekingIterator* obj) {
+    return obj->hp ? obj->hp = 0, obj->c : (obj->c = obj->it->next());
+}
+
+bool hasNext(struct PeekingIterator* obj) {
+    return obj->hp || obj->it->hasNext();
+}

@@ -1,0 +1,72 @@
+
+int compress(char* chars, int charsSize){
+    
+    if (charsSize  == 0)
+        return 0;
+    else if(charsSize == 1)
+        return 1;
+    
+    int cnt = 0;
+    int total = 0;
+    char p = 34;
+    const int s = charsSize;
+    char ta[s+1];
+    int taIndex = 0;
+
+    for(int i = 0; i < charsSize; i++)
+    {
+        if(chars[i] == p) 
+        {
+            cnt++;
+        }
+        else
+        {
+            if(cnt == 0)
+            {
+                ta[taIndex++] = chars[i];
+            }
+            else if(cnt == 1)
+            {
+                ta[taIndex++] = cnt+1 + '0';
+                ta[taIndex++] = chars[i];
+                cnt = 0;
+            }
+            else if (cnt > 1)
+            {
+                cnt = cnt +1;
+                sprintf(&ta[taIndex], "%d", (cnt) );
+                while(cnt > 0)
+                {
+                    cnt = cnt/10;
+                    taIndex++;
+                }
+                ta[taIndex++] = chars[i];
+                
+            }
+        }
+        
+        p = chars[i];
+    }
+    
+    if(cnt > 0)
+    {
+        int nums = 0;
+        int t = cnt+1;
+        while(t > 0)
+        {
+                    t = t/10;
+                    nums++;
+        }
+        snprintf(&(ta[taIndex]), nums+1, "%d", (cnt+1) );
+        taIndex += nums;
+    }
+    
+    for(int i = 0; i < charsSize; i++)
+        if(i < taIndex )
+            chars[i] = ta[i];
+    
+    return (taIndex); 
+}
+
+
+

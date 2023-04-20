@@ -1,0 +1,37 @@
+class Solution {
+public:
+    std::map<int, long long> M;
+    vector<vector<long long>> splitPainting(vector<vector<int>>& segments) {
+        for (vector<int> s : segments) {
+            if (M.find(s[0]) == M.end()) {
+                M[s[0]] = (long long) s[2];
+            }
+            else {
+                M[s[0]] += (long long) s[2];
+            }
+            if (M.find(s[1]) == M.end()) {
+                M[s[1]] = -1 * (long long) s[2];
+            }
+            else {
+                M[s[1]] -= (long long) s[2];
+            }
+        }
+        vector<vector<long long>> res = {};
+        std::pair<int, long long> st;
+        st = {-1, -1};
+        long long track = 0;
+        for (auto p : M) {
+            if (st.first == -1) {
+                st = p;
+                track = (long long)p.second;
+            }
+            else {
+                if (track > 0)
+                    res.push_back({(long long)st.first, (long long)p.first, track});
+                st = p;
+                track += (long long)p.second;
+            }
+        }
+        return res;
+    }
+};

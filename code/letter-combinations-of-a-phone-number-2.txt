@@ -1,0 +1,31 @@
+char map[10][5] = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+
+void search(int cidx, char** res, char* restmp, int* returnSize, int len, char* digits) {
+    if (cidx == len) {
+        restmp[cidx] = '\0';
+        char* tmp = (char*) malloc((len+1) * sizeof(char));
+        strncpy(tmp, restmp, len+1);
+        res[(*returnSize)++] = tmp;
+    } else {
+        char* substring = map[digits[cidx] - '0'];
+        for (int i = 0; i < strlen(substring); i++) {
+            restmp[cidx] = substring[i];
+            search(cidx+1, res, restmp, returnSize, len, digits);
+        }
+    }
+}
+
+char** letterCombinations(char* digits, int* returnSize) {
+    int len = strlen(digits);
+    *returnSize = 0;
+    if (len == 0) return NULL;
+    int size = 1;
+    for (int i = 0; i < len; i++) {
+        size *= strlen(map[digits[i] - '0']);
+    }
+    char** res = (char**) malloc(size * sizeof(char*));
+    char* restmp = (char*) malloc((len+1) * sizeof(char));
+    search(0, res, restmp, returnSize, len, digits);
+	free(restmp);
+    return res;
+}

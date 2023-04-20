@@ -1,0 +1,29 @@
+public class Solution {
+    public int MinDeletions(string s) {
+        if (s == null || s == string.Empty)
+            return 0;
+        
+        int res = 0,
+            curFreq = Int32.MaxValue;
+        Dictionary<char, int> dict = new Dictionary<char, int>();
+        
+        foreach (var c in s)
+        {
+            if (!dict.ContainsKey(c))
+                dict.Add(c, 0);
+            
+            dict[c] += 1;
+        }
+        
+        foreach (var item in dict.OrderByDescending(x => x.Value).Select(x => x.Value).ToList())
+            if (curFreq <= item)
+            {
+                res += curFreq == 0 ? item : item - curFreq + 1;
+                curFreq = curFreq == 0 ? 0 : curFreq - 1;
+            }
+            else
+                curFreq = item;
+        
+        return res;
+    }
+}

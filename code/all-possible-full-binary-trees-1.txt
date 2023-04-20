@@ -1,0 +1,96 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+void function(int left,int right,int *array,int count,int N,int **result,int *count_point){
+    if(left==right||count>=N){
+        if(count==N){
+            result[(*count_point)++]=(int*)calloc(right,sizeof(int));
+            for(int i=0;i<right;i++){
+                result[(*count_point)-1][i]=array[i];
+            }
+        }
+        return;
+    }
+    if(array[left]==1){
+        array[right]=1;
+        array[right+1]=1;
+        function(left+1,right+2,array,count+2,N,result,count_point);
+        array[right]=0;
+        array[right+1]=0;
+        function(left+1,right+2,array,count,N,result,count_point);
+    }else{
+        function(left+1,right,array,count,N,result,count_point);
+    }
+}
+struct TreeNode* arrayToTreeNode(int *array,int N){
+    struct TreeNode** arr=(struct TreeNode**)malloc(5000*sizeof(struct TreeNode*));
+    int a[5000]={0};
+    int right=1;
+    int tamp=0;
+    for(int i=0;tamp<N;i++){
+        if(array[i]==1){
+            if(a[i]==0){
+                tamp++;
+                a[i]=1;
+            }
+            int leftNode=right;
+            int rightNode=right+1;
+            right=right+2;
+            if(arr[i]==NULL){
+                arr[i]=(struct TreeNode*)malloc(sizeof(struct TreeNode));
+                arr[i]->val=0;
+                arr[i]->left=NULL;
+                arr[i]->right=NULL;
+            }
+            if(array[leftNode]==1){
+                arr[i]->left=(struct TreeNode*)malloc(sizeof(struct TreeNode));
+                arr[i]->left->val=0;
+                arr[i]->left->left=NULL;
+                arr[i]->left->right=NULL;
+                arr[leftNode]=arr[i]->left;
+                if(a[leftNode]==0){
+                    tamp++;
+                    a[leftNode]=1;
+                }
+            }
+            if(array[rightNode]==1){
+                arr[i]->right=(struct TreeNode*)malloc(sizeof(struct TreeNode));
+                arr[i]->right->val=0;
+                arr[i]->right->left=NULL;
+                arr[i]->right->right=NULL;
+                arr[rightNode]=arr[i]->right;
+                if(a[rightNode]==0){
+                    tamp++;
+                    a[rightNode]=1;
+                }
+            }
+        }
+    }
+    return arr[0];
+}
+struct TreeNode** allPossibleFBT(int N, int* returnSize) {
+    int **result=(int**)malloc(5000*sizeof(int*));
+    int *count_point=(int*)malloc(sizeof(int));
+    *count_point=0;
+    int array[5000]={0};
+    array[0]=1;
+    int left=0;
+    int right=1;
+    int count=1;
+    function(left,right,array,count,N,result,count_point);
+    *returnSize=*count_point;
+    struct TreeNode** ret=(struct TreeNode**)malloc((*count_point)*sizeof(struct TreeNode*));
+    for(int i=0;i<(*count_point);i++){
+        ret[i]=arrayToTreeNode(result[i],N);
+    }
+    return ret;
+}

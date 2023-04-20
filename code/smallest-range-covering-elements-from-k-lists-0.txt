@@ -1,0 +1,49 @@
+int* smallestRange(int** nums, int numsSize, int* numsColSize, int* returnSize){
+    int* ans = malloc(2 * sizeof(int));
+    *returnSize = 2;
+    int* pos = calloc(numsSize, sizeof(int));
+    int min = INT_MAX, max = INT_MIN;
+    int diff = INT_MAX;
+    int m_idx = -1, M_idx = -1;
+        min = nums[0][0];
+        max = nums[0][0];
+        m_idx = 0, M_idx = 0;
+    for(int i = 1; i < numsSize; i++){
+        if(nums[i][pos[i]] < min){
+            min = nums[i][pos[i]];
+            m_idx = i;
+        }
+        else if(nums[i][pos[i]] > max){
+            max = nums[i][pos[i]];
+            M_idx = i;
+        }
+    }
+    diff = max - min;
+    ans[0] = min;
+    ans[1] = max;
+    pos[m_idx]++;
+    if(pos[m_idx] == numsColSize[m_idx]  || diff == 0)
+        return ans;        
+    
+    max = fmax( max,  nums[m_idx][pos[m_idx]] );
+    while(1){
+        min = nums[0][pos[0]];
+        m_idx = 0;
+        for(int i = 1; i < numsSize; i++){
+            if(nums[i][pos[i]] < min){
+                min = nums[i][pos[i]];
+                m_idx = i;
+            }
+        }
+        if((max - min) < diff){
+            diff = max - min;
+            ans[0] = min;
+            ans[1] = max;
+        }
+        pos[m_idx]++;
+        if(pos[m_idx] == numsColSize[m_idx]  || diff == 0)
+            return ans;  
+        max = fmax( max,  nums[m_idx][pos[m_idx]] );
+    }
+    return ans;
+}

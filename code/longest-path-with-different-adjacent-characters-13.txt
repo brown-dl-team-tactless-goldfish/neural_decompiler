@@ -1,0 +1,47 @@
+class Solution {
+public:
+    
+    int dfs(int index, vector<vector<int>>&tree, string &s, int &maxLength)
+    {        
+        int max1 = 0;   // first max length from child
+        int max2 = 0;   // second max length from child
+        int len;
+        
+        for(int i=0;i<tree[index].size();i++)
+        {
+            len = dfs(tree[index][i],tree,s,maxLength);
+            
+            // if child and parent has diff char then get their first and second max length
+            if(s[index]!=s[tree[index][i]])
+            {
+                if(max1 < len)max2=max1,max1 = len;
+                else if(max2 < len)max2 = len;
+            }
+        }
+        
+        max1++; // add current node in the current longest path
+        
+        // update overall longest path with max1 + max2 as path can lead from one leaf to another
+        maxLength = max(max1+max2,maxLength);
+
+        // return current node's longest path directed from current node to its child subtree
+        return max1;
+    }
+    
+    int longestPath(vector<int>& parent, string s) {
+        
+        int n = parent.size();
+        
+        // create tree from parent list
+        vector<vector<int>>tree(n);        
+        for(int i=1;i<n;i++)
+            tree[parent[i]].push_back(i);
+        
+        int maxLength = 0;
+     
+        // run DFS from root
+        dfs(0,tree,s,maxLength);
+        
+        return maxLength;
+    }
+};

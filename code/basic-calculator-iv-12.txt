@@ -1,0 +1,182 @@
+	int state = 0;//0:init, 1:number, 2: var
+	string var = "";
+	int cur_num = 0;
+	for (int i = 0; i < expression.size(); i++) {
+		char c = expression[i];
+		if (c >= '0' && c <= '9') {
+			if (state != 1) {
+				cur_num = 0;
+				state = 1;
+			}
+			cur_num = cur_num * 10 + c - '0';
+		}
+		else if (c >= 'a'&& c <= 'z') {
+			if (state != 2) {
+				var = "";
+				state = 2;
+			}
+			var += c;
+		}
+		else if (c == '(') {
+			op_stack.push(c);
+		}
+		else if (is_op(c)) {
+			op_stack.push(c);
+		}
+		else if (c == ')') {
+			push_pre(state, cur_num, var, val_map, res_stack);
+			char op = op_stack.top();
+			op_stack.pop();
+			if (op != '(') {
+				cout << "error when match ()" << endl;
+			}				
+		}
+		if (i + 1 >= expression.length() || is_op(expression[i + 1]) || expression[i + 1] == ')') {
+			push_pre(state, cur_num, var, val_map, res_stack);
+			int priority = 1;
+			if (i + 1 < expression.length()) {
+				priority = get_priority(expression[i + 1]);
+			}
+			cal(priority, op_stack, res_stack);
+			state = 0;
+		}
+	}
+	vector<string> res;
+	if (res_stack.empty()) {
+		return res;
+	}
+	vector<pair<string,int> > res_pair(res_stack.top().begin(), res_stack.top().end());
+	sort(res_pair.begin(), res_pair.end(), cmp);
+	for (auto iter = res_pair.begin(); iter != res_pair.end(); iter++) {
+		if (iter->second != 0) {
+			string tmp = to_string(iter->second);
+			if (iter->first != "") {
+				tmp += "*" + iter->first;
+			}
+			res.push_back(tmp);
+		}
+	}
+	return res;
+}
+
+void cal(int priority, stack<char>& op_stack, stack< unordered_map<string, int> >& res_stack) {
+	while ( (!op_stack.empty()) && op_stack.top() != '(' && get_priority(op_stack.top())>=priority && res_stack.size() >= 2) {
+		unordered_map<string, int> num2 = res_stack.top();
+		res_stack.pop();
+		unordered_map<string, int> num1 = res_stack.top();
+		res_stack.pop();
+		char op = op_stack.top();
+		op_stack.pop();
+		if (op == '+' || op == '-') {				
+			for (auto iter = num2.begin(); iter != num2.end();iter++ ) {
+				if (num1.find(iter->first) == num1.end()) {
+					if (op == '+') {
+						num1[iter->first] = iter->second;
+					}
+					else {
+						num1[iter->first] = -iter->second;
+					}
+				}
+				else {
+					if (op == '+') {
+						num1[iter->first] += iter->second;
+					}
+					else {
+						num1[iter->first] -= iter->second;
+					}
+					if (num1[iter->first] == 0) {
+						num1.erase(iter->first);
+					}
+				}
+			}
+			res_stack.push(num1);
+		}
+		else{
+			unordered_map<string, int> tmp_map;
+			for (auto iter1 = num1.begin(); iter1 != num1.end(); iter1++) {
+				for (auto iter2 = num2.begin(); iter2 != num2.end(); iter2++) {
+					string var = mergevars(iter1->first, iter2->first);
+					int value = iter1->second*iter2->second;
+					if (tmp_map.find(var) != tmp_map.end()) {
+						tmp_map[var] += value;
+						if (tmp_map[var] == 0) {
+							tmp_map.erase(var);
+						}
+					}
+					else if(value!=0){
+						tmp_map[var] = value;
+					}
+				}
+			}
+			res_stack.push(tmp_map);
+		}
+		
+	}
+}
+
+void push_pre(int& state, int cur_num, string& var, 
+	unordered_map<string, int>& val_map, stack< unordered_map<string, int> >& res_stack) {
+	if (state == 1) {
+		unordered_map<string, int> tmp_map;
+		tmp_map[""] = cur_num;
+		res_stack.push(tmp_map);
+	}
+	else if (state == 2) {
+		if (val_map.find(var) != val_map.end()) {
+			unordered_map<string, int> tmp_map;
+			tmp_map[""] = val_map[var];
+			res_stack.push(tmp_map);
+		}
+		else {
+			unordered_map<string, int> tmp_map;
+			tmp_map[var] = 1;
+			res_stack.push(tmp_map);
+		}
+	}
+}
+
+
+int get_priority(char c) {
+	if (c == '*' ) {
+		return 2;
+	}
+	return 1;
+}
+
+bool is_op(char c) {
+	return c == '+' || c == '-' || c == '*';
+}
+
+string mergevars(string var1, string var2) {
+	vector<string> vars;
+	decode_var(var1, vars);
+	decode_var(var2, vars);
+	sort(vars.begin(), vars.end());
+	string res="";
+	for (auto iter = vars.begin(); iter != vars.end(); iter++) {
+		if (iter != vars.begin()) {
+			res += "*";
+		}
+		res += *iter;
+	}
+	return res;
+}
+
+void decode_var(string& var1, vector<string>& vars) {
+	string v = "";
+	for (int i = 0; i <= var1.size(); i++) {
+		char c = '*';
+		if (i < var1.size()) {
+			c = var1[i];
+		}
+		if (c == '*') {
+			if (v != "") {
+				vars.push_back(v);
+			}
+			v = "";
+		}
+		else if (c >= 'a' &&c <= 'z') {
+			v += c;
+		}
+	}
+}

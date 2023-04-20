@@ -1,0 +1,33 @@
+class Solution:
+    def canReach(self, arr: List[int], start: int) -> bool:
+        
+        n = len(arr)
+        dp = {}
+        visited = []
+        def dfs(curIdx):
+            if (0 <= curIdx < n and curIdx not in visited):
+
+                visited.append(curIdx)
+                
+                if (arr[curIdx] == 0):
+                    return True
+
+                else:
+                    if (curIdx in dp):
+                        return dp[curIdx]
+                    else:
+                
+                        res1 = dfs(curIdx+arr[curIdx])
+                        res2 = dfs(curIdx-arr[curIdx])
+
+
+                        if (res1 == True or res2 == True):
+                            dp[curIdx] = True
+                            return True
+                        else:
+                            dp[curIdx] = False
+                            return False
+        res = dfs(start)
+        print ("res = ", res)
+        
+        return res

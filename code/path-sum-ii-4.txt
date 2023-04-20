@@ -1,0 +1,31 @@
+void ans(struct TreeNode* root,int sum,int **ret,int *returnSize,int** returnColumnSizes,int *arr,int idx)
+{
+    
+    if(root==NULL)
+        return;
+    sum-=root->val;
+    arr[idx++]=root->val;
+    if(root->right==NULL&&root->left==NULL&&sum==0)
+    {
+        (*returnColumnSizes)[*returnSize]=idx;
+        ret[*returnSize]=malloc(sizeof(int)*idx);
+        memcpy(ret[*returnSize], arr, idx * sizeof(int));
+        (*returnSize)++;
+    }
+    ans(root->left,sum,ret,returnSize,returnColumnSizes,arr,idx);
+    ans(root->right,sum,ret,returnSize,returnColumnSizes,arr,idx);
+    
+}
+int** pathSum(struct TreeNode* root, int sum, int* returnSize, int** returnColumnSizes){
+    *returnSize=0;
+    
+    if(root==NULL)
+        return NULL;
+    
+    *returnColumnSizes=malloc(sizeof(int)*5000);
+    int **ret=malloc(sizeof(int*)*5000);
+    int *arr=malloc(sizeof(int)*1000);
+    int idx=0;
+    ans(root,sum,ret,returnSize,returnColumnSizes,arr,idx);
+    return ret;
+}

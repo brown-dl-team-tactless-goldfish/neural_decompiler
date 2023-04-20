@@ -1,0 +1,36 @@
+#include <ext/pb_ds/tree_policy.hpp>
+#include <ext/pb_ds/assoc_container.hpp> // Common file
+
+using namespace __gnu_pbds;
+
+template <class T> 
+struct cmp {
+    bool operator() (T a, T b) {
+        return a.first > b.first || (a.first == b.first && a.second < b.second);
+    }
+};
+template <class T> using ordered_set = tree<T, null_type, cmp<T>, rb_tree_tag, tree_order_statistics_node_update>;
+
+class SORTracker {
+    unordered_map<string , int> m;
+    ordered_set <pair<int , string> > tree ;
+    int index;
+
+public:
+    SORTracker() {
+        m.clear();
+        index = 0;
+    }
+
+    void add(string name, int score) {
+        tree.erase( tree.find({m[name] , name}) );
+        tree.insert({score , name });
+        m[name] = score;
+    }
+
+    string get() {
+        pair<int , string> ans =  *tree.find_by_order(index);
+        index++;
+        return ans.second ;
+    }
+};

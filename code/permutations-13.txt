@@ -1,0 +1,58 @@
+typedef struct Node{
+    int val;
+    struct Node *next;
+}Node,*Linklist;
+
+Linklist CreateLink(int *s, int n){
+    Linklist head,node,end;
+    head=(Linklist)malloc(sizeof(Node));
+    head->next=NULL;
+    end=head;
+    for(int i=0;i<n;i++){
+        node=(Linklist)malloc(sizeof(Node));
+        node->val=s[i];
+        end->next=node;
+        end=node;
+        end->next=NULL;
+    }
+    return head;
+}
+
+void Do(int **s,Linklist list, int*nums, int n, int nn,int *record, int lier, int *count){
+    int i,j,k;
+    Linklist t=list, pre=t;
+    for(i=0;i<n;i++){
+        pre=t;
+        t=t->next;
+        record[lier]=t->val;
+        pre->next=t->next;//take out the node
+        if(n==1){
+            for(i=0;i<nn;i++){
+                s[(*count)][i]=record[i];
+            }
+            (*count)++;
+        }
+        else Do(s,list, nums,  n-1, nn, record, lier+1, count);
+        t->next=pre->next;//insert back the node
+        pre->next=t;
+    }    
+}
+
+int** permute(int* nums, int n, int* r, int** c){
+    *r=1;
+    int i;
+    for(i=2;i<=n;i++){
+        (*r)*=i;
+    }
+    int *record=(int*)calloc(n,sizeof(int));
+    int **s=(int**)calloc((*r),sizeof(int*));
+    (*c)=(int*)calloc((*r),sizeof(int));
+    for(i=0;i<(*r);i++){
+        s[i]=(int*)calloc(n,sizeof(int));
+        (*c)[i]=n;
+    }
+    int lier=0, h=0, *count=&h;
+    Linklist list=CreateLink(nums,n);
+    Do(s,list, nums,  n, n,record, lier, count);
+    return s;
+}

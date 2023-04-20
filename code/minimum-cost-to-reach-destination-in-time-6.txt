@@ -1,0 +1,71 @@
+struct node {
+    int id;
+    // time
+    int t;
+    // cost;
+    int c;
+    
+    node(int i, int time, int cost)
+    {
+        id = i;
+        t = time;
+        c = cost;
+    }
+};
+
+struct cmp {
+  bool operator() (const node& l, const node& r)
+  {
+      if (l.c != r.c)
+      {
+            return l.c > r.c;
+      }
+      return l.t > r.t;
+  }
+};
+class Solution {
+public:
+    int n;
+    int maxt;
+    
+    int minCost(int maxTime, vector<vector<int>>& edges, vector<int>& pfee) {
+        maxt = maxTime;
+        n = pfee.size();
+        vector<int> visited = vector<int>(n, INT_MAX);
+        vector<vector<pair<int, int>>> es(n);
+        for (auto& p : edges)
+        {
+            es[p[0]].push_back( {p[1], p[2]});
+            es[p[1]].push_back( {p[0], p[2]});
+        }
+        
+        priority_queue<node, vector<node>, cmp> q;
+        q.push(node(0, 0, pfee[0]));
+        visited[0] = 0;
+        while (!q.empty())
+        {
+            auto cur = q.top();
+            if (cur.id == n -1)
+            {
+                return cur.c;
+            }
+            q.pop();
+            for (auto& p : es[cur.id])
+            {
+                int nt = cur.t + p.second;
+                int id = p.first;
+                if (nt > maxt)
+                {
+                    continue;
+                }
+                if (nt >= visited[id])
+                {
+                    continue;
+                }
+                visited[id] = nt;
+                q.push(node(id, nt, cur.c + pfee[id]));
+            }
+        }
+        return -1;
+    }
+};

@@ -1,0 +1,55 @@
+class Solution {
+public:
+    string optimalDivision(vector<int>& nums) {
+   
+        double minv[10][10];
+        double maxv[10][10];
+        string minvs[10][10];
+        string maxvs[10][10];
+        int n = nums.size();
+
+        for (int i=0; i<n; i++)
+        {
+            minv[i][i] = maxv[i][i] = nums[i];   
+            minvs[i][i] = maxvs[i][i] = to_string(nums[i]); 
+        }
+
+        for(int c=2; c <= n; c++)
+        {
+            for (int i=0; i<n-c+1; i++)
+            {
+                int maxj = i+1; 
+                int minj = i+1;
+                double resmax = 0;
+                double resmin = 10000000;
+                for (int j=i+1; j<i+c; j++)    
+                {
+                    if (maxv[i][j-1]/minv[j][i+c-1] > resmax)
+                    {
+                        resmax = maxv[i][j-1]/minv[j][i+c-1];
+                        maxj = j;
+                    }
+                    if (minv[i][j-1]/maxv[j][i+c-1] < resmin)
+                    {
+                        resmin = minv[i][j-1]/maxv[j][i+c-1];
+                        minj = j;
+                    }
+                }
+                maxv[i][i+c-1] = resmax;
+                minv[i][i+c-1] = resmin;
+                maxvs[i][i+c-1] = maxvs[i][maxj-1];
+                minvs[i][i+c-1] = minvs[i][minj-1];
+                if (i+c-maxj <= 1)
+                    maxvs[i][i+c-1].append("/").append(minvs [maxj][i+c-1]);
+                else
+                    maxvs[i][i+c-1].append("/(").append(minvs [maxj][i+c-1]).append(")");
+                if (i+c-minj <= 1)
+                    minvs[i][i+c-1].append("/").append(maxvs [minj][i+c-1]);
+                else
+                    minvs[i][i+c-1].append("/(").append(maxvs [minj][i+c-1]).append(")");
+            }
+        }
+        cout<<maxv[0][n-1];
+        return maxvs[0][n-1]; 
+    }
+};

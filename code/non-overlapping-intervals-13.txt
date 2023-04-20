@@ -1,0 +1,30 @@
+class Solution {
+    static bool compare(vector<int>v1, vector<int>v2) {
+        return (v1[0] < v2[0]) || (v1[0] == v2[0] && v1[1] > v2[1]);
+    }
+public:
+    int eraseOverlapIntervals(vector<vector<int>>& intervals) {
+        
+        int n = intervals.size();
+        if (n == 0) return 0;
+        
+        sort(intervals.begin(), intervals.end(), compare);
+        
+        vector<vector<int>>res;
+        res.push_back(intervals[0]);
+    
+        for (int i = 1; i < n; i++) {
+            vector<int>v = res[res.size()-1];
+            if (v[1] > intervals[i][1]) {
+                res.pop_back();
+                res.push_back(intervals[i]);
+            } else if (v[1] > intervals[i][0]) {
+                continue;
+            } else {
+                res.push_back(intervals[i]);
+            }
+        }
+        
+        return n - res.size();
+    }
+};

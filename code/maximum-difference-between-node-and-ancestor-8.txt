@@ -1,0 +1,34 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+void iterateTree(struct TreeNode *node, int *v, int *max, int *min) {
+    int lmin = *min;
+    int lmax = *max;
+
+    if (node->val > *max) *max = node->val;
+    if (node->val < *min) *min = node->val;
+
+    if (!node->left && !node->right) {
+        int delta = abs(*max - *min);
+        if (*v < delta) *v = delta;
+    }
+
+    if (node->left) iterateTree(node->left, v, max, min);
+    if (node->right) iterateTree(node->right, v, max, min);
+    *min = lmin;
+    *max = lmax;
+}
+
+int maxAncestorDiff(struct TreeNode* root){
+    int v = 0;
+    int min = root->val;
+    int max = root->val;
+    iterateTree(root, &v, &max, &min);
+    return v;
+}

@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int minCost(vector<int>& houses, vector<vector<int>>& cost, int m, int n, int target) {
+        int dp[101][101][21];
+        const int inf = 0x3f3f3f3f;
+        memset(dp, 0x3f, sizeof dp);
+        
+        for (int j = 1; j <= n; ++j)
+            dp[0][0][j] = 0;
+        
+        for (int i = 0; i < m; ++i)
+        {
+            for (int j = 1; j <= target; ++j)
+                for (int c1 = 1; c1 <= n; ++c1)
+                {
+                    if (houses[i] != 0 && c1 != houses[i]) continue;
+                    int t = houses[i] == 0 ? cost[i][c1 - 1] : 0;
+                    for (int c2 = 1; c2 <= n; ++c2)
+                    {
+                        if (c1 == c2) 
+                            dp[i + 1][j][c1] = min(dp[i + 1][j][c1], dp[i][j][c2] + t);
+                        else
+                            dp[i + 1][j][c1] = min(dp[i + 1][j][c1], dp[i][j - 1][c2] + t);
+                    }
+                }
+        }
+        
+        int ans = INT_MAX;
+        
+        for (int c = 1; c <= n; ++c)
+        {
+            ans = min(dp[m][target][c], ans);
+        }
+        
+        return ans == inf ? -1 : ans;
+    }
+};

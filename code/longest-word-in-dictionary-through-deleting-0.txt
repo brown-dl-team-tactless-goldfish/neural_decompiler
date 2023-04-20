@@ -1,0 +1,41 @@
+char * findLongestWord(char * s, char ** dictionary, int dictionarySize){
+    int n = strlen(s);
+    int** table = malloc((n+1) * sizeof(int*));
+    for(int i = 0; i <= n; i++){
+        table[i] = malloc(26 * sizeof(int));
+    }
+    for(int i = 0; i < 26; i++){
+        table[n][i] = -1;
+    }
+    for(int i = n-1; i >= 0; i--){
+        table[i] =  malloc(26 * sizeof(int)); 
+        memcpy(table[i], table[i+1], 26 * sizeof(int));
+        table[i][s[i] - 'a'] = i ; 
+    }
+    
+    char* ans = "";
+    int maxL = 0;
+    for(int i = 0; i < dictionarySize; i++){
+        int len = strlen(dictionary[i]);
+        if(len > n || len < maxL)
+            continue;
+        int p = 0;
+        for(int j = 0; j < len; j++){
+            int d = dictionary[i][j] - 'a';
+            if(table[p][d] == -1)
+                break;
+            if(j == (len-1)){
+                if(len > maxL){
+                    maxL = len;
+                    ans = dictionary[i];
+                }
+                else if(len == maxL){
+                    if(strcmp(dictionary[i], ans) < 0)
+                        ans = dictionary[i];
+                }
+            }
+            p = table[p][d] +1;
+        }
+    }
+    return ans;
+}

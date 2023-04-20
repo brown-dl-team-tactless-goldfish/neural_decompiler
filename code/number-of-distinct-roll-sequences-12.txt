@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int dp[10001][7][7];
+    int mod = 1e9 + 7;
+    int gcd(int a, int b) {
+        if(b == 0) return a;
+        return gcd(b, a%b);
+    }
+    int cal(int n, int p, int pp) {
+        if(n == 0) return 1;
+        if(dp[n][p][pp] != -1) return dp[n][p][pp];
+        int ans = 0;
+        for(int i = 1; i <= 6; i++) {
+            if((i == p || i == pp || gcd(i, p) != 1) && p != 0) continue;
+            ans = (ans + cal(n-1, i, p))%mod;
+        }
+        return dp[n][p][pp] = ans;
+    }
+    int distinctSequences(int n) {
+        memset(dp, -1, sizeof(dp));
+        return cal(n, 0, 0);
+    }
+};

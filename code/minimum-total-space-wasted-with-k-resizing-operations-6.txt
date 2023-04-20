@@ -1,0 +1,47 @@
+class Solution {
+public:
+    int minSpaceWastedKResizing(vector<int>& nums, int k) {
+        int n=nums.size();
+        vector<int>pre(n+1,0);
+        vector<int>mx(n+1,0);
+        for(int i=0;i<n;i++){
+            pre[i+1]=pre[i]+nums[i];//sum 0-i
+            mx[i+1]=max(mx[i],nums[i]);//max 0-i
+        }
+        
+        int dp[n][k+1];
+        for(int i=0;i<n;i++){
+            for(int j=0;j<=k;j++){
+                dp[i][j]=INT_MAX;
+            }
+        }
+        int ans=INT_MAX;
+        for(int i=0;i<n;i++){
+            for(int j=0;j<=min(i,k);j++){
+                if(j==0)dp[i][j]=(i+1)*mx[i+1]-pre[i+1];
+                else{
+                    int me=nums[i];//max running element
+                    int sum=nums[i];//running sum
+                    int l=1; //length of subarray
+                    for(int s=i-1;s>=0;s--){
+                        if(dp[s][j-1]!=INT_MAX){
+                        dp[i][j]=min(dp[i][j],dp[s][j-1]+ me*l-sum);//total waste = (maxelement*len - sum) of subarray
+                        }
+                        sum+=nums[s];
+                        me=max(me,nums[s]);
+                        l++;
+                    }
+                }
+                if(i==n-1)ans=min(ans,dp[i][j]);
+            }
+        }
+        return ans;
+      
+        
+    }
+};
+
+
+
+
+

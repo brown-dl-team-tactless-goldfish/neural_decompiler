@@ -1,0 +1,19 @@
+int findLatestStep(int* arr, int arrSize, int m){
+    int *newArr = calloc(arrSize + 2, 4);
+    int total = 0;
+    int last = -1;
+    for (int i = 0; i < arrSize; i++) {
+        int num = arr[i];
+        int right = newArr[num + 1];
+        int left = newArr[num - 1];
+        if(right == m) total--;
+        if(left == m) total--;
+        int final = 1 + left + right;
+        if(final == m) total++;
+        newArr[num] = final;
+        if(left > 0) newArr[num - left] = final;
+        if(right > 0) newArr[num + right] = final;
+        if(total > 0) last = i + 1;
+    }
+    return last;
+}

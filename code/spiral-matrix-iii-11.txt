@@ -1,0 +1,94 @@
+class Solution {
+public:
+    vector<vector<int>> spiralMatrixIII(int R, int C, int r0, int c0) {
+        vector<vector<int>> points;
+        int countdown = R*C;       //track how many squares have been counted
+        int r = r0, c = c0;        //track current coordinate
+        int diff = 1;              //the bound of the coordinate oscillation
+        
+        bool rightdone = false;    //flags to indicate what part of the lap we are on
+        bool downdone = false;     //and to skip out of bounds cells
+        bool leftdone = false;
+        bool updone = false;
+        while (countdown > 0){
+            
+            //going right along the top edge of the current lap
+            if (!rightdone && !downdone && !leftdone && !updone){
+                if (r < 0){
+                    c = c0+diff;
+                    r = 0;
+                } else {
+                    while (c < c0+diff){
+                        cout << "Checking " << r << ", " << c << endl;
+                        if (r >= 0 && r < R && c >= 0 && c < C){
+                            points.push_back({r,c});
+                            countdown--;
+                        }
+                        c++;
+                    }  
+                }
+                rightdone = true;
+                
+            //going down along the right edge of the current lap
+            } else if (rightdone && !downdone && !leftdone && !updone){
+                if (c >= C){
+                    r = r0+diff;
+                    c = C-1;
+                } else {
+                    while (r < r0+diff){
+                        cout << "Checking " << r << ", " << c << endl;
+                        if (r >= 0 && r < R && c >= 0 && c < C){
+                            points.push_back({r,c});
+                            countdown--;
+                        }
+                        r++;
+                    }
+                }
+                downdone = true;
+            
+            //going left along the bottom edge of the current lap
+            } else if (rightdone && downdone && !leftdone && !updone){
+                if (r >= R){
+                    r = R-1;
+                    c = c0-diff;
+                } else {
+                    while (c > c0-diff){
+                        cout << "Checking " << r << ", " << c << endl;
+                        if (r >= 0 && r < R && c >= 0 && c < C){
+                            points.push_back({r,c});
+                            countdown--;
+                        }
+                        c--;
+                    }
+                }
+                leftdone = true;
+            
+            //going up along the left edge of the current lap
+            } else if (rightdone && downdone && leftdone && !updone){
+                if (c < 0){
+                    r = r0-diff;
+                    c = 0;
+                } else {
+                    while (r > r0-diff){
+                        cout << "Checking " << r << ", " << c << endl;
+                        if (r >= 0 && r < R && c >= 0 && c < C){
+                            points.push_back({r,c});
+                            countdown--;
+                        }
+                        r--;
+                    }
+                }
+                updone = true;
+                
+            //Increment the difference from r0, c0 when the lap is over
+            } else {
+                diff++;
+                rightdone = false;
+                downdone = false;
+                leftdone = false;
+                updone = false;
+            }
+        }
+        return points;
+    }
+};

@@ -1,0 +1,226 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+#define FOLLOW_MAX 100
+#define FEED_MAX 100
+#define USER_MAX 100
+
+//basic linked list
+//disguised as "feed" :3
+
+typedef struct tweets{
+
+        int tweetId;
+        int userId;
+        struct tweets *next;
+
+}feed;
+
+typedef struct{
+
+        int id;
+        int *followers;
+        int *following;
+
+        //these act as max size
+
+        int biggestFollowerId;
+        int biggestFollowingId;
+
+}user;
+
+typedef struct {
+
+        user **users;
+        feed *feed;
+
+        //same here - max size
+
+        int biggestUserId;
+
+}Twitter;
+
+//utility initializer functions
+
+feed *init_feed(){
+
+        feed *newFeed = malloc(sizeof(feed));
+        newFeed->tweetId = -1;
+        newFeed->userId = -1;
+        newFeed->next = NULL;
+
+        return newFeed;
+
+}
+user *init_user(int userId){
+
+        user *newUser = malloc(sizeof(user));
+        newUser->id = userId;
+
+        newUser->followers = calloc(FOLLOW_MAX, sizeof(int));
+        newUser->following = calloc(FOLLOW_MAX, sizeof(int));
+
+
+        newUser->biggestFollowerId = newUser->biggestFollowingId = FOLLOW_MAX;
+
+        return newUser;
+
+}
+Twitter* twitterCreate() {
+
+        Twitter *newTwitter = malloc(sizeof(Twitter));
+
+        newTwitter->users = calloc(USER_MAX, sizeof(user*));
+        newTwitter->feed = init_feed();
+
+        newTwitter->biggestUserId = USER_MAX;
+
+        return newTwitter;
+}
+
+void check(int *arr, int ix, int *maxIx){
+
+        //O(1)
+        //check whether a given index is present in a lookup table or not
+        //if its not we reallocate the lookup in order to have it
+
+        if(ix>(*maxIx)){
+
+                *maxIx = ix;
+                arr = realloc(arr, sizeof(int)*ix);
+
+        }
+}
+
+void twitterPostTweet(Twitter* obj, int userId, int tweetId) {
+
+        //O(1)
+        //basic push_front method in a linked list
+
+        feed *new = init_feed();
+        new->userId = userId;
+        new->tweetId = tweetId;
+
+        if(!obj)
+                obj = twitterCreate();
+
+        if(obj->feed->userId != -1)
+                new->next = obj->feed;
+
+        obj->feed = new;
+}
+
+int* twitterGetNewsFeed(Twitter* obj, int userId, int* retSize) {
+
+        //slowest function out of all
+        //O(n)
+        //we go through the linked list that contains the feed
+        //and if the current tweet we are on contains an id we follow
+        //or our id
+        //we put it in the feed array
+
+        if(!obj)
+                return NULL;
+
+        user *currUser = obj->users[userId];
+        int *userFeed = calloc(10, sizeof(int));
+
+        feed *head = obj->feed;
+
+        while(head){
+
+                if(*retSize >= 10)
+                        break;
+
+                if(head->tweetId!=-1 && currUser && head && currUser->following[head->userId] || head->userId == userId){
+                        userFeed[(*retSize)++] = head->tweetId;
+                }
+
+                head = head->next;
+
+        }
+
+        return userFeed;
+
+
+}
+
+void checkUser(Twitter *obj, int followerId, int followeeId){
+
+        //O(1)
+        //we check if a given index is present in a lookup table
+        //kinda like the check that we saw earlier
+
+        if(!obj)
+                return;
+
+        if(followerId > obj->biggestUserId){
+
+                obj->biggestUserId = followerId;
+                obj->users = realloc(obj->users, sizeof(user)*(followerId + 1));
+
+        }
+
+        if(followeeId > obj->biggestUserId){
+
+                obj->biggestUserId = followeeId;
+                obj->users = realloc(obj->users, sizeof(user)*(followeeId + 1));
+
+        }
+
+        //initializing users if they do not exist
+
+        if(!obj->users[followerId])
+                obj->users[followerId] = init_user(followerId);
+
+        if(!obj->users[followeeId])
+                obj->users[followeeId] = init_user(followeeId);
+
+
+}
+void twitterFollow(Twitter* obj, int followerId, int followeeId) {
+
+        //follow
+        //O(1)
+        //we get the given index of the follower and followee
+        //each user has a "following" and a "followers" array
+        //the follower's followings will be updated and at the index followeeId it will become 1
+        //the followee's followers will be updated and at the index followerId it will become 1
+
+        if(!obj)
+                return;
+
+        checkUser(obj, followerId, followeeId);
+
+
+        check(obj->users[followerId]->following,
+                        followeeId, &obj->users[followerId]->biggestFollowingId);
+
+        check(obj->users[followeeId]->followers,
+                        followerId, &obj->users[followeeId]->biggestFollowerId);
+
+
+        obj->users[followerId]->following[followeeId] = 1;
+        obj->users[followeeId]->followers[followerId] = 1;
+
+}
+
+void twitterUnfollow(Twitter* obj, int followerId, int followeeId) {
+
+        //unfollow
+        //O(1)
+        //we get the given index of the follower and followee
+        //each user has a "following" and a "followers" array
+        //the follower's followings will be updated and at the index followeeId it will become 0
+        //the followee's followers will be updated and at the index followerId it will become 0
+
+        checkUser(obj, followerId, followeeId);
+
+        obj->users[followerId]->following[followeeId] = 0;
+        obj->users[followeeId]->followers[followerId] = 0;
+
+}
+
+void twitterFree(Twitter* obj) {
+        free(obj);
+}

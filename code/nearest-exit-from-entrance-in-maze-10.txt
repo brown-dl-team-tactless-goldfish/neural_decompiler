@@ -1,0 +1,15 @@
+public class Solution {
+    public int NearestExit(char[][] maze, int[] entrance) {
+        int rows = maze.Length - 1, cols = maze[0].Length - 1;
+        var wave = new Queue<(int, int, int)>(new[] { (entrance[0], entrance[1], 0) });
+        while (wave.Any()) {
+            var (r, c, dist) = wave.Dequeue();
+            if (r < 0 || r > rows || c < 0 || c > cols || maze[r][c] == '+') continue;
+            if (dist > 0 && (r == 0 || r == rows || c == 0 || c == cols)) return dist;
+            maze[r][c] = '+';
+            Array.ForEach(dirs, d => wave.Enqueue((r + d.r, c + d.c, dist + 1)));
+        }
+        return -1;
+    }
+    static readonly (int r, int c)[] dirs = { (0, 1), (0, -1), (-1, 0), (1, 0) };
+}

@@ -1,0 +1,20 @@
+string smallestSubsequence(string text) {
+   string res;
+   while (!text.empty()) {
+      int cnt[128] = {};
+      for (auto c : text) cnt[c]++;
+      char minC = 127;
+      int minCIndex = 0;
+      for (int i = 0; i < text.size(); i++) {
+         if (text[i] < minC) {
+            minC = text[i];
+            minCIndex = i;
+         }
+         if (--cnt[text[i]] == 0) break;
+      }
+      res += minC;
+      text = text.substr(minCIndex);
+      text.erase(remove(text.begin(), text.end(), minC), text.end());
+   }
+   return res;
+}

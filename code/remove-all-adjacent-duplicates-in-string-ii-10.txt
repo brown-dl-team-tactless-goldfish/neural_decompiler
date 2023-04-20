@@ -1,0 +1,37 @@
+char * removeDuplicates(char * s, int k){
+    int len = strlen(s);
+    char *res_string = (char*)malloc(sizeof(char) * len+1);
+    int *count = (int*)malloc(sizeof(int) * len);
+    int top = 0;
+    
+    //Push the first element into stack
+    res_string[top] = s[0];
+    count[top] = 1;
+    
+    for(int i = 1; i < len; i++){   
+        if((top == -1) || (s[i] != res_string[top])){
+            ++top;
+            res_string[top] = s[i];
+            count[top] = 1;            
+        }
+        else{
+            int count_at_top = count[top];
+            if(count_at_top == (k-1)){
+                top -= (k-1);    
+            }
+            else{
+                ++top;
+                res_string[top] = s[i];
+                count[top] = (count_at_top + 1);                 
+            }
+        }
+    }
+    res_string[++top] = '\0';
+    
+    //Free the stack
+    free(count);
+    count = NULL;
+    
+    //Return result
+    return res_string;
+}

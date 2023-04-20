@@ -1,0 +1,46 @@
+void swap(int* a, int* b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void permute_nums(int* nums, int start, int end, int** res, int* returnSize) {
+    if (start == end) {
+        res[*returnSize] = (int*) malloc(sizeof(int) * (end + 1));
+        for (int i = 0; i <= end; i++) {
+            res[*returnSize][i] = nums[i];
+        }
+        (*returnSize)++;
+    } else {
+        for (int i = start; i <= end; i++) {
+            swap(nums + start, nums + i);
+            permute_nums(nums, start + 1, end, res, returnSize);
+            swap(nums + start, nums + i);
+        }
+    }
+}
+
+int** permute(int* nums, int numsSize, int* returnSize, int** returnColumnSizes) {
+    *returnSize = 0;
+    int** res = (int**) malloc(sizeof(int*) * 10000);
+    permute_nums(nums, 0, numsSize - 1, res, returnSize);
+    *returnColumnSizes = (int*) malloc(sizeof(int) * (*returnSize));
+    for (int i = 0; i < *returnSize; i++) {
+        (*returnColumnSizes)[i] = numsSize;
+    }
+    return res;
+}
+
+int solution() {
+    int nums[] = {1, 2, 3};
+    int returnSize;
+    int* returnColumnSizes;
+    int ** res = permute(nums, sizeof(nums)/sizeof(int), &returnSize, &returnColumnSizes);
+for (int i = 0; i < returnSize; i++) {
+for (int j = 0; j < returnColumnSizes[i]; j++) {
+printf("%d ", res[i][j]);
+}
+printf("\n");
+}
+return 0;
+}

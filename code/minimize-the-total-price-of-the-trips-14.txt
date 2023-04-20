@@ -1,0 +1,63 @@
+class Solution {
+public:
+    vector<vector<int>> graph ;
+    vector<int> path , vis , cst;
+    vector<vector<vector<int>>> dp ;
+    int fun(int i , int par , int end){
+        if(i==end){
+            path[i]++ ;
+            return 1 ;
+        }
+        int ans=0 ;
+        for(auto d:graph[i]){
+            if(d==par) continue ;
+            if(fun(d,i,end)){
+                 path[i]++ ;
+                 ans++ ;
+            }
+        }
+        return ans ;
+    }
+
+    int cost(int i , int par , int typ){
+        if(dp[i][par][typ]!=-1) return dp[i][par][typ] ;
+        vis[i]=1 ;
+        int ans=0 ;
+        if(typ==1){
+            for(auto d:graph[i]){
+                if(d==par || path[d]==0) continue ;
+                ans+=cost(d,i,0) ;
+            }
+            ans+=(path[i]*cst[i]) ;
+        }
+        if(typ==0){
+            int temp1=0 , temp2=0 ;
+            for(auto d:graph[i]){
+                if(d==par || path[d]==0) continue ;
+                temp2+=cost(d,i,1) ;
+                temp1+=cost(d,i,0) ;
+            }
+            ans=min(temp1+(path[i]*cst[i]),temp2+(path[i]*(cst[i]/2))) ;
+        }
+        return dp[i][par][typ]=ans ;
+    }
+
+    int minimumTotalPrice(int n, vector<vector<int>>& edges, vector<int>& price, vector<vector<int>>& trips) {
+        graph=vector<vector<int>>(n) ;
+        cst=price ;
+        vis=vector<int>(n) ;
+        path=vector<int>(n) ;
+        dp=vector<vector<vector<int>>>(n,vector<vector<int>>(n,vector<int>(2,-1))) ;
+        for(auto d:edges){
+            graph[d[0]].push_back(d[1]) ;
+            graph[d[1]].push_back(d[0]) ;
+        }
+        for(auto d:trips) fun(d[0],-1,d[1]) ;
+        int ans=0 ;
+        for(int i=0 ; i<n ; i++){
+            if(path[i]==0 || vis[i]) continue ;
+            ans+=cost(i,i,0) ;
+        }
+        return ans ;
+    }
+};

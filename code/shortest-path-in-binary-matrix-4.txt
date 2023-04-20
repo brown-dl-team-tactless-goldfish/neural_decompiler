@@ -1,0 +1,15 @@
+def shortestPathBinaryMatrix(self, grid: List[List[int]]) -> int:
+  allowed = set([(r, c) for r in range(len(grid)) for c in range(len(grid[0])) if not grid[r][c]])
+  moves = [(0, 0)] if (0, 0) in allowed else []
+  allowed.discard((0, 0))
+  wgt = 0
+  while moves:
+    prev_moves, moves = moves, []
+    wgt = wgt + 1;
+    for row, col in prev_moves:
+      if row + 1 == len(grid) and col + 1 == len(grid[0]):
+        return wgt
+      for move in [(r, c) for r in range(row - 1, row + 2) for c in range(col - 1, col + 2) if (r, c) in allowed]:
+        allowed.remove(move)
+        moves.append(move)
+  return -1

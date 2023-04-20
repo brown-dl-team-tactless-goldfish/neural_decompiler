@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int minOperations(vector<int>& target, vector<int>& arr) {
+        int m = target.size(), n = arr.size();
+        unordered_map<int, int> umap;
+        vector<int> lcs;
+        for (int i = 0; i < m; i++)
+            umap[target[i]] = i;
+        for (auto &a : arr) {
+            if (umap.count(a)) {
+                auto pos = lower_bound(lcs.begin(), lcs.end(), umap[a]);
+                if (pos == lcs.end()) {
+                    lcs.emplace_back(umap[a]);
+                } else {
+                    *pos = umap[a];
+                }
+            }
+        }
+        return m - lcs.size();
+    }
+};

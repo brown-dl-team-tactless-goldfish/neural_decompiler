@@ -1,0 +1,39 @@
+class Solution {
+public:
+    bool checkPalindromeFormation(string a, string b) {
+        int N = a.size(), aStart = findPalinStart(a, N), bStart = findPalinStart(b, N);
+        if (aStart == 0 || bStart == 0)
+            return true;
+        vector<char> first(a.begin(), a.end()), second(b.begin(), b.end()), third(a.rbegin(), a.rend()), fourth(b.rbegin(), b.rend());
+        int lastValidIndex = palinSlices(N, first, second, a, b), lastValidIndexRev = palinSlices(N, third, fourth, a, b);
+        return lastValidIndex >= aStart - 1 || lastValidIndex >= bStart - 1 || lastValidIndexRev >= aStart - 1 || lastValidIndexRev >= bStart - 1;
+    }
+private:
+    int palinSlices(int N, vector<char> first, vector<char> second, string& a, string& b) {
+        bool validFirst = true, validSecond = true;
+        int lastValidIndex = -1;
+        for (int i = 0; i < N / 2; i++) {
+            swap(first[i], second[i]);
+            if (validFirst && first[i] != first[N - i - 1])
+                validFirst = false;
+            if (validSecond && second[i] != second[N - i - 1])
+                validSecond = false;
+            if (!validFirst && !validSecond)
+                break;
+            lastValidIndex = i;
+        }
+        return lastValidIndex;
+    }
+    int findPalinStart(string s, int N) {
+        int mid = N / 2, left = mid - 1, right = N % 2 == 1 ? mid + 1 : mid;
+        while (left >= 0) {
+            if (s[left] == s[right++]) {
+                mid = left;
+                left--;
+            } else {
+                break;
+            }
+        }
+        return mid;
+    }
+};

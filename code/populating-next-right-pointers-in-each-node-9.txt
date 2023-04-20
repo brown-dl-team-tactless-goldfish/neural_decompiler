@@ -1,0 +1,44 @@
+int height(struct Node *root)
+{
+    if (root==NULL)
+        return 0;
+    return 1+height(root->left);
+}
+
+struct Node* connect(struct Node* root) {
+    
+    int total_nodes=pow(2,height(root))-1;
+    if (total_nodes == 0)
+    {
+        return root;
+    }
+    uint64_t *Q =(uint64_t *)malloc(sizeof(uint64_t) * total_nodes);
+    memset(Q,0,sizeof(uint64_t) * total_nodes);
+    int i=0;
+    struct Node* ptr=NULL;
+    int next_null = 0;
+    int top=0;
+    Q[0] = root;
+    while(i < total_nodes)
+    {
+        ptr = (struct Node*)Q[i];
+        if (ptr->left != NULL)
+        {
+            top++;
+            Q[top] = ptr->left;
+            top++;
+            Q[top] = ptr->right;
+        }
+        if (next_null == i)
+        {
+            ptr->next = NULL;
+            next_null = 2*i+2;
+        }
+        else
+        {
+            ptr->next = Q[i+1];
+        }
+        i++;
+    }
+    return root;
+}

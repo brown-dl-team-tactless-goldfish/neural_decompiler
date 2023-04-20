@@ -1,0 +1,74 @@
+#include <bits/stdc++.h>
+//#include<fstream>
+
+using namespace std;
+#define ar array
+#define ll long long
+#define ld long double
+#define sza(x) ((int)x.size())
+#define all(a) (a).begin(), (a).end()
+#define pii pair<int, int>
+#define pll pair<ll, ll>
+#define Vc vector
+#define pb push_back
+#define ppb pop_back
+#define ff first
+#define ss second
+#define nl "\n"
+#define  lb lower_bound
+#define  ub upper_bound
+#define fo(i ,a, b) for(ll i = a; i < b ; i++)
+#define rFo(i, b, a) for(ll i = b; i>=a; i--)
+#define pdd pair<double, double>
+class Solution
+{
+    Vc<ld> lineFromPoints(pdd P, pdd Q)
+    {
+        Vc<ld> res;
+        double a = Q.second - P.second;
+        double b = P.first - Q.first;
+        double c = a * (P.first) + b * (P.second);
+        res.pb(a);
+        res.pb(b);
+        res.pb(c);
+        return res;
+
+    }
+    bool pointOnLine(Vc<ld> &res,
+                     ld x1, ld y1)
+    {
+        ld a = res[0], b = res[1], c = res[2];
+        ld fx1; // Variable to store a * x1 + b * y1 - c
+        fx1 = a * x1 + b * y1 - c;
+        if (fx1 == 0 * 1.0)
+            return true;
+
+        return false;
+    }
+public:
+    int minimumLines(vector<vector<int>> &stockPrices)
+    {
+        Vc<ld> res;
+        sort(all(stockPrices));
+        ll len = sza(stockPrices), cnt = 0;
+        fo(indx, 0, len - 1)
+        {
+            pdd P = {stockPrices[indx][0], stockPrices[indx][1]};
+            pdd Q = {stockPrices[indx + 1][0], stockPrices[indx + 1][1]};
+            if(indx == 0)
+            {
+                res = lineFromPoints(P, Q);;
+                cnt++;
+            }
+            else
+            {
+                if(!pointOnLine(res, Q.ff, Q.ss))
+                {
+                    cnt++;
+                    res = lineFromPoints(P, Q);
+                }
+            }
+        }
+        return cnt;
+    }
+};

@@ -1,0 +1,19 @@
+void helper(struct TreeNode* root, int min, int max, int* ans)
+{
+    if(!root) return;
+    
+    long disMin = (long)root -> val - min;
+    long disMax = max - root -> val;
+    int disTemp = (int)(disMin < disMax ? disMin : disMax);
+    *ans = (*ans < disTemp ? *ans : disTemp);
+    
+    helper(root -> left, min, root -> val, ans);
+    helper(root -> right, root -> val, max, ans);
+}
+
+int minDiffInBST(struct TreeNode* root) {
+    int* ans = malloc(sizeof(int));
+    *ans = INT_MAX;
+    helper(root, INT_MIN, INT_MAX, ans);
+    return *ans;
+}

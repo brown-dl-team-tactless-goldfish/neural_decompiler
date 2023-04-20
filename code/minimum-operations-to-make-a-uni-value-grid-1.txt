@@ -1,0 +1,50 @@
+int cmpfunc(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+
+int minOperations(int** grid, int gridSize, int* gridColSize, int x){
+    int* data = malloc( gridSize * (*gridColSize) * sizeof(int) );
+    int idx = 0;
+    for(int i = 0; i < gridSize; i++){
+        for(int j = 0; j < *gridColSize; j++){
+            if((grid[i][j] - grid[0][0]) % x )
+                return -1;
+            data[idx] = grid[i][j];
+            idx++;
+        }
+    }
+    qsort(data, idx, sizeof(int), cmpfunc);
+    if(idx %2 == 1){
+        int Opt = 0;
+        for(int i = 0; i < idx/2; i++){
+            Opt += ( data[idx/2] - data[i] )/x;
+        }
+        for(int i = idx/2; i < idx; i++){
+            Opt +=  (data[i] - data[idx/2] )/x;
+        }
+        
+        return Opt;
+    }
+    else{
+        int Opt1 = 0;
+        for(int i = 0; i < idx/2; i++){
+            Opt1 += ( data[idx/2] - data[i] )/x;
+        }
+        for(int i = idx/2; i < idx; i++){
+            Opt1 +=  (data[i] - data[idx/2] )/x;
+        }
+    
+        int Opt2 = 0;
+        for(int i = 0; i < idx/2 - 1; i++){
+            Opt2 += ( data[idx/2 - 1] - data[i] )/x;
+        }
+        for(int i = idx/2-1; i < idx; i++){
+            Opt2 +=  (data[i] - data[idx/2 - 1] )/x;
+        }
+        
+        if(Opt1 <= Opt2)
+            return Opt1;
+        else
+            return Opt2;
+    }
+}

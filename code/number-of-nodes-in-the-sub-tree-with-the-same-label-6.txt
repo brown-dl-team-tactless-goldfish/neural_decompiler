@@ -1,0 +1,84 @@
+public class Solution
+    {
+        private class Node<T> : IEquatable<Node<T>>
+        {
+            public readonly T Value;
+            public int Idx;
+            public readonly HashSet<Node<T>> Edges;
+
+            public Node(T value)
+            {
+                Value = value;
+                Edges = new HashSet<Node<T>>();
+            }
+
+            public override bool Equals(object obj)
+            {
+                return Equals((Node<T>)obj);
+            }
+
+            public bool Equals(Node<T> other)
+            {
+                return Idx.Equals(other.Idx);
+            }
+
+            public override int GetHashCode()
+            {
+                return Idx.GetHashCode();
+            }
+
+            public override string ToString()
+            {
+                return $"Value: {Value}";
+            }
+        }
+
+        private class Data
+        {
+            public int[] Raw = new int[26];
+        }
+
+        private Data Helper(Node<char> node, int[] res, ISet<int> visited)
+        {
+            visited.Add(node.Idx);
+
+            var d = new Data();
+            d.Raw[node.Value - 'a']++;
+            foreach (var e in node.Edges)
+            {
+                if (!visited.Contains(e.Idx))
+                {
+                    var c = Helper(e, res, visited);
+
+                    for (int i = 0; i < 26; i++)
+                    {
+                        d.Raw[i] += c.Raw[i];
+                    }
+                }
+            }
+
+            res[node.Idx] = d.Raw[node.Value - 'a'];
+            return d;
+        }
+
+        public int[] CountSubTrees(int n, int[][] edges, string labels)
+        {
+            Node<char>[] nodes = new Node<char>[n];
+            for (int i = 0; i < n; i++)
+            {
+                nodes[i] = new Node<char>(labels[i]);
+                nodes[i].Idx = i;
+            }
+
+            foreach (var e in edges)
+            {
+                nodes[e[0]].Edges.Add(nodes[e[1]]);
+                nodes[e[1]].Edges.Add(nodes[e[0]]);
+            }
+
+            int[] res = new int[n];
+            ISet<int> visited = new HashSet<int>();
+            Helper(nodes[0], res, visited);
+            return res;
+        }
+    }

@@ -1,0 +1,31 @@
+class Solution {
+    public int maxSatisfied(int[] customers, int[] grumpy, int X) {
+        int custSatisfied = 0;
+        int gLength = grumpy.length;
+		// adding only those cutomers where the grumpy is 0. Since its for sure that the owner will satisfy the customers.
+        for(int i=0;i<gLength;i++) {
+            if(grumpy[i] == 0) custSatisfied += customers[i];
+        }
+		// initializing the sliding window
+        int i=0;
+        int j=0;
+        int midSum = 0;
+        int maxSatisfied = Integer.MIN_VALUE;
+        while(j<gLength) {
+			// Adding only those customers where the grump is 1 since in the trick the customers are satisfied for sure. We don't add grump=0 customers since they are already added. 
+            if(grumpy[j] == 1) midSum += customers[j]; 
+            if(j-i+1 < X) {
+                j++;
+                continue;
+            } else if(j-i+1 == X) {
+                maxSatisfied = Math.max(maxSatisfied, midSum);
+				// Removing only those customers where the grump is 1. We dont remove customers where grumpy is 0 since they were never added to the calculations.
+                if(grumpy[i] == 1)
+                    midSum -= customers[i];
+                i++;
+                j++;
+            }
+        }
+        return custSatisfied+maxSatisfied;
+    }
+}

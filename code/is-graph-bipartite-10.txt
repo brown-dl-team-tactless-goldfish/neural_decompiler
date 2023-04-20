@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<int> adj[101],color ;
+    int n ;
+    bool dfs(int src , int parent , int c ){
+        color[src] = c ;
+        
+        for(auto &nbr : adj[src]){
+            if(!color[nbr]) if(!dfs(nbr,src,3-c)) return false ;
+            if(color[nbr] == c) return false ;
+        }
+        return true ;
+    }
+    
+    bool isBipartite(vector<vector<int>>& graph) {
+        n = size(graph) ;
+        color.resize(n,0) ;
+        
+        for(int i = 0 ; i < n ; ++i )
+            for(auto &x : graph[i]) adj[i].push_back(x) ;
+        
+        for(int i = 0 ; i < n ; ++i ){
+            if(color[i]) continue ;
+            if(!dfs(i,-1,1)) return false; 
+        }
+        return true ;
+    }
+};

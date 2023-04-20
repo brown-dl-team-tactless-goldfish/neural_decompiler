@@ -1,0 +1,36 @@
+class Solution {
+public:
+    bool isIncreasing(vector<int>& arr){
+        int n=arr.size();
+        for(int i=n-1; i>0; i--){
+            if(arr[i-1]>=arr[i])return false;
+        }
+        return true;
+    }
+    int f(vector<int>& arr1, vector<int>& arr2, int indx, int i2){
+        cout<<indx<<" "<<i2<<endl;
+        if(indx<0 )return INT_MAX-1;
+        if(isIncreasing(arr1))return 0;
+        if(i2<0)return INT_MAX-1;
+        
+        int x=arr1[indx];
+        int c1=f(arr1, arr2, indx-1, i2);
+        arr1[indx]=arr2[i2];
+        int c2=f(arr1, arr2, indx, i2-1);
+        arr1[indx]=x;
+        return min(c1, c2+1) ;
+    }
+    int makeArrayIncreasing(vector<int>& arr1, vector<int>& arr2) {
+        sort(arr2.begin(), arr2.end()); 
+        int x=f(arr1, arr2, arr1.size()-1, arr2.size()-1);
+        
+        return (x>=INT_MAX-1)? -1 : x;
+        // int n=arr1.size();
+        // for(int i=n-1; i>0; i--){
+        //     cout<<arr1[i]<<" ";
+        //     if(arr1[i-1]>=arr1[i]){break;}
+        // }
+        // return 0;
+        
+    }
+};

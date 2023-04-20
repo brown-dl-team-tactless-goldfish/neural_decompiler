@@ -1,0 +1,52 @@
+char ** findAndReplacePattern(char ** words, int wordsSize, char * pattern, int* returnSize)
+{
+    char** array = (char**) calloc(wordsSize, sizeof(char*));
+    int count = 0;
+    
+    const int len = strlen(pattern);
+    
+    char pkey[32] __attribute__((aligned(8)));
+    char wkey[32] __attribute__((aligned(8)));
+    
+    while (wordsSize--)
+    {
+        char* word = *words++;
+        
+        memset(pkey, 0, sizeof(pkey));
+        memset(wkey, 0, sizeof(wkey));
+        
+        for (int i = 0; i < len; ++i)
+        {
+            char p = pattern[i];
+            char w = word[i];
+            
+            char pk = pkey[p - 'a'];
+            char wk = wkey[w - 'a'];
+            
+            if (pk == 0)
+            {
+                pkey[p - 'a'] = w;
+            }
+            else if (pk != w)
+            {
+                goto fail;
+            }
+            
+            if (wk == 0)
+            {
+                wkey[w - 'a'] = p;
+            }
+            else if (wk != p)
+            {
+                goto fail;
+            }
+        }
+
+        array[count++] = word;
+fail:
+        continue;
+    }
+    
+    *returnSize = count;
+    return array;
+}

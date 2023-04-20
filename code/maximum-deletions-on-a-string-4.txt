@@ -1,0 +1,51 @@
+class Solution {
+public:
+    int dp[4001];
+    
+    int recurse(int i, int n, long long hashes[], long long ps[],const int m){
+        if(dp[i] != -1) return dp[i];
+        int ans = INT_MIN;
+        bool done = 0;
+        for(int j = i;j<=i + (n-i)/2 - 1;j++){
+            long long l;
+            if(i == 0) l = hashes[j];
+            else l = hashes[j] - hashes[i-1];
+            l = (l*ps[j+1 - i]);
+            l%= m;
+            if(l < 0) l+= m;            
+            long long r = hashes[i + 2*(j-i+1)-1] - hashes[j];
+            r%=m;
+            if(r < 0) r += m;
+            if(l == r){
+                ans = max(ans, 1 + recurse(j+1, n, hashes, ps, m));
+                done = 1;
+            }
+        }
+        if(!done){
+            ans = 1;
+        }
+        return dp[i] = ans;
+    }
+    
+    int deleteString(string s) {
+        int n = s.length();
+        long long hashes[n], ps[n];
+        int p = 31;
+        const int m = 1e9 + 9;
+        long long hash_value = 0;
+        long long p_pow = 1;
+        int i = 0;
+        for(int i = 0;i<4001;i++){
+            dp[i] = -1;
+        }
+        for (char c : s) {
+            hash_value = (hash_value + (c - 'a' + 1) * p_pow) % m;
+            hashes[i] = hash_value;
+            ps[i] = p_pow;
+            i++;
+            p_pow = (p_pow * p) % m;
+        }
+        i = 0;
+        return recurse(i, n, hashes, ps, m);
+    }
+};

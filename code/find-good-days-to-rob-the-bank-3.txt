@@ -1,0 +1,22 @@
+class Solution {
+public:
+    vector<int> goodDaysToRobBank(vector<int>& a, int time) {
+        int n = a.size();
+        vector<int> ni(n, 1), nd(n, 1);
+        for(int i = 1; i < n; i++) {
+            if(a[i - 1] >= a[i]) ni[i]+=ni[i - 1];
+            if(a[i - 1] <= a[i]) nd[i]+=nd[i - 1];
+        }
+        
+        vector<int> ans;
+        
+        for(int i = 0; i < n; i++) {
+            bool x = false, y = false;
+            if(time == 0 || (i > 0 && ni[i] > time)) x = !x;
+            if(time == 0 || (i + time < n && nd[i + time] > time)) y = !y;
+            if(x && y) ans.push_back(i);
+        }
+        
+        return ans;
+    }
+};

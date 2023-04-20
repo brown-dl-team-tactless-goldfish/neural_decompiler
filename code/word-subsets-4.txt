@@ -1,0 +1,44 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char** wordSubsets(char** A, int ASize, char** B, int BSize, int* returnSize) {
+    int* map=(int*)calloc(26,sizeof(int));
+    int* map1=(int*)calloc(26,sizeof(int));
+    char** ret=(char**)malloc((ASize+BSize)*sizeof(char*));
+    *returnSize=0;
+    int count=0;
+    for(int i=0;i<BSize;i++){
+        for(int j=0;B[i][j]!='\0';j++){
+            map1[B[i][j]-'a']++;
+        }
+        for(int k=0;k<26;k++){
+            map[k]=map[k]>map1[k]?map[k]:map1[k];
+            map1[k]=0;
+        }
+    }
+    for(int k=0;k<26;k++){
+        if(map[k]!=0){
+            count++;
+        }
+    }
+    for(int i=0;i<ASize;i++){
+        int tempCount=0;
+        for(int k=0;k<26;k++){
+            map1[k]=map[k];
+        }
+        for(int j=0;A[i][j]!='\0';j++){
+            if(map1[A[i][j]-'a']!=0){
+                map1[A[i][j]-'a']--;
+                if(map1[A[i][j]-'a']==0){
+                    tempCount++;
+                }
+            }
+            if(tempCount==count){
+                ret[(*returnSize)++]=A[i];
+                break;
+            }
+        }
+    }
+    return ret;
+}

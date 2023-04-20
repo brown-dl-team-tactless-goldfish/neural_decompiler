@@ -1,0 +1,28 @@
+int** generate(int numRows, int** columnSizes, int* returnSize) {
+	int **q, i, j;
+	
+	*returnSize = numRows;
+	
+	q = (int **) malloc (sizeof(int *) * numRows);
+	for (i = 0; i < numRows; i++) {
+		q[i] = (int *) malloc (sizeof(int) * (i + 1));
+		q[i][0] = 1;
+		q[i][i] = 1;
+	}
+		
+	*columnSizes = (int *) malloc (sizeof(int) * numRows);
+	for (i = 0; i < numRows; i++) 
+		(*columnSizes)[i] = i + 1;
+	
+	i = 2;
+	while (i < numRows) {
+		j = 1;
+		while (j < i) {
+			q[i][j] = q[i - 1][j - 1] + q[i - 1][j];
+			j++;
+		}
+		i++;
+	}
+
+	return q;
+}

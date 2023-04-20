@@ -1,0 +1,41 @@
+class Solution {
+    static bool comp(string &a, string &b){
+        return a.size() > b.size();
+    }
+    bool same(string &s1, string &s2)
+    {
+        int n = s1.size(), j = 0;
+        for(int i = 0; i < n; i++)
+        {
+            if(s1[i] == s2[j])
+            {
+                j++;
+                if(j == s2.size())
+                    return true;
+            }
+        }
+        return false;
+    }
+    bool iscommon(vector<string>& strs, string s, int idx)
+    {
+        int n = strs.size(), m = s.size();
+        for(int i = 0; i < n && strs[i].size() >= m; i++)
+        {
+            if(idx == i) continue;
+            if(same(strs[i], s))
+                return false;
+        }
+        return true;
+    }
+public:
+    int findLUSlength(vector<string>& strs) {
+        sort(strs.begin(), strs.end(), comp);
+        int n = strs.size();
+        for(int i = 0; i < n; i++)
+        {
+            if(iscommon(strs, strs[i], i))
+                return strs[i].size();
+        }
+        return -1;
+    }
+};

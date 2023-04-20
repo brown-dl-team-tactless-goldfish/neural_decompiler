@@ -1,0 +1,58 @@
+class Solution {
+public:
+    vector<int> dir = {-1,0,1,0,-1};
+    void dfs(queue<pair<pair<int, int>, int>>& q, vector<vector<int>>& grid, int i, int j, vector<vector<bool>>& vis){
+        if(i < 0 || j < 0 || i >= grid.size() || j >= grid[0].size() || grid[i][j] == 0 || vis[i][j] == true)
+        return;
+        vis[i][j] = true;
+        q.push({{i,j},0});
+        grid[i][j] = 0;
+        dfs(q, grid,i + 1,j,vis);
+        dfs(q, grid,i,j + 1,vis);
+        dfs(q, grid,i - 1,j,vis);
+        dfs(q, grid,i,j - 1,vis);
+    }
+    
+    int shortestBridge(vector<vector<int>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        vector<vector<bool>> vis(n, vector<bool> (m, false));
+        bool flag = false;
+        queue<pair<pair<int, int>, int>> q;
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                if(grid[i][j] == 1){
+                    dfs(q, grid,i,j,vis);
+                    flag = true;
+                }
+                if(flag == true) break;
+            }
+            if(flag == true) break;
+        }
+        
+        int ans = INT_MAX;
+        while(!q.empty()){
+            int size = q.size();
+            while(size--){
+                auto top = q.front();
+                q.pop();
+                for(int i = 0; i < 4; i++){
+                    int r = top.first.first + dir[i];
+                    int c = top.first.second + dir[i + 1];
+                    if(r >= 0 && c >=0 && r < n && c < m){
+                        if(vis[r][c] == false && grid[r][c] == 1){
+                            ans = min(ans, top.second);
+                        }else{
+                            if(!vis[r][c] && grid[r][c] == 0){
+                                int val = top.second + 1;
+                                vis[r][c] = true;
+                                q.push({{r,c}, val});
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+};

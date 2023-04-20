@@ -1,0 +1,41 @@
+class Solution {
+public:
+    vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {
+        int m = board.size(), n = board[0].size(), i = click[0], j = click[1];
+        
+        if (board[i][j] == 'M') {
+            board[i][j] = 'X';
+            return board;
+        }
+        
+        queue<pair<int, int>> q;
+        q.push({i, j});
+        board[i][j] = 'T';
+        while (!q.empty()) {
+            int r = q.front().first, c = q.front().second;
+            q.pop();
+            
+            int mines = 0;
+            vector<pair<int, int>> next;
+            for (int x = max(0, r - 1); x <= min(m - 1, r + 1); ++x) {
+                for (int y = max(0, c - 1); y <= min(n - 1, c + 1); ++y) {
+                    if (board[x][y] == 'M')
+                        ++mines;
+                    else if (board[x][y] == 'E')
+                        next.push_back({x, y});
+                }
+            }
+            
+            if (mines)
+                board[r][c] = mines + '0';
+            else {
+                board[r][c] = 'B';
+                for (auto p : next) {
+                    q.push(p);
+                    board[p.first][p.second] = 'T';
+                }
+            }
+        }
+        return board;
+    }
+};

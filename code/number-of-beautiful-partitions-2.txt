@@ -1,0 +1,67 @@
+class Solution {
+public:
+    typedef long long int LLI;
+    const LLI MOD = 1e9+7;
+
+    bool isPrime(char c) {
+        return c == '2' || c == '3' || c == '5' || c == '7';
+    }
+
+    vector<int> substringLengths(string s) {
+        vector<int> lengths;
+        int i = 0;
+        for (int j=1; j<s.size(); j++) {
+            if (isPrime(s[j]) && !isPrime(s[j-1])) {
+                lengths.push_back(j - i);
+                i = j;
+            }
+        }
+        lengths.push_back(s.size() - i);
+        return lengths;
+    }
+
+    vector<int> latestStartIndex(vector<int> lengths, int minLength) {
+        int n = lengths.size();
+        vector<int> starts(n, -1);
+        int tmpLength = 0;
+        for (int i=n - 1, j=n - 1; i >= 0; i-- ) {
+            tmpLength += lengths[i];
+            while (tmpLength >= minLength) {
+                tmpLength -= lengths[j];
+                starts[j] = i;
+                j--;
+            }
+        }
+        return starts;
+    }
+
+    int beautifulPartitions(string s, int k, int minLength) {
+        if (!isPrime(s[0]) || isPrime(s[s.size()-1])) return 0;
+
+        vector<int> lengths = substringLengths(s);
+        vector<int> starts = latestStartIndex(lengths, minLength);
+
+        int n = lengths.size();
+        vector<vector<LLI>> results(n, vector<LLI>(k));
+        for (int sum=0, i=0; i<n; i++) {
+            sum += lengths[i];
+            if (sum >= minLength) results[i][0] = 1;
+        }
+
+        for (int j=1; j<k; j++) {
+            for (int i=1; i<n; i++) {
+                results[i][j-1] += results[i-1][j-1];
+                results[i][j-1] %= MOD;
+            }
+            for (int i=0; i<n; i++) {
+                if (starts[i] < 1) {
+                    results[i][j] = 0;
+                } else {
+                    results[i][j] = results[starts[i]-1][j-1];
+                }
+            }
+        }
+
+        return results[n-1][k-1];
+    }
+};

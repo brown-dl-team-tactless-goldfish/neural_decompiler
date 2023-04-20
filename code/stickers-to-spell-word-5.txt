@@ -1,0 +1,190 @@
+    public class Solution
+    {
+        private class Data : IEquatable<Data>
+        {
+            public readonly int[] Raw = new int[26];
+
+            public Data(string str)
+            {
+                foreach (var c in str)
+                {
+                    Raw[c - 'a']++;
+                }
+            }
+
+            public Data(Data source)
+            {
+                for (int i = 0; i < source.Raw.Length; i++)
+                {
+                    Raw[i] = source.Raw[i];
+                }
+            }
+
+            public override bool Equals(object obj) => Equals((Data) obj);
+
+            public override int GetHashCode()
+            {
+                int hashCode = 31;
+                for (int i = 0; i < Raw.Length; i++)
+                {
+                    hashCode += Raw[i];
+                    hashCode *= 19;
+                }
+
+                return hashCode;
+            }
+
+            public bool Equals(Data other) => Raw.SequenceEqual(other.Raw);
+
+
+
+            public static Data operator +(Data l, Data r)
+            {
+                var res = new Data(l);
+
+                for (int i = 0; i < r.Raw.Length; i++)
+                {
+                    res.Raw[i] += r.Raw[i];
+                }
+
+                return res;
+            }
+
+            public static Data operator -(Data l, Data r)
+            {
+                var res = new Data(l);
+
+                for (int i = 0; i < r.Raw.Length; i++)
+                {
+                    res.Raw[i] -= r.Raw[i];
+                    res.Raw[i] = Math.Max(0, res.Raw[i]);
+                }
+
+                return res;
+            }
+
+            public static bool operator >(Data l, Data r)
+            {
+                for (int i = 0; i < 26; i++)
+                {
+                    if (l.Raw[i] <= r.Raw[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            public static bool operator <(Data l, Data r)
+            {
+                for (int i = 0; i < 26; i++)
+                {
+                    if (l.Raw[i] >= r.Raw[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+
+            public static bool operator >=(Data l, Data r)
+            {
+                for (int i = 0; i < 26; i++)
+                {
+                    if (l.Raw[i] < r.Raw[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            public static bool operator <=(Data l, Data r)
+            {
+                for (int i = 0; i < 26; i++)
+                {
+                    if (l.Raw[i] > r.Raw[i])
+                    {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+
+            public static readonly Data Empty = new Data(string.Empty); 
+        }
+
+        private int Helper(Data[] stickersData, int idx, Data target, IDictionary<(Data target, int idx), int> cache)
+        {
+            checked
+            {
+                if (target.Equals(Data.Empty))
+                {
+                    return 0;
+                }
+
+                if (idx >= stickersData.Length)
+                {
+                    return int.MaxValue;
+                }
+
+                (Data target, int idx) key = (target, idx);
+                if (cache.ContainsKey(key))
+                {
+                    return cache[key];
+                }
+
+                int res = int.MaxValue;
+                int currentCount = 0;
+                Data prevTarget = new Data(target);
+
+                while (true)
+                {
+                    var inner = Helper(stickersData, idx + 1, target, cache);
+                    if (inner != int.MaxValue)
+                    {
+                        res = Math.Min(res, currentCount + inner);
+                    }
+
+                    prevTarget = target;
+                    target -= stickersData[idx];
+                    currentCount++;
+
+                    if (target.Equals(prevTarget))
+                    {
+                        break;
+                    }
+                }
+
+                cache[key] = res;
+                return res;
+            }
+        }
+
+        public int MinStickers(string[] stickers, string target)
+        {
+            Data targetData = new Data(target);
+            Data[] stickersData = stickers.Select(s => new Data(s)).ToArray();
+
+            Data sum = new Data(String.Empty);
+            foreach (var sticker in stickersData)
+            {
+                sum += sticker;
+            }
+
+            for (int i = 0; i < targetData.Raw.Length; i++)
+            {
+                if (sum.Raw[i] == 0 && targetData.Raw[i] > 0)
+                {
+                    return -1;
+                }
+            }
+
+            return Helper(stickersData, 0, targetData, new Dictionary<(Data target, int idx), int>());
+        }
+    }

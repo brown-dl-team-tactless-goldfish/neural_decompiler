@@ -1,0 +1,115 @@
+
+#define BUF_SIZE 4096
+
+struct repr {
+    unsigned short start;
+    unsigned char buf[256];
+};
+
+struct iterator {
+    unsigned char r_idx;
+    unsigned short buf_idx;
+    const struct repr *r[2];
+};
+
+static void fill_repr(struct repr *repr, int val)
+{
+    
+    assert(val >= 0);
+    
+    repr->start = sizeof(repr->buf);
+    do {
+        assert(repr->start != 0);
+        repr->start--;
+        repr->buf[repr->start] = val % 10;
+        val /= 10;
+    } while(val != 0);
+}
+
+static void init_iterator(struct iterator *iter, const struct repr *x, const struct repr *y)
+{
+    iter->r[0] = x;
+    iter->r[1] = y;
+    iter->r_idx = 0;
+    iter->buf_idx = iter->r[0]->start;
+}
+
+// returns EOF on eof, else 0..9
+static inline int next_digit(struct iterator *iter)
+{
+    const struct repr *r;
+    int digit;
+    
+    if (iter->r_idx == 2) {
+        return EOF;
+    }
+
+    r = iter->r[iter->r_idx];
+    digit = r->buf[iter->buf_idx];
+    iter->buf_idx++;
+    if (iter->buf_idx == sizeof(r->buf)) {
+        iter->r_idx++;
+        if (iter->r_idx == 1) {
+            iter->buf_idx = iter->r[1]->start;
+        }
+    }
+    
+    assert(digit >= 0 && digit <= 9);
+    return digit;
+}
+
+static int compare_num(const void *vx, const void *vy)
+{
+    struct repr x;
+    struct repr y;
+    struct iterator a;
+    struct iterator b;
+    int c;
+    int d;
+    
+    fill_repr(&x, *(const int *)vx);
+    fill_repr(&y, *(const int *)vy);
+    
+    // see if x.y >? y.x
+    init_iterator(&a, &x, &y);
+    init_iterator(&b, &y, &x);
+    
+    while (true) {
+        c = next_digit(&a);
+        if (c == EOF) {
+            return 0;
+        }
+                
+        d = next_digit(&b);
+        assert(d >= 0 && d <= 9);
+        if (c != d) {
+            return d - c;
+        }
+    }
+}
+
+char* largestNumber(int* nums, int numsSize) {
+    size_t total_printed;
+    char *buf;
+    int nprint;
+    int i;
+    
+    buf = malloc(BUF_SIZE);
+    
+    qsort(nums, numsSize, sizeof(*nums), compare_num);
+    
+    // skip leading 0's
+    i = 0;
+    while (i + 1 < numsSize && nums[i] == 0 && nums[i + 1] == 0) {
+        i++;
+    }
+    
+    total_printed = 0;
+    for (; i < numsSize; i++) {
+        nprint = snprintf(buf + total_printed, BUF_SIZE - total_printed, "%d", nums[i]);
+        assert(nprint > 0 && nprint < BUF_SIZE);
+        total_printed += nprint;
+    }
+    
+    return buf;
+}

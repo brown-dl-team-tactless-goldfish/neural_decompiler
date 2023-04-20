@@ -1,0 +1,95 @@
+typedef struct queue{
+    int front;
+    int rear;
+    int currItemCount;
+    int *arrayRow;
+    int *arrayCol;
+}queue_t;
+
+queue_t *createQueue(int queueSize){
+    queue_t *queue = malloc(sizeof(queue_t));
+    if(!queue){
+        return NULL;
+    }
+    queue->front = 0;
+    queue->rear = -1;
+    queue->currItemCount = 0;
+    queue->arrayRow = malloc(sizeof(int)*queueSize) ;
+    queue->arrayCol = malloc(sizeof(int)*queueSize) ;
+    if(!(queue->arrayRow) || !(queue->arrayCol)){
+        return NULL;
+    }
+    return queue;
+}
+
+void insertQueue(queue_t *queue, int rowIdx, int colIdx){
+    queue->arrayRow[++queue->rear] = rowIdx;
+    queue->arrayCol[queue->rear] = colIdx;
+    queue->currItemCount++;
+}
+
+int removeQueueRow(queue_t *queue){
+    return queue->arrayRow[queue->front];
+}
+
+int removeQueueCol(queue_t *queue){
+    queue->currItemCount--;
+    return queue->arrayCol[queue->front++];
+}
+
+bool isQueueEmpty(queue_t *queue){
+    return queue->currItemCount == 0;
+}
+
+void freeQueue(queue_t *queue){
+    free(queue->arrayRow);
+    free(queue->arrayCol);
+    free(queue);
+}
+
+int numIslands(char** grid, int gridSize, int* gridColSize)
+{
+    int i = 0, j = 0;
+    int islandCount = 0;
+    
+    int nr = gridSize;
+    int nc = *gridColSize;
+    
+    queue_t *queue = createQueue(nr*nc);
+    
+    for(i = 0; i < nr; i++)
+    {
+        for(j = 0; j < nc; j++)
+        {
+            if(grid[i][j] == '1')
+            {
+                int keyHash = i*nc+j;
+                islandCount++;
+                insertQueue(queue, i, j);
+                grid[i][j] = '0';
+                while(!isQueueEmpty(queue)){
+                    int rowIdx = removeQueueRow(queue);
+                    int colIdx = removeQueueCol(queue);
+                    if((rowIdx-1) >= 0 && grid[rowIdx-1][colIdx] == '1'){
+                        insertQueue(queue, rowIdx-1, colIdx);
+                        grid[rowIdx-1][colIdx] = '0';
+                    }
+                    if((rowIdx+1) < nr && grid[rowIdx+1][colIdx] == '1'){
+                        insertQueue(queue, rowIdx+1, colIdx);
+                        grid[rowIdx+1][colIdx] = '0';
+                    }
+                    if((colIdx-1) >= 0 && grid[rowIdx][colIdx-1] == '1'){
+                        insertQueue(queue, rowIdx, colIdx-1);
+                        grid[rowIdx][colIdx-1] = '0';
+                    }
+                    if((colIdx+1) < nc && grid[rowIdx][colIdx+1] == '1'){
+                        insertQueue(queue, rowIdx, colIdx+1);
+                        grid[rowIdx][colIdx+1] = '0';
+                    }
+                }
+            }
+        }
+    }
+    freeQueue(queue);
+    return islandCount;
+}

@@ -1,0 +1,22 @@
+class Solution {
+public:
+    vector<int> gardenNoAdj(int n, vector<vector<int>>& paths) {
+        vector<unordered_set<int>> g(n);
+        for(int i=0; i<n; i++){
+            g[i]={};
+        }
+        for(auto p: paths){
+            g[p[0]-1].insert(p[1]-1);
+            g[p[1]-1].insert(p[0]-1);        
+        }
+        vector<int> res(n,0);
+        for(int i=0; i<n; i++){
+            vector<int> colors(5);
+            for(int j: g[i])colors[res[j]] =1;
+            for (int c = 4; c > 0; --c)
+                if (colors[c] == 0)
+                    res[i] = c;
+        }
+        return res;
+    }
+};

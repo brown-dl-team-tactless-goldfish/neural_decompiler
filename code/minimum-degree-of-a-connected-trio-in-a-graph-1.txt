@@ -1,0 +1,55 @@
+
+This is kind of a greedy solution as we are sorting the nodes based on their degree, Considering the ones with the lower values at first as they will lead to a lower degree sum, and breaking the loop when we get to know that any further progression in the loop will lead to only higher deegree trios
+
+class Solution {
+public:
+    int minTrioDegree(int n, vector<vector<int>>& edges1) {
+        
+        unordered_map<int,unordered_set<int>>map;
+        
+        for(auto vec : edges1){
+            map[vec[0]].insert(vec[1]);
+            map[vec[1]].insert(vec[0]);
+        }
+        
+        vector<pair<int,int>>edges;
+        
+        for(auto it : map){
+            edges.push_back({it.first,it.second.size()});
+        }
+        //Sorting based on the number of edges
+        sort(edges.begin(),edges.end(),[](auto a , auto b){return a.second < b.second; });
+        
+        int mini = INT_MAX;
+        
+        for(int i = 0 ; i < edges.size() ; i++ ){
+            int one = edges[i].first;
+            for(int j = i + 1 ; j < edges.size() ; j++){
+                int two = edges[j].first;
+                if(map[one].find(two) == map[one].end() ){
+                    continue;
+                }
+                for(int k = j + 1 ; k < edges.size() ;k++){
+                    int three = edges[k].first;
+
+                    if((map[three].find(one)!= map[three].end()) && (map[three].find(two) != map[three].end())){
+                        
+                        int curr = map[one].size()-2 + map[two].size()-2+map[three].size()-2;
+						//As the rest will lead to a higher degree of connection
+                        if(curr >= mini){
+                            break;
+                        }
+                        
+                        mini = min(mini,curr);
+                    }
+  
+                }
+            }
+        }
+        
+        if(mini == INT_MAX)
+            return -1; 
+        return mini;
+        
+    }
+};

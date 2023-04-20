@@ -1,0 +1,41 @@
+#define max(x,y) ((x)>(y)?(x):(y))
+
+typedef struct Node Node;
+typedef struct Node {
+    int val;
+    Node *left;
+    Node *right;
+} Node;
+
+int mctFromLeafValues(int* a, int aS){
+    Node *buff = (Node*) calloc(2*aS-1, sizeof(Node));
+    Node *root = buff, **forkPos, *branch, *leftLeaf, *rightLeaf;
+    int i, res=0;
+    
+    // Build binary tree
+    root->val = a[0];
+    for (i=1; i<aS; i++) {
+        // Get branch position
+        forkPos = &root;
+        while ((*forkPos)->right!=NULL && (*forkPos)->val > a[i]) {
+            forkPos = &((*forkPos)->right);
+        }
+        // Form new branch
+        leftLeaf = *forkPos;
+        branch = buff + i*2 - 1;
+        rightLeaf = buff + i*2;
+        rightLeaf->val = a[i];
+        branch->val = max(leftLeaf->val, a[i]);
+        branch->left = leftLeaf;
+        branch->right = rightLeaf;
+        *forkPos = branch;
+    }
+    
+    // Calculate result
+    for (i=0; i<aS-1; i++) {
+        res += buff[2*i+1].left->val 
+            * buff[2*i+1].right->val;
+    }
+    
+    return res;
+}

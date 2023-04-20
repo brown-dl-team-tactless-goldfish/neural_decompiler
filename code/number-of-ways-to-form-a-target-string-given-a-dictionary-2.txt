@@ -1,0 +1,33 @@
+class Solution {
+    const int M = 1000000007;
+    int add(int x, int y) {
+        if ((x += y) >= M) x -= M;
+        return x;
+    }
+    
+    int mul(long long x, long long y) {
+        return x * y % M;
+    }
+public:
+    int numWays(vector<string>& words, string target) {
+        const int m = words[0].size();
+        vector<vector<int>> v(m, vector<int>(26));
+        for (const string& word : words) {
+            for (int i = 0; i < m; ++i) {
+                ++v[i][word[i] - 'a'];
+            }
+        }
+        vector<int> dp(m + 1, 1);
+        dp[0] = 1;
+        for (char c : target) {
+            const int x = c - 'a';
+            vector<int> temp(m + 1);
+            for (int i = 1; i <= m; ++i) {
+                temp[i] = add(temp[i - 1], mul(v[i - 1][x], dp[i - 1]));
+            }
+            dp = temp;
+        }
+        return dp[m];
+        
+    }
+};

@@ -1,0 +1,35 @@
+class Solution {
+public:
+  bool canPartitionKSubsets(vector<int>& nums, int k) {
+    int target = std::accumulate(nums.begin(), nums.end(), 0);
+    if (target % k != 0) {
+      return false;
+    }
+    target /= k;
+    // sort in desc order
+    sort(nums.begin(), nums.end(), std::greater<int>());
+    vector<bool> marked(nums.size(), false);
+    marked[0] = true;
+    return partion(nums, marked, target, nums[0], k);
+  }
+  bool partion(vector<int>& nums, vector<bool>& marked, int target, int sum, int k) {
+    if (sum == target) {
+      -- k;
+      sum = 0;
+      if (k == 0) {
+        return true;
+      }
+    }
+    for (int i = 1; i < nums.size(); i++) {
+      if (!marked[i] && nums[i] + sum <= target) {
+        marked[i] = true;
+        bool ret = partion(nums, marked, target, sum + nums[i], k);
+        marked[i] = false;
+        if (ret) {
+          return ret;
+        }
+      }
+    }
+    return false;
+  }
+};

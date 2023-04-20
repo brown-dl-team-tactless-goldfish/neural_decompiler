@@ -1,0 +1,140 @@
+
+class Solution {
+public:
+    vector<int> recoverArray(int n, vector<int>& sums) {
+        sort(begin(sums), end(sums));
+        if (n == 1) {
+            vector<int> ans;
+            if (sums[0] == 0 || sums[1] == 0) {
+                ans.emplace_back(sums[0] + sums[1]);
+            }
+            return ans;
+        }
+        
+        int pn = (1 << n);
+        int top1 = sums[pn - 1];
+        int top2 = sums[pn - 2];
+        int c = top1 - top2;
+
+        {
+            unordered_map<int, int> m;
+            vector<int> sorted;
+            for (int i = pn - 1; i >= 0; --i) {
+                if (i == pn - 1 || sums[i] != sums[i + 1]) {
+                    sorted.emplace_back(sums[i]);
+                }
+                ++m[sums[i]];
+            }
+            
+            vector<int> havenot;
+            bool zero = false;
+            for (int i = 0; i < sorted.size(); ) {
+                int a = sorted[i];
+                int b = a - c;
+                if (m.count(a) == 0) {
+                    ++i;
+                    continue;
+                }
+                if (a == b) {
+                    if (m.count(a) && m[a] >= 2) {
+                        havenot.emplace_back(b);
+                        if (b == 0) {
+                            zero = true;
+                        }
+                        m[a] -= 2;
+                        if (m[a] == 0) {
+                            m.erase(a);
+                            ++i;
+                        }
+                    } else {
+                        break;
+                    }
+                } else {
+                    if (m.count(a) && m.count(b) && m[a] > 0 && m[b] > 0) {
+                        havenot.emplace_back(b);
+                        if (b == 0) {
+                            zero = true;
+                        }
+                        if (--m[a] == 0) {
+                            m.erase(a);
+                            ++i;
+                        }
+                        if (--m[b] == 0) {
+                            m.erase(b);
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+            if (m.empty() && zero) {
+                vector<int> ans = recoverArray(n - 1, havenot);
+                if (!ans.empty()) {
+                    ans.emplace_back(c);
+                    return ans;
+                }
+            }
+        }
+        
+        {
+            unordered_map<int, int> m;
+            vector<int> sorted;
+            for (int i = 0; i < pn; ++i) {
+                if (i == 0 || sums[i] != sums[i - 1]) {
+                    sorted.emplace_back(sums[i]);
+                }
+                ++m[sums[i]];
+            }
+            
+            vector<int> havenot;
+            bool zero = false;
+            for (int i = 0; i < sorted.size(); ) {
+                int a = sorted[i];
+                int b = a + c;
+                if (m.count(a) == 0) {
+                    ++i;
+                    continue;
+                }
+                if (a == b) {
+                    if(m.count(a) && m[a] >= 2) {
+                        havenot.emplace_back(b);
+                        if (b == 0) {
+                            zero = true;
+                        }
+                        m[a] -= 2;
+                        if (m[a] == 0) {
+                            m.erase(a);
+                            ++i;
+                        }
+                    } else {
+                        break;
+                    }
+                } else {
+                    if (m.count(a) && m.count(b) && m[a] > 0 && m[b] > 0) {
+                        havenot.emplace_back(b);
+                        if (b == 0) {
+                            zero = true;
+                        }
+                        if (--m[a] == 0) {
+                            m.erase(a);
+                            ++i;
+                        }
+                        if (--m[b] == 0) {
+                            m.erase(b);
+                        }
+                    } else {
+                        break;
+                    }
+                }
+            }
+            if (m.empty() && zero) {
+                vector<int> ans = recoverArray(n - 1, havenot);
+                if (!ans.empty()) {
+                    ans.emplace_back(-c);
+                    return ans;
+                }
+            }
+        }
+        return {};
+    }
+};

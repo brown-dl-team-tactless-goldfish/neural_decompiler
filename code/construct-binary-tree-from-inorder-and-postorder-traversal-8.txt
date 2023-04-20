@@ -1,0 +1,29 @@
+struct TreeNode* buildTreeHelper(int *inorder,int inorder_start,int inorder_end,int *postorder,int postorder_start,int postorder_end);
+struct TreeNode* buildTree(int* inorder, int inorderSize, int* postorder, int postorderSize) {
+    int inorder_start=0;
+    int inorder_end=inorderSize-1;
+    int postorder_start=0;
+    int postorder_end=postorderSize-1;
+    return buildTreeHelper(inorder,inorder_start,inorder_end,postorder,postorder_start,postorder_end);
+}
+
+struct TreeNode* buildTreeHelper(int *inorder,int inorder_start,int inorder_end,int *postorder,int postorder_start,int postorder_end){
+    if(inorder_end<inorder_start||postorder_end<postorder_start) return NULL;
+    struct TreeNode *root=malloc(sizeof(struct TreeNode*)*1);
+    root->val=postorder[postorder_end];
+    int i=0;
+    for(i=0;i<=inorder_end;i++){
+        if(inorder[i]==postorder[postorder_end]) break;
+    }
+    int inorder_left_start=inorder_start;
+    int inorder_left_end=i-1;
+    int inorder_right_start=i+1;
+    int inorder_right_end=inorder_end;
+    int postorder_left_start=postorder_start;
+    int postorder_left_end=postorder_left_start-inorder_left_start+inorder_left_end;
+    int postorder_right_start=postorder_left_end+1;
+    int postorder_right_end=postorder_end-1;
+    root->left=buildTreeHelper(inorder,inorder_left_start,inorder_left_end,postorder,postorder_left_start,postorder_left_end);
+    root->right=buildTreeHelper(inorder,inorder_right_start,inorder_right_end,postorder,postorder_right_start,postorder_right_end);
+    return root;
+}

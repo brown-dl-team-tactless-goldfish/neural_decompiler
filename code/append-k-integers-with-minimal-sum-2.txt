@@ -1,0 +1,24 @@
+    typedef long long LL;
+    LL sum(LL l, LL r) {
+        return (l + r) * (r - l + 1) / 2;
+    }
+    long long minimalKSum(vector<int>& nums, int k) {
+        LL ans = 0;
+		// We will add 0 and 2e9 in nums vector so that we can handle edge cases inside array
+        nums.push_back(0);
+        nums.push_back(2e9);
+        sort(nums.begin(), nums.end());
+        int n = nums.size();
+        for (int i = 0; i < n && k; i++) {
+            LL c = nums[i + 1] - nums[i] - 1;
+            if (c <= 0) {
+                continue;
+            }
+            if (c > k) {
+                c = k;
+            }
+            ans += sum(nums[i] + 1, nums[i] + c);
+            k -= c;
+        }
+        return ans;
+    }

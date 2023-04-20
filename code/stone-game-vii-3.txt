@@ -1,0 +1,17 @@
+class Solution {
+private:
+    vector<vector<int> >dp=vector(1000,vector<int> (1000,0));
+public:
+    
+
+    int solve(vector<int> &stones,int low,int high,int sum){
+        if(low==high)
+            return 0;
+        return dp[low][high] ? dp[low][high] : 
+        dp[low][high]=max(sum-stones[low]-solve(stones,low+1,high,sum-stones[low]),
+                          sum-stones[high]-solve(stones,low,high-1,sum-stones[high]));
+    }
+    int stoneGameVII(vector<int>& stones) {
+        return solve(stones,0,stones.size()-1,accumulate(stones.begin(),stones.end(),0));
+    }
+};

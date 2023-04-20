@@ -1,0 +1,44 @@
+class Solution {
+public:
+    int minMoves(const vector<int>& nums, int k) {
+        vector<int> one;
+        int n = nums.size();
+        for (int i = 0; i < n; ++i) {
+            if (nums[i]) {
+                one.push_back(i - one.size());
+            }
+        }
+        n = one.size();
+
+        function<bool(int)> can = [&](int value) {
+            int p = (k - 1) / 2;
+            int need = 0;
+            for (int i = 0; i < k; ++i) {
+                need += abs(one[i] - one[p]);
+            }
+            if (need <= value) return true;
+            for (int i = 0; i + k < n; ++i) {
+                need += one[i];
+                need += one[i + k];
+                ++p;
+                need -= one[p];
+                need -= one[p - (k & 1)];
+                if (need <= value) return true;
+            }
+            return false;
+        };
+
+        int first = 0, len = numeric_limits<int>::max();
+        while (len > 0) {
+            int step = len >> 1;
+            int mid = first + step;
+            if (!can(mid)) {
+                first += step + 1;
+                len -= step + 1;
+            } else {
+                len = step;
+            }
+        }
+        return first;
+    }
+};

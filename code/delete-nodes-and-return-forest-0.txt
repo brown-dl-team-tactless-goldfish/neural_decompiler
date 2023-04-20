@@ -1,0 +1,34 @@
+void dfs(struct TreeNode* root, int* map, struct TreeNode** res, int* returnSize, bool* flag) {
+    if (root == NULL) return;
+    dfs(root->left, map, res, returnSize, flag);
+    if ((*flag)) {
+        root->left = NULL;
+        (*flag) = false;
+    }
+    dfs(root->right, map, res, returnSize, flag);
+    if ((*flag)) {
+        root->right = NULL;
+        (*flag) = false;
+    }
+    if (map[root->val] == 1) {
+        if (root->left != NULL && root->right == NULL) res[(*returnSize)++] = root->left;
+        if (root->left == NULL && root->right != NULL) res[(*returnSize)++] = root->right;
+        if (root->left != NULL && root->right != NULL) {
+            res[(*returnSize)++] = root->left;
+            res[(*returnSize)++] = root->right;
+        }
+        (*flag) = true;
+    }
+}
+struct TreeNode** delNodes(struct TreeNode* root, int* to_delete, int to_deleteSize, int* returnSize) {
+    *returnSize = 0;
+    bool flag = false;
+    int map[1001] = {0};
+    for (int i = 0; i < to_deleteSize; i++) {
+         map[to_delete[i]]++;
+    }
+    struct TreeNode** res = (struct TreeNode**) calloc(1001, sizeof(struct TreeNode*));   
+    dfs (root, map, res, returnSize, &flag);
+    if (map[root->val] != 1) res[(*returnSize)++] = root;
+    return res;
+}

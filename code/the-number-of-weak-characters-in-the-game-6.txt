@@ -1,0 +1,60 @@
+struct comp
+{
+    bool operator()(vector<int>&v1,vector<int>&v2)
+    {
+        return v1[0]>v2[0];
+    }
+};
+class Solution {
+public:
+    int numberOfWeakCharacters(vector<vector<int>>& nums) {
+        int count=0;
+       sort(nums.begin(),nums.end(),comp());
+       stack<pair<int,int>>st;
+        
+    for(int i=0;i<nums.size();i++)
+    {  if(!st.empty())
+    {
+    // when top element's attack!=current element's attack
+     if(st.top().first!=nums[i][0])
+     {
+         if(st.top().second>nums[i][1])
+             count++;
+         else
+         {
+             if(st.top().second<nums[i][1])
+                 st.push({nums[i][0],nums[i][1]});
+         }
+     }
+   //when top element's attack==current element's attack
+    else
+    {
+        if(st.top().second<nums[i][1])
+        {
+            st.pop();
+            st.push({nums[i][0],nums[i][1]});
+        }
+        else
+        {
+            pair<int,int>p=st.top();
+            st.pop();
+            if(!st.empty())
+            if(st.top().second>nums[i][1])
+                count++;
+            st.push(p);
+            
+        }
+        }
+    }
+     else
+      st.push({nums[i][0],nums[i][1]});
+     // cout<<"count="<<count<<endl;
+    }
+     
+    
+        return count;
+    }
+};
+
+Time Complexity: O(nlog(n)+n)
+Space Compexity: O(n)

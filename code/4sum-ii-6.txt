@@ -1,0 +1,43 @@
+struct node{
+    int data, time;
+    struct node *lef, *rig;
+};
+
+void add(struct node *root, int data, int *nums){
+    for(struct node *now = root; now;){
+        if (now->data == data){
+            (*nums) += now->time;  break;
+        }
+        now = (data < now->data) ? now->lef : now->rig;
+    }
+}
+
+void insert(struct node **Par, int data){
+    if(!*Par){
+        (*Par) = (struct node*)malloc(sizeof(struct node));
+        (*Par)->data = data;
+        (*Par)->time = 1;
+        (*Par)->lef = (*Par)->rig = NULL;
+    }
+    else{
+        struct node *par = *Par;
+        if(data > par->data)
+            insert(&(par->rig), data);
+        else if(data < par->data)
+            insert(&(par->lef), data);
+        else  par->time++;
+    }
+}
+
+int fourSumCount(int* nums1, int size, int* nums2, int size2, int* nums3, int size3, int* nums4, int size4){
+    struct node *root = NULL;
+    int ans=0;
+    for(int i=0; i<size; i++)
+        for(int j=0; j<size; j++)
+            insert(&root, nums1[i]+nums2[j]);
+    
+    for(int i=0; i<size; i++)
+        for(int j=0; j<size; j++)
+            add(root, -1*nums3[i]-nums4[j], &ans);
+    return ans;
+}

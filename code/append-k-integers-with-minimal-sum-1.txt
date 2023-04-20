@@ -1,0 +1,67 @@
+
+int cmp(void *a, void *b){
+    return ( *((int*)a) > *((int*)b) );
+}
+
+
+long long minimalKSum(int* nums, int numsSize, int k){
+	//Sort the nums array
+    qsort(nums, numsSize, sizeof(nums[0]), cmp);
+    
+    int count = 0, done = 0;
+    long long sum = 0;
+    
+    //If the first item in the array is not 1, add those elements to sum
+    if(nums[0] != 1){
+        if(nums[0] < k){
+            long long n = nums[0]-1;
+            sum = (n * (n+1))/2;
+            count += n;            
+        }
+        else if(nums[0] == k){
+            long long n = k-1;
+            sum = (n * (n+1))/2;
+            count += n;
+        }
+        else{
+            long long n = k;
+            sum = (n * (n+1))/2;
+            return sum;              
+        }
+    }  
+    
+    
+    //Haven't covered the k items yet | Traverse through array
+    int i = 0;
+    while(i < numsSize-1){
+        int diff = (nums[i+1] - nums[i]);
+        if(diff > 1){
+            if((count + (diff-1)) < k){
+                long long m = nums[i];
+                long long n = nums[i+1] - 1;
+                long long temp_sum_lower = (m * (m+1))/2;
+                long long temp_sum_upper = (n * (n+1))/2;
+                sum += (temp_sum_upper - temp_sum_lower);
+                count += (diff-1); 
+            }
+            else{
+                long long m = nums[i];
+                long long n = nums[i] + (k - count);
+                long long temp_sum_lower = (m * (m+1))/2;
+                long long temp_sum_upper = (n * (n+1))/2;
+                sum += (temp_sum_upper - temp_sum_lower);
+                return sum;                
+            }
+        }
+        i++;
+    }  
+
+    //Done with traversing the array | But haven't covered the k items | Lets cover that
+    long long m = nums[i];
+    long long n = nums[i] + (k - count);
+    long long temp_sum_lower = (m * (m+1))/2;
+    long long temp_sum_upper = (n * (n+1))/2;
+    sum += (temp_sum_upper - temp_sum_lower);
+ 
+    return sum;
+}

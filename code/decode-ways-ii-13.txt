@@ -1,0 +1,50 @@
+class Solution {
+public:
+    
+    int mod = 1e9 + 7;
+    long long int dp[1000005];
+    
+    int ways1(char a){
+        if(a == '*')
+            return 9;
+        return 1;
+    }
+    
+    int ways2(char a, char b){
+        if(a-'0' > 2)
+            return 0;
+        
+        if(a == '*' && b == '*')
+            return 15;
+        
+        if(a == '*')
+            return (b - '0' <= 6) ? 2 : 1;
+                
+        if(b == '*')
+            return (a - '0' == 0 || a - '0' == 1) ? 9 : 6;
+        
+        int no = (a-'0')*10 + (b-'0');
+        if(no >= 1 && no <= 26)
+            return 1;
+        return 0;
+    }
+    
+
+    int numDecodings(string s) {
+        
+        memset(dp, 0, sizeof dp);
+        dp[s.length()] = 1;
+        
+        for(int idx=s.length()-1;idx>=0;idx--){
+            if(s[idx] == '0'){
+                dp[idx] = 0;
+                continue;
+            }
+            dp[idx] = (dp[idx] + ways1(s[idx]) * dp[idx+1]) % mod;
+            if(idx + 1 != s.length())
+                dp[idx] = (dp[idx] + ways2(s[idx], s[idx+1]) * dp[idx+2]) % mod;
+        }        
+        
+        return dp[0] % mod;
+    }
+};

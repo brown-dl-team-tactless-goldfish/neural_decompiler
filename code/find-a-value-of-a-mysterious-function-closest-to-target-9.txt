@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int closestToTarget(vector<int>& arr, int target) {
+        unordered_set<int> dp;
+        unordered_set<int> tmp;
+        int res = INT_MAX;
+        for (auto& v : arr)
+        {
+            res = min(res, abs(v-target));
+            tmp.insert(v);
+            for (auto t : dp)
+            {
+                int t1 = t & v;
+                if (!tmp.count(t1))
+                {
+                    res = min(res, abs(t1 - target));
+                    tmp.insert(t1);
+                }
+            }
+            dp.swap(tmp);
+        }
+        return res;
+    }

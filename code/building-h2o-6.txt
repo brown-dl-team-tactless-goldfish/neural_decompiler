@@ -1,0 +1,95 @@
+typedef struct {
+    // User defined data may be declared here.
+    pthread_mutex_t mut_wait_h;
+    pthread_mutex_t mut_wait_o;
+    pthread_mutex_t mut_counters;
+    unsigned int n_hyd;
+    unsigned int n_ox;
+    unsigned int n_hyd_to_wakeup;
+} H2O;
+
+H2O* h2oCreate() {
+    H2O* obj = (H2O*) malloc(sizeof(H2O));
+    
+    // Initialize user defined data here.
+    pthread_mutex_init(&obj->mut_wait_h, NULL);
+    pthread_mutex_init(&obj->mut_wait_o, NULL);
+    pthread_mutex_init(&obj->mut_counters, NULL);
+    
+    pthread_mutex_lock(&obj->mut_wait_h);
+    pthread_mutex_lock(&obj->mut_wait_o);
+    
+    obj->n_hyd = 0;
+    obj->n_ox = 0;
+    obj->n_hyd_to_wakeup = 0;
+    
+    return obj;
+}
+
+void hydrogen(H2O* obj) {
+    
+    bool released = false;
+    pthread_mutex_lock(&obj->mut_counters);
+    obj->n_hyd++;
+    
+    if (obj->n_hyd >= 2 && obj->n_ox >=1) {
+        released = true;
+        // releasing myself (not taking the mut_wait_h lock) and 1H and 1O threads
+        obj->n_hyd -= 2;
+        obj->n_ox -= 1;
+        pthread_mutex_unlock(&obj->mut_wait_o);
+        pthread_mutex_unlock(&obj->mut_wait_h);
+    }
+    
+    pthread_mutex_unlock(&obj->mut_counters);
+    
+    if (!released) {
+        pthread_mutex_lock(&obj->mut_wait_h);
+        // wake up second waiter
+        
+        if (obj->n_hyd_to_wakeup) {
+            pthread_mutex_lock(&obj->mut_counters);
+            if (obj->n_hyd_to_wakeup) {
+                obj->n_hyd_to_wakeup--;
+                pthread_mutex_unlock(&obj->mut_wait_h);
+            }
+            pthread_mutex_unlock(&obj->mut_counters);
+        }
+    }
+    
+    // releaseHydrogen() outputs "H". Do not change or remove this line.
+    printf("H "); 
+    releaseHydrogen();
+}
+
+void oxygen(H2O* obj) {
+    bool released = false;
+    pthread_mutex_lock(&obj->mut_counters);
+    obj->n_ox++;
+    
+    if (obj->n_hyd >= 2) {
+        obj->n_ox -= 1;
+        obj->n_hyd -= 2;
+        
+        released = true;
+        // releasing myself (not taking the mut_wait_o lock) and 1H thread. since i cant unlock twice ill leave the second unlock to the waking up H thread
+        obj->n_hyd_to_wakeup++;
+        pthread_mutex_unlock(&obj->mut_wait_h);
+    }
+    
+    pthread_mutex_unlock(&obj->mut_counters);
+    
+    if (!released)
+        pthread_mutex_lock(&obj->mut_wait_o);
+    
+    // releaseOxygen() outputs "O". Do not change or remove this line.
+    printf("O ");
+    releaseOxygen();
+}
+
+void h2oFree(H2O* obj) {
+    // User defined data may be cleaned up here.
+    pthread_mutex_destroy(&obj->mut_wait_h);
+    pthread_mutex_destroy(&obj->mut_wait_o);
+    pthread_mutex_destroy(&obj->mut_counters);
+}

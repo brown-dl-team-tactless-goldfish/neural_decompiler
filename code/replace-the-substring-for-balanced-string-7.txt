@@ -1,0 +1,15 @@
+int balancedString(string s) {
+    unordered_map<char, int> cnt;
+    int sz = s.size(), n = s.size() / 4, res = INT_MAX;
+    for (auto ch : s)
+        ++cnt[ch];
+    for (int i = 0, j = 0; i < s.size(); ++i) {
+        --cnt[s[i]];
+        while (j < s.size() && all_of(begin(cnt), end(cnt), 
+            [&](const pair<char, int> &p) { return p.second <= n; })) {
+            res = min(res, i - j + 1);
+            ++cnt[s[j++]];                
+        }
+    }
+    return res;
+}

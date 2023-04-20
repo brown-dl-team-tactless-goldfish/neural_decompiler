@@ -1,0 +1,41 @@
+class Solution {
+public:
+    long long maxScore(vector<int>& nums1, vector<int>& nums2, int k) {
+
+        vector<pair<int,int>> new_nums2;
+        for(int i=0;i<nums2.size();i++) {
+            new_nums2.push_back({nums2[i], i});
+        }
+
+        sort(begin(new_nums2), end(new_nums2), [](auto& a, auto& b) {
+            return a.first > b.first;
+        });
+
+        vector<int> new_nums1;
+        for(int i=0;i<nums1.size();i++) {
+            int index = new_nums2[i].second;
+            new_nums1.push_back(nums1[index]);
+        }
+
+
+        long long cur_sum = 0;
+        priority_queue<int, vector<int>, greater<int>> minheap;
+        for(int i=0;i<k-1;i++) {
+            minheap.push(new_nums1[i]);
+            cur_sum += new_nums1[i];
+        }
+        long long res = 0;
+        for(int i=k-1;i<new_nums2.size();i++) {
+            long long cur_min_val = new_nums2[i].first;
+            minheap.push(new_nums1[i]);
+            cur_sum += new_nums1[i];
+            res = max(res, cur_min_val * cur_sum);
+
+            int pop_ele = minheap.top();
+            minheap.pop();
+            cur_sum -= pop_ele;
+        }
+
+        return res;
+    }
+};

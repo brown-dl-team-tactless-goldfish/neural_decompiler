@@ -1,0 +1,27 @@
+class Solution {
+    const int M = 1e9 + 7;
+public:
+    int maxProfit(vector<int>& inventory, int orders) {
+        sort(inventory.begin(), inventory.end(), greater<int>());
+        long long ans = 0, count = 1;
+        for (auto i=0; i<inventory.size(); ++i) {
+            long long cur = inventory[i];
+            long long nxt ; 
+            if(i == inventory.size() -1)
+                nxt = 0 ;
+            else
+                nxt = inventory[i+1] ;
+            if ((cur - nxt) * count <= orders) {
+                ans = (ans + (cur + (nxt+1)) * (cur-nxt) / 2 * count) % M;
+                orders -= (cur - nxt) * count;
+                ++count;
+            } else {
+                int stop = orders / count;
+                ans = (ans + (cur + (cur-stop+1)) * stop / 2 * count) % M;
+                ans = (ans + (orders % count) * (cur-stop)) % M;
+                break;
+            }
+        }
+        return ans;        
+    }
+};

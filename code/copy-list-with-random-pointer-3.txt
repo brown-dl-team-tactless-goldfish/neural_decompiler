@@ -1,0 +1,94 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     struct Node *next;
+ *     struct Node *random;
+ * };
+ */
+
+// Remark:
+
+// The task of this problem is "deep copy". To understand what "deep copy"
+// means, a good method is comparison, i.e., to think of what's a 
+// "shallow copy" first, then observe the difference between it and
+// the requirement of "deep copy"
+
+// The term, "shallow copy", in this context just mean the most primitive
+// and unsophilsicated copy method, i.e., to create a new list which
+// shares the same length with the original one, and copy all involved 
+// values, namely val and random, node by node.
+
+// To make the new list to be "linked" we mustn't copy the next value
+// but make them point to the next node in the new list.
+
+// At this stage, everything perfectly meets the requirement but the 
+// "random pointers",which still point to the nodes in the original list
+
+// Then, we must reason out the gap between the current stage and the
+// final one. It's not diffcult to perceive that although the random
+// pointers in our current copied list are not pointing to the correct
+// positions in the copied list. But they do point to the correct
+// positions in the original list. Say, for a random pointer which should
+// point to the third node in the copied list now is pointing to the 
+// third node in the original list. What makes the situation better
+// is that the pointers which are supposed be "NULL" are already "NULL".
+
+// So, the objective at this stage is crystal clear: to establish a 
+// connection between the corresponding nodes in both lists. It's not
+// difficult to find out that the only means is pointer
+
+// Since we are dealing with the issue caused by the random pointers,
+// it will make perfect sense should we make use of the random pointers
+// themselves to address this problem.
+
+// As we've mentioned before, the address value itself held by a random
+// pointer in the original list is of no importance whatsoever but the
+// relative position of the node it points to. Since it has already been
+// copied to the new list, what we can do is, upon creating a new node
+// and copying the address value held by the random pointer in the old
+// node into the new node, we can now make the old random value point to
+// the new-born node. For example, when we have created the first node
+// of the new list and already copied everything we need, we can now
+// make random pointer of first node of the original list point to
+// the first node of the new list. Through doing so, we
+
+// 1. establish a connection between the correspoding nodes in both lists
+// which is the key to our problem
+
+// 2. do not violate the integerity of any information needful of copying
+
+// Now, we just need to tranverse the new list and perform but one 
+// operation: node->random = node->random->random if (node->random)
+// node->random is the corresponding node in the original list of
+// the node in the new list whose address value node->random is supposed
+// to hold
+// By the mentioned technique, node->random->random stores the address
+// value of the correspoding and correct node in the new list.
+// So, now, all random pointers in the new list have been correctly set.
+
+struct Node* copyRandomList(struct Node* head) {
+  if(!head)
+    return head;
+  struct Node* p0 = NULL;
+  struct Node* p1 = NULL;
+  struct Node* newHead = (struct Node*) malloc(sizeof(struct Node));
+  newHead->val = head->val;
+  newHead->next = NULL;
+  newHead->random = head->random;
+  head->random = newHead;
+  struct Node* p2 = newHead;
+  for(p0 = head->next;p0;p0 = p0->next){
+    p1 = (struct Node*) malloc(sizeof(struct Node));
+    p1->val = p0->val;
+    p1->next = NULL;
+    p1->random = p0->random;
+    p2->next = p1;
+    p2 = p1;
+    p0->random = p1;
+  }
+  for(p1 = newHead;p1;p1 = p1->next)
+    if(p1->random)
+      p1->random = p1->random->random;
+  return newHead;
+}

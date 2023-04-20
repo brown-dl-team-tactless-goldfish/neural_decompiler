@@ -1,0 +1,59 @@
+public class Solution {
+    private Dictionary<int, List<int>> g = new Dictionary<int, List<int>>();
+    
+    public int AmountOfTime(TreeNode root, int start) {
+        int res = -1;
+        Queue<int> q = new Queue<int>();
+        HashSet<int> visited = new HashSet<int>();
+        
+        g.Add(root.val, new List<int>());        
+        ConvertToGraph(root);
+        
+        q.Enqueue(start);
+        visited.Add(start);
+        
+        while (q.Count > 0)
+        {
+            res++;
+            
+            int cnt = q.Count;
+            
+            while (cnt > 0)
+            {
+                int cur = q.Dequeue();
+                
+                foreach (var n in g[cur])
+                {
+                    if (!visited.Contains(n))
+                    {
+                        q.Enqueue(n);
+                        visited.Add(n);
+                    }
+                }
+                
+                cnt--;
+            }
+        }
+        
+        return res;
+    }
+    
+    private void ConvertToGraph(TreeNode n)
+    {        
+        if (n.left != null)
+        {
+            g[n.val].Add(n.left.val);            
+            g.Add(n.left.val, new List<int>() { n.val });
+            
+            ConvertToGraph(n.left);
+        }
+        
+        if (n.right != null)
+        {
+            g[n.val].Add(n.right.val);            
+            g.Add(n.right.val, new List<int>() { n.val });
+            
+            ConvertToGraph(n.right);
+        }
+    }
+}

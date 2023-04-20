@@ -1,0 +1,60 @@
+long long M_best_cut(long long** list, int M, int now){
+    long long max = 0;
+    int helf = now / 2;
+    for (int l = 1 ; l <= helf ; l++){
+        if (max < list[M][l] + list[M][now-l]){
+            max = list[M][l] + list[M][now-l];
+        }
+    }
+    return max;
+}
+
+long long N_best_cut(long long** list, int N, int now){
+    long long max = 0;
+    int helf = now / 2;
+    for (int l = 1 ; l <= helf ; l++){
+        if (max < list[l][N] + list[now-l][N]){
+            max = list[l][N] + list[now-l][N];
+        }
+    }
+    return max;
+}
+
+long long best(long long a, long long b, long long c){
+    if (a < b){
+        a = b;
+    }
+    if (a < c){
+        return c;
+    }
+    return a;
+}
+
+long long sellingWood(int m, int n, int** prices, int pricesSize, int* pricesColSize){
+    long long** list = malloc(sizeof(long long*)*(m+1));
+    
+    for (int i = 0 ; i <= m ; i++){
+        list[i] = calloc((n+1),sizeof(long long));
+    }
+    
+    for (int i = 0 ; i < pricesSize ; i++){
+        list[prices[i][0]][prices[i][1]] = prices[i][2];
+    }
+    
+    long long cut_M, cut_N;
+    
+    for (int i = 1 ; i <= m ; i++){
+        for (int j = 1 ; j <= n ; j++){
+            cut_M = M_best_cut(list, i, j);
+            cut_N = N_best_cut(list, j, i);
+            list[i][j] = best(cut_M,cut_N,list[i][j]);
+        }
+    }
+
+    long long ans = list[m][n];
+    for (int i = 0 ; i <= m ; i++){
+        free(list[i]);
+    }
+    free(list);
+    return ans;
+}

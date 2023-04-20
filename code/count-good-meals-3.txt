@@ -1,0 +1,38 @@
+class Solution {
+public:
+    
+int mod = 1e9 + 7;
+int count(unordered_map<int, int>& freq, int n)
+{
+	int res = 0;
+    long long int f = freq[n];
+	for (int i = 0; i < 22; i++)
+	{
+		int num = (1 << i) - n;
+		if (num >= 0 && freq.count(num) && freq[num])
+		{
+			long long int c = freq[num];
+            
+			if (num == n)
+				res = (res + (((c - 1) * c) / 2)) % mod;
+			else
+				res = (res + (c * f)) % mod;
+		}
+	}
+	freq[n] = 0;
+	return res;
+}
+
+int countPairs(vector<int>& nums)
+{
+	unordered_map<int, int> freq;
+	for (int num : nums)
+		freq[num]++;
+	long long int res = 0;
+	for (auto it = freq.begin(); it != freq.end(); it++)
+	{
+		res = (res + count(freq, it->first)) % mod;
+	}
+	return res;
+}
+};

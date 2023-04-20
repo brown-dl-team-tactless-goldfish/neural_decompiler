@@ -1,0 +1,46 @@
+bool checkWord(char **wordDict, int wordDictSize,char *str){
+    int i;
+    for (i = 0; i < wordDictSize; i++){
+        char *words = wordDict[i];
+        if (strcmp(words, str) == 0){
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+bool wB(int *checked,char *s,char** wordDict, int wordDictSize,int start){
+    
+    if (start > strlen(s) - 1) return true;
+    
+    int i,j;
+    char str[1000] = {'\0'};
+    for (i = start,j = 0; i < strlen(s); i++,j++){
+        str[j] = s[i];
+        if (checkWord(wordDict,wordDictSize,str)){
+            if (checked[i+1] == 1) return true;
+            else if (checked[i+1] == -1) continue;
+            bool ret = wB(checked,s,wordDict,wordDictSize,i+1);
+            if (ret){
+                checked[i+1] = 1;
+                return true;
+            }
+            else {
+                checked[i+1] = -1;
+                continue;
+            }
+        }
+    }
+    
+    return false;
+}
+
+bool wordBreak(char* s, char** wordDict, int wordDictSize) {
+    int *checked = malloc(sizeof(int)*10000);
+    int i;
+    for (i = 0;i < 10000; i++){
+        checked[i] = 0;
+    }
+    return wB(checked,s,wordDict,wordDictSize,0);
+}

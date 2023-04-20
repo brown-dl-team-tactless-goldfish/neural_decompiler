@@ -1,0 +1,57 @@
+public:
+    int nCrModp(int n, int r, int p) 
+	{ 
+		// Optimization for the cases when r is large 
+		if (r > n - r) 
+			r = n - r; 
+
+		// The array C is going to store last row of 
+		// pascal triangle at the end. And last entry 
+		// of last row is nCr 
+		int C[r + 1]; 
+		memset(C, 0, sizeof(C)); 
+
+		C[0] = 1; // Top row of Pascal Triangle 
+
+		// One by constructs remaining rows of Pascal 
+		// Triangle from top to bottom 
+		for (int i = 1; i <= n; i++) { 
+
+			// Fill entries of current row using previous 
+			// row values 
+			for (int j = min(i, r); j > 0; j--) 
+
+				// nCj = (n-1)Cj + (n-1)C(j-1); 
+				C[j] = (C[j] + C[j - 1]) % p; 
+		} 
+		return C[r]; 
+	} 
+    #define M 1000000007
+    #define ll long long int
+    ll nw(vector<int>& nums){
+        int n = nums.size();
+        if(n<=1) return 1;
+        int x = nums[0];
+        vector<int> s,l;
+        for(int i=1;i<n;i++){
+            if(nums[i]>x) l.push_back(nums[i]);
+            else s.push_back(nums[i]);
+        }
+        int n1=s.size(),n2=l.size();
+        return (((nCrModp(n1+n2,n1,1000000007)*nw(l))%M)*nw(s))%M;
+    }
+    int numOfWays(vector<int>& nums) {
+        int n = nums.size();
+        if(n<2) return 0;
+        if(n<=1) return 1;
+        int x = nums[0];
+        vector<int> s,l;
+        for(int i=1;i<n;i++){
+            if(nums[i]>x) l.push_back(nums[i]);
+            else s.push_back(nums[i]);
+        }
+        int n1=s.size(),n2=l.size();
+        int ans = (((nCrModp(n1+n2,n1,1000000007)*nw(l))%M)*nw(s))%M;
+        return ans-1;
+    }
+};```

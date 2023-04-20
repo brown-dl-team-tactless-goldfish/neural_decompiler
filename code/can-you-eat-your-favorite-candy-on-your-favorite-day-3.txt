@@ -1,0 +1,17 @@
+class Solution {
+public:
+    vector<bool> canEat(vector<int>& candiesCount, vector<vector<int>>& queries) {
+        int n = candiesCount.size();
+        vector<long long> presum(n + 1);
+        for (int i = 0; i < n; ++ i)
+            presum[i + 1] = presum[i] + candiesCount[i];
+        
+        vector<bool> ans;
+        for (auto& q : queries) {
+            long long i = q[0], d = q[1], c = q[2];
+            long long lo = presum[i] + 1, hi = presum[i + 1];
+            ans.push_back((lo <= (d + 1) * c) && (hi >= d + 1));
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,76 @@
+struct node{
+    int arr[8];
+    struct node *next;
+};
+
+void insert(struct node **head, struct node **tail, int *cells, int size){
+    struct node *new = (struct node*)malloc(sizeof(struct node));
+    struct node *c = *head;
+    for (int i=0; i<size; i++){
+        new->arr[i] = cells[i];
+    }
+    new->next = NULL;
+    if (*head == NULL){
+        *head = new;
+        *tail = new;
+    }
+    else{
+        (*tail)->next = new;
+        *tail = new;
+    }
+}
+
+bool check(struct node *head, int *cells, int size){
+    struct node *c = head;
+    int count = 0;
+    
+    while (c != NULL){
+        count = 0;
+        for (int i=0; i<size; i++){
+            if (cells[i] == c->arr[i])
+                count++;
+        }
+        if (count == size)
+            return true;
+        c = c->next;
+    }
+    return false;
+}
+
+int* prisonAfterNDays(int* cells, int cellsSize, int N, int* returnSize){
+    struct node *head = NULL, *tail = NULL;
+    int *copy = (int*)malloc(sizeof(int)*cellsSize);
+    int flag = 0;
+    for (int i=0; i<cellsSize; i++){
+        copy[i] = cells[i];
+    }
+
+    for (int i=0; i<N; i++){
+        for (int j=1; j<cellsSize-1; j++){
+            if (copy[j-1] == copy[j+1])
+                cells[j] = 1;
+            else
+                cells[j] = 0;
+        }
+        if (cells[cellsSize-1] == 1)
+            cells[cellsSize-1] = 0;
+        if (cells[0] == 1)
+            cells[0] = 0;
+        if (flag == 0 && check(head, cells, cellsSize) == false)
+            insert(&head, &tail, cells, cellsSize);
+        else if (flag == 0){
+            N = N%i;
+            i = 0;
+            flag = 1;
+            if (N == 0){
+                *returnSize = cellsSize;
+                return copy;
+            }
+        }
+        for (int k=0; k<cellsSize; k++){
+            copy[k] = cells[k];
+        }
+    }
+    *returnSize = cellsSize;
+    return copy;
+}

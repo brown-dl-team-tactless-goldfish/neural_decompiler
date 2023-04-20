@@ -1,0 +1,47 @@
+public int MaxStudents(char[][] seats) {
+
+	Dictionary<string, int> dic = new Dictionary<string, int>();
+
+	return dfs(0, 0, seats, dic);
+}
+
+
+int dfs(int i, int j, char[][] seats, Dictionary<string, int> dic)
+{
+	int n = seats.Length;
+	int m = seats[0].Length;
+
+	if(j == m)
+	{
+		string key = i.ToString() + "_" + new string(seats[i]);
+
+		if(dic.ContainsKey(key))
+			return dic[key];
+
+		dic[key] = dfs(i+1, 0, seats, dic);
+
+		return dic[key];
+	}
+	if(i == n)
+	{
+		return 0;
+	}
+
+	char c = seats[i][j];
+
+	int res = 0;
+
+	res = Math.Max(res, dfs(i, j+1, seats, dic));
+
+	if(c == '.' 
+	   && (j == 0 || seats[i][j-1] != 'p')
+	   && (j == 0 || i == 0 || seats[i-1][j-1] != 'p')
+	   && (j == m-1 || i == 0 || seats[i-1][j+1] != 'p'))
+	{
+		seats[i][j] = 'p';
+		res = Math.Max(res, 1 + dfs(i, j+1, seats, dic));
+		seats[i][j] = '.';
+	}
+
+	return res;
+}

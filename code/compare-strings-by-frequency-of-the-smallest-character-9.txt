@@ -1,0 +1,41 @@
+    vector<int> numSmallerByFrequency(vector<string>& queries, vector<string>& words) {
+        std::unordered_map<std::string, int> Qmap;
+        std::for_each(queries.begin(), queries.end(), [&](std::string& s) {
+            std::sort(s.begin(), s.end());
+            char first = s[0];
+            int c = 0;
+            for (int i=0;i<s.size();++i) {
+                if (s[i] == first) {
+                    ++c;
+                } else {
+                    break;
+                }
+            }
+            Qmap[s] = c;
+        });
+
+        std::vector<int> WFreq; 
+        std::for_each(words.begin(), words.end(), [&](std::string& s) {             
+            std::sort(s.begin(), s.end());
+            char first = s[0];
+            int c = 0;
+            for (int i=0;i<s.size();++i) {
+                if (s[i] == first) {
+                    ++c;
+                } else {
+                    break;
+                }
+            }
+            WFreq.push_back(c);
+        });
+        
+        std::sort(WFreq.begin(), WFreq.end());
+       
+        std::vector<int> ans;
+        for (const auto& q:queries) {
+            int c = Qmap[q];
+            auto it = std::upper_bound(WFreq.begin(), WFreq.end(), c);
+            ans.push_back(std::distance(it, WFreq.end()));
+        }
+        return ans;
+    }

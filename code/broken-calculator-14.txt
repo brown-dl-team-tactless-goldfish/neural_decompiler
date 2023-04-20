@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int brokenCalc(int startValue, int target) {
+    
+	//unless multiplying by two lands directly on target, we have to overshoot and correct.
+	//We can correct by walking back from val, or by walking back from previous multiplications.
+	//Walking back from previous jumps eats away at the overshoot difference more quickly,
+	//b/c each minus is multiplied by 2 each multiplication. We can even subtract before the first multiplication, 
+	//even going negative if necessary, so just take as many big steps back as needed, as early as possible.
+	
+    int val = startValue;
+    int count = 0;
+    while(val < target){ 
+        val *= 2;
+        count++;
+        }
+    int moves = count;
+    int diff = val - target;
+        while(diff > 0){
+            if(diff >= (int)pow(2, count)){
+                moves += diff / (int)pow(2, count);
+                diff %= (int)pow(2, count);
+            }
+            if(count == 0) return moves+diff;
+            else count--;
+        }
+        return moves;
+    }
+};

@@ -1,0 +1,71 @@
+int cmp(const void*a,const void*b){
+    return (*(int**)a)[0]-(*(int**)b)[0];
+}
+void heapdown(int **chair,int *heap,int heapsize){
+    int curr = 1;
+    int child = curr*2;
+    while(child<=heapsize){
+        if(child+1<=heapsize && chair[heap[child+1]][0]<chair[heap[child]][0])
+            child++;
+        if(chair[heap[curr]][0]<chair[heap[child]][0])
+            break;
+        int tmp = heap[child];
+        heap[child] = heap[curr];
+        heap[curr] = tmp;
+        
+        curr = child;
+        child*=2;
+    }
+}
+void heapup(int **chair,int *heap,int heapidx,int val){
+    int curr = heapidx;
+    int father = curr/2;
+    while(father>=1){
+        if(chair[heap[father]][0]<=chair[val][0])
+            break;
+        heap[curr] = heap[father];
+        curr = father;
+        father/=2;
+    }
+    heap[curr] = val;
+}
+int smallestChair(int** times, int timesSize, int* timesColSize, int targetFriend){
+    int ans = 0;
+    int **chair = malloc(timesSize*sizeof(int*));
+    int **qdata = malloc(timesSize*sizeof(int*));
+    int *valid = malloc((timesSize+1)*sizeof(int));
+    int *invalid  = malloc((timesSize+1)*sizeof(int));
+    int valididx = timesSize;
+    int invalididx = 0;
+    for(int i=0;i<timesSize;i++){
+        qdata[i] = malloc(3*sizeof(int));
+        qdata[i][0] = times[i][0];
+        qdata[i][1] = times[i][1];
+        qdata[i][2] = i;
+        chair[i] = malloc(3*sizeof(int));
+        chair[i][0] = i;
+        chair[i][1] = i;
+        chair[i][2] = 0;
+        valid[i+1] = i;
+    }
+    qsort(qdata,timesSize,sizeof(qdata[0]),cmp);
+    for(int i=0;i<timesSize;i++){
+        //invalid->valid
+        while(invalididx>0 && chair[invalid[1]][0]<=qdata[i][0]){
+            int target = invalid[1];
+            chair[target][0] = chair[target][1];
+            heapup(chair,valid,++valididx,target);
+            invalid[1] = invalid[invalididx--];
+            heapdown(chair,invalid,invalididx);    
+        }
+        //valid->invalid
+        if(targetFriend==qdata[i][2])
+            return chair[valid[1]][1];
+        int target = valid[1];
+        chair[target][0] = chair[target][2] = qdata[i][1];
+        heapup(chair,invalid,++invalididx,target);
+        valid[1] = valid[valididx--];
+        heapdown(chair,valid,valididx);
+    }
+    return ans;//no use
+}

@@ -1,0 +1,20 @@
+class Solution 
+{
+public:
+    int dp[1000000];
+    int mod=1e9+7;
+    int f(int currLen, int low, int high, int zero, int one)
+    {
+        int ans=0;
+        if(currLen>high) return 0;
+        if(dp[currLen]!=-1) return dp[currLen];
+        if(currLen>=low && currLen<=high) ans=(ans+1)%mod;
+        ans=(ans+f(currLen+zero,low,high,zero,one)+f(currLen+one,low,high,zero,one))%mod;
+        return dp[currLen]=ans;
+    }
+    int countGoodStrings(int low, int high, int zero, int one) 
+    {
+        memset(dp,-1,sizeof(dp));
+        return f(0,low,high,zero,one);
+    }
+};

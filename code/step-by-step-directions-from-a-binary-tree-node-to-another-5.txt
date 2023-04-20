@@ -1,0 +1,71 @@
+public class Solution {
+    private Dictionary<int, List<(int, char)>> g = new Dictionary<int, List<(int, char)>>();
+    private HashSet<int> visited = new HashSet<int>();
+    private StringBuilder res = new StringBuilder();
+    
+    public string GetDirections(TreeNode root, int startValue, int destValue) {
+        ConvertToGraph(root);
+        
+        visited.Add(startValue);
+        
+        DFS(startValue, destValue, res);
+        
+        return res.ToString();
+    }
+    
+    private void ConvertToGraph(TreeNode n)
+    {
+        if (!g.ContainsKey(n.val))
+        {
+            g.Add(n.val, new List<(int, char)>());
+        }
+        
+        if (n.left != null)
+        {
+            if (!g.ContainsKey(n.left.val))
+            {
+                g.Add(n.left.val, new List<(int, char)>());
+            }
+            
+            g[n.val].Add((n.left.val, 'L'));
+            g[n.left.val].Add((n.val, 'U'));
+            
+            ConvertToGraph(n.left);
+        }
+        
+        if (n.right != null)
+        {
+            if (!g.ContainsKey(n.right.val))
+            {
+                g.Add(n.right.val, new List<(int, char)>());
+            }
+            
+            g[n.val].Add((n.right.val, 'R'));
+            g[n.right.val].Add((n.val, 'U'));
+            
+            ConvertToGraph(n.right);
+        }
+    }
+    
+    private bool DFS(int cur, int d, StringBuilder path)
+    {
+        foreach (var n in g[cur])
+        {
+            if (!visited.Contains(n.Item1))
+            {                
+                visited.Add(n.Item1);
+                path.Append(n.Item2);
+
+                if (n.Item1 == d || DFS(n.Item1, d, path))
+                {
+                    return true;
+                }
+                
+                visited.Remove(n.Item1);
+                path.Remove(path.Length - 1, 1);
+            }
+        }
+        
+        return false;
+    }
+}

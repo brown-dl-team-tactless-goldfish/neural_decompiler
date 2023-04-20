@@ -1,0 +1,15 @@
+int missingNumber(int* nums, int numsSize){
+    int lst[numsSize+1];
+    memset( lst, 0, (numsSize+1)*sizeof(int));
+    
+    for (int i = 0; i < numsSize; i++) {
+        lst[nums[i]] = nums[i];
+    }
+    
+    for (int i = 1; i < numsSize + 1; i++) {
+        if (lst[i] == 0) {
+            return i;
+        }
+    }
+    return 0;
+}

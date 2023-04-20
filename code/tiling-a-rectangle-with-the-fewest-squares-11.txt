@@ -1,0 +1,58 @@
+template <class F>
+struct recursive {
+  F f;
+  template <class... Ts>
+  decltype(auto) operator()(Ts&&... ts)  const { return f(std::ref(*this), std::forward<Ts>(ts)...); }
+  
+  template <class... Ts>
+  decltype(auto) operator()(Ts&&... ts)  { return f(std::ref(*this), std::forward<Ts>(ts)...); }
+};
+
+template <class F> recursive(F) -> recursive<F>;
+auto const rec = [](auto f){ return recursive{std::move(f)}; };
+
+
+class Solution {
+ public:
+  int tilingRectangle(int n, int m) {
+
+    auto test = [&](const vector<vector<bool>> &x, int r1, int r2, int c1, int c2) {
+      for (int r = r1; r < r2; ++r)
+        for (int c = c1; c < c2; ++c)
+          if (x[r][c]) return true;
+      return false;
+    };
+    
+    auto assign = [](vector<vector<bool>>& x, int r1,int r2, int c1, int c2, bool val) {
+      for (int r = r1; r < r2; ++r)
+        for (int c = c1; c < c2; ++c)
+          x[r][c] = val;
+    };
+    
+    auto backtrack = [&] {
+      int acc = INT_MAX;
+      vector<vector<bool>> covered(n, vector<bool>(m, false));
+      auto fill = rec([&](auto&& fill, int r, int c, int tiles) -> void {
+        if (r >= n and c == 0)  
+          acc = std::min(acc, tiles);
+        else if (r < n and c >= m)
+          fill(r + 1, 0, tiles);
+        else if (r < n  and c < m and covered[r][c])
+          fill(r, c + 1, tiles);
+        else if (r < n and c < m and not covered[r][c]) {
+          for (int tile_size = std::min(m - c, n - r); tile_size > 0; tile_size--) {
+            if (acc > tiles + 1 and not test(covered, r, r + tile_size, c, c + tile_size)) {
+              assign(covered, r, r + tile_size, c, c + tile_size, true);
+              fill(r,  c + 1, tiles + 1);
+              assign(covered, r, r + tile_size, c, c + tile_size, false);
+            }
+          }
+        }
+        else throw std::domain_error("unmatched error");
+      });
+      return (fill(0, 0, 0), acc);
+    };
+
+    return backtrack();
+  }
+};

@@ -1,0 +1,69 @@
+    public class ExamRoom
+    {
+        private readonly SortedSet<int> _set;
+        private readonly int _n;
+
+        public ExamRoom(int n)
+        {
+            _set = new SortedSet<int>();
+            _n = n;
+        }
+
+        public int Seat()
+        {
+            if (_set.Count == 0)
+            {
+                _set.Add(0);
+                return 0;
+            }
+
+            int last = 0;
+            int from = 0;
+            int to = 0;
+            int first = -1;
+
+            foreach (var occupied in _set)
+            {
+                if (first < 0)
+                {
+                    first = occupied;
+                }
+
+                if ((occupied - last) / 2 > (to - from) / 2)
+                {
+                    from = last;
+                    to = occupied;
+                }
+
+                last = occupied;
+            }
+
+            int target = from + (to - from) / 2;
+
+            if (!_set.Contains(0))
+            {
+                if (first >= (to - from) / 2)
+                {
+                    from = -first;
+                    to = first;
+                    target = 0;
+                }
+            }
+
+            if (!_set.Contains(_n - 1))
+            {
+                if (_n - 1 - last > (to - from) / 2)
+                {
+                    target = _n - 1;
+                }
+            }
+
+            _set.Add(target);
+            return target;
+        }
+
+        public void Leave(int p)
+        {
+            _set.Remove(p);
+        }
+    }

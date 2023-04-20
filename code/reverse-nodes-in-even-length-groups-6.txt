@@ -1,0 +1,99 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+/* <-+.@.time:2022.11.8 周2 0:32 @.豫A
+ */
+int lengthOfLinkedList(struct ListNode* head) {
+    int len = 0;
+    struct ListNode* p = head;
+    while (p != 0) {
+        len++;
+        p = p->next;
+    }
+    return len;
+}
+void showArrayElements(int* arr,int length) {
+    printf("groups: [ ");
+    for (int i = 0; i < length; i++) printf("%d ", arr[i]);
+    printf("]\n");
+}
+
+/* '根据LinkedList长度，得到对应的分组情况：'
+ */
+int* groupsDistribution(int listLength, int* shares) {  
+    /* 'According to LinkedList's length: calculate the Distribution of groups.'
+     *    such that For General case: [1,2,3,4] which N equals to '10'
+     *    Or For case: [1,2,3,3] which N equals to '9'
+     */
+    int n = 1;
+    int sn = n * (n + 1) / 2;
+    while (!(listLength <= sn)) {
+        n++;
+        sn = n * (n + 1) / 2;
+    }
+    printf("n = %d\n", n);
+    
+    int* groups = (int*)calloc(n,sizeof(int));
+    for (int i = 1; i <= n; i++) {
+        groups[i-1] = i;
+        if (i == n) groups[i-1] = listLength - n * (n - 1) / 2;
+    }
+    *shares = n; /* 将划分的group's count返回到调用函数:*/
+    showArrayElements(groups, n);
+    return groups;
+}
+
+struct ListNode* reverseEvenLengthGroups(struct ListNode* head) {
+    /*
+    struct ListNode* p = malloc(sizeof(struct ListNode)); p->val = 11; p->next = 0; */
+    int length = lengthOfLinkedList(head);
+    int shares;
+    int* groups = groupsDistribution(length, &shares); 
+    struct ListNode* p = head;  
+    printf("shares: %d\n", shares);
+
+    int i = 0;
+    struct ListNode* prior = 0;
+    while (i < shares) {
+        int nElementsInGroup = groups[i];
+        if (nElementsInGroup % 2 != 0) {
+            for (int j = 0; j < nElementsInGroup; j++) {
+                prior = p;  /* Node(5):*/
+                p = p->next; /* Node(2):*/
+            }
+        } else {
+            /*
+            struct ListNode* p0 = p;
+            for (int to = nElementsInGroup; to > 0; to--) {
+            } */
+            struct ListNode* temp = prior;
+            int* stack = (int*)calloc(nElementsInGroup, sizeof(int));
+            for (int i = 0; i < nElementsInGroup; i++) {    
+                temp = temp->next;
+                stack[i] = temp->val; /* 这个地方取巧的方法: 将reversed Nodes的值push到'stack栈'中: which space cost-ineffective!*/
+            }
+            temp = prior;
+            for (int i = 0; i < nElementsInGroup; i++) {
+                temp = temp->next;
+                temp->val = stack[nElementsInGroup-1-i]; /* 从'stack栈'中pop出来值给reversed Nodes重新赋值，和reconnect nodes的效果是一样的!*/
+
+                prior = p;
+                p = p->next;
+            }
+            free(stack);
+        }
+        i++;
+    }
+    return head;
+}
+
+/* @.thoughts: 在'开发过程'中，时常会遇到这种逻辑稍微复杂的情况。而为了及时完成任务，可能会采取上面这种埋雷、挖坑的工作。对性能存在潜在的影响。this kind of compact 可大可小。
+    e.g. 设计'system software'的底层代码时，这种情况100%是要避免的。因为你不清楚内存在什么情况下就爆掉了。
+    但是，如果是性能在可接受的情况下，the above solution就显得要方便、简单得多了!
+    所以，two ascepts Or approaches both requires granted。这个权衡选择在于自己了！ <-.@.time:2022.11.8 0:45 Tuesday
+ */

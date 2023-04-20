@@ -1,0 +1,74 @@
+// RS Hash Function
+unsigned int RSHash(char *str)
+{
+    unsigned int b = 378551;
+    unsigned int a = 63689;
+    unsigned int hash = 0;
+
+    while (*str)
+    {
+        hash = hash * a + (*str++);
+        a *= b;
+    }
+
+    return (hash & 0x7FFFFFFF);
+}
+
+typedef struct data{
+    unsigned int key;
+    char* str;
+    int index;
+}data;
+
+char ** findRestaurant(char ** list1, int list1Size, char ** list2, int list2Size, int* returnSize){
+    int n = list1Size;
+    int N = 2 * n;
+    data** hashTable = calloc(N , sizeof(data*));
+    for(int i = 0; i < n; i++){
+        unsigned val = RSHash( list1[i] );
+        int d = val;
+        while(1){
+            if( hashTable[d%N] == NULL){
+                hashTable[d%N] = malloc( sizeof(data));
+                hashTable[d%N]->key = val;
+                hashTable[d%N]->str = list1[i];
+                hashTable[d%N]->index = i;
+                break;
+            }
+            else 
+                d++;
+        }
+    }
+    int n2 = list2Size;
+    char** ans = malloc(n2 * sizeof(char*));
+    int id = 0;
+    int minIdx = INT_MAX;
+    for(int i = 0; i < list2Size; i++){
+        int k = RSHash( list2[i] );
+        int d = k;
+        while(1){
+            if( hashTable[d%N] == NULL)
+                break;
+            else if(hashTable[d%N]->key == k){
+                if(strcmp(hashTable[d%N]->str, list2[i]) == 0){
+                    if((i + hashTable[d%N]->index) == minIdx){
+                        ans[id] = list2[i];
+                        id++;
+                    }
+                    else if( (i + hashTable[d%N]->index) < minIdx){
+                        minIdx = i + hashTable[d%N]->index;
+                        id = 0; 
+                        ans[id] = list2[i];
+                        id++;
+                    }
+                    break;
+                }
+            }
+            else
+                d++;
+        }
+    }
+    *returnSize = id;
+    return ans;
+
+}

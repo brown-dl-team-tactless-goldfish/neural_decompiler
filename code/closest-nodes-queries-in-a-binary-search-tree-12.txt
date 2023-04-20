@@ -1,0 +1,39 @@
+    List<int> sortedValues;
+    public IList<IList<int>> ClosestNodes(TreeNode root, IList<int> queries)
+    {
+        sortedValues = new List<int>();
+        ReadNodeValues(root);
+        int nodeCount = sortedValues.Count;
+        int lowest = sortedValues[0];
+        int highest = sortedValues[nodeCount-1];
+
+        IList<IList<int>> result = new List<IList<int>>();
+        foreach (int query in queries)
+        {
+            int index = sortedValues.BinarySearch(query);
+            if (index >= 0)
+                result.Add(new int[] { sortedValues[index], sortedValues[index] });
+            else
+            {
+                index = ~index;
+                int min = -1;
+                int max = -1;
+
+                if (query < highest)
+                    max = sortedValues[index];
+                if (query > lowest)
+                    min = sortedValues[index-1];
+                result.Add(new int[] { min, max });
+            }
+        }
+        return result;
+    }
+
+    public void ReadNodeValues(TreeNode root) 
+    {
+        if (root == null)
+            return;
+        ReadNodeValues(root.left);
+        sortedValues.Add(root.val);
+        ReadNodeValues(root.right);
+    }

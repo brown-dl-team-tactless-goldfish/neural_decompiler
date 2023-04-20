@@ -1,0 +1,81 @@
+struct record {
+    int max;
+    int min;
+    int width;
+};
+#define LEVEL 2000
+#define MAX_INT 0x7fffffff
+#define MIN_INT 0x80000000
+
+void countWidth(struct TreeNode * root, struct record * re, long cur, int level);
+
+int widthOfBinaryTree(struct TreeNode* root){
+    if (root == NULL)
+        return 0;
+    int i;
+    int max = 0, level = 0;
+    long cur = 0;
+    struct record * re = malloc(sizeof(struct record) * LEVEL);
+    for (i = 0; i < LEVEL; i++){
+        re[i].max = 0;
+        re[i].min = 0;
+        re[i].width = 1;
+    }
+    countWidth(root, re, cur, level);
+    for (i = 0; i < LEVEL; i++){
+        max = (max < re[i].width)?(re[i].width):max;
+    }
+    return max;
+}
+
+void countWidth(struct TreeNode * root, struct record * re, long cur, int level){
+    if (root == NULL)
+        return;
+    int new_width = 1;
+    if (re[level].max == 0)
+        re[level].max = cur;
+    if (re[level].min == 0)
+        re[level].min = cur;
+    if (re[level].max < cur){
+        re[level].max = cur;
+        new_width = re[level].max - re[level].min;
+        if ((re[level].max < 0 && re[level].min < 0) || (re[level].max > 0 && re[level].min > 0))
+            new_width += 1;
+        re[level].width = (new_width > re[level].width)?new_width:(re[level].width);
+    }
+    if (re[level].min > cur){
+        re[level].min = cur;
+        new_width = re[level].max - re[level].min;
+        if ((re[level].max < 0 && re[level].min < 0) || (re[level].max > 0 && re[level].min > 0))
+            new_width += 1;
+        re[level].width = (new_width > re[level].width)?new_width:(re[level].width);
+    }
+    if (cur < 0){
+        if (cur <= (int)MIN_INT){
+            re[level].max = 0 - re[level].min;
+            re[level].min = 0;
+            countWidth(root->left, re, -1, level + 1);
+            countWidth(root->right, re, 1, level + 1);
+        }
+        else{
+            countWidth(root->left, re, 2 * cur, level + 1);
+            countWidth(root->right, re, cur * 2 + 1, level + 1);
+        }
+    }
+    else if (cur > 0){
+        if (cur >= (int)MAX_INT){
+            re[level].min = re[level].max;
+            re[level].max = 0;
+            countWidth(root->left, re, -1, level + 1);
+            countWidth(root->right, re, 1, level + 1);
+        }
+        else{
+            countWidth(root->left, re, 2 * cur - 1, level + 1);
+            countWidth(root->right, re, cur * 2, level + 1);
+        }
+    }
+    else{
+        countWidth(root->left, re, cur - 1, level + 1);
+        countWidth(root->right, re, cur + 1, level + 1);
+    }
+}

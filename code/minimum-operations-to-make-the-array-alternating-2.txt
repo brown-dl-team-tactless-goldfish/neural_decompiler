@@ -1,0 +1,62 @@
+class Solution {
+public:
+    int minimumOperations(vector<int>& nums) {
+        
+      int n=nums.size();
+      
+      if(n==1)
+        return 0;
+      
+      unordered_map<int,int>mp1,mp2;
+      
+      int mx1=0,mx2=0;
+    
+      for(int i=0;i<n;i+=2){
+        mp1[nums[i]]++;
+        mx1=max(mx1,mp1[nums[i]]);
+      }
+      
+       for(int i=1;i<n;i+=2){
+         mp2[nums[i]]++;
+         mx2=max(mx2,mp2[nums[i]]);
+       }
+      
+      
+      priority_queue<pair<int,int>>pq1,pq2;
+      
+      for(auto it:mp1)
+        pq1.push({it.second,it.first});
+      
+       
+      for(auto it:mp2)
+        pq2.push({it.second,it.first});
+      
+    if(pq1.top().second==pq2.top().second){
+      if(pq1.top().first<=pq2.top().first){
+        pq1.pop();
+        if(pq1.size()>0)
+          mx1=pq1.top().first;
+        else
+          mx1=0;
+      }
+      else{
+        pq2.pop();
+        if(pq2.size()>0)
+          mx2=pq2.top().first;
+        else
+          mx2=0;
+      }
+    }
+      
+      int ans=0;
+      
+      ans+=(n/2)-mx2;
+      
+      if(n%2==0)
+        ans+=(n/2)-mx1;
+      else
+        ans+=(n/2 +1)-mx1;
+      
+      return ans;
+    }
+};

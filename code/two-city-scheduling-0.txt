@@ -1,0 +1,28 @@
+struct pair {
+    int a;
+    int b;
+    int diff;
+};
+
+int cmp(const void* a, const void* b) {
+    const struct pair pa = *(const struct pair*) a;
+    const struct pair pb = *(const struct pair*) b;
+    return pa.diff - pb.diff;
+}
+
+int twoCitySchedCost(int** costs, int costsSize, int* costsColSize) {
+    struct pair* arr = (struct pair*) malloc(costsSize * sizeof(struct pair));
+    for(int i = 0; i < costsSize; i++) {
+        arr[i].a = costs[i][0];
+        arr[i].b = costs[i][1];
+        arr[i].diff = costs[i][0] - costs[i][1];
+    }
+    
+    qsort(arr, costsSize, sizeof(struct pair), cmp);
+    
+    int ans = 0, max = 0;
+    for(int i = 0; i < costsSize; i++) {
+        ans = (max++ < costsSize / 2) ? (ans + arr[i].a) : (ans + arr[i].b);
+    }
+    return ans;
+}

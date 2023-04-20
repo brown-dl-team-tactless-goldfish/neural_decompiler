@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int slidingPuzzle(vector<vector<int>>& board) {
+        vector<vector<int>> cand {{3,1},{0,2,4},{1,5},{0,4},{3,5,1},{4,2}};
+        string str;
+        string final = "123450";
+        for(auto r: board)
+            for(auto v: r)
+                str += to_string(v);
+        unordered_set<string> visited;
+        int res = -1;
+        queue<string> q;
+        q.push(str);
+        visited.insert(str);
+        while(!q.empty()) {
+            int qsize = q.size();
+            res++;
+            for(int i = 0; i < qsize; i++) {
+                auto curr = q.front();
+                q.pop();
+                if(curr == final) 
+                    return res;
+                for(int i = 0 ; i < curr.size(); i++) {
+                    if(curr[i] != '0') continue;
+                    for(auto idx : cand[i]) {
+                        string tmp = curr;
+                        swap(tmp[i], tmp[idx]);
+                        if(visited.count(tmp))
+                            continue;
+                        q.push(tmp);
+                        visited.insert(tmp);
+                    }
+                }
+            }
+        }
+       return -1;
+    }
+};

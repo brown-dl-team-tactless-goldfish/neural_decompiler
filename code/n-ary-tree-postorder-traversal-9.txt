@@ -1,0 +1,35 @@
+int TreeSize(struct Node* root)
+{
+    int size = 1;
+    if(root == NULL)
+    {
+        return 0;
+    }
+    if(root->numChildren == 0)
+    {
+        return 1;
+    }
+    for(int i = 0; i < root->numChildren; i++)
+    {
+        size += TreeSize(root->children[i]);
+    }
+    return size;    
+}
+
+void _postorder(struct Node* root, int* a, int* idx)
+{
+    if(root == NULL) return;
+    for(int i = 0; i < root->numChildren; i++)
+    {
+        _postorder(root->children[i], a, idx);
+    }
+    a[(*idx)++] = root->val;
+}
+
+int* postorder(struct Node* root, int* returnSize) {
+
+    int *a = (int*)malloc(sizeof(int)*TreeSize(root));
+    *returnSize = 0;
+    _postorder(root, a, returnSize);
+    return a;
+}

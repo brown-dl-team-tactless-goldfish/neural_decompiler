@@ -1,0 +1,36 @@
+ vector<int> countPairs(int n, vector<vector<int>>& edges, vector<int>& queries) {
+        map<pair<int,int>,int> mp;
+        int n2=edges.size();
+        vector<int> count(n+1,0),ans(2*n2+5,0),res;
+        map<int,int> freqDegree;
+        for(auto v: edges){
+            mp[{max(v[0],v[1]),min(v[0],v[1])}]++; //storing distinct edges
+            count[v[0]]++;   //finding degree 
+            count[v[1]]++;
+        }
+         for(int i=1;i<=n;i++)
+             freqDegree[count[i]]++;  //freq of degree
+       
+         for(auto it=freqDegree.begin();it!=freqDegree.end();it++){
+             auto it2=it;
+             ans[(*it).first+(*it2).first]+=(((*it).second-1)*(*it2).second)/2;
+             it2++;
+             for(;it2!=freqDegree.end();it2++){
+                 ans[(*it).first+(*it2).first]+=((*it).second)*(*it2).second;
+             }
+         }
+        for(auto i: mp){
+            ans[count[i.first.first]+count[i.first.second]]--;
+            ans[count[i.first.first]+count[i.first.second]-i.second]++;
+            
+        }
+       
+        for(int i=1;i<=2*n2;i++){
+            ans[i]+=ans[i-1];
+        }
+        int x=ans[2*n2];
+        for(int i: queries){
+            res.push_back(x-ans[i]);
+        }
+        return res;
+    }

@@ -1,0 +1,24 @@
+void AllAdd(struct TreeNode* root, int num){
+    if(!root) return;
+    root->val += num;
+    AllAdd(root->left, num);
+    AllAdd(root->right, num);
+    return;
+}
+int MinVal(struct TreeNode* root){
+    if(!root) return 0;
+    while(root->left) root = root->left;
+    return root->val;
+}
+struct TreeNode* convertBST(struct TreeNode* root) {
+    if(!root) return root;
+    if(root->right){
+        root->right = convertBST(root->right);
+        root->val += MinVal(root->right);
+    }
+    if(root->left){
+        root->left = convertBST(root->left);
+        AllAdd(root->left, root->val);
+    } 
+    return root;
+}

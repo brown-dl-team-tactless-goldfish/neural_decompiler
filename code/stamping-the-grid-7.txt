@@ -1,0 +1,55 @@
+class Solution {
+public:
+    bool possibleToStamp(vector<vector<int>>& grid, int h, int w) {
+       
+        int n = grid.size(), m = grid[0].size();
+
+        /***
+        - Stores the suffix sum of 2-D grid. 
+        - suff[i][j] = Sum of sub-matrix starting at (i,j) and ending at (n-1,m-1)
+        ***/
+        vector<vector<int>> suff(n+1, vector<int>(m+1));
+        for(int i = n-1; i >= 0; --i){
+            for(int j = m-1; j >= 0; --j){    
+                suff[i][j] = grid[i][j]
+                    + (j+1 < m ? suff[i][j+1] : 0 )
+                    + (i+1 < n ? suff[i+1][j] : 0 )
+                    - (j+1 < m && i+1 < n ? suff[i+1][j+1] : 0);
+                
+                //Check if we can put a stamp starting at this cell, that is, All h * w cells starting at (i,j) are empty.
+                if(grid[i][j] == 0 && n - i >= h && m - j >= w && (suff[i][j] - suff[i+h][j] - suff[i][j+w] + suff[i+h][j+w]) == 0)
+                    grid[i][j] = 2; //2 indicates start a stamp from here
+                
+                
+            
+            }
+        }
+        
+        int total = n*m - suff[0][0]; //total empty spots        
+        for(int i = 0; i < n; ++i){
+            for(int till = -1, j = 0, flow = 1; j < m; ++j){
+                
+                if(grid[i][j] == 2){
+                    //start a stamp here
+                    till = min(m-1, j + w - 1);
+                    flow = -h + 1 ;
+                    total--;
+                }
+                else if(till >= j) {
+                    flow = -h + 1;
+                    total--;                    
+                }
+                else if(grid[i][j] < 0){
+                    flow = grid[i][j]+1;
+                    total--;
+                }
+                
+                if(i+1 < n && grid[i+1][j] != 2 && grid[i+1][j] != 1 && flow < 1)
+                    grid[i+1][j] = flow;
+                
+            }
+        }
+        
+        return total == 0;
+    }
+};

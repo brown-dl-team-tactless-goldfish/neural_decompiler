@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int longestIdealString(string s, int k) {
+        // ending from this location; 
+        vector<int> dp (26, 0); 
+        int ans = 1; 
+        for (int i = 0; i < s.size(); i++){
+            // the last must be smaller than 2 values, 
+            // find adjacent k and get the longest distance; 
+            // left and right; 
+            char c = s[i]; 
+            int maxlen = 0; 
+            // whats the range of before; 
+            for (char c1 = max ((int)'a', c - k); c1 <= min ((int)'z', c + k); c1++){
+                // find the maximum values associated with it; 
+                maxlen = max (dp[c1 - 'a'], maxlen); 
+            }
+            // get the maxlen of it.// update it. 
+            dp[c - 'a'] = max (dp[c - 'a'], maxlen + 1);  
+            ans = max (ans, dp[c - 'a']); 
+        }
+        return ans; 
+        
+    }
+};

@@ -1,0 +1,62 @@
+int  **g_stone;
+short  g_row_head[10001] = {0};
+short  g_col_head[10001] = {0};
+short  g_row_next[1002] = {0};
+short  g_col_next[1002] = {0};
+
+void dfs (int i) {
+  int idx, row, col;
+
+  row = g_stone[i][0];
+  col = g_stone[i][1];
+
+  g_stone[i][0] = -1;
+
+  idx = g_row_head[row];
+  g_row_head[row] = 0;
+  while (idx) {
+    if (g_stone[idx-1][0] >= 0) {
+      dfs(idx-1);
+    }
+    idx = g_row_next[idx];
+  }
+
+  idx = g_col_head[col];
+  g_col_head[col] = 0;
+  while (idx) {
+    if (g_stone[idx-1][0] >= 0) {
+      dfs(idx-1);
+    }
+    idx = g_col_next[idx];
+  }
+}
+
+int removeStones (int** stones, int stonesSize, int* stonesColSize) {
+  int i, idx, row, col, group = 0;
+    
+    if (stonesSize < 2) {
+        return 0;
+    }
+    
+  g_stone = stones;
+
+  for (i = 0; i < stonesSize; i++) {
+    idx = i + 1;
+    row = stones[i][0];
+    col = stones[i][1];
+
+    g_row_next[idx] = g_row_head[row];
+    g_row_head[row] = idx;
+    g_col_next[idx] = g_col_head[col];
+    g_col_head[col] = idx;
+  }
+
+  for (i = 0; i < stonesSize; i++) {
+    if (g_stone[i][0] >= 0) {
+      group++;
+      dfs(i);
+    }
+  }
+
+  return stonesSize - group;
+}

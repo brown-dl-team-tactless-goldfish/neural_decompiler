@@ -1,0 +1,43 @@
+int** spiralMatrix(int m, int n, struct ListNode* head, int* returnSize, int** returnColumnSizes) {
+    *returnSize = m;
+    *returnColumnSizes = (int*) malloc(m * sizeof(int));
+    int** res = (int**) malloc(m * sizeof(int*));
+    for (int i = 0; i < m; i++) {
+        (*returnColumnSizes)[i] = n;
+        res[i] = (int*) malloc(n * sizeof(int));
+        memset(res[i], -1, n * sizeof(int));
+    }
+    struct ListNode* node = head;
+    int r = 0, c = 0, right = n, left = -1, up = 0, down = m;
+    while (node) {
+        while (c < right && node) {
+            res[r][c++] = node->val;
+            node = node->next;
+        }
+        r++;
+        c--;
+        right--;   
+        while (r < down && node) {
+            res[r++][c] = node->val;
+            node = node->next;
+        }
+        c--;
+        r--;
+        down--;
+        while (c > left && node) {
+            res[r][c--] = node->val;
+            node = node->next;
+        }
+        c++;
+        r--;
+        left++;
+        while (r > up && node) {
+            res[r--][c] = node->val;
+            node = node->next;
+        }
+        r++;
+        c++;
+        up++;
+    }
+    return res;
+}

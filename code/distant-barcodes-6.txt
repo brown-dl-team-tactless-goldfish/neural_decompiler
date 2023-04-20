@@ -1,0 +1,23 @@
+    struct comp{
+        bool operator()(const pair<int,int>& a,const pair<int,int>& b) 
+		{return a.second<b.second || (a.second==b.second && a.first<b.first);}
+    };
+    vector<int> rearrangeBarcodes(vector<int>& barcodes) {
+        unordered_map<int,int> mp;
+        for(int i: barcodes) mp[i]++;
+        priority_queue<pair<int,int>,vector<pair<int,int>>,comp> pq(mp.begin(),mp.end());
+        vector<int> ans;
+        while(pq.size())
+        {
+            auto t=pq.top();pq.pop();
+            ans.push_back(t.first); t.second--;
+            if(pq.size())
+            {
+                auto t1=pq.top();pq.pop();
+                ans.push_back(t1.first);t1.second--;
+                if(t1.second) pq.push(t1);
+            }
+            if(t.second) pq.push(t);
+        }
+        return ans;
+    }

@@ -1,0 +1,58 @@
+class Solution {
+private:
+    vector<int> dirs{0, 1, 0, -1, 0};
+    int m {0};
+    int n {0};
+public:
+    void dfs(vector<vector<int>>& grid, int row, int col, bool &checker, int &res)
+    {
+        grid[row][col] = 0;
+        
+        for(int i = 0; i < 4; i++)
+        {
+            int nextRow = row;
+            int nextCol = col;
+            
+            while(nextRow >= 0 and nextRow < m and nextCol >= 0 and nextCol < n )
+            {
+                if(grid[nextRow][nextCol] == 1)
+                {
+                    res++;
+                    checker = true;
+                    dfs(grid, nextRow, nextCol, checker, res);
+                }
+                
+                nextRow += dirs[i];
+                nextCol += dirs[i+1];
+            }
+        }
+    }
+    
+    int countServers(vector<vector<int>>& grid) {
+        m = grid.size();
+        n = grid[0].size();
+        
+        int res{0};
+        
+        for(int i = 0; i < m; i++)
+        {
+            for(int j = 0; j < n; j++)
+            {
+                if(grid[i][j] == 1)
+                {
+                    bool checker {false};
+                    int tempRes{1};
+                    
+                    dfs(grid, i, j, checker, tempRes);
+                    
+                    if(checker)
+                    {
+                        res += tempRes;
+                    }
+                }
+            }
+        }
+        
+        return res;
+    }
+};

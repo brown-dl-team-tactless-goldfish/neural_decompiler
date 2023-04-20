@@ -1,0 +1,53 @@
+int getLengthOfOptimalCompression(string s, int k) {
+
+	vector<vector<int>> cnt(k + 1, vector<int>(s.length(), 0));
+
+	vector<int> idx(26, 0);
+	vector<int> seq(s.length(), 0);
+
+	vector<vector<int>> dir(26);
+
+	for (int i = 0; i < s.length(); ++i) {
+		seq[i] = idx[s[i] - 'a']++;
+		dir[s[i] - 'a'].push_back(i);
+	}
+
+	int num = 0;
+	char c = 0;
+
+	for (int i = 0; i < s.length(); ++i) {
+		if (s[i] != c) {
+			c = s[i];
+			num = 1;
+		} else {
+			++num;
+		}
+
+		if (i == 0) cnt[0][i] = 1;
+		else if (num <= 2 || num == 10 || num == 100) cnt[0][i] = cnt[0][i - 1] + 1;
+		else cnt[0][i] = cnt[0][i - 1];
+	}
+
+	for (int i = 1; i <= k; ++i) {
+		for (int j = i; j < s.length(); ++j) {
+			int val = cnt[i - 1][j - 1];
+			for (int t = seq[j]; t >= 0; --t) {
+				int need_delete = dir[s[j] - 'a'][seq[j]] - dir[s[j] - 'a'][t] - (seq[j] - t);
+
+				num = seq[j] - t + 1;
+				if (num >= 100) num = 4;
+				else if (num >= 10) num = 3;
+				else if (num >= 2) num = 2;
+				else num = 1;
+
+				if (need_delete <= i) {
+					if (dir[s[j] - 'a'][t] == 0) val = min(val, num);
+					else val = min(val, num + cnt[i - need_delete][dir[s[j] - 'a'][t] - 1]);
+				}
+			}
+			cnt[i][j] = val;
+		}
+	}
+
+	return cnt.back().back();
+}

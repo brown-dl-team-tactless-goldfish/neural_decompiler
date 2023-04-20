@@ -1,0 +1,35 @@
+class Solution {
+    void dfs(const vector<vector<int>> &con, int x, vector<bool> &mark) {
+        if (mark[x]) {
+            return;
+        }
+        mark[x] = true;
+        for (int y : con[x]) {
+            dfs(con, y, mark);
+        }
+    }
+    
+public:
+    int makeConnected(int n, vector<vector<int>>& connections) {
+        // e - n + c (c - 1)
+        const int m = connections.size();
+        int r = m - n;
+        if (r < -1) {
+            return -1;
+        }
+        vector<vector<int>> con(n);
+        for (const auto & e : connections) {
+            con[e[0]].push_back(e[1]);
+            con[e[1]].push_back(e[0]);
+        }
+        vector<bool> mark(n);
+        int c = -1;
+        for (int i = 0; i < n; ++i) {
+            if (!mark[i]) {
+                dfs(con, i, mark);
+                ++c;
+            }
+        }
+        return c; 
+    }
+};

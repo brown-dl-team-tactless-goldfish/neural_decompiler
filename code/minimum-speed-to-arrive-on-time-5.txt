@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int minSpeedOnTime(vector<int>& dist, double hour) {
+        int left = 1, right = 10000000, mid, answer = INT_MAX;
+        double timeTaken;
+        while (left <= right) {
+            mid = (left + right) / 2;
+            timeTaken = found(mid, dist);
+            if (timeTaken <= hour) {
+                answer = min(mid, answer);
+                right = mid - 1;
+            }
+            else {
+                left = mid + 1;
+            }
+        }
+        return answer == INT_MAX ? -1 : answer;
+    }
+    
+    // Return the total time if V was speed
+    double found(int speed, vector<int> &dist) {
+        double timeTaken = 0.0;
+        for (int i = 0; i < dist.size(); i++) {
+            timeTaken += (1.0 * dist[i]) / speed;
+            if (i == dist.size() - 1) {
+                break;
+            }
+            timeTaken = (floor(timeTaken) == timeTaken) ? timeTaken : round(timeTaken + 0.5);
+        }
+        return timeTaken;
+    }
+};

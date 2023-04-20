@@ -1,0 +1,38 @@
+class Solution {
+public:
+    
+    bool check(vector<int> &price, int mid, int k)
+    {
+        int basket_cnt = 1; 
+        int last = price[0];  
+        for(int i = 1 ; i < int(price.size()); ++i){
+            int diff = price[i] - last; 
+            if(diff >= mid){
+                basket_cnt+=1; 
+                last = price[i]; 
+            }
+        }
+        if(basket_cnt >= k ) return true; 
+        return false; 
+    }
+    
+    int maximumTastiness(vector<int>& price, int k) {
+        sort(price.begin(), price.end()); 
+        int n = int(price.size()); 
+        int low = 0; 
+        int ans = 0; 
+        int high = price[n-1] - price[0]; 
+        while(low <= high){
+            int mid = (low + high) / 2; 
+            bool can = check(price, mid , k); 
+            if(can){
+                low = mid + 1 ;
+                ans = mid;  
+            }
+            else{
+                high = mid - 1; 
+            }
+        }
+        return ans; 
+    }
+};

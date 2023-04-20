@@ -1,0 +1,79 @@
+class Solution {
+public:
+    vector<vector<int>> rotateGrid(vector<vector<int>>& grid, int k) 
+    {
+        vector<vector<int>> layers;
+        int n = grid.size(), m = grid[0].size();
+        
+        int left = 0, top = 0, right = m - 1, down = n - 1;
+        
+        while(left < right and top < down)
+        {
+            vector<int> layer;
+            
+            for(int i = left ; i <= right ; i++)
+                layer.push_back(grid[top][i]);
+            top++;
+            for(int i = top ; i <= down ; i++)
+                layer.push_back(grid[i][right]);
+            right--;
+            for(int i = right ; i >= left ; i--)
+                layer.push_back(grid[down][i]);
+            down--;
+            for(int i = down ; i >= top ; i--)
+                layer.push_back(grid[i][left]);
+            left++;
+            
+            rotate****(layer, k);
+            layers.push_back(layer);
+        }
+        left = 0, right = m - 1, top = 0, down = n - 1;
+        int c = 0;
+        
+        while(left < right and top < down)
+        {
+            int j = 0;
+            
+            for(int i = left ; i <= right ; i++)
+                grid[top][i] = layers[c][j++];
+            top++;
+            for(int i = top ; i <= down ; i++)
+                grid[i][right] = layers[c][j++];
+            right--;
+            for(int i = right ; i >= left ; i--)
+                grid[down][i] = layers[c][j++];
+            down--;
+            for(int i = down ; i >= top ; i--)
+                grid[i][left] = layers[c][j++];
+            left++;
+            c++;
+        }
+        
+        return grid;
+    }
+private:
+    void rotate(vector<int> &layer, int k)
+    {
+        int n = layer.size(), g;
+        k %= n;
+        
+        g = __gcd(n, k);
+        
+        for(int i = 0 ; i < g ; i++)
+        {
+            int temp = layer[i];
+            int j = i;
+            
+            while(true)
+            {
+                int p = (j + k) % n;
+                
+                if(p == i)
+                    break;
+                layer[j] = layer[p];
+                j = p;
+            }
+            layer[j] = temp;
+        }
+    }
+};

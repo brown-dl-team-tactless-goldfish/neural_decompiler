@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int minimizedMaximum(int n, vector<int>& quantities) {
+        int l=1, r = *max_element(quantities.begin(), quantities.end());
+        while(l<r){
+            int mid = l + (r-l)/2;
+            if(helper(n,quantities,mid)){
+                l=mid+1;
+            }else{
+                r=mid;
+            }
+        }
+        return l;
+    }
+    
+    bool helper(int n, vector<int>& quantities, int mid){
+        int cnt=0;
+        for(auto &e : quantities){
+            cnt += e/mid;
+            if(e%mid) cnt++;
+        }
+        return cnt > n;
+    }
+};

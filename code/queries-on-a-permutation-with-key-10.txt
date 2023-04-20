@@ -1,0 +1,19 @@
+// Just simulate the process
+// Runtime: 4 ms, faster than 98.78% of C++ online submissions for Queries on a Permutation With Key.
+// Memory Usage: 8.3 MB, less than 54.89% of C++ online submissions for Queries on a Permutation With Key.
+vector<int> processQueries(vector<int>& queries, int m) {
+	vector<int> res {};
+	vector<int> perm(m, 0);
+	int v = 0;
+	for_each(perm.begin(), perm.end(), [&](int& val) { ++v; val = v; }); // fill in with 1..m
+
+	for (int i = 0; i < queries.size(); i++) {
+		auto curIt = find(perm.begin(), perm.end(), queries[i]); // find the val iterator
+		res.push_back(distance(perm.begin(), curIt)); // push dist to this it in the result
+
+		int val = move(*curIt);
+		perm.erase(curIt); // remove found value from the current pos
+		perm.insert(perm.begin(), val); // place found value in front of permutation
+	}
+	return res;
+}

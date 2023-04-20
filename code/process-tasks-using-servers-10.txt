@@ -1,0 +1,68 @@
+class Solution 
+{
+	public:
+		vector<int> assignTasks(vector<int> const &servers, vector<int> const &tasks) 
+		{
+			int n = tasks.size();
+
+			// priority queue for available servers; store: {server weight, server index}
+			// user greater<> template, as we want to store smallest server weight on top, as well as smallest server index
+			priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > availServerQueue;
+			for (size_t serverIdx = 0; serverIdx < servers.size(); ++serverIdx)
+				availServerQueue.push({servers[serverIdx], serverIdx});
+
+			// priority queue for busy servers; store: {end time, server index}
+			priority_queue<pair<int, int>, vector<pair<int, int> >, greater<pair<int, int> > > busyServerQueue;
+
+			// queue for storing tasks
+			queue<int> tasksQueue;
+
+			vector<int> output(n);
+
+			int time = 0;
+			while (true)
+			{
+				// for 0 <= time < n, each second a task is added
+				if (time < n)
+				{
+					int taskIdx = time;
+					tasksQueue.push(taskIdx);
+				}
+
+				// if busy server has finished at current time -> put them in available server queue
+				while (!busyServerQueue.empty() && busyServerQueue.top().first == time)
+				{
+					int serverIdx = busyServerQueue.top().second;
+					availServerQueue.push({servers[serverIdx], serverIdx});
+					busyServerQueue.pop();
+				}
+
+				// assign tasks to available servers
+				while (!tasksQueue.empty() && !availServerQueue.empty())
+				{
+					int taskIdx = tasksQueue.front();
+					tasksQueue.pop();
+					int serverIdx = availServerQueue.top().second;
+					availServerQueue.pop();
+
+					busyServerQueue.push({time + tasks[taskIdx], serverIdx});
+					output[taskIdx] = serverIdx;
+				}
+
+				// if time smaller than n, we increment by 1, as every second a task is inserted
+				// otherwise, we go forward in time when next busy server becomes available
+				// if no more busy servers, while time is at least n, we are done
+				if (time < n)
+					++time;
+				else
+				{
+					if (tasksQueue.empty())
+						break;
+
+					time = busyServerQueue.top().first;
+				}
+			}
+
+			return output;
+		}
+};

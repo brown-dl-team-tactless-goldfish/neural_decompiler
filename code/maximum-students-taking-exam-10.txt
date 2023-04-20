@@ -1,0 +1,77 @@
+class Solution {
+public:
+    
+    bool canTake(const vector<vector<char>>& seats, int row, int col) {
+        
+        const int rows = seats.size();
+        const int cols = seats[0].size();
+        
+        if (seats[row][col] == '#') {
+            return false;
+        }
+        
+        // Check only left seat
+        if (row == 0) {
+            return col == 0 ? true : seats[row][col - 1] != 'S';
+        }
+        
+        // Check only top right
+        if (col == 0) {
+            return (col + 1 == cols) ? true : seats[row - 1][col + 1] != 'S';
+        }
+        
+        // Check all: left, topLeft and topRight
+        bool leftOK = seats[row][col - 1] != 'S';
+        bool topLeftOK = seats[row - 1][col - 1] != 'S';
+        bool topRightOK = (col + 1 == cols) ? true : seats[row - 1][col + 1] != 'S';
+        
+        return leftOK && topLeftOK && topRightOK;
+    }
+    
+    int dfs(vector<vector<char>>& seats, int r, int c, int state) {
+        
+        if (r >= seats.size()) {
+            return 0;
+        }
+        
+        int loc = r * seats[0].size() + c;
+        if (dp[loc][state] != -1) {
+            return dp[loc][state];
+        }
+        
+        int next_col = (c + 1) < seats[0].size() ? (c + 1) : 0;
+        int next_row = next_col ? r : r + 1;
+
+        // Take branch
+        int taken = 0;
+        if (canTake(seats, r, c)) {
+            seats[r][c] = 'S';
+            // Set the bit
+            state |= (1 << c);
+            taken = 1 + dfs(seats, next_row, next_col, state);
+            // Clear the bit
+            state &= ~(1 << c);
+            seats[r][c] = '.';
+        }
+
+        int not_taken = dfs(seats, next_row, next_col, state);
+        
+        dp[loc][state] = max(taken, not_taken);
+        
+        return dp[loc][state];
+    }
+    
+    int maxStudents(vector<vector<char>>& seats) {
+     
+        if (seats.empty()) {
+            return 0;
+        }
+        
+        dp = move(vector<vector<int>>(seats.size() * seats[0].size(), vector<int>(1 << seats[0].size(), -1)));
+        
+        return dfs(seats, 0, 0, 0);
+    }
+    
+    vector<vector<int>> dp;
+    
+};

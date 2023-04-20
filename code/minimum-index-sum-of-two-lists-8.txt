@@ -1,0 +1,75 @@
+typedef struct dictionary{
+    int idx1;
+    int idx2;
+    struct dictionary *next;
+}dictionary;
+
+
+void create(int in1,int in2, dictionary **head){
+    
+     if((*head)==NULL){
+        dictionary *temp=(dictionary *)malloc(sizeof(dictionary));
+        temp->idx1=in1;
+        temp->idx2=in2;
+        temp->next=NULL;
+        (*head)=temp;
+    }
+    else{
+        dictionary *temp=(dictionary *)malloc(sizeof(dictionary));
+        temp->idx1=in1;
+        temp->idx2=in2;
+        temp->next=NULL;
+        dictionary *temp1=(*head);
+        for(temp1=(*head);temp1->next!=NULL;temp1=temp1->next);
+        temp1->next=temp;
+    }
+}
+
+char ** findRestaurant(char ** list1, int list1Size, char ** list2, int list2Size, int* returnSize){
+
+    if(list1Size==0 || list2Size==0){
+        return NULL;
+    }
+    
+    dictionary *head=NULL;
+    int i,j; 
+   
+    //add all common restaurants indexes to the linked list aka dict
+    for(i=0;i<list1Size;i++){
+        for(j=0;j<list2Size;j++){
+            if(strcmp(list1[i],list2[j])==0){ 
+                create(i,j,&head);
+                break;
+            }
+        }
+    }
+    
+
+    //finding the minimun index sum 
+    dictionary *min=head;
+    dictionary *temp=head;
+    for(temp=head->next;temp!=NULL;temp=temp->next){
+        if((temp->idx1+temp->idx2) < (min->idx1+min->idx2)) min=temp;
+    }
+    
+    //finding how many minimum index sum are in the list
+    int count=0;
+    for(temp=head;temp!=NULL;temp=temp->next){
+        if((temp->idx1+temp->idx2) == (min->idx1+min->idx2)) count++;
+    }
+   
+    //creating a list that has to be returned
+    char **ret=(char **)malloc(sizeof(char *)*count);
+    int idx=-1;
+    
+    //adding resto to the returning list
+    for(temp=head;temp!=NULL;temp=temp->next){
+        if((temp->idx1+temp->idx2) == (min->idx1+min->idx2)){
+            ret[++idx]=(char *)malloc(sizeof(char)*strlen(list1[temp->idx1]));
+            ret[idx]=list1[temp->idx1];
+        }
+    }
+    
+    *returnSize=count;
+    return ret;
+}

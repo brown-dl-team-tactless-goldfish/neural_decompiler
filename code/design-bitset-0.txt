@@ -1,0 +1,91 @@
+
+
+
+typedef struct {
+    bool *data ;
+    int size;
+    int one;
+    int flip;
+} Bitset;
+
+
+Bitset* bitsetCreate(int size) {
+    Bitset* ret = malloc(sizeof(Bitset));
+    ret->data = calloc(size , sizeof(bool)) ;
+    ret->size = size;
+    ret->one = 0;
+    ret->flip = 0;
+    return ret;
+}
+
+void bitsetFix(Bitset* obj, int idx) {
+      if((obj->data[idx] + obj->flip) % 2 == 0){
+        obj->data[idx] = !obj->data[idx] ;
+        obj->one = obj->one  + 1 ;
+      }
+}
+
+void bitsetUnfix(Bitset* obj, int idx) {
+      if((obj->data[idx] + obj->flip) % 2 == 1){
+        obj->data[idx] = !obj->data[idx] ;
+        obj->one = obj->one  - 1 ;
+      }
+}
+
+void bitsetFlip(Bitset* obj) { 
+    obj->flip = obj->flip + 1;
+    obj->one = obj->size - obj->one;
+}
+
+bool bitsetAll(Bitset* obj) {
+    if(obj->size != obj->one)
+        return false;
+    return true;
+}
+
+bool bitsetOne(Bitset* obj) {
+    if(obj->one > 0)
+        return true;
+    return false;
+}
+
+int bitsetCount(Bitset* obj) {
+    return obj->one;
+}
+
+char * bitsetToString(Bitset* obj) {
+    char* ans = malloc((obj->size + 1) * sizeof(char));
+    ans[obj->size] = '\0';
+    for(int i = 0; i < obj->size; i++){
+        if((obj->data[i] + obj->flip) % 2 == 0)
+            ans[i] = '0';
+        else
+            ans[i] = '1';
+    }
+    return ans;
+}
+
+void bitsetFree(Bitset* obj) {
+    free(obj->data);
+    free(obj);
+}
+
+/**
+ * Your Bitset struct will be instantiated and called as such:
+ * Bitset* obj = bitsetCreate(size);
+ * bitsetFix(obj, idx);
+ 
+ * bitsetUnfix(obj, idx);
+ 
+ * bitsetFlip(obj);
+ 
+ * bool param_4 = bitsetAll(obj);
+ 
+ * bool param_5 = bitsetOne(obj);
+ 
+ * int param_6 = bitsetCount(obj);
+ 
+ * char * param_7 = bitsetToString(obj);
+ 
+ * bitsetFree(obj);
+*/

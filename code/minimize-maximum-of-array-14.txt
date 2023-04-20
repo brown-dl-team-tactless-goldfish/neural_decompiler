@@ -1,0 +1,35 @@
+class Solution {
+    bool possible(long  mid, vector<int>& nums, int mod) {
+        if (nums[0] > mid) return false;
+        
+        int n = nums.size();
+        long canUse = (mid - nums[0]);
+        for (int i = 1; i < n; i++) {
+            int val = (nums[i] - canUse) % (mod + 1);
+            if (val < 0) val = 0;
+            if (val > mid) return false;
+            canUse = canUse + (mid - nums[i]);
+        }
+        return true;
+    }
+public:
+    int minimizeArrayValue(vector<int>& nums) {
+        int maxNum = nums[0];
+        for (int i = 1; i < nums.size(); i++) {
+            if (maxNum < nums[i]) maxNum = nums[i];
+        }
+        
+        int l = 0, r = maxNum;
+        while (l < r) {
+
+            int mid = l + (r - l) / 2;
+            if (possible(mid, nums, maxNum)) {
+                r = mid;
+            } else {
+                l = mid + 1;
+            }
+        }
+        
+        return l;
+    }
+};

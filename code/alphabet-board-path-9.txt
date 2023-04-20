@@ -1,0 +1,47 @@
+class Solution {
+public:
+    string alphabetBoardPath(string target) {
+        
+        vector<string>board = {"abcde", "fghij", "klmno", "pqrst", "uvwxy", "z"};
+        unordered_map<char, pair<int, int>>hm;
+        for (int i = 0; i < board.size(); i++) {
+            for (int j = 0; j < board[i].size(); j++) {
+                hm[board[i][j]] = make_pair(i, j);
+            }
+        }
+        
+        string res;
+        int r = 0, c = 0;
+        for (int i = 0; i < target.size(); i++) {
+            if (i > 0 && target[i] == target[i-1]) {
+                res += '!'; continue;
+            }
+            
+            char letter = target[i];
+            if (target[i] == 'z') letter = 'u';
+            int r1 = hm[letter].first;
+            int c1 = hm[letter].second;
+            
+            int row = r1-r;
+            if (row > 0) {
+                while (row--) res += 'D';
+            } else {
+                row = -row; while (row --) res += 'U';
+            }
+            
+            int col = c1-c;
+            if (col > 0) {
+                while (col--) res += 'R';
+            } else {
+                col = -col; while (col--) res += 'L';
+            }
+            
+            if (target[i] == 'z') res += 'D';
+            res += '!';
+            r = target[i] == 'z' ? hm[target[i]].first : r1;
+            c = target[i] == 'z' ? hm[target[i]].second : c1;
+        }
+        
+        return res;
+    }
+};

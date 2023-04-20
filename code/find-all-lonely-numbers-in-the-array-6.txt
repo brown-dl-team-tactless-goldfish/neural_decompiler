@@ -1,0 +1,42 @@
+class Solution {
+public:
+    vector<int> findLonely(vector<int>& nums) {
+
+        // track the numbers already appeared
+        bitset<1000004>track(0);
+        
+        // track the numbers which are in the lonely set
+        bitset<1000004>lonelyTrack(0);
+        
+        // store current lonely numbers
+        set<int>lonely;
+        
+        // loop through numbers of nums array
+        // inorder to avoid -1 for 0, numbers are increased by 1 value right => num+1
+        for(auto &num : nums)
+        {
+            // check if num-1, num and num+1 exists in the track,
+            // if then remove it from lonely list
+            if(track[num+1] || track[num] || track[num+2])
+            {
+                if(track[num] && lonelyTrack[num])lonely.erase(num),lonelyTrack[num]=0;
+                if(track[num+1] && lonelyTrack[num+1])lonely.erase(num+1),lonelyTrack[num+1]=0;
+                if(track[num+2] && lonelyTrack[num+2])lonely.erase(num+2),lonelyTrack[num+2]=0;            
+            }
+            else
+            {   
+                // otherwise add number to the lonely list
+                lonely.insert(num+1);
+                lonelyTrack[num+1]=1;
+            }
+            
+            track[num+1] = 1;
+        }
+        
+        // loop through lonely list and add to result vector
+        vector<int>res;
+        for(auto &num : lonely)res.push_back(num-1);
+        
+        return res;
+    }
+};

@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int digArtifacts(int n, vector<vector<int>>& artifacts, vector<vector<int>>& dig) {
+        
+        // create n * n grid
+        vector<vector<bool>>grid(n,vector<bool>(n,false));
+        
+        // mark the dig positions
+        for(int i=0;i<dig.size();i++)
+            grid[dig[i][0]][dig[i][1]] = true;    
+        
+        int count  = 0;
+        int r1,r2,c1,c2;
+        bool uncovered = false;
+        
+        // check if each artifacts can be uncovered fully
+        // if then increment count
+        for(auto &art : artifacts)
+        {
+            r1 = art[0];
+            c1 = art[1];
+            r2 = art[2];
+            c2 = art[3];
+            uncovered = true;
+            
+            for(int i=r1;i<=r2;i++)
+            {
+                for(int j=c1;j<=c2;j++)
+                {
+                    if(!grid[i][j])
+                    {
+                        uncovered = false;
+                        break;
+                    }
+                }
+            }
+            
+            if(uncovered)count++;
+        }
+        
+        return count;
+    }
+};

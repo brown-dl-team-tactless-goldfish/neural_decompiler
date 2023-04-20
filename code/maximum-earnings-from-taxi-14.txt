@@ -1,0 +1,57 @@
+class Solution {
+public:
+unordered_map<long long,vector<pair<long long,long long>>>mp;
+vector<long long>dp;
+long long maxTaxiEarnings(int n, vector<vector<int>>& arr) 
+{
+	 long long currpos=1;
+	 dp.resize(n+1,-1);
+	 for(int i=0;i<arr.size();i++)
+	 {
+	 	vector<int>temp=arr[i];
+	 	long long int start=temp[0];
+	 	long long int end=temp[1];
+	 	long long int tip=temp[2];
+	 	
+	 	mp[start].push_back(make_pair(end,tip));
+     }   
+     return fun(currpos,n);
+}
+long long fun(long long currpos,int &n)
+{
+	//base case
+	if(currpos==n)
+	{
+		return 0;
+	}
+	if(dp[currpos]!=-1)
+	{
+		return dp[currpos];
+	}
+	if(mp[currpos].size()>0)   //we have passengers on this point
+	{
+		long long choise1=INT_MIN;
+		for(int i=0;i<mp[currpos].size();i++)
+		{
+			//basically we dont have option for the passengers need to carry all of them atleast one time
+			//take choise we will consider here
+		    auto p = mp[currpos][i];
+		    
+		    long long start=currpos;
+		    long long end=p.first;
+		    long long tip=p.second;
+		    
+            long long temp = (end-start+tip) + fun(end,n) + 0LL;
+            
+            choise1=max(choise1,temp);
+		}
+	    long long choise2 =  0 + fun(currpos+1,n);
+	    return dp[currpos]=  max(choise1,choise2);
+	}
+	else if(mp[currpos].size()==0)  //we dont have passengers on the currpos 
+	{
+	   	return dp[currpos] =  0 + fun(currpos+1,n);
+	}
+	return 0;    //this will never get encounterd
+}
+};

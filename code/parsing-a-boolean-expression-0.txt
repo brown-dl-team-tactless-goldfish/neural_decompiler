@@ -1,0 +1,107 @@
+#define TRUE    't'
+#define FALSE   'f'
+
+#define NOT     '!'
+#define AND     '&'
+#define OR      '|'
+
+#define OPEN    '('
+#define CLOSE   ')'
+#define SEP     ','
+
+
+bool isOperator(char c) {
+    return c == NOT || c == AND || c == OR;
+}
+
+bool isBool(char c) {
+    return c == TRUE || c == FALSE;
+}
+
+bool parseBool(char c) {
+    switch(c) {
+        case TRUE:
+            return true;
+        
+        case FALSE:
+            return false;
+    }
+    
+    return false;
+}
+
+char *findClose(char *s) {
+    int depth = 0;
+    
+    while(*s) {
+        if (*s == OPEN) {
+            depth++;
+        }
+        
+        if (*s == CLOSE) {
+            depth--;
+            
+            if (depth == 0) {
+                return s;
+            }
+        }
+        
+        s++;
+    }
+    
+    return NULL;
+}
+
+bool parseSub(char *exp, char *end, char operator) {
+    bool result = (operator == AND);
+    
+    if (isBool(operator)) {
+        return parseBool(operator);
+    }
+    
+    while(exp < end) {
+        bool subValue = false;
+
+        if (*exp == SEP) {
+            exp++;
+            continue;
+        }
+        
+        if (isOperator(*exp)) {
+            char subOperator = *exp;
+            char *close = findClose(exp);
+            // Skip op and (
+            exp += 2;
+            subValue = parseSub(exp, close, subOperator);
+            exp = close + 1;
+        }
+        else if (isBool(*exp)) {
+            subValue = parseBool(*exp);
+            exp++;
+        }
+
+        switch(operator) {
+        case AND:
+            result &= subValue;
+            break;
+
+        case OR:
+            result |= subValue;
+            break;
+        
+        case NOT:
+            result = !subValue;
+            break;
+                
+        default:
+            result = subValue;
+            break;
+        }
+    }
+    
+    return result;
+}
+
+bool parseBoolExpr(char *expression) {
+    return parseSub(expression, expression + strlen(expression), 0);
+}

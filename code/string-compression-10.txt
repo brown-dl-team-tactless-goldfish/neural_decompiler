@@ -1,0 +1,47 @@
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
+
+int compress(char* chars, int charsSize){
+
+    
+    int temp;
+    char buff[10];
+    int index=0,newIndex,count;
+    char ch;
+    char prev;
+    int last=0;
+    prev= chars[0] ;//first character
+    count=0; //character count
+    newIndex=0;//index for compressed result
+    
+    for(index=0;index<(charsSize+1);index++){//the loop is just one character longer checking the last character
+
+        
+        if (index<charsSize) ch=chars[index];
+        else ch=prev-1;//make a artificual change event for the algorithm
+
+        //printf("%c %d  %d \n ",ch,index,newIndex);
+        if(prev!=ch ){
+            chars[newIndex++]=prev;
+            if (count!=1){
+                 
+                    temp=sprintf(&buff[0],"%d",count);
+                    memcpy(&chars[newIndex],buff,temp);
+                    newIndex+=temp;
+            }
+            count=1;
+            
+            
+        }else{
+            
+            count+=1;
+             
+        }
+        prev=ch;
+    }
+    //printf("%d \n",newIndex);
+   
+    return newIndex;
+    
+}

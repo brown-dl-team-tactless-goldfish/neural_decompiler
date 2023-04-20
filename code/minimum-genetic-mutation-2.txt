@@ -1,0 +1,122 @@
+bool isGean(char * a, char *b)  //무조건 하나는 틀려야 함. 
+{
+    int i = 0;
+    int cnt = 0;
+    while(a[i]!='\0')
+    {
+        if(a[i]!=b[i]) cnt++;
+        i++;
+    }
+    if(cnt == 1)
+        return true;
+    else
+        return false;
+}
+//queue
+typedef struct myQueue{
+    int start;
+    int cnt;
+}myQueue;
+
+#define MAX_QUEUE 10000
+myQueue * myqueue = NULL;
+int front = 0;
+int tail = 0;
+void createQueue(void)
+{
+    myqueue = calloc(MAX_QUEUE, sizeof(myQueue));
+    front = 0;
+    tail =0;
+}
+
+void enqueue(int start, int cnt)
+{
+    if(front == MAX_QUEUE)
+    {
+        printf("queue full");
+        return;
+    }
+    
+    myqueue[front].start = start;
+    myqueue[front].cnt = cnt;
+    front++;
+}
+
+myQueue dequeue(void)
+{
+    myQueue tmp;
+    tmp.start = -1;
+    tmp.cnt = -1;
+    if(front == tail)
+    {
+        printf("queue is empty");
+        return tmp;
+    }
+    tmp = myqueue[tail];
+    tail++;
+    return tmp;
+}
+ //1 start  -> end 되냐? 
+    //안되면 start -> bank -> end 되냐?   // visited있어야 함. 역으로는 못가게 해야하고.. 
+    // 안되면 bank -> bnak -> end 되냐?
+int minMutation(char* start, char* end, char** bank, int bankSize) {
+    
+    if(bankSize == 0) return -1;
+    createQueue();
+    int *visited = calloc(bankSize, sizeof(int));
+    int cnt = 0;
+    int bank_end =0;
+    int end_check = 0;
+    for(int i =0; i < bankSize; i++)
+    {
+        if(!strcmp(end, bank[i]))
+        {
+            bank_end = i;
+            end_check = 1;
+           // if(bank_end == 0) return 1;
+            break;
+        }
+    }
+    if(end_check == 0) return -1;
+    
+    if(isGean(start, end)) return 1;
+    
+    // find gean in bank
+    int bank_start = 0;
+
+    for(int i =0; i < bankSize; i++)
+    {
+        if(isGean(start, bank[i]))
+        {
+            bank_start = i;
+            cnt = 1;
+            visited[i]=1;
+            enqueue(bank_start, cnt);
+            if(bank_start == bank_end) return cnt;
+
+        }
+    }
+     printf("%d %d\n", bank_start, bank_end);
+ 
+    while(1)
+    {
+        myQueue tmp = dequeue();
+        if(tmp.start == bank_end) return tmp.cnt; 
+        
+        for(int i =0; i < bankSize; i++)
+        {
+           //  printf("%d %d\n", tmp.start, i);
+            if(visited[i]!=1 &&isGean(bank[tmp.start], bank[i]))
+            {
+                printf("-----%d %d %d\n",tmp.start, i, tmp.cnt+1);
+                enqueue(i, tmp.cnt+1);
+                visited[i]=1;       
+            }
+        }
+        
+        if(front == tail)
+            break;
+    }
+    return -1;
+   
+}

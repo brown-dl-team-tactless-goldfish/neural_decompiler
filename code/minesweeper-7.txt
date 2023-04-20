@@ -1,0 +1,62 @@
+bool is_valid(int x, int y,vector<vector<char>>&board)
+{
+    return (x >= 0  && x <board.size() && y>= 0 && y < board[0].size());
+}
+
+void helper(vector<vector<char>>&board, int x, int y)
+{
+   
+    int c;
+    
+    if(!is_valid(x,y,board))
+    {
+        return;
+    }
+    
+    if(board[x][y] == 'E')
+    {
+       c = 0;
+        
+        for(vector<int> v : dir)
+        {
+            int xx = x + v[0];
+            int yy = y + v[1];
+            
+            if(is_valid(xx,yy,board) && board[xx][yy] == 'M')
+            {
+                c++;
+            }
+        }
+        
+        if(c > 0)
+        {
+            board[x][y] = c + '0';
+        }
+        else
+        {
+            board[x][y] = 'B';
+            
+            for(vector<int>vec: dir)
+            {
+                int xx = x+vec[0];
+                int yy = y+vec[1];
+                
+                helper(board,xx,yy);
+            }
+            
+        }
+    }
+}
+
+vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {
+    if(board[click[0]][click[1]] == 'M')
+    {
+        board[click[0]][click[1]] = 'X';
+        
+        return board;
+    }
+    
+    helper(board,click[0], click[1]);
+    
+    return board;
+}

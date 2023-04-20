@@ -1,0 +1,96 @@
+#define HEAP_MAX    10001
+
+struct ath {
+    int score;
+    int idx;
+};
+struct pq {
+    struct ath heap[HEAP_MAX];
+    int heap_size;
+};
+struct pq *q;
+
+void swap(struct ath arr[], int a, int b)
+{
+    struct ath temp = arr[a];
+    arr[a] = arr[b];
+    arr[b] = temp;
+}
+
+void heapify_up(struct ath arr[], int curr_idx)
+{
+    int p_idx = (curr_idx - 1) / 2;
+    
+    if (curr_idx < 1)
+        return;
+    if (arr[curr_idx].score > arr[p_idx].score) {
+        swap(arr, curr_idx, p_idx);
+        heapify_up(arr, p_idx);
+    }
+}
+
+void heap_push(struct ath arr[], int score, int idx)
+{
+    arr[q->heap_size].score = score;
+    arr[q->heap_size].idx = idx;
+    q->heap_size++;
+    heapify_up(arr, q->heap_size - 1);
+}
+
+void heapify_down(struct ath arr[], int p_idx, int size)
+{
+    int largest = p_idx;
+    int l_idx = p_idx * 2 + 1;
+    int r_idx = p_idx * 2 + 2;
+    
+    if (l_idx < size && arr[l_idx].score > arr[largest].score)
+        largest = l_idx;
+    if (r_idx < size && arr[r_idx].score > arr[largest].score)
+        largest = r_idx;
+    if (largest != p_idx) {
+        swap(arr, largest, p_idx);
+        heapify_down(arr, largest, size);
+    }
+}
+
+struct ath heap_pop(struct ath arr[])
+{
+    struct ath ret = arr[0];
+    q->heap_size--;
+    swap(arr, 0, q->heap_size);
+    heapify_down(arr, 0, q->heap_size);
+    return ret;
+}
+void print_heap(struct ath arr[])
+{
+    for (int i = 0; i < q->heap_size; i++)
+        printf("%d ", arr[i].score);
+    printf("\n");
+}
+char medal[4][15] = {
+    "", "Gold Medal", "Silver Medal", "Bronze Medal"    
+};
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char ** findRelativeRanks(int* score, int scoreSize, int* returnSize){
+    *returnSize = scoreSize;
+    char **ret = (char **)malloc(sizeof(char *) * scoreSize);
+    q = (struct pq *)malloc(sizeof(struct pq));
+    memset(q, 0, sizeof(struct pq));
+
+    for (int i = 0; i < scoreSize; i++) // O(n logn)
+        heap_push(q->heap, score[i], i);
+    
+    for (int rank = 1; rank <= scoreSize; rank++) { // O(n logn)
+        struct ath tmp = heap_pop(q->heap);
+        if (rank <= 3) {
+            ret[tmp.idx] = (char *)malloc(sizeof(char) * 15);
+            strcpy(ret[tmp.idx], medal[rank]);
+        } else {
+            ret[tmp.idx] = (char *)malloc(sizeof(char) * 6);
+            sprintf(ret[tmp.idx], "%d", rank);
+        }
+    }
+    return ret;
+}

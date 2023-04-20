@@ -1,0 +1,71 @@
+class LockingTree {
+public:
+    vector<int> parent,locked;   
+    unordered_map<int,vector<int>> nodes; //parent and children
+    
+    LockingTree(vector<int>& parent) {
+        locked = vector<int>(parent.size(),-1); 
+        this->parent = parent; 
+        for(int i=0;i<parent.size();i++){
+            nodes[parent[i]].push_back(i); 
+        }         
+    }
+    
+    bool lock(int num, int user) {
+        if(locked[num]!=-1)
+            return 0 ; 
+        locked[num] = user; 
+        return 1; 
+    }
+    
+    bool unlock(int num, int user) {
+        if(locked[num]!=user || locked[num]==-1)
+            return 0;
+        locked[num] = -1;
+        return 1; 
+    }
+    
+    bool checkdecendant(int num){
+        //check if any unlocked decendant  
+        queue<int> q;         
+        q.push(num);
+        while(!q.empty()){
+            int top = q.front();
+            q.pop(); 
+            if(locked[top] != -1) //It has at least one locked descendant (by any user), and
+                return 1; 
+            for(auto child : nodes[top]) {
+                q.push(child); 
+            }
+        }
+        return 0; 
+    }
+    
+    bool checkancestor(int num){
+        //It does not have any locked ancestors.
+        while(num!=-1){
+            if(locked[num]!=-1)
+                return 0;
+            num = parent[num]; 
+        }
+        return 1; 
+    }
+    
+    bool upgrade(int num, int user) {
+        if(locked[num]!=-1 || !checkdecendant(num) || !checkancestor(num))                
+            return 0 ;         
+         //now unlock all descendants; 
+        queue<int> q;         
+        q.push(num);
+        while(!q.empty()){
+            int top = q.front();
+            q.pop(); 
+            locked[top] = -1;
+            for(auto child : nodes[top]) {
+                q.push(child); 
+            }
+        }
+        locked[num] = user; 
+        return 1; 
+    }
+};

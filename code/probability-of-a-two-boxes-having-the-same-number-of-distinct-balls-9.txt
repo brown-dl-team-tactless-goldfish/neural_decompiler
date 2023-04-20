@@ -1,0 +1,41 @@
+class Solution {
+public:
+    double getProbability(vector<int>& balls) {
+        init(balls);
+        long sumProb = 0;
+        dfs(0, 0, 1, 0, 0, sumProb);
+        return double(sumProb) / combis[n][n/2];
+    }
+    
+    void dfs(int i, int numBalls, long prob, int numColor1, int numColor2, long& sumProb){
+        if(numBalls > n/2) return;
+        if(i == v.size()){
+            if(numBalls != n/2) return;
+            if(numColor1 == numColor2) sumProb += prob;
+            return;
+        }
+        const int size = v[i];
+        for(int j=0;j<=size;j++){
+            int newNumColor1 = numColor1 + (j!=0);
+            int newNumColor2 = numColor2 + (j!= size);
+            dfs(i+1, numBalls + j, prob*combis[size][j], newNumColor1, newNumColor2, sumProb);
+        }
+    }
+    
+    void init(vector<int>& balls){
+        v = balls;
+        n = accumulate(balls.begin(), balls.end(), 0);
+        combis = vector(n+1, vector<long>());
+        combis[0].push_back(1);
+        for(int i=1;i<=n;i++){
+            combis[i].push_back(1);
+            for(int j=1;j<combis[i-1].size();j++) 
+                combis[i].push_back(combis[i-1][j-1] + combis[i-1][j]);
+            combis[i].push_back(1);
+        }
+    }
+    
+    vector<int> v;
+    vector<vector<long>> combis;
+    int n;
+};

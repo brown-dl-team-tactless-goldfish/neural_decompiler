@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int smallestRangeII(vector<int>& nums, int k) {
+        std::sort(nums.begin(), nums.end());
+        for (int &num : nums) num -= k;
+        
+        const int firstNum = nums.front();
+        const int lastNum = nums.back();
+        int minScore = lastNum - firstNum;
+        for (int i = 0; i < nums.size() - 1; i++) {
+            nums[i] += 2 * k;
+            const int minNum = std::min({nums[0], nums[i], nums[i + 1]});
+            const int maxNum = std::max({nums[i], nums[i + 1], lastNum});
+            minScore = std::min(minScore, maxNum - minNum);
+        }
+        return minScore;
+    }
+};

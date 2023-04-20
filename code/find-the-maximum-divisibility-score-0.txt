@@ -1,0 +1,23 @@
+#define MIN(a,b) ((a) < (b) ? (a) : (b))
+#define MAX(a,b) ((a) > (b) ? (a) : (b))
+
+int maxDivScore(int* nums, int numsSize, int* divisors, int divisorsSize) {
+    int ss = 0, ans = INT_MAX;
+    int* score = (int*) calloc(divisorsSize, sizeof(int));
+    for (int i = 0; i < divisorsSize; i++) {
+        ss = 0;
+        for (int j = 0; j < numsSize; j++) {
+            if (nums[j] % divisors[i] == 0) ss++;
+        }
+        score[i] = ss;
+    }
+    ss = INT_MIN;
+    for (int i = 0; i < divisorsSize; i++) {
+        ss = MAX(ss, score[i]);
+    }
+    for (int i = 0; i < divisorsSize; i++) {
+        if (score[i] == ss) ans = MIN(ans, divisors[i]);
+    }
+    free(score);
+    return ans == INT_MAX ? ss : ans;
+}

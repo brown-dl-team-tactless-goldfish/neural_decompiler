@@ -1,0 +1,81 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+void swap(int *deck,int a,int b){
+    int t=deck[a];
+    deck[a]=deck[b];
+    deck[b]=t;
+}
+
+int partition(int *deck,int st,int end){
+    int higher=end;
+    int lower=st;
+    while(lower!=higher){
+        while(deck[higher]>=deck[lower]&&higher!=lower)
+            higher--;
+        swap(deck,lower,higher);
+        
+        while(deck[higher]>=deck[lower]&&higher!=lower)
+            lower++;
+        swap(deck,lower,higher);
+    }
+    
+    return lower;
+}
+
+void qquicksort(int *deck,int st,int end){
+    if(st>=end)
+        return;
+    
+    int pivot=partition(deck,st,end);
+    
+    qquicksort(deck,st,pivot-1);
+    
+    qquicksort(deck,pivot+1,end);
+}
+
+
+int* deckRevealedIncreasing(int* deck, int deckSize, int* returnSize) {
+    (*returnSize)=deckSize;
+    
+    if(deckSize<=0)
+        return NULL;
+    
+    qquicksort(deck,0,deckSize-1);
+    
+    int* a=(int*)malloc(sizeof(int)*deckSize);
+    int d[deckSize];
+    int mer;
+    for(mer=0;mer<deckSize;mer++)
+        d[mer]=0;
+        
+    int i=0,j=1,count=0,n=deckSize-1;
+    
+    a[0]=deck[0];
+    d[0]=1;
+    while(n!=0){
+        if(i==deckSize)
+            i=0;
+        
+        if(count==2&&d[i]==0){
+            a[i]=deck[j++];
+            d[i]=1;
+            n--;
+            count=0;
+        }
+        
+        if(n==1&&d[i]==0){
+            a[i]=deck[j++];
+            d[i]=1;
+            n--;
+        }
+        
+        i++;
+        
+        if(i!=deckSize&&d[i]==0)
+        count++;
+    }
+    
+    return a;
+}

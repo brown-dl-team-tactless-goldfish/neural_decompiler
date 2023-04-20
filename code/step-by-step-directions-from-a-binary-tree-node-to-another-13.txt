@@ -1,0 +1,51 @@
+class Solution {
+
+private:
+    TreeNode* findLca(TreeNode *root, int start, int end){
+        if(!root or root -> val == start or root -> val == end) return root;
+        
+        TreeNode *left = findLca(root -> left, start, end);
+        TreeNode *right = findLca(root -> right, start, end);
+        
+        if(!left) return right;
+        if(!right) return left;
+        
+        return root;
+    }
+
+private:
+    bool findPath(TreeNode *lca, int dest, string &s){
+        if(!lca) return false ;
+        
+        if(lca -> val == dest) return true;
+        
+        s += 'L';
+        bool left = findPath(lca -> left, dest, s);
+        if(left) return true;
+        s.pop_back();
+        
+        s += 'R';
+        bool right = findPath(lca -> right, dest, s);
+        if(right) return true;
+        s.pop_back();
+        
+        return false;
+    }
+    
+    
+public:
+    string getDirections(TreeNode* root, int startValue, int destValue) {
+        if(!root) return "";
+        
+        TreeNode *lca = findLca(root, startValue, destValue);
+        
+        string left, right;
+        
+        findPath(lca, startValue, left);
+        findPath(lca, destValue, right);
+        
+        for(auto &c : left) c = 'U';
+        
+        return left + right;
+    }
+};

@@ -1,0 +1,83 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+typedef struct _node{
+    char* name;
+    char* city;
+    int time;
+    int amount;
+}node;
+char ** invalidTransactions(char ** transactions, int transactionsSize, int* returnSize){
+    int n = transactionsSize ;
+    node* data = malloc( n * sizeof(node) ) ;
+    for(int i = 0; i < n; i++){
+        int len = strlen(transactions[i] ) ;
+        char* tmp = malloc(len + 1) ;
+        strcpy(tmp, transactions[i]) ;
+        int begin = 0 ;
+        //name 
+        for(int j = begin; j < len; j++){
+            if(tmp[j] == ','){
+                tmp[j] = '\0' ;
+                data[i].name = malloc(j + 1) ;
+                strcpy(data[i].name, &tmp[begin]) ;
+                begin = j + 1;
+                break ;
+            }
+        }
+        //time
+        int time =  0 ;
+        for(int j = begin; j < len; j++){
+            if(tmp[j] == ','){         
+                begin = j + 1;
+                data[i].time = time ;
+                break ;
+            }
+            time = time* 10 + tmp[j] -'0' ;
+        }
+        //amount 
+        int amount =  0 ;
+        for(int j = begin; j < len; j++){
+            if(tmp[j] == ','){
+                begin = j + 1;
+                data[i].amount = amount ;
+                break ;
+            }
+            amount = amount* 10 + tmp[j] -'0' ;
+        }
+        //city
+        data[i].city = malloc(len - begin + 1) ;
+        strcpy(data[i].city, &tmp[begin]) ;
+        free(tmp) ;
+    }
+    int a_idx = 0 ;
+    char** ans = malloc(n * sizeof(char*) ) ;
+    for(int i = 0; i < n; i++){
+        if(data[i].amount > 1000){
+            int len = strlen(transactions[i]) ;
+            ans[a_idx] = malloc(len + 1) ;
+            strcpy(ans[a_idx], transactions[i] ) ;
+            a_idx++ ;
+            continue ;
+        }
+
+        for(int j = 0; j < n; j++){
+            if(j == i)
+                continue ;
+            if(strcmp(data[i].name, data[j].name) == 0 && strcmp(data[i].city, data[j].city) != 0  && abs(data[i].time - data[j].time) <= 60 ){
+                int len = strlen(transactions[i]) ;
+                ans[a_idx] = malloc(len + 1) ;
+                strcpy(ans[a_idx], transactions[i] ) ;
+                a_idx++ ;
+                break ;
+            }
+        }
+    }
+    for(int i = 0; i <n; i++){
+        free(data[i].name) ;
+        free(data[i].city) ;
+    }
+    free(data) ;
+    *returnSize =  a_idx ;
+    return ans ;
+}

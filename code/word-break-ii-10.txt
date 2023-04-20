@@ -1,0 +1,58 @@
+class Solution {
+public:
+    struct TrieNode {
+        TrieNode* children[26] = { NULL };
+        bool isKey = false;
+    };
+    TrieNode* root = new TrieNode();
+
+    void insertTrie(string key) {
+        TrieNode* node = root;
+        for (char c : key) {
+            if (NULL == node->children[c - 'a'])
+                node->children[c - 'a'] = new TrieNode();
+            node = node->children[c - 'a'];
+        }
+        node->isKey = true;
+    }
+
+    void searchRecursive(string str, int i, vector<string>& words, vector<string>& result) {
+        if (i == str.length()) {
+            string sentence = "";
+            for (auto s : words) sentence += (s + " ");
+            sentence.pop_back();
+            result.push_back(sentence);
+            return;
+        }
+
+        TrieNode* node = root;
+
+        int startIndex = i;
+        while (i < str.length()) {
+            char c = str[i];
+
+            if (NULL == node->children[c-'a'])
+                break;
+
+            node = node->children[c-'a'];
+            if (node->isKey) {
+                words.push_back(str.substr(startIndex, i - startIndex + 1));
+                searchRecursive(str, i+1, words, result);
+                words.pop_back();
+            }
+
+            i++;
+        }
+    }
+    
+    vector<string> wordBreak(string s, vector<string>& wordDict) {
+        for (auto s : wordDict)
+            insertTrie(s);
+
+        vector<string> words;
+        vector<string> result;
+        searchRecursive(s, 0, words, result);
+
+        return result;
+    }
+};

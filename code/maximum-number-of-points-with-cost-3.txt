@@ -1,0 +1,38 @@
+    long long maxPoints(vector<vector<int>>& points) {
+        // if maxPoint(i, j) is the max point we can get for cell (i, j)
+        // then we can see that maxPoint(i, j) = max(maxPoint(i - 1, k) + points[i][j] - abs(k - j)) for every k in the range of [0, points[0].size()]
+        // and we can seperate the abs(k - j) into two parts depending on the position between k and j
+        // maxPoint(i, j) = max(leftPart, rightPart), 
+        // and leftPart = max(maxPoint(i - 1, k) + points[i][j] + k - j) if k < j
+        // rightPart = max(maxPoint(i - 1, k) + points[i][j] + j - k) if k >= j
+        // and we can see that instead of we get maxPoint using for loop
+        // we can get the maximum maxPoint(i - 1, k) + k and maximum maxPoint(i - 1, k) - k seperately
+        int rows = points.size();
+        int columns = points[0].size();
+        vector<long long> dp;
+        for (int i = 0; i < columns; i++) {
+            dp.push_back((long long)points[0][i]);
+        }
+        long long res = 0;
+        for (auto& p : dp) {
+            res = max(res, p);
+        }
+        for (int r = 1; r < rows; r++) {
+            vector<long long> dpLeft = dp;
+            for (int c = 1; c < columns; c++) {
+                dpLeft[c] = max(dpLeft[c - 1], dpLeft[c] + c);
+            }
+            vector<long long> dpRight = dp;
+            dpRight.back() -= columns - 1;
+            for (int c = columns - 2; c >= 0; c--) {
+                dpRight[c] = max(dpRight[c + 1], dpRight[c] - c);
+            }
+            for (int c = 0; c < columns; c++) {
+                long long leftSumMax = dpLeft[c] - c;
+                long long rightSumMax = dpRight[c] + c;
+                dp[c] = max(leftSumMax, rightSumMax) + points[r][c];
+                res = max(dp[c], res);
+            }
+        }
+        return res;
+    }

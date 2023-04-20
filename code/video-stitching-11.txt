@@ -1,0 +1,32 @@
+int INF=1000;
+class Solution {
+public:
+    vector<vector<int>>clip;
+    vector<vector<vector<int>>>dp;
+    int get(int i,int s,int l)
+    {
+        if(i>=clip.size())
+            return INF;
+        if(clip[i][0]>s)
+            return INF;
+        if(clip[i][0]<=s && clip[i][1]>=l)
+            return 1;
+        if(dp[i][s][l]!=-1)
+            return dp[i][s][l];
+        int res;
+        res=min(1+get(i+1,clip[i][1],l),get(i+1,s,l));
+        return dp[i][s][l]=res;
+    }
+    int videoStitching(vector<vector<int>>& clips, int T) 
+    {
+        sort(clips.begin(),clips.end());
+        clip=clips;
+        if(T==0)
+            return 0;
+        if(clips[0][0]!=0)
+            return -1;
+        dp.resize(clips.size(),vector<vector<int>>(T+1,vector<int>(T+1,-1)));
+        int res=get(0,0,T);
+        return res>=INF?-1:res;
+    }
+};

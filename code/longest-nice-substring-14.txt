@@ -1,0 +1,59 @@
+class Solution {
+public:
+    string longestNiceSubstring(string s) {
+        // First, store the frequencies of all characters in s. We need 2 arrays for lower and uppser cases.
+        // Then we go through each substring, and check for each character, if its corresponding character (a<->A)
+        // appears in the substring. To do this, we can use the 2 arrays rather than go through each character in 
+        // the substring.
+        // Everytime we find a nice substring where its length > current result's length, replace the result.
+        int size = s.size();
+        string res;
+        vector<int> lows(26), upps(26);
+        
+        for (char c : s)
+        {
+            if (c <= 'z' && c >= 'a')
+            {
+                ++lows[c - 'a'];
+            }
+            else
+            {
+                ++upps[c - 'A'];
+            }
+        }
+        
+        for (int i = 0; i < size; ++i)
+        {
+            vector<int> l = lows, u = upps;
+            for (int j = size - 1; j >= i; --j)
+            {
+                int k = 0, len = j - i + 1;
+                while (k < 26 && ((l[k] == 0 && u[k] == 0) || (l[k] != 0 && u[k] != 0)))
+                {
+                    ++k; // check if for each lower case, its upper case appears, and vice versa
+                }
+                
+                res = k >= 26 && len > res.size() ? s.substr(i, len) : res; // update result
+                if (s[j] <= 'z' && s[j] >= 'a')
+                {
+                    --l[s[j] - 'a'];
+                }
+                else
+                {
+                    --u[s[j] - 'A']; 
+                }
+            }
+            
+            if (s[i] <= 'z' && s[i] >= 'a')
+            {
+                --lows[s[i] - 'a']; 
+            }
+            else
+            {
+                --upps[s[i] - 'A']; // starting from the next character, ignore current character
+            }
+        }
+        
+        return res;
+    }
+};

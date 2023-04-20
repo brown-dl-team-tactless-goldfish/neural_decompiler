@@ -1,0 +1,40 @@
+class Solution {
+public:
+string fractionToDecimal(int numerator, int denominator) {
+    long a = numerator;
+    long b = denominator;
+    long r = 0;
+    int sign = (numerator >= 0) ^ (denominator >= 0) ? -1 : 1;
+    long q = abs(a / b);
+    string res = to_string(q);
+    r = a % b;
+    
+    if(r == 0){
+        if(sign == 1){return res;}
+        else if(q == 0){return res;}
+        else{return "-" + res;}
+    }
+    
+    a = abs(a), b = abs(b), r = abs(r);
+    res = (sign == -1 ? "-" : "") + res; 
+    res += ".";
+    
+    unordered_map<int, int> mp;
+    mp[r] = res.size();
+    
+    while(r != 0){
+        r = r*10;
+        q = r/b;
+        res += to_string(q);
+        
+        r = r%b;
+        if(mp.find(r) == mp.end()){
+            mp[r] = res.size();// to recorde the index of this remains in the string
+        }else{
+            res.insert(mp[r], "(", 1);
+            res += ")";
+            break;
+        }
+    }
+    return res;
+}

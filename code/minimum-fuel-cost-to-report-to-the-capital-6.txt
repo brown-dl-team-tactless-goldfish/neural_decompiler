@@ -1,0 +1,34 @@
+class Solution {
+public:
+    long long solve(vector<vector<int>>& edges, int seats, int u, vector<bool>& vis, vector<long long>& cost){
+        vis[u] = true;
+        long long person = 1;
+        
+        for(auto &v : edges[u]){
+            if(vis[v] == false){
+                long long p = solve(edges, seats, v, vis, cost);
+                person+=p;
+                long long t = p/seats;
+                if(p%seats > 0) t+=1;
+                cost[u] += t+cost[v];
+            }
+        }
+        
+        return person;
+    }
+    
+    long long minimumFuelCost(vector<vector<int>>& roads, int seats) {
+        int n = roads.size();
+        vector<vector<int>> edges(n+1);
+        vector<bool> vis(n+1, false);
+        vector<long long> cost(n+1, 0);
+        
+        for(auto &r : roads){
+            edges[r[0]].push_back(r[1]);
+            edges[r[1]].push_back(r[0]);
+        }
+        
+        solve(edges, seats, 0, vis, cost);
+        return cost[0];
+    }
+};

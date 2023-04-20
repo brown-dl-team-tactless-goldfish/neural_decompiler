@@ -1,0 +1,59 @@
+vector<int> countPairs(int n, vector<vector<int>>& edges, vector<int>& queries) {
+	vector<int> res(queries.size());
+
+
+	vector<vector<int>> m(n);
+	vector<pair<int, int>> vec(n);
+	vector<int> tmp(n, 0);
+	for (int i = 0; i < n; ++i) vec[i].second = i;
+
+	for (int i = 0; i < edges.size(); ++i) {
+		vector<int>& v = edges[i];
+		m[v[0] - 1].push_back(v[1] - 1);
+		m[v[1] - 1].push_back(v[0] - 1);
+		vec[v[0] - 1].first++;
+		vec[v[1] - 1].first++;
+	}
+
+	sort(vec.begin(), vec.end());
+
+	vector<int> dir(n);
+	for (int i = 0; i < n; ++i) dir[vec[i].second] = i;
+
+	for (int i = 0; i < queries.size(); ++i) {
+
+		int thres = queries[i];
+		int cnt = 0;
+
+		for (int j = 0; j < n; ++j) {
+
+			int curr = thres - vec[dir[j]].first;
+			if (vec.back().first <= curr) continue;
+
+			vector<int> d;
+
+			int left = 0, right = n - 1;
+
+			while (right > left) {
+				int mid = left + (right - left) / 2;
+				if (vec[mid].first <= curr) left = mid + 1;
+				else right = mid;
+			}
+
+			int tot = n - left;
+
+			for (int k = 0; k < m[j].size(); ++k) {
+				++tmp[m[j][k]];
+				if (vec[dir[m[j][k]]].first - tmp[m[j][k]] == curr) --tot;
+			}
+			for (int k = 0; k < m[j].size(); ++k) tmp[m[j][k]] = 0;
+			if (vec[dir[j]].first > curr) --tot;
+
+			cnt += tot;
+		}
+
+		res[i] = cnt / 2;
+	}
+
+	return res;
+}

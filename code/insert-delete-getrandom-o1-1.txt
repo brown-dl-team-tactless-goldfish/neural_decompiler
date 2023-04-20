@@ -1,0 +1,136 @@
+#include <time.h>
+const uint32_t REMAINDER = 1ULL << 29; // This can be tuned to optimize runtime/memory
+const uint64_t GROUPS = ((1ULL << 31) / REMAINDER) * 2;
+
+// linked list
+struct ll{
+    struct ll *next;
+    int val;
+};
+
+// array of linked lists + counter for total number of items
+typedef struct {
+    uint64_t total;
+    struct ll **nodeslst;  
+} RandomizedSet;
+
+
+RandomizedSet* randomizedSetCreate() {
+	// seed random number generator
+    srand(time(NULL));
+	
+	// create the array of linked lists
+    RandomizedSet *retval = malloc(sizeof(RandomizedSet));
+    retval->nodeslst = malloc(sizeof(struct ll*) * GROUPS);
+	
+	// for each element, create an empty bucket (contains the number of elements in that bucket)
+    struct ll *head;
+    for (int i=0; i<GROUPS; i++){
+        head = malloc(sizeof(struct ll));
+        head->next = NULL;
+        head->val = 0;
+        retval->nodeslst[i] = head;
+    }
+	
+	// set total number of elements to 0
+    retval->total = 0;
+    return retval;
+}
+
+bool randomizedSetInsert(RandomizedSet* obj, int val) {
+	// calculate bucket (group) and remainder
+	// must be unsigned ints so we can handle negatives correctly
+	uint32_t uintval = (uint32_t) val;
+    uint32_t group = uintval / REMAINDER;
+    uint32_t remainder = uintval % REMAINDER;
+
+	// LL is sorted, so we just look to see if we can find it
+    struct ll *ptr = obj->nodeslst[group];
+    struct ll *mover = ptr;
+    while(mover->next && mover->next->val < remainder)
+        mover = mover->next;
+    
+    // if object already exists, return false
+    if (mover->next && mover->next->val == remainder)
+        return false;
+    
+    // if object doesn't exist, add it and return true
+	// and update corresponding counts
+    ptr->val++;
+    struct ll *newnode = malloc(sizeof(struct ll));
+    newnode->val = remainder;
+    newnode->next = mover->next;
+    mover->next = newnode;
+    obj->total++;
+    
+    return true;
+}
+
+bool randomizedSetRemove(RandomizedSet* obj, int val) {
+	// calculate bucket (group) and remainder
+    uint32_t uintval = (uint32_t) val;
+    uint32_t group = uintval / REMAINDER;
+    uint32_t remainder = uintval % REMAINDER;
+    
+	// try to find the element in the linked list
+    struct ll *ptr = obj->nodeslst[group];
+    struct ll *mover = ptr;
+    while(mover->next && mover->next->val < remainder)
+        mover = mover->next;
+    
+    // if item wasnt present, return false
+    if (!mover->next || mover->next->val > remainder)
+        return false;
+    
+    // otherwise item is present at mover->next
+	// so we remove it and update the corresponding counts
+    ptr->val--;
+    struct ll *toremove = mover->next;
+    mover->next = mover->next->next;
+    free(toremove);
+    obj->total--;
+    
+    return true;
+}
+
+int randomizedSetGetRandom(RandomizedSet* obj) {
+    // pick one of the elements at random
+    uint64_t roll = rand() % obj->total;
+    uint32_t ctr = obj->nodeslst[0]->val;
+    uint32_t idx = 0;
+    struct ll **nlst = obj->nodeslst;
+	
+	// find the element
+    while (ctr < roll){
+        idx++;
+        ctr += nlst[idx]->val;
+    }
+	// guards against case where we roll 0 and the first bucket(s) are empty
+    while (nlst[idx]->val == 0) 
+        idx++;
+		
+	// find the element within the bucket
+    struct ll *ptr = nlst[idx]->next;
+    for (int i=1; i<ctr-roll; i++){
+        ptr = ptr->next;
+    }
+    
+	// recalculate the original number as a signed 32 bit integer
+    int32_t retval = (REMAINDER*idx) + ptr->val;
+    return retval;
+}
+
+void randomizedSetFree(RandomizedSet* obj) {
+    struct ll *ptr;
+    struct ll *tofree;
+    for (int i=0; i<GROUPS; i++){
+        ptr = obj->nodeslst[i];
+        do {
+            tofree = ptr;
+            ptr = ptr->next;
+            free(tofree);
+        } while (ptr);
+    }
+    
+    free(obj);
+}

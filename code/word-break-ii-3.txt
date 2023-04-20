@@ -1,0 +1,72 @@
+struct Trie {
+private:
+    Trie *children[26];
+    bool isEnd = false;
+public:
+    void insert(string &s) {
+        Trie *curr = this;
+        for (char &c : s) {
+            int cVal = c - 'a';
+            if (curr->children[cVal] == NULL) {
+                curr->children[cVal] = new Trie();
+            }
+            curr = curr->children[cVal];
+        }
+        curr->isEnd = true;
+    }
+    
+    // ptr becomes NULL if not words can be found
+    bool streamSearch(Trie *&ptr, char c) {
+        int cVal = c - 'a';
+        if (ptr == NULL) return false;
+        ptr = ptr->children[cVal];
+        if (ptr == NULL) return false;
+        return ptr->isEnd;
+    }
+    
+    Trie() {
+        for (int i = 0; i < 26; i++) {
+            children[i] = NULL;
+        }
+    }
+};
+
+class Solution {
+private:
+    vector<string> res;
+    Trie trie;
+    
+    void bt(int i, string &s, string &currS) {
+        Trie *searchPtr = &trie;
+        int addCnt = 0;
+        while (i < s.size()) {
+            currS += s[i];
+            addCnt++;
+            if (trie.streamSearch(searchPtr, s[i])) {
+                if (i + 1 == s.size()) {
+                    res.push_back(currS);
+                } else {
+                    currS += ' ';
+                    bt(i + 1, s, currS);
+                    currS.pop_back();
+                }
+            }
+            if (searchPtr == NULL) break;
+            i++;
+        }
+        
+        while (addCnt-- > 0) {
+            currS.pop_back();
+        }
+    }
+public:
+    vector<string> wordBreak(string s, vector<string>& wordDict) {
+        for (string &eachWord : wordDict) {
+            trie.insert(eachWord);
+        }
+        
+        string currS;
+        bt(0, s, currS);
+        return res;
+    }
+};

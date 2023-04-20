@@ -1,0 +1,38 @@
+typedef struct Pair{
+    int growTime;
+    int plantTime;
+}Pair;
+
+void Pair_init(Pair *this, int growTime, int plantTime){ 
+    this->growTime = growTime; 
+    this->plantTime = plantTime; 
+}
+int flrcmp(const void *left, const void *right){
+    const Pair* a = *(const Pair**) left;
+    const Pair* b = *(const Pair**) right;
+    return (b->growTime - a->growTime);
+}
+int earliestFullBloom(int* plantTime, int plantTimeSize, int* growTime, int growTimeSize){
+        Pair *pairs[plantTimeSize];
+        for (int i = 0; i < plantTimeSize; i++) {
+            pairs[i] = (Pair *) malloc(sizeof(Pair));
+            Pair_init(pairs[i], growTime[i], plantTime[i]);
+        }
+        //Pair(a, b) creates an object of struct Pair
+        
+        //=========================================================
+        //Sort the pairs on basis of decreasing growTime
+        qsort(pairs, plantTimeSize, sizeof(Pair*), flrcmp);
+
+        //========================================================
+        //currTime denotes the time at which we finished planting the current flower
+        //After the currentTime we are now free to plant another plant while the current flower grows 
+        int currTime = 0, mxBloomTime = 0;
+        for(int i = 0; i < plantTimeSize; i++){
+            currTime += pairs[i]->plantTime; 
+            int bloomTime = currTime + pairs[i]->growTime; //current flower will bloom at bloonTime
+            mxBloomTime = fmax(mxBloomTime, bloomTime);
+        }
+        //=======================================================
+        return mxBloomTime;
+}

@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int lastStoneWeightII(vector<int>& stones) {
+        
+        int n = stones.size();
+        int sum = 0;
+        for (int i = 0; i < n; i++)
+            sum += stones[i];
+        
+        vector<int>dp(sum/2+1, false);
+        int target = sum/2;
+        dp[0] = true;
+        
+        for (int i = 0; i < n; i++) {
+            for (int j =  target; j >= stones[i]; j--) {
+                dp[j] = dp[j] | dp[j-stones[i]];
+            }
+        }
+        
+        for (int i = sum/2; i >= 0; i--) {
+            if (dp[i]) return sum-i-i;
+        }
+        
+        return 0;
+    }
+};

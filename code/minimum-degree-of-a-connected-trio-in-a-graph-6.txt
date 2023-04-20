@@ -1,0 +1,37 @@
+    int minTrioDegree(int n, vector<vector<int>>& edges) {
+        // use adjacent matrix to construct the graph
+        // it's easy to operate in this way
+        vector<vector<bool>> graph (n + 1, vector<bool>(n + 1, false));
+        // connection[i] equals the edges connected with node i
+        vector<int> connection(n + 1, 0);
+        // to avoid count triangles more than once, when defining an edge in the graph, the start point is smaller than the end point
+        for (auto& e : edges) {
+            graph[min(e[0], e[1])][max(e[0], e[1])] = true;
+            connection[e[0]]++;
+            connection[e[1]]++;
+        }
+        int minValue = INT_MAX;
+        for (int i = 1; i <= n; i++) {
+            for (int j = i + 1; j <= n; j++) {
+                if (!graph[i][j]) {
+                    continue;
+                }
+                // if i and j are connected, we need to check whether i and k, j and k are connected
+                for (int k = j + 1; k <= n; k++) {
+                    if (graph[i][k] && graph[j][k]) {
+                        // if so a triangle is found, and the minimum sum of connections for a triangle is 6
+                        // after removing 6, the value remaining is the degree
+                        int degree = connection[i] + connection[j] + connection[k] - 6;
+                        if (degree < minValue) {
+                            minValue = degree;
+                        }
+                    }
+                }
+            }
+        }
+        // if we found no triangle, return -1
+        if (minValue == INT_MAX) {
+            return -1;
+        }
+        return minValue;
+    }

@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int n;
+    int k;
+    int kn;
+    int n0;
+    
+    bool dfs(unordered_set<int>& s, int cur, string& result) {
+        if (s.size() == kn) {
+            return true;
+        }
+        for (int i = 0; i < k; i++) {
+            int c = cur * 10 % n0 + i;
+            if (s.find(c) == s.end()) {
+                s.insert(c);
+                result += i + '0';
+                if (dfs(s, c, result)) return true;
+                result.pop_back();
+                s.erase(c);
+            }
+        }
+        return false;
+    }
+    
+    string crackSafe(int n_, int k_) {
+        n = n_;
+        k = k_;
+        kn = pow(k, n);
+        n0 = pow(10, n);
+        unordered_set<int> s;
+        s.insert(0);
+        string result(n, '0');
+        dfs(s, 0, result);
+        return result;
+    }
+};

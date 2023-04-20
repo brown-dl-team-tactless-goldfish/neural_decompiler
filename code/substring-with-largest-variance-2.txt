@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int largestVariance(string s) {
+        int has[26]{};
+        for(char c : s) has[c - 'a'] = 1;
+        int res = 0;
+        for(char b = 'a'; b <= 'y'; b++) {
+            if(has[b - 'a'] == 0) continue;
+            for(char e = b + 1; e <= 'z'; e++) {
+                if(has[e - 'a'] == 0) continue;
+                int sum = 0;
+                int L1 = INT_MAX, M1 = INT_MAX;
+                int L2 = INT_MAX, M2 = INT_MAX;
+                int L = 0, M = 0;
+                for(char c : s) {
+                    if(c == b) {
+                        L1 = L = min(L, sum);
+                        M1 = M = max(M, sum);
+                        sum++; 
+                        if(L2 != INT_MAX) {
+                            res = max(res, abs(sum - L2));
+                            res = max(res, abs(sum - M2));
+                        }
+                    }
+                    else if(c == e) {
+                        L2 = L = min(L, sum);
+                        M2 = M = max(M, sum);
+                        sum--;
+                        if(L1 != INT_MAX) {
+                            res = max(res, abs(sum - L1));
+                            res = max(res, abs(sum - M1));
+                        }
+                    }
+                }
+            }
+        }
+        return res;
+    }
+};

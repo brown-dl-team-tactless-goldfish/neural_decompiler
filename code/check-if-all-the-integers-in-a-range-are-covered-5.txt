@@ -1,0 +1,17 @@
+class Solution {
+public:
+    bool isCovered(vector<vector<int>>& ranges, int left, int right) {
+        int n=right-left+1;
+        vector<int> vis(n,0);
+        for(vector<int> r: ranges){
+            r[0]-=left;
+            if(r[0]<0){
+                if(r[1]>=0) r[0]=0;
+                else continue;
+            }
+            r[1]=min(right,r[1])-left;
+            fill_n(vis.begin()+r[0],r[1]-r[0]+1,1);
+        }
+        return !count(vis.begin(),vis.begin()+n,0);
+    }
+};

@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int swimInWater(vector<vector<int>>& grid) {
+        int n = grid.size();
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> que;
+        que.push({grid[0][0], 0, 0});
+        vector<vector<int>> dir {{1, 0}, {0, 1}, {-1, 0}, {0, -1}};
+        vector<vector<bool>> vis(n, vector<bool> (n, false));
+        vis[0][0] = true;
+        int level = 0;
+        while (!que.empty()) {
+            vector<int> temp = que.top();
+            que.pop();
+            int val = temp[0], i = temp[1], j = temp[2];
+            level = max(level, grid[i][j]);
+            if (i == n - 1 and j == n - 1) break;
+            for (int d = 0; d < dir.size(); ++d) {
+                int r = i + dir[d][0];
+                int c = j + dir[d][1];
+                if (r >= 0 and c >= 0 and r < n and j < n and !vis[r][c]) {
+                    vis[r][c] = true;
+                    que.push({grid[r][c], r, c});
+                }
+            }
+        }
+        return level;
+    }
+};

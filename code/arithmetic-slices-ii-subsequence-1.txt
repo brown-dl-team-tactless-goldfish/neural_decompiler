@@ -1,0 +1,62 @@
+struct hashTable {
+    long long key;
+    int val;
+    int init;
+    UT_hash_handle hh;
+};
+
+struct hashTable* dict;
+
+struct hashTable* find(long long k) {
+    struct hashTable* t;
+    HASH_FIND(hh, dict, &k, sizeof(long long), t);
+    return t;
+}
+
+int min(int a, int b) {
+    return a<b?a:b;
+}
+
+void insert(long long k, int v, int id) {
+    struct hashTable* t = malloc(sizeof(struct hashTable));
+    t->key = k;
+    t->val = v;
+    t->init = id;
+    HASH_ADD(hh, dict, key, sizeof(long long), t);
+}
+
+int numberOfArithmeticSlices(int* nums, int numsSize){
+    int ans = 0;
+    int cnt = 0;
+    int idx[numsSize*numsSize];
+    int cnt2 = 0;
+    int dp[numsSize][min(numsSize*numsSize,(int)10000000/numsSize)];
+    memset(dp, 0, sizeof(dp));
+    memset(idx, -1, sizeof(idx));
+    dict = NULL;
+    for(int i = 0; i < numsSize; ++i) {
+        for(int j  = 0; j < i; ++j) {
+            long long dif = (long long)nums[j] - (long long)nums[i];          
+            struct hashTable* it = find(dif);
+            if(it == NULL) {
+                insert(dif, cnt, i);                
+                ++cnt;
+            }
+            else {
+                if(idx[it->val] == -1) {
+                    idx[it->val] = cnt2;
+                    dp[it->init][cnt2] = 1;
+                    dp[i][cnt2] += dp[j][cnt2] + 1;
+                    ans += dp[j][cnt2];
+                    ++cnt2;
+                }
+                else {
+                    dp[i][idx[it->val]] += dp[j][idx[it->val]] + 1;
+                    ans += dp[j][idx[it->val]];
+                }
+            }
+            
+        }
+    }
+    return ans;
+}

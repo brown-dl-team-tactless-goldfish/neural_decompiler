@@ -1,0 +1,108 @@
+  TreeNode* GetLCA(
+        TreeNode* a,
+        TreeNode* b,
+        std::unordered_map<TreeNode*, TreeNode*>& parent) {
+        std::vector<TreeNode*> nodes_a;
+        TreeNode* curr = a;
+        while (curr) {                      
+            nodes_a.push_back(curr);  
+            curr = parent[curr];
+        }
+        
+        std::vector<TreeNode*> nodes_b;
+        curr = b;
+        while (curr) {            
+            nodes_b.push_back(curr);
+            curr = parent[curr];
+        }        
+        
+        auto it_a = nodes_a.rbegin();
+        auto it_b = nodes_b.rbegin();
+        
+        TreeNode* lca = nullptr;
+        while (it_a != nodes_a.rend() && 
+               it_b != nodes_b.rend() && 
+               *it_a == *it_b) {
+            lca = *it_a;
+            ++it_a;
+            ++it_b;
+        }
+        return lca;
+    }
+   
+    std::string GetSPath(
+        TreeNode* node,
+        TreeNode* lca, 
+        std::unordered_map<TreeNode*, TreeNode*>& parent) {
+        std::string path;
+        TreeNode* curr = node;
+        while (curr != lca) {
+            curr = parent[curr];
+            path += 'U';
+        }
+        return path;
+    }
+    
+    std::string GetEPath(
+        TreeNode* node,
+        TreeNode* lca,        
+        std::unordered_map<TreeNode*, TreeNode*>& parent) {
+        
+        std::string path;
+        TreeNode* curr = node;
+        while (curr != lca) {
+            TreeNode* p = parent[curr];
+            if (curr == p->left) {
+                path += "L";
+            } else {
+                path += "R";
+            }
+            curr = p;
+        }
+        return path;
+    }
+    
+    string getDirections(TreeNode* root, int startValue, int destValue) {
+        std::unordered_map<TreeNode*, TreeNode*> parent;
+        std::unordered_map<int, TreeNode*> M;
+        parent[root] = nullptr; 
+        std::queue<TreeNode*> q;
+        if (root) {
+            q.push(root);
+        }
+        while (!q.empty()) {
+            int sz = q.size();
+            for (int i=0;i<sz;++i) {
+                TreeNode* curr = q.front();
+                M[curr->val] = curr;
+                q.pop();
+                if (curr->left) {
+                    parent[curr->left] = curr;
+                    q.push(curr->left);
+                }
+                if (curr->right) {
+                    parent[curr->right] = curr;
+                    q.push(curr->right);
+                }
+            }
+        }
+        
+        auto it = M.find(startValue);
+        if (it == M.end()) {
+            return {};
+        }
+        TreeNode* start = it->second;
+        
+        it = M.find(destValue);
+        if (it == M.end()) {
+            return {};
+        }
+        TreeNode* end = it->second;
+        
+        TreeNode* lca = GetLCA(start, end, parent);
+        // path from s -> LCA, e -> LCA
+        std::string path_s = GetSPath(start, lca, parent);
+        std::string path_e = GetEPath(end, lca, parent);
+        std::reverse(path_e.begin(), path_e.end());
+        return path_s + path_e;        
+    }

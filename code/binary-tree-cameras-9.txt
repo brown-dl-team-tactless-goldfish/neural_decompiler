@@ -1,0 +1,53 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    int cameraCount;
+private:
+    int dfs(TreeNode* root){
+
+        /*
+            -1 = doesn't need camera
+             0 = doesn't have camera hence camera is needed
+             1 = has camera hence camera is not needed
+        */
+
+        if(root == NULL) return -1;
+
+        int leftChild = dfs(root->left);
+
+        int rightChild = dfs(root->right);
+
+/* Case 1 : if any of my left child or right child needs camera .. i will set camera on me as a parent
+            i.e increment cameracount and return 1 -> saying to your parent that you have a camera */
+        if(leftChild == 0 || rightChild == 0) return ++cameraCount - cameraCount + 1;
+
+
+/* Case 2 : if neither of my leftChild nor rightChild doesn't need camera then i'll better ask my parent to cover me
+            rather than setting camera on myself which will be inefficient as i do not have to cover my children */
+        if(leftChild == -1 && rightChild == -1) return 0;
+
+
+/* Case 3 : The remaining cases would be : {left = has Camera && right = has Camera} 
+                                         : {left = doesnt need camera && right = has Camera}
+                                         : {left = has Camera && right doesn't need Camera}
+            In all these cases cuurent node is being covered by its any of the children ensuring their children are already
+            being covered */
+        return -1;
+    }
+public:
+    int minCameraCover(TreeNode* root) {
+        cameraCount = 0;
+        cameraCount += (dfs(root) == 0); // if root needs a camera 
+        return cameraCount;
+    }
+};

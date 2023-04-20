@@ -1,0 +1,64 @@
+class Solution {
+public:
+   string decodeAtIndex(string S, int K) {
+      auto datas = preprocess(S);
+      A* root = nullptr;
+      for (auto data : datas) {
+         auto p = new A(root, data);
+         root = p;
+      }
+
+      K--;
+      while (root->preSize > K)
+         root = root->pre;
+
+      return string(1, root->find(K));
+   }
+
+   struct Data {
+      string s;
+      long long factor = 1;
+   };
+
+   vector<Data> preprocess(string s) {
+      vector<Data> v = { Data() };
+      bool isNum = false;
+      for (auto c : s) {
+         if (isalpha(c)) {
+            if (isNum) {
+               v.push_back(Data());
+               isNum = false;
+            }
+            v.back().s += c;
+         }
+         else {
+            isNum = true;
+            v.back().factor *= c - '0';
+         }
+      }
+      return v;
+   }
+
+   struct A {
+      A() = default;
+      A(A* a_pre, Data d) : pre(a_pre), s(d.s), factor(d.factor) {
+         if (a_pre) preSize = a_pre->totalSize;
+         size = preSize + s.size();
+         totalSize = size * factor;
+      }
+
+      //K must < totalSize;
+      char find(long long K) {
+         K %= size;
+         if (K < preSize) return pre->find(K);
+         return s[K - preSize];
+      }
+
+      A* pre = nullptr;
+      string s;
+      long long factor = 1;
+      long long size = 0;
+      long long preSize = 0;
+      long long totalSize = 0;
+   };
+};

@@ -1,0 +1,100 @@
+class Robot {
+private:
+    int x;
+    int y;
+    string dir;
+    int width;
+    int height;
+    int roundTrip;
+    
+    bool isOnAxis(){
+        return (y == 0 && dir == "East") || (y == height - 1 && dir == "West") || (x == 0 && dir == "South") || (x == width - 1 && dir == "North");
+    }
+    
+    void moveOnePosition(){
+        if(dir == "North"){
+            if(y == height - 1){
+                x--;
+                dir = "West";
+            }
+            else{
+                y++;
+            }
+        }
+        else if(dir == "East"){
+            if(x == width - 1){
+                y++;
+                dir = "North";
+            }
+            else{
+                x++;
+            }
+        }
+        else if(dir == "West"){
+            if(x == 0){
+                y--;
+                dir = "South";
+            }
+            else{
+                x--;
+            }
+        }
+        else if(dir == "South"){
+            if(y == 0){
+                x++;
+                dir = "East";
+            }
+            else{
+                y--;
+            }
+        }
+    }
+    
+public:
+    Robot(int width, int height) {
+        this->x = 0;
+        this->y = 0;
+        this->dir = "East";
+        this->width = width;
+        this->height = height;
+        this->roundTrip = 2 * (width + height - 2);
+    }
+    
+    void move(int num) {
+        while(!isOnAxis() && num > 0){
+            moveOnePosition();
+            num--;
+        }
+        
+        if(num > 0){
+            if(num / roundTrip > 0){
+                if(dir == "East" && y == 0 && x == 0){
+                    dir = "South";
+                }
+                else if(dir == "North" && y == 0 && x == width - 1){
+                    dir = "East";
+                }
+                else if(dir == "West" && y == height - 1 && x == width - 1){
+                    dir = "North";
+                }
+                else if(dir == "South" && y == height - 1 && x == 0){
+                    dir = "West";
+                }
+            }
+            num = num % roundTrip;
+        }
+        
+        while(num > 0){
+            moveOnePosition();
+            num--;
+        }
+    }
+    
+    vector<int> getPos() {
+        return vector<int> {this->x, this->y};
+    }
+    
+    string getDir() {
+        return this->dir;
+    }
+};

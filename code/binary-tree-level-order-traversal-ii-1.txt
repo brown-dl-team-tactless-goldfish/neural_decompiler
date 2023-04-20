@@ -1,0 +1,66 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *columnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+#define len 800
+int levelcount;
+void order(struct TreeNode* root,int* returnSize,int** columnSizes1,int** result)
+{
+    if(root==NULL)
+    {return ;}
+    levelcount++;
+    if(root->left==NULL&&root->right==NULL&&*returnSize<levelcount)
+    {*returnSize=levelcount;}
+    int temp=columnSizes1[0][len-levelcount]++;
+    result[len-levelcount][temp]=root->val;
+    order(root->left,returnSize,columnSizes1,result);
+    order(root->right,returnSize,columnSizes1,result);
+    levelcount--;
+}
+int** levelOrderBottom(struct TreeNode* root, int** columnSizes, int* returnSize) {
+    *returnSize=0;
+    if(root==NULL)
+    {     
+        *columnSizes=(int*)malloc(sizeof(int));
+        columnSizes[0][0]=0;
+        return NULL;
+    }
+    levelcount=0;
+    int** columnSizes1=(int**)malloc(sizeof(int*));
+    columnSizes1[0]=(int*)malloc(sizeof(int)*len);
+    for(int i=0;i<len;i++)
+    {
+        columnSizes1[0][i]=0;
+    }
+    
+    int** result=(int**)malloc(sizeof(int*)*len);
+    for(int i=0;i<len;i++)
+    {
+        result[i]=(int*)malloc(sizeof(int)*len);
+    }
+    order(root,returnSize,columnSizes1,result);
+    *columnSizes=(int*)malloc(*returnSize*sizeof(int));
+    for(int i=0;i<*returnSize;i++)
+    {
+        columnSizes[0][i]=columnSizes1[0][len-*returnSize+i];
+    }
+    int** result1=(int**)malloc(sizeof(int*)*len);
+    for(int i=0;i<*returnSize;i++)
+    {
+        result1[i]=(int*)malloc(sizeof(int)*columnSizes[0][i]);
+        for(int j=0;j<columnSizes[0][i];j++)
+        {
+            result1[i][j]=result[len-*returnSize+i][j];
+        }
+    }
+    return result1;
+}

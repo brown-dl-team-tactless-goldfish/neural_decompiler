@@ -1,0 +1,239 @@
+class Solution {
+	class Term {
+		map<string, int> variables;
+        int degree;
+	public:
+		int coefficient;
+
+		Term() {
+			coefficient = 0;
+			degree = 0;
+		}
+
+		void addVariable(const string &var) {
+			variables[var]++;
+			degree++;
+		}
+
+		Term operator *(const Term &other) const {
+			Term result;
+			result.coefficient = coefficient * other.coefficient;
+			for (const auto &pair : variables) {
+				result.variables[pair.first] += pair.second;
+				result.degree += pair.second;
+			}
+			for (const auto &pair : other.variables) {
+				result.variables[pair.first] += pair.second;
+				result.degree += pair.second;
+			}
+			return result;
+		}
+
+		bool operator <(Term &other) {
+			if (degree != other.degree) {
+				return degree > other.degree;
+			}
+			set<string> varSet;
+			for (const auto &pair : variables) {
+				varSet.insert(pair.first);
+			}
+			for (const auto &pair : other.variables) {
+				varSet.insert(pair.first);
+			}
+			for (const string &var : varSet) {
+				if (variables[var] != other.variables[var]) {
+					return variables[var] > other.variables[var];
+				}
+			}
+			return this < &other; // make the comparison stable
+		}
+
+		bool sameVariables(Term &other) {
+			if (degree != other.degree) {
+				return false;
+			}
+			for (const auto pair : variables) {
+				if (pair.second != other.variables[pair.first]) {
+					return false;
+				}
+			}
+			for (const auto pair : other.variables) {
+				if (pair.second != variables[pair.first]) {
+					return false;
+				}
+			}
+			return true;
+		}
+
+		string toString() const {
+			string result = to_string(coefficient);
+			for (const auto pair : variables) {
+				for (int i = 0; i < pair.second; i++) {
+					result.push_back('*');
+					result.append(pair.first);
+				}
+			}
+			return result;
+		}
+	};
+
+	class Poly {
+		vector<Term> terms;
+	public:
+		static Poly mergeAndSort(vector<Poly> polies) {
+			Poly result;
+			vector<Term> &terms = result.terms;
+			for (const Poly &poly : polies) {
+				terms.insert(terms.end(), poly.terms.begin(), poly.terms.end());
+			}
+			sort(terms.begin(), terms.end());
+			int i = -1;
+			for (int j = 0; j < terms.size(); j++) {
+				if (i >= 0 && terms[i].sameVariables(terms[j])) {
+					terms[i].coefficient += terms[j].coefficient;
+					if (terms[i].coefficient == 0) {
+						i--;
+					}
+				} else if (terms[j].coefficient != 0) {
+					i++;
+					terms[i] = terms[j];
+				}
+			}
+			terms.erase(terms.begin() + (i + 1), terms.end());
+			return result;
+		}
+
+		void addTerm(int coefficient, string variable) {
+			terms.emplace_back();
+			terms.back().coefficient = coefficient;
+			if (!variable.empty()) {
+				terms.back().addVariable(variable);
+			}
+		}
+
+		void mulTerm(int coefficient, string variable) {
+			for (Term &term : terms) {
+				term.coefficient *= coefficient;
+				if (!variable.empty()) {
+					term.addVariable(variable);
+				}
+			}
+		}
+
+		void mulPoly(Poly &other) {
+			vector<Term> terms1 = terms;
+			const vector<Term> &terms2 = other.terms;
+			terms.clear();
+			for (const Term &t1 : terms1) {
+				for (const Term &t2 : terms2) {
+					terms.push_back(t1 * t2);
+				}
+			}
+		}
+
+		vector<string> toString() {
+			vector<string> result;
+			for (const Term &term : terms) {
+				result.push_back(term.toString());
+			}
+			return result;
+		}
+	};
+
+	Poly eval(const string &expression, int &idx, unordered_map<string, int> &map) {
+		vector<Poly> polies;
+		char sign = '+';
+		bool end = false;
+		for (; idx < expression.length() && !end; idx++) {
+			char ch = expression[idx];
+			switch (ch) {
+			    case ' ':
+				    continue;
+			    case '+':
+				    sign = '+';
+				    break;
+			    case '-':
+				    sign = '-';
+				    break;
+			    case '*':
+				    sign = '*';
+				    break;
+			    case '(': {
+				    idx++;
+				    Poly poly = eval(expression, idx, map);
+				    switch (sign) {
+				        case '+':
+					        polies.push_back(poly);
+					        break;
+				        case '-':
+					        poly.mulTerm(-1, "");
+					        polies.push_back(poly);
+					        break;
+				        case '*':
+					        polies.back().mulPoly(poly);
+					        break;
+				    }
+				    break;
+			    }
+			    case ')':
+				    end = true;
+				    break;
+			    default: {
+				    int coefficient = 1;
+				    string variable;
+				    if (isdigit(ch)) {
+					    coefficient = 0;    //!1
+					    int j = idx;
+					    while (j < expression.length() && isdigit(expression[j])) {
+						    coefficient = expression[j] - '0' + coefficient * 10;
+						    j++;
+					    }
+
+					    idx = j - 1;
+				    } else if (isalpha(ch)) {
+					    int j = idx;
+					    while (j < expression.length() && isalpha(expression[j])) {
+						    variable.push_back(expression[j]);
+						    j++;
+					    }
+					    if (map.find(variable) != map.end()) {
+						    coefficient = map[variable];
+						    variable.clear();
+					    }
+
+					    idx = j - 1;
+				    }
+				    switch (sign) {
+				        case '+':
+					        polies.emplace_back();
+					        polies.back().addTerm(coefficient, variable);
+					        break;
+				        case '-':
+					        polies.emplace_back();
+					        polies.back().addTerm(-coefficient, variable);
+					        break;
+				        case '*':
+					        polies.back().mulTerm(coefficient, variable);
+					        break;
+				    }
+				    break;
+			    }
+			}
+			if (end) {
+				idx--;
+			}
+		}
+		return Poly::mergeAndSort(polies);
+	}
+public:
+	vector<string> basicCalculatorIV(string expression, vector<string>& evalvars, vector<int>& evalints) {
+		unordered_map<string, int> map;
+		for (int i = 0; i < evalvars.size(); i++) {
+			map[evalvars[i]] = evalints[i];
+		}
+
+		int idx = 0;
+		Poly poly = eval(expression, idx, map);
+		return poly.toString();
+	}
+};

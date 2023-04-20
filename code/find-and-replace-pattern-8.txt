@@ -1,0 +1,56 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+bool checkPattern(const char* word, const char* pattern)
+{
+    if (strlen(word) != strlen(pattern)) return false;
+    
+    bool used[26];
+    int table[26];
+    
+    memset(used, 0, sizeof(bool) * 26);   // set every member to false
+    memset(table, 0xff, sizeof(int) * 26);  // set every member to -1
+    
+    for (int i = 0; word[i] != '\0'; i++)
+    {
+        if (table[word[i]-'a'] == -1)
+        {
+            if (!used[pattern[i]-'a'])
+            {
+                table[word[i]-'a'] = pattern[i] - 'a';
+                used[pattern[i]-'a'] = true;
+            }
+            else
+            {
+                return false;
+            }
+        }
+        else
+        {
+            if (table[word[i]-'a'] != pattern[i]-'a')
+            {
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
+char ** findAndReplacePattern(char ** words, int wordsSize, char * pattern, int* returnSize){
+    *returnSize = 0;
+    char** ans = NULL;
+    
+    for (int i = 0; i < wordsSize; i++)
+    {
+        if (checkPattern(words[i], pattern))
+        {
+            (*returnSize)++;
+            ans = realloc(ans, sizeof(char*) * (*returnSize));
+            ans[(*returnSize)-1] = words[i];
+        }
+    }
+    
+    return ans;
+}

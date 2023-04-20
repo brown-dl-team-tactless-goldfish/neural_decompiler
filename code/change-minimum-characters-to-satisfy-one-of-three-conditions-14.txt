@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int minCharacters(string a, string b) {
+        if(a == b) return 0;
+        const int n = a.length(), m = b.length();
+        vector<int> ca(26);
+        vector<int> cb(26);
+        int mosta = 0, mostb = 0;
+        for(char c : a)  mosta = max(mosta, ++ca[c - 'a']);
+        for(char c : b)  mostb = max(mostb, ++cb[c - 'a']);
+        // prefix
+        for(int i = 1; i < 26; ++i) {
+            ca[i] += ca[i - 1];
+            cb[i] += cb[i - 1];
+        }
+        
+        int ans = min(strictlyLess(ca, cb), strictlyLess(cb, ca));  // compare condition 1 and 2
+        ans = min(ans, n - mosta + m - mostb);  // compare with condition 3
+        
+        return ans;
+    }
+private:
+    int strictlyLess(vector<int>& lo, vector<int>& hi) { 
+        int ans = INT_MAX;
+        for(int i = 0; i < 25; ++i) {   // all chars in lo less or equal to char(i + 'a'),  all chars in hi are greater than char(i + 'a')
+            int cur = lo[25] - lo[i] + hi[i];
+            ans = min(cur, ans);
+        }
+        return ans;
+    }
+};

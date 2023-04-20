@@ -1,0 +1,48 @@
+class Solution {
+public:
+    vector<int> closestPrimes(int a, int b) {
+        vector<int> prime;
+        if(a==b) return {-1,-1};
+        if(a==1&&b==2) return {1,2};
+        // if(a==1) prime.push_back(1);
+        if(a==1||a==2) prime.push_back(2);
+        if (a <= 2) {
+            a = 2;
+            if (b >= 2) {
+                a++;
+            }
+        }
+        if (a % 2 == 0)
+            a++;
+        for (int i = a; i <= b; i = i + 2) {
+            bool flag = 1;
+            for (int j = 2; j * j <= i; ++j) {
+                if (i % j == 0) {
+                    flag = 0;
+                    break;
+                }
+            }
+            if (flag == 1){
+                if(i==1)
+                    continue;
+                else
+                    prime.push_back(i);
+            }
+        }      
+        sort(prime.begin(),prime.end());
+        
+        int c=-1,d=-1;
+        int minDiff = INT_MAX, curDiff;
+        for(int i = 1; i < size(prime); i++) {
+            auto [p, q] = minmax(prime[i], prime[i-1]); // p and q will hold min and max amongst A[i] and A[j]
+            curDiff = q - p;
+            
+            if(curDiff < minDiff) { // if current diff < MAB, update it and only keep current pair in ans
+                minDiff = curDiff;
+                c=p;
+                d=q;
+            }
+        }
+        return {c,d};
+    }
+};

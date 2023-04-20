@@ -1,0 +1,41 @@
+int countBits(int n){
+    int count = 0;
+    while(n){
+        n &= (n-1);
+        count++;
+    }
+    return count;
+}
+
+int comparator (const void * p1, const void * p2)
+{
+    int a = *(int*)p1;
+    int b = *(int*)p2;
+    int c1 = countBits(a);
+    int c2 = countBits(b);
+    if(c1 == c2){
+        return a-b;
+    }
+    else{
+        return c1-c2;
+    }             
+}
+
+int* sortByBits(int* arr, int arrSize, int* returnSize){
+    int n = arrSize;
+    int i,c,j,idx;
+    int *res  = (int*) malloc(sizeof(int) * n);
+    if(n==0){
+        return arr;
+    }
+    
+    for(j=0;j<n;j++){
+        res[j] = arr[j];
+    }
+    
+    for(i=0;i<n;i++){
+        qsort(res, n, sizeof(int),comparator);
+    }
+    *returnSize = n;
+    return res;
+}

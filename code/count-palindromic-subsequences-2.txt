@@ -1,0 +1,15 @@
+int countPalindromes(string s) {
+	int cnt1[10] = {}, cnt2[100] = {}, cnt3[100] = {}, cnt4[10] = {}, res = 0, mod = 1e9 + 7;
+	for (char c : s) {
+		int curr = c - '0';
+		res = (res + cnt4[curr]) % mod;
+		for (int i = curr; i < 100; i += 10)
+			cnt4[i / 10] = (cnt4[i / 10] + cnt3[i]) % mod;
+		for (int i = 0; i < 100; i++)
+			cnt3[i] = (cnt3[i] + cnt2[i]) % mod;
+		for (int i = 0; i < 10; i++)
+			cnt2[i * 10 + curr] = (cnt2[i * 10 + curr] + cnt1[i]) % mod;
+		cnt1[curr] = (cnt1[curr] + 1) % mod;
+	}
+	return res;
+}

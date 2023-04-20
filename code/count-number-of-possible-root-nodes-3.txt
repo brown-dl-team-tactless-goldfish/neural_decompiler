@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int rootCount(vector<vector<int>>& edges, vector<vector<int>>& guesses, int k) {
+        n = edges.size() + 1;
+        g.resize(n);
+        for(auto& e:edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        for(auto& g:guesses){
+            guess.insert(pair(g[0], g[1]));
+        }
+
+        int res = 0, numGood = 0;
+        numGoodGuess(0, -1, numGood);
+        dfs(0, -1, numGood, res, k);
+        return res;
+    }
+
+    void numGoodGuess(int i, int par, int& count){
+        for(auto j:g[i]){
+            if(j == par) continue;
+            if(guess.count(pair(i, j))) count++;
+            numGoodGuess(j, i, count);
+        }
+    }
+
+    void dfs(int i, int par, int numGood, int& res, int k){
+        //cout<<i<<" "<<numGood<<endl;
+        if(numGood >= k) res++;
+        for(auto j:g[i]){
+            if(j == par) continue;
+            int jGood = numGood;
+            if(guess.count(pair(j, i))) jGood++;
+            if(guess.count(pair(i, j))) jGood--;
+            dfs(j, i, jGood, res, k);
+        }
+    }
+
+    int n;
+    vector<vector<int>> g;
+    set<pair<int,int>> guess;
+};

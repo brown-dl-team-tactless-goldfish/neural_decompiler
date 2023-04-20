@@ -1,0 +1,39 @@
+public class Solution 
+{
+    public long RepairCars(int[] ranks, int cars)
+    {
+        long l = 0;
+        long r = long.MaxValue;
+
+        long bestTime = 0;
+        while (l <= r) 
+        {
+            long mid = l + (r - l) / 2;
+            bool possible = Evaluate(ranks, cars, mid);
+            if (possible)
+            {
+                r = mid -1;
+                bestTime = mid;
+            }
+            else
+            {
+                l = mid +1 ;
+            }
+        }
+
+        return bestTime;
+    }
+
+    private bool Evaluate(int[] ranks, int cars,long time)
+    {
+        
+        foreach (int rank in ranks)
+        {
+            int carsFixed = (int)Math.Sqrt(time / rank);
+            cars -= carsFixed;
+            if (cars <= 0)
+                return true;
+        }
+        return false;
+    }
+}

@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int findTheCity(int n, vector<vector<int>>& edges, int distanceThreshold) {
+        vector<vector<int>> mat(n, vector<int>(n,INT_MAX)); //State matrix
+        for(int i=0;i<n;i++) mat[i][i] = 0; //Diagonals 0, no self loop allowed.
+        for(int i=0;i<edges.size();i++)   //Defining state matrix
+        {
+            int u = edges[i][0];
+            int v = edges[i][1];
+            int wt = edges[i][2];
+            mat[u][v] = wt;
+            mat[v][u] = wt;
+        }
+        
+        //Floyd-Warshall Algorithm for finding all possible shortest paths from each node
+        for(int k=0;k<n;k++)  //k means state. Number of state = number of nodes.
+        {
+            for(int i=0;i<n;i++)
+            {
+                for(int j=0;j<n;j++)
+                {
+                    if(i==k || j==k || i==j) continue; //For each state k, values of node k is preserved
+    
+                    if(mat[i][k]==INT_MAX || mat[k][j]==INT_MAX) continue; //Main algorithm
+                    else mat[i][j] = min(mat[i][j], mat[i][k]+mat[k][j]);
+                }
+            }
+            
+        }
+        
+        map<int, vector<int>> mp; //map for storing the citycount for each city
+        for(int i=0;i<n;i++)
+        {
+            int c = 0;
+            for(int j=0;j<n;j++)
+            {
+                if(mat[i][j]<=distanceThreshold) c++;  //each node preserves its value.
+            }
+            if(mp.find(c)==mp.end()) mp.insert({c,{i}});
+            else mp[c].push_back(i);
+        }
+        vector v = mp.begin()->second;
+        return *max_element(v.begin(),v.end());
+    }
+};

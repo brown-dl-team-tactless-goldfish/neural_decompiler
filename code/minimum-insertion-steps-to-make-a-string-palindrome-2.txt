@@ -1,0 +1,37 @@
+class Solution:
+    def minInsertions(self, s: str) -> int:
+        # print("s = ", s)
+
+        dp = {}
+
+        def helper(curS):
+            # print("helper curS = ", curS)
+            if (curS in dp):
+                return dp[curS]
+
+            n = len(curS)
+            if (n < 2):
+                dp[curS] = 0
+                return 0
+            elif (n == 2):
+                if (curS[0] == curS[1]):
+                    dp[curS] = 0
+                    return 0
+                else:
+                    dp[curS] = 1
+                    return 1
+            else:
+
+                if (curS[0] == curS[-1]):
+                    return helper(curS[1:-1])
+                else:
+                    case1 = helper(curS[1:])
+                    case2 = helper(curS[0:-1])
+
+                    dp[curS] = min(case1, case2) + 1
+                    return min(case1, case2) + 1
+
+        res = helper(s)
+        # print("end dp = ", dp)
+        # print("res = ", res)
+        return res

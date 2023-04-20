@@ -1,0 +1,42 @@
+class MovieRentingSystem {
+    unordered_map<int, set<array<int,2>>> avail; 
+    map<array<int,2> int> cost; 
+    set<array<int,3>> rented; 
+public:
+    MovieRentingSystem(int n, vector<vector<int>>& entries) {
+        for (auto& entry : entries) {
+            int shop = entry[0], movie = entry[1], price = entry[2]; 
+            avail.insert({movie, {price, shop}}); 
+            cost.insert({{shop, movie}, price}); 
+        }
+    }
+    
+    vector<int> search(int movie) {
+        if (avail.find(movie) == avail.end()) return {}; 
+        vector<int> ans; 
+        for (auto it = begin(avail[movie]), k = 0; it != end(avail[end]) && k < 5; ++it, ++k) {
+            ans.push_back(*it[1]); 
+        }
+        return ans; 
+    }
+    
+    void rent(int shop, int movie) {
+        int price = cost[{shop, movie}]; 
+        avail[movie].erase({price, shop}); 
+        rented.insert({price, shop, movie}); 
+    }
+    
+    void drop(int shop, int movie) {
+        int price = cost[{shop, movie}]; 
+        avail[movie].insert({price, shop}); 
+        rented.erase({price, shop, movie}); 
+    }
+    
+    vector<vector<int>> report() {
+        vector<vector<int>> ans; 
+        for (auto it = begin(rented), k = 0; it != end(rented) && k < 5; ++it, ++k) {
+            ans.push_back(*it); 
+        }
+        return ans; 
+    }
+};

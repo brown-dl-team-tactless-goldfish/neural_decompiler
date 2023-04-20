@@ -1,0 +1,51 @@
+typedef struct {
+    int i, n;
+    sem_t zs, es, os;
+} ZeroEvenOdd;
+
+ZeroEvenOdd* zeroEvenOddCreate(int n) {
+    ZeroEvenOdd* obj = (ZeroEvenOdd*) malloc(sizeof(ZeroEvenOdd));
+    obj->i = 1;
+    obj->n = n;
+    sem_init(&obj->zs, 0, 0);
+    sem_init(&obj->es, 0, 0);
+    sem_init(&obj->os, 0, 0);
+    return obj;
+}
+
+void zero(ZeroEvenOdd* obj) {
+    ZeroEvenOdd *o = obj;
+    sem_t *s = &obj->os;
+    while (o->i <= o->n) {
+        printNumber(0);
+        sem_post(s);
+        s = s == &o->os ? &o->es : &o->os;
+        sem_wait(&o->zs);
+    }
+    sem_post(&o->es);
+    sem_post(&o->os);    
+}
+
+inline void cmn(ZeroEvenOdd *o, sem_t *s) {
+    sem_wait(s);      
+    while (o->i <= o->n) {
+        printNumber(o->i++);
+        sem_post(&o->zs);        
+        sem_wait(s);   
+    }
+}
+
+void even(ZeroEvenOdd* obj) {
+    cmn(obj, &obj->es);
+}
+
+void odd(ZeroEvenOdd* obj) {
+    cmn(obj, &obj->os);    
+}
+
+void zeroEvenOddFree(ZeroEvenOdd* obj) {
+    sem_destroy(&obj->zs);
+    sem_destroy(&obj->es);
+    sem_destroy(&obj->os);
+    free(obj);
+}

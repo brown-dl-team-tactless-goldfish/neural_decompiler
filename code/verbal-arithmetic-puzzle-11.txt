@@ -1,0 +1,104 @@
+
+class IsSolvable {
+public:
+    IsSolvable(vector<string>& words, string result)
+        :   words(words),
+            charToVal(26, -1) {
+        // Append result to words
+        words.push_back(result);
+         
+        // Reverse words to changes order from lsd to msd
+        for (string& word : words) {
+            reverse(word.begin(), word.end());
+        }   
+    }
+    
+    bool solve() {
+        return solve(0, 0, 0);    
+    }
+    
+private:
+    bool solve(int cIdx, int carryIn, int usedVals){
+        // Done
+        if (cIdx == words.back().size()) {
+            return true;
+        }
+        
+        return solve(cIdx, 0, carryIn, usedVals);
+    }
+    
+    bool solve(int cIdx, int wIdx, int carryIn, int usedVals) {
+        // Done assigning chars at this index in all words
+        if (wIdx == words.size()) {
+            // Sum all corresponding words
+            int sum = carryIn;
+            
+            for (int i = 0; i < words.size() - 1; ++i) {
+                if (cIdx < words[i].length()) {
+                    sum += charToVal[words[i][cIdx] - 'A']; 
+                }
+            }
+            
+            // Check it matches with result
+            if (sum % 10 == charToVal[words.back()[cIdx] - 'A']) {
+                // Continue checking higher digits
+                return solve(cIdx + 1, sum / 10, usedVals);
+            }
+                
+            return false;
+        } 
+
+        // Word being processed
+        string& word =  words[wIdx];
+        
+        if (cIdx < word.size() && charToVal[word[cIdx] -'A'] == -1) {
+            // Assign char
+            int chId = word[cIdx] - 'A';
+
+            for (int i = 0, mask = 1; i < 10; ++i, mask <<= 1) {
+                if (usedVals & mask) {
+                    continue;
+                }
+                
+                // Cannot have 0 at msd
+                if ((i == 0) && (cIdx == word.size() - 1)) {
+                    continue;    
+                }
+                
+                // Assign word[cIdx] i
+                charToVal[chId] = i;
+                
+                // Assign char in next word
+                if (solve(cIdx, wIdx + 1, carryIn, usedVals | mask)) {
+                    return true;
+                } 
+                  
+                charToVal[chId] = -1;
+            }    
+            
+            return false;
+        } else {
+            // Already assigned char  or corresponding char doesn't in this word
+            
+            // Cannot have 0 at msd
+            if ((cIdx == word.size() - 1) && (charToVal[word[cIdx] -'A'] == 0)) {
+                return false;
+            }
+
+            return solve(cIdx, wIdx + 1, carryIn, usedVals);
+        }
+    }
+    
+    vector<string>& words;
+    vector<int> charToVal;
+};
+
+
+class Solution {
+public:
+    bool isSolvable(vector<string>& words, string result) {
+        IsSolvable isSolvableWrap(words, result);  
+        
+        return isSolvableWrap.solve();
+    }
+};

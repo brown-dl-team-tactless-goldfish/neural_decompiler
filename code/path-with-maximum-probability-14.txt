@@ -1,0 +1,40 @@
+    public double MaxProbability(int n, int[][] edges, double[] succProb, int start, int end) {
+        
+        Dictionary<int, List<Tuple<int,double>>> adj = new Dictionary<int, List<Tuple<int,double>>>();
+        
+        for(int i=0; i< edges.Length; i++)
+        {
+            if (!adj.ContainsKey(edges[i][0])) { adj[edges[i][0]] = new List<Tuple<int,double>>(); }
+            if (!adj.ContainsKey(edges[i][1])) { adj[edges[i][1]] = new List<Tuple<int,double>>(); }
+            
+            adj[edges[i][0]].Add(new Tuple<int,double>(edges[i][1], succProb[i]));
+            adj[edges[i][1]].Add(new Tuple<int,double>(edges[i][0], succProb[i]));
+        }
+        
+        double[] val = new double[n];
+        val[start] = 1;
+       
+        
+        Queue<int> queue = new Queue<int>();
+        queue.Enqueue(start);
+        
+        int idx;
+        
+        while(queue.Count > 0)
+        {
+            idx = queue.Dequeue();
+            
+            if (!adj.ContainsKey(idx)) { continue; }
+            
+            foreach(Tuple<int,double> t in adj[idx])
+            {
+                if (val[idx] * t.Item2 > val[t.Item1])
+                {
+                    val[t.Item1] = val[idx] * t.Item2;
+                    queue.Enqueue(t.Item1);
+                }
+            }
+        }
+        
+        return val[end];
+    }

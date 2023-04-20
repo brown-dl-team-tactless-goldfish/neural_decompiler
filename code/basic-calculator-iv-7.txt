@@ -1,0 +1,269 @@
+class Solution {
+    struct Token {
+        char op;
+        char paren;
+        string var;
+        int val;
+
+        Token() {
+            op = ' ';
+            paren = ' ';
+            val = 0;
+        }
+    };
+    
+    struct Term {
+        vector<int> var;
+        int coef;
+
+        Term() {
+            coef = 1;
+            var = vector<int>{};
+        }
+
+        Term(int c, vector<int> a) {
+            coef = c;
+            var = a;
+        }
+    };
+
+    // two terms are the same except the coefficient 
+    bool similar(Term &a, Term &b) {
+        for (int i = 0; i < a.var.size(); ++i) {
+            if (a.var[i] != b.var[i]) return false;
+        }
+
+        return true;
+    }
+
+    vector<Term> add(vector<Term> &a, vector<Term> &b) {
+        vector<Term> ret;
+        
+        for (auto &it1: a) {
+            int temp = it1.coef;
+            for (auto &it2: b) {
+                if (similar(it1, it2)) temp += it2.coef;
+            }
+            ret.push_back(Term(temp, it1.var));
+        }
+
+        for (auto &it2: b) {
+            bool included = false;
+            for (auto &it1: a) {
+                if (not similar(it1, it2)) continue;
+                
+                included = true;
+                break;
+            }
+            if (not included) ret.push_back(it2);
+        }
+
+        for (int i = ret.size() - 1; i >= 0; --i) {
+            if (ret[i].coef == 0) ret.erase(ret.begin() + i);
+        }
+        sort(ret.begin(), ret.end(), compare());
+
+        return ret;
+    }
+
+    vector<Term> multiply(vector<Term> &a, vector<Term> &b) {
+        vector<Term> ret;
+
+        for (const auto &it1: a) {
+            for (const auto &it2: b) {
+                vector<int> var(it1.var.size());
+                for (int i = 0; i < var.size(); ++i) var[i] = it1.var[i] + it2.var[i];
+                Term temp(it1.coef * it2.coef, var);
+                bool included = false;
+                for (auto &it3: ret) {
+                    if (not similar(it3, temp)) continue;
+                    it3.coef += temp.coef;
+                    included = true;
+                    break;
+                }
+                if (not included) ret.push_back(temp);
+            }    
+        }
+
+        for (int i = ret.size() - 1; i >= 0; --i) {
+            if (ret[i].coef == 0) ret.erase(ret.begin() + i);
+        }
+        sort(ret.begin(), ret.end(), compare());
+
+        return ret;
+    }
+
+    // converting input string into vector of tokens
+    // return the list of variables in ascending order
+    vector<string> tokenize(string &expression,  vector<string>& evalvars, vector<int>& evalints, vector<Token> &data) {
+        unordered_map<string, int> temp;
+        for (int i = 0; i < evalvars.size(); ++i) temp[evalvars[i]] = evalints[i];
+
+        set<string> s;
+        int n = expression.size();
+        
+        string str;
+        for (int i = 0; i <= n; ++i) {
+            if (expression[i] == '+' or expression[i] == '-' or expression[i] == '*') {
+                Token t;
+                t.op = expression[i];
+                data.push_back(t);
+                continue;
+            }
+
+            if (expression[i] != ' ' and expression[i] != '(' and expression[i] != ')') {
+                str.push_back(expression[i]);
+                if (i + 1 < n) continue;
+            }
+
+            if (not str.empty() and (i == n - 1 or expression[i] == ' ' or expression[i] == ')')) {
+                Token t;
+                if (str[0] >= 'a' and str[0] <= 'z') {
+                    if (temp.find(str) == temp.end()) {
+                        s.insert(str);
+                        t.var = str;
+                    } else t.val = temp[str];
+                } else t.val = stoi(str);
+                data.push_back(t);
+                str = "";
+            }
+
+            if (expression[i] == '(' or expression[i] == ')') {
+                Token t;
+                t.paren = expression[i];
+                data.push_back(t);
+            }
+        }
+
+        return vector<string>(s.begin(), s.end());
+    }
+
+    vector<Term> simplify(vector<Token> &data, vector<string> &variables) {
+        // vaiable name to index mapping
+        unordered_map<string, int> mp;
+        // <expression in represented in Terms, oprtator, depth>
+        vector<tuple<vector<Term>, char, int>> sk;
+        int level = 0, n = variables.size();
+
+        for (int i = 0; i < variables.size(); ++i) mp[variables[i]] = i;
+        for (auto &tk: data) {
+            if (tk.op != ' ') {
+                sk.push_back({vector<Term>{}, tk.op, level});
+                continue;
+            }
+
+            if (tk.paren == '(') {
+                level += 1;
+                continue;
+            }
+            
+            if (tk.paren== ')') {
+                level -= 1;
+                while (not sk.empty() and get<2>(sk.back()) > level) {
+                    int sz = sk.size();
+                    if (sz == 1 or get<2>(sk[sz - 3]) < get<2>(sk[sz - 1])) {
+                        if (sz > 1 and get<1>(sk[sz - 2]) == '*' and get<2>(sk[sz - 3]) + 1 == get<2>(sk[sz - 1])) {
+                            auto [a1, b1, c1] = sk.back();
+                            sk.pop_back();
+                            sk.pop_back();
+                            auto [a2, b2, c2] = sk.back();
+                            sk.pop_back();
+                            sk.push_back({multiply(a1, a2), b1, c1});
+                        } else {
+                            auto [a, b, c] = sk.back();
+                            sk.pop_back();
+                            if (not sk.empty() and get<1>(sk.back()) == '-' and get<2>(sk.back()) == c - 1) {
+                                auto [a1, b1, c1] = sk.back();
+                                sk.pop_back();
+                                sk.push_back({a1, '+', c1});
+                                for (auto &it: a) it.coef = -it.coef;
+                            }
+                            sk.push_back({a, b, c - 1});
+                        }
+                    } else {
+                        auto [a1, b1, c1] = sk.back();
+                        sk.pop_back();
+                        if (get<1>(sk.back()) == '-') {
+                            for (auto &it: a1) it.coef = -it.coef;
+                        }
+                        sk.pop_back();
+                        auto [a2, b2, c2] = sk.back();
+                        sk.pop_back();
+                        sk.push_back({add(a1, a2), b1, c1});
+                    }
+                }
+
+                continue;
+            }
+
+            Term t;
+            if (n > 0) t.var.resize(n, 0);
+            if (not tk.var.empty()) {
+                t.var = vector<int>(n);
+                t.var[mp[tk.var]] = 1;
+            } else t.coef = tk.val;
+
+            if (not sk.empty() and get<1>(sk.back()) == '-' and get<2>(sk.back()) == level) {
+                auto [a, b, c] = sk.back();
+                sk.pop_back();
+                sk.push_back({a, '+', c});
+                t.coef = -t.coef;
+            }
+            
+            vector<Term> temp{t};
+            int sz = sk.size();
+            if (sz > 1 and get<1>(sk[sz - 1]) == '*' and get<2>(sk[sz - 2]) == level) {
+                sk.pop_back();
+                auto [a, b, c] = sk.back();
+                sk.pop_back();
+                sk.push_back({multiply(a, temp), b, c});                
+            } else sk.push_back({temp, ' ', level});
+        }
+        
+        while (sk.size() > 1) {
+            auto [a1, b1, c1] = sk.back();
+            sk.pop_back();
+            if (get<1>(sk.back()) == '-') {
+                for (auto &it: a1) it.coef = -it.coef;
+            }
+            sk.pop_back();
+            auto [a2, b2, c2] = sk.back();
+            sk.pop_back();
+            sk.push_back({add(a1, a2), b1, c1});
+        }
+
+        return get<0>(sk.back());
+    }
+
+    struct compare {
+        bool operator()(Term &a, Term &b) {
+            int c = accumulate(a.var.begin(), a.var.end(), 0) - accumulate(b.var.begin(), b.var.end(), 0);
+            if (c == 0) return a.var > b.var;
+            return c > 0;
+        }
+    };
+
+
+public:
+    vector<string> basicCalculatorIV(string expression, vector<string>& evalvars, vector<int>& evalints) {
+        vector<Token> data;
+        vector<string> variables = tokenize(expression, evalvars, evalints, data);
+        vector<Term> temp = simplify(data, variables);
+        vector<string> ret;
+
+        for (auto &it: temp) {
+            if (it.coef == 0) continue;
+            string str = to_string(it.coef);
+            for (int i = 0; i < it.var.size(); ++i) {
+                if (it.var[i] == 0) continue;
+                for (int k = 0; k < it.var[i]; ++k) {
+                    str.push_back('*');
+                    str += variables[i]; 
+                }
+            } 
+            ret.push_back(str);
+        }
+
+        return ret;
+    }
+};

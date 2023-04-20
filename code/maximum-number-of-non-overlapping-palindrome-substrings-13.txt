@@ -1,0 +1,40 @@
+class Solution {
+public:
+    const int INF = 1e9 + 7;
+    int maxPalindromes(string s, int k) {
+        int n = s.size();
+        if (k == 1) {
+            return n;
+        }
+        vector<vector<bool>> dp(n, vector<bool> (n));
+        for (int i = 0; i < n; i++) {
+            dp[i][i] = true;
+        }
+        vector<int> minLen(n, INF);
+        for (int L = n - 1; L >= 0; L--) {
+            for (int R = L + 1; R < n; R++) {
+                if (s[L] == s[R]) {
+                    if (L + 1 == R) {
+                        if (R - L + 1 >= k) {
+                            minLen[L] = min(minLen[L], R - L + 1);
+                        }
+                        dp[L][R] = true;
+                    } else if (dp[L + 1][R - 1]) {
+                        if (R - L + 1 >= k) {
+                            minLen[L] = min(minLen[L], R - L + 1);
+                        }
+                        dp[L][R] = true;
+                    }
+                }
+            }
+        }
+        vector<int> dp1(n + 1);
+        for (int i = n - 1; i >= 0; i--) {
+            if (minLen[i] != INF) {
+                dp1[i] = max(dp1[i], dp1[i + minLen[i]] + 1);
+            }
+            dp1[i] = max(dp1[i], dp1[i + 1]);
+        }
+        return dp1[0];
+    }
+};

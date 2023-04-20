@@ -1,0 +1,55 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char ** findWords(char ** words, int wordsSize, int* returnSize){
+    short hash[26] = {0}, len;
+    * returnSize = 0;
+    bool flag;
+    char **output = (char **)malloc(sizeof(char*) * wordsSize);
+    char row2[] = "asdfghjkl", row3[] = "zxcvbnm";
+    for(int i = 0; i < 9; i++)
+        hash[row2[i] - 97] = 1;
+    for(int i = 0; i < 7; i++)
+        hash[row3[i] - 97] = 2;
+
+    for(int i = 0; i < wordsSize; i++){
+        len = strlen(words[i]) - 1;
+        flag = true;
+        for(int j = 0; j < len; j++){
+            if(words[i][j] < 97 && words[i][j + 1] < 97){ // capital letters
+                if(hash[words[i][j] - 65] != hash[words[i][j + 1] - 65]) 
+                {
+                    flag = false;
+                    break;
+                }
+            }
+            else if(words[i][j] < 97 && words[i][j + 1] >= 97){ // capital letter and small letter
+                if(hash[words[i][j] - 65] != hash[words[i][j + 1] - 97]) 
+                {
+                    flag = false;
+                    break;
+                }
+            }
+            else if(words[i][j] >= 97 && words[i][j + 1] < 97){ // small letter and capital letter
+                if(hash[words[i][j] - 97] != hash[words[i][j + 1] - 65]) 
+                {
+                    flag = false;
+                    break;
+                }
+            }
+            else{ // small letters
+                if(hash[words[i][j] - 97] != hash[words[i][j + 1] - 97]) 
+                {
+                    flag = false;
+                    break;
+                }
+            }
+        }
+        if(flag){
+            output[*returnSize] = (char *)malloc(sizeof(char) * (len + 2));
+            strcpy(output[(*returnSize)++], words[i]);
+        }
+    }
+
+    return output;
+}

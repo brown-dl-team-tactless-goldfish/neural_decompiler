@@ -1,0 +1,36 @@
+public class Solution {
+    public bool CanReorderDoubled(int[] arr) {
+        
+        if(arr.Length % 2 != 0)
+            return false;
+        
+        Dictionary<int,int> dic = new Dictionary<int,int>();
+        foreach(var num in arr)
+        {
+            if(dic.ContainsKey(num))
+                dic[num]++;
+            else
+                dic.Add(num,1);
+        }
+        
+        Array.Sort(arr);
+        foreach(var num in arr)
+        {
+            // skip checking the number that has been used
+            if(dic[num] == 0)
+                continue;
+            
+            if(num < 0 && num % 2 != 0)
+                return false;
+            
+            int target = num >= 0? num * 2 : num / 2;
+            if(!dic.ContainsKey(target) || dic[target] == 0)
+                return false;
+            
+            dic[num]--;
+            dic[target]--;
+        }
+        
+        return true;
+    }
+}

@@ -1,0 +1,48 @@
+class Solution {
+public:
+    long long dp[100005] = {};
+    long long dp2[100005] = {};
+    long long maxPoints(vector<vector<int>>& points) {
+        int rows = points.size();
+        int cols = points[0].size();
+        memset(dp, 0, sizeof dp);
+        memset(dp2, 0, sizeof dp2);
+        for (int y = 0; y < rows; ++y) {
+            for (int c = 0; c < cols; ++c) {
+                long long p = points[y][c]; //current point for left to right traversal
+                long long p2 = points[y][cols-1-c]; // current point for right to left traversal
+                
+                if (y==0) {
+                    if (cols-1-c == cols - 1) {
+                        dp2[cols-1-c] = p2;
+                    } else {
+                        dp2[cols-1-c] = max(p2, dp2[cols-c] - 1);
+                    }
+                    
+                    if (c==0) {
+                        dp[c] = p;
+                    } else {
+                        dp[c] = max(p, dp[c-1] - 1);
+                    }
+                } else {
+                    dp[c] = max(dp[c] + p, (c-1 >= 0 ? dp[c-1] - 1 : p));
+                    dp2[cols-1-c] = max(dp2[cols-1-c] + p2, (cols - c < cols ? dp2[cols-c] - 1 : p2));
+                }
+            }
+            
+            //merge 2 dp arrays to obtain best scores possible after processing current row
+            for (int c = 0; c < cols; ++c) {
+                dp[c] = max(dp[c], dp2[c]);
+                dp2[c] = dp[c];
+            }
+        }
+		
+		//just find max after last row has been processed
+        long long res = 0;
+        for (int c = 0; c < cols; ++c) {
+            res = max(res, dp[c]);
+        }
+        
+        return res;
+    }
+};

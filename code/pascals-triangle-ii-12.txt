@@ -1,0 +1,19 @@
+int* getRow(int rowIndex, int* returnSize){
+    if (rowIndex > 33) {return NULL;}
+    int *former = (int *)malloc(sizeof(int) * 34); former[0] = former[1] = 1;
+    int *res = (int *)malloc(sizeof(int) * 34);
+    if (rowIndex == 0) {*returnSize = 1; return former;}
+
+    for (int i = 1; i <= 33; ++i) {
+        *returnSize = i + 1;
+        res[0] = res[i] = 1;
+        if (i >= 2) {
+            for (int j = 1; j < i; ++j) {
+                res[j] = former[j-1] + former[j];
+            }
+        }
+        if (i == rowIndex) {return res;}
+        else {memcpy(former, res, sizeof(int) * (i+1));}
+    }
+    return res;
+}

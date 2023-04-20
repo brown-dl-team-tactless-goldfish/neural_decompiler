@@ -1,0 +1,36 @@
+/*
+I'm sure it can be much faster, but it will be too much complicated.
+This is the simplest solution I can think of right now and still quite fast enough.
+*/
+
+int cmp(const void*a,const void*b){
+    return *(char*)a-*(char*)b;
+}
+
+int numSpecialEquivGroups(char ** words, int wordsSize){
+    int i,j,even,odd,len=strlen(words[0]),cnt=0; 
+    int group[1000]={0};
+    char temp[21];
+    for(i=0;i<wordsSize;i++){
+        even=0,odd=len-1;
+        for(j=0;j<len;j++){
+            if(j%2==0)
+                temp[even++]=words[i][j];
+            else
+                temp[odd--]=words[i][j];
+        }
+        qsort(temp,len-len/2,sizeof(char),cmp);
+        qsort(temp+len/2,len/2,sizeof(char),cmp);
+        memcpy(words[i],temp,len*sizeof(char));
+    }
+    for(i=0;i<wordsSize;i++){
+        if(group[i])
+            continue;
+        group[i]=++cnt;
+        for(j=i+1;j<wordsSize;j++){
+            if(strcmp(words[i],words[j])==0)
+                group[j]=cnt;
+        }
+    }
+    return cnt;
+}

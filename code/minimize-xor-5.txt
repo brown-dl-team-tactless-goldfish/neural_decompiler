@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int minimizeXor(int num1, int num2) {
+        int count = 0;
+        while(num2!=0) {
+            if((num2&1)!=0) {
+                count++;
+            }
+            num2>>=1;
+        }
+
+
+        int res = 0;
+        for(int i=31;i>=0;i--) {
+            if(count == 0) {
+                break;
+            }
+            if(((1<<i)&num1) != 0) {
+                res |= (1<<i);
+                count--;
+            }
+        }
+        if(count == 0) {
+            return res;
+        }
+        
+        for(int i=0;i<31;i++) {
+            bool flag = (1<<i)&res;
+            if(!flag) {
+                count--;
+                res |= (1<<i);
+            }
+            if(count == 0) {
+                break;
+            }
+        }
+
+        return res;
+    }
+};

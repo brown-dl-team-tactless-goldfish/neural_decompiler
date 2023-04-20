@@ -1,0 +1,99 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+typedef struct _union {
+    int *p; //parent
+    int *size;
+    int n; // number of elements in set
+} set_union;
+
+void set_union_init (set_union *s, int n) {
+    int i;
+    s->p = calloc(n+1, sizeof(int));
+    s->size = calloc(n+1, sizeof(int));
+    for (i = 1; i <= n; i++) {
+        s->p[i] = i;
+        s->size[i] = 1;
+    }
+    s->n = n;
+}
+
+int find(set_union *s, int x) {
+    if (s->p[x] == x) {
+        return x;
+    } else {
+        return (find(s, s->p[x]));
+    }
+}
+
+void union_(set_union *s, int x, int y) {
+    int r1, r2;
+    
+    r1 = find(s, x);
+    r2 = find(s, y);
+    
+    if (r1 == r2) {
+        return;
+    }
+    
+    if (s->size[r1] >= s->size[r2]) {
+        s->size[r1] = s->size[r1] + s->size[r2];
+        s->p[r2] = r1;
+    } else {
+        s->size[r1] = s->size[r1] + s->size[r2];
+        s->p[r1] = r2;
+    }
+
+}
+
+bool same_component(set_union *s, int s1, int s2) {
+    return (find(s, s1) == find(s, s2));
+}
+
+void connection(set_union *s, int threshold, int n) {
+    int i, j, x, y;
+    
+    for(i = threshold + 1; i <= n; i++) {
+        x = find(s, i);
+        for(j = 2; i*j <= n; j++) {
+            y = find(s, i*j);
+            if (x == y) {
+                continue;
+            } else union_(s, x, y);
+        }
+    }
+}
+
+bool* areConnected(int n, int threshold, int** queries, int queriesSize, int* queriesColSize, int* returnSize) {
+    int i, j;
+    bool *res;
+    int div = 0;
+    set_union *s = NULL;
+    
+    res = calloc(queriesSize, sizeof(bool));
+    s = calloc(1, sizeof(set_union));
+    
+    *returnSize = queriesSize;
+    
+    /*
+     create a disjoint set of all the vertices first
+     create connection for all the pairs which with the multiples of i, 2*i
+	 where i = threshold + 1
+	 go through the queries and update the result using union-find
+    */
+    
+    //initialize the set_union
+    set_union_init(s, n);
+    connection(s, threshold, n);
+  
+    for (i = 0; i < queriesSize; i++, div = 0) {
+    if (false == res[i]) {
+            res[i] = same_component(s, queries[i][0], queries[i][1]);
+        }
+    }
+    
+    return res;
+}

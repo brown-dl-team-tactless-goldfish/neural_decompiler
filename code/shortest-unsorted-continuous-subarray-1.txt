@@ -1,0 +1,52 @@
+int partition(int* array,int low,int high)
+{
+    int temp_1=array[low];
+    while(low<high)
+    {
+        while(low<high&&array[high]>=temp_1)
+            high--;
+        if(low<high) 
+        {
+            array[low]=array[high];
+            low++;
+        }
+        while(low<high&&array[low]<temp_1)
+            low++;
+        if(low<high)
+        {
+            array[high]=array[low];
+            high--;
+        }
+    }
+    array[low]=temp_1;
+    return low;
+}
+void quick_sort(int* array,int s,int t)
+{   
+    int i=0;
+    if(s<t)
+    {
+        i=partition(array,s,t);
+        quick_sort(array,s,i-1);
+        quick_sort(array,i+1,t);
+    }
+}
+int findUnsortedSubarray(int* nums, int numsSize) {
+    int *nums1=(int*)malloc(sizeof(int)*numsSize);
+    for(int i=0;i<numsSize;i++){
+        nums1[i]=nums[i];
+    }
+    quick_sort(nums1,0,numsSize-1);
+    int i=0;
+    int j=numsSize-1;
+    while(i<numsSize&&nums1[i]==nums[i]){
+        i++;
+    }
+    if(i==numsSize){return 0;}
+    while(j>=0&&nums1[j]==nums[j]){
+        j--;
+        i++;
+    }
+    return numsSize-i;
+    
+}

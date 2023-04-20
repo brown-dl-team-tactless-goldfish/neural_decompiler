@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int maximumSum(const vector<int>& arr) {
+        int maxi = *max_element(arr.begin(), arr.end());
+        if (maxi <= 0) return maxi;
+        return helper(arr.begin(), arr.end());
+    }
+
+    int helper(vector<int>::const_iterator a, vector<int>::const_iterator b) {
+        if (a >= b) return 0;
+        auto p = min_element(a, b);
+        if (*p >= 0) return accumulate(a, b, 0);
+        int left = 0, right = 0;
+        int leftCur = 0, rightCur = 0;
+        for (auto i = p - 1; i >= a; --i) {
+            leftCur += *i;
+            left = max(left, leftCur);
+        }
+        for (auto i = p + 1; i < b; ++i) {
+            rightCur += *i;
+            right = max(right, rightCur);
+        }
+        return max(left + right, max(helper(a, p), helper(p + 1, b)));
+    }
+
+};

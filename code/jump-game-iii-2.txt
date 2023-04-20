@@ -1,0 +1,32 @@
+void check(int* box, int* arr, int arrSize, int start, int up, int down, int now){
+    while (up < arrSize || down >= 0){
+        if (up < arrSize && arr[up] == now && box[up] == 0){
+            box[up] = 1;
+            check(box, arr, arrSize, start, up+1, up-1, 1);
+        }
+        if (down >= 0 && arr[down] == now && box[down] == 0){
+            box[down] = 1;
+            check(box, arr, arrSize, start, down+1, down-1, 1);
+        }
+        if (box[start] == 1){
+            break;
+        }
+        up++;
+        down--;
+        now++;
+    }
+}
+
+bool canReach(int* arr, int arrSize, int start){
+    int* box = calloc(arrSize,sizeof(int));
+    for (int i = 0 ; i < arrSize ; i++){
+        if (arr[i] == 0){
+            box[i] = 1;
+            check(box, arr, arrSize, start, i+1, i-1, 1);
+            if (box[start] == 1){
+                return true;
+            }
+        }
+    }
+    return false;
+}

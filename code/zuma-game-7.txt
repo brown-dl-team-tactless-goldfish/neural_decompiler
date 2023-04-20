@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int findMinStep(string board, string hand) {
+        int res = INT_MAX;
+        int nums[26] = {0};
+        for(auto c : hand) nums[c - 'A']++;
+        helper(board, nums, res, 0);
+        return res == INT_MAX ? -1 : res;
+    }
+    void helper(string board, int nums[26], int &res, int cur) {
+        if(board.length() == 0) {
+            res = min(res, cur);
+            return;
+        }
+        if(cur >= res) return;
+        for(int j = 0, len = board.length(); j < len; j++) {
+            int n = 1, idx = board[j] - 'A';
+            if(j >= len - 1 || board[j+1] != board[j]) n = 2;
+            if(nums[idx] < n) continue;
+            string str;
+            if(j < len-1 && board[j+1] == board[j])
+                str = nextBoard(board, idx, j-1, j+2), j++;
+            else str = nextBoard(board, idx, j-1, j+1);
+            nums[idx] -= n;
+            helper(move(str), nums, res, cur+n);
+            nums[idx] += n;
+        }
+    }
+    string nextBoard(string &board, int idx, int i, int j) {
+        int len = board.length(), n = 0;
+        while(i >= 0 && j < len) {
+            if(board[i] != board[j]) break;
+            n = 2;
+            if(i > 0 && board[i] == board[i-1]) i--, n++;
+            if(j < len-1 && board[j] == board[j+1]) j++, n++;
+            if(n < 3) break;
+            i--, j++;
+        }
+        string res;
+        if(n > 3) {
+            int left = 0;
+            if(i >= 0) left = count(board.begin(), board.begin()+i+1, board[i+1]);
+            if(j < len) left += count(board.begin()+j, board.end(), board[i+1]);
+            if(left > 0) i++;
+        }
+        if(i >= 0) res = board.substr(0, i+1);
+        if(j < len) res += board.substr(j, len-j);
+        return res;
+    }
+};

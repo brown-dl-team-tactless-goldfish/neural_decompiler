@@ -1,0 +1,60 @@
+ public class Solution
+    {
+        public IList<IList<int>> FindSolution(CustomFunction customfunction, int z)
+        {
+            IList <IList<int>> res = new List<IList<int>>();
+
+            for (int x = 1; x <= z; x++)
+            {
+                int left = 1;
+                int right = z;
+
+                while (left <= right)
+                {
+                    if (right - left == 1)
+                    {
+                        if (customfunction.f(x, left) == z)
+                        {
+                            res.Add(new List<int>() { x, left });
+                        }
+
+                        if (customfunction.f(x, right) == z)
+                        {
+                            res.Add(new List<int>() { x, right });
+                        }
+
+                        break;
+                    }
+                    
+                    if (right - left == 0)
+                    {
+                        if (customfunction.f(x, left) == z)
+                        {
+                            res.Add(new List<int>() { x, left });
+                        }
+                        break;
+                    }
+
+                    int mid = left + (right - left) / 2;
+                    var val = customfunction.f(x, mid);
+                    if (val == z)
+                    {
+                        res.Add(new List<int>(){x, mid});
+                        break;
+                    }
+
+                    if (val > z)
+                    {
+                        right = mid;
+                    }
+                    else
+                    {
+                        left = mid;
+                    }
+                }
+
+            }
+
+            return res;
+        }
+    }

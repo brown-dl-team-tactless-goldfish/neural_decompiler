@@ -1,0 +1,38 @@
+class Solution {
+public:
+    
+    void dfs(int i, vector<vector<int> >&g, vector<int>&cost, vector<bool>&visited, vector<int>&time) {
+        visited[i] = true;
+        
+        int c = 0;
+        for(int j = 0; j < g[i].size(); j++){
+            if(visited[ g[i][j] ] == false) {
+                dfs(g[i][j], g, cost, visited, time);
+            }
+            c = max(c, cost[g[i][j]]);
+        }
+        cost[i] = c+time[i-1];        
+    }
+    
+    int minimumTime(int n, vector<vector<int>>& relations, vector<int>& time) {
+        vector<vector<int> >g(n+1);
+        
+        for(int i = 0; i < relations.size(); i++) {
+            g[relations[i][0]].push_back(relations[i][1]);
+        }
+        
+        vector<int>cost(n+1, 0);
+        vector<bool>visited(n+1, false);
+        
+        for(int i = 1; i <= n;i++) {
+            if (visited[i] == false)
+                dfs(i, g, cost, visited,time);
+        }
+        int ans = 0;
+        for(int i = 1;i <= n; i++) {
+            ans = max(ans, cost[i]);
+        }
+        return ans;
+        
+    }
+};

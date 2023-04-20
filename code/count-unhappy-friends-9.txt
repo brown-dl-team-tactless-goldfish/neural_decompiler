@@ -1,0 +1,33 @@
+#pragma GCC optimize("Ofast","inline","fast-math","unroll-loops","no-stack-protector")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,tune=native","f16c")
+static const auto fast = []() { ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0); return 0; } ();
+class Solution {
+public:
+    int unhappyFriends(int n, vector<vector<int>>& preferences, vector<vector<int>>& pairs) {
+        vector<vector<int>> order(n, vector<int>(n));
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < n - 1; ++j) {
+                order[i][preferences[i][j]] = j;
+            }
+        }
+        vector<int> pairings(n);
+        for (auto& pair : pairs) {
+            pairings[pair[0]] = pair[1];
+            pairings[pair[1]] = pair[0];
+        }
+        int unhappy = 0;
+        for (int x = 0; x < n; ++x) {
+            int y = pairings[x];
+            int index = order[x][y];
+            for (int i = 0; i < index; ++i) {
+                int u = preferences[x][i];
+                int v = pairings[u];
+                if (order[u][x] < order[u][v]) {
+                    ++unhappy;
+                    break;
+                }
+            }
+        }
+        return unhappy;
+    }
+};

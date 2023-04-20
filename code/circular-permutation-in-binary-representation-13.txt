@@ -1,0 +1,20 @@
+vector<int> circularPermutation(int n, int start) {
+	vector<int> res = {0, 1};
+
+	for (int i=1; i<n; ++i) {
+		// each time duplicate the previous vector
+		vector<int> dup = res;
+
+		// reverse it, so the ends match with the original when I join them
+		reverse(dup.begin(), dup.end());
+
+		// add 1 bit at position i
+		for_each(dup.begin(), dup.end(), [i](int &x) {x += 1<<i;});
+
+		// append the updated duplicate
+		copy(dup.begin(), dup.end(), back_inserter(res));
+	}
+
+	rotate(res.begin(), find(res.begin(), res.end(), start), res.end());
+	return res;
+}

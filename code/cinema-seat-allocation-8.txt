@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int maxNumberOfFamilies(int n, vector<vector<int>>& reservedSeats) {
+        
+        unordered_map<int, char>hm;
+        for (int i = 0; i < reservedSeats.size(); i++) {
+            if (reservedSeats[i][1] > 1 && reservedSeats[i][1] < 10)
+                hm[reservedSeats[i][0]] |= (1 << (reservedSeats[i][1]-2));
+        }
+        
+        int count = 2*n;
+        for (auto it = hm.begin(); it != hm.end(); it++) {
+            bool p1 = !(it->second & 0b11110000);
+            bool p2 = !(it->second & 0b00111100);
+            bool p3 = !(it->second & 0b00001111);
+        
+            if (p1 && p3)
+                continue;
+            else if (p1 || p2 || p3)
+                count-=1;
+            else
+                count-=2;
+        }
+        
+        return count;
+    }
+};

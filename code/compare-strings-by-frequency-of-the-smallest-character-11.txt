@@ -1,0 +1,29 @@
+public class Solution
+{
+    public int[] NumSmallerByFrequency(string[] queries, string[] words)
+    {
+        int Freq(string s)
+        {
+            var min = s.Min();
+            return s.Count(c => c == min);
+        }
+
+        var wordF = new int[11];
+        foreach (var word in words)
+        {
+            wordF[Freq(word)]++;
+        }
+        for (int i = 9; i >= 0; i--)
+        {
+            wordF[i] += wordF[i + 1];
+        }
+
+        var ans = new int[queries.Length];
+        for (int i = 0; i < queries.Length; i++)
+        {
+            int f = Freq(queries[i]);
+            ans[i] = f < 10 ? wordF[f + 1] : 0;
+        }
+        return ans;
+    }
+}

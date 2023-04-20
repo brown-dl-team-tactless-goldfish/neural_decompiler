@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int validSubarraySize(vector<int>& nums, int th) {
+        int n = nums.size();
+        
+        vector<int> val(n);
+        
+        for(int i=0;i<n;i++)
+        {
+            val[i] = th/nums[i] + 1;
+        }
+        
+        vector<int> left(n),right(n);
+        stack<pair<int,int>> stk1,stk2;
+        
+        for(int i=0,j;i<n;i++)
+        {
+            while(!stk1.empty() and val[i]>=stk1.top().first)
+                    stk1.pop();
+                
+                if(stk1.empty())
+                    left[i] = 0;
+                else
+                    left[i] = stk1.top().second+1;
+                
+                stk1.push({val[i],i});
+            
+            j = n-1-i;
+            
+            while(!stk2.empty() and val[j]>=stk2.top().first)
+                stk2.pop();
+            
+            if(stk2.empty())
+                    right[j] = n-1;
+                else
+                    right[j] = stk2.top().second-1;
+                
+                stk2.push({val[j],j});
+            
+        }
+        
+        for(int i=0;i<n;i++)
+        {
+            if(right[i]-left[i]+1 >= val[i])
+                return val[i];
+        }
+        
+        return -1;
+    }
+};

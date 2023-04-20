@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<vector<int>> dp;
+    int numberOfWays(int sp, int ep, int k) {
+        if (sp < k) {
+            ep = k - sp + ep;
+            sp = k;
+        }
+        if (ep > sp + k || ep < sp - k) return 0;
+        
+        vector<long long> dp(sp + k + 1, 0);
+        vector<long long> tmp(sp + k + 1, 0);
+        dp[sp] = 1;
+        int l = sp;
+        int r = sp;
+        long long mod = (long long)(1e9 + 7);
+        for (int x = 1; x <= k; x++) {
+            int s = max(0, l - 1);
+            int e = min(sp + k, r + 1);
+            for (int i = s; i <= e; i++) {
+                 long long ll = (i - 1) >= 0 ? dp[i -1] : 0;
+                 long long rr = (i + 1) <= sp + k ? dp[i + 1] : 0;
+                 tmp[i] = (ll + rr) % mod;
+            } 
+            l--;
+            r++;
+            dp.swap(tmp);
+        }
+        return dp[ep];
+    }
+};

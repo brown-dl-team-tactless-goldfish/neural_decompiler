@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int minimizedMaximum(int n, vector<int>& quantities) {
+        int left = 1;
+        int right = 0;
+        for(int ele: quantities) {
+            right = max(right, ele);
+        }
+
+        std::function<bool(int)> binarySearch = [&](int mid) {
+            int count = 0;
+            for(int ele: quantities) {
+                if(ele%mid==0) {
+                    count += ele/mid;
+                }else {
+                    count += ele/mid + 1;
+                }
+
+                if(count > n) {
+                    return false;
+                }
+            }
+
+            return true;
+        };
+
+
+        while(left < right) {
+            int mid = (left + right)/2;
+            bool canDistributed = binarySearch(mid);
+            if(canDistributed) {
+                right = mid;
+            }else {
+                left = mid+1;
+            }
+        }
+
+        return left;
+    }
+};

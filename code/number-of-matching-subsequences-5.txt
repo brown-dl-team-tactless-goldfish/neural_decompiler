@@ -1,0 +1,40 @@
+struct TreeNode {
+    struct TreeNode *idx[26];
+};
+
+int numMatchingSubseq(char * s, char ** words, int wordsSize) {
+    int len = strlen(s);
+    
+    struct TreeNode *tree = (struct TreeNode *)calloc(len + 1, sizeof(struct TreeNode));
+    
+    /* Generate the tree backwards. Copy the next node to the current node,
+     * and replace the pointer indexed by the current letter. 
+     */
+    for ( int i=len; i>0; i-- ) {
+        int tmp = s[i-1] - 'a';
+        tree[i-1] = tree[i];
+        tree[i-1].idx[tmp] = &tree[i];
+    }
+    
+    /* Navigate through the tree to see how many subsequences there are.  */
+    int ans = 0;
+    for ( int i=0; i<wordsSize; i++ ) {
+        struct TreeNode *root = tree;
+        
+        int j = 0;
+        int len = strlen(words[i]);
+        for ( ; j<len; j++ ) {
+            if ( root->idx[words[i][j]-'a'] ) {
+                root = root->idx[words[i][j]-'a'];
+            } else {
+                break;
+            }
+        }
+        
+        if ( j == len ) {
+            ans++;
+        }
+    }
+    
+    return ans;
+}

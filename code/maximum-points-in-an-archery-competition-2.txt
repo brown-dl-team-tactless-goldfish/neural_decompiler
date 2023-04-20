@@ -1,0 +1,53 @@
+class Solution {
+public:
+
+    int findMaxScore(int section, int arrows, vector<vector<int>>&dp, vector<int>&bob)
+    {
+        // return score 0 for arrows<=0 or section<=0
+        if(arrows<=0 || section<=0) return 0;
+        
+        // return precalculated result
+        if(dp[section][arrows]!=-1)return dp[section][arrows];
+        
+        int taken = 0;
+        int notTaken = 0;
+        
+        // if remaining arrows >= bob[section] then we can take current section and call recursively
+        if(arrows >= bob[section])
+            taken =  section + findMaxScore(section-1,arrows-bob[section],dp,bob);
+        
+        // call recursively without taking current section
+        notTaken =  findMaxScore(section-1,arrows,dp,bob);
+        
+        // get max score from taken and not taken case
+        return dp[section][arrows] = max(taken,notTaken);
+    }
+    
+    vector<int> maximumBobPoints(int arrows, vector<int>& alice) {
+        
+        // dp to store the max score for current section and number of arrows
+        vector<vector<int>>dp(12,vector<int>(arrows+1,-1));
+        
+        // store bob arrows to win in each section
+        vector<int>bob;
+        
+        // result bob arrows for max score
+        vector<int>ans(12,0);
+        
+        // bob arrows in each section will be alice's arrow + 1
+        for(int i=0;i<alice.size();i++)
+            bob.push_back(alice[i]+1);
+        
+        // find max score bob can obtain
+        findMaxScore(11,arrows,dp,bob);
+        
+        // find bob's arrows for each section starting from max score section
+        for(int i=11;i>0 && arrows>0 ;i--)
+            if(arrows>=bob[i] && dp[i][arrows]>dp[i-1][arrows])ans[i]=bob[i],arrows-=bob[i];           
+        
+        // add remaining arrows in section 0
+        if(arrows>0)ans[0] = arrows;
+        
+        return ans;
+    }
+};

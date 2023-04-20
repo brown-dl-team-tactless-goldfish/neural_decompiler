@@ -1,0 +1,43 @@
+int max(int a, int b) {
+    
+    return a > b ? a : b;
+}
+
+int longestCommonSubsequence(char * text1, char * text2) {
+    
+    int **rem;
+    int ans;
+    int row = strlen(text1);
+    
+    int col = strlen(text2);
+    
+    if(row == 0 || col == 0)
+        return 0;
+    
+    rem = malloc(sizeof(int *) * (row+1));
+    
+    for(int i = 0; i <= row; i++)
+        rem[i] = calloc(sizeof(int),col+1);
+    
+    
+    for(int i = 1; i <= row; i++) {
+        
+        for(int j = 1; j <= col; j++) {
+            
+     
+                if(text1[i-1] == text2[j-1])
+                    rem[i][j] = rem[i-1][j-1] + 1;
+                else
+                    rem[i][j] = max(rem[i-1][j], rem[i][j-1]);
+
+            }
+        }
+
+    ans = rem[row][col];
+    //free
+    for(int i = 0; i <= row; i++)
+        free(rem[i]);
+    free(rem);
+    return ans;
+
+}

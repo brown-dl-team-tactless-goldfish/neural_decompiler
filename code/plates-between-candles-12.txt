@@ -1,0 +1,24 @@
+class Solution {
+public:
+  vector<int> platesBetweenCandles(string s, vector<vector<int>>& queries) {
+    vector<int> answer;
+    map<int,int>v;
+    for(int i = 0, pl = 0; i < s.size();){
+      int j = i;
+      while(j != s.size() && s[j] == '*') j++;
+      if(j != s.size()) v[j] =  j - (pl++);
+      i = j + 1;
+    }
+    
+    for(auto &q: queries){
+      auto itl = v.lower_bound( q[0]); 
+      auto itr = v.lower_bound( q[1]); 
+      if(itl == v.end()) {answer.push_back(0); continue;}
+      if(itr == v.end() || itr->first != q[1]) itr--; 
+      int tmp = (*itr).second - (*itl).second;
+      if(tmp > 0) answer.push_back(tmp);
+      else answer.push_back(0);
+    }
+    return answer;
+  }
+};

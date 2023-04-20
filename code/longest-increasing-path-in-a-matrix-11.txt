@@ -1,0 +1,30 @@
+#define MAXN 2048
+#define zip(x,y) ((x)*(col)+(y))
+
+int max(int a, int b)
+{
+    return a > b?a:b;
+}
+int dp[MAXN*MAXN];
+int dfs(int x,int y,const int row,const int col,int last,int **mat)
+{
+     if(x >= row || y >= col || x < 0 || y < 0 || mat[x][y] <= last)
+        return 0;
+    int t = zip(x,y);
+    if(dp[t]) 
+        return dp[t];
+    int ret = dfs(x-1,y,row,col,mat[x][y],mat);
+    ret = max(ret,dfs(x+1,y,row,col,mat[x][y],mat));
+    ret = max(ret,dfs(x,y-1,row,col,mat[x][y],mat));
+    ret = max(ret,dfs(x,y+1,row,col,mat[x][y],mat));
+    return dp[t] = ++ret;
+ }
+
+ int longestIncreasingPath(int** mat, int row, int col) {
+     int ret = 0;
+     memset(dp,0,sizeof(int)*zip(row,col));
+     for(int i = 0; i < row; i++)
+        for(int j = 0; j < col; j++)
+            ret = max(ret,dfs(i,j,row,col,mat[i][j] - 1,mat));
+    return ret;
+ }

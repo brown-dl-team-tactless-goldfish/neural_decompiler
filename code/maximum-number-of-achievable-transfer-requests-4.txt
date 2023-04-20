@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int maximumRequests(int n, vector<vector<int>>& requests) {
+        int sol = 0;
+        int len = requests.size();
+        vector<int> degree(n);
+        for (vector<int>& req : requests) {
+            ++degree[req[0]];
+            --degree[req[1]];
+        }
+        for (int mask = 0; mask < (1 << len); mask++) {
+            vector<int> deg = degree;
+            int count = 0;
+            for (int bit = 0; bit < len; bit++) {
+                if (mask & (1 << bit)) {
+                    --deg[requests[bit][0]];
+                    ++deg[requests[bit][1]];
+                    ++count;
+                }
+            }
+            if (degree == deg) {
+                sol = max(sol, count);
+            }
+        }
+        return sol;
+    }
+};

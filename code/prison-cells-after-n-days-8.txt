@@ -1,0 +1,30 @@
+int* prisonAfterNDays(int* cells, int cellsSize, int N, int* returnSize) {
+    unsigned char uc = 0;
+    *returnSize = 8;
+    for (int i = 0; i < 8; i++) {
+    	if (cells[i] == 1)
+        	uc+=(1<<(7-i));
+    }
+    if (N != 0) {
+	    uc = ~((uc<<1)^(uc>>1));
+	    uc = uc&(0x7E);
+	    unsigned char st = uc;
+	    int count = 0;
+	    do {
+	    	uc = ~((uc<<1)^(uc>>1));
+	    	uc = uc&(0x7E);
+	    	count++;
+	    } while(st != uc);
+	    int it = (N-1)%count;
+	    for (int i = 0; i < it; ++i) {
+	    	uc = ~((uc<<1)^(uc>>1));
+	    	uc = uc&(0x7E);
+	    }
+	}
+    int* re = malloc(sizeof(int)*8);
+    for (int i = 7; i >= 0; i--) {
+	    re[i] = (uc%2==1) ? 1 : 0;
+        uc = uc>>1;
+    }
+    return re;
+}

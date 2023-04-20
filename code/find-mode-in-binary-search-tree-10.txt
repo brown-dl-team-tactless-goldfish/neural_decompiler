@@ -1,0 +1,66 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+typedef struct TreeNode tree_node_t;
+
+void find_mode_h(tree_node_t *node, int *count, int *count_max, int *prev, int *return_val, int *return_sz) {
+    if(node == NULL) return;
+
+    find_mode_h(node->left, count, count_max, prev, return_val, return_sz);
+
+    if(*prev == -1) {
+        *prev = node->val;
+        *count = 1;
+    }
+    else if(*prev != node->val) {
+        *count = 1;
+        *prev = node->val;
+    }
+    else if(*prev == node->val) {
+        (*count)++;
+    }
+
+    // update the count
+    if(*count > *count_max) {
+        *count_max = *count;
+        *return_sz = 1;
+        *return_val = *prev;
+    }
+    else if(*count == *count_max) {
+        // if(realloc(return_val, sizeof(int) * ((*return_sz)*2)) == NULL) {
+        //     assert(0);
+        // }
+        *(return_val + (*return_sz)) = *prev;
+        (*return_sz)++;
+    }
+
+    // printf("%d, %d, %d\n", *prev, node->val, *count);
+
+    find_mode_h(node->right, count, count_max, prev, return_val, return_sz);
+}
+
+int *findMode(struct TreeNode *root, int *returnSize) {
+    int count = 0;
+    int count_max = 0;
+    int prev = -1;
+    int *return_val = malloc(sizeof(int)*10000);
+    *returnSize = 0;
+
+    find_mode_h(root, &count, &count_max, &prev, return_val, returnSize);
+
+    // printf("count max: %d\n", count_max);
+    // printf("return size: %d\n", *returnSize);
+
+    return return_val;
+}

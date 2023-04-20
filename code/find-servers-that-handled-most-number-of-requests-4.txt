@@ -1,0 +1,28 @@
+class Solution {
+public:
+    set<int> free ;
+    set<pair<int,int>> busy ; // finish_time , id
+    map<int,int> mpp ;
+    int maxi  = 0 ;
+    vector<int> ans ;
+    vector<int> busiestServers(int k, vector<int>& arrival, vector<int>& load) {
+        for(int i = 0 ; i < k ; ++i) free.insert(i) , free.insert(i + k) ;
+        
+        for(int i = 0 ; i < arrival.size() ; ++i ){
+            while(busy.size() and arrival[i] >= begin(busy)->first){
+                free.insert(begin(busy)->second % k) ;
+                free.insert(begin(busy)->second % k + k) ;
+                busy.erase(begin(busy));
+            }
+            if(free.empty()) continue ;
+            
+            int server = (*free.lower_bound(i%k)) % k ; 
+            free.erase(server) ; free.erase(server + k) ;
+            busy.insert({arrival[i] + load[i] , server}) ;
+            ++mpp[server] ; maxi = max(maxi,mpp[server]) ;
+        }
+        
+        for(auto &x : mpp) if(x.second == maxi) ans.push_back(x.first) ;
+        return ans ;
+    }
+};

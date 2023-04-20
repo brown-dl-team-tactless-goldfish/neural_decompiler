@@ -1,0 +1,20 @@
+char * kthDistinct(char ** arr, int arrSize, int k){
+    bool* memo = (int*)calloc(arrSize, sizeof(int));
+    int distCnt = 0;
+    for(int i = 0; i < arrSize; i++){
+        int dist = memo[i]? 0 : 1;
+        for(int j = i+1; j < arrSize && !memo[i]; j++){
+            if(i != j && !memo[j]){
+                if(!strcmp(arr[i], arr[j])){
+                    memo[j] = 1;/* means depucalted */
+                    dist = 0;
+                }
+            }
+        }
+        distCnt += dist? 1 : 0;
+        dist = 0;
+        if(distCnt == k)
+            return arr[i];        
+    }
+    return "";
+}

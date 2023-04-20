@@ -1,0 +1,44 @@
+class Solution {
+public:
+	struct Node {
+		char c;
+		vector<Node*> childs;
+		Node(char _c) : c(_c) {}
+	};
+
+	int dfs(Node* node, int &res) {
+		if (!node) {
+			return 0;
+		}
+
+		int _max = 0, _secMax = 0;
+		for (int i = 0; i < node->childs.size(); ++i) {
+			int len = dfs(node->childs[i], res);
+			if (node->childs[i]->c != node->c) {
+				if (len >= _max) {
+					swap(_max, _secMax);
+					_max = len;
+				} else if (len > _secMax) {
+					_secMax = len;
+				}
+
+			}
+		}
+		res = max(res, 1 + _max + _secMax);
+        return 1 + _max;
+	}
+
+	int longestPath(vector<int>& parent, string s) {
+		vector<Node*> nodes(parent.size());
+		for (int i = 0; i < parent.size(); ++i) {
+			nodes[i] = new Node(s[i]);
+		}
+
+		for (int i = 1; i < parent.size(); ++i) {
+			nodes[parent[i]]->childs.push_back(nodes[i]);
+		}
+
+		int res = 0;
+		return max(dfs(nodes[0], res), res);
+	}
+};

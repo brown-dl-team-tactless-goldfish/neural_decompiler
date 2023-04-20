@@ -1,0 +1,67 @@
+
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int findPath(int** matrix, int matrixSize, int matrixColSize, int i, int j, int *** result, int * returnSize, int val, int ***);
+
+int** pacificAtlantic(int** matrix, int matrixSize, int* matrixColSize, int* returnSize, int** returnColumnSizes){
+    *returnSize = 0;
+    if (matrixSize == 0)
+        return NULL;
+    int ** result = malloc(sizeof(int *) * matrixSize * matrixColSize[0]);
+    int ** visited = malloc(sizeof(int *) * matrixSize);
+    for (int i = 0; i < matrixSize; i++){
+        visited[i] = malloc(sizeof(int) * matrixColSize[0]);
+        for (int j = 0; j < matrixColSize[0]; j++){
+            visited[i][j] = 0;
+        }
+    }
+    for (int i = 0; i < matrixSize; i++){
+        for (int j = 0; j < matrixColSize[0]; j++){
+            findPath(matrix, matrixSize, matrixColSize[0], i, j, &result, returnSize, matrix[i][j], &visited);
+        }
+    }
+    *returnColumnSizes = malloc(sizeof(int) * (*returnSize));
+    for (int i = 0; i < (*returnSize); i++){
+        (*returnColumnSizes)[i] = 2;
+    }
+    return result;
+}
+
+int findPath(int** matrix, int matrixSize, int matrixColSize, int i, int j, int *** result, int * returnSize, int val, int *** visited){
+    if (i < 0 || j < 0 || i >= matrixSize || j >= matrixColSize)
+        return false;
+    if (matrix[i][j] > val)
+        return 0;
+    if ((*visited)[i][j] == -1){
+        return 0;
+    }
+    if ((*visited)[i][j] == 1)
+        return 3;
+    int sum = 0;
+    (*visited)[i][j] = -1;
+    bool lt = 0, rb = 0;
+    if (i == 0 || j == 0){
+        sum |= 1;
+    }
+    if (i == matrixSize - 1 || j == matrixColSize - 1){
+        sum |= 2;
+    }
+    sum |= findPath(matrix, matrixSize, matrixColSize, i + 1, j, result, returnSize, matrix[i][j], visited);
+    sum |= findPath(matrix, matrixSize, matrixColSize, i, j + 1, result, returnSize, matrix[i][j], visited);
+    sum |= findPath(matrix, matrixSize, matrixColSize, i - 1, j, result, returnSize, matrix[i][j], visited);
+    sum |= findPath(matrix, matrixSize, matrixColSize, i, j - 1, result, returnSize, matrix[i][j], visited);
+    if (sum == 3){
+        (*result)[*returnSize] = malloc(sizeof(int) * 2);
+        (*result)[*returnSize][0] = i;
+        (*result)[*returnSize][1] = j;
+        *returnSize = *returnSize + 1;
+        (*visited)[i][j] = 1;
+        return sum;
+    }
+    (*visited)[i][j] = 0;
+    return sum;
+}

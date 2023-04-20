@@ -1,0 +1,130 @@
+
+        public int DpSolution(int[][] grid)
+        {
+            int n = grid.Length, m = grid[0].Length;
+
+            // 检查终点是否被阻塞
+            if (grid[n - 1][m - 1] != 0 || grid[n - 1][m - 2] != 0) return -1;
+
+            // 定义dp[第一个部位位置][部位方向（0 表示水平, 1 表示垂直）] = 到达终点所需的最小
+            // 例：[x, x  ： 表示 位置[0][0] 水平方向 
+            int?[][][] dp = new int?[n][][];
+            for (int i = 0; i < n; i++)
+            {
+                var arr = dp[i] = new int?[m][];
+                for (int j = 0; j < m; j++)
+                {
+                    arr[j] = new int?[2];
+                }
+            }
+
+            // 初始化终点为0
+            dp[n - 1][m - 2][0] = 0;
+
+            // 初始化最后一行
+            for (int i = m - 3, count = 1; i >= 0; i--, count++)
+            {
+                // 最后一行由于位置原因只能水平移动，没有其他移动方案
+                if (grid[n - 1][i] != 1)
+                {
+                    dp[n - 1][i][0] = count;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            for (int i = n - 2; i >= 0; i--)
+            {
+                for (int j = m - 2; j >= 0; j--)
+                {
+                    if (grid[i][j] == 1) continue;
+
+                    var curr = dp[i][j];
+                    int? horizontal = null, vertical = null;
+
+                    #region horizontal
+                    // 水平移动
+                    if (grid[i][j + 1] == 0)
+                    {
+                        int res = int.MaxValue;
+                        // move right
+                        var right = dp[i][j + 1][0];
+                        if (right.HasValue)
+                        {
+                            res = 1 + right.Value;
+                        }
+
+                        // move bottom
+                        var bottom = dp[i + 1][j][0];
+                        if (bottom.HasValue)
+                        {
+                            res = Math.Min(res, 1 + bottom.Value);
+                        }
+                        if (res != int.MaxValue)
+                        {
+                            horizontal = curr[0] = res;
+                        }
+                    }
+                    #endregion
+
+                    #region vertical
+                    // 垂直移动
+                    if (grid[i + 1][j] == 0)
+                    {
+                        int res = int.MaxValue;
+                        // move right
+                        var right = dp[i][j + 1][1];
+                        if (right.HasValue)
+                        {
+                            res = 1 + right.Value;
+                        }
+
+                        // move bottom
+                        var bottom = dp[i + 1][j][1];
+                        if (bottom.HasValue)
+                        {
+                            res = Math.Min(res, 1 + bottom.Value);
+                        }
+                        if (res != int.MaxValue)
+                        {
+                            vertical = curr[1] = res;
+                        }
+                    }
+                    #endregion
+
+                    #region rotate
+                    // 更改占位
+                    {
+
+                        if (grid[i + 1][j + 1] == 0)
+                        {
+                            if (horizontal.HasValue && !vertical.HasValue)
+                            {
+                                if (grid[i + 1][j] == 0)
+                                {
+                                    curr[1] = curr[0] + 1;
+                                }
+                            }
+                            else if (!horizontal.HasValue && vertical.HasValue)
+                            {
+                                if (grid[i][j + 1] == 0)
+                                {
+                                    curr[0] = curr[1] + 1;
+                                }
+                            }
+                            else if (horizontal.HasValue && vertical.HasValue)
+                            {
+                                curr[0] = Math.Min(curr[0].Value, vertical.Value + 1);
+                                curr[1] = Math.Min(curr[1].Value, horizontal.Value + 1);
+                            }
+                        }
+
+                    }
+                    #endregion
+                }
+            }
+            var t = dp[0][0][0];
+            return t.HasValue ? t.Value : -1;
+        }

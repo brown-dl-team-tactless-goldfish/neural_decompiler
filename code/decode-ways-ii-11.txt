@@ -1,0 +1,40 @@
+class Solution {
+public:
+    #define ll long long
+    int mod = (int)1e9+7;
+    ll dp[100001];
+    ll solve(string &s, int idx){
+        if(idx>=s.size()) return 1;
+        if(s[idx]=='0') return 0;
+        
+        if(dp[idx]!=-1) return dp[idx];
+        
+        ll ans = 0;
+        ans += solve(s, idx+1);
+        if(s[idx]=='*'){
+            ans = ans*9;
+            
+            //for * as '1'
+            if(idx+1<s.size() && s[idx+1]>='0' && s[idx+1]<='9') ans+=solve(s,idx+2);
+            if(idx+1<s.size() && s[idx+1]=='*') ans+=(9*solve(s,idx+2));
+            
+            //for * as '2'
+            if(idx+1<s.size() && s[idx+1]>='0' && s[idx+1]<='6') ans+=solve(s,idx+2);
+            if(idx+1<s.size() && s[idx+1]=='*') ans+=(6*solve(s,idx+2));
+        }
+        else if(s[idx]=='1'){
+            if(idx+1<s.size() && s[idx+1]>='0' && s[idx+1]<='9') ans+=solve(s,idx+2);
+            if(idx+1<s.size() && s[idx+1]=='*') ans+=(9*solve(s,idx+2));
+        }else if(s[idx]=='2'){
+            if(idx+1<s.size() && s[idx+1]>='0' && s[idx+1]<='6') ans+=solve(s,idx+2);
+            if(idx+1<s.size() && s[idx+1]=='*') ans+=(6*solve(s,idx+2));
+        }
+        ans=ans%mod;
+        return dp[idx]=ans;
+    }
+    
+    int numDecodings(string s) {
+        memset(dp,-1,sizeof(dp));
+        return (int)solve(s,0);
+    }
+};

@@ -1,0 +1,30 @@
+public class Solution {
+
+    private static bool CanDo(int[] nums, int k, int min) {
+        for (int i = 0; i < nums.Length; ++i) 
+            if (nums[i] <= min) {
+                i += 1;
+                
+                if (--k <= 0)
+                    return true;
+            }
+        
+        return false;
+    }
+
+    public int MinCapability(int[] nums, int k) {
+        int never = nums.Min() - 1;
+        int ever = nums.Max();
+
+        while ((ever - never) > 1) {
+            int middle = (never + ever) / 2;
+
+            if (CanDo(nums, k, middle))
+                ever = middle;
+            else
+                never = middle;
+        }    
+
+        return ever;
+    }
+}

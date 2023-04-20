@@ -1,0 +1,54 @@
+class Solution {
+    vector<string> results;
+    string num;
+    ///e.g. 5+1*2*34, we are at 4. last_num is 3, last_len is last_num's len = 1
+    ///last_factor_total is 1*2, total is 1*2*34 = 68, target is ORIG_TARGET-5
+    void print(int k, string &result, long long target, long long total, int last_factor_total, long long last_num, int last_len)
+    {
+        bool is_valid = last_len > 0 && !(last_len > 1 && result.back() == '0');
+        if (target == total && k < 0 && is_valid)
+        {
+            auto temp = result;
+            reverse(temp.begin(), temp.end());
+            return results.push_back(temp);
+        }
+        if (k < 0)
+            return;
+        ///add + or -
+        if (is_valid)
+        {
+            result.push_back('+');
+            print(k, result, target - total, 0, 1, 0, 0);
+            result.back() = '-';
+            print(k, result, target + total, 0, 1, 0, 0);
+            result.pop_back();
+        }
+        ///append a digit;
+        int d = num[k] - '0';
+        for (int i = 0; i < last_len; ++i)
+            d *= 10;
+        long long new_last_num = d + last_num;
+        long long new_total = new_last_num * last_factor_total;
+        result.push_back(num[k]);
+        print(k - 1, result, target, new_total, last_factor_total, new_last_num, last_len + 1);
+        result.pop_back();
+        ///multiply by a digit
+        if (is_valid)
+        {
+            result.push_back('*');
+            result.push_back(num[k]);
+            int d = num[k] - '0';
+            new_total =  total * d;
+            print(k - 1, result, target, new_total, total, d, 1);
+            result.pop_back();
+            result.pop_back();
+        }
+    }
+public:
+    vector<string> addOperators(string _num, int target) {
+        num = std::move(_num);
+        string result;
+        print(num.size() - 1, result, target, 0, 1, 0, 0);
+        return results;
+    }
+};

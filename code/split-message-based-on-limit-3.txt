@@ -1,0 +1,69 @@
+class Solution {
+public:
+    int getLength(int i){
+        int ans = 0;
+        while(i){
+            i /= 10;
+            ans++;
+        }
+        return ans;
+    }
+    
+    int checkMaxSize(int limit, int fixed){
+        if(limit<=5) return 0;
+        int mul = 9;
+        int ans = 0;
+        int n = 1;
+        int dec = 3 + n + fixed;
+        while(limit - dec > 0 && n<=fixed){
+            ans += mul*(limit - dec++);
+            n++;
+            mul *= 10;
+        }
+        return ans;
+    }
+    
+    vector<string> splitMessage(string message, int limit) {
+        int msize = message.size();
+        int den = 1;
+        int maxsize = checkMaxSize(limit, den);
+        int maxm = maxsize;
+        while(maxsize<msize && den<limit-4){
+            maxsize = checkMaxSize(limit, ++den);
+            maxm = max(maxsize, maxm);
+        }
+        
+        if(maxm<msize) return {};
+        
+        vector<string> ans; int idx = 0;
+        for(int i=1; i<=maxsize && idx<msize; i++){
+            string temp;
+            int cut = getLength(i) + 3 + den;
+            int tlen = limit - cut;
+            for(int j=0; j<tlen; j++){
+                temp.push_back(message[idx++]);
+            }
+            temp.push_back('<');
+            string numerator = to_string(i);
+            for(char c : numerator) temp.push_back(c);
+            temp.push_back('/');
+            for(int k=0; k<den; k++) temp.push_back('#');
+            temp.push_back('>');
+            ans.push_back(temp);
+            //cout << temp << endl;
+        }
+
+        string denominator = to_string(ans.size());
+        for(string &str : ans){
+            int i = 0;
+            for(char &c : str){
+                if(c=='#'){
+                    c = denominator[i++];
+                }
+            }
+            //cout << str << endl;
+        }
+        
+        return ans;
+    }
+};

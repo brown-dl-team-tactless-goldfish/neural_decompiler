@@ -1,0 +1,31 @@
+class Solution {
+    const long MOD = 1e9+7;
+public:
+    int maxProductPath(vector<vector<int>>& grid) {
+        int rows = grid.size();
+        int cols = grid[0].size();
+        vector<vector<long>> tblp(rows, vector<long>(cols, 1));
+        vector<vector<long>> tbln(rows, vector<long>(cols, 1));
+        tblp[0][0] = tbln[0][0] = grid[0][0];
+        for (int i=1; i<rows; i++) {
+            tblp[i][0] = tbln[i][0] = grid[i][0]*tblp[i-1][0];      
+        }
+        for (int j=1; j<cols; j++) {
+            tblp[0][j] = tbln[0][j] = grid[0][j]*tblp[0][j-1];            
+        }        
+        for (int i=1; i<rows; i++) {
+            for (int j=1; j<cols; j++) {
+                vector<long> v(4);
+                v[0] = (tblp[i-1][j]* (long)grid[i][j]);
+                v[1] = (tbln[i-1][j]* (long)grid[i][j]);
+                v[2] = (tblp[i][j-1]* (long)grid[i][j]);
+                v[3] = (tbln[i][j-1]* (long)grid[i][j]);              
+                sort(v.begin(), v.end());              
+                tblp[i][j] = v[3];
+                tbln[i][j] = v[0];
+            }
+        }
+        if (tblp[rows-1][cols-1]<0) return -1;
+        return tblp[rows-1][cols-1] % MOD;
+    }
+};

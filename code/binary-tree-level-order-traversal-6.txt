@@ -1,0 +1,59 @@
+
+int** levelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes){
+    
+    if (root == NULL)
+    {
+        *returnSize=0;
+        return NULL;
+    }
+    
+    int **res;int resIdx=0;
+    int size=100;
+    void **Queue;
+    struct TreeNode* ptr=NULL;
+    Queue = malloc(sizeof(Queue)*size);
+    int total=0;
+    int front=0; int rear=0;
+    int scale=2;
+    int need,i;
+    Queue[0] = (void **)root;
+    total++;
+    front++;
+    int explore=1;
+    res = (int **)malloc(sizeof(int *)*1000);
+    *returnColumnSizes = (int *)malloc(sizeof(int)*1000);
+    while (total)
+    { 
+        explore = total;
+        res[resIdx]=(int *)malloc(sizeof(int)*explore);
+        returnColumnSizes[0][resIdx] = explore;
+        i=0;
+          
+        while (explore)
+        {
+            if (front >= (size-5))
+            {
+                size=scale*size;
+                Queue=realloc(Queue,sizeof(Queue)*size);
+            }
+             ptr = (struct TreeNode*)Queue[rear]; 
+            total--;
+            rear++;
+            if (ptr->left!=NULL) {
+                Queue[front] = (void **)ptr->left;
+                front++;total++;
+            }
+            
+            if (ptr->right!=NULL) {
+                Queue[front] = (void **)ptr->right;
+                front++;total++;
+            }
+            res[resIdx][i] = ptr->val;
+            i++;
+            explore--;
+        }
+        resIdx++;
+    }
+    *returnSize = resIdx;
+    return &res[0];
+}

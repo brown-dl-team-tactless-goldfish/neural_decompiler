@@ -1,0 +1,47 @@
+public class Solution {
+    Dictionary<int, bool> memory = new Dictionary<int, bool>();
+    public bool PrimeSubOperation(int[] nums) {
+        if(IsIncreasing(nums))
+            return true;
+
+        // O(N^2)
+        for(int i = nums.Length-1; i>0; i--) {
+            if(nums[i] > nums[i-1])
+                continue;
+            int d = nums[i-1] - nums[i] + 1;
+            while(!IsPrime(d)) {
+                d++;
+            }
+            if(nums[i-1] - d <= 0)
+                return false;
+            nums[i-1] -= d;
+        }
+        return true;
+    }
+    
+    // O(N)
+    private bool IsIncreasing(int[] nums) {
+        if(nums.Length <= 1)
+            return true;
+        for(int i = 1; i<nums.Length; i++) {
+            if(nums[i] <= nums[i-1])
+                return false;
+        }
+        return true;
+    }
+    
+    private bool IsPrime(int num) {
+        if(memory.ContainsKey(num))
+            return memory[num];
+        if(num <= 1)
+            return false;
+        for(int i = 2; i <= num/2; i++) {
+            if(num%i == 0) {
+                memory.Add(num, false);
+                return false;
+            }                
+        }
+        memory.Add(num, true);
+        return true;
+    }
+}

@@ -1,0 +1,51 @@
+class Solution {
+public:
+
+    int countGreaterOrEqualXi(vector<int> &X, int x)
+    {
+        if(X.size() == 0) return 0;
+
+        int pos = X.size();
+        int beg = 0, end = X.size() - 1;
+        while(beg <= end)
+        {
+            int mid = (beg + end) / 2;
+            if(x <= X[mid])
+            {
+                pos = mid;
+                end = mid - 1;
+            }
+            else beg = mid + 1;
+        }
+
+        return X.size() - pos;
+    }
+
+    int findRectangle(unordered_map<int, vector<int>> &Map, int x, int y)
+    {
+        int ans = 0;
+        for(int i = y; i <= 100; i++)
+        {
+            ans += countGreaterOrEqualXi(Map[i], x);
+        }
+        return ans;
+    }
+
+    vector<int> countRectangles(vector<vector<int>>& rectangles, vector<vector<int>>& points) 
+    {
+        vector<int> ans;
+
+        //HINT : check contraints -> y/h <= 100
+        unordered_map<int, vector<int>> Map; //y -> x1, x2 .... xn.
+        for(auto r : rectangles) Map[r[1]].push_back(r[0]);
+        
+        for(auto x : Map) sort(Map[x.first].begin(), Map[x.first].end()); 
+
+        for(auto point : points)
+        {
+            ans.push_back(findRectangle(Map, point[0], point[1]));
+        }
+
+        return ans;
+    }
+};

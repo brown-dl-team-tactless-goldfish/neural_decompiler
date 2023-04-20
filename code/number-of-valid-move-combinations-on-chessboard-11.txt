@@ -1,0 +1,184 @@
+int dir[8][2] = { {0,1},{0,-1},{1,0},{-1,0},
+                  {1,1},{-1,1},{1,-1},{-1,-1} }; 
+class point{
+  public : 
+    int x,y;
+    point()
+    {
+        x=0;
+        y=0;
+    }
+    point(int _x,int _y)
+    {
+        x=_x;
+        y=_y;
+    }
+    bool operator == (point const &p)
+    {
+        if(x==p.x && y==p.y) return true;
+        return false;
+    }
+};
+class segment{
+  public : 
+    point st;
+    point en;
+    int d;
+    segment(point _st,point _en,int _dir)
+    {
+        st=_st;
+        en=_en;
+        d=_dir;
+    }
+    bool operator == (segment const &s)
+    {
+        // this is intersect , true if intersect ( with respect to steps) ,else false
+        point a=st;
+        point b=s.st;
+        while(!(a==en) && !(b==s.en))
+        {
+            a.x=a.x+dir[d][0];
+            a.y=a.y+dir[d][1];
+            b.x=b.x+dir[s.d][0];
+            b.y=b.y+dir[s.d][1];
+            if(a==b) return true;
+        }
+        while(!(a==en))
+        {
+            a.x=a.x+dir[d][0];
+            a.y=a.y+dir[d][1];
+            if(a==b) return true;
+        }
+        while(!(b==s.en))
+        {
+            b.x=b.x+dir[s.d][0];
+            b.y=b.y+dir[s.d][1];
+            if(a==b) return true;
+        }
+        return false;
+    }
+};
+
+bool is_not_intersecting(segment &a,segment &b,segment &c,segment &d)
+{
+    if(a==b) return false;
+    if(a==c) return false;
+    if(a==d) return false;
+    if(b==c) return false;
+    if(b==d) return false;
+    if(c==d) return false;
+    return true;
+}
+bool is_not_intersecting(segment &a,segment &b,segment &c)
+{
+    if(a==b) return false;
+    if(a==c) return false;
+    if(b==c) return false;
+    return true;
+}
+bool is_not_intersecting(segment &a,segment &b)
+{
+    if(a==b) return false;
+    return true;
+}
+bool is_safe(int x,int y)
+{
+    if(x>=1 && x<=8 && y>=1 &&y <=8) return true;
+    return false;
+}
+class Solution {
+public:
+    
+    vector < segment > get_possible_pos(int _x,int _y,string type)
+    {
+        int dir_st=0;
+        int dir_en=7;
+        if(type=="rook"){ dir_en=3;}
+        if(type=="bishop"){ dir_st=4;}
+        vector < segment > ans;
+        ans.push_back(segment(point(_x,_y),point(_x,_y),8));
+        while(dir_st<=dir_en)
+        {
+            int x=_x;
+            int y=_y;
+            x=x+dir[dir_st][0];
+            y=y+dir[dir_st][1];
+            while(is_safe(x,y))
+            {
+                ans.push_back(segment(point(_x,_y),point(x,y),dir_st));
+                x=x+dir[dir_st][0];
+                y=y+dir[dir_st][1];
+            }
+            dir_st++;
+        }
+        return ans;
+    }
+    int countCombinations(vector<string>& pc, vector<vector<int>>& pos) {
+        int sz=pc.size();
+        int ans=0;
+        if(sz==1)
+        {
+            vector < segment > p1=get_possible_pos(pos[0][0],pos[0][1],pc[0]);
+            ans=p1.size();
+            return ans;
+        }
+        else if(sz==2)
+        {
+            vector < segment > p1=get_possible_pos(pos[0][0],pos[0][1],pc[0]);
+            vector < segment > p2=get_possible_pos(pos[1][0],pos[1][1],pc[1]);
+            cout<<p1.size()<<" "<<p2.size()<<"\n";
+            for(auto &i:p1)
+            {
+                for(auto &j:p2)
+                {
+                    if(is_not_intersecting(i,j))
+                        ans++;
+                }
+            }
+            return ans;
+        }
+        else if(sz==3)
+        {
+            vector < segment > p1=get_possible_pos(pos[0][0],pos[0][1],pc[0]);
+            vector < segment > p2=get_possible_pos(pos[1][0],pos[1][1],pc[1]);
+            vector < segment > p3=get_possible_pos(pos[2][0],pos[2][1],pc[2]);
+            for(auto &i:p1)
+            {
+                for(auto &j:p2)
+                {
+                    for(auto &k:p3)
+                    {
+                        if(is_not_intersecting(i,j,k))
+                        ans++;
+                    }
+                    
+                }
+            }
+            return ans;
+        }
+        else if(sz==4)
+        {
+            vector < segment > p1=get_possible_pos(pos[0][0],pos[0][1],pc[0]);
+            vector < segment > p2=get_possible_pos(pos[1][0],pos[1][1],pc[1]);
+            vector < segment > p3=get_possible_pos(pos[2][0],pos[2][1],pc[2]);
+            vector < segment > p4=get_possible_pos(pos[3][0],pos[3][1],pc[3]);
+            for(auto &i:p1)
+            {
+                for(auto &j:p2)
+                {
+                    for(auto &k:p3)
+                    {
+                        for(auto &l:p4)
+                        {
+                            if(is_not_intersecting(i,j,k,l))
+                            ans++;
+                        }
+                    }
+                    
+                }
+            }
+            return ans;
+        }
+        return ans;
+    }
+};

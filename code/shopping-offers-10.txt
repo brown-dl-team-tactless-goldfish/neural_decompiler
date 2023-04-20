@@ -1,0 +1,25 @@
+class Solution {
+public:
+    map<vector<int>, int> dp;
+    int shoppingOffers(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {
+        if (count(needs.begin(), needs.end(), 0) == needs.size())
+            return 0;
+        if (dp.count(needs))
+            return dp[needs];
+        
+        int res = inner_product(needs.begin(), needs.end(), price.begin(), 0);
+        for (int i = 0; i < special.size(); i++) {
+            for (int j = 0; j < needs.size(); j++) {
+                needs[j] -= special[i][j];
+            }
+            if (none_of(needs.begin(), needs.end(), [] (int need) { return need < 0; })) {
+                    res = min(res, special[i].back() + shoppingOffers(price, special, needs));
+            }
+            for (int j = 0; j < needs.size(); j++) {
+                needs[j] += special[i][j];
+            }
+        }
+        
+        return dp[needs] = res;
+    }
+};

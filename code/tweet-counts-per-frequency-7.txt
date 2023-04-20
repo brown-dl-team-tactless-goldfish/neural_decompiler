@@ -1,0 +1,23 @@
+class TweetCounts {
+private:
+    unordered_map<string,vector<int>> TweetTimes;
+    
+public:
+    TweetCounts() { }
+    
+    void recordTweet(string tweetName, int time) {
+        TweetTimes[tweetName].push_back(time);      //store the time under the tweetname
+        return;
+    }
+    
+    vector<int> getTweetCountsPerFrequency(string freq, string tweetName, int startTime, int endTime) {
+        if (!TweetTimes.count(tweetName)) return {0};
+        int f = (freq[0] == 'm')? 60 : (freq[0] == 'h')? 3600 : 86400; 
+        vector<int> ans((endTime-startTime)/f + 1, 0); 
+        for (auto& t : TweetTimes[tweetName]){
+            if (t < startTime || t > endTime) continue;
+            ans[(t-startTime)/f]++;
+        }
+        return ans;
+    }
+};

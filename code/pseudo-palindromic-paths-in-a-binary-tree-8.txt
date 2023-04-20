@@ -1,0 +1,43 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, val=0, left=None, right=None):
+#         self.val = val
+#         self.left = left
+#         self.right = right
+class Solution:
+    def pseudoPalindromicPaths (self, root: TreeNode) -> int:
+        
+        self.res = 0
+        def helper(curNode, curA):
+            # print ("curA = ", curA) 
+            
+            if (curNode == None):
+                return
+
+            tmpA = curA +[curNode.val]
+            if (curNode.left == None and curNode.right == None):
+                # print ("this is a root to leaf")
+                # print (tmpA)
+                # print (" ")
+                
+                tmpCounts = collections.Counter(tmpA)
+                # print ("tmpCounts = ", tmpCounts)
+                
+                numOdds = 0
+                for k,v in tmpCounts.items():
+                    if (v % 2 == 1):
+                        numOdds += 1
+                        
+                # print ("numOdds = ", numOdds)
+                
+                if (numOdds < 2):
+                    self.res += 1
+            
+            helper(curNode.left, tmpA)
+            helper(curNode.right, tmpA)
+
+        helper(root, [])
+        
+        print ("end self.res = ", self.res)
+        
+        return self.res

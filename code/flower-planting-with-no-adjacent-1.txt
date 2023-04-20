@@ -1,0 +1,42 @@
+class Solution:
+    def gardenNoAdj(self, N: int, paths: List[List[int]]) -> List[int]:
+        # print("paths = ", paths)
+
+        maps = {i: [] for i in range(1, N+1)}
+        # print("1 maps = ", maps)
+
+        for p in paths:
+            maps[p[0]].append(p[1])
+            maps[p[1]].append(p[0])
+
+        # print("2 maps = ", maps)
+
+        res = {i: 0 for i in range(1, N+1)}
+        res[1] = 1
+        print("1 res = ", res)
+
+        for i in range(2, N+1):
+            flowers = {1, 2, 3, 4}
+            # print("i = ", i)
+            nbs = maps[i]
+            # print("nbs = ", nbs)
+
+            used = set()
+            for nb in nbs:
+                used.add(res[nb])
+            # print("used = ", used)
+
+            flowers = flowers - used
+            # print("2 flowers = ", flowers)
+
+            res[i] = flowers.pop()
+
+        # print("2 res = ", res)
+
+        res_2 = []
+        sorted(res)
+        for k, v in res.items():
+            res_2.append(v)
+        # print("res_2 = ", res_2)
+
+        return res_2

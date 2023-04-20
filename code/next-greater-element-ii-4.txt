@@ -1,0 +1,60 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+// struct to store into the stack, 
+// including the value in nums and the index of value.
+typedef struct element {
+    int val;
+    int idx;
+} element;
+
+int* nextGreaterElements(int* nums, int numsSize, int* returnSize){
+    int i;
+    int* res = (int*)malloc(sizeof(int) * numsSize);
+    *returnSize = numsSize;
+    element* stack = (element* )malloc(sizeof(element) * (numsSize+1));
+    
+    /* First, all element put into the stack.
+     * Before putting into the stack, checking the element greater then 
+     * the peak one in the stack or not:
+     *      true: delete the peak one and put into.
+     *      false: just put into the stack.
+     */
+    int tailPr = 0;
+    
+    element ele;
+    ele.val = nums[0]; ele.idx = 0;
+    stack[tailPr] = ele;
+    for (i = 1; i < numsSize; i++) {
+        int num = nums[i];
+        ele.val = num; 
+        ele.idx = i;
+        if (num > stack[tailPr].val) {
+            for (int j = tailPr; j >= 0; j--) {
+                if (num > stack[j].val) {
+                    res[stack[j].idx] = num;
+                    tailPr--;
+                }
+            }
+        } 
+        stack[++tailPr] = ele;
+    }
+    
+    // Second comparison
+    for (i = 0; i < numsSize-1; i++) {
+        int num = nums[i];
+        while (num > stack[tailPr].val) {
+            res[stack[tailPr--].idx] = num;
+        }
+    }
+    
+    // Deal with remaining elements in stack
+    while (tailPr >= 0) res[stack[tailPr--].idx] = -1;
+
+    free(stack);
+    
+    return res;
+}

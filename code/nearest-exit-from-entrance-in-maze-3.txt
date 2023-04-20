@@ -1,0 +1,71 @@
+struct Queue{
+    int row;
+    int col;
+    int steps;
+};
+#define MAX_PATH 100*100
+struct Queue queue[MAX_PATH];
+int rear = -1;
+int front = 0;
+int queueItemCount = 0;
+void qPush(int row, int col, int steps) {
+    ++rear;
+    queue[rear].row = row;
+    queue[rear].col = col;
+    queue[rear].steps = steps;
+    queueItemCount++;
+}
+struct Queue* qPop() {
+    struct Queue *data = (struct Queue*)malloc(sizeof(struct Queue));
+    data->row   = queue[front].row;
+    data->col   = queue[front].col;
+    data->steps = queue[front].steps;
+    front++;
+    queueItemCount--;
+    return data;
+}
+bool qEmpty() {
+    return queueItemCount == 0;
+}
+bool isNotVisited(char** maze, int mazeSize, int mazeColSize, int nextRow, int nextCol){
+    if(0 <= nextRow && nextRow < mazeSize &&
+        0 <= nextCol && nextCol < mazeColSize &&
+            maze[nextRow][nextCol] == '.'){
+        return true;
+    }
+    return false;
+}
+bool isNearestExit(int nextRow, int nextCol, int mazeSize, int mazeColSize){
+    if (nextRow == 0 || nextRow == mazeSize - 1 || nextCol == 0 || nextCol == mazeColSize - 1){
+        return true;
+    }
+    return false;
+}
+int nearestExit(char** maze, int mazeSize, int* mazeColSize, int* entrance, int entranceSize){
+    rear = -1;
+    front = 0;
+    queueItemCount = 0;
+    int dirs[4][2] = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    int rows = mazeSize;
+    int cols = *mazeColSize;
+    maze[entrance[0]][entrance[1]] = '+';
+    qPush(entrance[0], entrance[1], 0);
+    while(!qEmpty()){
+        struct Queue *temp = qPop();
+        int currRow = temp->row;
+        int currCol = temp->col;
+        int currDistance = temp->steps;
+        for(int i = 0; i < 4; ++i){
+            int nextRow = currRow + dirs[i][0];
+            int nextCol = currCol + dirs[i][1];
+            if(isNotVisited(maze, rows, cols, nextRow, nextCol)){
+                if (isNearestExit(nextRow, nextCol, rows, cols)){
+                    return currDistance + 1;
+                }
+                maze[nextRow][nextCol] = '+';
+                qPush(nextRow, nextCol, currDistance + 1);
+            }
+        }
+    }
+    return -1;
+}

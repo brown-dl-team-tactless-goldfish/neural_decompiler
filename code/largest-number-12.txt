@@ -1,0 +1,30 @@
+static int wcmp(const void *v1, const void *v2)
+{
+    static char buf1[512], buf2[512];
+    int len;
+    len = sprintf(buf1, "%d%d", *(int *)v1, *(int *)v2);
+    len = sprintf(buf2, "%d%d", *(int *)v2, *(int *)v1);
+    for (int i = 0; i < len; ++i) {
+        if (buf1[i] > buf2[i]) {
+            return -1;
+        }
+        if (buf1[i] < buf2[i]) {
+            return 1;
+        }
+    }
+    return 0;
+}
+
+char* largestNumber(int* nums, int numsSize)
+{
+    static char str[1024];
+    int i = 0, j = 0;
+    qsort(nums, numsSize, sizeof(int), wcmp);
+    str[0] = '0';
+    str[1] = '\0';
+    while (i < numsSize && nums[i++] == 0);
+    for (--i; i < numsSize; ++i) {
+        j += sprintf(str + j, "%d", nums[i]);
+    }
+    return str;
+}

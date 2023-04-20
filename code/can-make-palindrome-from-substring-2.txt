@@ -1,0 +1,24 @@
+class Solution {
+public:
+    vector<bool> canMakePaliQueries(string s, vector<vector<int>>& queries) {
+        vector<vector<bool> >  prefixsum(1, vector<bool>(26,false));
+        for (auto& c : s) {
+            vector<bool> rec = prefixsum.back();
+            rec[c-'a'] = !rec[c-'a'];
+            prefixsum.push_back(rec);
+        }
+        vector<bool> res;
+        for (auto& query : queries) {
+            vector<bool>& start = prefixsum[query[0]];
+            vector<bool>& stop = prefixsum[query[1]+1];
+            int numOdd = 0;
+            for (int i = 0; i < start.size(); ++i) {
+                numOdd += (start[i] != stop[i]);
+            }
+            int numChange = query[2];
+            res.push_back(numOdd - 2 * numChange <= 1);
+        }
+        
+        return res;        
+    }
+};

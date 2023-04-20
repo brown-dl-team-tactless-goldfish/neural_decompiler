@@ -1,0 +1,66 @@
+
+
+int get(int **m, int r, int c, int maxR, int maxC){
+	int startR, startC, finishR, finishC;
+
+	if (r-1 >= 0)
+		startR = r-1;
+	else
+		startR = r;
+	if (c-1 >= 0)
+		startC = c-1;
+	else
+		startC = c;
+	if (r+1 < maxR)
+	       finishR = r+1;
+	else
+		finishR = r;
+	if (c+1 < maxC)
+		finishC = c+1;
+	else
+		finishC = c;
+
+	int res = 0;
+
+	for (int i=startR; i<=finishR; i++){
+		for (int k=startC; k<=finishC; k++){
+            if (i == r && k == c)
+                continue;
+			if (m[i][k] == 1)
+				res++;
+		}
+	}
+	return res;
+}	
+
+void gameOfLife(int **board, int boardSize, int *boardColSize){
+	int **new = (int **)malloc(sizeof(int*)*boardSize);
+
+	for (int i=0; i<boardSize; i++)
+		new[i] = (int *)malloc(sizeof(int)*boardColSize[0]);
+	
+	for (int i=0; i<boardSize; i++)
+		for (int k=0; k<boardColSize[0]; k++)
+			new[i][k] = board[i][k];
+
+	for (int i=0; i<boardSize; i++){
+		for (int k=0; k<boardColSize[0]; k++){
+			if (board[i][k] == 0){
+				if (get(new, i, k, boardSize, boardColSize[0]) == 3)
+					board[i][k] = 1;
+			}
+			else{
+				if (get(new, i, k,  boardSize, boardColSize[0]) < 2){
+					board[i][k] = 0;
+				}
+				else if  (get(new, i, k,  boardSize, boardColSize[0]) == 3 || get(new, i, k, boardSize, boardColSize[0]) == 2)
+					board[i][k] = 1;
+				else
+					board[i][k] = 0;
+			}
+		}
+	}
+	for (int i=0; i<boardSize; i++)
+		free(new[i]);
+	free(new);
+}

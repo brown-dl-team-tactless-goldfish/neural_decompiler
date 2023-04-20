@@ -1,0 +1,44 @@
+class Solution {
+    class trieNode {
+        public:
+        int count = 1;
+        trieNode *children[26];
+    };
+    void insert(trieNode *root, string &s) {
+        trieNode *curr = root;
+        for(char ch: s) {
+            if(curr -> children[ch - 'a'] == nullptr) {
+                curr -> children[ch - 'a'] = new trieNode(); 
+            } else {
+                curr -> children[ch - 'a'] -> count++;
+            }
+            curr = curr -> children[ch - 'a'];
+        }
+    }
+    int query(trieNode *root, string &s) {
+        trieNode *curr = root;
+        int c = 0;
+        for(char ch: s) {
+            if(curr -> children[ch - 'a'] == nullptr) {
+                return c;
+            } else {
+                c += curr -> children[ch - 'a'] -> count;
+            }
+            curr = curr -> children[ch - 'a'];
+        }
+        return c;
+    }
+public:
+    vector<int> sumPrefixScores(vector<string>& words) {
+        int n = words.size();
+        trieNode *root = new trieNode();
+        for(string word: words) {
+            insert(root, word);
+        }
+        vector<int> ans(n);
+        for(int i = 0; i < n; i++) {
+            ans[i] = query(root, words[i]);
+        }
+        return ans;
+    }
+};

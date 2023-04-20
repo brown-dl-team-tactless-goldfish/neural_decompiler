@@ -1,0 +1,57 @@
+class Solution {
+public:
+    const int mod = 1e9 + 7;
+    int mul(int a, int b) {
+        return ((long long) a * b) % mod;
+    }
+    void add(int& a, int b) {
+        a += b;
+        if (a >= mod) {
+            a -= mod;
+        }
+    }
+    int countPalindromes(string s) {
+        int n = s.size();
+        vector<vector<vector<int>>> dpLeft(n, vector<vector<int>> (10, vector<int> (10)));
+        vector<vector<vector<int>>> dpRight(n, vector<vector<int>> (10, vector<int> (10)));
+        vector<int> digitFreq(10);
+        for (int i = 0; i < n; i++) {
+            int d = s[i] - '0';
+            for (int j = 0; j < 10; j++) {
+                for (int k = 0; k < 10; k++) {
+                    if (k == d) {
+                        add(dpLeft[i][j][d], digitFreq[j]);
+                    }
+                    if (i > 0) {
+                        add(dpLeft[i][j][k], dpLeft[i - 1][j][k]);
+                    }
+                }
+            }
+            ++digitFreq[d];
+        }
+        digitFreq = vector<int> (10);
+        for (int i = n - 1; i >= 0; i--) {
+            int d = s[i] - '0';
+            for (int j = 0; j < 10; j++) {
+                for (int k = 0; k < 10; k++) {
+                    if (k == d) {
+                        add(dpRight[i][j][d], digitFreq[j]);
+                    }
+                    if (i < n - 1) {
+                        add(dpRight[i][j][k], dpRight[i + 1][j][k]);
+                    }
+                }
+            }
+            ++digitFreq[d];
+        }
+        int sol = 0;
+        for (int i = 1; i < n - 1; i++) {
+            for (int j = 0; j < 10; j++) {
+                for (int k = 0; k < 10; k++) {
+                    add(sol, mul(dpLeft[i - 1][j][k], dpRight[i + 1][j][k]));
+                }
+            }
+        }
+        return sol;
+    }
+};

@@ -1,0 +1,35 @@
+    unordered_map<int, TreeNode*> pmp;
+    TreeNode* t;
+    
+    void fillmp(TreeNode* root, TreeNode* p, int x) {
+        
+        if(root == NULL) return;
+        if(root->val == x) t = root;
+        pmp[root->val] = p;
+        fillmp(root->left, root, x); fillmp(root->right, root, x);
+    }
+    
+    int geth(TreeNode* root, int x, bool b, set<int> st) {
+        
+        if(root == NULL) return 0;
+        if(st.count(root->val)) return 0;
+        if(root->val == x && b) return 0;
+        st.insert(root->val);
+        return 1 + geth(root->left, x, b, st) +
+                    geth(root->right, x, b, st) +
+                    geth(pmp[root->val], x, b, st);
+    }
+    
+    bool btreeGameWinningMove(TreeNode* root, int n, int x) {
+        
+        fillmp(root, NULL, x);
+        auto par = pmp[x];
+
+        int a = geth(par, x, 1, {});
+        int b = geth(t->left, x, 1, {});
+        int c = geth(t->right, x, 1, {});
+        
+        int best = max({a, b, c});
+        int other = a + b + c - best + 1;
+        return best > other;
+    }

@@ -1,0 +1,42 @@
+public class Solution {
+    public int DaysBetweenDates(string date1, string date2) {
+        
+        var result = Math.Abs(DaysFrom1970(date1) - DaysFrom1970(date2)); 
+        return result;
+    }
+    
+    private int DaysFrom1970(string dt)
+    {
+        
+        var monthDays = new int[] {0, 31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        var d1 = dt.Split('-');
+        
+        var y = Convert.ToInt32(d1[0]);
+        var m = Convert.ToInt32(d1[1]);
+        var d = Convert.ToInt32(d1[2]);
+        
+        var days = 0;
+        for(int i = 1971; i < y; i++)
+        {
+            days += IsLeapYear(i) ? 366 : 365;
+        }
+        for(int i = 1; i < m; i++)
+        {
+            if(IsLeapYear(y) && i == 2)
+                days += 1;
+            days += monthDays[i];
+        }
+        days += d;
+        
+        return days;
+    }
+    
+    private bool IsLeapYear(int year)
+    {
+        if(year % 4 == 0 && year % 100 != 0 || year % 400 == 0)
+            return true;
+        return false;
+    }
+}
+
+//1971 1975

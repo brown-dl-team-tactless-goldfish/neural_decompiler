@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int countPaths(vector<vector<int>>& grid) {        
+        n = grid.size(), m = grid[0].size();
+        dp = vector(n, vector(m, 0LL));
+        long long res = 0;
+        for(int i=0;i<n;i++) for(int j=0;j<m;j++)
+            res += dfs(i, j, grid);
+        return res % mod;
+    }
+    
+    long long dfs(int i, int j, vector<vector<int>>& grid){
+        if(dp[i][j] > 0) return dp[i][j];
+        long long sum = 1;
+        for(auto [di, dj] : dirs){
+            const int x = i+di, y = j+dj;
+            if(x>=0 && x<n && y>=0 && y<m && grid[x][y] < grid[i][j])
+                sum += dfs(x, y, grid);
+        }
+        return dp[i][j] = sum % mod;
+    }
+        
+    int n, m;
+    vector<vector<long long>> dp;    
+    const vector<pair<int,int>> dirs = {{0,1}, {0, -1}, {1, 0}, {-1,0}};
+    const long long mod = 1e9+7;
+};

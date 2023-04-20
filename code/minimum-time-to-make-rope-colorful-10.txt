@@ -1,0 +1,28 @@
+int minCost(char * colors, int* neededTime, int neededTimeSize){
+    // initialize some variables
+    int i = 1; // counter
+    int curmaxnum = neededTime[0]; // maximum number seen in each consecutive run
+    int runningTotal = curmaxnum; // total cost to remove ALL balloons in each consecutive run
+    char curcolor = colors[0]; // current color
+    
+    while(colors[i]){ // loop over all balloons
+	
+        while(colors[i] && colors[i] == curcolor){ // subloop for consecutive runs of same color
+            // get running sum and record the maximum number seen in this run
+			runningTotal += neededTime[i];
+            if (neededTime[i] > curmaxnum) curmaxnum = neededTime[i];
+            i++;
+        }
+        if (!colors[i]) break; // edge case
+		
+		// subtract off the max number seen in that run, then reinitialize
+        runningTotal -= curmaxnum;
+        curcolor = colors[i];
+        curmaxnum = neededTime[i];
+        runningTotal += curmaxnum;
+        i++;
+    }
+    // subtract final max number seen
+    runningTotal -= curmaxnum;
+    return runningTotal;
+}

@@ -1,0 +1,64 @@
+class Solution {
+public:
+    
+     int give(string str){
+        int ans = 0;
+        for(auto it : str)
+            ans = ans*10 + (it-'0');
+        return ans;
+    }
+    
+    static bool comp(string a,string b){
+        if(a.length() < b.length())
+            return 1;
+        if(b.length() < a.length())
+            return 0;
+        return a<b;
+    }
+    
+   
+    int nextBeautifulNumber(int n) {
+        
+        if(n == 0)
+            return 1;
+        
+        vector<string>options;
+        options.push_back("1");
+        options.push_back("22");
+        options.push_back("333");
+        options.push_back("4444");
+        options.push_back("55555");
+        options.push_back("666666");
+        options.push_back("7777777");
+                
+        vector<string>comb;
+        for(int i=1;i<=127;++i){
+            vector<int>bin(7,0);
+            int temp = i , ind = 0;
+            while(temp){
+                bin[ind++] = temp%2;
+                temp/=2;
+            }
+            string cat="";
+            for(int i=0;i<7;++i){
+                if(bin[i])
+                    cat += options[i];
+            }
+            if(cat.length() <= 7)
+                comb.push_back(cat);
+        }
+        sort(comb.begin(),comb.end(),comp);
+                
+        int ans = INT_MAX;
+        
+        for(int i=0;i<=17;++i){
+            string req = comb[i];
+        do{
+            int x = give(req);
+            if(x > n and x < ans)
+                ans = x;
+        }while(next_permutation(req.begin(),req.end()));
+        }
+        return ans;
+    }
+};

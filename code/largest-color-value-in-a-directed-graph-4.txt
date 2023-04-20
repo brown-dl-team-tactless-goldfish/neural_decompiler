@@ -1,0 +1,82 @@
+class Solution {
+public:
+    int largestPathValue(string colors, vector<vector<int>>& edges) {
+        int n = colors.size();
+        
+        map<int, vector<int>> graph;
+        
+        int indegree[n];
+        
+        memset(indegree, 0, sizeof(indegree));
+        for(int i = 0; i < edges.size(); i++) {
+            graph[edges[i][0]].push_back(edges[i][1]);
+            indegree[edges[i][1]]++;
+        }
+        
+        int colorCnt[n][26];
+        
+        memset(colorCnt, 0, sizeof(colorCnt));
+        
+        // topological sort
+        // at a position
+        // we keep track of how many max times we encountered colors of each type
+        // having computed it at each possible node
+        
+        
+        // we finally run one each of the nodes and find max value
+        // encountered for any color on any node..
+        // or probably update it while running 
+        // topological sort itself...
+        
+        queue<int> Q;
+        //cout << "0 indegree :  "<< endl;
+        for(int i = 0; i < n; i++) {
+            if(indegree[i] == 0) {
+                //cout << i << endl;
+                Q.push(i);
+            }
+        }
+        
+        int ans = -1;
+        
+        while(!Q.empty()) {
+            int front = Q.front();
+            colorCnt[front][colors[front] - 'a']++;
+            for(int i = 0; i < 26; i++) {
+               ans = max(ans, colorCnt[front][i]); 
+            }
+            
+            Q.pop();
+            
+            for(auto node: graph[front]) {
+                indegree[node]--;
+                if(indegree[node] == 0) {
+                    Q.push(node);
+                }
+                
+                for(int i = 0; i < 26; i++) {
+                    colorCnt[node][i] = max(colorCnt[node][i], colorCnt[front][i]);
+                }
+            }    
+        }
+        
+        for(int i = 0; i < n; i++) {
+            if(indegree[i] != 0) {
+                return -1;
+            }
+        }
+        
+        // set<char> st(colors.begin(), colors.end());
+        // vector<char> uc(st.begin(), st.end());
+        
+        // for(int i = 0; i < n; i++) {
+        //     cout << "node = " << i << endl;
+        //     for(char c: uc) {
+        //         cout << c << " : " << colorCnt[i][c - 'a'] << endl; 
+        //     }
+        // }
+        
+        return ans;
+        
+    }
+};

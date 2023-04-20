@@ -1,0 +1,43 @@
+class Solution {
+    int n, ans = -1;
+    bool isPalindrome(string &p)
+    {
+        int i = 0, j = p.size()-1;
+        while(i <= j)
+        {
+            if(p[i] == p[j])
+            {
+                i++;
+                j--;
+            }
+            else
+                return false;
+        }
+        return true;
+    }
+    void dfs(string &s, string &a, string &b, int idx)
+    {
+        if(idx == n)
+        {
+            if(isPalindrome(a) && isPalindrome(b)){
+                int val = a.size()*b.size();
+                ans = max(val, ans);
+            }
+            return;
+        }
+        a.push_back(s[idx]);
+        dfs(s, a, b, idx+1);
+        a.pop_back();
+        b.push_back(s[idx]);
+        dfs(s, a, b, idx+1);
+        b.pop_back();
+        dfs(s, a, b, idx+1);
+    }
+public:
+    int maxProduct(string s) {
+        n = s.size();
+        string a = "", b = "";
+        dfs(s, a, b, 0);
+        return ans;
+    }
+};

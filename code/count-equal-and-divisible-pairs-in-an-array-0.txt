@@ -1,0 +1,30 @@
+struct pair {
+    int val;
+    int idx;
+};
+
+int cmp(const void* a, const void* b) {
+    struct pair pa = *(struct pair*) a;
+    struct pair pb = *(struct pair*) b;
+    if(pa.val == pb.val) return pa.idx - pb.idx;
+    return pa.val - pb.val;
+}
+
+int countPairs(int* nums, int numsSize, int k) {
+    struct pair* arr = (struct pair*) malloc(numsSize * sizeof(struct pair));
+    for(int i = 0; i < numsSize; i++) {
+        arr[i].val = nums[i];
+        arr[i].idx = i;
+    }
+    qsort(arr, numsSize, sizeof(struct pair), cmp);
+    
+    int ans = 0;
+    for(int i = 0; i < numsSize; i++) {
+        for(int j = i+1; j < numsSize; j++) {
+            if(arr[i].val == arr[j].val && (arr[i].idx * arr[j].idx) % k == 0) ans++;
+            if(arr[i].val != arr[j].val) break;
+        }
+    }
+    free(arr);
+    return ans;
+}

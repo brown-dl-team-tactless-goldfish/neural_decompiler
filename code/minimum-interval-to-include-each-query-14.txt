@@ -1,0 +1,35 @@
+
+class Solution {
+public:
+    vector<int> minInterval(vector<vector<int>>& intervals, vector<int>& queries) {
+        vector<vector<int>> events;
+		for (vector<int> &e: intervals) {
+			events.push_back({e[0], 1, e[1] - e[0] + 1});
+			events.push_back({e[1] + 1, -1, e[1] - e[0] + 1});
+		}
+		int n = queries.size();
+		for (int i = 0; i < n; i++) {
+			events.push_back({queries[i], 2, i});
+		}
+		sort(events.begin(), events.end(), [](const vector<int> &a, const vector<int> &b) {
+			if (a[0] != b[0]) return a[0] < b[0];
+			return a[1] < b[1];
+		});
+		vector<int> res(n);
+		multiset<int> ms;
+		for (vector<int> &v: events) {
+			if (v[1] == 1) {
+				ms.insert(v[2]);
+			} else if (v[1] == -1) {
+				ms.erase(ms.lower_bound(v[2]));
+			} else {
+				if (ms.empty()) {
+					res[v[2]] = -1;
+				} else {
+					res[v[2]] = *ms.begin();
+				}
+			}
+		}
+		return res;
+    }
+};

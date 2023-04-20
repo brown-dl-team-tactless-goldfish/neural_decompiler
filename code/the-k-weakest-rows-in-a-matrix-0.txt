@@ -1,0 +1,31 @@
+struct pair {
+    int idx;
+    int nums;
+};
+
+int cmp(const void* a, const void* b) {
+    struct pair pa = *(const struct pair*) a;
+    struct pair pb = *(const struct pair*) b;
+    if(pa.nums == pb.nums) return pa.idx - pb.idx;
+    return pa.nums - pb.nums;
+}
+
+int* kWeakestRows(int** mat, int matSize, int* matColSize, int k, int* returnSize) {
+    *returnSize = k;
+    struct pair* arr = (struct pair*) malloc(matSize * sizeof(struct pair));
+    for(int i = 0; i < matSize; i++) {
+        int tmp = 0;
+        for(int j = 0; j < matColSize[0]; j++) {
+            tmp = (mat[i][j] == 1) ? tmp+1 : tmp;
+        }
+        arr[i].idx = i;
+        arr[i].nums = tmp;
+    }
+    qsort(arr, matSize, sizeof(struct pair), cmp);
+    int* ans = (int*) malloc(k * sizeof(int));
+    for(int i = 0; i < k; i++) {
+        ans[i] = arr[i].idx;
+    }
+    free(arr);
+    return ans;
+}

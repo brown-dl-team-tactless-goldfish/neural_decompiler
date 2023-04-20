@@ -1,0 +1,50 @@
+class Solution {
+public:
+   int numDupDigitsAtMostN(int N) {
+      vector<int> v = toVec(N);
+      int n1 = numNoRepeat1(v, {}, 0);
+      int n2 = numNoRepeat2(v.size() - 1);
+      cout << N << " " << n1 << " " << n2 << endl;
+      return N - n1 - n2;
+   }
+
+   // from 10^pow to N 
+   int numNoRepeat1(vector<int> & v, set<int> used, int i) {
+      if (i == v.size()) return 1;
+      int res = 0;
+      int nCanbeUse = v[i];  // 0,1,2,3,4,...v[0]-1
+      if (i == 0) nCanbeUse--; //leading digit cannot be 0
+      for (auto x : used) if (x < v[i]) nCanbeUse--;
+      res += nCanbeUse * permutation(10 - used.size() - 1, v.size() - i - 1);
+
+      //repeated, early return
+      if(used.count(v[i])) return res;
+
+      used.insert(v[i]);
+      res += numNoRepeat1(v, used, i + 1);
+      return res;
+   }
+
+   int permutation(int num, int k) {
+      int prod = 1;
+      while (k--) prod *= num--;
+      return prod;
+   }
+
+   // from 0 to 10^pow10 
+   int numNoRepeat2(int pow10) {
+      int sum = 0;
+      while (pow10) {
+         sum += 9 * permutation(9, pow10 - 1);
+         pow10--;
+      }
+      return sum;
+   }
+
+   vector<int> toVec(int N) {
+      auto s = to_string(N);
+      vector<int> v;
+      for (auto c : s) v.push_back(c - '0');
+      return v;
+   }
+};

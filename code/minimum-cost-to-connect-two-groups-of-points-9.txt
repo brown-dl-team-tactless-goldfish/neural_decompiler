@@ -1,0 +1,32 @@
+class Solution {
+public:
+    
+    int n, m;
+    vector<vector<int> > c;
+    vector<int> mi;
+    vector<vector<int> > dp;
+    
+    int util(int i, int mask){
+        if(i>=n){
+            int res=0;
+            for(int j=0; j<m; j++)
+                if(!(mask&(1<<j))) res+=mi[j];
+            return res;
+        }
+        if(dp[i][mask]!=-1) return dp[i][mask];
+        int ans=2000000000;
+        for(int j=0; j<m; j++) ans=min(ans, c[i][j]+util(i+1, mask|(1<<j)));
+        return dp[i][mask]=ans;
+    }
+    
+    int connectTwoGroups(vector<vector<int>>& cost) {
+        c=cost, n=c.size(), m=c[0].size();
+        dp=vector<vector<int> >(n, vector<int>(1<<m, -1));
+        mi=vector<int>(m);
+        for(int j=0; j<m; j++){
+            mi[j]=c[0][j];
+            for(int i=1; i<n; i++) mi[j]=min(mi[j], c[i][j]);
+        }
+        return util(0, 0);
+    }
+};

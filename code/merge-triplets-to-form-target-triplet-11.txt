@@ -1,0 +1,42 @@
+class Solution {
+public:
+    bool mergeTriplets(vector<vector<int>>& ts, vector<int>& t) {
+        vector<vector<vector<int>>> dp(3,vector(1010,vector<int>(3,2000)));
+        for(auto& t : ts) {
+            for(int i = 0;i<3;i++) {
+                for(int j = 0;j<3;j++) {
+                    dp[i][t[i]][j] = min(dp[i][t[i]][j], t[j]);
+                }
+            }
+        }
+        vector<int> tmp(3);
+        for(int i = 0;i<3;i++) {
+            for(int j = 0;j<3;j++) {
+                tmp[j] = max(tmp[j],dp[i][t[i]][j]);
+            }
+        }
+        if(tmp == t) {
+            return true; 
+        }
+        for(int i = 0;i<3;i++) {
+            if(dp[i][t[i]] == t) {
+                return true; 
+            }
+        }
+        for(int i = 0;i<3;i++) {
+            tmp.assign(3,0);
+            for(int j = 0;j<3;j++) {
+                if(j == i) {
+                    continue; 
+                }
+                for(int k = 0;k<3;k++) {
+                    tmp[k] = max(tmp[k],dp[j][t[j]][k]);
+                }
+            }
+            if(tmp == t) {
+                return true; 
+            }
+        }
+        return false; 
+    }
+};

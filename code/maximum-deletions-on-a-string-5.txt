@@ -1,0 +1,41 @@
+class Solution {
+public:
+    int f(string& s, int u, vector<int>& dp) {
+        if(u == s.size()) {
+            return 0; 
+        }
+        if(dp[u] != 0) {
+            return dp[u];
+        }
+        // starts with u. 
+        string_view tmp = s; 
+        tmp = tmp.substr(u);
+        vector<int> next(tmp.size());
+        int j = -1;
+        next[0] = -1; 
+        for(int i = 1;i<tmp.size();i++) {
+            while(j>=0 && tmp[j+1] != tmp[i]) {
+                j = next[j];
+            }
+            if(tmp[j+1] == tmp[i]) {
+                j++; 
+            }
+            next[i] = j; 
+        }
+        int ret = 1; 
+        for(int i = 0;i<tmp.size();i++) {
+            int len = i + 1; 
+            int matched = next[i] + 1; 
+            if(len == matched * 2) {
+                ret = max(ret, f(s,u + matched,dp) + 1);
+            }
+        }
+        return dp[u] = ret; 
+    }
+    
+    int deleteString(string s) {
+        vector<int> dp(s.size()+5);
+        return f(s, 0, dp);
+        
+    }
+};

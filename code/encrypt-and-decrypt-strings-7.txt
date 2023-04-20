@@ -1,0 +1,33 @@
+class Encrypter {
+public:
+    Encrypter(const vector<char>& keys, const vector<string>& values, const vector<string>& dictionary) {
+        int n = keys.size();
+        for (int i = 0; i < n; ++i) {
+            forward[keys[i]] = values[i];
+            backward[values[i]] = min(backward.count(values[i]) ? backward[values[i]] : numeric_limits<char>::max(), keys[i]);
+        }
+        for (const string& w : dictionary) ++dcount[getKey(w)];
+    }
+
+    string encrypt(string word1) {
+        string res;
+        for (char c : word1) res += forward[c];
+        return res;
+    }
+
+    int decrypt(string word2) {
+        string k;
+        for (int i = 0, n = word2.size(); i < n; i += 2) k += backward[word2.substr(i, 2)];
+        return dcount[k];
+    }
+
+    string getKey(string s) {
+        string key;
+        for (char c : s) key.push_back(backward[forward[c]]);
+        return key;
+    }
+
+    unordered_map<char, string> forward;
+    unordered_map<string, char> backward;
+    unordered_map<string, int> dcount;
+};

@@ -1,0 +1,67 @@
+#include <stdint.h>
+#include <stdbool.h>
+#include <stdlib.h>
+
+int EuclideanDistance(int x, int y) {
+    return x * x + y * y;
+}
+
+int balance(int** points, int left, int right) {
+    int* tmpPoint = points[right];
+    int tmpDistance = EuclideanDistance(tmpPoint[0], tmpPoint[1]);
+    while (left < right) {
+        while (left < right) {
+            int leftDistance = EuclideanDistance(points[left][0], points[left][1]);
+            if (leftDistance > tmpDistance) {
+                points[right] = points[left];
+                right -= 1;
+                break;
+            }
+            left += 1;
+        }
+        while (left < right) {
+            int rightDistance = EuclideanDistance(points[right][0], points[right][1]);
+            if (rightDistance < tmpDistance) {
+                points[left] = points[right];
+                left += 1;
+                break;
+            }
+            right -= 1;
+        }
+    }
+    
+    points[right] = tmpPoint;
+    return right;
+}
+
+// find k or k+1 quantile
+void k_quantile(int** points, int left, int right, int k) {
+    while (true) {
+        int mid = balance(points, left, right);
+        if (mid > k) {
+            right = mid - 1;
+        } else if (mid < k - 1) {
+            left = mid + 1;
+        } else {
+            return;
+        }
+    }
+}
+
+int** kClosest(int** points, int pointsSize, int* pointsColSize, int K, int* returnSize, int** returnColumnSizes){
+    k_quantile(points, 0, pointsSize - 1, K);
+
+    int** kpoints = (int**)malloc(sizeof(int*) * K);
+    int *ksizes = (int*)malloc(sizeof(int) * K);
+    for (int i = 0; i < K; i++) {
+        kpoints[i] = (int*)malloc(sizeof(int) * 2);
+        kpoints[i][0] = points[i][0];
+        kpoints[i][1] = points[i][1];
+        ksizes[i] = 2;
+    }
+
+    *returnSize = K;
+    *returnColumnSizes = ksizes;
+    return kpoints;
+}
+

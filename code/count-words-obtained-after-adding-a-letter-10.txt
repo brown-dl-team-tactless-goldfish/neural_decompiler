@@ -1,0 +1,23 @@
+int wordCount(vector<string>& startWords, vector<string>& targetWords) {
+	unordered_set<string> s;
+	for(int i = 0; i<startWords.size(); i++) {
+		string temp = startWords[i];
+		sort(temp.begin(), temp.end());
+		s.insert(temp);
+	}
+
+	int res = 0;
+	for(auto x : targetWords) {
+		sort(x.begin(), x.end());
+		for(int i = 0; i<x.length(); i++) {
+			char c = x[i];
+			string curr = x.substr(0, i) + x.substr(i+1);
+			if(s.find(curr) != s.end() && curr.find(c) == string::npos) {
+				res++;
+				break;
+			}
+		}
+	}
+
+	return res;
+}

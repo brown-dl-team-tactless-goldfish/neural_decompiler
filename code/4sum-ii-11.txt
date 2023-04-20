@@ -1,0 +1,120 @@
+#define SIZE 890000
+
+struct mapItem
+{
+	int value;
+	long key;
+	struct mapItem *next;
+};
+
+
+void display();
+void insert(long key, int value);
+long getHashKey(long key);
+struct mapItem* search(long key);
+bool delete(int key);
+int fourSumCount(int* A, int ASize, int* B, int BSize, int* C, int CSize, int* D, int DSize);
+
+struct mapItem* hashArray[SIZE]; // global hashmap created with size
+
+long getHashKey(long key)
+{
+	return key % SIZE;
+}
+
+void insert(long key, int value)
+{
+	// compute hash
+	long lhashkey = getHashKey(key);
+    if (lhashkey <0)
+    {
+        lhashkey = abs(lhashkey); // normalize
+    }
+	struct mapItem** ptr = &(hashArray[lhashkey]);
+
+	while ((*ptr) != NULL) // something is there, collision
+	{
+		// cycle through linked list
+		if ((*ptr)->key == key)
+		{
+			(*ptr)->value = (*ptr)->value + 1;
+			return;
+		}
+		ptr = &((*ptr)->next);
+	}
+
+	// for if it cycles through linked list but couldn't find a matching key
+	struct mapItem *localitem = (struct mapItem*)malloc(sizeof(struct mapItem));
+	localitem->key = key;
+	localitem->value = value;
+	localitem->next = NULL;
+	(*ptr) = localitem;
+
+}
+
+struct mapItem* search(long key)
+{
+	// compute hash
+	long lhashkey = getHashKey(key);
+    if (lhashkey <0)
+    {
+        lhashkey = abs(lhashkey); // normalize
+    }	
+
+	struct mapItem **ptr = &(hashArray[lhashkey]);
+
+	if ((*ptr) == NULL)
+	{
+		return NULL;
+	}
+
+	while ((*ptr) != NULL) // something here
+	{
+		// cycle through linked list
+		if ((*ptr)->key == key)
+		{
+			return (*ptr);
+		}
+		ptr = &((*ptr)->next);
+
+	}
+	return NULL; // only reaches if it went through linked list and couldn't find key
+
+}
+
+int fourSumCount(int* A, int ASize, int* B, int BSize, int* C, int CSize, int* D, int DSize)
+{
+	int * rootB = B; // store original point of B
+	int * rootD = D; // store original point of D
+
+	struct mapItem* temp = (struct mapItem*)malloc(sizeof(struct mapItem));
+
+	int retCount = 0;
+	for (uint16_t i = 0; i < ASize; i++)
+	{
+		for (uint16_t j = 0; j < BSize; j++)
+		{
+			insert(*A+*B,1);
+			B++;
+		}
+		B = rootB; // reset pointer of B back to position 0
+		A++;
+	}
+
+	for (uint16_t k = 0; k < CSize; k++)
+	{
+		for (uint16_t l = 0; l < DSize; l++)
+		{
+			temp = search( 0 - *C - *D);
+			if (temp != NULL) // found something
+			{
+				retCount = retCount+ temp->value;
+			}
+			D++;
+		}
+		D = rootD;
+		C++;
+	}
+	memset(&hashArray, 0, (sizeof(hashArray))); // for next iteration
+	return retCount;
+}

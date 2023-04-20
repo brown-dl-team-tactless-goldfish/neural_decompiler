@@ -1,0 +1,132 @@
+#define DFS
+
+
+#define MAX(a, b) ((a>b)?a:b)
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+int chaseNumber(struct TreeNode *node, int k, int stained) {
+    int retl = 0;
+    int retr = 0;
+    int ret;
+
+    if(node == NULL) return 0;
+
+    if(node->left != NULL && node->left->val == k) {
+//printf("node->left -> %d\n", node->left->val);
+        retl =  chaseNumber(node->left, k, true) + 1;
+    }
+    if(node->right != NULL && node->right->val == k) {
+//printf("node->right -> %d\n", node->right->val);
+        retr = chaseNumber(node->right, k, true) + 1;
+    }
+
+//printf("RET: %d <=== retl %d, retr %d\n", MAX(retl, retr), retl, retr);
+    if(stained == true)
+        return MAX(retl, retr);
+    else
+        return retl + retr;
+}
+
+static int max = 0;
+
+#ifdef DFS
+int recursivelongestUnivaluePath(struct TreeNode* root){
+    int cnt;
+    struct TreeNode *node;
+
+    if(root == NULL) return 0;
+
+    cnt = chaseNumber(root, root->val, 0);
+    if(max < cnt) max = cnt;
+//printf("========= node-> %d, max %d\n", root->val, max);
+
+    if(root->left != NULL) {
+        cnt = recursivelongestUnivaluePath(root->left);
+        if(max < cnt) max = cnt;
+    }
+    if(root->right != NULL) {
+        cnt = recursivelongestUnivaluePath(root->right);
+        if(max < cnt) max = cnt;
+    }
+
+    return max;
+}
+#else // BFS
+typedef struct listNode {
+    void *val;
+    struct listNode *next;
+} qlist;
+
+static qlist *head = NULL;
+static qlist *tail = NULL;
+
+void enque(void *val) {
+    qlist *new;
+
+    new = (qlist *)malloc(sizeof(qlist));
+    new->val = val;
+    new ->next = NULL;
+
+    if(head == NULL) {
+        head = tail = new;
+    } else {
+        tail->next = new;
+        tail = new;
+    }
+}
+
+void *deque(void) {
+    void *ret;
+    qlist *tmp;
+
+    tmp = head;
+    ret = head->val;
+    head = head->next;
+    if(head == NULL) {
+        tail = NULL;
+    }
+    
+    free(tmp);
+    
+    return ret;
+}
+
+bool isempty(void) {
+    if(head == NULL) return true;
+    return false;
+}
+
+int recursivelongestUnivaluePath(struct TreeNode* root){
+    int cnt;
+    struct TreeNode *node;
+
+    if(root == NULL) return 0;
+
+    cnt = chaseNumber(root, root->val, 0);
+    if(max < cnt) max = cnt;
+//printf("========= node-> %d, max %d\n", root->val, max);
+
+    if(root->left != NULL) enque(root->left);
+    if(root->right != NULL) enque(root->right);
+    
+    while(isempty() == false) {
+        node = deque();
+        recursivelongestUnivaluePath(node);
+    }
+
+    return max;
+}
+#endif
+
+int longestUnivaluePath(struct TreeNode* root){
+    max = 0;
+    return recursivelongestUnivaluePath(root);
+}

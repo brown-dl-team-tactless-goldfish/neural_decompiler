@@ -1,0 +1,25 @@
+    int factorialZeros(int n) {
+        int nzeros = 0;
+        while (n >= 5) {
+            n = n / 5;
+            nzeros += n;
+        }
+        return nzeros;
+    }
+    
+    int preimageSizeFZF(int K /* number of 0s */) {
+        int low = 0;
+        int high = K * 5;  // for sure is bigger than potential 'n'
+        for (; low < (high + 5); ) {
+            int n = (low + high) / 2;
+            int nzeros = factorialZeros(n);
+            if (nzeros < K)
+                low = n + 5;    //each span with repeated values is 5 elements long
+            else if (nzeros > K)
+                high = n - 5;
+            else
+                return 5;
+        }
+        return 0; //not found factorialZeros(n) that could return K 0s
+    }
+};

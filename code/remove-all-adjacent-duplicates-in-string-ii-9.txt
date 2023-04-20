@@ -1,0 +1,52 @@
+typedef struct node{
+    char letter;
+    int count;
+}STACK;
+
+char * removeDuplicates(char * s, int k){
+    int len = strlen(s);
+    STACK *my_stack = (STACK*)calloc(len, sizeof(STACK));
+    int top = 0;
+    
+    //Push the first element into stack
+    my_stack[top].letter = s[0];
+    my_stack[top].count = 1;
+    
+	//Traverse through remaining elements
+    for(int i = 1; i < len; i++){   
+	    //If its the first element on stack OR the current element != element at the top of the stack, just add the element to the stack with count = 1
+        if((top == -1) || (s[i] != my_stack[top].letter)){
+            my_stack[++top].letter = s[i];
+            my_stack[top].count = 1;            
+        }
+        else{  //current element == top element in stack
+            int count_at_top = my_stack[top].count;
+			
+            if(count_at_top == (k-1)){
+			    //We already have (k-1) repetition of the element, remove them from stack 
+                top -= (k-1);    
+            }
+            else{ 
+			    //Else, add the current one to stack with updated count
+                my_stack[++top].letter = s[i];
+                my_stack[top].count = (count_at_top + 1);                 
+            }
+        }
+    }
+    
+    //Resultant string
+    char *res_string = (char*)malloc(sizeof(char) * top+2);
+    int idx = 0;
+    for(int i = 0; i <= top; i++){
+        res_string[idx++] = my_stack[i].letter;
+    }
+    res_string[idx] = '\0';
+    
+    //Free the stack
+    free(my_stack);
+    my_stack = NULL;
+    
+    //Return result
+    return res_string;
+
+}

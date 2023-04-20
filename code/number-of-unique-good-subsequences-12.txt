@@ -1,0 +1,34 @@
+class Solution {
+public:
+    int numberOfUniqueGoodSubsequences(string b) {
+        int lz = -1 , lo = -1; // last undex of zero and one
+        int ind = 0, cnt0 = 0, M = 1e9 + 7;
+        string tem = ""; // this will be new string after removing leading zeros
+        if(b[0] == '0') cnt0 = 1;
+        while(ind < b.length() && b[ind] == '0') ind++;
+        while(ind < b.length()){ if(b[ind] =='0') cnt0 = 1; tem += b[ind++]; }
+        if(tem == "") return cnt0;
+        vector<int> dp(tem.size()+1,0);
+        dp[0] = 1; // 0 is for null in end we will remove it
+        dp[1] = 2; // first char can have 2 sub sequence
+        lo = 1; // always starting from 1
+        for(int i = 1; i<tem.length();i++){
+            if(tem[i] == '0'){  
+                // if we get 0 then if this is first then only we cannot make 0 that's wy -1 
+                // else removes previous zero sequences to remove duplicates
+                if(lz == -1) dp[i+1] = (dp[i]*2ll - 1)%M;
+                else dp[i+1] = (dp[i]*2ll - dp[lz-1] )%M;
+                lz = i+1;
+            }else{
+                // similar as of zero 
+                if(lo == -1) dp[i+1] = (dp[i]*2ll)%M;
+                else dp[i+1] = (dp[i]*2ll - dp[lo-1])%M;
+                lo = i+1;
+            }
+            if(dp[i+1] < 0 ) dp[i+1] += M;
+        }
+        dp[tem.length()] -= (1-cnt0); // at last we will remove null and add 0 count
+        if(dp[tem.length()] < 0 ) dp[tem.length()] += M;
+        return dp[tem.length()]%M;
+    }
+};

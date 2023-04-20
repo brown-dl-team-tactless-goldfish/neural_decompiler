@@ -1,0 +1,48 @@
+struct stack{
+    long int data[10000];
+    long int top;
+};
+
+void init(struct stack *s){
+    s->top = -1;
+}
+
+void push(struct stack *s, long int value){
+    s->top = s->top + 1;
+    s->data[s->top] = value;
+}
+
+long int pop(struct stack *s){
+    int x = s->data[s->top];
+    s->top = s->top - 1;
+    return x;
+}
+
+long int evalRPN(char ** tokens, int tokensSize){
+    long int a, b, x;
+    struct stack s;
+    init(&s);
+    for (int i = 0; i < tokensSize; i++){
+        if (strcmp(tokens[i],"+") == 0){
+            a = pop(&s);
+            b = pop(&s);
+            push(&s,a+b);
+        } else if (strcmp(tokens[i],"-") == 0){
+            a = pop(&s);
+            b = pop(&s);
+            push(&s,b-a);
+        } else if (strcmp(tokens[i],"*") == 0){
+            a = pop(&s);
+            b = pop(&s);
+            push(&s,a*b);
+        } else if (strcmp(tokens[i],"/") == 0){
+            a = pop(&s);
+            b = pop(&s);
+            push(&s,b/a);
+        } else {
+            x = atoi(tokens[i]);
+            push(&s,x);
+        }
+    }
+    return pop(&s);
+}

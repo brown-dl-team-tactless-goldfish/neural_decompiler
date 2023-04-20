@@ -1,0 +1,30 @@
+int cmp ( const void *a , const void *b ){
+    return *(int *)a - *(int *)b;
+}
+
+int findRadius(int* houses, int housesSize, int* heaters, int heatersSize){
+    qsort(houses, housesSize, sizeof(int), cmp);
+    qsort(heaters, heatersSize, sizeof(int), cmp);
+    int * distance = malloc(sizeof(int) * housesSize);
+    int i = 0, j = 0;
+    for (i = 0; i < housesSize; i++){
+        while (j < heatersSize && houses[i] > heaters[j])
+            j++;
+        if (j == 0)
+            distance[i] = heaters[j] - houses[i];
+        else if (j >= heatersSize) {
+            distance[i] = houses[i] - heaters[j - 1];
+        }
+        else {
+            int temp1 = heaters[j] - houses[i];
+            int temp2 = houses[i] - heaters[j - 1];
+            distance[i] = (temp1 < temp2)?temp1:temp2;
+        }
+    }
+    int result = 0;
+    for (i = 0; i < housesSize; i++){
+        if (distance[i] > result)
+            result = distance[i];
+    }
+    return result;
+}

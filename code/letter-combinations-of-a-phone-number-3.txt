@@ -1,0 +1,36 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+ void gen_string(char* digits, int index, int len, char *tmpstr, char ** result, int * count, char (*map)[5]) {
+     
+     if(index == len) {
+         tmpstr[index] = '\0';
+         char *str = (char*)malloc((len+1)*sizeof(char));
+         strncpy(str, tmpstr, len+1);
+         result[(*count)++] = str;
+       
+         
+     } else {
+         char * substring = map[digits[index]-'0'];
+         for(int i=0;i<strlen(substring);i++) {
+            tmpstr[index] = substring[i];
+            gen_string(digits, index+1, len, tmpstr, result, count, map);
+         }
+     }
+ }
+char ** letterCombinations(char * digits, int* returnSize){
+    char map[10][5] = {"","","abc","def","ghi","jkl","mno","pqrs","tuv","wxyz"};
+    int i, targetlen=1;
+    *returnSize =0;
+    int len = strlen(digits);
+    if (len == 0) return NULL;
+    for(i=0;i<len; i++) {
+        targetlen *= strlen(map[digits[i]-'0']);
+    }
+    char **result = (char **)malloc(targetlen * sizeof(char*));
+    char *tmpstr = malloc((len+1) *sizeof(char));
+    
+    gen_string(digits, 0, len, tmpstr, result, returnSize, map);
+    free(tmpstr);
+    return result;
+}

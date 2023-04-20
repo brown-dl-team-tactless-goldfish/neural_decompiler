@@ -1,0 +1,30 @@
+class Solution {
+public:
+    vector<int> loudAndRich(vector<vector<int>>& richer, vector<int>& quiet) {
+        vector<int> res(quiet.size(), 0);
+        unordered_map<int, vector<int>> map;
+        for(const auto& r : richer){
+            map[r[1]].push_back(r[0]);
+        }
+        for(int i = 0; i < quiet.size(); ++i){
+            int minq{quiet[i]};
+            int minp{i};
+            for(const auto& n : map[i]){
+                if(n < i) {
+                    if(quiet[res[n]] < minq ) {minq = quiet[res[n]]; minp = res[n];} 
+                    continue;
+                }
+                queue<int> q;
+                q.push(n);
+                while(!q.empty()){
+                    int x = q.front();
+                    if(quiet[x] < minq) {minq = quiet[x]; minp = x;}
+                    q.pop();
+                    for(const auto& nx : map[x]) q.push(nx);
+                }
+            }
+            res[i] = minp;
+        }
+        return res;
+    }
+};

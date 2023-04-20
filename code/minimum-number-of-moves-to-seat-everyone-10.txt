@@ -1,0 +1,35 @@
+int minMovesToSeat(int* seats, int seatsSize, int* students, int studentsSize){
+    int i,count=0,diff;
+    countingsort(seats,seatsSize);
+    countingsort(students,studentsSize);
+    for(i=0;i<studentsSize;i++){
+        diff=students[i]-seats[i];
+        if(diff<0) diff=diff*(-1);
+        count=count+diff;
+    }
+    return count;
+}
+void countingsort(int* array,int arraySize){
+    int i,b[101];
+    int res[101];
+
+    for(i=0;i<101;i++){
+        b[i]=0;
+    }
+    for(i=0;i<arraySize;i++){
+        b[array[i]]++;
+    }
+    for(i=1;i<101;i++){
+        b[i]=b[i]+b[i-1];
+    }
+    for(i=arraySize-1;i>=0;i--){
+        res[b[array[i]]-1]=array[i];
+        b[array[i]]--;
+    }
+
+    for(i=0;i<arraySize;i++){
+        array[i]=res[i];
+    }
+
+}
+

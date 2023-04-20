@@ -1,0 +1,72 @@
+public class Solution {
+    
+    public class Course {
+        public double studentsThatPassed; 
+        public double totalStudents; 
+        public double passRatio; 
+        
+        public Course(int pass, int total) {
+            studentsThatPassed = pass; 
+            totalStudents = total;
+            CalculatePassRatio(); 
+        }
+        
+        public void CalculatePassRatio() {
+            passRatio = studentsThatPassed/totalStudents;
+        }
+        
+        public Double CheckUpdatedRatio() {
+            return (studentsThatPassed+1)/(totalStudents+1); 
+        }
+    }
+    
+    public class CustomComparer : IComparer<Course> {
+        public int Compare(Course first, Course second) {
+            var diffFirst = first.CheckUpdatedRatio() - first.passRatio; 
+            var diffSecond = second.CheckUpdatedRatio() - second.passRatio;
+            if (diffFirst > diffSecond) {
+                return -1; 
+            } else if (diffFirst < diffSecond) {
+                return 1; 
+            } else {
+                // just return the one with the lowest overall ratio if tie
+                return first.passRatio.CompareTo(second.passRatio); 
+            }
+        }
+    }
+    
+    public double MaxAverageRatio(int[][] classes, int extraStudents) {
+        
+        // O(nlogn) for custom comparer, sort all courses
+        var pq = new PriorityQueue<Course, Course>(new CustomComparer()); 
+        
+        // O(nlogn)
+        for (var i = 0; i < classes.Length; i++) {
+            var course = new Course(classes[i][0], classes[i][1]); 
+            pq.Enqueue(course, course); 
+        }
+        
+        // O(elogn) where is is number of extra students 
+        while (extraStudents > 0) {
+            var classWithWorstRatio = pq.Dequeue();
+            classWithWorstRatio.studentsThatPassed++; 
+            classWithWorstRatio.totalStudents++; 
+            classWithWorstRatio.CalculatePassRatio(); 
+            extraStudents--; 
+            pq.Enqueue(classWithWorstRatio, classWithWorstRatio); 
+        }
+        
+        var totalPassRatioSum = 0.0;
+        var totalCourses = 0; 
+        
+        // O(nlogn)
+        while (pq.Count > 0) {
+            totalCourses += 1; 
+            totalPassRatioSum += pq.Dequeue().passRatio;
+        }
+        
+        // Time Complexity ~ O(nlogn) or O(elogn)
+        // Space Complexity is O(n) where c is number of classes, the PQ
+        return totalPassRatioSum / totalCourses; 
+    }
+}

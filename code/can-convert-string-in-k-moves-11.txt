@@ -1,0 +1,22 @@
+class Solution {
+public:
+    bool canConvertString(string s, string t, int k) {
+        #let diff be difference between s and t, we can only have unique diff , 
+        #in case of duplicate diffs, next diff will be 26+ curr if diff is same
+        #make sure max diff is less than k.
+        if (s.size() != t.size()) return false ; 
+        unordered_map<int, int> req_moves ; 
+        for (int i = 0 ; i < s.size() ; i++){
+            if (s[i] == t[i]) continue ; 
+            auto curr_moves = (int) t[i] - (int) s[i] ; 
+            if (curr_moves < 0) curr_moves += 26 ; 
+            auto curr_moves_ = curr_moves ; 
+            if (req_moves.find(curr_moves) != req_moves.end()){
+                curr_moves_ = req_moves[curr_moves] + 26 ;
+            }
+            if (curr_moves_ > k) return false ;       
+            req_moves[curr_moves] = curr_moves_ ; 
+        }
+        return true;         
+    }
+};

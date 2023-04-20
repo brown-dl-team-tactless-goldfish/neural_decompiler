@@ -1,0 +1,26 @@
+public class Solution {
+    public IList<IList<int>> FindSubsequences(int[] nums) {
+        var res = new List<IList<int>>();
+        
+        FindSubs(nums, res, 0, new List<int>());
+        
+        return res;
+    }
+    
+    private void FindSubs(int[] nums, List<IList<int>> res, int index, List<int> current){
+        if(current.Count > 1)
+            res.Add(new List<int>(current));
+        
+        HashSet<int> visited = new HashSet<int>();
+        
+        for(int i=index;i<nums.Length;++i){
+            if(visited.Contains(nums[i])) continue;
+            if(current.Count == 0 || nums[i] >= current[current.Count-1]){
+                current.Add(nums[i]);
+                visited.Add(nums[i]);
+                FindSubs(nums, res, i+1, current);
+                current.RemoveAt(current.Count-1);
+            }
+        }
+    }
+}

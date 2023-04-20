@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int numWays(int steps, int arrLen) {
+		// the length of DP should be min of arrLen and steps / 2 + 1, otherwise we may have TLE
+		// if you reach beyond steps / 2 + 1, you will never come back to 0
+		const int len(min(steps / 2 + 1, arrLen)), mod(1e9 + 7);
+        vector<long> dp(len);
+        dp[0] = 1;
+        
+        while (steps--) {
+            vector<long> new_dp(len);
+            for (int i = 0; i < len; ++i) {
+				// for each point in the middle, we either stay or go left or go right
+				// at end points, we only have two options
+                new_dp[i] = (dp[i] + (i ? dp[i-1] : 0) + (i < len - 1 ? dp[i+1] : 0)) % mod;
+				// slight improvement: we break the loop of we find new_dp[i] is 0
+				// since by deduction, any point beyond i is also 0
+                if (!new_dp[i]) break;
+            }
+            swap(dp, new_dp);
+        }
+        
+        return dp[0];
+    }
+};

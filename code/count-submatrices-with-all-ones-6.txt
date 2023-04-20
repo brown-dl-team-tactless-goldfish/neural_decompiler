@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int numSubmat(vector<vector<int>>& mat) {
+        int r=mat.size();
+        int c=mat[0].size();
+        int ans=0;
+        for(int i=0;i<r;i++){
+            vector<int> q(c,0);//for each column as there are intotal c columns
+            for(int j=i;j<r;j++){
+                //fixing the two rows on top and bottom
+                for(int k=0;k<c;k++){
+                    if(mat[j][k]==0){
+                        //then this column doesnt count
+                        q[k]=0;
+                    }
+                    else if(mat[j][k]==1){
+                        q[k]=q[k]+1;
+                    }
+                }
+                 //after doing the primitive work
+                //now we gonna proceed further
+                int height=j-i+1;
+                //so we need a height of j-i+1 1 one's to form our current submatrix
+                for(int p=0;p<c;p++){
+                    if(q[p]!=height){
+                        continue;//if 0 then this wont help
+                    }
+                    else if(q[p]==height){
+                       int oo=p;
+                       while(oo<q.size() and q[oo]==height){
+                           oo++;
+                       }
+                       int ct=oo-p;
+                       ans+=((ct)*(ct+1))/2;
+                       p=oo-1;
+                    }  
+                }
+            }
+        }
+        return ans;
+    }
+};

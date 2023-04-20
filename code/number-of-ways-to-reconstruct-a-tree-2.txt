@@ -1,0 +1,74 @@
+class Solution {
+public:
+    bool flag;
+    
+    void buildGraph(int root, map<int, set<int>> &adj, vector<vector<int>> &tree)
+    {
+        set<int> :: iterator it;
+        int node, maxi;
+        while(adj[root].size())
+        {
+            node = 1, maxi = 0;
+            for(auto it: adj[root])
+            {
+                if(maxi < adj[it].size())
+                {
+                    maxi = adj[it].size(); node = it;
+                }
+            }
+            
+            tree[root].push_back(node);
+            adj[root].erase(node);
+            adj[node].erase(root);
+            
+            for(auto x : adj[node])
+            {
+                if(adj[root].find(x) == adj[root].end())
+                {
+                   // cout<<x<<" ";
+                    flag = false; return;
+                }
+                adj[root].erase(x);
+                adj[x].erase(root);
+            }
+            buildGraph(node, adj, tree);
+        }
+    }
+    
+    int checkWays(vector<vector<int>>& pairs) {
+        
+        map<int, set<int>> adj;
+        flag = true;
+        
+        for(auto pair : pairs){
+            adj[pair[0]].insert(pair[1]);
+            adj[pair[1]].insert(pair[0]);
+        }
+        
+        // get root node
+        int node = 1, maxi = 0;
+        for(auto it: adj)
+        {
+            if(maxi < it.second.size())
+            {
+                maxi = it.second.size(); node = it.first;
+            }
+        }
+     
+        vector<vector<int>> tree(501);
+        buildGraph(node, adj, tree);
+        
+        for(auto it : adj)
+        {
+            if(it.second.size())
+                return 0;
+        }
+        if(!flag)
+            return 0;
+        for(int i = 0; i < 501; i++)
+            if(tree[i].size() == 1)
+        return 2;
+        
+        return 1;
+    }
+};

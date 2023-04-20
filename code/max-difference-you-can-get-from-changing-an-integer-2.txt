@@ -1,0 +1,20 @@
+class Solution {
+public:
+	static constexpr int INF = 1e9 + 7;
+	using VC = vector<char>;
+	int maxDiff(int x, int min = INF, int max = -INF) {
+		VC digits(10);
+		iota(digits.begin(), digits.end(), '0');
+		for (auto i: digits) {
+			for (auto j: digits) {
+				auto cur = to_string(x);
+				if (cur[0] == i && j == '0')
+					continue; // no leading 0 ❌
+				transform(cur.begin(), cur.end(), cur.begin(), [=](auto c) { return c == i ? j : c; });
+				min = std::min(min, stoi(cur));
+				max = std::max(max, stoi(cur));
+			}
+		}
+		return max - min;
+	}
+};

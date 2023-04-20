@@ -1,0 +1,74 @@
+class DSU {
+  public:
+    vector<int> parent;
+    vector<int> size;
+    int sz = 0;
+    
+    DSU(int n) {
+        
+        parent.resize(n,0);
+        size.resize(n,0);
+        for(int i=0;i<n;i++) {
+            parent[i] = i;
+            size[i] = 1;
+        }
+        sz = 1;
+        
+    }
+    
+    int find_set(int v) {
+        if(parent[v]==v)
+            return v;
+        return parent[v]=find_set(parent[v]);
+    }
+    
+    bool union_sets(int u,int v) {
+        int a = find_set(u);
+        int b = find_set(v);
+        if(a==b)
+            return false;
+        if(a!=b) {
+            if(size[a]<size[b])
+                swap(a,b);
+            parent[b] = a;
+            size[a]+=size[b];
+        } 
+        sz++;
+        return true;
+    }
+};
+    
+class Solution {
+public:
+    
+    
+    int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
+        DSU* u1 = new DSU(n);
+        DSU* u2 = new DSU(n);
+        int ans = 0;
+        for(auto edge:edges) {
+            int type = edge[0];
+            int u = edge[1]; u--;
+            int v = edge[2]; v--;
+            if(type!=3) continue;
+            if(!u1->union_sets(u,v) || !u2->union_sets(u,v))
+                ans++;
+        }
+        
+        
+        for(auto edge:edges) {
+            int type = edge[0];
+            int u = edge[1]; u--;
+            int v = edge[2]; v--;
+            if(type==1 && !u1->union_sets(u,v))
+                ans++;
+            if(type==2 && !u2->union_sets(u,v))
+                ans++;
+        }
+      
+        if(u1->sz==n && u2->sz==n)
+            return ans;
+        
+        return -1;
+    }
+};

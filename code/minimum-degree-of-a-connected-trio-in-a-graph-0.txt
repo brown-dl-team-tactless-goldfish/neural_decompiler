@@ -1,0 +1,41 @@
+typedef unsigned int uint;
+
+union I {
+  int s;
+  uint u;
+};
+
+int minTrioDegree(int n, int** edges, int edgesSize, int* edgesColSize){
+  uint degrees[n];
+  memset(degrees, 0, n * sizeof(uint));
+  
+  char adjacencies[n][n];
+  memset(adjacencies, 0, n * n * sizeof(char));
+  
+  for (int i = 0; i < edgesSize; i++) {
+    int v1 = edges[i][0] - 1;
+    int v2 = edges[i][1] - 1;
+    
+    adjacencies[v1][v2] = 1;
+    adjacencies[v2][v1] = 1;
+    
+    degrees[v1]++;
+    degrees[v2]++;
+  }
+  
+  union I ret;
+  ret.s = -1;
+  
+  for (int v1 = 0; v1 < n; v1++) {
+    for (int v2 = v1 + 1; v2 < n; v2++) {
+      for (int v3 = v2 + 1; v3 < n; v3++) {
+        if (adjacencies[v1][v2] && adjacencies[v1][v3] && adjacencies[v2][v3]) {
+          uint deg = degrees[v1] + degrees[v2] + degrees[v3] - 6;
+          if (deg < ret.u) ret.u = deg;
+        }
+      }
+    }
+  }
+  
+  return ret.s;
+}

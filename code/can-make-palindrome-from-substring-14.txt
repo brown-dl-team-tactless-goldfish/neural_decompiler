@@ -1,0 +1,60 @@
+class Solution {
+public:
+    vector<bool> canMakePaliQueries(string s, vector<vector<int>>& queries) {
+        int len = s.length();
+        vector<vector<int>> cnt(26, vector<int> (len, 0));
+        cnt[s[0] - 'a'][0]++;
+        
+        /*
+            cnt[c - 'a'][i] : represents the number of occurrences of the character c, till the index i in the string s
+            
+            so to find out the frequency of some character c in the range l to r
+            
+            freq = cnt[c - 'a'][r] - cnt[c - 'a'][l - 1]
+            
+            now how to check whether it can be rearranged into a palindrome, given that we can change at most k characters 
+            lets say we have this 
+            a b d c c c m m m m m k k k a
+            
+            k, m, c, b, d
+            we can place it like this 
+            
+            a k m m c ______ c m m k a
+            
+            now after doing this the remaining spots are to be filled 
+            other are already matched
+            we will place the remaining c in the middle
+            k can be transformed into b, and c can be transformed into d
+            
+            so the number of transformations we need is : (number of character with odd frequency) / 2
+            
+            
+        */
+        
+        for(int i = 1; i < len; i++) {
+            cnt[s[i] - 'a'][i] = 1;
+            for(char c = 'a'; c <= 'z'; c++) {
+                 cnt[c - 'a'][i]+=cnt[c - 'a'][i - 1];
+                    
+            }
+        }
+                
+        int qLen = queries.size();
+        vector<bool> ans(qLen, 0);
+        for(int i = 0; i < qLen; i++) {
+            auto q = queries[i];
+            int li = q[0], ri = q[1];
+    
+            int oddCount = 0;
+            for(char c = 'a'; c <= 'z'; c++) {
+                int curCount = cnt[c - 'a'][ri] - (li > 0 ? cnt[c - 'a'][li - 1] : 0);            
+                if(curCount % 2) oddCount++;
+            }
+            
+            int changedNeeded = oddCount / 2;
+            ans[i] = changedNeeded <= q[2];
+        }
+                
+        return ans;
+    }
+};

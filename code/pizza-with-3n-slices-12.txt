@@ -1,0 +1,40 @@
+class Solution {
+    int dp[501][167][2][2] = {};
+public:
+    int maxSizeSlices(vector<int>& slices) {
+        int n = slices.size();
+        int len = n / 3;
+                
+        return helper(0, 0, 0, 0, slices);
+    }
+    
+    // cur: current idx.
+    // pick: slices that we have picked so far.
+    // prev: Whether we picked the previous slice. If we did, we cannot pick the current one.
+    // first: Whether we picked the first slice. 
+    int helper(int cur, int pick, int prev, int first, vector<int>& slices) {
+        int n = slices.size();
+        if(cur == n || pick == n / 3) {
+            return 0;
+        }
+                
+        if(dp[cur][pick][prev][first] != 0) return dp[cur][pick][prev][first];
+        
+        // Do not pick the current slice.
+        int res = helper(cur+1, pick, 0, first, slices);
+        if(prev == 0) {
+            if(cur == 0) {
+                // Pick the first slice, mark param "first" as true.
+                res = max(res, slices[cur] + helper(cur+1, pick+1, 1, 1, slices));
+            } else if(cur == n-1 && first) {
+                // Cannot pick the last one because we already pick the first one.
+            } else {
+                // Pick the current slice.
+                res = max(res, slices[cur] + helper(cur+1, pick+1, 1, first, slices));
+            }
+            
+        }
+        dp[cur][pick][prev][first] = res;
+        return res;
+    }
+};

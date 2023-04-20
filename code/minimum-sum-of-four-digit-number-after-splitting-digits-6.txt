@@ -1,0 +1,30 @@
+int minimumSum(int num){
+    // Step 1: Split number into 4 seperate digits
+	register const unsigned char digits = 4;
+	int arr[4];
+	register unsigned short a, x = num;
+	for(a = 0; a < digits; a++) {
+		arr[a] = x % 10;
+		x = x / 10;
+	}
+
+	// Step 2: Insertion sort
+    int i, key, j, n = digits;
+    for (i = 1; i < n; i++) {
+        key = arr[i];
+        j = i - 1;
+ 
+        while (j >= 0 && arr[j] > key) {
+            arr[j + 1] = arr[j];
+            j = j - 1;
+        }
+        arr[j + 1] = key;
+    }
+
+    // Step 3: Return either with two or more zero, one zero or none zero digits
+    if(arr[0] == 0 && arr[1] == 0)
+    	return arr[2] + arr[3];
+    else if(arr[0] == 0)
+    	return (arr[1] * 10) + arr[2] + arr[3];
+    return ((arr[0] * 10) + arr[3]) + ((arr[1] * 10) + arr[2]);
+}

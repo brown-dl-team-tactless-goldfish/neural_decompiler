@@ -1,0 +1,21 @@
+    int numWays(vector<string>& words, string target) {
+        const long long mod = 1e9+7;
+        const int n = words[0].size();
+        auto counter = vector(n, vector(128,0));
+        for(auto& s:words){
+            for(int i=0;i<n;i++) counter[i][s[i]]++;
+        }
+        //dp[i][j] = cnt[i][target[j]] * (dp[i-1][j-1] + dp[i-2][j-1]+...)
+        //         = cnt[..] + vsum[i-1][j-1]
+        const int m = target.size();
+        auto vdp = vector(n+1, vector(m+1, 0LL)), vsum = vdp;
+        vdp[0][0] = 1;
+        for(int i=0;i<n;i++) vsum[i][0] = 1;
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                vdp[i+1][j+1] = counter[i][target[j]] * vsum[i][j] % mod;
+                vsum[i+1][j+1] = (vsum[i][j+1] + vdp[i+1][j+1]) % mod;
+            }
+        }
+        return vsum[n][m];
+    }

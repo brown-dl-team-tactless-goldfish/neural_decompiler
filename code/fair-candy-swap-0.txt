@@ -1,0 +1,45 @@
+
+int sum(int* arr, int arrSize, int* res) {
+    int sum = 0, start = 0, end = arrSize - 1;
+    while (start < end) {
+        sum += arr[start] + arr[end];
+        res[arr[start++]]++;
+        res[arr[end--]]++;
+    }
+    if (arrSize % 2 == 1) {
+        sum += arr[start];
+        res[arr[start]]++;
+    }
+    return sum;
+}
+
+int* fairCandySwap(int* aliceSizes, int aliceSizesSize, int* bobSizes, int bobSizesSize, int* returnSize) {
+    int* arr1 = (int*) calloc(100001, sizeof(int));
+    int* arr2 = (int*) calloc(100001, sizeof(int));
+    int sumOfalice = sum(aliceSizes, aliceSizesSize, arr1), sumOfbobs = sum(bobSizes, bobSizesSize, arr2);
+    int tar = (sumOfalice + sumOfbobs) / 2;
+    int* res = (int*) malloc(2 * sizeof(int));
+    if (aliceSizesSize > bobSizesSize) {
+        for (int i = 0; i < aliceSizesSize; i++) {
+            res[0] = aliceSizes[i];
+            int tmp = tar - (sumOfalice - res[0]);
+            if (tmp > 0 && tmp < 100001 && arr2[tmp] != 0) {
+                res[1] = tmp;
+                break;
+            }
+        }
+    } else {
+        for (int i = 0; i < bobSizesSize; i++) {
+            res[1] = bobSizes[i];
+            int tmp = tar - (sumOfbobs - res[1]);
+            if (tmp > 0 && tmp < 100001 && arr1[tmp] != 0) {
+                res[0] = tmp;
+                break;
+            }
+        }
+    }
+    *returnSize = 2;
+    free(arr1);
+    free(arr2);
+    return res;
+}

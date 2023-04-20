@@ -1,0 +1,30 @@
+public class Solution {
+    public TreeNode GetTargetCopy(TreeNode original, TreeNode cloned, TreeNode target) {
+        if (original == null || cloned == null || target == null)
+            return null;
+        
+        var qo = new Queue<TreeNode>();
+        var qc = new Queue<TreeNode>();
+        
+        qo.Enqueue(original);
+        qc.Enqueue(cloned);
+        
+        while (qo.Count > 0 && qc.Count > 0) {
+            var len = qo.Count;
+            for (int i = 0; i < len; i++) {
+                var o = qo.Dequeue();
+                var c = qc.Dequeue();
+                
+                if (o == target) return c;
+                
+                if (o.left != null) qo.Enqueue(o.left);
+                if (c.left != null) qc.Enqueue(c.left);
+
+                if (o.right != null) qo.Enqueue(o.right);
+                if (c.right != null) qc.Enqueue(c.right);
+            }
+        }
+        
+        return null;
+    }
+}

@@ -1,0 +1,35 @@
+typedef int32_t   s32;
+typedef uintptr_t umm;
+
+inline static s32 divideCeiled(s32 dividend, s32 divisor) {
+    return (dividend / divisor) + ((dividend % divisor) ? 1 : 0);
+}
+
+inline static s32 hoursNeeded(s32 *piles, umm pilesLength, s32 speed) {
+    s32 hours = 0;
+
+    while (pilesLength--) {
+        hours += divideCeiled(*piles, speed);
+        piles++;
+    }
+
+    return hours;
+}
+
+s32 minEatingSpeed(s32 *piles, umm pilesLength, s32 timeAvailable) {
+    s32 left  = 1;
+    s32 right = 1 << 30;
+
+    while (left < right) {
+        s32 center = left + (right - left) / 2;
+        s32 hours  = hoursNeeded(piles, pilesLength, center);
+
+        if (timeAvailable < hours) {
+            left = center + 1;
+        } else {
+            right = center;
+        }
+    }
+
+    return left;
+}

@@ -1,0 +1,52 @@
+class Solution {
+public:
+  int deleteString(string s) {
+    RollingHash rh(s);
+    const int n = s.size();
+    auto dp = vector(n + 1, -1);
+    dp[0] = 0;
+    for (int i = 0; i < n; i++) {
+      for (int j=0; j<=i; j++) {
+        int len = i-j+1;
+        if (dp[j] == -1 || i+1+len > n) continue;        
+        if (rh.isSame(i+1, j, len))
+          dp[i + 1] = max(dp[i + 1], 1 + dp[j]);
+      }
+    }
+    return *max_element(dp.begin(), dp.end()) + 1;
+  }
+
+  class RollingHash {
+  public:
+    RollingHash(const string &as) : s(as), n(s.size()) {
+      v.reserve(n + 1);
+      vpow.reserve(n + 1);
+      v.push_back(0);
+      vpow.push_back(1);
+      long long hash = 0;
+      for (auto c : s) {
+        hash = (pow * hash + (c - 'a')) % mod;
+        v.push_back(hash);
+        vpow.push_back(vpow.back() * pow % mod);
+      }
+    }
+
+    bool isSame(int i, int j, int len) const {
+      if (hash(i, len) != hash(j, len))
+        return false;
+      return s.substr(i, len) == s.substr(j, len);
+    }
+
+  private:
+    long long hash(int i, int len) const {
+      return (v[i + len] + mod - v[i]) * vpow[n - i] % mod;
+    }
+
+    const int pow = 311;
+    const int mod = 1e9 + 7;
+    string_view s;
+    const int n;
+    vector<long long> v;
+    vector<long long> vpow;
+  };
+};

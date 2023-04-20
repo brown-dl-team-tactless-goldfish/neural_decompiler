@@ -1,0 +1,36 @@
+public int[][] MatrixBlockSum(int[][] mat, int K) {
+	var n = mat.Length; var m = mat[0].Length;
+	var res = Enumerable.Range(0, n).Select(x => new int[m]).ToArray();
+	res[0][0] = GetSum(Enumerable.Range(0, 2 * K + 1)
+		.SelectMany(x => Enumerable.Range(0, 2 * K + 1)
+			.Select(y => (x: x - K, y: y - K))));
+
+	for (var i = 1; i < n; i++)
+		res[i][0] = res[i - 1][0] + GetRowDiff(i, 0);
+
+	for (var i = 0; i < n; i++)
+		for (var j = 1; j < m; j++)
+			res[i][j] = res[i][j - 1] + GetColDiff(i, j);
+
+	return res;
+
+	int GetRowDiff(int r, int c) {
+		var minus = GetSum(Enumerable.Range(0, 2 * K + 1)
+			.Select(x => (r - K - 1, c - K + x)));
+		var plus = GetSum(Enumerable.Range(0, 2 * K + 1)
+			.Select(x => (r + K, c - K + x)));
+		return plus - minus;
+	}
+
+	int GetColDiff(int r, int c) {
+		var minus = GetSum(Enumerable.Range(0, 2 * K + 1)
+			.Select(x => (r - K + x, c - K - 1)));
+		var plus = GetSum(Enumerable.Range(0, 2 * K + 1)
+			.Select(x => (r - K + x, c + K)));
+		return plus - minus;
+	}
+
+	int GetSum(IEnumerable<(int x, int y)> points)
+		=> points.Where(t => t.x >= 0 && t.y >= 0 && t.x < n && t.y < m)
+			.Sum(t => mat[t.x][t.y]);
+}

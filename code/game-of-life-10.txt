@@ -1,0 +1,45 @@
+int check(int x,int y, int** board,int xlimit,int ylimit){
+    int z = 0;
+    int o = 0;
+    for(int i = -1;i <= 1; i++){
+        for(int j = -1;j <= 1;j++){
+            if(((x+i)> -1 && ((x+i)< xlimit)) && ((y+j)> -1 && ((y+j)<ylimit))){
+
+                if(x == x+i && y == y+j)
+                    continue;
+                else if(board[y+j][x+i] == 1)
+                    o++;
+                else
+                    z++;
+            }
+        }
+    }
+    
+    if(o < 2){
+        return 0;
+    }
+    else if(o == 2 && board[y][x])
+        return 1;
+    else if(o == 3){
+        return 1;
+    }
+    else
+        return 0;
+
+}
+
+void gameOfLife(int** board, int boardSize, int* boardColSize){
+    printf("%d %d",boardSize,boardColSize[0]);
+    int arr[boardSize][boardColSize[0]];   
+    for(int i = 0; i < boardColSize[0]; i++){
+        for(int j = 0; j < boardSize;j++){
+            arr[j][i] = check(i,j,board,boardColSize[0],boardSize);
+        }
+    }
+    
+    for(int i = 0; i < boardColSize[0]; i++){
+        for(int j = 0; j < boardSize;j++){
+            board[j][i] = arr[j][i];
+        }
+    }
+}

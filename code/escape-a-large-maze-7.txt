@@ -1,0 +1,30 @@
+class Solution {
+	bool dfs(set<pair<int, int>> &b, int sx, int sy, int &tx, int &ty, set<pair<int, int>> &v, int steps) {
+		if(sx < 0 or sx >= 1000000 or sy < 0 or sy >= 1000000 or b.count({sx, sy}) or v.count({sx, sy}))
+			return false;
+
+		v.insert({sx, sy});
+
+		if(steps > 10000 or (sx == tx and sy == ty))
+			return true;
+
+		steps += 1;
+		return dfs(b, sx + 1, sy, tx, ty, v, steps) || dfs(b, sx, sy + 1, tx, ty, v, steps) ||
+			dfs(b, sx - 1, sy, tx, ty, v, steps) || dfs(b, sx, sy - 1, tx, ty, v, steps);
+	}
+public:
+	bool isEscapePossible(vector<vector<int>>& blocked, vector<int>& source, vector<int>& target) {
+		set<pair<int, int>> blocks, v;
+
+		for(auto &b : blocked)
+			blocks.insert({b[0], b[1]});
+
+		int steps = 0, s1= 0;
+		bool first = dfs(blocks, source[0], source[1], target[0], target[1], v, steps);
+		v.clear();
+		bool second = dfs(blocks, target[0], target[1], source[0], source[1], v, s1);
+
+		return first and second;
+
+	}
+};

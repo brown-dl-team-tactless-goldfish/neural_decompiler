@@ -1,0 +1,67 @@
+int* CompareNumber(void* pFirst, void* pSecond)
+{
+    return *(int*)pSecond - *(int*) pFirst;
+}
+
+int CoinChangeInner(int* pnCoins, char cCoinsSize, int nAmount, char cCoinsIndex, int nCoinAmount, int nRet)
+{
+    // input cCoinsIndex or nCoinAmount is out of range
+    if(cCoinsIndex >= cCoinsSize || nCoinAmount >= nRet) return -1;
+
+    // the value of current cCoinsIndex is larger than input nAmount, go next directly
+    if(pnCoins[cCoinsIndex] > nAmount)
+    {
+        return CoinChangeInner(pnCoins, cCoinsSize, nAmount, cCoinsIndex+1, nCoinAmount, nRet);
+    }
+
+    // input nCoinAmount plus current extra coins are out of range
+    int nCoinCurr = nAmount / pnCoins[cCoinsIndex];
+    if(nCoinAmount + nCoinCurr > nRet) return -1;
+
+    // return if the current coin can make up input nAmount
+    nAmount %= pnCoins[cCoinsIndex];
+    if(nAmount == 0) return nCoinAmount + nCoinCurr;
+
+    // cannot make up nAmount by smallest coins
+    if(cCoinsIndex == cCoinsSize-1) return -1;
+    
+    // ** special case **, needs to check all possible cases by reducing one by one coin
+    for(int i=nCoinCurr; i>=0; i--)
+    {
+        // ** special case **, skip checking directly if remainder is still less than one extra smallest coin
+        if(pnCoins[cCoinsSize-1] * (nCoinCurr+1-i) <= nAmount)
+        {
+            int nResult = CoinChangeInner(pnCoins, cCoinsSize, nAmount, cCoinsIndex+1, nCoinAmount+i, nRet);
+            if(nResult > 0 && nResult < nRet)  nRet = nResult;
+        }
+
+        nAmount += pnCoins[cCoinsIndex];
+    }
+    
+    return (nRet == INT_MAX)? -1: nRet;
+}
+
+int coinChange(int* coins, int coinsSize, int amount){
+    if(amount == 0) return 0;
+
+    // sort the coin first
+    qsort(coins, coinsSize, sizeof(int), CompareNumber);
+
+    // ** special case **, quickly check if the smallest coin can make up the amount
+    bool bCheckBySmallestCoinOnly = true;
+    for(char i=coinsSize-2; i>=0; i--)
+    {
+        if(coins[i] % coins[coinsSize-1] != 0)
+        {
+            bCheckBySmallestCoinOnly = false;
+            break;
+        }
+    }
+    if(bCheckBySmallestCoinOnly && (amount % coins[coinsSize-1] != 0)) return -1;
+    
+    // search the first start coin index
+    char nCoinsIndex = 0;
+    while(nCoinsIndex < coinsSize && coins[nCoinsIndex] > amount) nCoinsIndex++;
+        
+    return CoinChangeInner(coins, coinsSize, amount, nCoinsIndex, 0, INT_MAX);
+}

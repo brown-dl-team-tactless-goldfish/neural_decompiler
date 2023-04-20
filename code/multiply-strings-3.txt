@@ -1,0 +1,40 @@
+char* multiply(char* num1, char* num2) {
+    int len1,len2,i,j,k;
+    int depth = 0;
+    int **parts;
+    char *result;
+    char *rresult;
+    int dummy;
+    int len=0,carry=0,prod;
+    len1 = strlen(num1);
+    len2 = strlen(num2);
+    result = (char*)malloc(sizeof(char)*(len1+len2));
+    for(i=0;i<len1+len2;i++){result[i]=0;}
+    for(i=len2-1;i>=0;i--){
+    	carry=0;
+    	for(j=len1-1;j>=0;j--){
+    		prod = (num1[j]-'0')*(num2[i]-'0');
+    		dummy = result[len1-j-1+(len2-i-1)]+carry + prod;
+    		result[len1-j-1+(len2-i-1)]= dummy % 10;
+    		carry = dummy / 10;
+    	}
+    	if(carry>=0){
+    		result[len1-j-1+(len2-i-1)] = carry;
+    	}
+    }
+    if(carry>0){ //len is the length of the final product
+    	result[len1+len2-1]=carry;
+    	len=len1+len2;
+    }else{
+    	len=len1+len2-1;
+    }
+    rresult=(char*)malloc(sizeof(char)*len);
+    for(i=0;i<len;i++){
+    	rresult[i]=result[len-i-1]+'0';
+    }
+    rresult[i]='\0';
+    if(rresult[0]=='0'){
+    	rresult[1]='\0';
+    }
+    return rresult;
+}

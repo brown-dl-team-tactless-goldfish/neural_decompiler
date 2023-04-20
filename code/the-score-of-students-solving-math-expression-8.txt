@@ -1,0 +1,87 @@
+class Solution {
+public:
+    int correct(const string &s) {
+        int ans = 0;
+        int i = 0;
+
+        while (i < s.size()) {
+            int d = s[i] - '0';
+            i += 1;
+            
+            if (i == s.size()) {
+                ans += d;
+                break;
+            }
+            
+            if (s[i] == '+') {
+                ans += d;
+                i += 1;
+                continue;
+            }
+            
+            while (i < s.size() && s[i] == '*') {
+                i += 1;
+                int n = s[i] - '0';
+                d *= n;
+                i += 1;
+            }
+            
+            ans += d;
+            i += 1;
+        }
+        
+        return ans;
+    }
+
+    set<int> catalan(const string &s, int i, int j, vector<vector<set<int>>> &dp) {        
+        if (i + 1 == j) {
+            return {s[i] - '0'};
+        }
+        
+        if (dp[i][j].size()) {
+            return dp[i][j];
+        }
+        
+        for (int op = i + 1; op < j; op += 2) {
+            auto l = catalan(s, i, op, dp);
+            auto r = catalan(s, op + 1, j, dp);
+            
+            for (const auto lv : l) {
+                for (const auto rv : r) {
+                    if (s[op] == '+') {
+                        if (lv + rv > 1000) {
+                            break;
+                        }
+                        dp[i][j].insert(lv + rv);
+                    } else {
+                        if (lv * rv > 1000) {
+                            break;
+                        }
+                        dp[i][j].insert(lv * rv);
+                    }
+                }
+            }
+        }
+        
+        return dp[i][j];
+    }
+    
+    int scoreOfStudents(string s, vector<int>& answers) {
+        int correct_ans = correct(s);
+        vector<vector<set<int>>> dp(s.size() + 1, vector<set<int>>(s.size() + 1));
+        set<int> possible = catalan(s, 0, s.size(), dp);
+
+        int ans = 0;
+        for (const auto a : answers) {
+            if (a == correct_ans) {
+                ans += 5;
+                continue;
+            }
+            if (possible.count(a)) {
+                ans += 2;
+            }
+        }
+        
+        return ans;
+    }
+};

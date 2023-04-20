@@ -1,0 +1,124 @@
+class Solution {
+public:
+    int maximumMinutes(vector<vector<int>>& grid) {
+        
+        int m = grid.size();
+        int n = grid[0].size();
+        
+        int wall = 2;
+        int fire = 1;
+        int grass = 0;
+        int rows[4] = {1,-1,0,0};
+        int cols[4] = {0,0,1,-1};
+        
+        // store the fire spread time in each cell
+        vector<vector<int>>times(m,vector<int>(n,0));
+        
+        // add all fire cell in to queue
+        queue<pair<int,int>>Q;        
+        for(int i=0;i<m;i++)
+            for(int j=0;j<n;j++)
+                if(grid[i][j]==fire)
+                    Q.push({i,j});
+
+        
+        
+        int size;
+        int level = 0;
+        int x,y,nx,ny;
+        
+        // run level order BFS to find the fire spread time in each grass cell
+        while(!Q.empty())
+        {
+            size = Q.size();
+            while(size--)
+            {
+                x = Q.front().first;
+                y = Q.front().second;
+                Q.pop();
+                
+                times[x][y] = level; 
+                
+                for(int i=0;i<4;i++)
+                {
+                    nx = x + rows[i];
+                    ny = y + cols[i];
+                    
+                    if(nx>=0 && nx<m && ny>=0 && ny<n && grid[nx][ny]==grass)
+                    {
+                        grid[nx][ny] = fire;
+                        Q.push({nx,ny});
+                    }
+                }
+            }
+            
+            level++;
+        }
+        
+        
+
+        int time,ntime;
+        int maxTime = -1;   // max time we can wait
+        bool reached = false;
+        int initialTime = times[0][0];  // initial cell wait time
+        
+        // push the initial cell and initial wait time
+        queue<vector<int>>q;
+        q.push({0,0,times[0][0]});
+        times[0][0] = INT_MAX;
+        level = 1;
+        
+        // run level order BFS from (0,0) and find the max wait time to reach (m-1,n-1)
+        while(!q.empty())
+        {
+            size = q.size();
+            while(size--)
+            {
+                x = q.front()[0];
+                y = q.front()[1];
+                time = q.front()[2];
+                q.pop();
+
+                // reached destination then update the maxTime
+                if((x==m-1 && y==n-1))
+                {
+                    reached = true;
+                    maxTime = max(time,maxTime);
+                    continue;
+                }
+
+                for(int i=0;i<4;i++)
+                {
+                    nx = x + rows[i];
+                    ny = y + cols[i];
+
+                    // visit only unvisited grass or fire cell which has fire spread time > 0 
+                    if(nx>=0 && nx<m && ny>=0 && ny<n && times[nx][ny]<INT_MAX && (grid[nx][ny]==grass || (grid[nx][ny]==fire && times[nx][ny]>0)))
+                    {
+                        ntime = time;
+                        
+                        if(grid[nx][ny]==fire && times[nx][ny]>0)
+                        {
+                            // wait time => min(previous wait time, fire spread time - level -1)
+                            // in case of destination cell ignore -1 cause we can safely reach it even if it is on fire
+                            
+                            if(nx==m-1 && ny==n-1) ntime = min(time,times[nx][ny]-level);
+                            else ntime = min(time,times[nx][ny]-level-1);
+                        }
+
+                        // push non-negative waiting time cells
+                        if(ntime>=0)q.push({nx,ny,ntime});
+
+                        // mark all cells visited except destination cell
+                        if(!(nx==m-1 && ny==n-1))times[nx][ny] = INT_MAX;
+                    }
+                }                   
+            }
+            
+            level++;
+        }
+
+        // if reached and initialTime==0 then we can wait as long as we want, otherwise maxTime
+        return ((reached && initialTime==0) ? 1000000000 : maxTime);
+    }
+};

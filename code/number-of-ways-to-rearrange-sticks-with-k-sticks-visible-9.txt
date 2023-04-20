@@ -1,0 +1,31 @@
+#define ll long long
+
+const ll MOD = 1e9 + 7;
+
+class Solution {
+public:
+    ll mem[1001][1001];
+
+    ll go(ll n, ll k) {
+		// If n == 0, it means we've run out of candles. 
+		// If k == 0, and we still have candles remaining, at least one of them will be visible. 
+		// So both cases are invalid
+        if(n == 0 || k == 0) return 0;
+		
+		// If n == k, there is only one way to line them up - in ascending order from the left
+        if(n == k) return 1;
+		
+        if(mem[n][k] > -1)
+            return mem[n][k];
+			
+		// Either we put the largest candle in the rightmost position. That leaves (n - 1, k - 1) to be solved.
+		// Or we exclude the largest candle, and put any of the smallest (n - 1) candles in the rightmost position. 
+		// For each of these, we have (n - 1, k) ways to solve the remaining positions.
+        return mem[n][k] = (go(n - 1, k - 1) + (n - 1) * go(n - 1, k)) % MOD;
+    }
+    
+    int rearrangeSticks(int n, int k) {
+        memset(mem, -1, sizeof(mem));
+        return go(n, k);
+    }
+};

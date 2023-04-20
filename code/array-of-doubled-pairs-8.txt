@@ -1,0 +1,25 @@
+bool canReorderDoubled(vector<int>& A) {
+    constexpr int MIN = -100000;
+    constexpr int MAX = 100000;
+    constexpr int cnt_size = MAX - MIN + 1;
+    int cnt[cnt_size] = {};
+    int min = MAX, max = MIN;
+    for (auto c : A) {
+        cnt[c - MIN]++;
+        if (c < min) min = c;
+        if (c > max) max = c;
+    }
+    if (cnt[0 - MIN] % 2 == 1) return false;
+    cnt[0 - MIN] = 0;
+    for (int c = min; c < 0 && c <= max; ++c) {
+        int cnt_c = cnt[c - MIN];
+        if (cnt_c == 0) continue;
+        if (c % 2 != 0 || 0 > (cnt[c / 2 - MIN] -= cnt_c)) return false;
+    }
+    for (int c = max; c > 0 && c >= min; --c) {
+        int cnt_c = cnt[c - MIN];
+        if (cnt_c == 0) continue;
+        if (c % 2 != 0 || 0 > (cnt[c / 2 - MIN] -= cnt_c)) return false;
+    }
+    return true;
+}

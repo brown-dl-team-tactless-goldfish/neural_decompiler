@@ -1,0 +1,42 @@
+int cmpfunc(const void* a, const void* b){
+    return *(char*)a - *(char*)b;
+}
+
+long long smallestNumber(long long num){
+    long long a = fabs(num);   //long long need use fabs
+    char* digit = malloc(16 * sizeof(char));
+    int idx = 0;
+    int zeroCn = 0;
+    while(a){
+        digit[idx] = a%10;
+        if(digit[idx]  == 0)
+            zeroCn++;
+        idx++;
+        a /= 10;
+    }
+    printf("zeroCn = %d ", zeroCn);
+    qsort(digit, idx, sizeof(char), cmpfunc);
+    long long ans;
+    if(num > 0){
+        ans = 0;
+        ans = digit[zeroCn];
+        for(int i = 0; i < zeroCn; i++){
+            ans *= 10;
+        }
+        for(int i = zeroCn + 1; i < idx; i++){
+            ans = ans*10 + digit[i];
+        }
+        return ans;
+    }
+    else{
+        ans = 0;
+        for(int i = idx-1; i >= zeroCn; i--){
+            ans = ans*10 + digit[i];
+        }
+        for(int i = 0; i < zeroCn; i++){
+            ans *= 10;
+        }
+        
+        return -1 * ans;
+    }
+}

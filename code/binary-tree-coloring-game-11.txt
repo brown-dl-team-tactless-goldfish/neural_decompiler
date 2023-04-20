@@ -1,0 +1,44 @@
+class Solution {
+public:
+    int dfs(TreeNode* root)
+    {
+        if(root == NULL)
+            return 0;
+        return dfs(root->left) + dfs(root->right) + 1;
+    }
+    void find(TreeNode* root, int x, TreeNode* node)
+    {
+        if(root == NULL)
+            return;
+        
+        find(root->left, x, node);
+        if(root->val == x)
+        {
+            node->left = root;
+            return;
+        }
+        find(root->right, x, node);
+        
+    }
+    bool checkValidity(int a, int b, int c) 
+    { 
+        // check condition 
+        if (a + b < c || a + c < b || b + c < a) 
+            return true; 
+        else
+            return false; 
+    } 
+    bool btreeGameWinningMove(TreeNode* root, int n, int x) {
+        TreeNode* first = new TreeNode();
+        find(root, x, first);
+        TreeNode* node = first->left;
+        // cout<<node->val<<endl;
+        
+        int nleft = dfs(node->left);
+        int nright = dfs(node->right);
+        
+        int nparent = n-(nleft+nright)-1;
+     
+        return checkValidity(nleft, nright, nparent);
+    }
+};

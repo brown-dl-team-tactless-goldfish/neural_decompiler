@@ -1,0 +1,36 @@
+/*
+// Definition for Employee.
+class Employee {
+public:
+    int id;
+    int importance;
+    vector<int> subordinates;
+};
+*/
+
+class Solution {
+public:
+    void dfs(Employee*e, vector<Employee*>arr, int &curr){
+        if(!e)return ;
+        curr += e->importance;
+        for(auto&it:e->subordinates){
+            for(int i = 0; i<(int)arr.size(); i++){
+                if(arr[i]->id == it){
+                    dfs(arr[i], arr, curr);
+                }
+            }
+        }
+        return ;
+    }
+    int getImportance(vector<Employee*> employees, int id) {
+       
+        int curr = 0;
+        for(int i = 0; i<(int)employees.size(); i++){
+            if(employees[i]->id == id){
+                dfs(employees[i], employees, curr);
+                break;
+            }
+        }
+        return curr;
+    }
+};

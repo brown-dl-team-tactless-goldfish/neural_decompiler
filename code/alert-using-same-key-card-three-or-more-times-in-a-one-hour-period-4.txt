@@ -1,0 +1,24 @@
+class Solution {
+public:
+    vector<string> alertNames(vector<string>& keyName, vector<string>& keyTime) {
+        std::unordered_map<string, std::vector<string>> m;
+        for(int i{0}, size{(int)keyName.size()}; i < size; ++i) m[keyName[i]].emplace_back(keyTime[i]);
+        std::vector<string> res;
+        for(auto &[p, v]: m) {
+            std::sort(v.begin(), v.end());
+            for(int i{2}; i < v.size(); ++i) {
+                if(diff(v[i], v[i-2]) <= 60) {
+                    res.emplace_back(p);
+                    break;
+                }
+            }
+        }
+        
+        std::sort(res.begin(), res.end());
+        return res;
+    }
+    
+    inline int diff(const string& a, const string& b) {
+        return std::stoi(a.substr(0,2))*60 + std::stoi(a.substr(3, 2)) - std::stoi(b.substr(0,2))*60 - std::stoi(b.substr(3,2));
+    }
+};

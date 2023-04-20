@@ -1,0 +1,25 @@
+int comp(const void*a,const void*b){return (*(int*)a - *(int*)b);}
+void helperr(int*row,int*col,int**mat,int*n,int*m,int*helper){
+    int index=0,r=*row,c=*col;
+    while(r<*n&&c<*m)
+        helper[index++] = mat[r++][c++];
+    qsort(helper,index,sizeof(int),comp);
+    r=*row,c=*col,index=0;
+    while(r<*n&&c<*m)
+        mat[r++][c++] = helper[index++];
+}
+int** diagonalSort(int** mat, int matSize, int* matColSize, int* returnSize, int** returnColumnSizes){
+    int n = matSize,m = *matColSize;
+    int min = (n>m)? m : n;
+    int*helper = (int*)malloc(sizeof(int)*min);
+    (*returnColumnSizes) = (int*)malloc(sizeof(int)*n);
+    int zero=0;
+    for(int i=0;i<n;i++){
+        helperr(&i,&zero,mat,&n,&m,helper);
+        (*returnColumnSizes)[i]=m;
+    }
+    for(int i=0;i<m;i++)
+        helperr(&zero,&i,mat,&n,&m,helper);
+    *returnSize = n;
+    return mat;
+}

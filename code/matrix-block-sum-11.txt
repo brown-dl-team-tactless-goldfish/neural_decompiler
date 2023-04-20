@@ -1,0 +1,38 @@
+class Solution {
+public:
+    vector<vector<int>> matrixBlockSum(vector<vector<int>>& mat, int K) {
+        int N = mat.size();
+        int M = mat[0].size();
+        
+        //create a new copy of mat with sizes
+        int NK = N + K;
+        int MK = M + K;
+        
+        vector<vector<int>> newMat(NK, vector<int>(MK, 0));
+        
+        for(int i= 0 + K; i<NK; i++){
+            for(int j=0 + K; j<MK; j++){
+                newMat[i][j] = mat[i-K][j-K];  
+            }
+        }
+        
+        vector<vector<int>> ans(N, vector<int>(M, 0));
+        
+        for(int i= K; i< NK;i++ ){
+            for(int j=K; j<MK; j++){
+                int sum = 0;
+                
+                for(int r = i-K; r<= i +K && r <NK; r++){
+                    for(int c = j-K; c <= j+K && c < MK; c++){
+                        //cout << r << " " <<c <<endl;
+                        sum += newMat[r][c];
+                    }
+                }
+                
+                ans[i-K][j-K] = sum;
+            }
+        }
+        
+        return ans;
+    }
+};

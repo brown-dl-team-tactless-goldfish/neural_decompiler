@@ -1,0 +1,20 @@
+class Solution {
+    bool good(int x, vector<int> &price, int k) {
+        int cnt = 1, last = price[0];
+        for(int i=1; i<price.size(); i++) {
+            if(price[i] - last >= x) cnt++, last = price[i];
+        }
+        return cnt < k ? false : true;
+    }
+public:
+    int maximumTastiness(vector<int>& price, int k) {
+        sort(price.begin(), price.end());
+        int s = 0, e = 1e9, ans = INT_MIN;
+        while(s <= e) {
+            int m = (s + e) / 2;
+            if(good(m, price, k)) ans = max(ans, m), s = m + 1;
+            else e = m - 1; 
+        }
+        return ans;
+    }
+};

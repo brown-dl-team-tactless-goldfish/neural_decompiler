@@ -1,0 +1,28 @@
+#include <vector>
+#include <unordered_map>
+
+class Solution {
+public:
+    int findShortestSubArray(std::vector<int>& nums) {
+
+        std::unordered_map<int, std::vector<int>> table;       // key, val => number, corresponding indexes in nums
+
+        for (int i = 0; i < nums.size(); ++i) {
+            table[nums[i]].push_back(i);
+        }
+
+        int degree = 0;
+        for (const auto& ele : table) {
+            degree = std::max(degree, (int)ele.second.size());
+        }
+        
+        int min_length = nums.size();
+        for (const auto& ele : table) {
+            if (ele.second.size() == degree) {
+                min_length = std::min(min_length, ele.second.back() - ele.second[0] + 1);
+            }
+        }
+
+        return min_length;
+    }
+};

@@ -1,0 +1,54 @@
+auto __ =[]()
+{
+    std::ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    return nullptr;
+}();
+class Solution {
+public:
+    bool lemonadeChange(vector<int>& bills) {
+        unordered_map<int,int> sets;
+        sets[5] = 0;
+        sets[10] = 0;
+        sets[20] = 0;
+        for(auto e : bills)
+        {
+            if(e-5 == 0)
+            {
+                sets[5]++;
+            }
+            else if (e-5 == 5)
+            {
+                if(sets[5]>0)
+                {
+                    sets[5]--;
+                    sets[10]++;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+            else
+            {
+                //15 
+                if(sets[10]>0 && sets[5]>0)
+                {
+                    sets[10]--;
+                    sets[5]--;
+                    sets[20]++;
+                }
+                else if(sets[5]>2)
+                {
+                    sets[5]-=3;
+                    sets[20]++;
+                }
+                else
+                {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+};

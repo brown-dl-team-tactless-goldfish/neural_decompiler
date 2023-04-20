@@ -1,0 +1,57 @@
+class Solution {
+public:
+    string makeLargestSpecial(string S) {
+        string ans = S;
+        string curr = S;
+        while(makeSpecial(curr,ans)){
+            curr = ans;
+        }
+        return ans;
+    }
+    
+    bool makeSpecial(string S, string& result){
+        //                S = [s0] [  s1  ] [   s2   ] [s3] 
+        // string index :          i0    i1 j0      j1 
+        //
+        // swap s1 and s2 if s2>s1. After swap store it in result, return true
+        
+        for(int i0=0; i0<S.size(); ++i0){ 
+            int n0 = 0; // count 0 in s1
+            int n1 = 0; // count 1 in s1
+            for(int i1=i0; i1<S.size(); ++i1){ 
+                if(S[i1] == '1')
+                    n1++;
+                else
+                    n0++;
+                if(n1 < n0)
+                    break; //s1 will never be special starting from i0
+                else if(n1 == n0){
+                    string s1 = S.substr(i0,i1-i0+1);
+                    int j0 = i1+1;
+                    int m0 = 0; // count 0 in s2
+                    int m1 = 0; // count 1 in s2
+                    for(int j1=j0; j1<S.size(); ++j1){ 
+                        if(S[j1] == '1')
+                            m1++;
+                        else
+                            m0++;
+                        if(m1 < m0)
+                            break; //s1 is special, but s2 will never be special starting from j0
+                        else if(m1 == m0){
+                            string s2 = S.substr(j0,j1-j0+1);
+                            if(s2 > s1){
+                                string s0 = S.substr(0,i0);
+                                string s3 = S.substr(j1+1);
+                                result = s0+s2+s1+s3;
+                                return true;
+                            }
+                            else
+                                break;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+};

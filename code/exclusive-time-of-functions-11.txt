@@ -1,0 +1,27 @@
+vector<int> exclusiveTime(int n, vector<string>& logs) {
+    vector<array<int, 3>> v;
+    vector<int> exclusive(n, 0);
+    
+    for(int i=0; i<logs.size(); ++i){
+        string log = logs[i];
+        
+        int f = log.find(':');
+        int l = log.rfind(':');
+        
+        int id = stoi(log.substr(0, f));
+        char c = log[f+1];
+        int tstamp = stoi(log.substr(l+1));
+        
+        if(c == 's'){
+            v.push_back({id, tstamp, 0});
+        } else {
+            int time = tstamp - v.back()[1] + 1 - v.back()[2];
+            exclusive[id] += time;
+            int extra = v.back()[2];
+            v.pop_back();
+            if(!v.empty()) v.back()[2] += time + extra;
+        }
+    }
+    
+    return exclusive;
+}

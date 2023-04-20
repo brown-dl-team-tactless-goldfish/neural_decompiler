@@ -1,0 +1,77 @@
+int cmpfunc(const void* a, const void* b){
+    return *(int*)b - *(int*)a;
+}
+void swap(int* a, int* b){
+    int k = *a;
+    *a = *b;
+    *b = k;
+}
+int heakpPop(int* heap, int n){
+    int ans = heap[0];
+    heap[0] = heap[n-1];
+    int p = 0;
+    while((2*p+1) < n){
+        if(2*p + 2 < n){
+            if(heap[2*p + 1] >= heap[2*p + 2]){
+                if(heap[2*p + 1] > heap[p]){
+                    swap(&heap[2*p + 1] , &heap[p]);
+                    p = 2*p + 1;
+                }
+                else
+                    break;
+            }
+            else{
+                if(heap[2*p + 2] > heap[p]){
+                    swap(&heap[2*p + 2] , &heap[p]);
+                    p = 2*p + 2;
+                }
+                else
+                    break;
+            }
+        }
+        else if(2*p + 1 < n){
+            if(heap[2*p + 1] > heap[p]){
+                swap(&heap[2*p + 1] , &heap[p]);
+                p = 2*p + 1;                
+            } 
+            else
+                break;
+        }
+    }
+    return ans;
+}
+
+void heapInsert(int* heap, int n, int val){
+    heap[n-1] = val;
+    int p = n-1;
+    while(p > 0){
+        int ptr = (p-1)/2;
+        if(heap[ptr] < heap[p]){
+            swap(&heap[ptr] , &heap[p]);
+            p = ptr;
+        }
+        else
+            break;
+    }
+}
+int minStoneSum(int* piles, int pilesSize, int k){
+    int n = pilesSize;
+    qsort(piles, n ,  sizeof(int), cmpfunc);
+    int sum = 0;
+    for(int i = 0; i < n; i++){
+        sum += piles[i];
+    }
+    int step = 0;
+    int rm = 0;
+    while(step < k){
+        int  a = heakpPop(piles, n);
+        int  b = piles[0];
+        while(a >= b && step < k){
+            rm += a/2;
+            a = a - a/2;
+            step++;
+        }
+        heapInsert(piles, n, a); 
+    }
+    return sum-rm;
+}

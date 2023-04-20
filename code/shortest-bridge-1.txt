@@ -1,0 +1,65 @@
+void dfs(int** grid, int gridSize, int* gridColSize, int i, int j, int target){
+    if(i<0 || j<0 || i>=gridSize || j>=*gridColSize || grid[i][j]!=1) return;
+    grid[i][j] = target;
+    dfs(grid, gridSize, gridColSize, i+1, j, target);
+    dfs(grid, gridSize, gridColSize, i-1, j, target);
+    dfs(grid, gridSize, gridColSize, i, j+1, target);
+    dfs(grid, gridSize, gridColSize, i, j-1, target);
+}
+
+int shortestBridge(int** grid, int gridSize, int* gridColSize){
+
+    // step 1: DFS setting two island to num 2 & 3
+	
+	int target = 2;
+    for(int i=0; i<gridSize; i++){
+        for(int j=0; j<*gridColSize; j++){
+            if(grid[i][j] == 1){
+                dfs(grid, gridSize, gridColSize, i, j, target);
+                target += 1;
+            }
+        }
+    }
+    
+	// step 2: BFS num 2 as start and find 3 as end. return the step.
+	
+    int queue[10000][2] = {0};
+    bool** visited = (bool**)calloc(gridSize, sizeof(bool*));
+    int direction[4][2] = {{0,1},{0,-1},{1,0},{-1,0}};
+    for(int i=0; i<gridSize; i++) visited[i] = (bool*)calloc(*gridColSize, sizeof(bool));
+    int head = 0, tail = 0, step = -2;
+    
+    for(int i=0; i<gridSize; i++){
+        for(int j=0; j<*gridColSize; j++){
+            if(grid[i][j] == 2){
+                queue[tail][0] = i;
+                queue[tail][1] = j;
+                tail += 1;
+                visited[i][j] = true;
+            }
+        }
+    }
+    
+    while(head < tail){
+        int size = tail - head;
+        step += 1;
+        for(int i=0; i<size; i++){
+            int X = queue[head][0];
+            int Y = queue[head][1];
+            head += 1;
+            if(grid[X][Y] == 3) return step;
+            for(int j=0; j<4; j++){
+                int newX = X + direction[j][0];
+                int newY = Y + direction[j][1];
+                if(newX>=0 && newY>=0 && newX<gridSize && newY<*gridColSize && !visited[newX][newY]){
+                    queue[tail][0] = newX;
+                    queue[tail][1] = newY;
+                    tail += 1;
+                    visited[newX][newY] = true;
+                }
+            }
+        }
+    }
+    
+    return 0;
+}

@@ -1,0 +1,22 @@
+public class Solution
+{
+    public int MaxUniqueSplit(string s)
+    {
+        return DFS(s, 0, new HashSet<string>());
+    }
+    
+    private int DFS(string s, int pos, HashSet<string> hash)
+    {
+        if(pos == s.Length) return 0;
+        int max = 0;
+        for(int len = 1; pos + len <= s.Length; len++)
+        {
+            string str = s.Substring(pos, len);
+            if(hash.Contains(str)) continue;
+            hash.Add(str);
+            max = Math.Max(max, 1 + DFS(s, pos+len, hash));
+            hash.Remove(str);
+        }
+        return max;
+    }
+}

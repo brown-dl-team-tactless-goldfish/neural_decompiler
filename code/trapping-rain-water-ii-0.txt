@@ -1,0 +1,162 @@
+typedef struct Data{
+    int value;
+    int *coor;    
+}dNode, *dLinklist;
+
+typedef struct Heap{
+    dNode *data;
+    int size;
+    int capacity;
+}hNode, *hLinklist;
+
+hLinklist CreateHeap(int r, int c){
+    hLinklist h=(hLinklist)malloc(sizeof(hNode));
+    h->data=(dLinklist)malloc((r*c)*sizeof(dNode));
+    h->size=0;
+    h->capacity=r*c;
+    h->data[0].value=-9999;
+    return h;
+}
+
+bool isFull(hLinklist h){
+    return (h->size == h->capacity);
+}
+
+bool isEmpty(hLinklist h){
+    return (h->size==0);
+}
+
+bool insert(hLinklist h, int a, int b, int c){    
+    if(isFull(h)){
+        printf("\n!!!!!!!!!!!堆满!!!!!!!!!!\n");
+        return false;
+    }
+    int i;
+    dNode data;
+    data.value=a;
+    data.coor=(int*)malloc(8);
+    data.coor[0]=b;
+    data.coor[1]=c;
+    i=++h->size;
+    for(;h->data[i/2].value>data.value;i/=2){
+        h->data[i]=h->data[i/2];
+    }
+    h->data[i]=data;
+    return true;
+}
+
+dNode deleteMin(hLinklist h){
+    int p,c;
+    dNode min,x;
+    if(isEmpty(h)){
+        printf("\n!!!!!!!!!!堆空!!!!!!!!!\n");
+        min.value=-9999;
+        return min;
+    }
+    min=h->data[1];
+    x=h->data[h->size--];
+    for(p=1;p*2<=h->size;p=c){
+        c=2*p;
+        if(c!=h->size)
+            if(h->data[c].value > h->data[c+1].value)
+                c++;
+        if(x.value<=h->data[c].value)break;
+            else h->data[p]=h->data[c];
+    }
+    h->data[p]=x; 
+    return min;
+}
+
+void percDown( hLinklist h, int a){
+    int p, c;
+    dNode x=h->data[a]; 
+    for(p=a;p*2<=h->size;p=c){
+        c=2*p;
+        if(c!=h->size)
+            if(h->data[c].value>h->data[c+1].value)
+                c++;
+        if(x.value<=h->data[c].value)break;
+            else h->data[p]=h->data[c];
+    }
+    h->data[p]=x;
+}
+
+void buildHeap(hLinklist h){
+    int i;
+    for(i=h->size/2;i>0;i--)
+        percDown(h,i);
+}
+
+void Do(int **s,hLinklist h, int i, int j, int k){
+    h->data[k].coor=(int*)malloc(8);
+    h->data[k].value=s[i][j];
+    h->data[k].coor[0]=i;
+    h->data[k].coor[1]=j;
+    h->size++;
+    s[i][j]=-1;     
+}
+
+void outerWall(hLinklist h, int **s, int r, int c){
+    int i=0,j=0,k=1;
+    for(s[i][j++]=-1;j<c-1;j++)
+        Do(s,h,i,j,k++);          
+    for(s[i++][j]=-1;i<r-1;i++)
+        Do(s,h,i,j,k++); 
+    for(s[i][j--]=-1;j>0;j--)
+        Do(s,h,i,j,k++); 
+    for(s[i--][j]=-1;i>0;i--)
+        Do(s,h,i,j,k++); 
+}
+
+void SearchAround(int **s,hLinklist h, int i, int j, int r, int c, int *dimension, int *level);
+
+void DO(int **s,hLinklist h, int i, int j, int r, int c, int *dimension, int *level){
+    if(s[i][j]>*level){
+        insert(h,s[i][j],i,j);
+        s[i][j]=-1;
+    }
+    else{       
+//      printf("i=%d,j=%d,高度为%d,水位为%d,蓄水量%d\n",i,j,s[i][j],*level,*level-s[i][j]);
+        (*dimension)+=(*level)-s[i][j];
+        s[i][j]=-1;
+        SearchAround(s,h,i,j,r,c,dimension,level);           
+    }    
+}
+
+void SearchAround(int **s,hLinklist h, int i, int j, int r, int c, int *dimension, int *level){
+    if(i!=0 && s[i-1][j]!=-1)       
+        DO(s,h,i-1,j,r,c,dimension,level); 
+    if(i<r-1 && s[i+1][j]!=-1)
+        DO(s,h,i+1,j,r,c,dimension,level);
+    if(j!=0 && s[i][j-1]!=-1)
+        DO(s,h,i,j-1,r,c,dimension,level); 
+    if(j<c-1 && s[i][j+1]!=-1)        
+        DO(s,h,i,j+1,r,c,dimension,level);
+}
+
+void Search(int **s,hLinklist h, int r, int c,int*level,int*dimension){
+    int i,j;
+    dNode t;
+    for(;;){
+        t=deleteMin(h);
+        if(t.value<0)break;
+        (*level)=t.value;
+  //    printf("level=%d\n",*level);   
+        i=t.coor[0];
+        j=t.coor[1];
+        SearchAround(s,h,i,j,r,c,dimension,level);
+    }   
+}
+
+int trapRainWater(int** s, int row, int* col){
+    if(row<3||(*col)<3)return 0;
+    int r=row, c=*col;
+    hLinklist h=CreateHeap(r,c);   
+    int i,j,k,a,b;    
+    int *level=(int*)calloc(1,4);
+    int *dimension=(int*)calloc(1,4);
+    outerWall(h,s,r,c);
+    buildHeap(h);
+    Search(s,h,r,c,level,dimension);   
+    return *dimension;
+}

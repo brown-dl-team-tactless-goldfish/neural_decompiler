@@ -1,0 +1,41 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left;
+ *     public TreeNode right;
+ *     public TreeNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    int res =  0;
+    Queue<KeyValuePair<TreeNode, int>> q = new Queue<KeyValuePair<TreeNode, int>>();
+    public int WidthOfBinaryTree(TreeNode root) {
+        if(root == null)return 0;
+        else{
+            q.Enqueue(new KeyValuePair<TreeNode, int>(root, 1));
+            int c = 1;
+            while(q.Count > 0){
+                c = q.Count;
+                int min = int.MaxValue;
+                int max = int.MinValue;
+                while(c > 0){
+                    KeyValuePair <TreeNode, int> pair = q.Dequeue();
+                    TreeNode curr = pair.Key;
+                    int vv = pair.Value;
+                    min = min < vv? min:vv;
+                    max = max > vv? max:vv;
+                    if(curr.left != null){
+                        q.Enqueue(new KeyValuePair<TreeNode, int>(curr.left, 2*vv));
+                    }
+                    if(curr.right != null){
+                        q.Enqueue(new KeyValuePair<TreeNode, int>(curr.right, 2*vv+1));
+                    }
+                    c--;
+                  }
+                res = res > (max - min + 1)? res: (max - min + 1);
+            }
+            return res;
+        }
+    }
+}

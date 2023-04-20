@@ -1,0 +1,31 @@
+class Solution {
+private:
+    int notPos=0;
+public:
+
+    int countPartitions(vector<int>& nums, int k) {
+        vector<int> dp(k,0);
+        dp[0]=1;
+        long mod=1e9+7;
+        long long sum=0;
+        int n=nums.size();
+        int ans=1;
+        for(int i=0;i<n;i++){
+            sum+=nums[i];
+            ans=(ans*2)%mod;
+            for(int j=k-1;j>=nums[i];j--){
+                dp[j]=(dp[j]+dp[j-nums[i]])%mod;    //find number of times we can found subsequence with sum 0 to k-1 be using nums[i];
+            }
+        }
+        if(2*k>sum){
+            return 0;
+        }
+        long long notPos=0;
+
+        for(int i=0;i<k;i++){
+            notPos=(notPos+dp[i])%mod;
+        }
+        return (ans-2*notPos+mod)%mod;
+    }
+};
+//code by sachin

@@ -1,0 +1,41 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+void helper(struct TreeNode* root, int max, int min, int* result)
+{
+    if(root==NULL)
+        return;
+    
+    if(abs(root->val - max) > (*result))
+    {
+        (*result) = abs(root->val - max);
+    }
+    if(abs(root->val - min) > (*result))
+    {
+        (*result) = abs(root->val - min);
+    }
+    
+    if(root->val > max)
+        max = root->val;
+    if(root->val < min)
+        min = root->val;
+    
+    helper(root->left, max, min, result);
+    helper(root->right, max, min, result);
+}
+
+int maxAncestorDiff(struct TreeNode* root){
+    int result=0;
+    
+    if(root==NULL)
+        return 0;
+    
+    helper(root, root->val, root->val, &result);
+    
+    return result;
+}

@@ -1,0 +1,45 @@
+int countTexts(char * pressedKeys){
+    int mod = 1e9 + 7 ;
+    int n = strlen(pressedKeys) ;
+    long long * dp = malloc((n+1) * sizeof(long long)) ;
+    dp[n] = 1;
+    bool* hash = calloc(100000, sizeof(bool)) ;
+    int trip[] = {2, 3, 4, 5, 6, 8};
+    int four[] = {7, 9} ;
+    for(int i = 0; i < 6; i++){
+        int d = trip[i] ;
+        int val = 0;
+        for(int j = 0; j < 3; j++){
+            val = val * 10 + d;
+            hash[val] = true ;
+        }
+    }
+    
+    for(int i = 0; i < 2; i++){
+        int d = four[i] ;
+        int val = 0;
+        for(int j = 0; j < 4; j++){
+            val = val * 10 + d;
+            hash[val] = true ;
+        }
+    }
+
+    dp[n] = 1;
+    dp[n-1] = 1;
+    pressedKeys[n] = '0' ;
+    for(int i = n-2 ; i >= 0 ; i--){
+        int val = pressedKeys[i] - '0' ;
+        dp[i] = 0;
+        int k = 1 ;
+        while( hash[val] ){
+            dp[i] = (dp[i] + dp[i+k]) % mod;
+            val = val* 10 + pressedKeys[i+k] - '0' ;
+            k++;  
+        }
+    }
+    pressedKeys[n] = '\0' ;  //rollback
+    int ans =  dp[0];
+    free(hash) ;
+    free(dp) ;
+    return ans;
+ }

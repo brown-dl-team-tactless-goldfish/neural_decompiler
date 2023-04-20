@@ -1,0 +1,57 @@
+int cmpfuncLetter(const void* a, const void* b){
+    char* A = *(char**)a;
+    char* B = *(char**)b;
+    int len = strlen(A);
+    int a_id = 0;
+    for(int i = 0; i < len; i++){
+        if(A[i] == ' '){
+            a_id = i+1;
+            break;
+        }
+    }
+    len = strlen(B);
+    int b_id = 0;
+    for(int i = 0; i < len; i++){
+        if(B[i] == ' '){
+            b_id = i+1;
+            break;
+        }
+    }
+    int lenA = strlen(&A[a_id]);
+    int lenB = strlen(&B[b_id]);
+
+    for(int i = 0; i < fmin(lenA, lenB); i++){
+        if(A[a_id + i] > B[b_id + i])
+            return 1;
+        if(A[a_id + i] < B[b_id + i])
+            return -1;
+    }    
+    if(strlen(&A[a_id]) == strlen(&B[b_id])){
+        return strcmp(A, B);
+    }
+    else if (lenA > lenB)
+        return 1;
+    else
+        return -1;
+}
+char ** reorderLogFiles(char ** logs, int logsSize, int* returnSize){
+    char** letter = malloc(logsSize * sizeof(char*));
+    char** digit = malloc(logsSize * sizeof(char*));
+    int l_id = 0, d_id = 0;
+    for(int i = 0; i < logsSize; i++){
+        int len = strlen(logs[i]);
+        if(logs[i][len-1] >= '0' && logs[i][len-1] <= '9'){
+            digit[d_id] = logs[i];
+            d_id++;
+        }
+        else{
+            letter[l_id] = logs[i];
+            l_id++;
+        }
+    }
+    qsort(letter, l_id, sizeof(char*), cmpfuncLetter) ;
+
+    memcpy(&letter[l_id], digit, d_id*sizeof(char*));
+    *returnSize = logsSize;
+    return letter;
+}

@@ -1,0 +1,32 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* separateDigits(int* nums, int numsSize, int* returnSize){
+    int *pRetVal = NULL;
+
+#define MAX_RETURN_SIZE (6*1000)
+    pRetVal = (int*)calloc(MAX_RETURN_SIZE, sizeof(int));
+    if (pRetVal == NULL) {
+        perror("calloc");
+        return pRetVal;
+    }
+
+    (*returnSize) = 0;
+    int buf[8];
+    int count;
+    int i;
+    for (i=0; i<numsSize; ++i) {
+        memset(buf, 0, sizeof(int));
+        count = 0;
+        while (nums[i] > 0) {
+            buf[count++] = nums[i]%10;
+            nums[i] /= 10;
+        }
+
+        while (count > 0) {
+            pRetVal[(*returnSize)++] = buf[--count];
+        }
+    }
+
+    return pRetVal;
+}

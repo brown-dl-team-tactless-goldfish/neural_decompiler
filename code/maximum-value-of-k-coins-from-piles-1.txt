@@ -1,0 +1,38 @@
+int maxValueOfCoins(int** piles, int pilesSize, int* pilesColSize, int k){
+    int** list = malloc(sizeof(int*)*pilesSize);
+    for (int i = 0 ; i < pilesSize ; i++){
+        list[i] = malloc(sizeof(int)*(k+1));
+    }
+    list[0][0] = 0;
+    
+    for (int j = 0 ; j < k ; j++){
+        list[0][j+1] = j < pilesColSize[0] ? list[0][j] + piles[0][j] : list[0][j];
+    }
+    
+    
+    for (int i = 1 ; i < pilesSize ; i++){
+        int point = 0;
+        for (int j = 0 ; j <= k ; j++){
+            list[i][j] = list[i-1][j];
+        }
+        int min = k < pilesColSize[i] ? k+1 : pilesColSize[i]+1;
+        for (int j = 1 ; j < min ; j++){
+            point += piles[i][j-1];
+            for (int p = j ; p <= k ; p++){
+                if (list[i][p] < point + list[i-1][p-j]){
+                    list[i][p] = point + list[i-1][p-j];
+                }
+            }
+        }  
+        
+    }
+    int ans = list[pilesSize-1][k];
+    
+    for (int i = 0 ; i < pilesSize ; i++){
+        free(list[i]);
+    }
+    free(list);
+    
+    return ans;
+    
+}

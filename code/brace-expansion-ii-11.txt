@@ -1,0 +1,61 @@
+class Solution {
+public:
+    vector<string> braceExpansionII(string expression) {
+        const char* p = expression.data();
+        auto* end = p + expression.size();
+        auto words = parse(p, end);
+        return vector<string>(words.begin(), words.end());
+    }
+    
+    static set<string> parse(const char*& p, const char* end) {
+        set<string> words;
+
+        while (p < end) {
+            set<string> new_words;
+
+            if (isalpha(*p)) {
+                string word;
+                while (p < end && isalpha(*p)) {
+                    word += *p;
+                    ++p;
+                }
+                new_words = {word};
+            } else if (*p == '{') {
+                ++p;
+                while (p < end && *p != '}') {
+                    auto subs = parse(p, end);
+                    for (auto& sub : subs) {
+                        new_words.emplace(sub);
+                    }
+                    if (p < end && *p == ',') {
+                        ++p;
+                    }
+                }
+                assert(*p == '}');
+                ++p;
+            } else {
+                break;
+            }
+            
+            words = concatWords(words, new_words);
+        }
+        return words;
+    }
+    
+    static set<string> concatWords(const set<string>& a, const set<string>& b) {
+        if (a.empty()) {
+            return b;
+        }
+        if (b.empty()) {
+            return a;
+        }
+        
+        set<string> ret;
+        for (auto& p : a) {
+            for (auto& q : b) {
+                ret.emplace(p + q);
+            }
+        }
+        return ret;
+    }
+};

@@ -1,0 +1,52 @@
+void reverseArray(int array[], int size)
+{
+    int left = 0, right = size - 1;
+    while(left < right)
+    {
+        array[left] ^= array[right];
+        array[right] ^= array[left];
+        array[left] ^= array[right];
+        left++;
+        right--;
+    }
+}
+
+int* postorderTraversal(struct TreeNode* root, int* returnSize){
+    *returnSize = 0;
+    struct TreeNode *cur = root, *pre;
+    int *ret = NULL;
+    while(cur)
+    {
+        if(cur->right == NULL)
+        {
+            ret = (int *)realloc(ret, sizeof(int) * (*returnSize + 1));
+            (*returnSize)[ret] = cur->val;
+            (*returnSize)++;
+            cur = cur->left;
+        }
+        else
+        {
+            pre = cur->right;
+            while(pre->left != NULL && pre->left != cur)
+                pre = pre->left;
+
+            if(pre->left)
+            {
+                pre->left = NULL;
+                cur = cur->left;
+            }
+            else
+            {
+                ret = (int *)realloc(ret, sizeof(int) * (*returnSize + 1));
+                (*returnSize)[ret] = cur->val;
+                (*returnSize)++;
+                pre->left = cur;
+                cur = cur->right;
+            }
+        }
+    }
+
+    reverseArray(ret, *returnSize);
+
+    return ret;
+}

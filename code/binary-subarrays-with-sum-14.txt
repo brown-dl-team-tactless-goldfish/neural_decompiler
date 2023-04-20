@@ -1,0 +1,52 @@
+class Solution {
+public:
+
+	int numSubarraysWithSum(const vector<int>& A, int S) {
+
+		int r = 0, c = 0, last = 0, z = 0;
+		queue<int> q;
+
+		if (S == 0)
+		{
+			for (int i = 0; i < A.size(); ++i) {
+				if (A[i] == 0) {
+					++c;
+				}
+				else {
+					r += (c*(c + 1) / 2);
+					c = 0;
+				}
+			}
+
+			r += (c*(c + 1) / 2);
+		}
+		else
+		{
+			int lastz = 0;
+			for (int i = 0; i < A.size(); ++i) {
+				if (A[i] == 1) {
+					++c;
+					q.push(i);
+					if (c == S) {
+						int leftz = q.front() - last - ((q.front() != last && A[last] == 1) ? 1 : 0);
+						r += leftz + z;
+						r += lastz * z;
+						++r;
+						last = q.front();
+						q.pop();
+						--c;
+						lastz = leftz;
+						z = 0;
+					}
+				}
+				else if (c == S-1 && r != 0 || S == 1) ++z;
+			}
+
+			if(r!=0) r += z + lastz * z;
+		}
+
+		return r;
+	}
+
+};
+

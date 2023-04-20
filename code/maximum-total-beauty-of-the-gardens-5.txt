@@ -1,0 +1,136 @@
+// Approach: Iterations  + Binary Search
+// Time Complexity: NlogN (Approx.)
+
+// Idea: Idea is to complete k flowers and for remaining n - k flowers try to maximize the minimum by using remaining new flowers
+
+class Solution {
+public:
+    long long maximumBeauty(vector<int>& flowers, long long newFlowers, int target, int full, int partial) {
+        
+        // Number of gardens
+        int n = flowers.size();
+    
+        sort(flowers.begin(),flowers.end());
+
+        long long ans = 0;
+
+        // If All gardens are complete
+        if(flowers[0] >= target)
+        {
+            return ((long long)n * full);
+        }
+
+        // Prefix Sum Array
+        long long prefix[n+1];
+
+        prefix[0] = 0;
+
+        for(int i=1;i<=n;i++)
+        {
+            prefix[i] = prefix[i-1] + flowers[i-1];
+        }
+
+
+        // Completed Gardens
+        long long complete = 0;
+
+
+        // Calculating Already Completed Gardens
+        for(int i=n-1; i>= 0;i--)
+        {
+            if(flowers[i] >= target)
+            {
+                complete++;
+            }
+            else
+            {
+                break;
+            }
+        }
+
+        // This case if for keep the completed gardens as it is and try to maximize other flowers for partial multplication
+        ans = (complete * full);
+        long long lo = flowers[0];
+        long long hi = target-1;
+        long long minFlower = lo;
+        while(lo <= hi)
+        {
+            long long mid = (lo + hi) / 2;
+
+            int count = flowers.end() - lower_bound(flowers.begin(),flowers.end(),mid);
+
+            int X = n - count;
+
+            long long req = mid * X - (prefix[X]);
+
+            if(req <= newFlowers)
+            {
+                minFlower = mid;
+                lo = mid + 1;
+
+            }
+            else
+            {
+                hi = mid - 1;
+            }
+
+        }
+
+        ans += (minFlower * partial);
+
+        
+
+        for(int i=n - complete - 1;i >= 0;i--)
+        {
+            int diff = max(target - flowers[i], 0);
+
+            if(diff > newFlowers)
+                break;
+            newFlowers -= diff;
+            complete++;
+
+            lo = flowers[0];
+            hi = target - 1;
+            minFlower = lo;
+
+            // Hey I have now make complete gardens 
+            // and now from remaining newFlowers try to maximize the flowers so that partial * min(flowers) will be maximums
+            
+            // Famous binary search implementation
+            while(lo <= hi)
+            {
+                long long mid = (lo + hi) / 2;
+
+                int count = flowers.end() - lower_bound(flowers.begin(),flowers.begin() + n - complete,mid);
+
+                int X = n - count;
+
+                long long req = mid * X - (prefix[X]);
+                
+                if(req <= newFlowers)
+                {
+                    minFlower = mid;
+                    lo = mid + 1;
+
+                }
+                else
+                {
+                    hi = mid - 1;
+                }
+
+            }
+
+            // Edge case if all completed then make the minFlower = 0
+            if(complete == n)
+                minFlower = 0;
+
+            // Try to maximize answer 
+            ans = max(complete * full + partial * minFlower,ans);
+
+        }
+        
+
+        // You are done, return the answer
+        return ans;
+    }
+};

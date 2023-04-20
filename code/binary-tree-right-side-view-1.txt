@@ -1,0 +1,48 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+typedef struct
+{
+    int *a;
+    int  count;
+    int  len;
+} Result;
+
+void check_chiled(struct TreeNode* node, Result* r,int deep)
+{
+    if (!node) return;
+    
+    if (deep > r->count)
+    {
+        if (r->len <= r->count)
+        {
+            int *tmp = r->a;
+            r->a = malloc(sizeof(int)*r->len*2);
+            memcpy(r->a,tmp,sizeof(int)*r->len);
+            r->len *=2;
+            free(tmp);
+        }
+        r->a[r->count++] = node->val;
+    }
+    check_chiled(node->right,r,deep+1);
+    check_chiled(node->left,r,deep+1);
+}
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* rightSideView(struct TreeNode* root, int* returnSize){
+    Result result;
+    result.len = 100;
+    result.count = 0;
+    result.a = malloc(sizeof(int)*result.len);
+    check_chiled(root,&result,1);
+    *returnSize = result.count;
+    return(result.a);
+}

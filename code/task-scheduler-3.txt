@@ -1,0 +1,23 @@
+#define min(a,b) (a<b?a:b)
+#define max(a,b) (a>b?a:b)
+
+int leastInterval(char* tasks, int tasksSize, int n){
+    int map[26]={0};
+    int highFreq = 0;
+
+    for (int i = 0 ; i < tasksSize ; i++)
+    {
+        map[tasks[i]-'A'] += 1;
+        highFreq = max(map[tasks[i]-'A'], highFreq) ;
+    }
+    
+    highFreq = highFreq-1;
+    int idleTask = highFreq*(n+1);
+    
+    for (int i = 0 ; i < 26 ; i++)
+    {
+        idleTask -= min(map[i], highFreq);
+    }
+    
+    return idleTask > 0 ? idleTask+tasksSize : tasksSize; 
+}

@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int garbageCollection(vector<string>& g, vector<int>& t) {
+        int ans = 0;
+        map<char,int>mp;
+        int ml = -1, pl = -1, gl = -1;
+        for(int i = 0; i < g.size(); i++){
+            for(auto c : g[i]){
+                mp[c]++;
+                if(c == 'M') ml = i;
+                else if(c == 'G') gl = i;
+                else pl = i;
+            }
+        }
+        for(int i = 1; i < t.size(); i++){
+            t[i] += t[i-1];
+        }
+        if(ml != -1){
+            if(ml == 0) ans += mp['M'];
+            else ans += (mp['M']+t[ml-1]);
+            cout << ans << " ";
+        }        
+        if(gl != -1){
+            if(gl == 0) ans += mp['G'];
+            else ans += (mp['G']+t[gl-1]);
+            cout << ans << " ";
+        }   
+        if(pl != -1){
+            if(pl == 0) ans += mp['P'];
+            else ans += (mp['P']+t[pl-1]);
+            cout << ans << " ";
+        }   
+        return ans;
+    }
+};

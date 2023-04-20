@@ -1,0 +1,11 @@
+# First we find all avalible dates who have at least 6 previous dates
+with valid_date as(
+    select distinct visited_on
+    from Customer
+    where datediff(visited_on, (select min(visited_on) from Customer)) >= 6
+)
+
+# Then use join & group by to finish the task
+select v.visited_on, sum(c.amount) amount, round(sum(c.amount)/7,2) average_amount
+from valid_date v left join Customer c on datediff(v.visited_on, c.visited_on) between 0 and 6
+group by v.visited_on

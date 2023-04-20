@@ -1,0 +1,74 @@
+int findLUSlength(string a, string b) {
+        
+        
+        
+        int m = max( a.size() , b.size() )  ;
+        int mn = min( a.size() , b.size() ) ;
+        
+        if( a == b ) return -1 ;
+
+        if( a.size() < b.size() )
+        {
+           for( int j = 0 ; j < m ; j++ )
+            {
+                if(b.substr( j , mn ) == a ) return -1 ;
+            }
+             
+             int c = 0 ;
+            for( int j = 0 ; j < m ; j++ )
+            {
+                if(b[j] == a[c] )c++ ;
+            }
+            
+            if( c == mn ) return -1 ;
+            
+        }
+        
+        
+        return a.size() ;
+    }
+    int findLUSlength(vector<string>& strs) {
+        
+        unordered_map< string , int>mp ;
+        
+        for( auto i : strs )
+        {
+            mp[i]++ ;
+        }
+
+        int ans = -1 ;
+        
+        int n = strs.size() ;
+        
+        for( int i = 0 ; i < n ; i++ )
+        {
+            int res = -1 ;
+            if( mp[strs[i]] == 1 )
+            {
+                for( int j = 0 ; j < n ; j++ )
+            {
+                if( j != i )
+                {
+                    int temp = findLUSlength( strs[i] , strs[j] ) ;
+                
+                // cout<<strs[i]<<" "<<strs[j]<<" "<<temp<<endl ;
+                if( temp == -1 )
+                {
+                    res = -1 ;
+                    break    ;
+                }
+                res = max( res , temp ) ;
+                    
+                }
+                
+            }
+            }
+            
+            
+            ans = max( ans , res ) ;
+        }
+        
+        
+        return ans ;
+    }
+};

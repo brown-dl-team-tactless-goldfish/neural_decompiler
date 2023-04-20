@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int reachableNodes(vector<vector<int>>& edges, int mvs, int n) {
+        vector<vector<array<int, 2>>> adj(n);
+        for (auto &e : edges) {
+            adj[e[0]].push_back({e[1], e[2]});
+            adj[e[1]].push_back({e[0], e[2]});
+        }
+        priority_queue<array<int, 2>> pq;
+        pq.push({mvs, 0});
+        vector<int> v(n, -1);
+        v[0] = mvs;
+        int ans = 0;
+        for (; !pq.empty();) {
+            auto [mv, i] = pq.top(); pq.pop();
+            if (mv != v[i]) continue;
+            ans++;
+            for (auto &[j, c] : adj[i]) {
+                int nmv = mv - c - 1;
+                if (nmv > v[j]) {
+                    v[j] = nmv;
+                    pq.push({nmv, j});
+                }
+            }
+        }
+        for (auto &e : edges) {
+            int t1 = max(v[e[0]], 0), t2 = max(v[e[1]], 0);
+            ans += min(e[2], t1 + t2);
+        }
+        return ans;
+    }
+};

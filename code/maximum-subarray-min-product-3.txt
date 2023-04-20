@@ -1,0 +1,47 @@
+#define MOD 1000000007
+
+class Solution {
+public:
+    int maxSumMinProduct(vector<int>& nums) {
+        size_t size{nums.size()};
+        std::vector<int64_t> leftSum(size, 0), rightSum(size, 0);
+        stack<std::pair<int, int64_t>> s;
+        int64_t acc{0};
+        for(int i{0}; i < size; ++i) {
+            while(!s.empty() && nums[s.top().first] > nums[i]) {
+                auto [j, v]{s.top()}; s.pop();
+                rightSum[j] = acc-v;
+            }
+            
+            acc += nums[i];
+            
+            s.emplace(i, acc);
+        }
+        
+        while(!s.empty()) {
+            auto [j, v]{s.top()}; s.pop();
+            rightSum[j] = acc-v;
+        }
+        
+        acc = 0;
+        for(int i{(int)size-1}; i >= 0; --i) {
+            while(!s.empty() && nums[s.top().first] > nums[i]) {
+                auto [j, v]{s.top()}; s.pop();
+                leftSum[j] = acc-v;
+            }
+
+            acc += nums[i];
+            s.emplace(i, acc);
+        }
+        
+        while(!s.empty()) {
+            auto [j, v]{s.top()}; s.pop();
+            leftSum[j] = acc-v;
+        }
+        
+        int64_t max_{1};
+        for(int i{0}; i < size; ++i) max_ = std::max(max_, (leftSum[i]+rightSum[i]+nums[i])*nums[i]);
+        
+        return max_ % MOD;
+    }
+};

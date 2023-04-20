@@ -1,0 +1,34 @@
+class Solution {
+public:
+    string largestMultipleOfThree(vector<int>& digits) {
+        vector<int> cnt(10,0);
+        for(auto i:digits) cnt[i]++;
+        int mod0 = cnt[0] + cnt[3] + cnt[6] + cnt[9];
+        int mod1 = cnt[1] + cnt[4] + cnt[7];
+        int mod2 = cnt[2] + cnt[5] + cnt[8];
+        int modAll = (mod1 + mod2*2) % 3;
+        
+        if(modAll == 1){
+            if(mod1 >= 1) remove(1, cnt[1], cnt[4], cnt[7]);
+            else if(mod2 >=2) remove(2, cnt[2], cnt[5], cnt[8]);
+            else return "";
+        }
+        else if(modAll == 2){
+            if(mod2 >= 1) remove(1, cnt[2], cnt[5], cnt[8]); 
+            else if(mod1 >=2) remove(2, cnt[1], cnt[4], cnt[7]);
+            else return "";
+        }
+        
+        string s;
+        for(int i=9; i>=0;i--) s += string(cnt[i], '0'+i);
+        if(!s.empty() && s[0] == '0') s = "0";
+        return s;
+    }
+    
+    // remove n elements from x1,x2,x3; from x1
+    void remove(int n, int& x1, int& x2, int& x3){
+        while(x1>0 && n>0) {x1--;n--;}
+        while(x2>0 && n>0) {x2--;n--;}
+        while(x3>0 && n>0) {x3--;n--;}
+    }
+};

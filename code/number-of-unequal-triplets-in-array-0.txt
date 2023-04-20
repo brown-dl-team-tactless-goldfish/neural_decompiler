@@ -1,0 +1,28 @@
+int cmp(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+int unequalTriplets(int* nums, int numsSize){
+    qsort(nums, numsSize, sizeof(int), cmp);
+    int* cn = calloc(numsSize, sizeof(int));
+    cn[0] = 1;
+    int idx = 0;
+    for(int i = 1; i < numsSize ; i++){
+        if(nums[i] == nums[i-1]){
+            cn[idx]++;
+        }
+        else{
+            idx++;
+            cn[idx] = 1;
+        }
+    }
+    int ans = 0; 
+    for(int i = 0; i <=idx-2; i++){
+        for(int j = i+1; j <= idx-1; j++){
+            for(int k = j+1; k <= idx; k++){
+                ans += cn[i] * cn[j] * cn[k];
+            }
+        }
+    }
+    free(cn);
+    return ans;
+}

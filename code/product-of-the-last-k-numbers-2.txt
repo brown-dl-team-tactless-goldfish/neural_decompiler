@@ -1,0 +1,43 @@
+typedef struct {
+    int *queue;
+    int top;
+    int max;
+    int zero_pre;
+} ProductOfNumbers;
+
+
+ProductOfNumbers* productOfNumbersCreate() {
+    ProductOfNumbers *obj = calloc(1, sizeof(ProductOfNumbers));
+    obj->max = 30000;
+    obj->top = -1;
+    obj->zero_pre = -1;
+    obj->queue = calloc(obj->max, sizeof(int));
+    
+    return obj;
+}
+
+void productOfNumbersAdd(ProductOfNumbers* obj, int num) {
+    obj->top ++;
+    if (num == 0) {
+        obj->zero_pre = obj->top;
+    } else if (obj->top > 0 && obj->queue[obj->top - 1]) {
+        obj->queue[obj->top] = num * obj->queue[obj->top - 1];
+    } else {
+        obj->queue[obj->top] = num;
+    }
+}
+
+int productOfNumbersGetProduct(ProductOfNumbers* obj, int k) {
+    if (obj->zero_pre >= obj->top - k + 1) {
+        return 0;
+    } else if (obj->top - k < 0 || obj->queue[obj->top - k] == 0) {
+        return obj->queue[obj->top];
+    } else {
+        return obj->queue[obj->top] / obj->queue[obj->top - k];
+    }
+}
+
+void productOfNumbersFree(ProductOfNumbers* obj) {
+    free(obj->queue);
+    free(obj);
+}

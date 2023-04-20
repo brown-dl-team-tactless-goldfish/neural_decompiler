@@ -1,0 +1,52 @@
+#define SZ  50000
+
+struct v {
+    int v, i;
+    struct v *n;
+};
+
+typedef struct {
+    struct v *vl[SZ];
+    int i;
+} SnapshotArray;
+
+SnapshotArray* snapshotArrayCreate(int length) {
+    return calloc(1, sizeof(SnapshotArray));
+}
+
+void snapshotArraySet(SnapshotArray* obj, int index, int val) {
+    SnapshotArray *s = obj;
+    struct v *v = s->vl[s->i], *p = NULL;
+    for (; v && index > v->i ; p = v, v = v->n);
+    if (v && index == v->i)
+        v->v = val;    
+    else {
+        struct v *n = calloc(1, sizeof *n);
+        n->v = val;
+        n->i = index;    
+        n->n = v;
+        p ? p->n = n : (s->vl[s->i] = n);
+    }
+}
+
+int snapshotArraySnap(SnapshotArray* obj) {
+    SnapshotArray *s = obj;
+    struct v *h = s->vl[s->i++];
+    for (struct v **p = &s->vl[s->i] ; h ; h = h->n) {
+        (*p = calloc(1, sizeof **p))->v = h->v;
+        (*p)->i = h->i;
+        p = &(*p)->n;
+    }
+    return s->i - 1;
+}
+
+int snapshotArrayGet(SnapshotArray* obj, int index, int snap_id) {
+    SnapshotArray *s = obj;
+    struct v *h;
+    for (h = s->vl[snap_id] ; h && h->i < index ; h = h->n);
+    return h && h->i == index ? h->v : 0;
+}
+
+void snapshotArrayFree(SnapshotArray* obj) {
+    free(obj);
+}

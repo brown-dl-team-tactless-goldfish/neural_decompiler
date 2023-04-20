@@ -1,0 +1,37 @@
+class CountIntervals {
+public:
+    set<pair<int, int>> my_set;
+    int res;
+    CountIntervals() {
+        res = 0;
+    }
+    
+    void add(int left, int right) {
+        pair<int, int> temp_p{left, right};
+        auto it  = my_set.upper_bound(temp_p);
+        if (it != my_set.begin()) {
+            auto previous = prev(it);
+            // new interval is already covered
+            if(previous->second >= right)return;
+            // not fully covered
+            if(previous->second >= left){
+                res -= previous->second - previous->first + 1;
+                left = previous->first;
+                my_set.erase(previous);
+            }
+        }
+        
+        // deal with right part
+        while(it != my_set.end() && it->first <= right + 1){
+            res -= it->second - it->first + 1;
+            right = max(right, it->second);
+            it = my_set.erase(it);
+        }
+        res += right - left + 1;
+        my_set.insert({left, right});
+    }
+    
+    int count() {
+        return res;
+    }
+};

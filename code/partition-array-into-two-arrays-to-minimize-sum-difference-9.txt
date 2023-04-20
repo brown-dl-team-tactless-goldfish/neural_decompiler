@@ -1,0 +1,91 @@
+        Dictionary<int, SortedSet<int>> leftMap = new Dictionary<int, SortedSet<int>>();
+        Dictionary<int, SortedSet<int>> rightMap = new Dictionary<int, SortedSet<int>>();
+
+        public int minimumDifference(int[] nums)
+        {
+            if (nums == null || nums.Length == 0)
+            {
+                return -1;
+            }
+
+            int n = nums.Length / 2;
+            int sum = 0;
+            // 1. generate {#_of_ele_in_set: [sums]}
+            List<List<int>> arr1 = new List<List<int>>();
+            List<List<int>> arr2 = new List<List<int>>();
+            for (int i = 0; i <= n; i++)
+            {
+                arr1.Add(new List<int>());
+                arr2.Add(new List<int>());
+                if (i < n)
+                {
+                    sum += nums[i];
+                    sum += nums[i + n];
+                }
+            }
+
+            for (int state = 0; state < (1 << n); state++)
+            {
+                int sum1 = 0, sum2 = 0;
+                for (int i = 0; i < n; i++)
+                {
+                    if ((state & (1 << i)) == 0)
+                    {
+                        continue;
+                    }
+                    int a1 = nums[i];
+                    int a2 = nums[i + n];
+                    sum1 += a1;
+                    sum2 += a2;
+                }
+                int numOfEleInSet = BitCount(state);
+                arr1[numOfEleInSet].Add(sum1);
+                arr2[numOfEleInSet].Add(sum2);
+            }
+
+            var sortedArray = new List<int>();
+            // 2. sort each [sums] in arr2
+            for (int i = 0; i <= n; i++)
+            {
+                arr2[i].Sort();
+            }
+
+            // 3. binary search
+            int min = int.MaxValue;
+            for (int i = 0; i <= n; i++)
+            {
+                List<int> sums1 = arr1[i];
+                List<int> sums2 = arr2[n - i];
+
+                foreach (int s1 in sums1)
+                {
+                    int idx = sums2.BinarySearch(sum / 2 - s1);
+                    if (idx < 0)
+                    {
+                        idx = -(idx + 1);
+                    }
+                    if (idx < sums1.Count)
+                    {
+                        min = Math.Min(min, Math.Abs((sum - s1 - sums2[idx]) - (sums2[idx] + s1)));
+                    }
+                    if (idx - 1 >= 0)
+                    {
+                        min = Math.Min(min, Math.Abs((sum - s1 - sums2[idx - 1]) - (sums2[idx - 1] + s1)));
+                    }
+                }
+            }
+
+            return min;
+        }
+
+        public static int BitCount(int n)
+        {
+            var count = 0;
+            while (n != 0)
+            {
+                count++;
+                n &= (n - 1); //walking through all the bits which are set to one
+            }
+
+            return count;
+        }

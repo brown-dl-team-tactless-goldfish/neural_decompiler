@@ -1,0 +1,43 @@
+class DinnerPlates {
+public:
+    DinnerPlates(int capacity) {
+        c = capacity;
+    }
+    
+    void push(int val) {
+        if (available.empty())
+        {
+            st.push_back(vector<int>());
+            available.insert(st.size() - 1);
+        }
+        st[*available.begin()].push_back(val);
+        if (st[*available.begin()].size() >= c)
+            available.erase(available.begin());
+    }
+    
+    int pop() {
+        while (!st.empty() && st.back().empty())
+        {
+            st.pop_back();
+            available.erase(st.size());
+        }
+        if (st.empty())
+            return -1;
+        return popAtStack(st.size() - 1);
+    }
+    
+    int popAtStack(int index) {
+        int k = st.size();
+        if (index < 0 || index >= k || st[index].empty())
+            return -1;
+        int ans = st[index].back();
+        st[index].pop_back();
+        available.insert(index);
+        return ans;
+    }
+    
+private: 
+    int c;
+    vector<vector<int>> st;
+    set<int> available;
+};

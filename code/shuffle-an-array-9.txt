@@ -1,0 +1,63 @@
+
+
+
+typedef struct {
+        int size;
+        int *nums;
+        int *bak;
+} Solution;
+
+
+Solution* solutionCreate(int* nums, int numsSize)
+{
+        Solution *obj = malloc(sizeof(Solution));
+        
+        obj->size = numsSize;
+        obj->nums = malloc(sizeof(int) * numsSize);
+        memcpy(obj->nums, nums, sizeof(int) * numsSize);
+        obj->bak = malloc(sizeof(int) * numsSize);
+        memcpy(obj->bak, nums, sizeof(int) * numsSize);
+        
+        return obj;
+}
+
+int* solutionReset(Solution* obj, int* retSize)
+{
+        memcpy(obj->nums, obj->bak, sizeof(int) * obj->size);
+        *retSize = obj->size;
+        return obj->nums;
+}
+
+int* solutionShuffle(Solution* obj, int* retSize)
+{
+        int i;
+        int sp; // swap pos
+        int tmp;
+        
+        for (i = 0; i < obj->size; i++) {
+                int sp = i + rand() % (obj->size - i);
+                tmp = obj->nums[sp];
+                obj->nums[sp] = obj->nums[i];
+                obj->nums[i] = tmp;
+        }
+        
+        *retSize = obj->size;
+        return obj->nums;
+}
+
+void solutionFree(Solution* obj)
+{
+        free(obj->nums);
+        free(obj->bak);
+        free(obj);
+}
+
+/**
+ * Your Solution struct will be instantiated and called as such:
+ * Solution* obj = solutionCreate(nums, numsSize);
+ * int* param_1 = solutionReset(obj, retSize);
+ 
+ * int* param_2 = solutionShuffle(obj, retSize);
+ 
+ * solutionFree(obj);
+*/

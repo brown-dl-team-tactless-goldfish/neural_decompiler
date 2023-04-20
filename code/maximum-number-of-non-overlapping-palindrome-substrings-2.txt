@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int maxPalindromes(string s, int k) {
+        const int n = s.size();
+        auto isPalin = vector(n, vector(n+1, false)); //i, len
+        auto dp = vector(n+1, 0); 
+
+        for(int i=0;i<n;i++){
+            for(auto j : {i, i+1}){
+                for(int d=0;i-d>=0 && j+d<n;d++){
+                    int len = j+d - (i-d) + 1;
+                    if(s[i-d] == s[j+d]) {
+                        if(len >= k){
+                            isPalin[i-d][len] = true;
+                        }                        
+                    }
+                    else break;
+                }
+            }
+        }
+
+        for(int i=0;i<n;i++){
+            dp[i+1] = dp[i];
+            for(int j=i-k+1;j>=0;j--){
+                int len = i-j+1;
+                if(isPalin[j][len]) 
+                    dp[i+1] = max(dp[i+1], 1+dp[j]);
+            }
+        }
+        return dp[n];
+    }
+};

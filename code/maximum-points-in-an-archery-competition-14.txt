@@ -1,0 +1,59 @@
+class Solution {
+public:
+    
+    
+    
+    // 2^12 unique values of numArrows
+    // 2^12 unique values of mask 
+    
+    
+    //thats why this solution works
+    
+    // i can be managed using for loop
+    
+    
+    
+    pair<int,int>recurs(int numArrows, vector<int>& aliceArrows,int i,int mask)
+    {
+        if(i<0)
+        {
+            return {0,mask};
+        }
+        
+        
+        vector<pair<int,int>>v;
+        pair<int,int>p;
+        if(aliceArrows[i]<numArrows)
+        {
+            int temp=mask;
+            temp|=(1<<i);
+            p=recurs(numArrows-1-aliceArrows[i],aliceArrows,i-1,temp);
+            p.first+=i;
+            v.push_back(p);
+        }
+        
+        p=recurs(numArrows,aliceArrows,i-1,mask);
+        v.push_back(p);
+        sort(v.rbegin(),v.rend());
+        return v[0];
+    }
+    
+    
+    vector<int> maximumBobPoints(int numArrows, vector<int>& aliceArrows) {
+        pair<int,int>p=recurs(numArrows,aliceArrows,11,0);
+        int mask=p.second,c=0;
+        
+      vector<int>ans(aliceArrows.size(),0);
+        for(int i=11;i>=0;i--)
+        {
+            if((mask&(1<<i)))
+            {
+                ans[i]=aliceArrows[i]+1;
+                c+=ans[i];
+            }
+        }
+        ans[0]+=(numArrows-c);
+        
+        return ans;
+    }
+};

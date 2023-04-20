@@ -1,0 +1,39 @@
+int minSumOfLengths(int* arr, int arrSize, int target){
+    int n = arrSize;
+    int sum = 0;
+    int left = 0, right = 0;
+    int* dp = malloc(n * sizeof(int));
+    int ans = INT_MAX;
+    int cur;
+    for(right = 0; right < n; right++){
+        sum += arr[right];
+        if(right == 0)
+            dp[right] = INT_MAX;
+        else
+            dp[right] = dp[right-1];    
+        
+        if(sum == target){
+            cur = right - left + 1;
+            dp[right] = fmin(dp[right], cur);
+            if( left > 0 && dp[left-1] != INT_MAX)
+                ans = fmin(ans, cur + dp[left-1]);            
+        }
+        else if(sum > target){
+            while(sum > target){
+                sum -= arr[left];
+                left++;
+            }
+            if(sum == target){
+                cur = right - left + 1;
+                dp[right] = fmin(dp[right], cur);
+                if( left > 0 && dp[left-1] != INT_MAX)
+                    ans = fmin(ans, cur + dp[left-1]); 
+            }
+        }
+    }
+    
+    if(ans == INT_MAX)
+        return -1;
+    else
+        return ans;
+}

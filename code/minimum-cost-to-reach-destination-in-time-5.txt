@@ -1,0 +1,51 @@
+public int MinCost(int maxTime, int[][] edges, int[] passingFees)
+{
+	int n = passingFees.Length;
+	Dictionary<int, List<(int index, int cost)>> graph = new Dictionary<int, List<(int, int)>>();
+
+	for (int i = 0; i < n; i++)
+	{
+		graph[i] = new List<(int, int)>();
+	}
+
+	foreach (var edge in edges)
+	{
+		int u = edge[0], v = edge[1], c = edge[2];
+		graph[u].Add((v, c));
+		graph[v].Add((u, c));
+	}
+
+	int result = int.MaxValue;
+	int[,] d = new int[n, maxTime + 1];
+
+	for (int node = 0; node < n; node++)
+	{
+		for (int time = 0; time <= maxTime; time++)
+		{
+			d[node, time] = int.MaxValue;
+		}
+	}
+
+	d[0, 0] = passingFees[0];
+
+	for (int time = 1; time <= maxTime; time++)
+	{
+		for (int i = 0; i < n; i++)
+		{
+			foreach (var (index, currentTime) in graph[i])
+			{
+				if (time >= currentTime && d[index, time - currentTime] != int.MaxValue)
+				{
+					d[i, time] = Math.Min(d[i, time], d[index, time - currentTime] + passingFees[i]);
+				}
+			}
+		}
+	}
+
+	for (int i = 1; i <= maxTime; i++)
+	{
+		result = Math.Min(result, d[n - 1, i]);
+	}
+
+	return result == int.MaxValue ? -1 : result;
+}

@@ -1,0 +1,22 @@
+int maximumScore(int* nums, int numsSize, int* multipliers, int multipliersSize){
+    int dpSize = fmin(numsSize, multipliersSize);
+    int* row = &nums[numsSize-dpSize];
+    int* col = nums;
+       
+    int** dp = malloc( dpSize * sizeof(int*) );
+    for(int i = 0; i < dpSize; i++){
+        dp[i] = malloc(dpSize * sizeof(int));  
+        dp[i][i] = fmax( multipliers[dpSize-1] * row[i] ,  multipliers[dpSize-1]*col[i] );
+    }
+    //
+    // dp transfer diagonal
+    for(int i = 1; i < dpSize; i++){
+        for(int j = 0; j < dpSize-i; j++){
+            //  left top to right bottom
+            dp[j][i+j] = fmax(col[j] * multipliers[dpSize-1-i] + dp[j+ 1][i + j ], \
+                        row[i+j] * multipliers[dpSize-1-i] + dp[ j ][ i + j-1] );
+        }
+    }
+    
+    return dp[0][dpSize-1];
+}

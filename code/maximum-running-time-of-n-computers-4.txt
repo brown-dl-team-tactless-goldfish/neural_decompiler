@@ -1,0 +1,28 @@
+class Solution {
+public:
+    long long maxRunTime(int n, vector<int>& bat) {
+        
+        sort(bat.begin(),bat.end());
+        
+        if(n==bat.size()) return bat[0];
+        long long sum=0;
+        for(int i=0;i+n<bat.size();i++){
+            sum+=bat[i];
+        }
+        int j=1;
+        for(int i=bat.size()-n;i<bat.size()-1;i++){
+            
+            long long temp=bat[i+1]-bat[i];
+            if(sum>=temp*(j)){
+                sum-=temp*(j);
+                bat[i]=bat[i]+temp;
+            }
+            else{
+                return bat[i]+sum/j;
+            }
+            j++;
+        }
+        if(sum>0) sum=sum/n;
+        return bat[bat.size()-1]+sum;
+ }
+};

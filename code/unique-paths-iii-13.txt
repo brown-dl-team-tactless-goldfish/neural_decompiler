@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int tpaths = 0;
+
+    void totalPaths(vector<vector<int>>& grid,int i, int j,int steps){
+        if(i<0 || i >= grid.size() || j <0 || j >= grid[0].size() || grid[i][j] == -1)return ;
+        
+        else if(grid[i][j] == 2){
+            if(!steps)tpaths++;
+            return ;
+        }
+        
+        else{
+            grid[i][j] = -1;
+            totalPaths(grid,i+1,j,steps-1);
+            totalPaths(grid,i,j+1,steps-1);
+            totalPaths(grid,i-1,j,steps-1);
+            totalPaths(grid,i,j-1,steps-1);
+            grid[i][j] = 0;
+
+        }
+    }
+    
+    int uniquePathsIII(vector<vector<int>>& grid) {
+        int xi,yi;
+        int steps = 1;
+
+        for(int i=0;i<grid.size();i++){
+            for(int j=0;j<grid[0].size();j++){
+                if(grid[i][j] == 1)xi = i,yi=j;
+                else if(grid[i][j] == 0)steps++;
+            }
+        }
+        
+        totalPaths(grid,xi,yi,steps);
+        return tpaths;
+    }
+};

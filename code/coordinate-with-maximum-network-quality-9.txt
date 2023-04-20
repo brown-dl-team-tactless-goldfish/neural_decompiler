@@ -1,0 +1,39 @@
+class Solution {
+public:
+    float distance(const vector<int>& n1,const vector<int>& n2){
+        return sqrt(pow(n1[0]-n2[0],2)+pow(n1[1]-n2[1],2));    
+    }
+    vector<int> bestCoordinate(vector<vector<int>>& towers, int radius) {
+        int maxQ=0;
+        vector<int> res={0,0};
+        int minx=0,maxx=0,miny=0,maxy=0;
+		//min and max coordinates to check
+        for(auto t:towers){
+            minx=min(t[0],minx); miny=min(t[1],miny);
+            maxx=max(t[0],maxx); maxy=max(t[1],maxy);
+
+        }
+		//loop for all coordinates
+        for(int x=minx; x<=maxx;x++){
+
+            for(int y=miny; y<=maxy;y++){
+                int currentQ=0;
+
+                for(auto t:towers){
+                    vector<int> p={x,y};
+                    auto dist=distance(p,t);
+                    if(dist<=radius) currentQ+=floor(t[2]/(1+dist));
+                }
+
+                if(currentQ>maxQ){
+                    maxQ=currentQ;
+                    res={x,y};
+                }
+            }
+
+
+        }
+        return res;
+        
+    }
+};

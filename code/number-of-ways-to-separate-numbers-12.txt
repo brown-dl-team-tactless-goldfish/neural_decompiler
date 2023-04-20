@@ -1,0 +1,48 @@
+class Solution {
+public:
+    const int mod=1e9+7;
+    int numberOfCombinations(string num) {
+        int n=num.size();
+        vector<vector<int>> dp(n+1,vector<int>(n+1)),cal(n+1,vector<int>(n+1)); // cal[i][j]=> to store if a string ending at position i of length j is greater than or equal to string of same length ending at position i-j
+        for(int len=1;len<=n;++len){ // to calculate cal[i][j] len=j
+            vector<int> tmp(n+1);
+            for(int i=len+1;i<=n;++i){ // check if it is greater than or equal to (i-len)th character
+                if(num[i-1]>num[i-len-1]) tmp[i]=1;
+                else if(num[i-1]<num[i-len-1]) tmp[i]=-1;
+            }
+            // greater => 1, less =>-1 , equal =>0
+            set<int> s,one; // could be optimized to O(n*n) since this is O(n*n*logn) due o set<int> ,could be optimized using 2 pointers and prefix sum
+            for(int i=1;i<=n;++i){
+                if(tmp[i]==-1) s.insert(i);
+                else if(tmp[i]==1) one.insert(i);// store where characters differ 
+            }
+            for(int i=len;i<=n;++i){
+                auto it=s.lower_bound(i-len+1); // find first character which could make number of length len less than previous adjacent string of same length
+                if(it==s.end()||*it>i) cal[i][len]=1; // no -1 found between i-len+1 and i
+                else {
+                    auto it1=one.lower_bound(i-len+1);
+                    if(it1!=one.end()&&*it1<=*it) cal[i][len]=1; // check if 1 exists before first position where string could be made less than prev
+                    else cal[i][len]=-1;
+                }
+            }
+        }
+        // main part dp
+        // dp[i][j] is the number of ways upto position i with last took number length ranging between 0 to j
+        dp[0][0]=1;
+        for(int i=1;i<=n;++i) dp[0][i]+=dp[0][i-1];
+        for(int i=1;i<=n;++i)
+            for(int j=1;j<=n;++j){
+                if(i-j>=0&&num[i-j]!='0'){ // not starting with '0'
+                    if(cal[i][j]!=-1) { // same length string could be taken because greater or equal to allowed
+                        (dp[i][j]+=dp[i-j][j])%=mod;
+                    }
+                    else { // 0 to j-1 length strings allowed at position (i-j)
+                        (dp[i][j]+=dp[i-j][j-1])%=mod;
+                    }
+                }
+                (dp[i][j]+=dp[i][j-1])%=mod;
+            }
+        return dp[n][n]; // sum of all lengths ending at n is final answer
+        // overall complexity O(n*n*logn)
+    }
+};

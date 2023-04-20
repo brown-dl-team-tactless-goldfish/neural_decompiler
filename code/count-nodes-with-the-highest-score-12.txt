@@ -1,0 +1,35 @@
+class Solution {
+    vector<int> count;
+    int solve(unordered_map<int, vector<int>> &tree, int node){
+        int c=1;
+        for(auto child: tree[node])
+            c+=solve(tree, child);
+        return count[node]=c;
+    }
+public:
+    int countHighestScoreNodes(vector<int>& parents) {
+        unordered_map<int, vector<int>> tree;
+        int n=parents.size();
+        count=vector<int>(n,0);
+        for(int i=1; i<n; i++)
+            tree[parents[i]].push_back(i);
+        solve(tree, 0);
+        long long prod=1;
+        int freq=0;
+        for(int i=0; i<n; i++){
+            long long a=count[0]-count[i];
+            if(a==0)
+                a=1;
+            long long tp=1; 
+            for(auto child: tree[i])
+                tp*=count[child];
+            if(a*tp>prod){
+                freq=1;
+                prod=a*tp;
+            }
+            else if(a*tp==prod)
+                freq++;
+        }
+        return freq;
+    }
+};

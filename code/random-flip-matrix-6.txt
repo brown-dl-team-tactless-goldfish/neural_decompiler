@@ -1,0 +1,67 @@
+class Solution {
+    // as we are going to use unordered_map so we have to give our own hash function
+    struct hash_pair {
+    template <class T1, class T2>
+    size_t operator()(const pair<T1, T2>& p) const
+    {
+        auto hash1 = hash<T1>{}(p.first);
+        auto hash2 = hash<T2>{}(p.second);
+ 
+        if (hash1 != hash2) {
+            return hash1 ^ hash2;             
+        }
+          return hash1;
+    }
+};
+public:
+    int nu; // this will store total number of possible indexs
+    int r , c; // this will store row and col
+    unordered_map<pair<int,int>,pair<int,int>,hash_pair> m;
+    Solution(int m, int n) {
+        nu = m*n;
+        r = m;
+        c = n;
+    }
+    
+    vector<int> flip() {
+        int ind = (rand() % nu); // this will generate random number between 0 and nu-1 inclusive
+        // let's initiate answer
+        vector<int> ans = {0,0};
+        int i = 0, j = 0; // let's final flipping row and col be i and j
+        // so if we start filling matrix of m*n with 0 first then we will get i and j as this
+        i = ind/c;
+        if(r == 1) i = 0;
+        j = ind%c;
+        if(c == 1) j = 0;
+        nu--; // as we doesn't included nu so we reduce it
+        // Now check if we got this index before then return given index
+        if(m.find({i,j}) != m.end()){
+            ans[0] = m[{i,j}].first;
+            ans[1] = m[{i,j}].second;
+        }else{
+            ans = {i,j};
+        }
+        // here we are finding last index of row and col
+        int lr = nu/c; 
+        if(r == 1) lr = 0;
+        int lc = nu%c;
+        if(c == 1) lc = 0;
+        // if we have previously swapped indexs then we will update new indexs
+        if(m.find({lr,lc}) != m.end()){
+            m[{i,j}] = m[{lr,lc}];
+        }else m[{i,j}] = {lr,lc};
+        return ans;
+    }
+    
+    void reset() {
+        m.clear();
+        nu = r*c;
+    }
+};
+
+/**
+ * Your Solution object will be instantiated and called as such:
+ * Solution* obj = new Solution(m, n);
+ * vector<int> param_1 = obj->flip();
+ * obj->reset();
+ */

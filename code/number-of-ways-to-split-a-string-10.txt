@@ -1,0 +1,61 @@
+class Solution {
+public:
+    int numWays(string s) {
+        int c = count(s.begin(),s.end(),'1');
+        if(c%3!=0)
+        {
+            return 0;
+        }
+        if(c==0)
+        {
+            long long v = s.size()-2;
+            long long ans = (v*(v+1))/2;
+            long long cv = 1e9+7;
+            return ans%cv;
+        }
+        c=c/3;
+        int count_first_chunk = 0;
+        int count_last_chunk =0;
+        int i=0;
+        int c1=0;
+        while(i<s.size())
+        {
+            if(c1==c && s[i]=='1')
+            {
+                break;
+            }
+            else if(c1==c && s[i]=='0')
+            {
+                count_first_chunk++;
+            }
+            else if(s[i]=='1')
+            {
+                c1++;
+            }
+            i++;
+        }
+        i=s.size()-1;
+        int c2=0;
+        while(i>=0)
+        {
+            if(c2==c && s[i]=='1')
+            {
+                break;
+            }
+            else if(c2==c && s[i]=='0')
+            {
+                count_last_chunk++;
+            }
+            else if(s[i]=='1')
+            {
+                c2++;
+            }
+            i--;
+        }
+        count_first_chunk++;
+        count_last_chunk++;
+        long long cv = 1e9+7;
+        long long ans = ((long long)count_first_chunk * (long long)count_last_chunk)%cv ;
+        return ans;
+    }
+};

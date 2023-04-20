@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int minimumTimeRequired(vector<int>& jobs, int k) {
+        sort(jobs.begin(), jobs.end(), greater<>());
+        if(k == jobs.size()) return jobs[0];
+        vector<int> workers(k);
+        res = firstGuess(jobs, k);
+        dfs(jobs, workers, 0, 0);
+        return res;
+    }
+    
+    void dfs(const vector<int>& jobs, vector<int>& workers, int i, int cur){
+        if(i == jobs.size()){
+            res = cur;
+            return;
+        }
+        set<int> visited;
+        for(auto& worker : workers){
+            if(worker + jobs[i] > res) continue;
+            if(!visited.insert(worker).second) continue;
+            worker += jobs[i];
+            dfs(jobs, workers, i+1, max(cur, worker));
+            worker -= jobs[i];
+        }
+    }
+    
+    int firstGuess(vector<int>& jobs, int k){
+        priority_queue<int, vector<int>, greater<int>> q;
+        for(int i=0;i<k;i++) q.push(0);
+        for(auto job:jobs){
+            auto worker = q.top(); q.pop();
+            q.push(worker + job);
+        }
+        while(q.size() > 1) q.pop();
+        return q.top();
+    }
+    
+    int res;
+};

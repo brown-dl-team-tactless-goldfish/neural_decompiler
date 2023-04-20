@@ -1,0 +1,48 @@
+public class Solution 
+{
+    int[] array;
+    int[] rank;
+    public  bool ValidPath(int n, int[][] edges, int source, int destination)
+    {
+        array = new int[n];
+        rank = new int[n];
+        for (int i = 0; i < n; i++)
+        {
+            array[i] = i;
+            rank[i] = i;
+        }
+
+        foreach (var item in edges)
+        {
+            Union(item[0], item[1]);
+        }
+
+        return Find(source) == Find(destination);
+
+    }
+    public int Find(int x)
+    {
+        if (array[x] == x) return x;
+        return array[x] = Find(array[x]);
+    }
+    public void Union(int a, int b)
+    {
+        int x = Find(a);
+        int y = Find(b);
+
+        if (x == y) return;
+        if (rank[x] < rank[y])
+        {
+            array[x] = y;
+        }
+        else if (rank[x] > rank[y])
+        {
+            array[y] = x;
+        }
+        else
+        {
+            array[y] = x;
+            rank[x] += 1;
+        }
+    }
+}

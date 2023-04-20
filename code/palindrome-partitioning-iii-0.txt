@@ -1,0 +1,78 @@
+vector<vector<vector<int>>> dp;
+
+int val = 1e9+9;
+
+int is_palin(string &s, int start, int end)
+{
+   
+    int c = 0;
+    
+    while(start < end)
+    {
+        if(s[start] != s[end])
+        {
+            c++;
+        }
+        
+        start++;
+        end--;
+    }
+    
+    return c;
+}
+
+int helper(string &s, int k , int start, int end, vector<vector<vector<int>>>& dp)
+{
+    
+    if(end < start)
+    {
+       return k <= 0 ? 0 : val;
+    }
+    
+    if(end - start + 1 == k)
+    {
+       return dp[start][end][k] = 0;
+        
+    }
+    
+    if(end-start+1 < k)
+    {
+        return val;
+    }
+    
+    if(k == 1)
+    {
+        int tmp = is_palin(s,start,end);
+        
+       return dp[start][end][k] = tmp;
+       
+    }
+    
+    if(dp[start][end][k] != -1)
+    {
+        return dp[start][end][k];
+    }
+    
+    int ans = val;
+    
+    for(int i = start; i<=end; i++)
+    {
+        int a = helper(s,1,start,i,dp);
+        int b = helper(s,k-1,i+1,end,dp);
+        
+        ans = min(ans,a+b);
+    }
+    
+    return dp[start][end][k] = ans;
+    
+}
+int palindromePartition(string s, int k) {
+    
+    int n = s.size();
+    
+   
+    dp.resize(101,vector<vector<int>>(101,vector<int>(k+1,-1)));
+    
+    return helper(s,k,0,s.size()-1,dp);
+    
+}

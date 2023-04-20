@@ -1,0 +1,58 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+typedef struct node_info{
+    struct TreeNode* parent;
+    int level;
+}node_info_t;
+
+
+void find_node_info(struct TreeNode* node, int val, node_info_t* node_info, int level){
+    
+    if(node->left == NULL && node->right == NULL)
+        return;
+    
+    if((node->left != NULL && (node->left->val == val)) || (node->right != NULL && (node->right->val == val)))
+    {
+         
+        node_info->parent = node;
+        node_info->level = level+1;
+        //printf("info %p-%d\n", node_info->parent, node_info->level);
+        
+        return;
+    }
+    
+    if(node->left != NULL)
+        find_node_info(node->left, val, node_info, level+1);
+    
+    if(node->right != NULL)
+        find_node_info(node->right, val, node_info, level+1);
+}
+
+bool isCousins(struct TreeNode* root, int x, int y){
+    
+    node_info_t info_x;
+    node_info_t info_y;
+    
+    if(root == NULL)
+        return false;
+    
+    if(root->val == x || root->val == y)
+        return false;
+    
+    find_node_info(root, x, &info_x, 0);
+    find_node_info(root, y, &info_y, 0);
+    
+    
+    if(info_x.level == info_y.level && info_x.parent != info_y.parent)
+        return true;
+    else
+        return false;
+
+}

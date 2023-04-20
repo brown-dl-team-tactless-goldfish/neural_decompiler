@@ -1,0 +1,48 @@
+class Solution {
+public:
+    int takeCharacters(string s, int k) {
+        unordered_map<int, int> mpa;
+        unordered_map<int, int> mpb;
+        unordered_map<int, int> mpc;
+        if(k == 0) return 0;
+        int acount = 0;
+        int bcount = 0;
+        int ccount = 0;
+        mpa[acount] = 0;
+        mpb[bcount] = 0;
+        mpc[ccount] = 0;
+        int best = s.size()+1;
+        for(int i = 0; i < s.size(); i++){
+            if(s[i] == 'a') acount++;
+            else if(s[i] == 'b') bcount++;
+            else if(s[i] == 'c') ccount++;
+
+            if(mpa.count(acount) == 0) mpa[acount] = i+1;
+            if(mpb.count(bcount) == 0) mpb[bcount] = i+1;
+            if(mpc.count(ccount) == 0) mpc[ccount] = i+1;
+
+            if(acount >= k && bcount >= k && ccount >= k) best = min(best, i+1);
+        }
+        
+        acount = 0;
+        bcount = 0;
+        ccount = 0;
+        for(int i = 1; s.size()-i > 0; i++){
+
+            if(s[s.size()-i] == 'a') acount++;
+            else if(s[s.size()-i] == 'b') bcount++;
+            else if(s[s.size()-i] == 'c') ccount++;
+            if(acount >= k && bcount >= k && ccount >= k) return min(best, i);
+            int diffa = max(0, k - acount);
+            int diffb = max(0, k - bcount);
+            int diffc = max(0, k - ccount);
+            if(!mpa.count(diffa) || !mpb.count(diffb) || !mpc.count(diffc)) break;
+            int req = max(mpa[diffa], mpb[diffb]);
+            req = max(req, mpc[diffc]);
+            best = min(best, i + req);
+        }
+
+        if(best == s.size()+1) return -1;
+        return best;
+    }
+};

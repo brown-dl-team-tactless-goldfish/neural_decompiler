@@ -1,0 +1,33 @@
+int cmp(void* a,void* b){
+    return ((int**)a)[0][1]-((int**)b)[0][1];
+}
+char ** findRepeatedDnaSequences(char * s, int* returnSize){ 
+    *returnSize= 0;
+    int i,j,num,count=0,len=strlen(s), prev1=0, prev2=0;
+    if(len<10)  return NULL;
+    char** ret=(char**)malloc(len/2*sizeof(char*));
+    int size= len-9; 
+    int **array=(int**)malloc(size*sizeof(int*));
+    for(i=0;i<size;i++){
+        for(num=0,j=0;j<10;j++)
+            num+=num*4+ s[i+j];
+        if(num == prev2 && num == prev1)
+            continue;
+        else{
+            array[count]=(int*)malloc(2*sizeof(int));
+            array[count][0]=i;
+            array[count++][1]=num;
+        }
+        prev2 = prev1;
+        prev1 = num;     
+    }
+    qsort(array,count,sizeof(array[0]),cmp);
+    for(i=1;i<count;i++)
+        if(array[i][1]==array[i-1][1])
+            if(i+1==count||array[i+1][1]!=array[i][1]){
+                ret[(*returnSize)++]=(char*)malloc(11*sizeof(char));
+                memcpy(ret[(*returnSize)-1], &s[array[i][0]],10);
+                ret[(*returnSize)-1][10]='\0';
+            }
+    return ret;
+}

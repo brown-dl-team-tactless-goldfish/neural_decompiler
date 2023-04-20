@@ -1,0 +1,44 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+typedef struct TreeNode treenode;
+
+int i;
+
+treenode* newNode(int val) {
+    treenode* temp = (treenode*) malloc (sizeof(treenode));
+    temp->val = val;
+    temp->left = NULL;
+    temp->right = NULL;
+    return temp;
+}
+
+void createTree(treenode* root, int* A, int n, int lmin, int rmax) {
+    if (i >= n)
+        return;
+    if (A[i] < root->val && A[i] > lmin) {
+        root->left = newNode(A[i]);
+        i++;
+        createTree(root->left, A, n, lmin, root->val);
+    }
+    if (i >= n)
+        return;
+    if (A[i] > root->val && A[i] < rmax) {
+        root->right = newNode(A[i]);
+        i++;
+        createTree(root->right, A, n, root->val, rmax);
+    }
+}
+
+struct TreeNode* bstFromPreorder(int* A, int n){
+    treenode* root = newNode(A[0]);
+    i = 1;
+    createTree(root, A, n, INT_MIN, INT_MAX);
+    return root;
+}

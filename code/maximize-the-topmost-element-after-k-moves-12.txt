@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int maximumTop(vector<int>& nums, int k) {
+        
+        if(k==0)return nums[0];  //can't do anything in such a case
+        
+        if(nums.size()==1){  
+            if(k%2!=0)return -1;   // will always end up with empty array after k operations.
+            return nums[0];
+        }
+        
+        int maxm=0, n=nums.size();
+        for(auto i: nums)maxm=max(maxm,i);
+        if(k>n)return maxm;   // can have any value from the array at the top in case k>n, hence, maximum element will be the result.
+        
+        int res=0;
+        for(int i=0;i<k-1;i++)res=max(res,nums[i]);  //k>(k-1), hence, assume k-1 to be new n,so we can have any val from 0th to (k-2)th idx
+                                                     //at the top, if we would want it to be at the top.
+        
+        if(k<n)res=max(res,nums[k]);                 //additional case, as we can remove elements from 0th to (k-1)th idx in k moves and if 
+                                                     //kth idx exists in the array then it can be a probable candidate for the answer too.
+        return res;
+    }
+};

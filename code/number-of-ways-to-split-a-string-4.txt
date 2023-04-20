@@ -1,0 +1,25 @@
+int numWays(string s) {
+	int magic = 1e9 + 7;
+
+	int cnt = 0, cnt_tmp = 0;
+	for (char& c : s) {
+		cnt += (c == '1');
+	}
+
+	if (cnt % 3 != 0) return 0;
+
+	if (cnt == 0) {
+		int t = (int) s.length();
+		return (int)(((long)(t - 1) * (t - 2) / 2) % magic);
+	}
+
+	int first = 0, second = 0;
+
+	for (char& c : s) {
+		cnt_tmp += (c == '1');
+		if (cnt_tmp == cnt / 3) ++first;
+		else if (cnt_tmp == cnt * 2 / 3) ++second;
+	}
+
+	return (int)(((long)first * second) % magic);
+}

@@ -1,0 +1,36 @@
+char *makeGood(char *s)
+{
+  if(strlen(s) <= 1) /* It must be good if length <= 1 */
+  {
+    return s;
+  }
+  char *res = malloc(sizeof(char) * (strlen(s) + 1));
+  res = strcpy(res, s);
+  int badLoc = -1;
+  while (true)
+  {
+    badLoc = -1;
+    if(strlen(res) <= 1) /* It must be good if length <= 1 */
+    {
+      return res;
+    }
+    for (size_t i = 0; i < strlen(res) - 1; i++)
+    {
+      if (tolower(res[i]) == tolower(res[i+1]) && res[i] != res[i+1])
+      {
+        badLoc = i; /* locate a bed part, index [badLoc] & [badLoc+1] */
+        break;
+      }
+    }
+    if (badLoc == -1) /* It's a good string */
+    {
+      break;
+    }
+    for (; badLoc < strlen(res) - 2; badLoc++) /* delete the bad part */
+    {
+      res[badLoc] = res[badLoc+2];
+    }
+    res[badLoc] = '\0';
+  }
+  return res;
+}

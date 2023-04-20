@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int minimumDistance(string word) {
+        vector<vector<int>>dp(word.size(),vector<int>(word.size(),-1));
+        return dfs(dp,word,-1,-1);
+    }
+    
+    int dfs(vector<vector<int>>&dp,string s,int l,int r){
+        int cur=max(l,r)+1;
+        if(cur>=s.size())return 0;
+        if(l!=-1&&r!=-1&&dp[l][r]!=-1)return dp[l][r];
+        char lc=' ';
+        char rc=' ';
+        if(l!=-1)lc=s[l];
+        if(r!=-1)rc=s[r];
+        int res=0;
+        int dis1=dis(lc,s[cur]);
+        int dis2=dis(rc,s[cur]);
+        res=min(dis1+dfs(dp,s,cur,r),dis2+dfs(dp,s,l,cur));
+        if(l!=-1&&r!=-1){
+            dp[l][r]=res;
+        }
+        return res;
+    }
+    
+    int dis(char a,char b)
+    {
+        if(a==' ')return 0;
+        int n1=(int)(a-'A');
+        int r1=n1/6;
+        int c1=n1%6;
+        int n2=(int)(b-'A');
+        int r2=n2/6;
+        int c2=n2%6;
+        return abs(r1-r2)+abs(c1-c2);
+    }
+};

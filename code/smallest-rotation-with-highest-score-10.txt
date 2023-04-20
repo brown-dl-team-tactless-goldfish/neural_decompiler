@@ -1,0 +1,48 @@
+class Solution {
+public:
+    int bestRotation(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> dp(n, 0);
+        for (int i = 0; i < n; i++)
+        {
+            int l = nums[i];
+            int r = n - 1;
+            if (l > r) continue;
+            if (i < l) {
+                int a = i + 1;
+                int b = (a + r - l + 1);
+                dp[a]++;
+                if (b < n)
+                dp[b]--;
+            } else if (i <= r){
+                int a = 0;
+                int b = i - l + 1;
+                dp[a]++;
+                if (b < n)
+                dp[b]--;
+                
+                a = i + 1;
+                if (a < n)
+                dp[a]++;
+            } else if (i > r) {
+                int a = i - r;
+                int b = i - l + 1;
+                dp[a]++;
+                if (b < n)
+                dp[b]--;
+            }
+        }
+        int m = -1;
+        int ans = -1;
+        int cur = 0;
+        for (int i = 0; i < n; i++)
+        {
+            cur += dp[i];
+            if (cur > m) {
+                m = cur;
+                ans = i;
+            }
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,22 @@
+    double check(vector<int>& v, int k) {
+        
+        double res = 0;
+        for(int i = 0 ; i < v.size() - 1 ; i++) res += ceil((double)v[i] / k);
+        return res + (double)v.back() / (double)k;
+    }
+    
+    int minSpeedOnTime(vector<int>& dist, double hour) {
+        
+        if(hour + 1 <= dist.size()) return -1;
+        int lo = 1; int hi = INT_MAX;
+        int res = hi;
+        
+        while(lo <= hi) {
+            
+            int m = lo + (hi - lo) / 2;
+            if(check(dist, m) > hour) lo = m + 1;
+            else res = m, hi = m - 1;
+        }
+        
+        return res;
+    }

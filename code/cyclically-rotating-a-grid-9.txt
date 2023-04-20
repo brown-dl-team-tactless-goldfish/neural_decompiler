@@ -1,0 +1,41 @@
+class Solution {
+public:
+    vector<vector<int>> rotateGrid(vector<vector<int>>& grid, int k) {
+        int n = grid.size(), m = grid[0].size();
+        vector<vector<int>> res(n, vector<int>(m));
+        
+        int layers = min(m, n) / 2;
+        for (int d = 0; d < layers; ++d) {
+            int len = (n - 2 * d) * 2 + (m- 2 * d) * 2 - 4;
+            int advance = k % len;
+            int x = d, y = d;
+            int tx = x, ty = y;
+            for (int i = 0; i < advance; ++i) {
+                step(d, n-1-d, d, m-1-d, tx, ty);
+            }
+            for (int i = 0; i < len; ++i) {
+                res[tx][ty] = grid[x][y];
+                step(d, n-1-d, d, m-1-d, tx, ty);
+                step(d, n-1-d, d, m-1-d, x, y);
+            }
+        }
+        return res;
+    }
+    
+    void step(int up, int down, int left, int right, int &r, int &c) {
+        if (r == up && c == left) {
+            ++r;
+        } else if (r == down && c == left) {
+            ++c;
+        } else if (r == down && c == right) {
+            --r;
+        } else if (r == up && c == right) {
+            --c;
+        } else {
+            if (r == up) --c;
+            else if (r == down) ++c;
+            else if (c == left) ++r;
+            else --r;
+        }
+    }
+};

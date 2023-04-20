@@ -1,0 +1,39 @@
+int leftMost(int* nums, int cap, int target) {
+  int lo = 0;
+  int hi = cap;
+  while(lo < hi) {
+    int mid = lo + (hi - lo) / 2;
+    if(nums[mid] == target) hi = mid;
+    else lo = mid + 1;
+  }
+  return lo;
+}
+
+int rightMost(int* nums, int numsSize, int cap, int target) {
+  int lo = cap - 1;
+  int hi = numsSize - 1;
+  while(lo < hi) {
+    int mid = hi - (hi - lo) / 2;
+    if(nums[mid] == target) lo = mid;
+    else hi = mid - 1;
+  }
+  return hi;
+}
+
+int* searchRange(int* nums, int numsSize, int target, int* returnSize) {
+  int* res = calloc(2, sizeof(int));
+  res[0] = -1, res[1] = -1;
+  *returnSize = 2;
+  int l = 0, r = numsSize;
+  while(l < r) {
+    int mid = l + (r - l) / 2;
+    if(nums[mid] > target) r = mid;
+    else if(nums[mid] < target) l = mid + 1;
+    else {
+      res[0] = leftMost(nums, mid, target);
+      res[1] = rightMost(nums, numsSize, mid, target);
+      return res;
+    }
+  }
+  return res;
+}

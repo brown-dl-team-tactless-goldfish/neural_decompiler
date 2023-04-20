@@ -1,0 +1,72 @@
+class Solution {
+public:
+    int numDecodings(string s) {
+        int len = s.length();
+        
+        // pre-processing the '0's
+        // if the current character s[i] is '0', check s[i - 1]
+        // * if it is a number and >= 3, just return 0.
+        // * if it is '*', replace it with '?', which means it must be '1' or '2'
+        // * if it is '1' or '2', replace it with '#', which means it has to combine with s[i]
+        for (int i = 0; i < len; i++) {
+            if (s[i] == '0') {
+                if (!i) return 0;
+                if (s[i - 1] != '*' && s[i - 1] != '1' && s[i - 1] != '2') return 0;
+                if (s[i - 1] == '*') s[i - 1] = '?'; else s[i - 1] = '#';
+            }
+        }
+        
+        // f[i]: before the position i, how many ways to decode.
+        vector<long long> f(len, 0);
+        const int M = 1000000007;
+        for (int i = 0; i < len; i++) {
+            char c = s[i];
+            char d = s[i - 1];
+            // in each loop, initialize f[i] as f[i - 1].
+            f[i] = i ? f[i - 1] : 1;
+            // if the current character c is '0' or '#', just continue, because f[i] must equal to f[i - 1] here.
+            if (c == '0' || c == '#') continue;
+            // if c is '?', it is similar with the situation of c=='#'
+            // f[i] = 2 * f[i - 1]
+            if (c == '?') {
+                f[i] *= 2;
+                f[i] %= M;
+                continue;
+            }
+            // if c is '*', f[i] = 9 * f[i - 1]
+            if (c == '*') f[i] *= 9;
+            
+            // And the i-th character may make a combination with the (i-1)th character.
+            
+            // t = f[i - 2]
+            long long t = i >= 2 ? f[i - 2] : 1;
+            
+            // here, we add t to f[i] for m times:
+            int m = 0;
+            //  m           |  c is '*'        |  c is not '*'
+            // ---------------------------------------------------------
+            //  d can be 1  |  9(123456789)    |  1
+            //  d can be 2  |  6(123456)       |  1(when c <= 6) or 0
+            if (i && (d == '1' || d == '*')) m += c == '*' ? 9 : 1;
+            if (i && (d == '2' || d == '*')) m += c == '*' ? 6 : (c <= '6');
+            f[i] += t * m;
+            f[i] %= M;
+        }
+        return f.back();
+    }
+};
+/*
+f[i]表示到第i位，有多少种decode方法。
+如果当前字符单独解析:
+	如果当前字符是一个数字，那么f[i]=f[i-1]
+	如果当前字符是`*`，那么f[i]=f[i-1]×9
+如果和前一字符合并解析:
+	如果上一个字符可以是1(=1或者=`*`)，那么，当前字符是`*`就给f[i]加上9个f[i-2]，否则只加一个
+	如果上一个字符可以是2(=2或者=`*`)，那么，当前字符是`*`就给f[i]加上6个f[i-2]，否则如果当前字符小于等于6就只加一个，否则不加。
+	
+但上面方法没有考虑0的情况。
+如果字符串中有0，那么它上一个一定是1、2或者`*`。
+考虑做一个预处理，如果发现某个0前面不是这三个字符，那就直接返回0。
+将0前的1、2换成#，表示这个字符必须和后一个字符绑定，
+将0前的`*`换成?，表示这个字符要么是1要么是2，且和后一个字符绑定。
+*/

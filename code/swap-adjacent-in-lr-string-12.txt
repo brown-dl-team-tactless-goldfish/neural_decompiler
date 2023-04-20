@@ -1,0 +1,35 @@
+    bool canTransform(string start, string end) {
+        // since RX can be changed to XR, and XL can be changed to LX
+        // which means R can only move to the right, and L can only move to the left
+        // we can iterate through two strings, after skipping all Xs we first check whether the two corresponding characters are the same, if not then it means that there's no way to change (for example
+        // RXXL can't change to XLRX)
+        // if two characters are the same, let's check whether R in the start position are to the right or equal to the position of R in the end
+        // similarly, we need to check positions of L
+        // for example, RXXLX can't be changed to RXXXL
+        int n = start.size();
+        int index1 = 0;
+        int index2 = 0;
+        while (true) {
+            while (index1 < n && start[index1] == 'X') {
+                index1++;
+            }
+            while (index2 < n && end[index2] == 'X') {
+                index2++;
+            }
+            if (index1 == n && index2 == n) {
+                break;
+            }
+            if (start[index1] != end[index2]) {
+                return false;
+            }
+            if (start[index1] == 'R' && index1 > index2) {
+                return false;
+            }
+            if (start[index1] == 'L' && index1 < index2) {
+                return false;
+            }
+            index1++;
+            index2++;
+        }
+        return true;
+    }

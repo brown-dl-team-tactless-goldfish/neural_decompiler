@@ -1,0 +1,90 @@
+#include <vector>
+#include <algorithm>
+#include <numeric>
+#include <iostream>
+
+using namespace std;
+
+
+struct DP
+{
+    DP()
+    {
+        sum = 0;
+        vec.clear();
+    }
+    long long sum;
+    vector<int> vec;
+    
+};
+
+bool operator<(const DP & l, const DP & r)
+{
+    return l.sum < r.sum || (l.sum == r.sum && l.vec > r.vec);
+}
+
+
+class Solution {
+public:
+    vector<int> maxSumOfThreeSubarrays(vector<int>& nums, int k) {
+        int n = nums.size();
+        
+        vector<long long> subSum = calcSubArraySumForLen(nums, k);
+        
+        vector<vector<DP> > dp(n, vector<DP>(4, DP()));
+        
+        dp[k-1][1].sum = subSum[0];
+        dp[k-1][1].vec = vector<int>({0});
+        
+        for(int i = k; i < n; ++i)
+        {
+            for(int j = 1; j <= 3; ++j)
+            {
+                if(dp[i-1][j].vec.size() == j)
+                {
+                    dp[i][j] = max(dp[i][j], dp[i-1][j]);
+                }
+                
+                int l = i + 1 - k;
+
+                DP temp = dp[l-1][j-1];
+
+                if(temp.vec.size() == j - 1)
+                {
+                    temp.sum = temp.sum + subSum[l];
+                    temp.vec.push_back(l);
+
+                    dp[i][j] = max(dp[i][j], temp);
+                }
+            }
+        }
+        
+        return dp[n - 1][3].vec;
+    }
+    
+private:
+    vector<long long> calcSubArraySumForLen(vector<int>& nums, int k)
+    {
+        vector<long long> subArraySum(nums.size(), 0);
+        
+        long long temp = accumulate(nums.begin(), nums.begin() + k, (long long)0);
+        
+        subArraySum[0] = temp;
+        
+        for(int i = 1; i < nums.size(); ++i)
+        {
+            if(i > (nums.size() - k))
+            {
+                break;
+            }
+            else
+            {
+                subArraySum[i] = subArraySum[i - 1] - nums[i - 1] + nums[i + k - 1];
+            }
+        }
+        
+        return subArraySum;
+    }
+    
+    
+};

@@ -1,0 +1,48 @@
+class Solution {
+public:
+  using it_t=string::iterator;
+  
+  tuple<NestedInteger, it_t> parseInteger(it_t sBegin, it_t sEnd) {
+    it_t originalSBegin = sBegin;
+    while (sBegin != sEnd && *sBegin != ',' && *sBegin != ']') ++sBegin;
+    NestedInteger integer = NestedInteger(stoi(string(originalSBegin, sBegin)));
+    if (sBegin != sEnd && *sBegin == ',') ++sBegin;
+    return tie(integer, sBegin);
+  }
+  
+  tuple<NestedInteger, it_t> parseList(it_t sBegin, it_t sEnd) {
+    NestedInteger list = NestedInteger();
+    while (*sBegin != ']') {
+      if (*sBegin == '[') {
+        NestedInteger subList;
+        tie(subList, sBegin) = parseList(sBegin + 1, sEnd);
+        list.add(subList);
+      } else {
+        NestedInteger integer;
+        tie(integer, sBegin) = parseInteger(sBegin, sEnd);
+        list.add(integer);
+      }
+    }
+    ++sBegin; // for the ']'
+    if (sBegin != sEnd && *sBegin == ',') {
+      ++sBegin;
+    }
+    return tie(list, sBegin);
+  }
+  
+  NestedInteger deserialize(it_t sBegin, it_t sEnd) {
+    if (*sBegin == '[') {
+      NestedInteger list;
+      tie(list, sBegin) = parseList(sBegin + 1, sEnd);
+      return std::move(list);
+    } else {
+      NestedInteger integer;
+      tie(integer, sBegin) = parseInteger(sBegin, sEnd);
+      return std::move(integer);
+    }
+  }  
+
+  NestedInteger deserialize(string s) {
+    return deserialize(s.begin(), s.end());
+  }
+};

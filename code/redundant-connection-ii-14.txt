@@ -1,0 +1,115 @@
+
+class Solution {
+public:
+    vector<int> findRedundantDirectedConnection(vector<vector<int>>& edges) {
+        int order = 1;
+        vector<int> badEdge(2);
+        
+        for (auto& edge: edges) {
+            // Create nodes 
+            Node& from = graph[edge[0]];
+            Node& to = graph[edge[1]];
+            
+            // Update fan in count
+            ++to.fanInCount;
+            
+            // Trap multi-parent edge
+            if (to.fanInCount > 1) {
+                badEdge = edge;
+            }
+            
+            // Add fan out edge with occurance order
+            from.outEdges.push_back({edge[1], order++});
+        }
+        
+        // Color all vertices white
+        colors.resize(graph.size() + 1, WHITE);
+        
+        // DFS
+        for (auto& p: graph) {
+            if (colors[p.first] == WHITE) {
+                if (!dfs(p.first, badEdge)) {
+                    break;
+                } 
+            }
+        }
+        
+        return badEdge;
+    }
+    
+private:
+    bool dfs(int id, vector<int>& badEdge) {
+        stack<pair <int, pair<int, int>>> stk;      // pair - node id, visit state, order
+        vector<pair<int, int>> path;                  // pair - to node, order
+        
+        // Dummy edge 
+        stk.push({id, {false, 0}});
+        
+        while (!stk.empty()) {
+            auto& top = stk.top();
+            
+            if (top.second.first == false) {     // Pre visit
+                top.second.first = true;
+                colors[top.first] = GREY;
+                path.push_back({top.first, top.second.second});
+                
+                // Schedule fanouts
+                for (auto& e: graph[top.first].outEdges) {
+                    if (colors[e.first] == GREY) {
+                        // Found cycle
+                        path.push_back(e);
+                        badEdge = findBadEdge(path);
+                        path.pop_back();
+                        return false;
+                    } else if (colors[e.first] == BLACK) {
+                        // Cross edge or back edge
+                        continue;
+                    }
+                    
+                    stk.push({e.first, {false, e.second}});
+                }
+            } else {                            // Post visit
+                path.pop_back();
+                stk.pop();
+                colors[top.first] = BLACK;
+            }
+        }
+        
+        return true;
+    }
+    
+    // Find edge that make multi parent of or one with max order
+    vector<int> findBadEdge(vector<pair<int, int>>& path) {
+        int i = path.size() - 1;
+        int j = i;
+        int start = path[i].first;
+        
+        do {
+            int id = path[i].first;
+            
+            if (graph[path[i].first].fanInCount > 1) {
+                j = i;
+                break;
+            }    
+            
+            if (path[j].second < path[i].second) {
+                j = i;
+            }
+            
+            --i;
+        } while (path[i].first != start);
+        
+        return {path[j - 1].first, path[j].first};
+    }
+    
+    struct Node {
+        Node() : fanInCount(0) { }
+        int fanInCount;
+        vector<pair<int, int>> outEdges;
+    };
+    
+    enum Color {WHITE, BLACK, GREY};
+    
+    unordered_map<int, Node> graph;
+    vector<Color> colors;
+};

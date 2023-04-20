@@ -1,0 +1,92 @@
+// Quick sort sub-routine
+void swap(int *a0, int *a1);
+int mid(int a, int b, int c);
+void quickSort(int *a, int x, int y);
+
+// Answer solution
+int maxSatisfaction(int* satisfaction, int satisfactionSize){
+  // step 1
+  quickSort(satisfaction, 0, satisfactionSize - 1);
+  // step 2
+  int sum = 0;
+  int res = 0;
+  // step 3
+  for (int i = satisfactionSize - 1; i >= 0; i--)
+  {
+    if (satisfaction[i] + sum > 0)
+    {
+      sum += satisfaction[i];
+      res += sum;
+    }
+    else
+    {
+      return res;
+    }
+  }
+  return res;
+}
+
+// Below is quick sort sub-routine
+void swap(int *a0, int *a1)
+{
+  int t = *a0;
+  *a0 = *a1;
+  *a1 = t;
+  return;
+}
+
+int mid(int a, int b, int c)
+{
+  if (a <= b)
+  {
+    if (c <= a)
+      return a;
+    else if (b <= c)
+      return b;
+    return c;
+  }
+  else // b <= a
+  {
+    if (c <= b)
+      return b;
+    else if (a <= c)
+      return a;
+    return c;
+  }
+}
+
+void quickSort(int *a, int x, int y)
+{
+  // non-decreasing order
+  // array, Quick Sort a[x] ~ a[y]
+  if (x < y) // has at least 2 data to sort
+  {
+    // choose mid value as pivot key
+    int pk = mid(a[x], a[(x + y) / 2], a[y]);
+    if (pk == a[(x + y) / 2])
+      swap(&a[x], &a[(x + y) / 2]);
+    else if (pk == a[y])
+      swap(&a[x], &a[y]);
+
+    int i = x, j = y + 1;
+    do // while (i < j)
+    {
+      do
+      {
+        i++;
+      } while (a[i] < pk && i != y);
+      do
+      {
+        j--;
+      } while (a[j] > pk && j != x);
+      if (i < j)
+      {
+        swap(&a[i], &a[j]);
+      }
+    } while (i < j);
+    swap(&a[j], &a[x]);
+    quickSort(a, x, j - 1);
+    quickSort(a, j + 1, y);
+  }
+  return;
+}

@@ -1,0 +1,97 @@
+#define N 10000000
+#define INF 99999999
+#define or ||
+
+struct edge{
+    int start;
+    int end;
+    int cost;
+};
+
+typedef struct edge E;
+
+E* getEdge(int start, int end, int cost)
+{
+    E* new_edge = (E*)malloc(sizeof(E));
+    new_edge->start = start;
+    new_edge->end = end;
+    new_edge->cost = cost;
+    return new_edge;
+}
+
+int min(int a, int b)
+{
+    return (a < b)? a: b;
+}
+
+E* edges[N];
+
+int calculateDistance(int src, int edgeCounter)
+{
+    int* distance = (int*)malloc(sizeof(int) * (src + 1));
+    int i, j, ans = INF;
+    for(i = 0; i < src; i++)
+        distance[i] = INF;
+    distance[src] = -1;
+    
+    for(i = 0; i <= src; i++)
+        for(j = 0; j < edgeCounter; j++)
+        {
+            int start = edges[j]->start, end = edges[j]->end, cost = edges[j]->cost;
+            if(distance[end] > distance[start] + cost)
+            {
+                distance[end] = distance[start] + cost;
+                ans = min(ans, distance[end]);
+            }
+        }
+    
+    return -ans;
+}
+
+int getSign(int a, int b)
+{
+    return (a > b)?1 :((a == b)? 0: -1);
+}
+
+int maxJumps(int* arr, int arrSize, int d)
+{
+    if(arrSize < 2)
+        return arrSize;
+    if(arrSize == 2)
+        return (arr[0] == arr[1])? 1: 2;
+    
+    int i, j, edgeCounter = 0, monotonicValue = getSign(arr[1], arr[0]);
+    bool isMonotonic = true;
+    
+    for(i = 2; i < arrSize; i++)
+    {
+        if(arr[i] == arr[i - 1] or getSign(arr[i], arr[i - 1]) != monotonicValue)
+        {
+            isMonotonic = false;
+            break;
+        }
+    }
+    
+    if(isMonotonic)
+        return arrSize;
+    
+    for(i = 0; i < arrSize; i++)
+    {
+        edges[edgeCounter++] = getEdge(arrSize, i, 0);
+        for(j = 1; j <= d; j++)
+        {
+            if(i + j == arrSize or arr[i + j] >= arr[i])
+                break;
+            edges[edgeCounter++] = getEdge(i, i + j, -1);
+        }
+
+        for(j = 1; j <= d; j++)
+        {
+            if(i - j == -1 or arr[i - j] >= arr[i])
+                break;
+            edges[edgeCounter++] = getEdge(i, i - j, -1);
+        }
+    }
+    
+    return calculateDistance(arrSize, edgeCounter);
+}

@@ -1,0 +1,50 @@
+#define MODULO_VALUE    1000000007
+
+int kInversePairs(int n, int k){
+    // calculate maximum k
+    int nKMax = (n * (n - 1)) >> 1;
+    if(k > nKMax) return 0;
+
+    // mirrow k since they are symmetric
+    if((k << 1) > nKMax) k = nKMax - k;
+
+    // return known value directly
+    if(k == 0) return 1;
+    if(k == 1) return n - 1;
+
+    // malloc space
+    nKMax >>= 1;
+    if(nKMax > k) nKMax = k;
+    nKMax++;
+    int anMem[2][nKMax];
+    memset(anMem, 0, 2*nKMax*sizeof(int));
+
+    // parse n = 3
+    anMem[0][0] = 1;   // always 1
+    anMem[0][1] = 2;   // always n - 1
+    anMem[0][2] = 2;   // f(n:3, k:2) = f(n:3, k:1)
+    if(nKMax > 3) anMem[0][3] = 1; // f(n:3, k:3) = f(n:3, k:0)
+
+    anMem[1][0] = 1;   // always 1
+
+    // parse from n = 4
+    char cIndex = 0;
+    for(int i=4; i<=n; i++)
+    {
+        cIndex ^= 1;
+        int nSize = (i * (i-1)) >> 1;
+
+        int j = 1;
+        for(; j<nKMax && j<=nSize; j++)
+        {
+            anMem[cIndex][j] = (anMem[cIndex][j-1] + anMem[cIndex^1][j]) % MODULO_VALUE;
+            if(j-i >= 0)
+            {
+                anMem[cIndex][j] -= anMem[cIndex^1][j-i];
+                if(anMem[cIndex][j] < 0) anMem[cIndex][j] += MODULO_VALUE;
+            }
+        }
+    }
+    
+    return anMem[cIndex][k];
+}

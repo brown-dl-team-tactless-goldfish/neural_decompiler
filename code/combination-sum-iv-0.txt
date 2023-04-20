@@ -1,0 +1,30 @@
+int cmpfunc(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+
+int combinationSum4(int* nums, int numsSize, int target){
+    unsigned int i, j;
+    qsort(nums, numsSize, sizeof(int), cmpfunc);
+    long long * dp = (long long *)calloc((target+1) , sizeof(long long ));
+
+    dp[0] = 1;
+    int ans;
+    for(i = 1; i <= target; i++){
+        for(j = 0; j < numsSize; j++){
+            if(i >= nums[j] ){
+                dp[i] += dp[i- nums[j]];
+                if(dp[i] >= INT_MAX){
+                    dp[i] = INT_MAX;  //已經溢位
+                }
+            }
+            else
+                break;
+        }
+    }
+        
+
+    ans = dp[target];
+    free(dp);
+    return ans;
+    
+}	

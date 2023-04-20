@@ -1,0 +1,61 @@
+#define MAX_LETTER ('z'-'a'+1)
+#define KEY(x) (x-'a')
+#define MIN(a,b) ((a)<(b)?(a):(b))
+
+int unionFind(int* unionMap,int key)
+{
+    if(unionMap[key] == key)
+    {
+        return key;
+    }
+    else
+    {
+        // Path compression: Update the parent as we go
+        return unionMap[key] = unionFind(unionMap,unionMap[key]);
+        // return unionFind(unionMap,unionMap[key]);
+    }
+}
+
+void unionUpdate(int* unionMap,int key,int newParent)
+{
+    int currentParent = unionMap[key];
+    if(currentParent!=key)
+    {
+        unionUpdate(unionMap,currentParent,newParent);
+    }
+    unionMap[key] = newParent;
+}
+char * smallestEquivalentString(char * s1, char * s2, char * baseStr){
+    int* unionMap = malloc(MAX_LETTER*sizeof(int));
+
+    //Init all the unions to have their own letter as the parent
+    for(int i=0;i<MAX_LETTER;i++)
+    {
+        unionMap[i]=i;
+    }
+
+    int s1Len = strlen(s1);
+    int s2Len = strlen(s2);
+    int minLen = MIN(s1Len,s2Len);
+    for(int i=0;i<minLen;i++)
+    {
+        int s1Parent = unionFind(unionMap,KEY(s1[i]));
+        int s2Parent = unionFind(unionMap,KEY(s2[i]));
+
+        int newParent = MIN(s1Parent,s2Parent);
+        
+        unionUpdate(unionMap,KEY(s1[i]),newParent);
+        unionUpdate(unionMap,KEY(s2[i]),newParent);
+
+    }
+
+    //Now loop on the baseStr and replace each letter with its parent
+    int baseStrLen = strlen(baseStr);
+    char* ans = strndup(baseStr,strlen(baseStr));
+    for(int i=0;i<baseStrLen;i++)
+    {
+
+        ans[i] = 'a'+unionFind(unionMap,KEY(baseStr[i]));
+    }
+    return ans;
+}

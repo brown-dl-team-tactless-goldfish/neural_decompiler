@@ -1,0 +1,33 @@
+public class Solution {
+    public int[][] HighestPeak(int[][] isWater) {
+        int[][] res = new int[isWater.Length][];
+        Queue<int[]> q = new Queue<int[]>();
+        int[] dx = new int[] { 0, 0, 1, -1 },
+              dy = new int[] { 1, -1, 0, 0 };
+        
+        for (int i = 0; i < res.Length; i++)
+            res[i] = Enumerable.Repeat(Int32.MaxValue, isWater[0].Length).ToArray();
+        
+        for (int i = 0; i < isWater.Length; i++)
+            for (int j = 0; j < isWater[0].Length; j++)
+                if (isWater[i][j] == 1)
+                {
+                    res[i][j] = 0;
+                    q.Enqueue(new int[] { i, j });
+                }
+        
+        while (q.Count > 0)
+        {
+            int[] cur = q.Dequeue();
+            
+            for (int i = 0; i < 4; i++)
+                if (cur[0] + dx[i] > -1 && cur[0] + dx[i] < isWater.Length && cur[1] + dy[i] > -1 && cur[1] + dy[i] < isWater[0].Length && res[cur[0] + dx[i]][cur[1] + dy[i]] != 0 && res[cur[0] + dx[i]][cur[1] + dy[i]] > res[cur[0]][cur[1]] + 1)
+                {
+                    res[cur[0] + dx[i]][cur[1] + dy[i]] = res[cur[0]][cur[1]] + 1;
+                    q.Enqueue(new int[] { cur[0] + dx[i], cur[1] + dy[i] });
+                }
+        }
+        
+        return res;
+    }
+}

@@ -1,0 +1,48 @@
+# include <math.h>
+
+
+int hasZero(int n);
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* getNoZeroIntegers(int n, int* returnSize){
+    
+    int *r = (int*)malloc(sizeof(int)*2);
+    *returnSize = 2;
+    
+    if((2<=n)&&(n< 10000)){
+        int i = 1;
+        for(i; i<n;i++){
+            if(!hasZero(i)&&(!hasZero(n-i))){
+                //printf("found");
+                r[0] = i;
+                r[1] = n-i;
+                return r;
+            }
+        }       
+    }else if(n==10000){
+        r[0] = 1;
+        r[1] = 9999;
+    }
+    return r;
+}
+
+int hasZero(int n){
+    int ord = 10000;
+    int x = 0;
+    while(x==0){
+        ord = ord / 10;
+        x = n / ord;
+    }    
+    
+    while(ord>=1){
+        if(n/ord == 0){
+            return 1;
+        }else{
+            n = n % ord;
+            ord = ord /10;
+        }
+    }
+    return 0;
+}

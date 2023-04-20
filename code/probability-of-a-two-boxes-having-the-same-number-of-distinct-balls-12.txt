@@ -1,0 +1,86 @@
+	public double DP(int[] balls)
+    {
+        var n = balls.Length;
+        var total = balls.Sum();
+
+        var dp = new int[n, n + 1, n + 1, total + 1];
+        var presum = balls[0];
+        dp[0, 0, 1, 0] = 1;
+        dp[0, 1, 0, presum] = 1;
+        for (var i = 1; i < presum; i++)
+        {
+            dp[0, 1, 1, i] = 1;
+        }
+
+        for (var index = 1; index < n; index++)
+        {
+            var m = balls[index];
+            for (var c = 0; c <= m; c++)
+            {
+                for (var i = 0; i <= index; i++)
+                {
+                    for (var j = 0; j <= index; j++)
+                    {
+                        for (var k = 0; k <= presum; k++)
+                        {
+                            var tmp = dp[index-1, i, j, k];
+                            if (tmp == 0) continue;
+                            var p1 = c;
+                            var p2 = m - c;
+                            var t1 = 1;
+                            while (p1 > 0)
+                            {
+                                tmp = tmp * (k + p1);
+                                t1 *= p1;
+                                p1--;
+                            }
+
+                            tmp /= t1;
+
+                            var t2 = 1;
+                            while (p2 > 0)
+                            {
+                                tmp = tmp * (presum - k + p2);
+                                t2 *= p2;
+                                p2--;
+                            }
+
+                            tmp /= t2;
+
+                            if (c == 0)
+                            {
+                                dp[index, i, j + 1, k + c] += tmp;
+                            }
+                            else if (c == m)
+                            {
+                                dp[index, i + 1, j, k + c] += tmp;
+                            }
+                            else
+                            {
+                                dp[index, i + 1, j + 1, k + c] += tmp;
+                            }
+                        }
+                    }
+                }
+            }
+
+            presum += m;
+        }
+
+        double all = 0;
+        double good = 0;
+        var count = presum / 2;
+        for (var i = 0; i <= n; i++)
+        {
+            for (var j = 0; j <= n; j++)
+            {
+                all += dp[n-1, i, j, count];
+                if (i == j)
+                {
+                    good += dp[n-1, i, j, count];
+                }
+            }
+        }
+
+        return good / all;
+    }

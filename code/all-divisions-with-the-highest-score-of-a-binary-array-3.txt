@@ -1,0 +1,26 @@
+class Solution {
+public:
+    vector<int> maxScoreIndices(vector<int>& nums) {
+        unordered_map<int, vector<int>>Map ; //{score, idx}
+        int n = nums.size() ;
+        vector<int>PreZero(n+1) ;
+        vector<int>SuffOne(n+1) ;
+        for(int i = 0; i < n; i++){
+            PreZero[i+1] = PreZero[i] ;
+            if(nums[i] == 0)
+                PreZero[i+1]++ ;
+        }
+        for(int i = n-1; i >= 0; i--){
+            SuffOne[i] = SuffOne[i+1] ;
+            if(nums[i] == 1)
+                SuffOne[i]++ ;    
+        }  
+        int maxScore = 0 ;
+        for(int i = 0; i <= n; i++){
+            int score = PreZero[i] + SuffOne[i] ;
+            Map[score].push_back(i) ;
+            maxScore = max(maxScore, score) ;
+        }
+        return Map[maxScore] ;
+    }
+};

@@ -1,0 +1,28 @@
+int maxWidthRamp(int* nums, int numsSize){
+    int n = numsSize; 
+    int* suffix = malloc(n * sizeof(int));
+    suffix[n-1] = nums[n-1];
+    for(int i = n-2; i >= 0; i--){
+        suffix[i] = fmax(nums[i], suffix[i+1]);
+    }
+    
+    int max = 0;
+    int left, right, mid;
+    for(int i = 0; i < n -1; i++){
+        if(max >= (n - i))
+            break;
+        left = i+1, right = n-1;        
+        while(left < right){
+            mid = right - (right - left)/2 ;
+            if(suffix[mid] >= nums[i])
+                left = mid;
+            else
+                right = mid - 1;
+        }
+        if(suffix[left] >= nums[i])
+            max = fmax(max, left - i);
+    }
+    
+    return max;
+
+}

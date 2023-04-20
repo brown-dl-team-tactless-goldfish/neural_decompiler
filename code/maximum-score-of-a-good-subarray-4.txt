@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int maximumScore(vector<int>& nums, int k) {
+        int n = nums.size(), ii=k, jj=k, ans=0;
+        set<int> st;
+        for (int elem : nums)
+            st.insert(elem);
+        ans = *st.begin() * n;
+        for (auto it=st.rbegin(); it!=st.rend(); it++) {
+            int elem = *it;
+            //if (n*elem<ans) continue;
+            //if (elem == *st.begin()) continue;
+            while (ii>=0 && nums[ii]>=elem)
+                ii--;
+            if (ii<k && (ii<0 || nums[ii]!=elem))
+                ii++;
+            while (jj<n && nums[jj]>=elem)
+                jj++;
+            if (jj>k && (jj==n || nums[jj]!=elem))
+                jj--; 
+            int curr = (jj-ii+1) *elem;
+            if (jj==ii)
+                curr = min(curr, nums[jj]);
+            //cout << elem << ", " << curr << endl;
+            //cout << ii << ", " << jj << endl;
+            ans = max(ans, curr);
+        }
+        return ans;
+    }
+};

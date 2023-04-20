@@ -1,0 +1,30 @@
+		public int Solution(int steps, int arrLen)
+        {
+            if (arrLen < 2) return arrLen;
+
+            // Move up to steps
+            arrLen = Math.Min(arrLen, steps);
+
+            int[] dp = new int[arrLen], prev = new int[arrLen];
+
+            prev[0] = 1;
+
+            // i => The remaining steps 
+            for (int i = 1; i < steps; i++)
+            {
+                dp[0] = (prev[0] + prev[1]) % Mod;
+                dp[arrLen - 1] = (prev[arrLen - 1] + prev[arrLen - 2]) % Mod;
+                int max = Math.Min(i, arrLen - 2);
+                for (int j = 1; j <= max; j++)
+                {
+                    // dp[step][j] = dp[step - 1][j] （Stay） + dp[step - 1][j + 1] （Right） + dp[step - 1][j - 1]（Left）
+                    dp[j] = ((prev[j] + prev[j - 1]) % Mod + prev[j + 1]) % Mod;
+                }
+
+                var t = dp;
+                dp = prev;
+                prev = t;
+            }
+
+            return ((prev[0] + prev[1]) % Mod);
+        }

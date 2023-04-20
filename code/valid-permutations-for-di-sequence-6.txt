@@ -1,0 +1,36 @@
+class Solution {
+public:
+int dp[201][201];
+int mod=1e9+7;
+int util(string &s,vector<int>&visited,int curr,int index,int n){
+    if(index==s.length())
+        return 1;
+    if(dp[curr][index]!=-1)
+        return dp[curr][index];
+    int res=0;
+    visited[curr]=true;
+    if(s[index]=='I'){
+        for(int i=curr+1;i<=n;i++)
+            if(!visited[i])
+            res=(res+util(s,visited,i,index+1,n))%mod;
+        
+    }else{
+        for(int i=curr-1;i>=0;i--)
+            if(!visited[i])
+            res=(res+util(s,visited,i,index+1,n))%mod;
+        
+    }
+    visited[curr]=false;
+    return dp[curr][index]=res;
+}
+int numPermsDISequence(string s) {
+    memset(dp,-1,sizeof(dp));
+    int n=s.length();
+    vector<int>visited(n+1,false);
+    int res=0;
+    for(int i=0;i<=n;i++)
+     res=(res+util(s,visited,i,0,n))%mod;
+    return res;
+    
+}
+};

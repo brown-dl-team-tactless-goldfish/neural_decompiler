@@ -1,0 +1,36 @@
+int shortestPathAllKeys(vector<string>& grid) {
+	int n = grid.size(), m = grid[0].size();
+	vector<pair<int, int>> dirs {{0,1}, {1,0}, {-1,0}, {0,-1}};
+	queue<tuple<int, int, int>> q; // {r, c, mask}
+	bool visited[n + 1][m + 1][(1 << 6) + 1];
+	memset(visited, 0, sizeof visited);
+	
+	int keys = 0;
+	for(int i = 0; i < n; i++) 
+		for(int j = 0; j < m; j++) 
+			if(grid[i][j] == '@')
+				q.push({i, j, 0}), visited[i][j][0] = 1; // Starting point, Push in queue and mark visited
+			else if(islower(grid[i][j]))
+				keys++;
+		
+	int allKeysMask = (1 << keys) - 1, steps = 0;
+	while(!q.empty()) {
+		int size = q.size();
+		while(size--) {
+			auto [i, j, currMask] = q.front(); q.pop();
+			if(currMask == allKeysMask) return steps; // Got all the keys, return the answer
+
+			for(auto &d : dirs) {
+				int r = d.first + i, c = d.second + j;
+				if(r < 0 || c < 0 || r >= n || c >= m || grid[r][c] == '#' || visited[r][c][currMask]) continue; // Invalid case
+				if(isupper(grid[r][c]) && !(currMask & (1 << (grid[r][c] - 'A')))) continue; // Visiting a lock without its corresponding key is an invalid step
+
+				int tempMask = currMask;
+				if(islower(grid[r][c])) tempMask |= (1 << (grid[r][c] - 'a')); // Mark the key as visited in the mask
+				q.push({r, c, tempMask}), visited[r][c][tempMask] = 1;
+			}
+		}
+		steps++;
+	}
+	return -1;
+}

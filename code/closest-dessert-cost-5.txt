@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int closestCost(vector<int>& baseCosts, vector<int>& toppingCosts, int target) {
+        int n = baseCosts.size();
+        int m = toppingCosts.size();
+        int minDiff = INT_MAX;
+        vector<int> ans;
+        for (int i=0; i<n; i++) {
+            queue<int> q;
+            int val = baseCosts[i], level=0;
+            q.push(val);
+            while (!q.empty()) {
+                queue<int> newq;
+                while (!q.empty()) {
+                    int curr = q.front();
+                    //cout << curr << ", ";
+                    q.pop();
+                    int curDiff = abs(curr-target);
+                    if (curDiff == minDiff) {
+                        ans.push_back(curr);
+                    } else if (curDiff < minDiff) {
+                        minDiff = curDiff;
+                        ans.clear();
+                        ans.push_back(curr);
+                    }
+                    if (level>=m)
+                        continue;
+                    newq.push(curr);
+                    newq.push(curr+toppingCosts[level]);
+                    newq.push(curr+toppingCosts[level]*2);
+                }
+                q = newq;
+                //cout << endl;
+                level++;
+                if (level>=m+1)
+                    break;
+            }
+        }
+        sort(ans.begin(), ans.end());
+        return ans[0];
+    }
+};

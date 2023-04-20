@@ -1,0 +1,35 @@
+class Solution { 
+public:
+    int findMinimumTime(vector<vector<int>>& tasks) {
+        vector<vector<int>> stk;
+        int res = 0;
+        unordered_map<int, pair<int, int>> active;
+
+        for (int i = 0; i < tasks.size(); i++) {
+            int start = tasks[i][0];
+            int end = tasks[i][1];
+            int pt = tasks[i][2];
+            stk.push_back({start, 0, pt, i});
+            stk.push_back({end, 1, pt, i});
+        }
+
+        sort(stk.begin(), stk.end());
+
+        for (auto item : stk) {
+            int t = item[0],d = item[1],pt = item[2],i = item[3];
+            if (1-d) {
+                active[i] = {t, pt};
+            } else {
+                int un_used = active[i].second;
+                res += un_used;
+                for (auto& [j, task] : active) {
+                    int use = min(task.second, min(t-task.first+1, un_used));
+                    task.second -= use;
+                    task.first += use;
+                }
+                active.erase(i);
+            }
+        }
+        return res;
+    }
+};

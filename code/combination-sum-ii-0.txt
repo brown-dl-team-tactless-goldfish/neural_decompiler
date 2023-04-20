@@ -1,0 +1,73 @@
+int cmpfunc(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+} 
+
+void process(int** ans, int*idx, int* ansCol , int* data ,int pos, int* candidates, int candidatesSize, int* CadiCount, int target){
+
+    if(target == 0){
+        ans[*idx] = malloc( pos * sizeof(int));
+        memcpy(ans[*idx], data, pos* sizeof(int));
+        ansCol[*idx] = pos ;
+        *idx = *idx + 1;
+        return;       
+    }
+    
+    if(candidatesSize == 0 || target < 0){
+        return;       
+    }
+
+    for(int i = 0; i <= CadiCount[0]; i++){
+        int remainder = target - candidates[0] * i ;  
+        
+        if(remainder < 0)
+            break;
+
+        if(i > 0){
+            data[pos] = candidates[0];
+            pos++;
+        }
+        process( ans, idx , ansCol , data , pos, &candidates[1], candidatesSize-1, &CadiCount[1], remainder);
+    }
+                       
+}
+
+int** combinationSum2(int* candidates, int candidatesSize, int target, int* returnSize, int** returnColumnSizes){
+    //>>>>> sort and organize "candidates" to newCandidates and CadiCount
+    qsort(candidates, candidatesSize, sizeof(int), cmpfunc);
+    int* newCandidates = malloc(candidatesSize * sizeof(int));
+    int* CadiCount = malloc(candidatesSize * sizeof(int));
+    newCandidates[0] = candidates[0];
+    CadiCount[0] = 1;
+    int CadiCountSize = 1;
+    for(int i = 1; i < candidatesSize; i++){
+        if(candidates[i] == candidates[i-1]){
+            CadiCount[CadiCountSize-1]++;
+        }
+        else{
+            newCandidates[CadiCountSize] = candidates[i];
+            CadiCount[CadiCountSize] = 1;
+            CadiCountSize++;
+        }
+    }
+    newCandidates = realloc(newCandidates, CadiCountSize * sizeof(int));
+    CadiCount = realloc(CadiCount, CadiCountSize * sizeof(int));
+    //<<<<< end
+    
+    int** ans = malloc(100 * sizeof(int*));
+    returnColumnSizes[0] = malloc(100 * sizeof(int));
+    
+    int* idx = calloc(1 , sizeof(int));
+    int* data = malloc(30 * sizeof(int));
+    
+    process( ans, idx, returnColumnSizes[0], data , 0, newCandidates, CadiCountSize, CadiCount, target);
+    ans = realloc(ans, (*idx) * sizeof(int*));
+    returnColumnSizes[0] = realloc(returnColumnSizes[0], (*idx) * sizeof(int));
+    * returnSize = *idx;
+    
+    //free no use memory
+    free(idx);
+    free(data);
+    free(newCandidates);
+    free(CadiCount);
+    return ans;
+}

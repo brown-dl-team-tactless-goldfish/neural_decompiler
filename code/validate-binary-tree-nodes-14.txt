@@ -1,0 +1,24 @@
+public class Solution
+{
+    public bool ValidateBinaryTreeNodes(int n, int[] leftChild, int[] rightChild)
+    {
+        Dictionary<int, int> parent = new Dictionary<int, int>();
+        for(int i = 0; i < n; i++)
+        {
+            int l = leftChild[i], r = rightChild[i];
+            if(l == r && l != -1)
+                return false;
+            
+            if(l != -1 && (parent.ContainsKey(l) || i == l))
+               return false;
+            
+            if(r != -1 && (parent.ContainsKey(r) || i == r))
+               return false;
+            
+            if(l != -1) parent[l] = i;
+            if(r != -1) parent[r] = i;
+        }
+        
+        return parent.Count == n - 1;
+    }
+}

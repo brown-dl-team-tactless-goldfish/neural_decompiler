@@ -1,0 +1,59 @@
+class Solution {
+public:
+    vector<vector<int>> R;
+    bool isR(vector<int>& a, vector<int>& o, vector<int>& b) {
+        int ca = (a[0] - o[0]) * (b[0] - o[0]);
+        int cb = (a[1] - o[1]) * (b[1] - o[1]);
+        return ca + cb == 0 ? true : false;
+    }
+    double line(vector<int>& a, vector<int>& b) {
+        int x = a[0] - b[0];
+        int y = a[1] - b[1];
+        return std::sqrt(x * x + y * y);
+    }
+    double area(vector<int>& a, vector<int>& b, vector<int>& c) {
+        return line(a, b) * line(b, c);
+    }
+    double minAreaFreeRect(vector<vector<int>>& points) {
+        int len = points.size();
+        for (int i = 0; i < len; i++) {
+            for (int j = i + 1; j < len; j++) {
+                for (int k = j + 1; k < len; k++) {
+                    if (isR(points[i], points[j], points[k])) {
+                        R.push_back({i,j,k});
+                    }
+                    if (isR(points[j], points[k], points[i])) {
+                        R.push_back({i,k,j});
+                    }
+                    if (isR(points[k], points[i], points[j])) {
+                        R.push_back({j,i,k});
+                    }
+                }
+            }
+        }
+        int rlen = R.size();
+        vector<int> a, b, c, d;
+        double res = -1.0;
+        for (int i = 0; i < rlen; i++) {
+            for (int j = i + 1; j < rlen; j++) {
+                if (R[i][0] == R[j][0] && R[i][2] == R[j][2]) {
+                    a = points[R[i][1]];
+                    b = points[R[i][0]];
+                    c = points[R[i][2]];
+                    d = points[R[j][1]];
+                    if (isR(a, b, d) && isR(a, c, d)) {
+                        if (res == -1.0) {
+                            res = area(b, a, c);
+                        }
+                        else {
+                            double tmp = area(b, a, c);
+                            if (tmp < res)
+                                res = tmp;
+                        }
+                    }
+                }
+            }
+        }
+        return res == -1.0 ? 0.0 : res;
+    }
+};

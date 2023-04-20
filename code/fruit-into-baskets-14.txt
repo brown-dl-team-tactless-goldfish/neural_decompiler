@@ -1,0 +1,31 @@
+int totalFruit(int* fruits, int fruitsSize){
+    if (fruitsSize <= 2){
+        return fruitsSize;
+    }
+
+    int left, right; // for the sliding window
+
+    // init hash map that will save how many fruits are for each tree
+    int * hash = (int*)malloc(sizeof(int)*fruitsSize);
+    for (int i = 0; i < fruitsSize; i++){
+        hash[i] = 0;
+    }   
+
+    int number_of_baskets = 0;
+    for (left = 0, right = 0; right < fruitsSize; ++right){
+        if (hash[fruits[right]] == 0){
+            number_of_baskets++;
+        }
+        hash[fruits[right]]++;
+            
+        if (number_of_baskets > 2){
+            hash[fruits[left]]--;
+            if (hash[fruits[left]] == 0){
+                number_of_baskets--;
+            }
+            left++;
+        }
+    }
+    free(hash);
+    return right - left;
+}

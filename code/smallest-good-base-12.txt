@@ -1,0 +1,39 @@
+#define LIMIT 8
+class Solution {
+public:
+    string smallestGoodBase(string n) {
+        long num = stol(n);
+        for (int base = 2; sum(base, LIMIT) <= num; base++) {
+            if (valid(num, base)) {
+                return to_string(base);
+            }
+        }
+        
+        for (int j = LIMIT-1; j > 1; j--) {
+            long base = pow(num, 1.0/j);
+            if (base < 2) continue;
+            if (sum(base, j) == num) {
+                return to_string(base);
+            }
+        }
+        return to_string(num-1);
+    }
+    
+    bool valid(long n, int base) {
+        while(n) {
+            if (n % base != 1) return false;
+            n /= base;
+        }
+        return true;
+    }
+    
+    long sum(int base, int k) {
+        long res = 1;
+        long num = 1;
+        for (int i = 0; i < k; i++) {
+            num *= base;
+            res += num;
+        }
+        return res;
+    }
+};

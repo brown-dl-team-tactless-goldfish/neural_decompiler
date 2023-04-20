@@ -1,0 +1,151 @@
+        public class Solution
+        {
+            public int[] ThreeEqualParts(int[] nums)
+            {
+                int onesCount = 0;
+                for (int i = 0; i < nums.Length; i++)
+                {
+                    if (nums[i] == 1)
+                    {
+                        onesCount++;
+                    }
+                }
+
+                if (onesCount % 3 != 0)
+                {
+                    return new[] {-1, -1};
+                }
+
+                if (onesCount == 0)
+                {
+                    return new[] {0, nums.Length - 1};
+                }
+
+                var target = onesCount / 3;
+                IList<int> valuablePrefix = new List<int>();
+                int postfixOnesCount = 0;
+                int postfixEndZeroes = 0;
+
+                int idx = nums.Length - 1;
+                bool canTrackEndZeroes = true;
+
+                while (postfixOnesCount != target)
+                {
+                    valuablePrefix.Add(idx);
+
+                    if(nums[idx] == 1)
+                    {
+                        postfixOnesCount++;
+                        canTrackEndZeroes = false;
+                    }
+                    else
+                    {
+                        if (canTrackEndZeroes)
+                        {
+                            postfixEndZeroes++;
+                        }
+                    }
+
+                    idx--;
+                }
+
+                idx = 0;
+                int firstOnesCount = 0;
+                while (firstOnesCount != target)
+                {
+                    if (nums[idx] == 1)
+                    {
+                        firstOnesCount++;
+                    }
+
+                    idx++;
+                }
+
+                int firstEndZeroes = 0;
+                while (firstEndZeroes != postfixEndZeroes)
+                {
+                    if (nums[idx] == 0)
+                    {
+                        firstEndZeroes++;
+                    }
+
+                    idx++;
+                }
+
+                idx--;
+                int res1 = idx;
+                int res2 = -1;
+
+                int pIdx = 0;
+
+                while (pIdx < valuablePrefix.Count || idx >= 0)
+                {
+                    if(pIdx < valuablePrefix.Count && idx >= 0)
+                    {
+                        if (nums[valuablePrefix[pIdx]] != nums[idx])
+                        {
+                            return new[] {-1, -1};
+                        }
+
+                        pIdx++;
+                        idx--;
+                        continue;
+                    }
+
+                    if (pIdx >= valuablePrefix.Count && idx < 0)
+                    {
+                        throw new Exception("Impossible");
+                    }
+
+                    if (pIdx >= valuablePrefix.Count && idx >= 0)
+                    {
+                        if (nums[idx] == 1)
+                        {
+                            return new[] {-1, -1};
+                        }
+
+                        idx--;
+                    }
+                }
+
+
+                idx = valuablePrefix[valuablePrefix.Count - 1] - 1;
+                while (nums[idx] != 1)
+                {
+                    idx--;
+                }
+
+                res2 = idx + postfixEndZeroes + 1;
+
+                if (res2 > valuablePrefix[valuablePrefix.Count - 1])
+                {
+                    return new[] {-1, -1};
+                }
+
+                idx = res1 + 1;
+                while (nums[idx] == 0)
+                {
+                    idx++;
+                }
+
+                if (res2 - idx != nums.Length - valuablePrefix[valuablePrefix.Count - 1])
+                {
+                    return new[] {-1, -1};
+                }
+
+                pIdx = valuablePrefix.Count - 1;
+                while (idx != res2)
+                {
+                    if (nums[idx] != nums[valuablePrefix[pIdx]])
+                    {
+                        return new[] {-1, -1};
+                    }
+
+                    idx++;
+                    pIdx--;
+                }
+
+                
+                return new []{res1, res2};
+            }
+        }

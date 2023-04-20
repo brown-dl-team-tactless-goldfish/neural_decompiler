@@ -1,0 +1,61 @@
+class Solution {
+public:
+    
+    int rowchild[4] = {1,-1,0,0};
+    int colchild[4] = {0,0,1,-1};
+    int row;
+    int col;
+    
+    // recursively find the connected component by visiting the neighbor nodes 
+    bool dfs(int x, int y, vector<vector<int>>& grid1, vector<vector<int>>& grid2,vector<vector<bool>>&visited)
+    {
+        // checks if pos[x][y] is both land in grid1 and grid2 and mark it as visited
+        bool res = (grid1[x][y]==1) && (grid2[x][y]==1);
+        visited[x][y] = true;
+               
+        
+        int px,py;
+        for(int i=0;i<4;i++)
+        {
+            px = x + rowchild[i];
+            py = y + colchild[i];
+                        
+            if(px>=0 && px<row && py>=0 && py<col && grid2[px][py] && !visited[px][py])
+            {
+                // call DFS for unvisited neighbor lands and update the component validity
+                bool t = dfs(px,py,grid1,grid2,visited);
+                res = res && t;
+            }
+        }
+        
+        // return true if component is valid sub island
+        return res;
+    }
+    
+    int countSubIslands(vector<vector<int>>& grid1, vector<vector<int>>& grid2) 
+    {
+        row = grid1.size();
+        col = grid1[0].size();
+     
+        // track visited node
+        vector<vector<bool>>visited(row,vector<bool>(col,false));
+        
+        // count sub islands
+        int c = 0;
+        
+        // loop through nodes of grid2 and call DFS if it is a land and not visited
+        for(int i=0;i<row;i++)
+        {
+            for(int j=0;j<col;j++)
+            {
+                if(grid2[i][j]==1 && !visited[i][j])
+                {
+                    // if grid2 connected component is common with grid1 then we count it 
+                    if(dfs(i,j,grid1,grid2,visited))c++;
+                }
+            }
+        }
+        
+        return c;
+    }
+};

@@ -1,0 +1,95 @@
+class MagicDictionary {
+public:
+    class Trie
+    {
+        public:
+            char c;
+            vector<Trie*> nodes;
+            bool isWord;
+
+            Trie(char c, bool word)
+            {
+                this->c = c;
+                nodes.assign(26, nullptr);
+                isWord = word;
+            }
+        
+            Trie* get(char c)
+            {
+                int i = c - 'a';
+                if(nodes[i] == nullptr)
+                {
+                    Trie* node = new Trie(c, false);
+                    nodes[i] = node;
+                    return node;
+                }
+                
+                return nodes[i];
+            }
+    };
+    
+    Trie* root;
+    
+    /** Initialize your data structure here. */
+    MagicDictionary() {
+        root = new Trie(' ', false);
+    }
+    
+    // O(26^L)
+    void buildDict(vector<string> dictionary) {
+        for(int i=0,n=dictionary.size(); i<n; i++)
+        {
+            Trie* cur = root;
+            for(int j=0; j<dictionary[i].length(); j++)
+            {
+                Trie* node = cur->get(dictionary[i][j]);
+                cur = node;
+            }
+            cur->isWord = true;
+        }
+    }
+    
+    bool search(string searchWord) {
+        if(searchWord.length() == 0) 
+            return false;
+        
+        for(int i=0; i<root->nodes.size(); i++)
+        {
+            if(dfs(searchWord, 0, false, root->nodes[i], root))
+                return true;
+        }
+        
+        return false;
+    }
+    
+    bool dfs(string& target, int i, bool changed, Trie* node, Trie* p)
+    {
+        if(i==target.length())
+            return changed && p->isWord;
+        
+        if(node == nullptr || (node->c != target[i] && changed)) 
+            return false;
+        
+        if(target[i] != node->c) 
+            changed = true;
+        
+        for(int j=0; j<node->nodes.size(); j++)
+        {
+            if(dfs(target, i+1, changed, node->nodes[j], node))
+                return true;
+        }
+    
+        return false;
+    }
+};
+
+// root
+// | |
+// h l
+// e  e
+// l   e
+// l    t
+// o     c
+//        o
+//         d
+//          e

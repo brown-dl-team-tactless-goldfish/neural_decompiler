@@ -1,0 +1,52 @@
+    public class Solution
+    {
+        public int FindMaxForm(string[] strs, int zeroesCount, int onesCount)
+        {
+            if (strs.Length == 0)
+            {
+                return 0;
+            }
+
+            (int, int)[] converted = strs.Select(s =>
+            {
+                int ones = 0;
+                int zeroes = 0;
+
+                foreach (char c in s)
+                {
+                    if (c == '0')
+                    {
+                        zeroes++;
+                    }
+                    else
+                    {
+                        ones++;
+                    }
+                }
+
+                return (zeroes, ones);
+
+            }).ToArray();
+
+            int[,,]dp = new int[converted.Length + 1, zeroesCount + 1, onesCount + 1];
+
+            for (int length = 1; length <= converted.Length; length++)
+            {
+                for (int zeroes = 0; zeroes <= zeroesCount; zeroes++)
+                {
+                    for (int ones = 0; ones <= onesCount; ones++)
+                    {
+                        (int, int) currStr = converted[length - 1];
+                        dp[length, zeroes, ones] = Math.Max(dp[length, zeroes, ones], dp[length - 1, zeroes, ones]);
+                        if (zeroes >= currStr.Item1 && ones >= currStr.Item2)
+                        {
+                            dp[length, zeroes, ones] = Math.Max(dp[length, zeroes, ones],
+                                1 + dp[length - 1, zeroes - currStr.Item1, ones - currStr.Item2]);
+                        }
+                    }
+                }
+            }
+
+            return dp[converted.Length, zeroesCount, onesCount];
+        }
+    }

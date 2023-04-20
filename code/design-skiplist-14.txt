@@ -1,0 +1,76 @@
+class Skiplist {
+public:
+    Skiplist() : rng(chrono::steady_clock::now().time_since_epoch().count()){
+        head = new Node(16, 0);
+    }
+    
+    bool search(int target) {
+        Node* cur = head;
+        for(int i = head->level - 1; i >= 0; i--) {
+            while(cur->next[i] != nullptr
+                  && cur->next[i]->val <= target)
+                cur = cur->next[i];
+        }
+        return cur != head && cur->val == target;
+    }
+    
+    void add(int num) {
+        vector<Node*> update(head->level, nullptr);
+        Node* cur = head;
+        for(int i = head->level - 1; i >= 0; i--) {
+            while(cur->next[i] != nullptr
+                  && cur->next[i]->val <= num)
+                cur = cur->next[i];
+            update[i] = cur;
+        }
+        if(cur == head || cur->val != num) {
+            int cur_level = 1;
+            while(rng() % 4 == 0) cur_level++;
+            for(int i = head->level; i <= cur_level; i++) {
+                head->next.push_back(nullptr);
+                update.push_back(head);
+            }
+            Node* new_node = new Node(cur_level, num);
+            for(int i = 0; i < cur_level; i++) {
+                new_node->next[i] = update[i]->next[i];
+                update[i]->next[i] = new_node;
+            }
+        }
+        else {
+            cur->count++;
+        }
+    }
+    
+    bool erase(int num) {
+        vector<Node*> update(head->level, nullptr);
+        Node* cur = head;
+        for(int i = head->level - 1; i >= 0; i--) {
+            while(cur->next[i] != nullptr
+                  && cur->next[i]->val < num)
+                cur = cur->next[i];
+            update[i] = cur;
+        }
+        if(cur->next[0] != nullptr && cur->next[0]->val == num) {
+            cur = cur->next[0];
+            if(--cur->count == 0) {
+                for(int i = 0; i < cur->level; i++) {
+                    update[i]->next[i] = cur->next[i];
+                }
+            }
+            return true;
+        }
+        return false;
+    }
+    
+private:
+    struct Node {
+        vector<Node*> next;
+        int val;
+        int count;
+        int level;
+        Node(int level, int val) : next(level, nullptr), level(level), val(val), count(1) {}
+    };
+    
+    Node* head;
+    mt19937 rng;
+};

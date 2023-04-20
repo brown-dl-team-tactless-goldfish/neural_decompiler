@@ -1,0 +1,48 @@
+public class Solution {
+      
+    public IList<string> WordBreak(string s, IList<string> wordDict) {
+        
+        HashSet<string> wordSet = new HashSet<string>(wordDict);
+        Dictionary<string,List<string>> seen = new Dictionary<string,List<string>>();
+        return dfs(s, wordSet, seen);
+    }
+    
+    private List<string> dfs(string s, HashSet<string> wordSet, Dictionary<string,List<string>> seen)
+    {
+        if(seen.ContainsKey(s))
+            return seen[s];
+        
+        if(s == "") 
+            return null;
+        
+        List<string> res = new List<string>();
+        for(int i = 1; i <= s.Length; i++)
+        {
+            // get the substring of length i
+            string subStr = s.Substring(0, i);
+            
+            if(wordSet.Contains(subStr))
+            {
+                // if subStr is in wordDic, then recursively handle the suffix substring,
+                string suffixStr = s.Substring(i);
+                List<string> suffixRes = dfs(suffixStr, wordSet, seen);
+                
+                // suffixRes == null indicates the subStr itself is a valid word
+                if(suffixRes == null)
+                    res.Add(subStr);
+                else
+                {
+                    // if suffixRes != null
+                    // then append subStr to all the string returned from the suffix substring.
+                    foreach(string suffix in suffixRes)
+                        res.Add(subStr + " " + suffix);
+                }
+            }
+        }
+        
+        // memorize the all the intermediate result for current string to avoid redundant calculations  
+        seen.Add(s, res);    
+        
+        return res;
+    }
+}

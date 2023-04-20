@@ -1,0 +1,67 @@
+int findInMountainArray(int target, MountainArray* mountainArr) {
+    int left,right,mid,peak;
+    int len = length(mountainArr);
+    int midVal,rightVal;
+    
+    // find the peak
+    left = 0;
+    right = len-1;
+    while(left<right)
+    {
+        mid = left + (right-left)/2;
+        midVal = get(mountainArr,mid);
+        rightVal = get(mountainArr,mid+1);
+        if(midVal < rightVal)
+        {
+            left = peak = mid + 1;
+        }
+        else
+        {
+            right = mid;
+        }
+    }
+    
+    // search left side
+    left = 0;
+    right = peak;
+    while(left<=right)
+    {
+        mid = left + (right-left)/2;
+        midVal = get(mountainArr,mid);
+        if(midVal == target)
+        {
+            return mid;
+        }
+        else if(midVal < target)
+        {
+            left = mid + 1;
+        }
+        else
+        {
+            right = mid - 1;
+        }
+    }
+    
+    // search right side
+    left = peak;
+    right = len-1;
+    while(left<=right)
+    {
+        mid = left + (right-left)/2;
+        midVal = get(mountainArr,mid);
+        if(midVal == target)
+        {
+            return mid;
+        }
+        else if(midVal > target)
+        {
+            left = mid + 1;
+        }
+        else
+        {
+            right = mid - 1;
+        }
+    }
+    
+    return -1;
+}

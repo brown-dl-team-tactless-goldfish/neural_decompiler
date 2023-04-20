@@ -1,0 +1,43 @@
+class Solution {
+public:
+    #define ll long long 
+    long long minSumSquareDiff(vector<int>& nums1, vector<int>& nums2, int k1, int k2) {
+        priority_queue<array<ll,2>> pq ;
+        unordered_map<ll,ll> mpp ;
+        
+        for(int i = 0 ; i < nums1.size() ; ++i ) ++mpp[abs(nums1[i] - nums2[i])] ;
+        for(auto &x : mpp) pq.push({x.first,x.second}) ;
+        int op = k1 + k2 ;
+        
+        ll mini = 0 ;
+        while(op and pq.size()){
+            auto[e1,f1] = pq.top() ; pq.pop() ; 
+            auto[e2,f2] = array<int,2>{0,0};
+            if(pq.size()) e2 = pq.top()[0] , f2 = pq.top()[1] , pq.pop() ;
+            
+            int cover = abs(e1-e2) ;
+            if(cover * f1 <= op){
+                op -= cover * f1 ;
+                if(e2) pq.push({e2,f1 + f2}) ;
+            }
+            else{
+                int round = op / f1 , rem = op % f1 ;
+                op = op - (round * f1 + rem) ;
+                bool fl = false ;
+                if(e1-round-1){
+                    if(e1-round-1 == e2) pq.push({e2,f2+rem}) , fl = true ;
+                    else pq.push({e1-round-1,rem}) ;
+                }
+                if(e1 - round){
+                    if(e1-round == e2) pq.push({e2,f2+f1-rem}) , fl = true ;
+                    else pq.push({e1-round,f1-rem}) ;
+                }
+                if(!fl and e2) pq.push({e2,f2}) ;
+            }
+            
+        }
+        while(pq.size()) mini += pq.top()[0] * pq.top()[0] * pq.top()[1] , pq.pop() ;
+        return mini ;
+        
+    }
+};

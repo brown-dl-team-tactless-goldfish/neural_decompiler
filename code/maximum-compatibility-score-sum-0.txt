@@ -1,0 +1,74 @@
+/*
+
+1. We use a score table to memorize each student's and mentor's matching score
+
+i.e. score [student index] [mentor index]
+
+2. Use recursive method void per() to try all permutation to figure out the max score.
+
+Fix mentor index : [ 0, 1, 2]
+
+Rearrange student array stu
+
+stu : 0 1 2  + mentor [0, 1, 2] =>  total score = score[0][0] + score[1][1] + score[2][2]
+stu : 0 2 1  + mentor [0, 1, 2] =>  total score = score[0][0] + score[2][1] + score[1][2]
+stu : 1 0 2  .
+stu : 1 2 0  .
+stu : 2 0 1  .
+stu : 2 1 0  + mentor [0, 1, 2] =>  total score = score[2][0] + score[1][1] + score[0][2]
+
+
+Finally, find the maximun among the total score listed above.
+*/
+static int max;
+
+void swap(int *arr, int x, int y){
+    int temp = arr[x];
+    arr[x] = arr[y];
+    arr[y] = temp;
+}
+
+void per(int *stu, int size, int **score, int start_idx){
+    if (start_idx == size){
+        int total = 0;
+        for (int i = 0; i < size; i++){
+            total = total + score[stu[i]][i];
+        }
+        if(total>max){
+            max = total;
+        }
+        return;
+    }
+    for (int i = start_idx; i < size; i++){
+        swap(stu, start_idx, i);
+        per(stu, size, score, start_idx+1);
+        swap(stu, start_idx, i);
+    }
+}
+
+int maxCompatibilitySum(int** students, int studentsSize, int* studentsColSize, int** mentors, int mentorsSize, int* mentorsColSize){
+    max = 0;
+    int **score = calloc(studentsSize, sizeof(int*));
+    for (int s = 0; s < studentsSize; s++){
+        score[s] = calloc(mentorsSize, sizeof(int));
+        for (int m = 0; m < mentorsSize;m++){
+            for (int col = 0; col < *studentsColSize; col++){
+                score[s][m] = score[s][m] + (students[s][col] == mentors[m][col]);
+            }
+        }
+    }
+
+    int *stu = malloc(studentsSize*sizeof(int));
+    for (int i = 0; i < studentsSize; i++){
+        stu[i] = i;
+    }
+    per(stu, studentsSize, score, 0);
+
+    free(stu);
+    for (int s = 0; s < studentsSize; s++){
+        free(score[s]);
+    }
+    free(score);
+    return max;
+}
+

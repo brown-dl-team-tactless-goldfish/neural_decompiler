@@ -1,0 +1,41 @@
+    unordered_map<string, int> mps, mpt;
+    int ans = 0, n1 = s.size(), n2 = t.size();
+    
+    for(int i = 0; i < n1; i++)
+    {
+        string tmp;
+        for(int j = i; j < n1; j++)
+            tmp += s[j], mps[tmp]++;
+    }
+    
+    for(int i = 0; i < n2; i++)
+    {
+        string tmp;
+        for(int j = i; j < n2; j++)
+            tmp += t[j], mpt[tmp]++;
+    }
+    
+    for(auto &it : mps)
+    {
+        string substr = it.first;
+        int n = substr.size();
+        
+        for(int i = 0; i < n; i++)
+        {
+            char c = substr[i];
+            substr[i] = 'a';
+            
+            while(substr[i] <= 'z')
+            {
+                if(substr[i] != c && mpt.find(substr) != mpt.end())
+                    ans += mpt[substr] * it.second;
+                
+                substr[i]++;
+            }
+            
+            substr[i] = c;
+        }
+    }
+    
+    return ans;
+}

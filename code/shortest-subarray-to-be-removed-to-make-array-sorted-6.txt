@@ -1,0 +1,16 @@
+class Solution {
+public:
+    int findLengthOfShortestSubarray(vector<int>& arr) {        
+        int left = 0, right = arr.size()-1, res;
+        while(right > 0 && arr[right-1] <= arr[right]) right--;
+        if (right == 0) return 0; /* ascending order*/
+        
+        res = right;
+        do {
+            while (right < arr.size() && arr[left] > arr[right]) right++;
+            res = min(res, right-left-1);
+        } while(++left < arr.size() && arr[left-1] <= arr[left]); /* Check till array is sorted */
+        
+        return res;
+    }
+};

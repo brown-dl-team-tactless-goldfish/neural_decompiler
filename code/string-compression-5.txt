@@ -1,0 +1,41 @@
+int compress(char* chars, int charsSize) {
+    int retVal = 0;
+
+    // 1 <= chars.length <= 2000 and Integer range: [2, 2147483647]
+    char buf[12];
+    int idx = 0;
+    int count = 1;
+
+    int i, j;
+    for (i = 1; i < charsSize; ++i) {
+        if (chars[i - 1] == chars[i]) {
+            ++count;
+            continue;
+        }
+
+        ++retVal;
+        chars[idx++] = chars[i - 1];
+        if (count != 1) {
+            memset(buf, 0, sizeof(buf));
+            snprintf(buf, sizeof(buf), "%d", count);
+            for (j = 0; j < strlen(buf); ++j) {
+                chars[idx++] = buf[j];
+                ++retVal;
+            }
+        }
+
+        count = 1;
+    }
+    ++retVal;
+    chars[idx++] = chars[i - 1];
+    if (count != 1) {
+        memset(buf, 0, sizeof(buf));
+        snprintf(buf, sizeof(buf), "%d", count);
+        for (j = 0; j < strlen(buf); ++j) {
+            chars[idx++] = buf[j];
+            ++retVal;
+        }
+    }
+
+    return retVal;
+}

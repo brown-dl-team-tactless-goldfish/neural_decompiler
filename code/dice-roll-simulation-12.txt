@@ -1,0 +1,48 @@
+long long int dp[5005][7][16];
+    const int mod = 1e9+7;
+    
+	// utility function
+    void addSelf(long long int &a, long long int b) {
+        a += b;
+        a %= mod;
+    } 
+    
+    long long int go(int idx, int n, int prevRolled, int prevRollCnt, vector<int> &rollMax) {
+        // all rolls done, 1 permutation found
+		if(idx == n) {
+            return 1;
+        }
+        
+		// create a alias, since dp[][][] looks bad
+        long long int &ans = dp[idx][prevRolled][prevRollCnt];
+        if(ans != -1) {
+            return ans;
+        }
+        ans = 0;
+        
+		// try rolling every number and find what is possible
+        for(int i=0; i<6; i++) {
+            if(prevRolled == i+1) {
+			// the same number is rolled that was rolled previously 
+                if(prevRollCnt < rollMax[i]) {
+				 // ok, we can roll one more time 
+                    addSelf(ans, go(idx+1, n, prevRolled, prevRollCnt + 1, rollMax));
+                } else {
+					// countinuous count exceeded, cant roll this anymore 
+				}
+				
+            } else {
+				// roll a different number from the previous, with count = 1
+                addSelf(ans, go(idx+1, n, i+1, 1, rollMax));
+            }
+        }
+        
+        return ans;
+    }
+    
+    int dieSimulator(int n, vector<int>& rollMax) {
+        memset(dp, -1, sizeof(dp));
+		// initially 0 is rolled with 0 count 
+		// so that we have all the possiblilties for the first roll
+        return go(0, n, 0, 0, rollMax);
+    }

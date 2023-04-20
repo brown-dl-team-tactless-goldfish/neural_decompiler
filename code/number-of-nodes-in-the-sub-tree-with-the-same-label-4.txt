@@ -1,0 +1,63 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+#define MAX_NEI 100
+#define MAX_HASH ('z'-'a'+1)
+typedef struct{
+    int hash[MAX_HASH];
+    int nei[MAX_NEI];
+    int neiSize;
+    bool visited;
+    char label;
+}AdjList;
+#define KEY(x) (x-'a')
+void countSubTreesDfs(AdjList* adjList , int src,int* countArray)
+{
+    adjList[src].visited = true;
+    
+    char label = adjList[src].label;
+    adjList[src].hash[KEY(label)]=1;
+    int count=1;
+    int numberOfNeighbours = adjList[src].neiSize;
+    for(int i=0;i<numberOfNeighbours;i++)
+    {
+        int neighbour =adjList[src].nei[i];
+        if(!adjList[neighbour].visited)
+        {
+            countSubTreesDfs(adjList,neighbour,countArray);       
+            //Add the count of children for all labels
+            for(int j=0;j<MAX_HASH;j++)
+            {
+                adjList[src].hash[j] += adjList[neighbour].hash[j];
+            }
+        }
+        
+    }
+
+    countArray[src] =  adjList[src].hash[KEY(label)];
+}
+
+static inline void addNei(AdjList* adjList , int src, int dest, char* labels)
+{
+    adjList[src].nei[adjList[src].neiSize++] = dest;
+    adjList[dest].nei[adjList[dest].neiSize++] = src;
+    adjList[src].label = labels[src];
+    adjList[dest].label = labels[dest];
+}
+
+int* countSubTrees(int n, int** edges, int edgesSize, int* edgesColSize, char * labels, int* returnSize){
+    AdjList* adjList = calloc(n,sizeof(AdjList));
+    //Build the adjacency list
+    for(int i=0;i<edgesSize;i++)
+    {
+        int src = edges[i][0];
+        int dest = edges[i][1];
+        addNei(adjList,src,dest,labels);
+    }
+
+    int* ans = malloc(n*sizeof(int));
+    *returnSize = n;
+
+    countSubTreesDfs(adjList,0,ans);
+    return ans;
+}

@@ -1,0 +1,71 @@
+#define ll long long
+const ll INF = 1000000000000000000;
+
+vector<pair<ll, ll>> adj[100005], adj2[100005];
+ll V; // total nodes 
+
+// Normal Dijkstra : Returing distance array....
+vector<ll> dijkstra(int src, bool origin) {
+    priority_queue<pair<ll, ll>, vector<pair<ll, ll>>, greater<pair<ll, ll>>> pq;
+    vector<ll> dist(V, INF);
+    
+    // {dist, node}
+    pq.push({0, src});
+    dist[src] = 0;
+
+    while(!pq.empty()){
+        ll node = pq.top().second;
+        ll nodeDist = pq.top().first;
+        pq.pop(); 
+
+        if(nodeDist > dist[node]) continue;
+        // For Original Graph
+        if(origin){
+            for(auto it : adj[node]){
+                ll next = it.first;
+                ll weight = it.second;
+                if(nodeDist + weight < dist[next]){
+                    dist[next] = weight + nodeDist;
+                    pq.push({dist[next], next});
+                }
+            }
+        }else{ // For Reversed Graph
+            for(auto it : adj2[node]){
+                ll next = it.first;
+                ll weight = it.second;
+                if(nodeDist + weight < dist[next]){
+                    dist[next] = weight + nodeDist;
+                    pq.push({dist[next], next});
+                }
+            }
+        }
+    }
+    return dist;
+}
+
+class Solution {
+public:
+    long long minimumWeight(int n, vector<vector<int>>& edges, int src1, int src2, int dest) {
+        V = n; // setting nodes
+		
+        // Clearing Both Graphs
+        for (int i=0; i<V; i++) {
+            adj[i].clear(); 
+            adj2[i].clear();
+        }
+        
+        for (vector<int> &i : edges) {
+            adj[i[0]].push_back({i[1], i[2]}); // Original
+            adj2[i[1]].push_back({i[0], i[2]});// Reversed
+        }
+
+        vector<ll> a = dijkstra(src1, true), b = dijkstra(src2, true), c = dijkstra(dest, false);
+        ll res = INF;
+        for (int i=0; i<V; i++) {
+            if(a[i] == INF || b[i] == INF || c[i] == INF) continue; // Path is not possible
+            ll cur = a[i]+b[i]+c[i];
+            res = min(res, cur); // picking the best available path
+        }
+        return (res == INF) ? -1 : res;
+    }
+};

@@ -1,0 +1,37 @@
+int UnionFind(int* UNION, int val){
+    if( UNION[val] == val )
+        return val;    
+    return UnionFind( UNION, UNION[val] );
+}
+
+bool UnionSet(int* UNION, int a, int b){
+    int Find_a = UnionFind(UNION , a);
+    int Find_b = UnionFind(UNION , b);
+    if(Find_a == Find_b)
+        return false;
+    if(Find_a < Find_b)
+        UNION[Find_b] = UNION[Find_a] ;
+    else
+        UNION[Find_a] = UNION[Find_b] ;
+    return true;
+}  
+
+char * smallestEquivalentString(char * s1, char * s2, char * baseStr){
+    int* table = malloc( 26 * sizeof(int));
+    for(int i = 0; i < 26; i++){
+        table[i] = i;
+    }
+    
+    int len = strlen(s1) ;
+    for(int i = 0; i < len; i++){
+        UnionSet( table, s1[i]-'a' , s2[i]-'a' ) ;
+ Memory Usage: 5.9 MB, less than 100.00% of C online submissions for Lexicographically Smallest Equivalent String.   }
+
+    int ans_len = strlen(baseStr);
+    char* ans = malloc( ( ans_len + 1 ) * sizeof(int) );
+    ans[ans_len] ='\0';
+    for(int i = 0; i < ans_len; i++){
+        ans[i] = UnionFind( table, baseStr[i] - 'a' ) + 'a';
+    }
+    return ans;
+}

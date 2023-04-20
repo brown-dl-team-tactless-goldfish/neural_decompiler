@@ -1,0 +1,40 @@
+public int VisiblePoints(IList<IList<int>> points, int angle, IList<int> location) {
+        int pointsAtOrigin = 0;
+        int max = 0;
+        List<Double> angles = new List<Double>();
+        foreach(List<int> point in points)
+        {
+            double x = point[0] - location[0];
+            double y = point[1] - location[1];
+            if(x == 0 && y ==0)
+            {
+                pointsAtOrigin++;
+            }
+            else
+            {
+                double degrees = Math.Atan2(x,y) * (180.0 / Math.PI);
+                angles.Add(degrees);
+                angles.Add(degrees + 360);
+            }
+        }
+        angles.Sort();
+        int size = angles.Count();
+        int slow = 0, fast = 0;
+        for(;fast<size && slow < size/2;)
+        {
+            if(angles[fast] - angles[slow] <= angle)
+            {
+                max = Math.Max(max, fast - slow +1);
+                if(max>=size/2)
+                {
+                    break;
+                }
+                fast++;
+            }
+            else
+            {
+                slow++;
+            }
+        }
+        return pointsAtOrigin + max;
+    }

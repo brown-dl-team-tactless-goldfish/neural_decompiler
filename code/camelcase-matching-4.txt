@@ -1,0 +1,29 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+bool* camelMatch(char ** queries, int queriesSize, char * pattern, int* returnSize){
+    int i, j, idx, lenPattern = strlen(pattern);
+    bool *res = malloc(queriesSize*sizeof(bool));
+    
+    for (i = 0; i < queriesSize; i++)
+        res[i] = true;
+    
+    for (i = 0; i < queriesSize; i++) {
+        idx = 0;
+        for (j = 0; queries[i][j]; j++) {  
+            if ((idx < lenPattern) && (queries[i][j] == pattern[idx]))
+                idx++;
+            else if (isupper(queries[i][j])) {
+                res[i] = false;
+                break;
+            }     
+        }
+        
+        if (idx < lenPattern)
+            res[i] = false;
+    }
+    *returnSize = queriesSize;
+    return res;
+}

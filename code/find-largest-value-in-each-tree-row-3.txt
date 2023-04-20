@@ -1,0 +1,26 @@
+void helper(struct TreeNode* root, int* returnSize, int* max, int d){
+    if (root == NULL) {
+       return; 
+    }
+    
+    if (d + 1 > *returnSize) {
+        *returnSize = d + 1;
+    }
+    
+    max[d] = (root->val > max[d])? root->val : max[d];
+    
+    helper(root->left, returnSize, max, d+1);
+    helper(root->right, returnSize, max, d+1);
+    
+    return;
+}
+
+int* largestValues(struct TreeNode* root, int* returnSize){
+    *returnSize = 0;
+    int* max = (int*)malloc(sizeof(int) * 1000);
+    for (int i = 0; i < 1000; i++) {
+        max[i] = INT_MIN;
+    }
+    helper(root, returnSize, max, 0);
+    return max;
+}

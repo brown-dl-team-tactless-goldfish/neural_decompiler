@@ -1,0 +1,23 @@
+class Solution {
+public:
+    void dfs(const int &node,unordered_map<int,vector<int>> &edges,vector<int> &quiet,vector<int> &ans){
+        ans[node] = node;  
+        for(const int &i:edges[node]){
+            if(ans[i] == -1) dfs(i,edges,quiet,ans);
+            if(quiet[node] > quiet[i]){
+                quiet[node] = quiet[i];
+                ans[node] = ans[i];
+            }
+        }
+    }
+    vector<int> loudAndRich(vector<vector<int>>& richer, vector<int>& quiet) {
+        unordered_map<int,vector<int>> edges;
+        const int n = quiet.size();
+        vector<int> ans(n,-1);
+        for(auto const &it:richer) edges[it[1]].emplace_back(it[0]);
+        for(int i = 0;i<n;i++){
+            if(ans[i] == -1) dfs(i,edges,quiet,ans);
+        }
+        return ans;
+    }
+};

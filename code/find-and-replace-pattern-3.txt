@@ -1,0 +1,37 @@
+bool checkwords(char *w1, char * w2)
+{
+    if(strlen(w1) != strlen(w2))
+        return false;
+    int c1[26] = {0};
+    int c2[26] = {0};
+    for(int i = 0; i < strlen(w1); i++)
+    {
+        if(c1[w1[i] - 'a'] == 0 && c2[w2[i] - 'a'] == 0)
+        {
+            c1[w1[i] - 'a'] = w2[i];
+            c2[w2[i] - 'a'] = w1[i];
+        }
+        else if(c1[w1[i] - 'a'] != 0 && c2[w2[i] - 'a'] != 0)
+        {
+            if(c1[w1[i] - 'a'] != w2[i] || c2[w2[i] - 'a'] != w1[i])
+                return false;
+        }
+        else
+            return false;     
+    }
+    return true;
+    
+}
+char ** findAndReplacePattern(char ** words, int wordsSize, char * pattern, int* returnSize){
+    char ** result = (char **)malloc(wordsSize*sizeof(char **));
+    int idx = 0;
+    *returnSize = 0;
+    for(int i = 0; i < wordsSize; i++)
+        if(checkwords(words[i], pattern))
+        {
+            result[idx] = (char *)calloc(strlen(pattern) + 1, sizeof(char));
+            strcpy(result[idx++], words[i]);
+        }
+    *returnSize = idx;
+    return result;
+}

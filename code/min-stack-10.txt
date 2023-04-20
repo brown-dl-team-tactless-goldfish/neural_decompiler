@@ -1,0 +1,66 @@
+typedef struct {
+    int value;
+    int curMin;
+} Node;
+
+typedef struct {
+    int size, limit;
+    Node *array;
+} MinStack;
+
+void minStackCreate(MinStack *stack, int maxSize) {
+    stack->limit = maxSize;
+    stack->size = 0;
+    stack->array = malloc(sizeof(Node) * maxSize);
+}
+
+void minStackPush(MinStack *stack, int element) {
+    if(stack->size >= stack->limit)
+    {
+        return; //overflow
+    }
+    stack->array[stack->size].value = stack->array[stack->size].curMin = element;
+    if(stack->size && stack->array[stack->size -1].curMin < element)
+    {
+        stack->array[stack->size].curMin = stack->array[stack->size -1].curMin;        
+    }
+    stack->size++;
+}
+
+void minStackPop(MinStack *stack) {
+    if(stack->size == 0)
+    {
+        return; //underflow
+    }
+    stack->size--;   
+    return;
+}
+
+int minStackTop(MinStack *stack) {
+    if(stack->size)
+    {
+        return stack->array[stack->size - 1].value;
+    }
+    else
+    {            
+        return 0;
+    }
+}
+
+int minStackGetMin(MinStack *stack) {
+    if(stack->size)
+    {
+        return stack->array[stack->size - 1].curMin;
+    }
+    else
+    {            
+        return 0;
+    }
+}
+
+void minStackDestroy(MinStack *stack) {
+    stack->limit = 0;
+    stack->size = 0;
+    free(stack->array);
+    stack->array = NULL;
+}

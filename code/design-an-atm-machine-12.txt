@@ -1,0 +1,27 @@
+class ATM {
+public:
+    vector<long long> banknotes;
+    vector<long long> banknotesType;
+    ATM() {
+        banknotes = vector<long long>(5, 0);
+        banknotesType = {20, 50, 100, 200, 500};
+    }
+    
+    void deposit(vector<int> banknotesCount) {
+        for (int i = 0; i < 5; i++) banknotes[i] += (long long)banknotesCount[i];
+    }
+    
+    vector<int> withdraw(int amount) {
+        vector<int> out(5, 0);
+        for (int i = 4; i >= 0; i--) {
+            if (banknotes[i] > 0) {
+                out[i] = min(banknotes[i], amount / banknotesType[i]);
+                amount -= out[i] * banknotesType[i];
+            }
+        }
+        if (amount > 0) return {-1};
+        for (int i = 0; i <= 4; i++) banknotes[i] -= (long long)out[i];
+        
+        return out;
+    }
+};

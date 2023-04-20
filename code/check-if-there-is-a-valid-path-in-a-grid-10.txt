@@ -1,0 +1,87 @@
+class Solution {
+private:
+    unordered_map <int, vector<vector<int>>> validNextPaths;
+    vector <vector<bool>> vis;
+    enum dir {
+        UP, DOWN, LEFT, RIGHT
+    };
+public:
+    void buildValidPaths() {
+        // 0: UP, 1: DOWN, 2: LEFT, 3: RIGHT
+        validNextPaths[1] = { {}, {}, {1,4,6}, {1,3,5} };
+        validNextPaths[2] = { {2,3,4}, {2,5,6}, {}, {} };
+        validNextPaths[3] = { {}, {2,5,6}, {1,4,6}, {} };   
+        validNextPaths[4] = { {}, {2,5,6}, {}, {1,3,5} };   
+        validNextPaths[5] = { {2,3,4}, {}, {1,4,6}, {} };  
+        validNextPaths[6] = { {2,3,4}, {}, {}, {1,3,5} };  
+    }
+    
+    bool checkBounds(int x, int y, int r, int c) {
+        return x >= 0 and y >= 0 and x < r and y < c and !vis[x][y];
+    }
+    
+    bool canGo(dir D, int currRoadType, int nextRoadType) {
+        for(int roadType : validNextPaths[currRoadType][D]) {
+            if(nextRoadType == roadType) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    bool dfs(vector<vector<int>>& grid, int x, int y, int r, int c) {
+        if(x == r - 1, y == c - 1) {
+            return true;
+        }
+        
+        int currRoadType = grid[x][y];
+        vis[x][y] = true;
+        
+        // UP
+        if(checkBounds(x - 1, y, r, c)) {
+            int nextRoadType = grid[x - 1][y];
+            if(canGo(UP, currRoadType, nextRoadType)) {
+                if(dfs(grid, x - 1, y, r, c)) return true;
+            }
+        }
+        
+        // DOWN
+        if(checkBounds(x + 1, y, r, c)) {
+            int nextRoadType = grid[x + 1][y];
+            if(canGo(DOWN, currRoadType, nextRoadType)) {
+                if(dfs(grid, x + 1, y, r, c)) return true;
+            }
+        }
+        
+        // LEFT
+        if(checkBounds(x, y - 1, r, c)) {
+            int nextRoadType = grid[x][y - 1];
+            if(canGo(LEFT, currRoadType, nextRoadType)) {
+               if(dfs(grid, x, y - 1, r, c)) return true;
+            }
+        }
+        
+        // RIGHT
+        if(checkBounds(x, y + 1, r, c)) {
+            int nextRoadType = grid[x][y + 1];
+            if(canGo(RIGHT, currRoadType, nextRoadType)) {
+                if(dfs(grid, x, y + 1, r, c)) return true;
+            }
+        }
+        
+        return false;
+        
+    }
+    
+    bool hasValidPath(vector<vector<int>>& grid) {
+        buildValidPaths();
+        
+        int r = grid.size(), c = grid[0].size();
+        
+        if(r == 1 and c == 1) return true;
+        
+        vis.resize(r, vector<bool>(c, false));
+        
+        return dfs(grid, 0, 0, r, c);
+    }
+};

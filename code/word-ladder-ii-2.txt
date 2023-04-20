@@ -1,0 +1,106 @@
+char*** findLadders(char* beginWord, char* endWord, char** wordList, int wordListSize, int** columnSizes, int* returnSize) {
+	char ***result = NULL;
+	struct Tree {
+		int Num, Lg;
+		struct Tree* left, *right, *before;
+	};
+	struct Tree *myTree;
+	myTree = (struct Tree*)malloc(sizeof(struct Tree));
+	for (myTree->Num = 0, myTree->Lg = 0, myTree->before = NULL, myTree->left = NULL, myTree->right = NULL; myTree->Num < wordListSize; myTree->Num++) {
+		if (strcmp(endWord, wordList[myTree->Num]) == 0)
+			break;
+	}
+	if (myTree->Num == wordListSize) {
+		free(myTree);
+		myTree = NULL;
+		*returnSize = 0;
+		columnSizes = NULL;
+		return result;
+	}
+	int *bgnToAll = (int*)malloc(sizeof(int) * wordListSize);
+	int **AllToAll = (int**)malloc(sizeof(int*) * wordListSize);
+	int *MinLg = (int*)malloc(sizeof(int) * wordListSize);
+	for (int i = 0; i < wordListSize; i++) {
+		AllToAll[i] = (int*)malloc(sizeof(int) * wordListSize);
+		MinLg[i] = wordListSize;
+		for (int j = 0; j < wordListSize; j++) {
+			AllToAll[i][j] = 0;
+			for (int ri = 0; ri < strlen(beginWord); ri++) {
+				AllToAll[i][j] += wordList[i][ri] != wordList[j][ri];
+			}
+		}
+		bgnToAll[i] = 0;
+		for (int j = 0; j < strlen(beginWord); j++) {
+			bgnToAll[i] += beginWord[j] != wordList[i][j];
+		}
+	}
+	struct Tree *head, *tail;
+	*returnSize = 0;
+	head = myTree;
+	while (*returnSize == 0 && head) {
+		struct Tree* ptr = head->left;
+		for (tail = head; tail; tail = tail->right) {
+			for (int i = 0; i < wordListSize; i++) {
+				if (AllToAll[tail->Num][i] == 1 && MinLg[i] >= tail->Lg + 1) {
+					if (!head->left) {
+						head->left = (struct Tree*)malloc(sizeof(struct Tree));
+						head->left->Num = i;
+						head->left->Lg = head->Lg + 1;
+						head->left->before = tail;
+						head->left->left = NULL;
+						head->left->right = NULL;
+						MinLg[i] = head->Lg + 1;
+						ptr = head->left;
+					}
+					else {
+						ptr->right = (struct Tree*)malloc(sizeof(struct Tree));
+						ptr = ptr->right;
+						ptr->Num = i;
+						ptr->Lg = head->Lg + 1;
+						ptr->before = tail;
+						ptr->left = NULL;
+						ptr->right = NULL;
+						MinLg[i] = head->Lg + 1;
+					}
+					if (bgnToAll[i] == 1) {
+						(*returnSize)++;
+					}
+				}
+			}
+		}
+		head = head->left;
+	}
+	if (!head) {
+		free(myTree);
+		myTree = NULL;
+		*returnSize = 0;
+		columnSizes = NULL;
+		return result;
+	}
+	result = (char***)malloc(sizeof(char*) * (*returnSize));
+	int count = 0;
+	for (int i = 0; i < *returnSize; i++) {
+		columnSizes[i] = (int*)malloc(sizeof(int));
+		*(columnSizes[i]) = head->Lg + 2;
+	}
+	for (; head; head = head->right) {
+		if (bgnToAll[head->Num] == 1) {
+			result[count] = (char**)malloc(sizeof(char*) * (head->Lg + 2));
+			result[count][0] = (char*)malloc(sizeof(char) * (strlen(beginWord) + 1));
+			memcpy(result[count][0], beginWord, strlen(beginWord) + 1);
+			tail = head;
+			int Num = 1;
+			while (tail != myTree) {
+				result[count][Num] = (char*)malloc(sizeof(char) * (strlen(beginWord) + 1));
+				memcpy(result[count][Num], wordList[tail->Num], strlen(beginWord) + 1);
+				Num++;
+				tail = tail->before;
+			}
+			result[count][head->Lg + 1] = (char*)malloc(sizeof(char) * (strlen(beginWord) + 1));
+			memcpy(result[count][head->Lg + 1], endWord, strlen(endWord) + 1);
+			tail = head->before;
+			count++;
+		}
+	}
+	return result;
+}

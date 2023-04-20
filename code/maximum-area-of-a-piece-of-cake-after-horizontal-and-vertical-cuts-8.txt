@@ -1,0 +1,31 @@
+// biggest gap takes in a sorted array, its size, and a max integer.
+// returns the biggest difference between adjacent numbers.
+// also compares arr[0] to zero and arr[arrSize - 1] to max
+long biggestGap(int* arr, int arrSize, int max){
+    int curBiggest = 0;
+
+    // check gaps between numbers
+    for (int i = 0; i < arrSize - 1; i++){
+        if (arr[i + 1] - arr[i] > curBiggest) curBiggest = arr[i + 1] - arr[i];
+    }
+
+    // check gap from 0
+    if (arr[0] > curBiggest) curBiggest = arr[0];
+
+    // check gap from max (last check so we can just return)
+    if (max - arr[arrSize - 1] > curBiggest) return max - arr[arrSize - 1];
+
+    return curBiggest;
+}
+
+int cmpfunc (const void * a, const void * b) {
+   return ( *(int*)a - *(int*)b );
+}
+
+int maxArea(int h, int w, int* horizontalCuts, int horizontalCutsSize, int* verticalCuts, int verticalCutsSize){
+
+    qsort(horizontalCuts, horizontalCutsSize, sizeof(int), cmpfunc);
+    qsort(verticalCuts, verticalCutsSize, sizeof(int), cmpfunc);
+
+    return (int)((biggestGap(horizontalCuts, horizontalCutsSize, h) * biggestGap(verticalCuts, verticalCutsSize, w)) % 1000000007);
+}

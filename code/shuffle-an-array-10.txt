@@ -1,0 +1,73 @@
+
+Avoiding storing a copy of original. Why is this not acceptable solution. I don't see why it would be wrong. Can someone help out ? The logic here is based on reversing the array and then reversing parts of array based on random index. This is similar to shuffling / rotating an array k times.  
+
+typedef struct {
+    int *array;
+    int size;
+    int pivot;
+} Solution;
+
+
+Solution* solutionCreate(int* nums, int numsSize) {
+    Solution *obj = (Solution *)malloc(sizeof(Solution));
+    assert(obj);
+    obj->array = (int *)calloc(numsSize, sizeof(int));
+    obj->array = nums;
+    assert(obj->array);
+    obj->size = numsSize;
+    obj->pivot = -1;
+    return obj;
+}
+
+void reverse(Solution *obj, int start, int end)
+{
+    while(start < end)
+    {
+        int temp = obj->array[start];
+        obj->array[start++] = obj->array[end];
+        obj->array[end--] = temp;
+    }
+}
+
+int* solutionReset(Solution* obj, int* retSize) {
+    *retSize = obj->size;
+    //It is already in initial state
+    if(obj->pivot != -1)
+    {
+        reverse(obj, 0, obj->pivot);
+        reverse(obj, obj->pivot+1, obj->size-1);
+        reverse(obj, 0, obj->size-1);
+        obj->pivot = -1;
+    }
+    return obj->array;
+}
+
+int* solutionShuffle(Solution* obj, int* retSize) {
+    *retSize = obj->size;
+    //Check if it is already shuffled.
+    if(obj->pivot != -1)
+    {
+        obj->array = solutionReset(obj, &obj->size);
+    }
+    srand(time(0));
+    obj->pivot = rand() % (obj->size -1);
+    reverse(obj, 0, obj->size-1);
+    reverse(obj, 0, obj->pivot);
+    reverse(obj, obj->pivot+1, obj->size-1);
+    return obj->array;    
+}
+
+void solutionFree(Solution* obj) {
+    free(obj->array);
+    free(obj);
+}
+
+/**
+ * Your Solution struct will be instantiated and called as such:
+ * Solution* obj = solutionCreate(nums, numsSize);
+ * int* param_1 = solutionReset(obj, retSize);
+ 
+ * int* param_2 = solutionShuffle(obj, retSize);
+ 
+ * solutionFree(obj);
+*/

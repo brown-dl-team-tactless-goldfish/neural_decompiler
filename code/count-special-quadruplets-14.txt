@@ -1,0 +1,16 @@
+int countQuadruplets(vector<int>& nums) {
+	array<vector<int>, 201> pos{};
+	for(int b=1; b < nums.size(); ++b) 
+		for(int a=0; a < b; ++a) 
+			pos[nums[a]+nums[b]].push_back(b);
+	int cnt = 0;
+	for(int c=2; c < nums.size()-1; ++c) {
+		for(int d=c+1; d < nums.size(); ++d) {
+			if(int s = nums[d] - nums[c]; s >=0) {
+				auto it = lower_bound(pos[s].begin(), pos[s].end(), c);
+				cnt += (it - pos[s].begin());
+			}
+		}
+	}
+	return cnt;
+}

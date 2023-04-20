@@ -1,0 +1,73 @@
+#define id it->second.first
+#define weight it->second.second
+
+class Solution {
+public:  
+  vector<int> groupStrings(vector<string>& words) {
+    unordered_map<string, pair<int,int> >t;        //mask , id
+     
+    int idx = 0;
+    for(auto &w: words){
+      string simple(26, '#'); 
+      for(auto ch : w) simple[ch-'a'] = '1';
+      if(t.count(simple)) t[simple].second++;
+      else t[simple] = {idx++, 1};
+    }
+      
+    vector<vector<int>> gr(t.size());
+    vector<int>weights(t.size());
+    
+    for(auto it = t.begin(); it != t.end(); it++){
+      weights[id] = weight;
+      string W = it->first;
+      
+      for(int i = 0; i != 26; i++)
+        if(W[i] == '#'){
+          W.operator[](i) = '1';
+          if(t.count(W)) gr[id].push_back(t[W].first), gr[t[W].first].push_back(id);
+          W[i] = '#';
+        }
+      
+      for(int i = 0; i != 26; i++)
+        if(W[i] == '1'){
+          W[i] = '#';
+          for(int j = 0; j != 26; j++)
+            if(j != i && W[j]  == '#'){
+              W[j] = '1';
+              if(t.count(W)) gr[id].push_back(t[W].first); 
+              W[j] = '#';
+            }
+          W[i] = '1';
+        }
+    }
+   
+    int group = 0, maxi = 0; 
+    
+    vector<int>vis(t.size(), 0);
+    
+    for(int i = 0; i != vis.size(); i++)
+      if(vis[i] == 0){ 
+        group++;
+        if(gr[i].empty()) maxi = max(maxi, weights[i]);
+        else{
+          queue<int>q;
+          q.push(i);
+          int temp = 0;
+          
+          while(!q.empty()){
+            int idx = q.front(); q.pop();
+            if(vis[idx]) continue;
+            temp += weights[idx];
+            vis[idx] = 1;
+            
+            for(auto x : gr[idx])
+              if(vis[x] == 0) q.push(x);
+          }
+        
+          maxi = max(maxi,temp);
+        }
+      }
+    
+    return {group, maxi};
+  }
+};

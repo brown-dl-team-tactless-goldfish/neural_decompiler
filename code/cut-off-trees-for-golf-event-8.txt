@@ -1,0 +1,50 @@
+class Solution {
+	int find(vector<vector<int>> &forest, int cur, int tar) {
+		int n = forest[0].size(), m = forest.size();
+		int tr = tar/n, tc = tar%n, curr = cur/n, curc = cur%n;
+		auto cmp = [](const pair<int,int> &a, const pair<int,int> &b) {
+			return a.second > b.second;
+		};
+		priority_queue<pair<int,int>, vector<pair<int,int>>, decltype(cmp)> q{cmp};
+	    unordered_set<int> vis;
+	    q.push(make_pair(cur, abs(tr-curr)+abs(tc-curc)));
+	    while (!q.empty()) {
+	    	auto f = q.top();
+	    	q.pop();
+			if (vis.count(f.first)) continue;
+			vis.insert(f.first);
+	    	if (f.first == tar) return f.second;
+	    	int dirs[][2] = {{1,0},{-1,0},{0,1},{0,-1}};
+	    	int r = f.first/n, c = f.first%n;
+	    	for (auto &dir : dirs) {
+	    		int newr = r + dir[0], newc = c + dir[1];
+	    		if (newr < 0 || newr >= m || newc < 0 || newc >= n || 
+	    			forest[newr][newc] == 0 || vis.count(newr*n+newc)) continue;
+	    		q.push(make_pair(newr*n+newc, f.second-abs(r-tr)-abs(c-tc)+1+abs(newr-tr)+abs(newc-tc)));
+	    	}
+	    }
+	    return -1;
+	}
+public:
+    int cutOffTree(vector<vector<int>>& forest) {
+        if (forest.size() == 0 || forest[0].size() == 0) return 0;
+        int m = forest.size(), n = forest[0].size();
+        vector<int> targets;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (forest[i][j] > 1) targets.push_back(i*n+j);
+            }
+        }
+        sort(targets.begin(), targets.end(), [&forest,n](int a, int b) {
+            return forest[a/n][a%n] < forest[b/n][b%n];
+        });
+        int ans = 0, cur = 0;
+        for (auto tar : targets) {
+            auto dis = find(forest, cur, tar);
+            if (dis == -1) return -1;
+            ans += dis;
+            cur = tar;
+        }
+        return ans;
+    }
+};

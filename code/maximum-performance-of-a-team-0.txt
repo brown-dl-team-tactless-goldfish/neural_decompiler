@@ -1,0 +1,104 @@
+struct PriorityQueue {
+  int* data;
+  size_t size;
+  size_t cap;
+};
+
+static 
+void priority_queue_init(struct PriorityQueue* obj) {
+  obj->data = NULL;
+  obj->size = 0;
+  obj->cap = 0;
+}
+
+static 
+size_t priority_queue_size(const struct PriorityQueue* obj) {
+  return obj->size;
+}
+
+static
+int priority_queue_top(const struct PriorityQueue* obj) {
+  return obj->data[0];
+}
+
+static
+int priority_queue_pop(struct PriorityQueue* obj) {
+  int ret = obj->data[0];
+  if (--obj->size) {
+    int idx = 0;
+    while (idx * 2 + 1 < obj->size) {
+      int to_move = obj->size;
+      /* Test if left branch is less */
+      if (obj->data[idx * 2 + 1] < obj->data[to_move]) {
+        to_move = idx * 2 + 1;
+      }
+      /* Test if right branch is less than our best*/
+      if (idx * 2 + 2 < obj->size && obj->data[idx * 2 + 2] < obj->data[to_move]) {
+        to_move = idx * 2 + 2;
+      }
+      if (to_move == obj->size) {
+        break;
+      }
+      
+      obj->data[idx] = obj->data[to_move];
+      idx = to_move;
+    }
+    obj->data[idx] = obj->data[obj->size];
+  }
+  return ret;
+}
+
+static
+void priority_queue_push(struct PriorityQueue* obj, int value) {
+  if (obj->size == obj->cap) {
+    obj->cap = (obj->cap) ? obj->cap * 2 : 8;
+    obj->data = realloc(obj->data, obj->cap * sizeof(int));
+  }
+  int idx = obj->size++;
+  while (idx && obj->data[(idx - 1) / 2] > value) {
+    obj->data[idx] = obj->data[(idx - 1) / 2];
+    idx = (idx - 1) / 2;
+  }
+  obj->data[idx] = value;
+}
+
+static
+void priority_queue_uninit(struct PriorityQueue* obj) {
+  free(obj->data);
+}
+
+int int_2_cmp(const void* l, const void* r) {
+  int (*const lhs)[2] = l;
+  int (*const rhs)[2] = r;
+  return ((*lhs)[0] != (*rhs)[0]) ? (*rhs)[0] - (*lhs)[0] : (*rhs)[1] - (*lhs)[1];
+}
+
+int maxPerformance(int n, int* speed, int speedSize, int* efficiency, int efficiencySize, int k){
+  /* Add engineers by highest efficiency, then highest speed, descendingly for both */
+  int (*const engineers)[2] = malloc(n * sizeof(int[2]));
+  for (int i = 0; i < n; ++i) {
+    engineers[i][0] = efficiency[i];
+    engineers[i][1] = speed[i];
+  }
+  qsort(engineers, n, sizeof(int[2]), &int_2_cmp);
+  
+  /* Keep adding engineers to the team, if we have more than k, remove the slowest engineer as they must have a higher efficiency than our
+     new engineer (as they are sorted from highest efficiency to lowest) */
+  struct PriorityQueue pq;
+  priority_queue_init(&pq);
+  long long sum = 0;
+  long long ret = 0;
+  for (int i = 0; i < n; ++i) {
+    if (priority_queue_size(&pq) < k || priority_queue_top(&pq) < engineers[i][1]) {
+      sum += engineers[i][1];
+      if (priority_queue_size(&pq) == k) {
+        sum -= priority_queue_pop(&pq);
+      }
+      priority_queue_push(&pq, engineers[i][1]);
+      ret = (ret > sum * engineers[i][0]) ? ret : (sum * engineers[i][0]);
+    }
+  }
+  free(engineers);
+  priority_queue_uninit(&pq);
+  return (int)(ret % 1000000007);
+}

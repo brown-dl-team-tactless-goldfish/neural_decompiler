@@ -1,0 +1,20 @@
+int cmp(const void* a, const void* b){
+    return *(int*)a - *(int*)b ;
+}
+long long putMarbles(int* weights, int weightsSize, int k){
+    int n = weightsSize;
+    if(n == k || k == 1 )
+        return 0 ;
+    int* data = malloc( (n-1) * sizeof(int)) ;
+    for(int i = 0; i < n-1; i++){
+        data[i] = weights[i] + weights[i+1] ;
+    }
+    qsort(data, n-1, sizeof(int), cmp) ;
+    long long min = weights[0] + weights[n-1] ;
+    long long max = weights[0] + weights[n-1] ;
+    for(int i = 0; i < k-1; i++){
+        min += data[i] ;
+        max += data[n-2-i] ;
+    }
+    return max - min ;
+}

@@ -1,0 +1,41 @@
+class Solution {
+public:
+    vector<long long> distance(vector<int>& nums) {
+        unordered_map<int, vector<long long>> map, map2;
+        unordered_map<int,int> mp;
+        int n = size(nums);
+        vector<long long> res;
+        for(int i = 0; i < n; i++) {
+            map[nums[i]].push_back(i);
+            mp[i] = map[nums[i]].size() - 1;
+            
+            if(map2.find(nums[i]) != map2.end()) {
+                map2[nums[i]].push_back(0LL + i + map2[nums[i]].back());
+            }
+            else {
+                map2[nums[i]].push_back(i+0LL);
+            }
+        }
+        
+        int count = 0;
+        for(int i = 0; i < n; i++) {
+            
+            if(map[nums[i]].size() == 1) {
+                res.push_back(0);
+                continue;
+            }
+            int lb = mp[i];
+            
+            long long ps = 0LL + map2[nums[i]][lb], pos = 0LL + map2[nums[i]][map2[nums[i]].size() - 1] - ps;
+            
+            ps -= i;
+            
+            long long f1 = lb, f2 = map[nums[i]].size() - lb - 1, ans = 0;
+            
+            ans = 0LL + (abs((1LL * f1 * i) - ps + 0LL)) + 0LL + (abs((1LL *f2 * i) - pos + 0LL));
+            
+            res.push_back(ans);
+        }
+        return res;
+    }
+};

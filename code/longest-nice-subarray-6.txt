@@ -1,0 +1,44 @@
+class Solution {
+public:
+    int longestNiceSubarray(vector<int>& nums) {
+        vector<int> dp(32, 0);
+        
+        int start = 0;
+        int count = 0;
+
+        int res = 0;
+        for(int i=0;i<nums.size();i++) {
+            int cur = nums[i];
+            for(int j=0;j<31;j++) {
+                bool flag = (1<<j)&cur;
+                if(flag) {
+                    dp[j]++;
+                    if(dp[j]==2) {
+                        count++;
+                    }
+                }
+            }
+
+
+            while(count!=0) {
+                int pre_start = nums[start];
+                for(int j=0;j<31;j++) {
+                    bool flag = (1<<j)&pre_start;
+                    if(flag) {
+                        dp[j]--;
+                        if(dp[j]==1) {
+                            count--;
+                        }
+                    }
+                }
+
+                start++;
+            }
+
+
+            res = max(res, i-start+1);
+        }
+
+        return res;
+    }
+};

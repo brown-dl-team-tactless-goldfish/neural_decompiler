@@ -1,0 +1,32 @@
+class Solution {
+public:
+    bool isTransformable(string s, string t) {
+        //we have to return just true or false
+        //Codeforces D
+       
+        //so we basically first stored the positions of each digit in s and t,digits ranging from 0 till 9
+        vector<deque<int>> v(10);
+        for(int i=0;i<s.size();i++){
+            v[s[i]-'0'].push_back(i);
+        }
+        for(int i=0;i<t.size();i++){
+            int num=t[i]-'0';
+            //first look whether this number is available in the string s
+            if(v[num].empty()){
+                //if this number is not in s itself return false
+                return false;
+            }
+            //now check all the digits which are less than this current num
+            //check if any of such digits appear before this current num's front
+            //if so,then this digit will be smaller than num and hence will block the pathway of num,so return false
+            for(int dig=0;dig<num;dig++){
+                if(v[dig].empty()==false and v[dig].front()<v[num].front()){
+                    return false;
+                }
+            }
+            v[num].pop_front();//after placing num at the target[i] pos,pop it out
+        }
+        return true;
+        
+    }
+};

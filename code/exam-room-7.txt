@@ -1,0 +1,57 @@
+
+class ExamRoom {
+public:
+    ExamRoom(int nInput) {
+        n = nInput;
+        insertRange({ -1,n });   //initially all available seats in one range
+    }
+
+    int seat() {  //split one exsting range into two ranges
+        auto t = *ranges.begin(); 
+        eraseRange(t);
+
+        if (t.first == -1)      return splitRange(-1,0,t.second);  //split the first one
+        else if (t.second == n) return splitRange(t.first,n - 1,n);  //split the last one
+        else                    return splitRange(t.first, (t.first + t.second) / 2, t.second ); 
+    }
+    
+    int splitRange( int a, int b, int c) {
+        insertRange({ a, b });
+        insertRange({ b, c });        
+        return b;
+    }
+
+	void leave(int p) { //find two connected ranges, and combine them into one
+		auto f2 = rangesPos.lower_bound({ p,-1 });
+		auto f1 = f2; f1--;
+		auto t1 = *f1;
+		auto t2 = *f2;
+
+		eraseRange(t1);
+		eraseRange(t2);
+		insertRange({ t1.first,t2.second });
+	}
+
+    void insertRange(const pair<int, int>& r) {
+        ranges.insert(r);
+        rangesPos.insert(r);
+    }
+
+    void eraseRange(const pair<int, int>& r) {
+        ranges.erase(r);
+        rangesPos.erase(r);
+    }
+private:
+    struct cmp  { //sort by length of range
+        bool operator() (const pair<int, int>& a, const pair<int, int>& b)const {
+            int lena = (a.first == -1) ? a.second :((a.second == n)?(n - 1 - a.first):(a.second - a.first) / 2);
+            int lenb = (b.first == -1) ? b.second :((b.second == n)?(n - 1 - b.first):(b.second - b.first) / 2);
+            return (lena != lenb) ? lena > lenb: a.first < b.first;
+        }
+    };
+
+    set<pair<int, int>, cmp> ranges;   //order by length of range
+    set < pair<int, int>>rangesPos;  //order by left position of range
+    static int n;
+};
+int ExamRoom::n=0;

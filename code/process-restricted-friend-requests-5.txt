@@ -1,0 +1,53 @@
+class Solution {
+public:
+    struct dsu
+    {
+        vector<int>parent;
+        dsu(int n)
+        {
+            parent.resize(n);
+            for(int i=0;i<n;i++)
+                parent[i]=i;
+        }
+        int find(int x)
+        {
+            if(parent[x]!=x)
+                parent[x]=find(parent[x]);
+            return parent[x];
+        }
+        void Union(int x,int y)
+        {
+            parent[y]=x;
+        }
+    };
+    vector<bool> friendRequests(int n, vector<vector<int>>& rest,vector<vector<int>>& req) 
+    {
+        dsu graph=dsu(n);
+        vector<vector<bool>>mat(n,vector<bool>(n,false));
+        for(auto v:rest)
+        {
+            mat[v[0]][v[1]]=mat[v[1]][v[0]]=true;
+        }
+        vector<bool>res;
+        for(auto v:req)
+        {
+            int pa=graph.find(v[0]);
+            int pb=graph.find(v[1]);
+            if(!mat[pa][pb])
+            {
+                res.push_back(true);
+                graph.Union(pa,pb);
+                for(int i=0;i<n;i++)
+                {
+                    if(mat[pb][i])
+                    {
+                        mat[pa][i]=mat[i][pa]=true;
+                    }
+                }
+            }
+            else
+                res.push_back(false);
+        }
+        return res;
+    }
+};

@@ -1,0 +1,43 @@
+static bool if_exists(char *array, char c)
+{
+    for (size_t i = 0; i < 26; i++)
+    {
+        if (array[i] == c)
+        {
+            return true;
+        }
+    }
+    return false;
+}
+
+char * decodeMessage(char * key, char * message){
+    char alphabet[27] = "";
+    char *res = calloc(strlen(message) + 1, sizeof(char));
+
+    if (!res)
+    {
+        return NULL;
+    }
+
+    size_t index = 0;
+    for (size_t i = 0; key[i] != '\0' && index != 26; i++)
+    {
+        if (!if_exists(alphabet, key[i]) && key[i] != ' ')
+        {
+            alphabet[index++] = key[i];
+        }
+    }
+
+    index = 0;
+    for (size_t i = 0; message[i] != '\0'; i++)
+    {
+        if (message[i] == ' ')
+        {
+            res[index++] = ' ';
+            continue;
+        }
+        char *ptr = strchr(alphabet, message[i]);
+        res[index++] = 'a' + (int) (ptr - alphabet);
+    }
+    return res;
+}

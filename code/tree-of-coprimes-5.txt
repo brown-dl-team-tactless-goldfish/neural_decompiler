@@ -1,0 +1,82 @@
+class Solution {
+public:
+    vector<int> getCoprimes(vector<int>& nums, vector<vector<int>>& edges) {
+        int n =nums.size();
+        vector<vector<int>> e(n);  // create graph edge list from edges
+        vector<int> parent(n,-2);  // parents list
+        vector<int> ans(n,-1);
+        for(auto edge : edges) 
+        {   // create edge list (to create parents list later)
+            {
+                e[edge[0]].push_back(edge[1]);
+                e[edge[1]].push_back(edge[0]);
+            }
+        }
+        vector<vector<int>> dp(n,vector<int>(51,-2));  // dp for every node and every nod num (0-50) - used as hash
+        queue<int> q1;
+        queue<int> q2;
+        queue<int> &q = q1;
+        queue<int> &next = q2;
+        q.push(0);
+        parent[0] = -1;
+        while(!q.empty()) 
+        {   // graph - use 2 queues to create parents list
+            while(!q.empty()) 
+            {
+                int p = q.front();
+                q.pop();
+                for(auto c : e[p]) 
+                {
+                    if (parent[c] != -2) continue;
+                    parent[c] = p;
+                    next.push(c);
+                }
+            }
+            swap(q,next);
+        }
+
+        for(int i = 0; i<n; i++)
+        {    // populate ans for every  node index using hash to short the search         
+            int v1 = nums[i];
+            int p = parent[i];
+            
+            if (v1 == 1  )
+            {
+                ans[i] =p;
+                dp[i][v1] = p;
+            }
+            while(p != -1 )
+            {
+               int v2 = nums[p];
+                int from_dp = dp[p][v1]; 
+                int gd = __gcd(v1,v2);
+                if (from_dp != -2 || gd == 1 )
+                {   
+                    int x;
+                    if (gd ==1) x = p;
+                     else x = from_dp;
+                    ans[i]=x;
+                    int j = i;
+                    do
+                    { // populate back all the dp for parents entries that was not updated for this num val
+                      dp[j][v1] = x;
+                      j = parent[j];
+                    } while(j != p);
+                    break;
+                }
+                p = parent[p];
+            }
+            if (p == -1)
+            {
+                int j = i;
+                do
+                {
+                     dp[j][v1] = -1;
+                     j = parent[j];
+                } while(j != p);
+
+            }
+        }
+        return(ans);
+    }
+};

@@ -1,0 +1,33 @@
+long long dividePlayers(int* skill, int skillSize){
+    int* hashCnt = (int*)calloc(1001, sizeof(int));
+    int l = 1000, r = 0;
+    for(int i = 0; i < skillSize; i++){
+        hashCnt[skill[i]]++;
+        l = (skill[i]<l)? skill[i]:l;
+        r = (skill[i]>r)? skill[i]:r;
+    }
+    int avg = l + r;
+    long long ans = 0;
+    while(l<=r){
+        while(!hashCnt[l]){ l++; }
+        while(!hashCnt[r]){ r--; }
+        if(l > r) /* escape loop */
+            break;
+        
+        if((avg != l + r) || (l < r && hashCnt[l]!=hashCnt[r])) /* incorrect case */
+            return -1;
+        
+        if(l == r){
+            if(hashCnt[l]&1)
+                return -1;
+            else
+                ans += ((long long)hashCnt[l]/2*l*r);
+            break;
+        }
+        else
+            ans += ((long long)hashCnt[l]*l*r);
+        l++;
+        r--;
+    }
+    return ans;
+}

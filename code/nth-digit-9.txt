@@ -1,0 +1,41 @@
+int findNthDigit(int n) {
+    if (n <= 0) return 0;
+    // nd           t       t * nd | sum
+    // 1 x          9 =          9 | 9
+    // 2 x         90 =        180 | 189
+    // 3 x        900 =       2700 | 2889
+    // 4 x       9000 =      36000 | 38889
+    // 5 x      90000 =     450000 | 488889
+    // 6 x     900000 =    5400000 | ...
+    // 7 x    9000000 =   63000000 | ...
+    // 8 x   90000000 =  720000000 | ...
+    // 9 x  900000000 = 8100000000 | ...
+    // max                         | 2147483648
+    
+    int t = 9;
+    int nd = 1;
+    int count = 0;
+    while ((long long)n > (long long)t * nd) {
+        count += t;
+        // printf("%d - %d = %d (%d)\n", n, t * nd, n - t * nd, count);
+        n -= t * nd;
+        nd ++;
+        t *= 10;
+    }
+    
+    // final calc
+    // printf("n = %d\n", n);
+    count += (n + nd - 1) / nd;
+    n -= 1;
+    n %= nd;
+    
+    // dig into the current digit
+    int temp = nd - n - 1;
+    while (temp > 0) {
+        count /= 10;
+        temp --;
+    }
+    
+    // printf("---------\n");
+    return count % 10;
+}

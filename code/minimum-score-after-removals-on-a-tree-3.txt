@@ -1,0 +1,67 @@
+class Solution {
+public:
+    int in[1001],out[1001];
+    int sub[1001];
+    int time=1;
+    vector<int>dp[1001];
+    void find(int node,vector<int>&nums,int p=-1)
+    {
+        in[node]=time++;
+        sub[node]=nums[node];
+        for(auto &it:dp[node])
+        {
+            if(it!=p)
+            {
+               find(it,nums,node);
+               sub[node]^=sub[it];
+            }
+        }
+        out[node]=time++;
+    }
+    int minimumScore(vector<int>& nums, vector<vector<int>>& edges) 
+    {
+        int n=nums.size();
+        for(auto it:edges)
+        {
+            dp[it[0]].push_back(it[1]);
+            dp[it[1]].push_back(it[0]);
+        }
+        find(0,nums);
+        int total=sub[0];
+        int ans=1e9;
+        for(int i=1;i<n;i++)
+        {
+            for(int j=1;j<n;j++)
+            {
+                if(i==j)
+                {
+                    continue;
+                }
+                int x=i;
+                int y=j;
+                if(in[x]<in[y]&&out[x]>out[y])
+                {
+                    int first=sub[y];
+                    int second=sub[x]^sub[y];
+                    int third=total^sub[x];
+                    ans=min({ans,max({first,second,third})-min({first,second,third})});
+                }
+                else if(in[x]>in[y]&&out[x]<out[y])
+                {
+                     int first=sub[x];
+                     int second=sub[y]^sub[x];
+                     int third=total^sub[y];
+                      ans=min({ans,max({first,second,third})-min({first,second,third})});
+                }
+                else
+                {
+                    int first=sub[x];
+                    int second=sub[y];
+                    int third=total^sub[x]^sub[y];
+                    ans=min({ans,max({first,second,third})-min({first,second,third})});
+                }
+            }
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,67 @@
+struct node { // node of count tree, recording counts of different values
+    int val;
+    int l; // elements less  than val
+    int e; // elements equal to val
+    node* left;
+    node* right;
+    node(int v) { val = v; l = e = 0; left = right = NULL; }
+};
+
+class Solution {
+    vector<int> a;
+    node* r;
+public:
+    node* build(int i, int j) { // build balanced count tree (also a BST), with initial count == 0
+        if(i >= j) return NULL;
+        int m = i + ( j - i ) / 2;
+        node* res = new node(a[m]);
+        res->left = build(i, m);
+        res->right = build(m + 1, j);
+        return res;
+    }
+    
+    pair<int, int> insert(int x) {
+        auto p = r;
+        int l = 0;
+        while(true) { // update count tree while inserting elements from vector ra
+            if(p -> val < x) {
+                l += p -> l + p -> e;
+                p = p -> right;
+            }else if(p -> val == x) {
+                p -> e ++;
+                l += p -> l;
+                return {l, l + p -> e};
+            }else {
+                p -> l ++;
+                p = p -> left;
+            }
+        }
+        return {0, 0};
+    }
+    
+    int numTeams(vector<int>& ra) {
+        map<int, int> m;
+        for(int i : ra) m[i]++;
+        
+        int pre = 0;
+        for(auto& t : m) {
+            a.push_back(t.first);
+            pre = t.second += pre;
+        }
+        
+        r = build(0, a.size());
+        
+        int res = 0;
+        for(int i = 0; i < ra.size(); i++) {
+            auto c = insert(ra[i]);
+            int L = c.first;
+            int R = (m.rbegin()->second - m[ra[i]] - (i + 1 - c.second));
+            res += L * R;
+            L = i + 1 - c.second;
+            R = (ra[i] == m.begin()->first ? 0 : prev(m.find(ra[i]))->second) - c.first;
+            res += L * R;
+        }
+        
+        return res;
+    }
+};

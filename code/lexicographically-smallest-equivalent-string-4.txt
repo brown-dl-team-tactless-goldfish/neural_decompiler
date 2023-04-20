@@ -1,0 +1,29 @@
+void update(char *ans, char old, char new){
+    for(int i=0;i<26;i++){
+        if(ans[i] == old){
+            ans[i] = new;
+        }
+    }
+}
+
+char * smallestEquivalentString(char * s1, char * s2, char * baseStr){
+    int len_s, len_b, min, max;
+    char *ans = calloc(26,sizeof(char));
+    for(int i=0;i<26;i++){
+        ans[i] = 'a' + i;
+    }
+    len_s = strlen(s1);
+    len_b = strlen(baseStr);
+    for(int i=0;i<len_s;i++){
+        if(ans[s1[i]-'a'] >= ans[s2[i]-'a']){
+            update(ans,ans[s1[i]-'a'],ans[s2[i]-'a']);
+        }
+        else{
+            update(ans,ans[s2[i]-'a'],ans[s1[i]-'a']);
+        }
+    }
+    for(int i=0;i<len_b;i++){
+        baseStr[i] = ans[baseStr[i]-'a'];
+    }
+    return baseStr;
+}

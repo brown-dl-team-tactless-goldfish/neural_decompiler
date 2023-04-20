@@ -1,0 +1,58 @@
+/** Initialize your data structure here. */
+Twitter() {
+    
+}
+
+int time = 0;
+
+struct comp{
+    bool operator()(const pair<int, int> &a, const pair<int, int> &b){
+        return a.first < b.first;
+    }
+};
+
+map<int, set<int> > followers;
+map<int, vector<pair<int, int> > > tweets;
+
+/** Compose a new tweet. */
+void postTweet(int userId, int tweetId) {
+    tweets[userId].push_back(make_pair(time++, tweetId));
+}
+
+/** Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent. */
+vector<int> getNewsFeed(int userId) {
+    vector<int> newsFeed; 
+    priority_queue<pair<int, int>, vector<pair<int, int> >,  comp > rque ;
+    for(int j = 0; j < tweets[userId ].size(); j++){
+        rque.push(tweets[userId][j]); 
+    }
+            
+    for(auto i: followers[userId]){
+        // you can't follow your self.
+        if (i == userId)
+            continue; 
+        for(int j = 0; j < tweets[i ].size(); j++){ 
+            rque.push(tweets[i ][j]);
+        } 
+    } 
+    for(int i = 0; i < 10 && !rque.empty(); i++){
+        auto p = rque.top();
+        newsFeed.push_back(p.second);
+        rque.pop();
+    }
+     
+    return newsFeed;
+}
+
+/** Follower follows a followee. If the operation is invalid, it should be a no-op. */
+void follow(int followerId, int followeeId) {
+    if(followers[followerId].count(followeeId) == 0)
+       followers[followerId].insert(followeeId);
+    
+}
+
+/** Follower unfollows a followee. If the operation is invalid, it should be a no-op. */
+void unfollow(int followerId, int followeeId) {
+    if(followers[followerId].count(followeeId) == 1)
+       followers[followerId].erase(followeeId); 
+}

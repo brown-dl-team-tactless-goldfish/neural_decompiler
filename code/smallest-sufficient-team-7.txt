@@ -1,0 +1,29 @@
+class Solution {
+public:
+    vector<int> smallestSufficientTeam(vector<string>& req, vector<vector<string>>& pep) {
+        map<string, int> toidx;
+        int idx = 0, sk = 0;
+        for (auto& r : req) {
+             sk |= (1 << idx);
+             toidx[r] = idx++;
+        }
+        vector<int> skill(sk+1, 1000000);
+        vector<vector<int>> dp(sk+1);
+        skill[0] = 0;
+        for (int i = pep.size()-1; i >= 0; i--) {
+            int key = 0;
+            for (auto& s : pep[i])
+                if (toidx.count(s))
+                    key |= (1 << toidx[s]);
+            for (int k = 0; k <= sk; k++) {
+                int dest = k | key;
+                if (skill[dest] > skill[k]+1) {
+                    skill[dest] = skill[k]+1;
+                    dp[dest] = dp[k];
+                    dp[dest].push_back(i);
+                }
+            }
+        }
+        return dp[sk];
+    }
+};

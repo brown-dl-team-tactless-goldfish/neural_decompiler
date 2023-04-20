@@ -1,0 +1,67 @@
+class Solution {
+public:
+    int bfs(int src,vector<int>adj[],vector<int>&depth){
+        queue<pair<int,int>>q;
+        q.push({src,1});
+        depth[src]=1;
+        int ans=1;
+        while(!q.empty()){
+            pair<int,int> top=q.front();
+            q.pop();
+            for(int i=0;i<adj[top.first].size();i++){
+                if(depth[adj[top.first][i]]==-1){
+                    depth[adj[top.first][i]]=top.second+1;
+                    ans=max(ans,top.second+1);
+                    q.push({adj[top.first][i],top.second+1});
+                }
+                else{
+                    if(abs(depth[top.first]-depth[adj[top.first][i]])!=1)
+                        return -1;
+                }
+            }
+        }
+        return ans;
+    }
+    void dfs(vector<int>adj[],vector<bool>&visited,vector<int>&temp,int src){
+        temp.push_back(src);
+        for(int i=0;i<adj[src].size();i++){
+            if(visited[adj[src][i]])
+                continue;
+            visited[adj[src][i]]=true;
+            dfs(adj,visited,temp,adj[src][i]);
+        }
+    }
+    int magnificentSets(int n, vector<vector<int>>& edges) {
+        vector<int> adj[n+1];
+        for(int i=0;i<edges.size();i++){
+            adj[edges[i][0]].push_back(edges[i][1]);
+            adj[edges[i][1]].push_back(edges[i][0]);
+        }
+        vector<vector<int>> disc;
+        vector<bool> visited(n+1,false);
+        for(int i=1;i<=n;i++){
+            if(visited[i])
+                continue;
+            visited[i]=true;
+            vector<int> temp;
+            dfs(adj,visited,temp,i);
+            disc.push_back(temp);
+        }
+        int ans=0;
+        vector<int> answer(disc.size(),-1);
+        for(int j=0;j<disc.size();j++){
+            for(int i=0;i<disc[j].size();i++){
+                
+                vector<int> depth(n+1,-1);
+                answer[j]=max(answer[j],bfs(disc[j][i],adj,depth));
+            }
+        }
+        for(int j=0;j<disc.size();j++){
+            if(answer[j]==-1)
+                return -1;
+            ans+=answer[j];
+        }
+        
+        return ans;
+    }
+};

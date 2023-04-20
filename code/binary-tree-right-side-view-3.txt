@@ -1,0 +1,27 @@
+void traverse(struct TreeNode *root, int height, int *array) {
+    if (root == NULL) return;
+    // Turn right to make sure the rightest always touched first
+    traverse(root->right, height + 1, array);
+    if (array[height] == -101) {
+        array[height] = root->val;
+    }
+    traverse(root->left, height + 1, array);
+}
+
+
+int* rightSideView(struct TreeNode* root, int* returnSize){
+    // Initialize the array
+    int *array = calloc(100, sizeof(int));
+    for (int i = 0; i < 100; i++) {
+        array[i] = -101;
+    }
+    
+    traverse(root, 0, array);
+    int c = 0;
+    for (int i = 0; i < 100; i++) {
+        if (array[i] == -101) break;
+        c++;
+    }
+    *returnSize = c;
+    return array;
+}

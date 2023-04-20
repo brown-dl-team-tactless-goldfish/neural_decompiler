@@ -1,0 +1,37 @@
+class Solution {
+public:
+    bool canBeValid(string s, string locked) {
+        if(s.length()%2!=0)
+          return false;
+
+         for(int i=0;i<s.size();i++)
+         {
+             if(locked[i]=='0')
+             {
+                 s[i]='*';
+             }
+         }
+
+        int min_open = 0, max_open = 0; // min and max possible count of open parentheses
+        for (char c : s) {
+            if (c == '(') {
+                min_open++;
+                max_open++;
+            } else if (c == ')') {
+                min_open--;
+                max_open--;
+            } else { // c == '*'
+                min_open--;
+                max_open++;
+            }
+            // check if the string becomes invalid at any point
+            if (max_open < 0) {
+                return false;
+            }
+            min_open = max(min_open, 0); // make sure min_open is non-negative
+        }
+        return min_open == 0; 
+
+
+    }
+};

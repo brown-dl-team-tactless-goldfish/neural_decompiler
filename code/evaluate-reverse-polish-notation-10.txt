@@ -1,0 +1,29 @@
+inline bool getNum(char * s, int * result){
+    if((s[0] == '-' && s[1] >= '0' && s[1] <= '9')
+    || (s[0] >= '0' && s[0] <= '9')){
+        *result = atoi(s);
+        return true;
+    }
+    return false;
+}
+
+int evalRPN(char ** tokens, int tokensSize){
+    int stacks[tokensSize], iStack=0;
+    long eval;
+
+    for(int i=0; i<tokensSize; i++){
+        if(getNum(tokens[i], &eval)){
+            stacks[iStack++] = eval;
+        }else{
+            switch(tokens[i][0]){
+                case '+': eval = (long)stacks[iStack-2] + (long)stacks[iStack-1]; break;
+                case '-': eval = (long)stacks[iStack-2] - (long)stacks[iStack-1]; break;
+                case '/': eval = (long)stacks[iStack-2] / (long)stacks[iStack-1]; break;
+                default:  eval = (long)stacks[iStack-2] * (long)stacks[iStack-1]; break;
+            }
+            stacks[--iStack-1] = eval;
+        }
+    }
+
+    return stacks[0];
+}

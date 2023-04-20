@@ -1,0 +1,71 @@
+int process(int* nums1, int n1, int* nums2, int n2){
+    int** hash1 = malloc(n1 * sizeof(int*));
+
+    for(int i = 0; i < n1; i++){
+        hash1[i] = calloc(2 , sizeof(int));
+    }
+
+    int** hash2 = malloc(n2 * sizeof(int*));
+        
+    int ans = 0;
+    for(int i = 0; i < n1; i++){
+        int a = nums1[i];
+        int cn = 0;
+        while(hash1[a % n1][0] != 0){
+            if(hash1[a % n1][0] == nums1[i]){
+                cn = hash1[a % n1][1];
+                goto next;
+            }
+            a++;
+        } 
+        
+        for(int j = 0; j < n2; j++){
+            hash2[j] = calloc(2 , sizeof(int));
+        }
+        long long k = (long long)nums1[i] * nums1[i];
+        for(int j = 0; j < n2; j++){
+            if(k % nums2[j] == 0){
+                int remain= k/nums2[j];
+                int b = k/nums2[j];
+                //find remain in hash2 table
+                while( hash2[b % n2][0] != 0){
+                    if(hash2[b % n2][0] == remain){
+                        cn += hash2[b % n2][1] ;
+                        break;
+                    }
+                    b++;
+                }
+                //inset nums2[j] into hash2 table
+                b = nums2[j];
+                while(1){
+                    if(hash2[b % n2][1] == 0){
+                        hash2[b % n2][0] = nums2[j];
+                        hash2[b % n2][1] = 1 ;
+                        break;
+                    }                    
+                    if(hash2[b % n2][0] == nums2[j]){
+                        hash2[b % n2][1]++;
+                        break;
+                    }
+                    b++;
+                }
+            }
+        }
+
+        //insert nums1 into hash1 table
+        hash1[a % n1][0] = nums1[i];
+        hash1[a % n1][1] = cn;
+        
+        next:
+        ans += cn;
+
+    }
+    
+    return ans;
+}
+
+int numTriplets(int* nums1, int nums1Size, int* nums2, int nums2Size){
+
+
+    return process(nums1, nums1Size, nums2,nums2Size) + process(nums2, nums2Size, nums1, nums1Size); 
+}

@@ -1,0 +1,43 @@
+/**
+ * @author      : archit
+ * @GitHub      : archit-1997
+ * @Email       : architsingh456@gmail.com
+ * @file        : d.cpp
+ * @created     : Sunday Aug 22, 2021 09:13:42 IST
+ */
+
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution {
+public:
+    vector<int> recoverArray(int n, vector<int>& sums) {
+        multiset<int> ms;
+        vector<int> ans;
+        long long limit=(1<<n);
+        for (long long i = 0; i < limit; i++)
+        {
+            int x=sums[i];
+            if (x)
+                ms.insert(x);
+        }
+        for (long long i = 0; i < n; i++)
+        {
+            auto x = *ms.begin();
+            for (long long j = 0; j < limit; j++)
+            {
+                int cnt = 0;
+                for (int l = 0; l < i; ++l)
+                {
+                    if ((j >> l) % 2)
+                    {
+                        cnt += ans[l];
+                    }
+                }
+                ms.erase(ms.find(x + cnt));
+            }
+            ans.push_back(x);
+        }
+        return ans;
+    }
+};

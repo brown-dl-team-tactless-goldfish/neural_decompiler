@@ -1,0 +1,28 @@
+class Solution {
+    bool good2(long long x, long long i, long long t) {
+        return i * x * x < t;
+    }
+    bool good1(long long x, vector<int>& ranks, int cars) {
+        long long cnt = 0;
+        for(int i : ranks) {
+            long long s = 0, e = cars, a = 0;
+            while(s <= e) {
+                long long m = (s + e) / 2;
+                if(good2(m, i, x)) s = m + 1, a = m;
+                else e = m - 1;
+            }
+            cnt += a;
+        }
+        return cnt >= cars;
+    }
+public:
+    long long repairCars(vector<int>& ranks, int cars) {
+        long long s = 0, e = 1e18, ans;
+        while(s <= e) {
+            long long m = (s + e) / 2;
+            if(good1(m, ranks, cars)) e = m - 1, ans = m;
+            else s = m + 1;
+        }
+        return ans - 1;
+    }
+};

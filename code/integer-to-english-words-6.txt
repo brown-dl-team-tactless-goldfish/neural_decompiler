@@ -1,0 +1,93 @@
+char* numberToWords(int num) {
+    
+    int num_buf[4][3] = {0}; // 3 digits as a group
+    int i, j;
+    int flag, space; 
+    // 'space' records if you need a space
+    // 'flag' records if '100,000,000' read as "One Hundred Million Thousand" or in the right way, without "Thousand"
+
+    char *str = NULL;
+    
+    char digits[][10] = {"","One","Two","Three","Four","Five","Six","Seven","Eight","Nine"};
+    char teens[][10] = {"Ten","Eleven","Twelve","Thirteen","Fourteen","Fifteen","Sixteen","Seventeen","Eighteen","Nineteen"};
+    char tens[][10] = {"","","Twenty","Thirty","Forty","Fifty","Sixty","Seventy","Eighty","Ninety"};
+    char larges[4][10] = {"","Thousand","Million","Billion"};
+    
+    if(num == 0){
+        str = (char*)malloc(5*sizeof(char));
+        strcpy(str, "Zero");
+        return str;
+    }
+    
+    str = (char*)malloc(160*sizeof(char));
+    strcpy(str,"");
+    
+    for(i=0; num!=0; i++){
+        for(j=0; j<3; j++){
+            num_buf[i][j] = num % 10;
+            num /= 10;
+        }
+    }
+
+    i--;
+    space = 0;
+    for(; i>=0; i--){
+        
+        flag = num_buf[i][2] || num_buf[i][1] || num_buf[i][0];
+        
+        if(num_buf[i][2]){
+            if(space)
+                strcat(str, " ");
+            strcat(str, digits[num_buf[i][2]]);
+            strcat(str, " ");
+            strcat(str, "Hundred");
+        }
+
+        space = space || num_buf[i][2];
+        
+        if(num_buf[i][1]){
+            if(space)
+                strcat(str, " ");
+            
+            if( num_buf[i][1] != 1 ){
+                strcat(str, tens[num_buf[i][1]]);
+                if( num_buf[i][0] ){
+                    strcat(str, " ");
+                    strcat(str, digits[num_buf[i][0]]);
+                }
+            }else{
+                strcat(str, teens[num_buf[i][0]]);
+            }
+            
+            //the following is common
+            if(flag){
+                if(i>0)
+                    strcat(str, " ");
+                strcat(str, larges[i]);
+            }
+            space = space || num_buf[i][1];
+            continue; // next round
+        }
+        
+        space = space || num_buf[i][1];
+        
+        if(num_buf[i][0]){
+            if(space)
+                strcat(str, " ");
+            strcat(str, digits[num_buf[i][0]]);
+        }
+
+        space = space || num_buf[i][0];
+        
+        
+        if(flag){
+            if(i>0)
+                strcat(str, " ");
+            strcat(str, larges[i]);
+        }
+        
+    } //for end
+    
+    return str;
+    
+}

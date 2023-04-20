@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int dfs(vector<vector<int>> &nums,int in,int p){
+        int re = 0;
+        for(int i = 0; i<nums[in].size();++i){
+            int j = nums[in][i];
+            if(j!=p){
+                re+=dfs(nums,j,in);
+            }
+        }
+        return re+1;
+    }
+    int reachableNodes(int n, vector<vector<int>>& arr, vector<int>& re) {
+        unordered_set<int> st;
+        vector<vector<int>> nums(n+1);
+        for(int i = 0; i<re.size();++i) st.insert(re[i]);
+        for(int i = 0; i<arr.size();++i){
+            int a = arr[i][0], b = arr[i][1];
+            if(st.find(a)==st.end() && st.find(b)==st.end()) {  // avoid connections with restricted node
+                nums[a].push_back(b); nums[b].push_back(a);
+            }
+        }
+        return dfs(nums,0,-1);
+    }
+};

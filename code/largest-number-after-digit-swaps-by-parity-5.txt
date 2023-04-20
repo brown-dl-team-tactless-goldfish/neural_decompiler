@@ -1,0 +1,43 @@
+int largestInteger(int num){
+    int tmp=num;
+    int i,a=0,b=1,a_place=0,b_place=0;
+    int array[10];
+    int ans=0;
+    for(i=0;tmp>0;i++)
+    {
+        //detect the final digit is odd or even.
+		if(tmp%2==0){
+           //if the digit is bigger than before, mark the digit.
+		   if(tmp%10>=a){
+                a=tmp%10;
+                a_place=i;
+                array[i]=tmp%10; 
+            }
+			//if the digit is a smaller one, swap with the biggest digit which is marked before. 
+            else{
+                array[a_place]=tmp%10;
+                a_place=i;
+                array[i]=a;
+            }
+        }  
+        else{
+            if(tmp%10>=b){
+                b=tmp%10;
+                b_place=i;
+                array[i]=tmp%10;
+            }
+            else{
+                array[b_place]=tmp%10;
+                b_place=i;
+                array[i]=b;
+            }
+        }  
+        tmp=tmp/10;
+    }
+    for(i;i>0;i--)
+    {
+        ans=ans*10+array[i-1];
+    }
+	//each round will move the biggest odd digit and even digit to the front, stop till the input equal output.
+    return ans%num==0 ? ans : largestInteger(ans);
+}

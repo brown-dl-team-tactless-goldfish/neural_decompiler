@@ -1,0 +1,28 @@
+class Solution {
+    long long dp[1005][1005] ;//dp[i][j]: how many way form target[0-i] using words digit[0-k]
+    int M = 1e9 + 7 ;
+public:
+    int numWays(vector<string>& words, string target) {
+        int n = target.size() ;
+        int m = words[0].size() ;
+        target = "#" + target ;
+        vector<vector<long long>>count(m+1, vector<long long>(26)) ;
+        for(int i = 0; i < words.size(); i++){
+            for(int j = 0; j < m; j++){
+                count[j+1][words[i][j]-'a']++ ;
+            }
+        }        
+
+        for(int i = 0; i <= m; i++)
+            dp[0][i] = 1 ;
+
+        for(int i = 1; i <= n; i++){
+            for(int j = 1; j <= m; j++){
+                dp[i][j] = dp[i][j-1] ;    
+                dp[i][j] += count[j][target[i]-'a'] * dp[i-1][j-1] % M ; 
+                dp[i][j] %= M ;
+            }
+        }                
+        return dp[n][m] ;
+    }
+};

@@ -1,0 +1,46 @@
+public class My : IComparer<(int, int)>
+        {
+            public int Compare((int, int)a, (int, int)b)
+            {
+                if (a.Item1 == b.Item1)
+                {
+                    return a.Item2 - b.Item2;
+                };
+
+                return a.Item1 - b.Item1;
+            }
+        }
+    
+    public int[] AssignTasks(int[] servers, int[] tasks) {
+        var ser_avail = new SortedSet<(int W, int I)>(new My());
+        for (var j = 0; j < servers.Length; j++)
+        {
+            ser_avail.Add((servers[j], j));
+        }
+        
+        var ser_wait = new SortedSet<(int T, int N)>(new My());
+        var ans = new int[tasks.Length];
+        int time = 0, ind = 0;
+        while (ind < tasks.Length)
+        {
+            while (ser_wait.Count != 0 && ser_wait.Min.T <= time)
+            {
+                var avail_s = ser_wait.Min;
+                ser_wait.Remove(avail_s);
+                ser_avail.Add((servers[avail_s.N], avail_s.N));
+            }
+                   
+            while (ser_avail.Count != 0 && ind <= time && ind < tasks.Length)
+            {
+                var avail_s = ser_avail.Min; 
+                ser_avail.Remove(avail_s);
+                ans[ind] = avail_s.I;
+                ser_wait.Add((time + tasks[ind], avail_s.I));
+                ind++;
+            }
+
+            time++;
+        }
+        
+        return ans;
+    }

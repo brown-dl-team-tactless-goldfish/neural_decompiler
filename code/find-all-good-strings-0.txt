@@ -1,0 +1,76 @@
+static const int64_t mod = 1000000007;
+
+/**
+ * Calculates number of good strings alphabetically less or equal to s
+ */
+int countGoodStrings(const char *s, const int n, const char* evil, const int el, const int64_t* dp) {
+    int64_t sum = 0;
+
+    int i, k;
+    for (i = 0; i <= n - el; ++i) {
+        for (k = 0; k < el && s[i + k] == evil[k]; ++k);
+        if (k == el) {
+            for (int j = i + k - 1; j >= i; --j) {
+                sum += (s[j] - 'a') * dp[n - j - 1];
+                sum %= mod;
+            }
+            return sum - 1;
+        }
+        
+        if (s[i + k] < evil[k]) {
+            sum += (s[i] - 'a') * dp[n - i - 1];
+        }
+        else {
+            sum += dp[n - i] - ('z' + 1 - s[i]) * dp[n - i - 1];
+        }
+        sum %= mod;
+    }
+
+    for (; i < n; ++i) {
+        sum += (s[i] - 'a') * dp[n - i - 1];
+        sum %= mod;
+    }
+
+    return sum;
+}
+
+int findGoodStrings(int n, char * s1, char * s2, char * evil){
+    int el = strlen(evil);
+    int64_t *dp = (int64_t*)alloca((n + 1) * sizeof(int64_t));
+    memset(dp, 0, el * sizeof(int64_t));
+
+    // KMP algorithm
+    int k = 0, i = 1;
+    while (i < el) {
+        if (evil[k] == evil[i]) dp[i++] = ++k;
+        else if (k > 0) k = dp[k - 1];
+        else ++i;
+    }
+
+    k = el - dp[el - 1];
+
+    // dp[i]: total number of good strings of lenght i ('a' to 'z')
+    // compute dp
+    dp[0] = 1LL;
+    for (i = 1; i < el; ++i) {
+        dp[i] = (dp[i - 1] * 26LL) % mod;
+    }
+
+    for (; i <= n; ++i) {
+        if (k == el) {
+            dp[i] = (dp[i - 1] * 26LL) % mod;
+            dp[i] -= dp[i - el];
+        }
+        else {
+            dp[i] = ((dp[i - 1] + dp[i - k - 1]) * 26LL) % mod;
+            dp[i] -= dp[i - el] + dp[i - k];
+        }
+    }
+
+    int res = countGoodStrings(s2, n, evil, el, dp) -
+              countGoodStrings(s1, n, evil, el, dp);
+    if (!strstr(s1, evil)) res++;
+    if (res < 0) res += mod;
+
+    return res % mod;
+}

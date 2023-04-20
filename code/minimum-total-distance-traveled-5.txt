@@ -1,0 +1,49 @@
+typedef long long int ll;
+const ll INF = 1e15;
+
+class Solution {
+     vector<vector<int>> factories;
+    vector<int> robots;
+    vector<vector<ll>> dp;
+    
+    ll MinimumTotalDistance(int f_ind,int r_ind)
+    {
+        int r = robots.size();
+        int f = factories.size();
+        
+        if(r_ind == r) return 0;
+        if(f_ind == f) return INF;
+        
+        ll &ans = dp[f_ind][r_ind];
+        if(ans != -1) return ans;
+        ans = INF;
+        
+        int f_position = factories[f_ind][0];
+        int f_capacity = factories[f_ind][1];
+        
+        for(int repaired = 0;repaired <= f_capacity;repaired++){
+            ll repair_cost = 0;
+            int j;
+            for(j = r_ind;j<r && j<r_ind+repaired;j++){
+                repair_cost += abs(robots[j]-f_position);
+            }
+            
+            ans = min(ans,repair_cost + MinimumTotalDistance(f_ind+1,j));
+        }
+        return ans;
+            
+    }
+public:
+    long long minimumTotalDistance(vector<int>& robot, vector<vector<int>>& factory) {
+        sort(robot.begin(),robot.end());
+        sort(factory.begin(),factory.end());
+        
+        robots = robot;
+        factories = factory;
+        
+        dp.clear();
+        dp.resize(factory.size(),vector<ll>(robots.size(),-1));
+        
+        return MinimumTotalDistance(0,0);
+    }
+};

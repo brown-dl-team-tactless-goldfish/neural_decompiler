@@ -1,0 +1,83 @@
+//declaring stack structure
+struct Cstack
+{
+   struct Node* data;
+   struct Cstack *ptr; //pointer type of stack
+};
+
+typedef struct Cstack Stack;
+typedef Stack *stackPtr;
+
+struct Node* stackTop(stackPtr top) {
+	struct Node* val = top->data;
+	return val;
+}
+
+int stackSize(stackPtr showPtr) {
+	int count = 0;
+	while(showPtr != NULL)
+	{
+		count++;
+		showPtr = showPtr -> ptr;
+	}
+	return count;
+}
+
+//function for pushing value into the top of stack
+void stackPush( stackPtr *top, struct Node* x )
+{
+    stackPtr nodePtr;
+
+    //allocating memory
+    nodePtr = (stackPtr)malloc(sizeof(Stack));
+
+    //pushing value at the top of stack only if there is space
+    if(nodePtr != NULL)
+    {
+       nodePtr -> data = x;
+       nodePtr -> ptr = *top;
+       *top = nodePtr;
+    }
+    else
+       printf("\nERROR !!! (Not enough space)");
+}
+
+//popping value out of the stack
+struct Node* stackPop(stackPtr *top)
+{
+   struct Node* pValue; //variable for value at the top
+   stackPtr tempPtr; //temporary pointer
+
+   tempPtr = *top;
+   pValue = (*top) -> data;
+   *top = (*top) -> ptr;
+   free(tempPtr); //free temporary pointer value
+   return pValue;
+}
+int checkEmpty(stackPtr top)
+{
+   return (top == NULL);
+}
+int* preorder(struct Node* root, int* returnSize) {
+    if(root == NULL){
+        *returnSize = 0;
+        return NULL;
+    } 
+    int* arr = (int*) malloc(10000 * sizeof(int));
+    int idx = 0;
+    stackPtr stack = NULL;
+    stackPush(&stack,root);
+    
+    while(!checkEmpty(stack)){
+        struct Node* cur = stackTop(stack);
+        stackPop(&stack);
+        arr[idx++] = cur->val;
+        for (int i = cur->numChildren - 1; i >= 0; i--) {
+            if (cur->children[i] != NULL) {
+                stackPush(&stack, cur->children[i]);
+            }
+        }
+    }
+    *returnSize = idx;
+    return arr;
+}

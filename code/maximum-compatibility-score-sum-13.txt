@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int m = INT_MIN;
+    
+    void perm(vector<vector<int>>& students, vector<vector<int>>& mentors, int pos) {
+        if(pos >= students.size()) {
+            int x = 0;
+            for(int i = 0; i < students.size(); i++) {
+                for(int j = 0; j < students[i].size(); j++) {
+                    x += (students[i][j] == mentors[i][j]);
+                }
+            }
+            m = max(m, x);
+        }
+        
+        for(int i = pos; i < students.size(); i++) {
+            swap(students[pos], students[i]);
+            perm(students, mentors, pos+1);
+            swap(students[pos], students[i]);
+        }
+        
+    }
+    
+    int maxCompatibilitySum(vector<vector<int>>& students, vector<vector<int>>& mentors) {
+        perm(students, mentors, 0);
+        return m;
+    }
+};

@@ -1,0 +1,99 @@
+public class Solution {
+    public bool IsPossible(int[] target) {
+        var heap = new MaxHeap();
+        for (var i = 0; i < target.Length; i++) {
+            if (target[i] < 1) {
+                return false;
+            }
+            
+            heap.Add(target[i]);
+        }
+                
+        while (heap.Ones() < target.Length) {
+            var sum = heap.Sum();
+            var max = heap.Get();
+            if ((ulong)(2 * max) < sum) {
+                return false;
+            }
+            
+            heap.Add((int)(2 * (ulong) max - sum));
+        }
+        
+        return true;
+    }
+    
+    class MaxHeap {
+        private int count = 0;
+        private int[] a = new int[50001];
+        private int ones = 0;
+        private ulong sum = 0;
+    
+        public override string ToString() {
+            return string.Join(",", a.Take(count));
+        }
+        
+        public int Get() {
+            var result = a[0];
+            a[0] = a[--count];
+            HeapifyDown(0);
+            sum -= (ulong) result;
+            return result;
+        }
+        
+        public void Add(int x) {
+            ones += x == 1 ? 1 : 0;
+            a[count++] = x;
+            HeapifyUp(count - 1);
+            sum += (ulong) x;
+        }
+        
+        public int Ones() {
+            return ones;
+        }
+        
+        public ulong Sum() {
+            return sum;
+        }
+        
+        private void HeapifyDown(int x) {
+            var left = Left(x) < count ? a[Left(x)] : int.MinValue;
+            var right = Right(x) < count ? a[Right(x)] : int.MinValue;
+            if (left == int.MinValue && right == int.MinValue) {
+                return;
+            }
+            
+            var target = left > right ? Left(x) : Right(x);
+            if (a[x] > a[target]) {
+                return;
+            }
+            
+            var c = a[x];
+            a[x] = a[target];
+            a[target] = c;
+            HeapifyDown(target);
+        }
+        
+        private void HeapifyUp(int x) {
+            if (x == 0 || a[x] < a[Parent(x)]) {
+                return;
+            }
+            
+            var c = a[x];
+            a[x] = a[Parent(x)];
+            a[Parent(x)] = c;
+            HeapifyUp(Parent(x));
+        }
+        
+        private int Parent(int x) {
+            return (x - 1) / 2;
+        }
+        
+        private int Left(int x) {
+            return x * 2 + 1;
+        }
+        
+        private int Right(int x) {
+            return x * 2 + 2;
+        }
+    }
+}

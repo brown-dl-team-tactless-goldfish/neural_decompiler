@@ -1,0 +1,26 @@
+bool dfs(char* visit, int state, long long sum, int maxChoosableInteger, int desiredTotal){
+    if(visit[state] == 2) return true;
+    if(visit[state] == 1) return false;
+    for(int i = 1; i <= maxChoosableInteger; i++){
+        if((state >> i )& 1 )
+            continue;
+        if((sum + i) >= desiredTotal){
+            visit[state] = 2;
+            return true;
+        }
+        if(dfs(visit, state + (1<<i) , sum+i, maxChoosableInteger, desiredTotal) == false){
+            visit[state] = 2;
+            return true;
+        }
+    }
+    visit[state] = 1;
+    return false;
+}
+bool canIWin(int maxChoosableInteger, int desiredTotal){
+    if (maxChoosableInteger >= desiredTotal) return true;
+    if (maxChoosableInteger * (maxChoosableInteger + 1) / 2 < desiredTotal) return false;
+    char* visit = calloc(pow(2, 21) , sizeof(char));
+    int  state = 0;
+    long long sum = 0;
+    return dfs(visit, state, sum, maxChoosableInteger, desiredTotal);
+}

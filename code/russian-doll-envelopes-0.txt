@@ -1,0 +1,41 @@
+
+int binarySearch(int *dp, int start, int end, int target)
+{
+    while(start < end)
+    {
+        int mid = start + (end - start) / 2;
+        if(dp[mid] == target)
+            return mid;
+        else if(dp[mid] > target)
+            end = mid;
+        else
+            start = mid + 1; 
+    }
+    return start;
+}
+
+int cmp(const void *a, const void *b)
+{
+    if((*(int **)a)[0] == (*(int **)b)[0])
+        return (*(int **)b)[1] - (*(int **)a)[1];
+    else return (*(int **)a)[0] - (*(int **)b)[0];
+}
+
+int maxEnvelopes(int** envelopes, int envelopesSize, int* envelopesColSize){
+    qsort(envelopes, envelopesSize, sizeof(int **), cmp);
+    int dp[envelopesSize], idx = 1;
+    dp[0] = envelopes[0][1];
+    for(int i = 1; i < envelopesSize; i++)
+        if(envelopes[i][1] > dp[idx - 1])
+        {
+            dp[idx++] = envelopes[i][1];
+        }
+        else
+        {
+            int index = binarySearch(dp, 0, idx, envelopes[i][1]);
+            dp[index] = envelopes[i][1];
+            if(index == idx)
+                idx++;
+        }
+    return idx;
+}

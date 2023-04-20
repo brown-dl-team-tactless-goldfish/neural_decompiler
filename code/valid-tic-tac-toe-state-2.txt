@@ -1,0 +1,42 @@
+int count (char **board, char c){
+    int counter = 0;
+    for (int i = 0; i < 3; i++){
+        for (int j = 0; j < 3; j++){
+            if (board[i][j] == c) 
+                counter++;
+        }
+    }
+    return counter;
+}
+
+bool isWinner (char **board, char c){
+    for (int i = 0; i < 3; i++){
+        if (board[i][0] == c && board[i][1] == c && board[i][2] == c)
+            return true;
+        
+        if (board[0][i] == c && board[1][i] == c && board[2][i] == c)
+            return true;
+    }
+    if (board[0][0] == c && board[1][1] == c && board[2][2] == c)
+        return true;
+
+    if (board[2][0] == c && board[1][1] == c && board[0][2] == c)
+        return true;
+    
+    return false;
+}
+
+bool validTicTacToe(char **board, int boardSize){
+    int countOfX = count(board, 'X');
+    int countOfO = count(board, 'O');
+    if (countOfX != countOfO && countOfX != countOfO + 1)
+        return false;
+    
+    if (isWinner(board, 'X') && countOfX != countOfO + 1)
+        return false;
+    
+    if (isWinner(board, 'O') && countOfX != countOfO)
+        return false;
+    
+    return true;
+}

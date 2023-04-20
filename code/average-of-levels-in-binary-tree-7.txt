@@ -1,0 +1,54 @@
+void SumLevlels(struct TreeNode* root , int level , double *sum_arr , int *level_count)
+{
+    if(NULL == root)
+    {
+        return;
+    }
+    
+    sum_arr[level]  += root->val;
+    ++level_count[level];
+    
+    SumLevlels(root->left , level +1 , sum_arr , level_count);
+    SumLevlels(root->right , level +1 , sum_arr , level_count);
+}
+
+int TreeDepth(struct TreeNode* root)
+{
+    if(NULL == root)
+    {
+        return 0;    
+    }
+    
+    int left = TreeDepth(root->left);
+    int right = TreeDepth(root->right);
+    
+    return ((left > right) ? left : right) + 1;
+}
+
+double* averageOfLevels(struct TreeNode* root, int* returnSize)
+{
+    int tree_depth = TreeDepth(root);
+    int i = 0;
+    double *avg_arr = calloc(tree_depth , sizeof(double));
+    if(NULL == avg_arr)
+    {
+        return NULL;
+    }
+    
+    int *level_count = calloc(tree_depth , sizeof(int));
+    if(NULL == avg_arr)
+    {
+        return NULL;
+    }
+    
+    SumLevlels(root , 0 , avg_arr , level_count);
+     
+    for(i = 0 ; i < tree_depth ; ++i)
+    {
+        avg_arr[i] = (avg_arr[i]/level_count[i]); 
+    }
+    
+    *returnSize = tree_depth;
+    
+    return avg_arr;
+}

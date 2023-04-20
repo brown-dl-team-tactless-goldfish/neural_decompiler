@@ -1,0 +1,24 @@
+    int numberWays(vector<vector<int>>& hats) {
+        const int n = hats.size(), n2 = 1<<n;
+        const long mod = 1e9+7;
+        vector<long> pre(n2), cur(n2);
+        pre[0] = 1, cur[0] = 1;
+        
+        vector<vector<int>> vv(41);
+        for(int person=0;person<n;person++) for(int h:hats[person])
+            vv[h].push_back(person); 
+        
+        for(auto& v:vv){
+            for(int i:v){
+                auto biti = 1 << i;
+                for(int bits=0;bits<n2;bits++){                    
+                    if(biti & bits) continue;
+                    auto bitnew = biti | bits;
+                    cur[bitnew] += pre[bits];
+                    cur[bitnew] %= mod;
+                }
+            }
+            pre = cur;
+        }
+        return pre[n2-1];
+    }

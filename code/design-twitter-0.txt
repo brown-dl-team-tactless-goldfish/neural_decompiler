@@ -1,0 +1,110 @@
+
+int Time=0;
+typedef struct tweets{
+    int tweetId;
+    int time;
+    struct tweets* next;
+}tweets;
+
+typedef struct {
+    int friends[1000][30];
+    int totalFriends;
+    int friendsCount[1000];
+    tweets** news;
+} Twitter;
+
+typedef struct cmpItem{
+    int time;
+    int tweetId;
+}cmpItem;
+
+int cmpfunc (const void * a, const void * b)
+{   
+    cmpItem A=*(cmpItem*)a;
+    cmpItem B=*(cmpItem*)b;
+    
+   return  A.time - B.time ;
+}
+/** Initialize your data structure here. */
+
+Twitter* twitterCreate() {
+    Twitter* obj=calloc(sizeof(Twitter),1);
+    obj->news =calloc(sizeof(tweets *),1000);
+    return obj;
+}
+void twitterFollow(Twitter* obj, int followerId, int followeeId) {
+    for(int i=0;i<obj->friendsCount[followerId];i++)
+        if(obj->friends[followerId][i]==followeeId)   //if followed someone, don't follow again.
+            return;
+    obj->friends[followerId][obj->friendsCount[followerId]++]=followeeId;
+}
+
+/** Compose a new tweet. */
+void twitterPostTweet(Twitter* obj, int userId, int tweetId) {
+    twitterFollow(obj,userId,userId);  //follow himself to get himself tweets.
+    tweets* tmp=obj->news[userId];
+    tweets* newnode=malloc(sizeof(tweets));
+    newnode->tweetId=tweetId;
+    newnode->time=Time++;
+    newnode->next=NULL;
+    if(!tmp)
+    {
+        obj->news[userId]=newnode;
+        return;
+    }
+    while(tmp->next)
+        tmp=tmp->next;
+    
+    tmp->next=newnode;
+    return;
+}
+
+/** Retrieve the 10 most recent tweet ids in the user's news feed. Each item in the news feed must be posted by users who the user followed or by the user herself. Tweets must be ordered from most recent to least recent. */
+int* twitterGetNewsFeed(Twitter* obj, int userId, int* retSize) {
+
+    int count=0,idx=0;
+    int *ans=malloc(sizeof(int)*10);
+    cmpItem *item=malloc(sizeof(cmpItem)*500);
+    
+    for(int i=0;i<obj->friendsCount[userId];i++)
+    {
+        int id=obj->friends[userId][i];
+        tweets *tmp=obj->news[id];
+        while(tmp)
+        {
+            item[count].time=tmp->time;             //store all related tweets and sort later.
+            item[count++].tweetId=tmp->tweetId;
+            tmp=tmp->next;
+        }
+        
+    }
+    qsort(item, count, sizeof(cmpItem), cmpfunc);
+    for(int i=count-1;i>=count-10&&i>=0;i--)
+        ans[idx++]=item[i].tweetId;
+    
+    *retSize=idx;
+    return ans;
+    
+}
+
+/** Follower follows a followee. If the operation is invalid, it should be a no-op. */
+
+/** Follower unfollows a followee. If the operation is invalid, it should be a no-op. */
+void twitterUnfollow(Twitter* obj, int followerId, int followeeId) {
+    int i;
+    if(followerId!=followeeId)
+    {
+        for(i=0;i<obj->friendsCount[followerId];i++)
+            if(obj->friends[followerId][i]==followeeId)
+                break;
+        if(i==obj->friendsCount[followerId]) return;    //no one match. 
+        for(int j=i+1;j<obj->friendsCount[followerId];j++)
+            obj->friends[followerId][j-1]=obj->friends[followerId][j];
+        obj->friendsCount[followerId]--;
+    }
+    
+}
+
+void twitterFree(Twitter* obj) {
+    free(obj);
+}

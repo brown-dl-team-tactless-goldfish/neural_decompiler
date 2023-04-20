@@ -1,0 +1,47 @@
+class Solution {
+    int M  = 1e9 + 7 ;
+    vector<int>primes = {2, 3, 5, 7, 11, 13, 17, 19, 23, 29} ;
+    int decode(int n){
+        int ret = 0 ;
+        for(int i = 0 ; i < 10; i++){
+            int cn = 0 ;
+            while((n % primes[i]) == 0){
+                cn++ ;
+                n /= primes[i] ;
+            }
+            if(cn > 1)
+                return -1 ;
+            if(cn == 1)
+                ret += (1 << i) ;
+        }
+        return ret ;
+    }
+public:
+    int squareFreeSubsets(vector<int>& nums) {
+        long long ret = 0 ;
+        nums.insert(nums.begin(), 0 ) ;
+        int n = nums.size() ;
+        vector<vector<long long>>dp(n, vector<long long>(1 << 10)) ;   // {items, state}
+        dp[0][0] = 1 ;  // 0 itesm create state 0
+        
+        for(int i = 1; i < n; i++){
+            for(int j = 0; j < (1 << 10) ; j++){
+                if(nums[i] == 1){
+                    dp[i][j] = 2 * dp[i-1][j] % M ;
+                    continue ;
+                }
+                dp[i][j] = dp[i-1][j] ;   //i 不選
+                int d = decode(nums[i]) ;
+                if(d == -1)
+                    continue ;
+                if((j & d) == d)
+                    dp[i][j] =  (dp[i][j] + dp[i-1][j-d] ) % M;
+            }   
+        }
+        
+        for(int i = 0 ; i < 1 << 10; i++)
+            ret  = (ret + dp[n-1][i]) % M ;
+        
+        return (ret + M - 1) % M ;   //減去empty
+    }
+};

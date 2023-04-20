@@ -1,0 +1,42 @@
+public class Solution {
+    public string LargestPalindromic(string num) {
+        int[] map = new int[10];
+        StringBuilder list = new();
+        
+        foreach(char c in num)
+            map[c-'0']++;
+        
+      //  for(int i = 9; i>=0 ;i--) Console.WriteLine($" map {i} {map[i]}");
+        
+        for(int i = 9; i>=0 ;i--){
+            if(map[i] > 1){
+                if(i == 0 && list.Length == 0){
+                    map[i] = 1;
+                    continue;
+                }
+                
+                int count = map[i]/2;
+                map[i] -= count*2;
+                
+                while(count > 0){
+                    list.Append(i);
+                    count--;
+                }
+            }
+        }
+        
+        string left = list.ToString();
+        
+        for(int i = 9; i>=0 ;i--){
+            if(map[i] == 1){
+                list.Append(i);
+                break;
+            }       
+        }
+        
+        string right = new string(list.ToString().Reverse().ToArray());
+        
+        var result =  left + right;
+        return result;
+    }
+}

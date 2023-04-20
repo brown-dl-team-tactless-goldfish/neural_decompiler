@@ -1,0 +1,63 @@
+public:
+	// use this to memoizate gcc of each pair of number
+    int helper[15][15] = {};
+    
+	// find gcc between nums[j] and nums[k]
+    int find(vector<int>& nums, int j, int k){
+        if(!helper[j][k]){
+            int a = nums[j], b = nums[k];
+            
+            while(a != b){
+                if (a > b){
+                    a -= b;
+                }else{
+                    b -= a;
+                }
+            }
+            
+            return helper[j][k] = a;
+        }
+        
+        return helper[j][k];
+    }
+    
+	// count the number of 1 
+    int count(int mask, int sz){
+        int ans = 0;
+        for (int i = 0; i < sz; ++ i){
+            if((mask & (1 << i))){
+                ans ++;
+            }
+        }
+        return ans;
+    }
+	
+    int maxScore(vector<int>& nums) {
+        
+        int sz = nums.size();
+        vector<int> dp(1 << sz, 0);
+        
+        for (int mask = 0; mask < (1 << sz); ++ mask){
+			
+			// count the number of element we have not use
+            int use = sz - count(mask, sz); // int use = count(mask, sz) + 2;
+			
+			// if the number if odd, just skip it
+            if (use % 2 == 1) {
+                continue;
+            }
+            
+            for (int j = 0; j < sz; ++ j){
+                for (int k = j; k < sz; ++ k){
+                    if(!(mask & (1 << j)) && !(mask & (1 << k))){
+                        int temp = mask | (1 << j);
+                        temp |= (1 << k);
+                        dp[temp] = max(dp[temp], dp[mask] + use * find(nums, j, k));
+                    }
+                }
+            }
+        }
+        
+        return dp.back() / 2;
+    }
+    

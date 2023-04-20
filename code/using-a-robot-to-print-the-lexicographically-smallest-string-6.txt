@@ -1,0 +1,25 @@
+class Solution {
+public:
+    string robotWithString(string s) {
+        map<char, int> m;
+        for (auto& c : s) ++m[c];
+        string ans = "";
+        string storage = "";
+        // monotonic stack
+        for (auto& c : s){
+            char smallest = m.begin()->first;
+            if (c == smallest) ans += c;
+            else storage += c;
+            if (--m[c] == 0) m.erase(c);
+            if (!m.empty()){
+                smallest = m.begin()->first;
+                while (!storage.empty() && storage.back() <= smallest){
+                    ans += storage.back();
+                    storage.pop_back();
+                }
+            }
+        }
+        reverse(storage.begin(), storage.end());
+        return ans + storage;
+    }
+};

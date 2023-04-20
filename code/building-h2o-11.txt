@@ -1,0 +1,51 @@
+#include <semaphore.h>
+//int sem_init(sem_t *sem, int pshared, unsigned int value);
+//create a semaphore
+
+//int sem_wait(sem_t *sem);
+//lock a semaphore
+
+//int sem_post(sem_t *sem);
+//unlock a semaphore
+
+//int sem_destroy(sem_t *sem);
+//delete a semaphore
+
+class H2O {
+private:
+    sem_t hSem;
+    sem_t oSem;
+    int h = 0;
+public:
+    H2O() 
+    {
+        sem_init(&hSem, /*pshared=*/0, /*value=*/1);
+        sem_init(&oSem, /*pshared=*/0, /*value=*/0);
+    }
+    
+    ~H2O()
+    {
+        sem_destroy(&hSem);
+        sem_destroy(&oSem);
+    }
+
+    void hydrogen(function<void()> releaseHydrogen) 
+    {
+        sem_wait(&hSem);
+        ++h;
+        // releaseHydrogen() outputs "H". Do not change or remove this line.
+        releaseHydrogen();
+        if (h % 2 == 0)
+          sem_post(&oSem);
+        else
+          sem_post(&hSem);
+    }
+
+    void oxygen(function<void()> releaseOxygen) 
+    {
+        sem_wait(&oSem);
+        // releaseOxygen() outputs "O". Do not change or remove this line.
+        releaseOxygen();
+        sem_post(&hSem);
+    }
+};

@@ -1,0 +1,34 @@
+class Solution {
+public:
+    long long wonderfulSubstrings(string word) {
+        int bit = 0;
+		
+		// {bitmask, # of prefix with this bitmask}
+        unordered_map<int, long long> mp;
+        
+        for(int i=0; i<word.size(); ++i) {
+            int d = word[i] - 'a';
+            bit = bit ^ (int) pow(2, d);
+            mp[bit]++;
+        }
+        
+        long long ans = 0;
+        for(auto& [k, v] : mp) {
+            ans += v * (v-1) / 2;
+            int odddigit = 0;
+            for(int d=0; d<10; d++) {
+                int p = pow(2, d);
+                if(k & p) odddigit += 1;
+                
+				// find other bitmasks that has one bit difference.
+                int k2 = k ^ p;
+                if(k < k2 && mp.count(k2)) {
+                    ans += v * mp[k2];
+                }
+            }
+			// The bitmask itself has less than 2 odd characters.
+            if(odddigit < 2) ans += v;
+        }
+        return ans;
+    }
+};

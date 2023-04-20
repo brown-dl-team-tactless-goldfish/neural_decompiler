@@ -1,0 +1,54 @@
+int depth(struct TreeNode* root){
+    if(root == NULL)
+        return 0;
+    else
+        return 1 + fmax( depth(root->left), depth(root->right) );
+}
+void process(struct TreeNode* root, int* small, char* ans, char* data, int idx){
+    if(root == NULL)
+        return;
+    data[idx] = root->val +'a';
+    idx++;
+    if(root->left == NULL && root->right == NULL){
+        data[idx] = '\0';
+        if(root->val < *small){
+            strcpy(ans, data);
+            *small = root->val;
+        }
+        else if(root->val == *small){
+            int l_a = strlen(ans) - 1;
+            int l_d = strlen(data) - 1;
+            while(l_a >= 0 && l_d >= 0){
+                if(data[l_d] < ans[l_a]){
+                    strcpy(ans, data);
+                    break;
+                }
+                if(data[l_d] > ans[l_a]){
+                    break;
+                }
+                if(l_d == 0){
+                    strcpy(ans, data);
+                    break;
+                }
+                l_a--;
+                l_d--;
+            }
+        }
+    }
+    process(root->left, small, ans, data, idx);
+    process(root->right, small, ans, data, idx);
+}
+char * smallestFromLeaf(struct TreeNode* root){
+    int d = depth(root);
+    char* data = calloc((d + 1) , sizeof(char));
+    char* ans = calloc((d + 1) , sizeof(char));
+    int small = 27;
+    process(root, &small, ans, data, 0);
+    int n = strlen(ans);
+    for(int i = 0; i < n/2; i++){
+        char tmp = ans[i] ;
+        ans[i] = ans[n-1-i] ;
+        ans[n-1-i] = tmp;
+    }
+    return ans;
+}

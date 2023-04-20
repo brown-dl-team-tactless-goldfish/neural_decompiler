@@ -1,0 +1,19 @@
+int cmp(const void* a, const void* b) {
+    return *(const int*) a - *(const int*) b;
+}
+
+int maximumBags(int* capacity, int capacitySize, int* rocks, int rocksSize, int additionalRocks) {
+    int* diff = (int*) calloc(rocksSize, sizeof(int));
+    for (int i = 0; i < rocksSize; i++) {
+        diff[i] = capacity[i] - rocks[i];
+    }
+    qsort(diff, rocksSize, sizeof(int), cmp);
+    int cnt = 0;
+    for (int i = 0; i < rocksSize; i++) {
+        if (diff[i] > additionalRocks) break;
+        additionalRocks -= diff[i];
+        cnt++;
+    }
+    free(diff);
+    return cnt;
+}

@@ -1,0 +1,32 @@
+class Solution {
+public:
+    bool isValid(char c){
+        if(c>='0' && c<='9')
+            return true;
+        return false;
+    }
+    void dfs(string s, int N, vector<int>& v, int K){
+        if(s.length()==N){
+            v.push_back(stol(s));
+            return;
+        }
+        char c = s.back();
+        if(isValid(c+K)){
+            dfs(s+char(c+K),N,v,K);
+        }
+        if(K!=0 && isValid(c-K)){
+            dfs(s+char(c-K),N,v,K);
+        }
+        
+    }
+    
+    
+    vector<int> numsSameConsecDiff(int N, int K) {
+        vector<int> ret;
+        string s="";
+        for(int i=min(N-1,1);i<=9;i++){
+            dfs(s+char('0'+i),N,ret,K);
+        }
+        return ret;
+    }
+};

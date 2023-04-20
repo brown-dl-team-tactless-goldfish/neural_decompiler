@@ -1,0 +1,49 @@
+
+#define ARBITRARY_LEN 15
+
+char * convertToBase7(int num){
+    char *str=NULL;
+    char buf[ARBITRARY_LEN+1];
+    int buf_idx=0;
+    bool neg=false;
+    
+    if (!num) {
+        str = malloc(2);
+        str[0] = '0';
+        str[1] = 0;
+        return str;
+    }
+    
+    if (num < 0) {
+        buf[buf_idx++] = '-';
+        num = -num;
+        neg=true;
+    }
+    
+    while(num) {
+        buf[buf_idx++] = (num % 7) + 48;
+        num /= 7;
+    }
+    
+    buf[buf_idx] = 0;
+    
+    // reverse order or characters
+    // 0 - n or 1 - n depending on if it's negative
+    int start = (neg ? 1 : 0);
+    int end = buf_idx - 1;
+    
+    while(start < end) {
+        buf[start] = buf[start] ^ buf[end];
+        buf[end]   = buf[end]   ^ buf[start];
+        buf[start] = buf[start] ^ buf[end];
+        start++;
+        end--;
+    }
+    
+    str = malloc(buf_idx+1);
+    str[buf_idx] = 0;
+    
+    strcpy(str, buf);
+    
+    return str;
+}

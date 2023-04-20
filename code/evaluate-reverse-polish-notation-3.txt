@@ -1,0 +1,60 @@
+typedef struct stack
+{
+    int value;
+    struct stack* next;
+}stack;
+
+stack* pop(stack* head, int* a, int* b)
+{
+    *a=head->next->value;
+    *b=head->value;
+    stack* tmp=head;
+    stack* tmp2=head->next;
+    head=head->next->next;
+    free(tmp);
+    free(tmp2);
+    return head;
+}
+
+stack* push(stack* head,int x)
+{
+    stack* new=(stack*)malloc(sizeof(stack));
+    new->next=head;
+    new->value=x;
+    return new;
+}
+
+int evalRPN(char ** tokens, int tokensSize){
+    stack* head=NULL;
+    int x,a,b;
+    for(int i=0; i<tokensSize; i++)
+    {
+        if(strcmp(tokens[i],"+")==0)
+        {
+            head=pop(head, &a, &b);
+            x=a+b;
+            head=push(head, x);
+        }
+        else if(strcmp(tokens[i],"-")==0)
+        {
+            head=pop(head, &a, &b);
+            x=a-b;
+            head=push(head, x);
+        }
+        else if(strcmp(tokens[i],"*")==0)
+        {
+            head=pop(head, &a, &b);
+            x=a*b;
+            head=push(head, x);
+        }
+        else if(strcmp(tokens[i],"/")==0)
+        {
+            head=pop(head, &a, &b);
+            x=a/b;
+            head=push(head, x);
+        }
+        else
+            head=push(head, atoi(tokens[i]));
+    }
+    return head->value;
+}

@@ -1,0 +1,30 @@
+#define TOTAL_SIZE 9
+#define GRID       3
+
+bool isValidSudoku(char** board, int boardSize, int* boardColSize){
+    //functionality to find row/column
+    int row_check[TOTAL_SIZE + 1] = {0};
+    int col_check[TOTAL_SIZE + 1] = {0};
+    int grid_check[TOTAL_SIZE] = {0};
+    for(int row_ptr = 0; row_ptr < TOTAL_SIZE; row_ptr++){
+        for(int col_ptr = 0; col_ptr < TOTAL_SIZE; col_ptr++){
+            //condtion to determine wheater number is not present 
+            if(board[row_ptr][col_ptr] == '.'){continue;}
+            //val variable is left shifted with resultant value driven out from the string 
+            //hence val holds the bit if there is previous occurance of the same number 
+            int val  = 1 << (board[row_ptr][col_ptr] - '0');
+            //condtion to check wheater current row has the same number
+            if((row_check[row_ptr] & val) == val){return false;} // termination condtion since there is repeatation of value in row
+            else{row_check[row_ptr] += val;}
+            //condtion to check wheater current column has the same number
+            if((col_check[col_ptr] & val) == val){return false;} // termination condtion since there is repeatation of value in column
+            else{col_check[col_ptr] += val;}
+            //condtion to check wheater the same grid has identical numbers 
+            int grid_row_pos = (row_ptr / GRID) * GRID;
+            int grid_col_pos = (col_ptr / GRID); 
+            if((grid_check[grid_row_pos + grid_col_pos] & val) == val){return false;}
+            else{grid_check[grid_row_pos + grid_col_pos] += val;}
+        }
+    }
+    return true;
+}

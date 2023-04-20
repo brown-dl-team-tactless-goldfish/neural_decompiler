@@ -1,0 +1,31 @@
+public class Solution
+{
+    public long MaximumSubarraySum(int[] nums, int k) 
+    {
+        long sum =0;
+        long temp=0;
+        var hash = new HashSet<int>();
+        int i=0,j=0;
+        while(j<nums.Length)
+        {
+            while(i<nums.Length && hash.Contains(nums[j]))
+            {
+                hash.Remove(nums[i]);
+                temp-=nums[i++];
+            }
+            if(j-i>k-1) 
+            {
+                hash.Remove(nums[i]);
+                temp-=nums[i++];
+            }
+            else
+            {
+                hash.Add(nums[j]);
+                temp+=nums[j++];
+            }
+            if(hash.Count==k) sum = Math.Max(sum,temp);
+        }
+        
+        return sum;
+    }
+}

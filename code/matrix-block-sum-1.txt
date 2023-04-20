@@ -1,0 +1,101 @@
+#define min(a,b) ((a)<(b)?(a):(b))
+int *intArray(const int n) {
+    int* const array = malloc(n * sizeof(int));
+    if (array == NULL) {
+        exit(-163);
+    }
+    return array;
+}
+int **pointerArray(const int n) {
+    int* const array = malloc(n * sizeof(int*));
+    if (array == NULL) {
+        exit(-163);
+    }
+    return array;
+}
+typedef struct {
+    int** mat;
+    int fixedIndex;
+    bool isColumn;
+} MatrixContext;
+int getValue(const MatrixContext* const ctx, const int i) {
+    if (ctx->isColumn) {
+        return ctx->mat[i][ctx->fixedIndex];
+    } else {
+        return ctx->mat[ctx->fixedIndex][i];
+    }
+}
+void setResult(const MatrixContext* const ctx, const int i, const int v) {
+    if (ctx->isColumn) {
+	    ctx->mat[i][ctx->fixedIndex] = v;
+    } else {
+        ctx->mat[ctx->fixedIndex][i] = v;
+    }
+}
+void windowSums(
+    const MatrixContext* const ctxGet,
+    const int listN,
+    const int windowRadius,
+    const MatrixContext* const ctxSet
+) {
+    int currentSum = 0;
+    int i = 0;
+    const int realRadius = min(listN - 1, windowRadius);
+    for (int j = 0; j <= realRadius; j += 1) {
+        currentSum += getValue(ctxGet, j);
+    }
+    setResult(ctxSet, i, currentSum);
+    for (i = 1; i < listN; i += 1) {
+        if (i + windowRadius < listN) {
+            currentSum += getValue(ctxGet, i + windowRadius);
+        }
+        if (i - windowRadius - 1 >= 0) {
+             currentSum -= getValue(ctxGet, i - windowRadius - 1);
+        }
+        setResult(ctxSet, i, currentSum);
+    }
+}
+int** matrixBlockSum(int** mat, int matSize, int* matColSize, int K, int* returnSize, int** returnColumnSizes) {
+    const int m = matSize;
+    const int n = matColSize[0];
+    *returnSize = m;
+    *returnColumnSizes = intArray(m);
+    memcpy(*returnColumnSizes, matColSize, m * sizeof(int));
+    int** const rowTable = pointerArray(m);
+    int** const rr = pointerArray(m);
+    for (int i = 0; i < m; i += 1) {
+        rowTable[i] = intArray(n);
+        rr[i] = intArray(n);
+    }
+    for (int i = 0; i < m; i += 1) {
+        const MatrixContext ctxGet = {
+            mat,
+            i,
+            false
+        };
+        const MatrixContext ctxSet = {
+            rowTable,
+            i,
+            false
+        };
+        windowSums(&ctxGet, n, K, &ctxSet);
+    }
+    for (int j = 0; j < n; j += 1) {
+        const MatrixContext ctxGet = {
+            rowTable,
+            j,
+            true
+        };
+        const MatrixContext ctxSet = {
+            rr,
+            j,
+            true
+        };
+        windowSums(&ctxGet, m, K, &ctxSet);
+    }
+    for (int i = 0; i < m; i += 1) {
+        free(rowTable[i]);
+    }
+    free(rowTable);
+    return rr;
+}

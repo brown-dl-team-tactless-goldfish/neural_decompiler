@@ -1,0 +1,59 @@
+
+class Solution {
+public:
+    
+    // Outer boundary walls sets the limit for water fall
+    // we set the lower one first and try to traverse it in all directions till
+    // it's get blocked, becuase if this particular branch is allowed then all other higher branches will also be
+    // allowed but only lower branch size water can flow outwards from this index
+    int trapRainWater(vector<vector<int>>& heightMap) {
+        int r = heightMap.size();
+        int c = heightMap[0].size();
+
+        vector<vector<int>> visited(r,vector<int>(c,false));
+        using tp= tuple<int,int,int>;
+        auto cmp = [&](auto &a, auto &b) { return get<0>(a) >= get<0>(b);};
+        
+        priority_queue<tp,vector<tp>,decltype(cmp)> pq(cmp);        
+        
+        // fill up the all the border sides height of the dam in priority_queue
+        for (int j = 0; j < c; j++) {
+            pq.push({heightMap[0][j],0,j});
+            pq.push({heightMap[r-1][j],r-1,j});
+            visited[0][j] = visited[r-1][j] = true;
+        }
+        for (int i = 1; i <= r-2; i++){
+            pq.push({heightMap[i][0],i,0});
+            pq.push({heightMap[i][c-1],i,c-1});
+            visited[i][0] = visited[i][c-1] = true;
+        }
+        
+        int result = 0;
+        vector<vector<int>> dir = {{0,-1},{0,1},{-1,0},{1,0}};
+        
+        // keep traversing from smallest height
+        while(!pq.empty()) {
+            auto [h,x,y] = pq.top();
+            pq.pop();
+            
+            // Iterate over all 4 direction for current mininmumm element
+            for (auto &d : dir) {
+                int nx = x + d[0]; int ny = y + d[1];
+                if (nx < 0 || nx == r || ny < 0 || ny == c || visited[nx][ny])
+                    continue;
+                visited[nx][ny] = true;
+                // if current element has heigh smaller than incoming elment the 
+                // compute the volume, as it will the smallest volume all other neighbors
+                // are gauranteed to be higher than it
+                int diff = h - heightMap[nx][ny];
+                if (diff > 0) {
+                    result += diff;
+                }
+                // push the maximumm height byond this path
+                pq.push({max(h,heightMap[nx][ny]),nx,ny});
+            }
+            
+        }
+        return result;
+    }
+};

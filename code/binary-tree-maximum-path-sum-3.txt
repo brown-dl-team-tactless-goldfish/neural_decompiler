@@ -1,0 +1,47 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+//如果下面的加起來 < 0 則回傳 0
+
+int check(struct TreeNode* root, int* ans){
+    if (root == NULL){
+        return 0;
+    }
+    int l = check(root->left, ans);
+    int r = check(root->right, ans);
+    if (l > 0){
+        if (r > 0) { 
+            if (root->val + r + l > *ans){
+                *ans = root->val + r + l;
+            }
+            return l > r ? root->val + l : root->val + r;
+        } else {
+            if (root->val + l > *ans){
+                *ans = root->val + l;
+            }
+            return root->val + l;
+        }
+    } else if (r > 0){
+        if (root->val + r > *ans){
+            *ans = root->val + r;
+        }
+        return root->val + r;
+    } else {
+        if (root->val > *ans){
+            *ans = root->val;
+        }
+        return root->val > 0 ? root->val : 0;
+    }
+}
+
+int maxPathSum(struct TreeNode* root){
+    int ans = root->val;
+    int k = check(root, &ans);
+    return ans;
+}

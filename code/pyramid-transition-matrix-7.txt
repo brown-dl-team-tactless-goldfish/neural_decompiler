@@ -1,0 +1,29 @@
+class Solution {
+public:
+    map<pair<char, char>, vector<char>> t;
+    //unordered_set<string> seen;
+    
+    bool pyramidTransition(string a, vector<string>& trans) {
+        for(string s : trans)
+            t[{s[0], s[1]}].push_back(s[2]);
+        return Solve(a);
+    }
+    
+    bool Solve(string a){
+        //if(seen.count(a)) return false;
+        //seen.insert(a);
+        if(a.size() == 1) return true;
+        string b(a.size()-1, 'Z');
+        return solve(a, b, 0);
+    }
+    
+    bool solve(string& a, string& b, int i){
+        if(i == a.size()-1) return Solve(b); //dummy t
+        
+        for(char c : t[{a[i],a[i+1]}]){
+            b[i] = c;
+            if(solve(a, b, i+1)) return true;
+        }
+        return false;
+    }
+};

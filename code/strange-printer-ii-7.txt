@@ -1,0 +1,83 @@
+class Solution {
+public:
+    bool isPrintable(vector<vector<int>>& targetGrid) {
+        
+        vector<vector<int>> adj(60);
+        populateAdj(adj, targetGrid);
+
+        int *visited = new int[60];
+        
+        for(int i=0;i<60;i++) visited[i]=0;
+        
+        for(int i=0;i<60;i++) {
+            if(visited[i]==0) {
+                bool temp = dfs(i,adj,targetGrid, visited);
+                if(temp==0) {
+                    return 0;
+                }
+            }
+        }    
+    
+        return 1;     
+    }
+    
+    void populateAdj(vector<vector<int>> &adj, vector<vector<int>>& targetGrid) {
+        
+        for(int k=0;k<60;k++) {
+            
+			//finds min,max x, y co-ordinates
+			//finds all colors contained in k
+			//adds them to the adj list of k
+			
+            int xmin=INT_MAX, xmax=INT_MIN, ymin=INT_MAX, ymax=INT_MIN;
+            int n = targetGrid.size();
+            int m = targetGrid[0].size();
+            
+            for(int i=0;i<n;i++) {
+                for(int j=0;j<m;j++) {
+                    if(targetGrid[i][j]==k+1) {
+                        xmin = min(xmin,i);
+                        xmax = max(xmax,i);
+                        ymin = min(ymin,j);
+                        ymax = max(ymax,j);
+                    }
+                }
+            }
+            
+            if(xmin==INT_MAX) {
+                continue;
+            }
+            
+            unordered_set<int> seen;
+            for(int i=xmin;i<=xmax;i++) {
+                for(int j=ymin;j<=ymax;j++) {
+                    if(targetGrid[i][j]!=k+1 && seen.find(targetGrid[i][j]-1)==seen.end()) {
+                        seen.insert(targetGrid[i][j]-1);
+                        adj[k].push_back(targetGrid[i][j]-1);
+                    }
+                }
+            }
+        }
+    }
+    
+    bool dfs(int i, vector<vector<int>> &adj, vector<vector<int>>& targetGrid, int* &visited) {
+        
+		//simple dfs for cycle detection in a graph
+		// See here for more explanation: https://cp-algorithms.com/graph/finding-cycle.html
+		
+        visited[i]=1;
+        
+        for(auto &color : adj[i]) {
+            if(visited[color]==1) {
+                return 0;
+            } else if(visited[color]==0) {
+                if(!dfs(color,adj,targetGrid,visited)) {
+                    return 0;
+                }
+            }
+        }
+        
+        visited[i]=2;    
+        return 1;
+    }
+};

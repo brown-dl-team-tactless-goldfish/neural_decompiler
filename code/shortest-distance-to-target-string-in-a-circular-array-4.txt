@@ -1,0 +1,38 @@
+class Solution:
+    def closetTarget(self, words: List[str], target: str, startIndex: int) -> int:
+        # First check if the target exists in the array
+        target_exists = False
+        for word in words:
+            if word == target:
+                target_exists = True
+                break
+        if not target_exists:
+            return -1
+
+        # Initialize the shortest distance to be the maximum possible value
+        shortest_distance = float('inf')
+
+        # Iterate over the array and check the distance from each index to the target
+        for i in range(len(words)):
+            # Calculate the distance from index i to the target
+            distance = 0
+            if i < startIndex:
+                # If i is before startIndex, the distance is the number of steps to the left of startIndex
+                distance = startIndex - i
+                # Check if it is shorter to go around the array to the right and then to the target
+                distance_to_right = len(words) - startIndex + i
+                if distance_to_right < distance:
+                    distance = distance_to_right
+            elif i > startIndex:
+                # If i is after startIndex, the distance is the number of steps to the right of startIndex
+                distance = i - startIndex
+                # Check if it is shorter to go around the array to the left and then to the target
+                distance_to_left = startIndex + len(words) - i
+                if distance_to_left < distance:
+                    distance = distance_to_left
+
+            # If the current index is the target, update the shortest distance
+            if words[i] == target:
+                shortest_distance = min(shortest_distance, distance)
+
+        return shortest_distance

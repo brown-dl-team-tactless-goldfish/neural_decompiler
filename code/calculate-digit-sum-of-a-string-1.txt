@@ -1,0 +1,40 @@
+void reverse(char* s, int idx, int size) {
+    int l = idx - size, r = idx - 1;
+    while (l < r) {
+        char tmp = s[l];
+        s[l] = s[r];
+        s[r] = tmp;
+        l++;
+        r--;
+    }
+}
+
+void sum(char* t, char* s, int k, int* idx) {
+    int tmp = 0;
+    for (int i = 0; t[i] != '\0' && i < k; i++) {
+        tmp += (t[i] - '0');
+    }
+    int size = (tmp >= 100) ? 3 : 2;
+    if (tmp >= 10) {
+        while (tmp > 0) {
+            s[(*idx)++] = (tmp % 10) + '0';
+            tmp /= 10;
+        }
+        reverse(s, *idx, size);
+    } else {
+        s[(*idx)++] = tmp + '0'; 
+    }
+}
+
+char* digitSum(char* s, int k) {
+    int len = strlen(s);
+    while (len > k) {
+        int idx = 0;
+        for (int i = 0; i < len; i += k) {
+            sum(s + i, s, k, &idx);
+        }
+        s[idx++] = '\0';
+        len = strlen(s);
+    }
+    return s;
+}

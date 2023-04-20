@@ -1,0 +1,56 @@
+class Solution {
+public:
+    double dist(const vector<double>&p1,const vector<int>&p2){
+        return sqrt((p1[0] - p2[0])*(p1[0] - p2[0]) + (p1[1] - p2[1])*(p1[1] - p2[1]));
+    }
+    double cal(const vector<double>&c,const vector<vector<int>>&P){
+        //cost function
+        double res = 0;
+        for(int i=0;i<P.size();i++){
+            res = res + dist(c,P[i]); 
+        }
+        return res;
+    }
+    double do_it(double low,double high,double x,const vector<vector<int>>&P){
+        // find best possible center_y for any given center_x
+        // return the distance
+        double res = 0;
+        for(int i=0;i<50;i++){
+            double midL = (2*low+high)/3.0;
+            double midR = (low+2*high)/3.0;
+            double val1 = cal({x,midL},P);
+            double val2 = cal({x,midR},P);
+            res = min(val1,val2);
+            if(val1 < val2){
+                high = midR;
+            }
+            else{
+                low = midL;
+            }
+        }
+        return res;
+    }
+    
+    double getMinDistSum(vector<vector<int>>& P) {
+        double xlow = 0;
+        double xhigh = 100;
+        double ylow = 0;
+        double yhigh = 100;
+        double res  = 0;
+        for(int i=0;i<50;i++){
+            double midL = (2*xlow+xhigh)/3.0;
+            double midR = (xlow+2*xhigh)/3.0;
+            //doing ternary search on x 
+            double val1 = do_it(ylow,yhigh,midL,P);
+            double val2 = do_it(ylow,yhigh,midR,P);
+            res = min(val1,val2);
+            if(val1 < val2){
+                xhigh = midR;
+            }
+            else{
+                xlow = midL;
+            }
+        }
+        return res;
+    }
+};

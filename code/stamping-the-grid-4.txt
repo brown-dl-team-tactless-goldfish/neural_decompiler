@@ -1,0 +1,78 @@
+class Solution {
+public:
+    vector<int> getLeft(vector<int>& vec) {
+        int n = vec.size();
+        vector<int> st;
+        vector<int> sol(n);
+        for(int i = 0; i < n; i++) {
+            while(!st.empty() && vec[st.back()] >= vec[i]) st.pop_back();
+            if(st.empty()) sol[i] = 0;
+            else sol[i] = st.back() + 1;
+            st.push_back(i);
+        }
+        return sol;
+    }
+    vector<int> getRight(vector<int>& vec) {
+        int n = vec.size();
+        reverse(vec.begin(), vec.end());
+        vector<int> st;
+        vector<int> sol(n);
+        for(int i = 0; i < n; i++) {
+            while(!st.empty() && vec[st.back()] >= vec[i]) st.pop_back();
+            if(st.empty()) sol[i] = 0;
+            else sol[i] = st.back() + 1;
+            st.push_back(i);
+        }
+        reverse(vec.begin(), vec.end());
+        return sol;
+    }
+    bool possibleToStamp(vector<vector<int>>& grid, int stampHeight, int stampWidth) {
+        int n = grid.size();
+        int m = grid[0].size();
+        vector<int> vec(m);
+        vector<vector<int>> mark(n, vector<int> (m));
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < m; j++) {
+               if(grid[i][j] == 0) vec[j]++;
+                else vec[j] = 0;
+            }
+            vector<int> left = getLeft(vec);
+            vector<int> right = getRight(vec);
+            for(int j = 0; j < m; j++) {
+                int l = left[j];
+                int r = m - 1 - right[m - 1 - j];
+                int height = vec[j];
+                int width = r - l + 1;
+                if(height >= stampHeight && width >= stampWidth) {
+                    mark[i - height + 1][l] += 1;
+                    if(i + 1 < n) {
+                        mark[i + 1][l] -= 1;
+                    }
+                    if(r + 1 < m) {
+                        mark[i - height + 1][r + 1] -= 1;
+                        if(i + 1 < n) {
+                            mark[i + 1][r + 1] += 1;
+                        }
+                    }
+                }
+            }
+        }
+        for(int i = 0; i < m; i++) {
+            for(int j = 1; j < n; j++) {
+                mark[j][i] += mark[j - 1][i];
+            }
+        }
+        for(int i = 0; i < n; i++) {
+            for(int j = 1; j < m; j++) {
+                mark[i][j] += mark[i][j - 1];
+            }
+        }
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < m; j++) {
+                if(grid[i][j] == 1) continue;
+                if(mark[i][j] == 0) return false;
+            }
+        }
+        return true;
+    }
+};

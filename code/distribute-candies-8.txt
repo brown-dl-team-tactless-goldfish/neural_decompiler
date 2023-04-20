@@ -1,0 +1,30 @@
+#define HASH_SIZE 14281
+#define HASH_NONE INT_MIN
+
+int
+distributeCandies(int *candies, int candiesSize)
+{
+	static int hash[HASH_SIZE];
+	unsigned int key;
+	int count, i, candy;
+
+	for (key = 0; key < HASH_SIZE; ++key)
+		hash[key] = HASH_NONE;
+	count = 0;
+	for (i = 0; i < candiesSize; ++i) {
+		candy = candies[i];
+		key = candy;
+		if (key > HASH_SIZE - 1)
+			key %= HASH_SIZE;
+		while (hash[key] != HASH_NONE && hash[key] != candy)
+			if (++key == HASH_SIZE)
+				key = 0;
+		if (hash[key] == HASH_NONE) {
+			hash[key] = candy;
+			if (++count == candiesSize / 2)
+				break;
+		}
+	}
+
+	return count;
+}

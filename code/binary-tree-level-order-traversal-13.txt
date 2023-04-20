@@ -1,0 +1,55 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int height(struct TreeNode *h){
+    if (h == NULL) return 0;
+    int l = height(h->left);
+    int r = height(h->right);
+    return 1 + (l > r ? l : r);
+}
+
+void set_col_len(struct TreeNode *root, int *res, int depth){
+    if (root){
+        res[depth]++;    // calloc already assigned every val to 0. So, increment
+        set_col_len(root->left, res, depth + 1);
+        set_col_len(root->right, res, depth + 1);
+    }
+}
+
+void fill_levels(struct TreeNode *root, int **returnColumnSizes, int **last_items, int level){
+    if (root){
+        int last_item = (*last_items)[level]++;
+        returnColumnSizes[level][last_item] = root->val;
+        fill_levels(root->left, returnColumnSizes, last_items, level + 1);
+        fill_levels(root->right, returnColumnSizes, last_items, level + 1);
+    }
+}
+
+int** levelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes){
+    if (root == NULL){
+        *returnSize == 0;
+    }
+    *returnSize = height(root);
+    int **res = malloc(sizeof(*res) * (*returnSize));
+    *returnColumnSizes = calloc(*returnSize, sizeof(**returnColumnSizes));
+    int *last_items = calloc(*returnSize, sizeof(**returnColumnSizes));
+    set_col_len(root, *returnColumnSizes, 0);
+    for (int i=0;i<*returnSize;i++)
+        res[i] = malloc(sizeof(*res[i]) * (*returnColumnSizes)[i]);
+    fill_levels(root, res, &last_items, 0);
+    free(last_items);
+    return res;
+        
+}

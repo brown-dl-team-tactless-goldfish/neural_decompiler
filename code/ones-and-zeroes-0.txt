@@ -1,0 +1,40 @@
+int findMaxForm(char ** strs, int strsSize, int m, int n){
+    int** dp = malloc((m+1) * sizeof(int*)) ;
+    for(int i = 0; i <= m; i++)
+        dp[i] = calloc((n+1) , sizeof(int)) ;
+
+    int** Ndp = malloc((m+1) * sizeof(int*)) ;
+    for(int i = 0; i <= m; i++)
+        Ndp[i] = calloc((n+1) , sizeof(int)) ;    
+    
+    for(int k = 0; k < strsSize; k++)
+    {
+        int ones = 0, zeros = 0 ;
+        for(int p = 0; p < strlen(strs[k]); p++)
+        {
+            if(strs[k][p] == '1')
+                ones++ ;
+            else
+                zeros++ ;
+        }
+        for(int i = zeros; i <= m; i++)
+        {
+            for(int j = ones; j <=n; j++)
+                Ndp[i][j] = fmax(dp[i][j], dp[i-zeros][j-ones] + 1) ;
+        }
+        
+        for(int a = 0; a <= m; a++)
+            memcpy(dp[a], Ndp[a], (n+1)*sizeof(int)) ;
+        
+    }
+    int ans = dp[m][n] ;
+    
+    for(int i = 0; i <= m; i++){
+        free(dp[i]) ;
+        free(Ndp[i]) ;
+    }
+    free(dp) ;
+    free(Ndp) ;
+        
+    return ans ;
+}

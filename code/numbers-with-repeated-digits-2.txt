@@ -1,0 +1,70 @@
+class Solution {
+public:
+	int count=0;
+	int permu(int M, int N)
+	{
+		int res=1;
+		for(int i=0;i<N;i++)
+		{
+			res*=M;
+			M--; 
+		}
+		return res;
+	}
+
+	void dfs(vector<int>& num, vector<int>& digit, int cur)
+	{
+		if(cur>=num.size())
+		{
+			count++;
+			return;
+		}
+
+		for(int i=0;i<=9;i++)
+		{
+			if(i==0 && cur==0) continue;
+			if(i<num[cur])
+			{
+				if(digit[i]==1) continue;
+				int av=0;
+				for(auto& x:digit)
+				{
+					if(x==0)
+						av++;
+				}
+				count+=permu(av-1,num.size()-cur-1);
+			}
+			else
+			{
+				if(digit[i]==1) continue;
+				if(i==num[cur])
+				{
+					digit[i]=1;
+					dfs(num,digit,cur+1);
+					digit[i]=0;
+				}
+			}
+		}
+	}
+	int numDupDigitsAtMostN(int N) {
+		if(N<=10) return 0;
+		vector<int> num;
+		int n=N;
+		while(n>0)
+		{
+			num.push_back(n%10);
+			n/=10;
+		}
+		reverse(num.begin(),num.end());
+
+		int len=num.size();
+		for(int i=1;i<len-1;i++)
+		{
+			count+=9*permu(9,i);
+		}
+		count+=9;
+		vector<int> digit(10);
+		dfs(num,digit,0);
+		return N-count; 
+	}
+};

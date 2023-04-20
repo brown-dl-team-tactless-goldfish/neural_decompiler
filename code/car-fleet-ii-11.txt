@@ -1,0 +1,30 @@
+const int N=100005;
+const double inf=1e20,eps=1e-8;
+struct line{
+	double x,t; int y;
+}l[N];
+class Solution {
+public:
+	vector<double> getCollisionTimes(vector<vector<int>>& c) {
+		int n=c.size(),l1=-1; vector<double> ans(n); 
+		for (int i=n-1;i>=0;--i){
+			double s=0; line p; p.x=c[i][0]; p.y=c[i][1];
+			while (l1>=0){
+				if (p.y>l[l1].y){
+					double t=(l[l1].x-p.x)/(p.y-l[l1].y);
+					if (t+eps<=l[l1].t){
+						p.x=c[i][0]; ans[i]=p.t=s+t;
+						l[l1].x+=l[l1].y*t; l[l1].t-=t; l[++l1]=p;
+						break;
+					}
+				}
+				s+=l[l1].t; p.x+=p.y*l[l1].t; --l1;
+			}
+			if (l1<0){
+				p.x=c[i][0]; p.t=inf; l[++l1]=p;
+				ans[i]=-1;
+			}
+		}
+		return ans;
+	}
+};

@@ -1,0 +1,45 @@
+class Solution 
+{
+public:
+    string longestNiceSubstring(const string& s) 
+    {
+        std::string candidate;
+        int maxLen = 0;
+        for (int left = 0; left < s.length(); left++)
+        {
+            for (int right = left + 2; right <= s.length(); right++)
+            {
+                std::string temp(s.begin() + left, s.begin() + right);
+                if (isNiceSubString(temp))
+                {
+                    if (maxLen < right - left + 1)
+                    {
+                        maxLen = right - left + 1;
+                        candidate = temp;
+                    }
+                }
+            }
+        }
+        
+        return candidate;
+    }
+private:
+    bool isNiceSubString(const std::string& s)
+    {
+        int freq[256];
+        std::memset(freq, 0, 256 * sizeof(int));
+        
+        for (const char& c : s)
+        {
+            freq[c]++;
+        }
+        
+        for (char c = 'A'; c <= 'Z'; c++)
+        {
+            if ((freq[c | 32] && !freq[c]) || (!freq[c | 32] && freq[c]))
+                return false;
+        }
+        
+        return true;
+    }
+};

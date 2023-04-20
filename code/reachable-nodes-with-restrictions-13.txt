@@ -1,0 +1,26 @@
+class Solution {
+    void dfs(int node, vector<int> adj[], vector<int> &vis, int &ans) {
+        vis[node] = 1;
+        
+        for(int ad : adj[node]) {
+            if(!vis[ad]) ans++, dfs(ad, adj, vis, ans);
+        }
+    }
+    
+public:
+    int reachableNodes(int n, vector<vector<int>>& edges, vector<int>& res) {
+        vector<int> adj[n];
+        
+        for(auto e : edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        vector<int> vis(n, 0);
+        for(int i : res) vis[i] = 1;
+        
+        int ans = 1;
+        dfs(0, adj, vis, ans);
+        
+        return ans;
+    }
+};

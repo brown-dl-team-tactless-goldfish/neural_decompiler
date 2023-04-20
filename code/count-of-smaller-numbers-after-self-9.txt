@@ -1,0 +1,65 @@
+typedef struct {
+    int id;
+    int v;
+} pair;
+
+int *ret;
+pair *array;
+
+void merge(int begin, int mid, int end)
+{
+    pair *temp = (pair *)malloc((end - begin + 1) * sizeof(pair));
+    int i = begin;
+    int j = mid + 1;
+    int k = 0;
+
+    while(i <= mid && j <= end)
+    {
+        if(array[i].v <= array[j].v)
+            temp[k++] = array[j++];
+        else
+        {
+            ret[array[i].id] += end - j + 1;
+            temp[k++] = array[i++];
+        }
+    }
+    while(i <= mid)
+        temp[k++] = array[i++];
+    while(j <= end)
+        temp[k++] = array[j++];
+
+    for(i = begin; i <= end; i += 1)
+        array[i] = temp[i - begin];
+}
+
+void sort(int begin, int end)
+{
+    if(begin < end)
+    {
+        int mid = (begin + end) / 2;
+        sort(begin, mid);
+        sort(mid + 1, end);
+        merge(begin, mid, end);
+    }
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* countSmaller(int* arr, int len, int* retlen){
+    ret = (int *)malloc(len * sizeof(int));
+    for(int i = 0; i < len; i += 1)
+        ret[i] = 0;
+    *retlen = len;
+
+    array = (pair *)malloc(len * sizeof(pair));
+    for(int i = 0; i < len; i += 1)
+    {
+        array[i].id = i;
+        array[i].v = arr[i];
+    }
+
+    sort(0, len - 1);
+
+    return ret;
+}

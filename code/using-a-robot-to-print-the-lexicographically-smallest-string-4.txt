@@ -1,0 +1,38 @@
+class Solution {
+public:
+    string robotWithString(string s) 
+    {
+       map<char,int>mp;
+        
+       for(auto x:s)  // store frequency of each character
+           mp[x]++;
+        char c='a'; 
+        
+        while(!mp[c]&&c<='z') // search for smallest element present in string  
+            c++;
+        string ans="";
+        string rem="";
+        for(int i=0;i<s.length();i++)
+        {
+            auto x = s[i];
+            if(x==c) // if x is smallest in right , write it on paper immediately
+            {
+                ans+=c;
+            }
+            else
+                rem+=x; // otherwise just append it to string rem (which is string t in question)
+            mp[x]--;
+            
+            while(!mp[c]&&c<='z') // if frequency of smallest character in right becomes zero , look for next smallest element ahead
+                c++;
+            
+            while(rem.length()>0&&c>=rem.back()) // if i can get element smaller than c from last of rem, pop it and write it on paper
+                ans+=rem.back(),rem.pop_back();
+        }
+        
+        reverse(rem.begin(),rem.end()); // Eventually , we have to write rem on paper by removing last char, so reverse it and append to answer
+        
+        ans+=rem;
+        return ans;
+    }
+};

@@ -1,0 +1,121 @@
+    public class Solution
+    {
+        private bool CheckRow(int row,
+            int col,
+            int[] king,
+            bool[,] checkBoard)
+        {
+            int c = col;
+            int diff = Math.Sign(king[1] - col);
+
+            while (c != king[1])
+            {
+                if (c != col && checkBoard[row, c])
+                {
+                    return false;
+                }
+                c += diff;
+            }
+
+            return true;
+        }
+
+        private bool CheckCol(int row,
+            int col,
+            int[] king,
+            bool[,] checkBoard)
+        {
+            int r = row;
+            int diff = Math.Sign(king[0] - row);
+
+            while (r != king[0])
+            {
+                if (r != row && checkBoard[r, col])
+                {
+                    return false;
+                }
+                r += diff;
+            }
+
+            return true;
+        }
+
+        private bool CheckDiagonal(int row,
+            int col,
+            int[] king,
+            bool[,] checkBoard)
+        {
+
+            int diffR = Math.Sign(king[0] - row);
+            int diffC = Math.Sign(king[1] - col);
+            int r = row;
+            int c = col;
+
+            while (r != king[0] && c != king[1])
+            {
+                if (r != row && c != col && checkBoard[r, c])
+                {
+                    return false;
+                }
+
+                r += diffR;
+                c += diffC;
+            }
+
+            return true;
+        }
+
+        private bool CanAttack(
+            int row, 
+            int col, 
+            int[] king,
+            bool[,] checkBoard)
+        {
+            if (king[0] == row)
+            {
+                if (CheckRow(row, col, king, checkBoard))
+                {
+                    return true;
+                }
+            }
+
+            if (king[1] == col)
+            {
+                if (CheckCol(row, col, king, checkBoard))
+                {
+                    return true;
+                }
+            }
+
+            if (Math.Abs(king[0] - row) == Math.Abs(king[1] - col))
+            {
+                if (CheckDiagonal(row, col, king, checkBoard))
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public IList<IList<int>> QueensAttacktheKing(int[][] queens, int[] king)
+        {
+            bool[,] checkBoard = new bool[8,8];
+
+            foreach (var queen in queens)
+            {
+                checkBoard[queen[0], queen[1]] = true;
+            }
+
+            IList<IList<int>> res = new List<IList<int>>();
+            foreach (var queen in queens)
+            {
+                if (CanAttack(queen[0], queen[1], king, checkBoard))
+                {
+                    res.Add(new List<int>(){queen[0], queen[1]});
+                }
+            }
+
+            return res;
+        }
+    }

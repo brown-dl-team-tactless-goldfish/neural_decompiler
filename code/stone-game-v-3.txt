@@ -1,0 +1,51 @@
+class Solution {
+    vector<int> v, s;
+    int n;
+    vector<vector<int>> dp;
+    int helper(int start, int end) {
+        if (dp[start][end]!=-1)
+            return dp[start][end];
+        //cout << "start, end = " << start << ", " << end << endl;
+        if (end==start) {
+            dp[start][end] = 0;
+            return 0;
+        }
+        int bestChoice = 0, currChoice = 0;
+        for (int mid = start+1; mid<=end; mid++) {
+            int leftSum = s[mid]-s[start];
+            int rightSum = s[end+1]-s[mid];
+            //cout << "leftSum, rightSum = " << leftSum << ", " << rightSum << endl;
+            if (leftSum==rightSum) {
+                int currChoiceL = leftSum + helper(start, mid-1);
+                int currChoiceR = rightSum + helper(mid, end);
+                currChoice = max(currChoiceL, currChoiceR);
+            } else {
+                bool bLeftLarger = (leftSum > rightSum);
+                currChoice = (bLeftLarger) ? rightSum : leftSum;
+                currChoice += (bLeftLarger) ? helper(mid, end) : helper(start, mid-1);
+            }
+            if (currChoice > bestChoice)
+                bestChoice = currChoice;
+        }
+        dp[start][end] = bestChoice;
+        return bestChoice;
+    }
+    void printv(const vector<int>& v) {
+        for (int elem : v)
+            cout << elem << ", ";
+        cout << endl;
+    }
+public:
+    int stoneGameV(vector<int>& stoneValue) {
+        v = stoneValue;
+        n = stoneValue.size();
+        s.resize(n+1, 0);
+        for (int i=0; i<n; i++)
+            s[i+1] = s[i] + v[i];
+        //printv(s);
+        dp.resize(n);
+        for (int i=0; i<n; i++)
+            dp[i].resize(n,-1);
+        return helper(0, n-1);
+    }
+};

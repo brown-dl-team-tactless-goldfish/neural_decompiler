@@ -1,0 +1,42 @@
+void swap(int* a, int* b){
+    int c = *a;
+    *a = *b;
+    *b = c;
+}
+
+void quicksort(int tab[], int first, int last) {
+    int pivot, i, j;
+    if (first < last) {
+        pivot = first;
+        i = first;
+        j = last;
+        while (i < j) {
+            while (tab[i] <= tab[pivot] && i < last)
+                i++;
+            while (tab[j] > tab[pivot])
+                j--;
+            if (i < j) {
+                swap(&tab[i], &tab[j]);
+            }
+        }
+        swap(&tab[pivot], &tab[j]);
+        quicksort(tab, first, j - 1);
+        quicksort(tab, j + 1, last);
+    }
+}
+
+
+int maxSatisfaction(int* satisfaction, int satisfactionSize){
+    quicksort(satisfaction, 0, satisfactionSize - 1);
+    int currentSum = 0;
+    int totalSum = 0;
+    int max = 0;
+    for (int i = satisfactionSize - 1; i >= 0; i--){
+        currentSum += satisfaction[i];
+        totalSum += currentSum;
+        if (totalSum > max){
+            max = totalSum;
+        }
+    }
+    return max;
+}

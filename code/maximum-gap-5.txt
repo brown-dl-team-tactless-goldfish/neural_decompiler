@@ -1,0 +1,42 @@
+/*
+ * NOTE 1 : This is a solution in O(n) time and O(n) space.
+ * NOTE 2 : This solution achieves in-memory sorted ordering in O(n).
+ */
+
+int check_skip_offset(uint8_t *m, int i);
+
+int maximumGap(int* nums, int numsSize){
+    uint8_t *m = calloc(1, 1000000000);
+    int mn_i = INT_MAX, mx_i = INT_MIN;
+    while (numsSize--) { // For O(n) in-memory sorted ordering
+        m[nums[numsSize]] = 1;
+        mx_i < nums[numsSize] ? mx_i = nums[numsSize] : 0;
+        mn_i > nums[numsSize] ? mn_i = nums[numsSize] : 0;
+    }
+    int i = mn_i, diff = 0, p = -1;
+    while (i <= mx_i) {
+        int o = check_skip_offset(m, i); // Ignore the unused range
+        if (o > 0)
+            i += o;
+        else if (m[i]) {
+            if (p != -1 && diff < i - p)
+                diff = i - p;            
+            p = i;            
+        }
+        i++;
+    }
+    free(m);
+    return diff;
+}
+
+int check_skip_offset(uint8_t *m, int i)
+{
+    int sz = 1024;
+    uint8_t t[1024] = { 0 };    
+    while (sz) {
+        if (!memcmp(m + i, t, sz))
+            return sz;
+        sz -= 512;
+    }
+    return -1;
+}

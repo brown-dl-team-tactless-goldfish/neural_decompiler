@@ -1,0 +1,32 @@
+class Solution {
+    int findMinimumDrop(int floors, int eggs, vector<vector<int>>& dp){
+       
+        for(int f=1; f<=floors; ++f){ // only 1 egg
+            dp[1][f] = f;
+        }
+     
+        for(int e=1; e<=eggs; ++e){ // only 1 floor
+            dp[e][1] = 1;
+        }
+        
+        for(int e= 2; e<=eggs; ++e){
+            for(int f=2; f<=floors; ++f){ 
+                int result = INT_MAX;
+                                         // (e,f) --> (e, f),(e,f-1),...(e,1)
+                for(int x=1; x<=f; ++x){
+                    result = min(result, 1+max(dp[e-1][x-1] , dp[e][f-x]));
+                }
+                
+                dp[e][f] = result;
+            }
+        }
+        return dp[eggs][floors];
+    }
+    
+public:
+    int twoEggDrop(int n) {
+        vector<vector<int>> dp(3, vector<int>(n+1, 0));
+        int eggs = 2;
+        return findMinimumDrop(n, eggs, dp);
+    }
+};

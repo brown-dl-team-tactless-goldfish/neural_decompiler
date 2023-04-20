@@ -1,0 +1,68 @@
+class Solution {
+    typedef string V;
+    
+    void expand(V & curr, priority_queue<pair<int, V>> & astarQ, unordered_map<V, int> & vis, int m, int n) {
+        int count = m * n - accumulate(curr.begin(), curr.end(), 0);
+        int tmp = vis[curr];
+        int idx = 0;
+        for (int i = 1; i < m; i++) {
+            if (curr[i] < curr[idx]) {
+                idx = i;
+            }
+        }
+        int j = 0;
+        while (idx+j < m && curr[idx] == curr[idx+j] && curr[idx] + j+1 <= n) {
+            V next = curr;
+            for (int k = idx; k <= idx + j; k++) {
+                next[k] += j+1;
+            }
+            if (vis.count(next) == 0 || tmp + 1 < vis[next]) {
+                int h = heuristics[count - (j+1)*(j+1)];
+                if (tmp + h + 1 < limit) {
+                    astarQ.push({-(tmp + h + 1), next});
+                    vis[next] = tmp + 1;
+                }
+            }
+            j++;
+        }
+    }
+    
+    void initHeuristics(int m, int n) {
+        heuristics.resize(m*n+1, 0);
+        for (int i = 1; i <= m*n; i++) {
+            heuristics[i] = INT_MAX;
+            for (int j = 1; j*j <= i; j++) {
+                heuristics[i] = min(heuristics[i], 1 + heuristics[i-j*j]);
+            }
+        }
+    }
+    
+    vector<int> heuristics;
+    int limit;
+    
+public:
+    int tilingRectangle(int n, int m) {
+        if (m > n) {
+            swap(m, n);
+        }
+        limit = INT_MAX;
+        initHeuristics(m, n);
+        
+        priority_queue<pair<int, V>> astarQ;
+        unordered_map<V, int> vis;
+        V start(m, 0), end(m, n);
+        
+        astarQ.push({-heuristics[m*n], start});
+        vis[start] = 0;
+
+        while (!astarQ.empty()) {
+            auto curr = astarQ.top(); astarQ.pop();
+            if (curr.second == end) {
+                limit = min(limit, vis[curr.second]);
+            } else if (vis[curr.second] < limit) {
+                expand(curr.second, astarQ, vis, m, n);
+            }   
+        }
+        return limit;
+    }
+};

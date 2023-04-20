@@ -1,0 +1,89 @@
+    if not nums:
+        return
+
+    self.tree = IntervalTree(nums)
+
+    self.tree.printTree()
+def sumRange(self, i, j):
+    """
+    :type i: int
+    :type j: int
+    :rtype: int
+    """
+    #print "i = ", i, " j = ", j
+
+    #print "self.tree.startIdx = ", self.tree.root.startIdx, " self.tree.endIdx = ", self.tree.root.endIdx, " self.tree.sum = ", self.tree.root.sum
+    if self.tree.root == None:
+        return
+
+
+    def helper(l, r, curNode):
+        #print "helper 1 l = ", l, " r = ", r, " curNode.startIdx = ", curNode.startIdx, "curNode.endIdx = ", curNode.endIdx
+
+        if l == curNode.startIdx and r == curNode.endIdx:
+            return curNode.sum
+        elif curNode.startIdx <= l <= r <= curNode.endIdx:
+            m = (curNode.startIdx+curNode.endIdx)/2
+            #print "m = ", m
+            if r <= m:
+                #print "here 1"
+                if curNode.leftChild != None:
+                    return helper(l, r, curNode.leftChild)
+
+            else:
+                #print "here 2"
+                if l < m < r:
+                    #print "here 3"
+                    if curNode.leftChild != None and curNode.rightChild != None:
+                        leftSum = helper(l, m, curNode.leftChild)
+                        rightSum = helper(m+1, r, curNode.rightChild)
+                        #print "leftSum = ", leftSum, " rightSum = ", rightSum
+                        if leftSum == None:
+                            leftSum = 0
+                        if rightSum == None:
+                            rightSum = 0
+
+                        return leftSum + rightSum
+                        # return (helper(l, m, curNode.leftChild) + helper(m+1, r, curNode.rightChild))
+
+                elif l > m:
+                    #print "here 5, l = ", l, " r = ", r, " curNode.rightChild.startIdx = ", curNode.rightChild.startIdx
+                    if curNode.rightChild != None:
+                        return helper(l, r, curNode.rightChild)
+
+                elif l == m:
+                    #print "here 6, l = ", l, " r = ", r, " curNode.rightChild.startIdx = ", curNode.rightChild.startIdx
+                    if curNode.rightChild != None:
+                        return helper(l, l, curNode.leftChild ) + helper(l+1, r, curNode.rightChild)
+
+        elif l < curNode.startIdx < r < curNode.startIdx:
+            if curNode.leftChild != None:
+                return (helper(l, curNode.leftChild.endIdx, curNode.leftChild) + helper(curNode.startIdx, r, curNode))
+
+
+        elif l > curNode.endIdx:
+            if curNode.rightChild != None:
+                return helper(l, r, curNode.rightChild)
+
+
+
+    if i < self.tree.root.startIdx:
+        i = self.tree.root.startIdx
+
+    if j > self.tree.root.endIdx:
+        j = self.tree.root.endIdx
+
+    res = helper(i, j, self.tree.root)
+    #print "res = ", res
+
+    return res
+
+def update(self, i, val):
+    """
+    :type i: int
+    :type val: int
+    :rtype: void
+    """
+    # print "update i = ", i, " val = ", val
+
+    self.tree.updateTree(i, val, self.tree.root)

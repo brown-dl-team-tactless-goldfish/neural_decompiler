@@ -1,0 +1,36 @@
+class Solution {
+private:
+    vector<vector<int>>mem;
+    vector<int>next;
+    int solve(vector<vector<int>>&events,int index,int k){
+        int n=events.size();
+        if(index>=n or k==0){
+            return 0;
+        } else if(mem[index][k]!=-1){
+            return mem[index][k];
+        } else {
+            int ans=INT_MIN;
+            for(int currEvent=index;currEvent<n;currEvent++){
+                int valueFromAttend=events[currEvent][2]+solve(events,next[currEvent],k-1);
+                ans=max(ans,valueFromAttend);
+            }
+            return mem[index][k]=ans;
+        }
+    }
+public:
+    int maxValue(vector<vector<int>>& events, int k) {
+        sort(events.begin(),events.end());
+        int n=events.size();
+        next=vector<int>(n,n);
+        for(int i=0;i<n;i++){
+            for(int j=i+1;j<n;j++){
+                if(events[j][0]>events[i][1]){
+                    next[i]=j;
+                    break;
+                }
+            }
+        }
+        mem=vector<vector<int>>(n,vector<int>(k+1,-1));
+        return solve(events,0,k);
+    }
+};

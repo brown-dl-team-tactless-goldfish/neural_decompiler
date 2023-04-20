@@ -1,0 +1,35 @@
+bool isEqual(char *s, char *dict,int len)
+{
+    int i = 0;
+    while(dict[i] != '\0' && s[i] != '\0') {
+        if(dict[i] == '\0') break;
+        if(s[i] != dict[i]) return false;
+        ++i;
+    }
+    if(i != len) return false;
+    if(dict[i] == '\0') return true;
+    return false;
+}
+
+bool wordBreak(char * s, char ** wordDict, int wordDictSize){
+    int len = strlen(s),i,j,k;
+    bool *dp = (bool*)malloc(sizeof(bool)*(len+1));
+    for(i= 1; i <= len; i++) {
+        dp[i] = false;
+    }
+    dp[0] = true;
+    for(i = 1; i <= len; i++) {
+        for(j = i-1; j >= 0; j--) {
+            if(dp[j]) {
+                for(k = 0; k < wordDictSize; k++) {
+                    if(isEqual(s+j,wordDict[k],i-j)) {
+                        dp[i] = true;
+                        break;
+                    }
+                }
+                if(dp[i]) break;
+            }
+        }
+    }
+    return dp[len];
+}

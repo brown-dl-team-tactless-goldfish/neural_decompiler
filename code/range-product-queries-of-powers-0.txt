@@ -1,0 +1,29 @@
+class Solution {
+public:
+    long long mod = 1e9 + 7;
+    vector<int> productQueries(int n, vector<vector<int>>& queries) {
+        int temp = n;
+        vector<int> t;
+        int count = 0;
+        while(temp) {
+            if(temp & 1 > 0) {
+                int c = pow(2, count);
+                t.push_back(c);
+            }
+            temp = temp >> 1;
+            count++;
+        }
+        vector<int> res;
+        for(auto query: queries) {
+            int start = query[0];
+            int end = query[1];
+            
+            long long prod = 1;
+            for(int i = start; i <= end; i++) {
+                prod = ((prod % mod) * t[i]) % mod;
+            }
+            res.push_back(prod % mod);
+        }
+        return res;
+    }
+};

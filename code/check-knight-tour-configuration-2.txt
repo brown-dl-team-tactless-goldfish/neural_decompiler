@@ -1,0 +1,26 @@
+class Solution
+{
+public:
+    vector<pair<int, int>> directions = {{-2, 1}, {-1, 2}, {1, 2}, {2, 1}, {2, -1}, {1, -2}, {-1, -2}, {-2, -1}};
+    bool isValid(int r, int c, int n)
+    {
+        return (r >= 0 && c >= 0 && r < n && c < n);
+    }
+    bool f(int r, int c, int n, int count, vector<vector<int>> &grid)
+    {
+        if (!isValid(r, c, n) || grid[r][c] != count) return false;
+        if (count == n * n - 1) return true;
+        for (auto it : directions)
+        {
+            int dr = r + it.first;
+            int dc = c + it.second;
+            if (f(dr, dc, n, count + 1, grid)) return true;
+        }
+        return false;
+    }
+    bool checkValidGrid(vector<vector<int>> &grid)
+    {
+        int n = grid.size();
+        return f(0, 0, n, 0, grid);
+    }
+};

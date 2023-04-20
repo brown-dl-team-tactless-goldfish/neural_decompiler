@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int longestPalindrome(vector<string>& words) {
+        unordered_map<string, int> s;
+        int c = 0;
+        int comb = 0, odd = 0;
+        for(string &str : words)
+            s[str]++;
+        for(auto [fst, snd] : s)
+        {
+            //cout << fst[0] << " " << fst[1] <<" ";
+            if(fst[0] == fst[1])
+            {
+                if(snd&1)
+                    odd = 2;
+                c += (snd/2)*4;
+            }
+            else
+            {
+                string tmp = "";
+                tmp += fst[1];
+                tmp += fst[0];
+                if(!s.count(tmp) || s[tmp] == 0)
+                    continue;
+                comb += min(s[fst], s[tmp])*4;
+                s[tmp] = 0;
+            }
+        }
+        return c+comb+odd;
+    }
+};

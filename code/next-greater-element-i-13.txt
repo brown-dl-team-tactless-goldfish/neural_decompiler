@@ -1,0 +1,47 @@
+int* nextGreaterElement(int* findNums, int findNumsSize, int* nums, int numsSize, int* returnSize) {
+    
+    
+    int *result  = (int *)malloc(sizeof(int)*(findNumsSize));
+    
+    int hash[100000];
+    
+    int next =0;
+    
+    int stack[1000000];
+    int top=-1;
+    
+    int i =0;
+    
+    //stack[++top] = nums[i++];
+    
+     for(i=0;i<numsSize;i++){
+        next = nums[i];
+         
+        //printf("next=%d, top=%d\n", next, top);
+        while(top!=-1 && next>stack[top]){
+             //printf("next=%d, top=%d, comp=%d\n", next, top, stack[top]);
+            hash[stack[top]] = next;
+            --top;
+        }
+        stack[++top]= next;
+    }
+    
+     
+        while(top!=-1){
+            hash[stack[top]] =-1;
+            --top;
+        }
+  
+    
+    hash[nums[numsSize-1]] =-1;
+    
+    for(i=0;i<findNumsSize;i++){
+        
+        result[i] = hash[findNums[i]];
+    }
+    
+    *returnSize=findNumsSize;
+    
+    return result;
+        
+    

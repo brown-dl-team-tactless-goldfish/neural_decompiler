@@ -1,0 +1,31 @@
+class Solution:
+    def findMiddleIndex(self, nums: List[int]) -> int:
+        n = len(nums)
+        
+        dp = [0 for i in range(n)]
+        
+        for idx in range(n):
+            if (idx == 0):
+                dp[idx] = nums[idx]
+            else:
+                dp[idx] = dp[idx-1] + nums[idx]
+                
+        print ("dp = ", dp)
+        
+        left, right = 0, 0
+        for idx in range(n):
+            if (idx == 0):
+                left = 0
+                right = dp[-1] - dp[idx]
+            elif (idx == n - 1):
+                left = dp[-2]
+                right = 0
+            else:
+                left = dp[idx-1]
+                right = dp[-1] - dp[idx]
+                
+            print ("idx = ", idx, " left = ", left, " right = ", right)
+            if (left == right):
+                return idx
+            
+        return -1

@@ -1,0 +1,52 @@
+class Solution {
+    int time = -1 ;
+    const int upperBound = 24 * 60 ;
+    void dfs(vector<bool>&used, vector<int>&arr, int cur, vector<int>&tmp){
+        if(cur == 4){
+            int hour = tmp[0]*10 + tmp[1] ;
+            int minute = tmp[2]*10 + tmp[3] ;
+            if(minute >= 60)
+                return ;
+            int curTime = hour * 60 + minute ;
+            if(curTime < upperBound) 
+                time = max(time, curTime) ;              
+            return ;
+        }
+        for(int i = 0; i < 4; i++){
+            if(used[i])
+                continue ;
+            used[i] = true ;
+            tmp[cur] = arr[i] ;
+            dfs(used, arr, cur+1, tmp) ;
+            used[i] = false ;
+        }
+    }
+public:
+    string largestTimeFromDigits(vector<int>& arr) {
+        sort(arr.begin(), arr.end()) ;
+        if(arr[0] > 2 || (arr[0] == 2 && arr[1] > 3))
+            return "" ;
+
+        vector<bool>used(4) ;
+        vector<int>tmp(4) ;
+        dfs(used, arr, 0, tmp) ;
+        if(time == -1)
+            return "" ;
+        string ret ;
+        int hour = time/60 ;
+        int minute = time %60 ;
+
+        if(hour < 10)
+            ret += "0" + to_string(hour) ;
+        else
+            ret += to_string(hour) ;
+        ret += ":" ;
+        
+        if(minute < 10)
+            ret += "0" + to_string(minute) ;
+        else
+            ret += to_string(minute) ;
+
+        return ret ;        
+    }
+};

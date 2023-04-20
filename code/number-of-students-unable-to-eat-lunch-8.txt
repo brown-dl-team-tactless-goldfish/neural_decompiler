@@ -1,0 +1,91 @@
+struct Node
+{
+    int val;
+    struct Node *next;
+};
+
+struct Queue
+{
+    struct Node *front;
+    struct Node *rear;
+    int size;
+}q;
+
+int peek(void)
+{
+    return q.front->val;
+}
+
+void enq(int t)
+{
+    struct Node *new_node = (struct Node *)malloc(sizeof(struct Node));
+    new_node->val = t;
+    new_node->next = NULL;
+    
+    if(q.size == 0){
+        
+        q.front = q.rear = new_node;
+    }
+    else{
+        q.rear->next = new_node;
+        q.rear = new_node;
+    }
+    q.size++;
+}
+
+int deq(void)
+{
+    struct Node *ptr = q.front;
+    int res = ptr->val;
+    q.front = q.front->next;
+    free(ptr);
+    q.size--;
+    return res;
+}
+
+void re_enter_q(void)
+{
+    struct Node *ptr = q.front;
+    if(q.front->next == NULL)
+        return;
+    q.front = q.front->next;
+    ptr->next = NULL;
+    q.rear->next = ptr;
+    q.rear = ptr;
+    //printf("Placed %d at last\n",ptr->val);
+}
+
+void print_q(void)
+{
+    struct Node *ptr = q.front;
+    while(ptr!=NULL){
+        printf("%d ->",ptr->val);
+        ptr = ptr->next;
+    }printf("\n");
+}
+
+int countStudents(int* students, int studentsSize, int* sandwiches, int sandwichesSize){
+    q.size = 0;
+    for(int i=0;i<studentsSize;i++){
+        enq(students[i]);
+    }
+    //print_q();
+    int i = 0;
+    int reshuf = 0;
+    while(i < sandwichesSize){
+        if(peek() == sandwiches[i]){
+            //printf("Sandwich %d given\n",sandwiches[i]);
+            deq();
+            reshuf = 0;
+            //print_q();
+            i++;
+        }
+        else{
+            re_enter_q();
+            reshuf++;
+            if(reshuf > 100)
+                break;
+        }
+    }
+    return sandwichesSize - i;
+}

@@ -1,0 +1,26 @@
+class Solution {
+    int subarraysWithAtmostK(vector<int>& A, int K) {
+        int n = A.size();
+        
+        unordered_map<int, int>hm;
+        int res = 0, i = 0, j = 0, count = 0;
+        
+        for (int i = 0; i < n; i++) {
+            hm[A[i]]++;
+            while (j < n && hm.size() > K) {
+                hm[A[j]]--;
+                if (hm[A[j]] == 0)
+                    hm.erase(A[j]);
+                j++;
+            }
+            
+            res += (i-j+1);
+        }
+        
+        return res;
+    }
+public:
+    int subarraysWithKDistinct(vector<int>& A, int K) {
+        return subarraysWithAtmostK(A, K) - subarraysWithAtmostK(A, K-1);
+    }
+};

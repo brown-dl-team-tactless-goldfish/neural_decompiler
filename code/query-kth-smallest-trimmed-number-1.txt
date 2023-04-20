@@ -1,0 +1,48 @@
+class Solution {
+public:
+    vector<int> smallestTrimmedNumbers(vector<string>& nums, vector<vector<int>>& queries) {
+        int m = nums.size();
+        int n = nums[0].size();
+        
+        // memorize the order for each trim
+        vector<vector<int>> memo(n+1);
+        
+        // initial order
+        vector<int> v(m);
+        iota(v.begin(), v.end(), 0);
+        
+        memo[0] = v;
+        
+        // sort by n-t's digit
+        for (int t = 1; t <= n; ++t) {
+            int i = n-t;
+            vector<vector<int>> bucket(10);
+
+            // bucket sort
+            for (int j = 0; j < m; ++j) {
+                int c = nums[v[j]][i] - '0';
+
+                bucket[c].push_back(v[j]);
+            }
+            
+            // obtain the order
+            int cnt = 0;
+            for (auto &row: bucket) {
+                for (auto col: row) {
+                    v[cnt++] = col;
+                }
+            }
+            
+            memo[t] = v;
+        }
+        
+        // fill answer
+        vector<int> res;
+        for (auto &q: queries) {
+            int k = q[0], t = q[1];
+            res.push_back(memo[t][k-1]);
+        }
+        
+        return res;
+    }
+};

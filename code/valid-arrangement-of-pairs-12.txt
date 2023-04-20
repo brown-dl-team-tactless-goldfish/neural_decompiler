@@ -1,0 +1,63 @@
+class Solution {
+public:
+    unordered_map<int, int> ind; // indegree
+    unordered_map<int, int> oud; // outdegree
+    unordered_map<int, vector<int>> gmp; // graph map
+    stack<int> path;
+    
+    vector<vector<int>> validArrangement(vector<vector<int>>& pairs) {
+        int N = pairs.size();
+
+        unordered_set<int> gset;
+        
+        // build map
+        for (auto &pa : pairs) {
+            int u = pa[0];
+            int v = pa[1];
+            
+            // u -- > v
+            oud[u]++; // out degree
+            ind[v]++; // in  degree
+            
+            gmp[u].push_back(v);
+            gset.insert(u);
+            gset.insert(v);
+        }
+        
+        /* 
+           if all nodes indgree == outdgree, it is Eulerian circle, 
+           in this case we choose 1st item as starting point. 
+           if one node's outdegree > indgree, it is the startting point 
+        */
+        auto it = gset.begin();
+        int sta = *it;
+        for (auto u : gset) {
+            if (ind[u] >= oud[u]) continue;
+            sta = u;
+        }
+        
+        dfs(sta);
+        
+        vector<vector<int>> ans;
+        
+        int from = path.top();
+        path.pop();
+        while(path.size()) {
+            int to = path.top();
+            path.pop();
+            ans.push_back({from, to});
+            from = to;
+        }
+        
+        return ans;
+    }
+    
+    void dfs(int u) {
+        while(oud[u]) {
+            oud[u] --;
+            int v = gmp[u][oud[u]];
+            dfs(v);
+        }
+        path.push(u);
+    }
+};

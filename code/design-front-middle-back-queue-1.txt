@@ -1,0 +1,70 @@
+/* Since at most 1000 items will be pushed, we can accommodate them in an
+   array containing two chunks, each delimited by a front and back index
+   (A and B delimit the left chunk, C and D the right, both inclusive/exclusive
+   respectively), with a clearance of 1000 between the front of the array and the
+   initial position of the front of the first chunk, and also between the two
+   chunks and between the end of the second chunk and the end of the array.
+   We always keep the two chunks the same size (differing by at most 1).
+*/
+
+typedef struct {
+    int *array; int a,b,c,d;
+} FrontMiddleBackQueue;
+
+#define leftsize (obj->b - obj->a)
+#define rightsize (obj->d - obj->c)
+#define empty (leftsize + rightsize == 0)
+#define pusha(x) obj->array[--obj->a] = x
+#define pushb(x) obj->array[obj->b++] = x
+#define pushc(x) obj->array[--obj->c] = x
+#define pushd(x) obj->array[obj->d++] = x
+#define popa obj->array[obj->a++]
+#define popb obj->array[--obj->b]
+#define popc obj->array[obj->c++]
+#define popd obj->array[--obj->d]
+#define shiftleft pushb(popc)
+#define shiftright pushc(popb)
+
+FrontMiddleBackQueue* frontMiddleBackQueueCreate() {
+FrontMiddleBackQueue *obj = malloc(sizeof *obj);
+    obj->array = malloc(3000*sizeof(int));
+    obj->a = 1000; obj->b = 1000; obj->c = 2000; obj->d = 2000;
+    return obj;
+}
+
+void frontMiddleBackQueuePushFront(FrontMiddleBackQueue* obj, int val) {
+    if (leftsize > rightsize) shiftright;
+    pusha(val);
+}
+
+void frontMiddleBackQueuePushMiddle(FrontMiddleBackQueue* obj, int val) {
+    if (leftsize > rightsize) shiftright;
+    pushb(val);
+}
+
+void frontMiddleBackQueuePushBack(FrontMiddleBackQueue* obj, int val) {
+    if (rightsize > leftsize) shiftleft;
+    pushd(val);
+}
+
+int frontMiddleBackQueuePopFront(FrontMiddleBackQueue* obj) {
+    if empty return -1;
+    if (rightsize > leftsize) shiftleft;
+    return popa;
+}
+
+int frontMiddleBackQueuePopMiddle(FrontMiddleBackQueue* obj) {
+    if empty return -1;
+    if (leftsize>=rightsize) return popb;
+    return popc;
+}
+
+int frontMiddleBackQueuePopBack(FrontMiddleBackQueue* obj) {
+    if empty return -1;
+    if (leftsize > rightsize) shiftright;
+    return popd;
+}
+
+void frontMiddleBackQueueFree(FrontMiddleBackQueue* obj) {
+    free(obj->array); free(obj);
+}

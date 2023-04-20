@@ -1,0 +1,25 @@
+public class Solution {
+    public int[] SuccessfulPairs(int[] spells, int[] potions, long success) {
+        var m = new int[spells.Max()+1];
+        var map = new Dictionary<long, int>();
+
+        for (var i = 0; i < potions.Length; i++)
+        {
+            var c = (success + potions[i] - 1) / potions[i];
+            if (map.ContainsKey(c))
+            {
+                map[c]++;
+                continue;
+            }
+            map.Add(c, 1);
+        }
+        m[0] = 0;
+        for (var i = 1; i < m.Length; i++)
+        {
+            map.TryGetValue(i, out var c);
+            m[i] = m[i - 1] + c;
+        }
+
+        return spells.Select(y => m[y]).ToArray();
+    }
+}

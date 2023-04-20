@@ -1,0 +1,45 @@
+class Solution {
+public:
+    long long maxProduct(string s) {
+        int n = s.length(), c = 0, r = 0;
+        vector<int> rr(n), left(n), right(n);
+        while(c < n)
+        {
+            // grow the palindrome
+            while(c-(r+1)>=0 && c+(r+1)<n && s[c-(r+1)]==s[c+(r+1)])
+            {
+                r++;
+                // record palindrome radius r ending at c+r and c-r
+                left [c+r] = max(left [c+r],r);
+                right[c-r] = max(right[c-r],r);
+            }
+
+            // done at c, move on
+            int c_old = c, r_old = r;
+            rr[c++] = r;
+            r = 0;
+            
+            // Manacher's mirror
+            for(;c-c_old <= r_old && c-c_old <= c_old;c++)
+            {
+                int c_mirr = c_old - (c-c_old);
+                int r_mirr = r_old - (c-c_old);
+                if(rr[c_mirr]==r_mirr) {r = r_mirr; break;}
+                rr[c] = min(r_mirr,rr[c_mirr]);
+                
+                // record palindrom radius rr[c] ending at c+rr[c], c-rr[c]
+                left [c+rr[c]] = max(left [c+rr[c]],rr[c]);
+                right[c-rr[c]] = max(right[c-rr[c]],rr[c]);
+            }
+        }
+        
+		// process the arrays to track the best palindromes found on the left and the right side
+        int mx = 0; for(int i = 0;   i <  n; i++) left[i]  = max( left [i], mx = max(mx,left [i]) );
+            mx = 0; for(int i = n-1; i >= 0; i--) right[i] = max( right[i], mx = max(mx,right[i]) );
+
+        // consider all left[x-1] * right[x] pairs, but remember to convert radii to lengths
+        long long o = 0;
+        for(int i = 1; i < n; i++) o = max(o, (left[i-1]*2+1)*(long long)(right[i]*2+1));
+        return o;
+    }
+};

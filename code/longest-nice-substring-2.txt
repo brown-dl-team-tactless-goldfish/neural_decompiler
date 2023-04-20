@@ -1,0 +1,50 @@
+
+int isSubstringNice(const char * begin, const char * end){
+    unsigned int upperBits = 0;
+    unsigned int lowerBits = 0;
+    
+    for(; begin < end; ++begin){
+        if(*begin >= 'A' && *begin <= 'Z')
+            upperBits |= (1 << (*begin - 'A'));
+        else if(*begin >= 'a' && *begin <= 'z')
+            lowerBits |= (1 << (*begin - 'a'));
+    }
+    
+    return !(upperBits ^ lowerBits);
+}
+
+char * longestNiceSubstring(char * s){
+    char * sEnd = s + strlen(s);
+    char * niceBegin = s;
+    char * niceEnd = s;
+    
+    char * subEnd;
+    
+    for(; s < sEnd && (niceEnd - niceBegin) < (sEnd - s); ++s){
+        for(subEnd = sEnd; s < subEnd; --subEnd){
+            if(isSubstringNice(s, subEnd)){
+                if((subEnd - s) > (niceEnd - niceBegin)){
+                    niceBegin = s;
+                    niceEnd = subEnd;
+                }
+
+                break;
+            }
+        }
+    }
+    
+    /* Version that doesn't modify input.
+    char * output = malloc(niceEnd - niceBegin + 1);
+    
+    memcpy(output, niceEnd, niceEnd - niceBegin);
+    
+    output[niceEnd - niceBegin] = '\0';
+    
+    return output;
+    */
+    
+    *niceEnd = '\0';
+    
+    return niceBegin;
+    
+}

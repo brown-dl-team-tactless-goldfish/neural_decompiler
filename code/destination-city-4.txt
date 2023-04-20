@@ -1,0 +1,44 @@
+
+__attribute__ ((inline)) unsigned long hash(char* str) {
+    unsigned long r = 0;
+    for (int counter = 0; str[counter]!='\0'; counter++){
+        r = str[counter] + (r << 6) + (r << 16) - r;
+    }
+    return r;
+}
+
+char * destCity(char *** paths, int pathsSize, int* pathsColSize){
+    unsigned long hashmap[256] = {0};
+    char* stringmap[256] = {0};
+    int hashpaths[256] = {[0 ... 255] = -1};
+    
+    for(int i=0; i<pathsSize; i++) {
+        unsigned char from = 0;
+        unsigned char to = 0;
+        
+        for(int j=0; j<pathsColSize[i]; j++) {
+            char* city = paths[i][j];
+            
+            // hashing
+            unsigned long r = hash(city);
+            unsigned char offset = r % 256;
+            
+            // colliding
+            while (hashmap[offset] != 0 && hashmap[offset] != r) offset = (offset + 1) % 256;
+            
+            if (hashmap[offset] == 0) hashmap[offset] = r;
+            stringmap[offset] = city;
+            
+            
+            if (j == 0) from = offset;
+            else to = offset;
+        }
+        hashpaths[from] = to;
+    }
+    
+    int dest = 0;
+    while(hashpaths[dest] == -1) dest++;
+    while(hashpaths[dest] != -1) dest = hashpaths[dest];
+    
+    return stringmap[dest];
+}

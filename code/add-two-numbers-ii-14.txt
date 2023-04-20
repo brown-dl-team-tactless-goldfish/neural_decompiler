@@ -1,0 +1,85 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+#define MAX_ARR 101
+
+typedef struct ListNode Node;
+
+Node* createNode(int val) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->val = val;
+    node->next = NULL;
+    return node;
+}
+
+int listLen(Node* head) {
+    int len = 0;
+    Node* temp = head;
+    while (temp) {
+        len++;
+        temp = temp->next;
+    }
+    return len;
+}
+
+int* listSum(Node* l1, Node* l2, int len1, int len2) {
+    int i, carry = 0;
+    int *arr = (int* )malloc(sizeof(int) * MAX_ARR);
+    for (i = 0; i < MAX_ARR; i++) 
+        arr[i] = 0;
+    
+    for (i = MAX_ARR - len1; i < MAX_ARR; i++) {
+        arr[i] = l1->val;
+        l1 = l1->next; 
+    }
+    for (i = MAX_ARR - len2; i < MAX_ARR; i++) {
+        arr[i] += l2->val;
+        l2 = l2->next;
+    }
+    for (i = MAX_ARR - 1; i >= 0; i--) {
+        arr[i] += carry;
+        if (arr[i] > 9) {
+            arr[i] -= 10;
+            carry = 1;
+        } else {
+            carry = 0;
+        }    
+    }
+    return arr;
+}
+
+struct ListNode* addTwoNumbers(Node* l1, Node* l2){
+    int len1 = listLen(l1), len2 = listLen(l2);
+    
+    int* sumArr = listSum(l1, l2, len1, len2);
+    int i, idx;
+    for (i = 0; i < MAX_ARR; i++) {
+        if (sumArr[i] != 0) {
+            idx = i;
+            break;
+        }
+        if (i == MAX_ARR) idx = MAX_ARR - 1;
+    }
+    
+    bool first = true;
+    Node* head = (Node*)malloc(sizeof(Node));
+    head->next = NULL;
+    Node* temp = head;
+    for (i = idx; i < MAX_ARR; i++) {
+        if (first) {
+            temp->val = sumArr[i];
+            first = false;
+        } else {
+            Node* node = createNode(sumArr[i]);
+            temp->next = node;
+            temp = temp->next;
+        }
+    }
+    
+    return head;
+}

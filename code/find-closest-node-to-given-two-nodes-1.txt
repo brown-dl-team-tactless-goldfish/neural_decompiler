@@ -1,0 +1,32 @@
+void dfs(int node, int dis, int *edge, int *n)
+{
+    while(node!=-1 && n[node]==-1)
+    {
+        n[node] = dis++;
+        node = edge[node];
+    }
+}
+
+int closestMeetingNode(int* edges, int edgesSize, int node1, int node2){
+    int res = -1, dist = INT_MAX;
+ 
+    int *n1 = (int*)malloc(edgesSize*sizeof(int));
+    int *n2 = (int*)malloc(edgesSize*sizeof(int));
+    for(int n=0;n<edgesSize;n++)
+    {
+        n1[n] = -1;
+        n2[n] = -1;
+    }
+
+    dfs(node1, 0, edges, n1);
+    dfs(node2, 0, edges, n2);
+
+    for(int i=0;i<edgesSize;++i)
+        if( fmin(n1[i],n2[i])>=0 && fmax(n1[i],n2[i])<dist )
+        {
+            dist = fmax(n1[i], n2[i]);
+            res = i;
+        }
+    
+    return res;
+}

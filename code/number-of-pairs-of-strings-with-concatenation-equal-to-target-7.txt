@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int numOfPairs(vector<string>& nums, string target) {
+        unordered_map<string, int> mp;
+        for (string s : nums) mp[s]++;
+        int ret = 0;
+        for (string prefix : nums) {
+            if (target.substr(0, prefix.length()) != prefix) continue;
+            string suffix = target.substr(prefix.length());
+            if (mp.find(suffix) == mp.end()) continue;
+            int c = mp[suffix];
+            ret += (prefix == suffix ? c-1 : c);
+        }
+        return ret;
+    }
+};
+
+/**
+
+Brute Force: N(n^2)
+
+Using Hash Set: O(n)
+====================
+1. First count all items and put in map.
+2. Traverse the array. Find remaining suffix in map.
+3. If map gives us count C add C into result.
+4. Exception: If prefix and suffix are same then add C-1 into result.
+
+**/

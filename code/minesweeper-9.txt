@@ -1,0 +1,47 @@
+class Solution {
+public:
+    vector<vector<char>> board;
+    int w;
+    int h;
+    void dfs(int r, int c)
+    {
+        if(r < 0 || r >= h || c < 0 || c >= w || board[r][c] != 'E') return;
+        int cnt = 0;
+        if(r-1 >= 0 && c-1 >= 0) cnt += (board[r-1][c-1] == 'M');
+        if(r-1 >= 0 && c   >= 0) cnt += (board[r-1][c  ] == 'M');
+        if(r-1 >= 0 && c+1 <  w) cnt += (board[r-1][c+1] == 'M');
+        if(r   >= 0 && c-1 >= 0) cnt += (board[r  ][c-1] == 'M');
+        if(r   >= 0 && c+1 <  w) cnt += (board[r  ][c+1] == 'M');
+        if(r+1 <  h && c-1 >= 0) cnt += (board[r+1][c-1] == 'M');
+        if(r+1 <  h && c   >= 0) cnt += (board[r+1][c  ] == 'M');
+        if(r+1 <  h && c+1 <  w) cnt += (board[r+1][c+1] == 'M');
+        if(cnt)
+        {
+            board[r][c] = '0'+cnt;
+            return;
+        }
+        board[r][c] = 'B';
+        dfs(r-1, c-1);
+        dfs(r-1, c  );
+        dfs(r-1, c+1);
+        dfs(r  , c-1);
+        dfs(r  , c+1);
+        dfs(r+1, c-1);
+        dfs(r+1, c  );
+        dfs(r+1, c+1);
+    }
+    
+    vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {
+        int r = click[0], c = click[1];
+        w = board[0].size();
+        h = board.size();
+        if(board[r][c] == 'M') 
+        {
+            board[r][c] = 'X';
+            return board;
+        }
+        this->board = board;
+        dfs(r, c);
+        return this->board;
+    }
+};

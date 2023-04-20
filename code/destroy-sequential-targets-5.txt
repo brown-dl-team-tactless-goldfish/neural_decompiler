@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int destroyTargets(vector<int>& nums, int space) {
+        //sort it in descending order, so that the last number we check is the smallest number
+        sort(begin(nums), end(nums),greater());
+        
+        //mod numbers by space and save into nums_modded
+        vector<int> nums_modded;
+        //save how many times appear nums[i] % space
+        unordered_map<int,int> freq; 
+        //save the nums[i](it will be the smallest one because we sort it in reverse order) that appears the most
+        pair<int,int> highest_freq = {0,0};
+        
+        //mod each number
+        for (int n : nums){
+            nums_modded.push_back(n % space);
+            freq[n % space]++;    
+            
+            //save the number with the highest frequence (that appear most)
+            if (highest_freq.second <= freq[n % space])
+                highest_freq = {n, freq[n % space]};
+        }
+
+        
+        return highest_freq.first;
+    }
+};

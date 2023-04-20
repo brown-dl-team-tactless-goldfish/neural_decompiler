@@ -1,0 +1,74 @@
+const int N = 600;
+vector<int> g[N];
+bool seen[N];
+vector<int> a;
+class Solution {
+public:
+    int magnificentSets(int n, vector<vector<int>>& edges) {
+        int res = 0;
+        for(int i = 0; i <= n; i++) {
+            g[i].clear(); seen[i] = false;
+        }
+        
+        for(vector<int>& e : edges) {
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        for(int i = 1; i <= n; i++) {
+            if(!seen[i]) {
+                a.clear();
+                dfs(i);
+                int cnt = divide(a);
+                if(cnt == -1) return -1;
+                res += cnt;
+            }
+        }
+        return res;
+    }
+    
+    int divide(vector<int>& a) {
+        
+        int mx = -1;
+        for(int u : a) {
+            mx = max(mx, bfs(u));
+        }
+        return mx;
+    }
+    
+    int bfs(int root) {
+        queue<int> q;
+        q.push(root);
+        int level[N];
+        memset(level, -1, sizeof level);
+        level[root] = 1;
+        int res = 1;
+        while(q.size() > 0) {
+            int sz = q.size();
+            for(int i = 0; i < sz; i++) {
+                int u = q.front(); q.pop();
+                for(int nxt : g[u]) {
+                    if(level[nxt] == -1) {
+                        level[nxt] = level[u] + 1;
+                        res = max(res, level[nxt]);
+                        q.push(nxt);
+                    } else {
+                        if(abs(level[nxt] - level[u]) != 1) {
+                            return -1;
+                        } 
+                    }
+                }
+            }
+        }
+        return res;
+    }
+    
+    void dfs(int root) {
+        seen[root] = true;
+        a.push_back(root);
+        for(int nxt : g[root]) {
+            if(!seen[nxt]) {
+                dfs(nxt);
+            }
+        }
+    }
+};

@@ -1,0 +1,96 @@
+public class Solution {
+    Dictionary<string, List<char>> map = null;
+    
+    Dictionary<string, bool> memo = new Dictionary<string, bool>();
+    
+    
+    public bool PyramidTransition(string bottom, IList<string> allowed) {
+        
+         map = new Dictionary<string, List<char>>();
+        
+        foreach (string s in allowed)
+        {
+            var key = s.Substring(0, 2);
+            var val = s[2];
+            
+            if (!map.TryGetValue(key, out List<char> list))
+            {
+                list = new List<char>();
+                map[key] = list;
+            }
+            
+            list.Add(val);
+        }
+        
+        
+        return Util(bottom);
+        
+    }
+    
+    bool Util(string bottom)
+    {
+        if (bottom.Length == 1)
+        {
+            return true;
+        }
+        
+        if (memo.TryGetValue(bottom, out bool ret))
+        {
+            return ret;
+        }       
+        
+        List<string> nextBottoms = null;
+        
+        if (!GenNextLevel(bottom, 0, out nextBottoms))
+        {
+            memo[bottom] = false;
+            return false;
+        }
+        
+        foreach (string b in nextBottoms)
+        {
+            if (Util(b))            
+            {
+                memo[bottom] = true;
+                return true;
+            }
+        }
+        
+        memo[bottom] = false;
+                return false;
+    }
+    
+    bool GenNextLevel(string bottom, int start, out List<string> ans)
+    {
+        ans = new List<string>();
+        if (start == bottom.Length - 1)
+        {
+            ans.Add("");
+            return true;
+        }
+        
+        var key = bottom.Substring(start, 2);
+        
+        if (!map.TryGetValue(key, out List<char> chars))
+        {
+            return false;
+        }
+        
+        if(!GenNextLevel(bottom, start + 1, out List<string> ret))
+        {
+            return false;
+        }
+        
+        foreach (char c in chars)
+        {
+            foreach (string s in ret)
+            {
+                ans.Add(c+s);
+            }
+        }
+        
+        return true;
+    }
+}
+
+```

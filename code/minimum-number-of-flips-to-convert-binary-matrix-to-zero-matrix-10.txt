@@ -1,0 +1,62 @@
+class Solution {
+public:
+    int m, n, count, ans;
+    int dir[4][2] = {{0,1},{0,-1},{1,0},{-1,0}};
+    
+    int minFlips(vector<vector<int>>& mat) {
+        ans = INT_MAX;
+        m = mat.size(), n = mat[0].size();    
+        for(int r=0; r<m; r++)
+        {
+            for(int c=0; c<n; c++)
+            {
+                count += mat[r][c];
+            }
+        }
+        
+        dfs(mat, 0, 0, 0);
+        return ans == INT_MAX ? -1 : ans;
+    }
+    
+    void dfs(vector<vector<int>>& mat, int r, int c, int steps)
+    {
+        if(!count) 
+        {
+            ans = min(ans, steps);
+            return;
+        }
+        
+        if(r == m) return;
+        
+        int nr = c == n-1 ? (r + 1) : r;
+        int nc = c == n-1 ? 0 : (c + 1);
+                
+        flip(mat, r, c);
+        dfs(mat, nr, nc, steps + 1);
+        
+        flip(mat, r, c);
+        dfs(mat, nr, nc, steps);
+    }
+    
+    void flip(vector<vector<int>>& mat, int r, int c)
+    {
+        flipCell(mat, r, c);
+        
+        for(int d=0; d<4; d++)
+        {
+            int _r = r + dir[d][0];
+            int _c = c + dir[d][1];
+            if(_r>=0 && _r<m && _c>=0 && _c<n)
+            {
+                flipCell(mat, _r, _c);
+            }
+        }
+    }
+    
+    void flipCell(vector<vector<int>>& mat, int r, int c)
+    {
+        mat[r][c] ^= 1;
+        count += mat[r][c] ? 1 : -1;
+    }
+};
+

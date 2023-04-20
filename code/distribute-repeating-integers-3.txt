@@ -1,0 +1,32 @@
+
+```public:
+    map<int,int>mp;
+    bool solve(vector<int>&q,int idx)
+    {
+        if(idx==q.size())
+        {
+            return true;
+        }
+        for(auto i:mp)
+        {
+            if(i.second>=q[idx])
+            {
+                mp[i.first]-=q[idx];
+                if(solve(q,idx+1))
+                {
+                    return true;
+                }
+                mp[i.first]+=q[idx];
+            }
+        }
+        return false;
+    }
+    bool canDistribute(vector<int>& nums, vector<int>& q) {
+        sort(q.begin(),q.end(),greater<int>());
+        for(int i=0;i<nums.size();i++)
+        {
+            mp[nums[i]]++;
+        }
+        return solve(q,0);
+    }
+};

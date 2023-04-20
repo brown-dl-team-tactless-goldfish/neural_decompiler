@@ -1,0 +1,31 @@
+class Solution {
+public:
+    bool canFormArray(vector<int>& arr, vector<vector<int>>& pieces) {
+        unordered_map<int, vector<int>> mp;
+        
+        for (const vector<int>& piece: pieces) {
+            mp[piece[0]] = piece;
+        }
+        
+        int i = 0;
+        while (i < arr.size()) {
+            int first = arr[i];
+            const auto& it = mp.find(first);
+            if (it != mp.end()) {
+                const vector<int>& piece = it->second;
+                ++i;
+                for (int j = 1; j < piece.size(); ++j) {
+                    if (i < arr.size() && piece[j] == arr[i]) {
+                        ++i;
+                    } else {
+                        return false;
+                    }
+                }           
+            } else {
+                return false;
+            }
+        }
+        
+        return i == arr.size();
+    }
+};

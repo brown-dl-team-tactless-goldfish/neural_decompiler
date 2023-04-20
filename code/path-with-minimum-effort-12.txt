@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int minimumEffortPath(vector<vector<int>>& h) {
+        int row = h.size(), col = h[0].size();
+        auto comp = [&](array<int,3> &a, array<int,3> &b) {
+            return a[2] > b[2];
+        };
+        vector<vector<bool>> seen (row, vector<bool>(col, false));
+        seen[0][0] = true;
+        priority_queue<array<int,3>, vector<array<int,3>>, decltype(comp)> prim(comp);
+        if(col > 1) prim.push({0,1,abs(h[0][0]-h[0][1])});
+        if(row > 1) prim.push({1,0,abs(h[0][0]-h[1][0])});
+        while(!prim.empty()) {
+            auto [r,c, eff] = prim.top(); prim.pop();
+            if(r == row-1 && c == col-1) return eff;
+            seen[r][c] = true;
+            int dir[4][2] = {{0,1},{0,-1},{1,0},{-1,0}};
+            for(int i=0; i<4; i++) {
+                int nr = r + dir[i][0], nc = c + dir[i][1];
+                if(nr < 0 || nc < 0 || nr >= row || nc >= col || seen[nr][nc]) continue;
+                prim.push({nr,nc, max(abs(h[r][c]-h[nr][nc]), eff)});
+            }
+        }
+        return 0;
+    }
+};

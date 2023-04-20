@@ -1,0 +1,30 @@
+typedef struct {
+    int **mtx, row;
+} NumMatrix;
+
+NumMatrix* numMatrixCreate(int** matrix, int size, int* colSize) {
+    NumMatrix *ans = malloc(sizeof(NumMatrix));
+    int **a = malloc((size+1) * sizeof(int*));
+    
+    for(int m=0; m<size+1; m++)
+        a[m] = calloc((colSize[0]+1), sizeof(int));
+    
+    for(int m=0; m<size; m++)
+        for(int n=0; n<colSize[0]; n++)
+            a[m+1][n+1] = a[m][n+1] + a[m+1][n] - a[m][n] + matrix[m][n];
+    
+    ans->mtx = a;  ans->row = size+1;
+    return ans;
+}
+
+int numMatrixSumRegion(NumMatrix* obj, int row1, int col1, int row2, int col2) {
+    int **a = obj->mtx;
+    return a[row2+1][col2+1] - (a[row2+1][col1] + a[row1][col2+1] - a[row1][col1]);
+}
+
+void numMatrixFree(NumMatrix* obj){
+    for(int i=0; i<obj->row; i++)
+        free(obj->mtx[i]);
+    free(obj->mtx);
+    free(obj);
+}

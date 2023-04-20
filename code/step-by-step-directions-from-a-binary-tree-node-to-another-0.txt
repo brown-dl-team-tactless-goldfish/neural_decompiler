@@ -1,0 +1,61 @@
+int depth(struct TreeNode* root) {
+    if (!root) return 0;
+    return fmax(depth(root->left), depth(root->right)) + 1;
+}
+
+void dfs(struct TreeNode* root, int n, char* arr, int* idx, bool* IsFind) {
+    if (!root) return;
+    if (root->val == n) {
+        (*IsFind) = true;
+        arr[(*idx)++] = '\0';
+        return;
+    }
+    arr[(*idx)++] = 'L';
+    dfs(root->left, n, arr, idx, IsFind);
+    if ((*IsFind) == false) {
+        (*idx)--;
+        arr[(*idx)++] = 'R';
+        dfs(root->right, n, arr, idx, IsFind);
+        (*idx)--;
+    }
+}
+
+char* getDirections(struct TreeNode* root, int startValue, int destValue) {
+    int size = depth(root), idx = 0, cnt = 0;
+    bool IsFind = false;
+    char** res = (char**) malloc(2 * sizeof(char*));
+    for (int i = 0; i < 2; i++) {
+        res[i] = (char*) malloc(size * sizeof(char));
+    }
+    
+    dfs(root, startValue, res[0], &idx, &IsFind);
+    IsFind = false;
+    idx = 0;
+    dfs(root, destValue, res[1], &idx, &IsFind);
+    idx = 0;
+    
+    int res0len = strlen(res[0]), res1len = strlen(res[1]), len = res0len + res1len + 1;
+    char* ans = (char*) malloc(len * sizeof(char));
+    while (idx < res0len && idx < res1len) {
+        if (res[0][idx] == res[1][idx]) {
+            cnt++;
+        } else {
+            break;
+        }
+        idx++;
+    }
+    
+    idx = 0;
+    for (int i = cnt; i < res0len; i++) {
+        ans[idx++] = 'U';
+    }
+    for (int i = cnt; i < res1len; i++) {
+        ans[idx++] = res[1][i];
+    }
+    ans[idx++] = '\0';
+    for (int i = 0; i < 2; i++) {
+        free(res[i]);
+    }
+    free(res);
+    return ans;
+}

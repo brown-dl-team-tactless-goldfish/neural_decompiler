@@ -1,0 +1,28 @@
+#include <stdlib.h>
+
+int longestOnes(int* nums, int numsSize, int k){
+    // equivalently, find the length of the longest substring with at most k zeros
+    
+    // first, find how many zeros there are and their indices
+    int zeroLocs[numsSize + 1];
+    int zeroCount = 0;
+    for (int i = 0; i < numsSize; i++) {
+      if (nums[i] == 0) {
+        zeroLocs[zeroCount++] = i;
+      }
+    }
+    zeroLocs[zeroCount] = numsSize;  // this bounds the last consecutive set of 1s in nums
+    if (zeroCount < k) {
+        return numsSize;  // if there are fewer than k zeros overall, just replace them all
+    }
+
+    // being greedy is best! always try to replace k consecutive zeros.
+    int maxLen = 0;
+    int base = 0;
+    int prevBaseVal = 0;
+    for (; base + k <= zeroCount; base++) {
+      maxLen = fmax(maxLen, zeroLocs[base+k] - prevBaseVal);
+      prevBaseVal = zeroLocs[base] + 1;
+    }
+    return maxLen;
+}

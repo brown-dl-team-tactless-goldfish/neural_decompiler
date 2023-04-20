@@ -1,0 +1,40 @@
+class Solution {
+    int pcount = 0;
+    bool canPalindrome(vector<int>v) {
+        
+        unordered_map<int, int>hm;
+        
+        for (int i = 0; i < v.size(); i++)
+            hm[v[i]]++;
+        
+        int c = 0;
+        for (auto it = hm.begin(); it != hm.end(); it++) {
+            if (it->second % 2 != 0)
+                c++;
+            if (c > 1)
+                return false;
+        }
+        
+        return true;
+    }
+    
+    void dfs(TreeNode* root, vector<int> v) {
+        if (!root) return;
+        
+        v.push_back(root->val);
+        if (!root->left && !root->right)
+            if (canPalindrome(v))
+                pcount++;
+        dfs(root->left, v);
+        dfs(root->right, v);
+    }
+    
+public:
+    int pseudoPalindromicPaths (TreeNode* root) {
+        if (!root) return 0;
+        
+        vector<int> v;
+        dfs(root, v);
+        return pcount;
+    }
+};

@@ -1,0 +1,27 @@
+class Solution {
+public:
+    bool isItPossible(string word1, string word2) {
+        auto v1 = normalize(word1), v2 = normalize(word2);
+        auto vswap = [&](int i, int j){
+            v1[i]--, v1[j]++, v2[i]++, v2[j]--;
+        };
+
+        for(int i=0;i<26;i++) for(int j=0;j<26;j++){
+            if(v1[i] == 0 || v2[j] == 0) continue;
+            vswap(i, j);
+            if(countChar(v1) == countChar(v2)) return true;
+            vswap(j, i);
+        }
+        return false;
+    }
+
+    int countChar(const vector<int>& cnt){
+        return count_if(begin(cnt), end(cnt), [](int n){return n>0;});
+    }
+
+    vector<int> normalize(const string& s){
+        vector<int> cnt(26,0);
+        for(char c:s) cnt[c-'a']++;
+        return cnt;
+    }
+};

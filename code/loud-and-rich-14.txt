@@ -1,0 +1,42 @@
+class Solution {
+public:
+    vector<int> loudAndRich(vector<vector<int>>& richer, vector<int>& quiet) {
+        int N = quiet.size();
+        vector<int> indegree(N, 0);
+        vector<vector<int>> children(N, vector<int> {});
+        
+        for (auto ij : richer) {
+            int i = ij[0];
+            int j = ij[1];
+            ++indegree[j];
+            children[i].push_back(j);
+        }
+        
+        queue<int> q;
+        for (int i = 0; i < N; ++i) {
+            if (!indegree[i]) {
+                q.push(i);
+            }
+        }
+        
+        vector<int> ans(N, 0);
+        for (int i = 1; i < N; ++i) {
+            ans[i] = i;
+        }
+        
+        while (!q.empty()) {
+            int i = q.front();
+            q.pop();
+            for (int j : children[i]) {
+                if (quiet[ans[i]] < quiet[ans[j]]) {
+                    ans[j] = ans[i];
+                }
+                if (!--indegree[j]) {
+                    q.push(j);
+                }
+            }
+        }
+        
+        return ans;
+    }
+};

@@ -1,0 +1,29 @@
+public string ReverseParentheses(string s) {
+	var stack = new Stack<Stack<char>>();
+	stack.Push(new Stack<char>());
+
+	foreach (var c in s.ToCharArray()) {
+		if (c == '(') {
+			stack.Push(new Stack<char>());
+		}
+		else if (c == ')') {
+			var pop = stack.Pop();
+			var peek = stack.Peek();
+			while (pop.Count > 0) {
+				peek.Push(pop.Pop());
+			}
+		}
+		else {
+			stack.Peek().Push(c);
+		}
+	}
+
+	var result = stack.Peek();
+	var n = result.Count;
+	var arr = new char[n];
+	for (var i = n - 1; i >= 0; i--) {
+		arr[i] = result.Pop();
+	}
+
+	return new string(arr);
+}

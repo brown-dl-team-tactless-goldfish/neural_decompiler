@@ -1,0 +1,33 @@
+
+
+int countBattleships(char** board, int boardSize, int* boardColSize){
+    int ** visited = malloc(sizeof(int *) * boardSize);
+    for (int i = 0; i < boardSize; i++){
+        visited[i] = malloc(sizeof(int) * boardColSize[i]);
+        for (int j = 0; j < boardColSize[i]; j++){
+            visited[i][j] = 0;
+        }
+    }
+    int count = 0;
+    for (int i = 0; i < boardSize; i++){
+        for (int j = 0; j < boardColSize[i]; j++){
+            if (visited[i][j] == 1){
+                continue;
+            }
+            visited[i][j] = 1;
+            if (board[i][j] == 'X'){
+                count++;
+                int row = i, col = j;
+                while (col < boardColSize[i] && board[i][col] == 'X'){
+                    visited[i][col] = 1;
+                    col++;
+                }
+                while (row < boardSize && board[row][j] == 'X'){
+                    visited[row][j] = 1;
+                    row++;
+                }
+            }
+        }
+    }
+    return count;
+}

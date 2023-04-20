@@ -1,0 +1,20 @@
+class Solution {
+public:
+  int largestValsFromLabels(vector<int>& values, vector<int>& labels, int numWanted, int useLimit) {
+    unordered_map<int, multiset<int>>table;
+    for(int i = 0; i != values.size(); i++) table[labels[i]].insert(values[i]);
+    
+    multiset<int>nums;
+    for(auto &[l, st] : table){
+      auto it = st.rbegin();
+      for(int i = 0; i != useLimit && it != st.rend(); i++, it++)
+        nums.insert(*it);
+    }
+    
+    int sum = 0;
+    for(auto it = nums.rbegin(); it != nums.rend() && numWanted--; it++) 
+      sum += *it;
+    
+    return sum;
+  }
+};

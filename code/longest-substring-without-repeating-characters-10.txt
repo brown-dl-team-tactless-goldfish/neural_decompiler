@@ -1,0 +1,37 @@
+int lengthOfLongestSubstring(char * s){
+	/* Map to find if the character(index) has occurred; 
+		value of index is last index of occurance*/
+	int map[256];
+
+	/* Variables to keep track of length */
+	int max_len = 0, len = 0; 
+
+	int low = 0, hig = 0, i = 0;
+
+	/* Set initial value; none of the characters occurred */
+	memset(map, -1 , sizeof(map));
+
+	/* Loop through every character */
+	while(s[i] != '\0') {
+		/* If Not present in map; Just update map*/
+		if(map[s[i]] == -1) {
+			map[s[i]] = i;
+			hig = i;
+			len++;
+		}else {
+			/* Rest all characters index from x to low to -1 */
+			int x = map[s[i]];
+			for(int j = low; j <= x; j++) {
+				map[s[j]] = -1;
+			}
+			/* Update the latest index */
+			map[s[i]] = i;
+			low = x + 1;
+			hig = i;
+			len = hig - low + 1;
+		}
+		i++;
+		if(len > max_len) 
+			max_len = len;
+	}
+	return max_len;

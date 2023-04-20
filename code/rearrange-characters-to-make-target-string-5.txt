@@ -1,0 +1,27 @@
+// Explicit solution
+int rearrangeCharacters(char * s, char * target){
+    int sCharsCount[26] = {0}, tarCharsCount[26] = {0}, slen = strlen(s), tarlen = strlen(target), minchar;
+    for (int i = 0; i < slen; i++) sCharsCount[s[i] -'a']++;
+    for (int i = 0; i < tarlen; i++) tarCharsCount[target[i] - 'a']++;
+    for (int i = 0; i < 26; i++)  if (tarCharsCount[i]) sCharsCount[i] /= tarCharsCount[i];
+    minchar = sCharsCount[target[0] - 'a'];
+    for (int i = 1; i < tarlen; i++) if (sCharsCount[target[i] - 'a'] < minchar) minchar = sCharsCount[target[i] - 'a'];
+    return minchar;
+}
+
+// The final for loop is actually not necessary but in case this code is not as clear I've included the more "explicit" solution above
+int rearrangeCharacters(char * s, char * target){
+    int sCharsCount[26] = {0}, tarCharsCount[26] = {0}, slen = strlen(s), tarlen = strlen(target), minchar;
+    for (int i = 0; i < slen; i++) sCharsCount[s[i] -'a']++;
+    for (int i = 0; i < tarlen; i++) tarCharsCount[target[i] - 'a']++;
+    minchar = sCharsCount[target[0] - 'a'] / tarCharsCount[target[0] - 'a'];
+    for (int i = 0; i < 26; i++)
+    {
+        if (tarCharsCount[i]) 
+        {
+            sCharsCount[i] /= tarCharsCount[i];
+            if (sCharsCount[i] < minchar) minchar = sCharsCount[i];
+        }
+    }
+    return minchar;
+}

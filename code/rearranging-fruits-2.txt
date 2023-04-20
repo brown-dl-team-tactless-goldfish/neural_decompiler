@@ -1,0 +1,85 @@
+class Solution {
+public:
+    long long minCost(vector<int>& basket1, vector<int>& basket2) {
+        unordered_map<int, int> map1;
+        unordered_map<int, int> map2;
+
+        int min_val = INT_MAX;
+        for(int ele: basket1) {
+            map1[ele]++;
+            min_val = min(min_val, ele);
+        }
+        for(int ele: basket2) {
+            map2[ele]++;
+            min_val = min(min_val, ele);
+        }
+        vector<int> first_swaps;
+        for(auto& it: map1) {
+            int count = 0;
+            if(map2.count(it.first)==0) {
+                count = it.second;
+            }else if(it.second > map2[it.first]){
+                count = it.second - map2[it.first];
+            }
+
+            if(count%2!=0) {
+                return -1;
+            }
+            count/=2;
+            while(count--!=0) {
+                first_swaps.push_back(it.first);
+            }
+
+        }
+
+
+
+
+
+        vector<int> second_swaps;
+        for(auto& it: map2) {
+            int count = 0;
+            int key = it.first;
+            if(map1.count(key) == 0) {
+                count = it.second;
+            }else if(it.second > map1[key]){
+                count = it.second - map1[key];
+            }
+
+            if(count%2!=0) {
+                return -1;
+            }
+
+            count/=2;
+            while(count--!=0) {
+                second_swaps.push_back(key);
+            }
+
+        }
+
+
+
+        if(first_swaps.size()!=second_swaps.size()) {
+            return -1;
+        }
+
+
+        int i = 0;
+        int j = 0;
+        long long res = 0;
+
+        first_swaps.insert(first_swaps.end(), second_swaps.begin(), second_swaps.end());
+        std::sort(first_swaps.begin(), first_swaps.end());
+        for(int i=0;i<first_swaps.size()/2;i++) {
+            if(min_val*2 < first_swaps[i]) {
+                res += (long long)min_val*2;
+            }else {
+                res += (long long)first_swaps[i];
+            }
+        }
+
+        return res;
+
+
+    }
+};

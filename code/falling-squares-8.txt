@@ -1,0 +1,108 @@
+public class Solution {
+    private List<Interval> _intervals;
+    private int _mh = -1;
+    public IList<int> FallingSquares(int[][] positions) {
+        _intervals = new List<Interval>();
+        var result = new List<int>();
+        foreach(var item in positions)
+        {
+            var ni = new Interval(item[0], item[0] + item[1], item[1]);
+            _mh = Math.Max(_mh, CalculateHeight(ni));
+            result.Add(_mh);
+        }
+        return result;
+    }
+    
+    private int CalculateHeight(Interval ni)
+    {
+        int result = -1;
+        if(_intervals.Count() == 0)
+        {
+            _intervals.Add(ni);
+            result = ni.H;
+        }
+        else
+        {
+            int maxH = ni.H;
+            
+            var overlappingIndexes = new List<int>();
+            
+            for(int i=0;i<_intervals.Count();i++)
+            {
+                if(IsOverlap(ni, _intervals[i]))
+                {
+                    var maxIntervalH = _intervals[i].H + ni.H;
+                    
+                    if(maxIntervalH > maxH)
+                    {
+                        maxH = maxIntervalH;
+                        overlappingIndexes = new List<int>();
+                        overlappingIndexes.Add(i);
+                    }
+                    else if(maxIntervalH == maxH)
+                    {
+                        overlappingIndexes.Add(i);
+                    }
+                }
+            }
+            
+            AdjustIntervals(overlappingIndexes, ni);
+            
+            ni.H = maxH;
+           _intervals.Add(ni);
+            result = maxH;
+        }
+        
+        return result;
+    }
+    
+    private void AdjustIntervals(List<int> overlappingIndexes, Interval ni)
+    {
+        foreach(var i in overlappingIndexes)
+        {
+            var interval = _intervals[i];
+            _intervals.RemoveAt(i);
+
+            if(ni.X1 <= interval.X1 && ni.X2 >= interval.X2)
+                continue;
+            else if(ni.X1 > interval.X1 && ni.X2 < interval.X2)
+            {
+                _intervals.Add(new Interval(interval.X1, ni.X1, interval.H));
+                _intervals.Add(new Interval(ni.X2, interval.X2, interval.H));
+            }
+            else
+            {
+                if (ni.X1<= interval.X1 && ni.X2 < interval.X2)
+                {
+                    _intervals.Add(new Interval(ni.X2, interval.X2, interval.H));        
+                }
+                else
+                {
+                    _intervals.Add(new Interval(interval.X1, ni.X1, interval.H));
+                }
+            }
+        }
+    }
+    
+    private bool IsOverlap(Interval x, Interval y)
+    {
+        if(x.X2<=y.X1 || y.X2<= x.X1)
+            return false;
+        
+        return true;
+    }
+    
+    private class Interval{
+        
+        public Interval(int x1, int x2, int h)
+        {
+            X1 = x1;
+            X2 = x2;
+            H = h;
+        }
+        
+        public int X1 {get; set;}
+        public int X2 {get; set;}
+        public int H {get; set;}
+    }
+}

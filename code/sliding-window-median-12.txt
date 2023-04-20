@@ -1,0 +1,77 @@
+class Solution {
+public:
+    multiset<int,greater<int>>left;
+    multiset<int>right;
+      void balance()
+    {
+        if(left.size()-right.size()==2)
+        {
+            int val=*left.begin();
+            left.erase(left.begin());
+            right.insert(val);
+        }
+        else if(right.size()-left.size()==2)
+        {
+            int val=*right.begin();
+            right.erase(right.begin());
+            left.insert(val);
+        }
+    }
+    void remove(int x)
+    {
+        if(left.find(x)!=left.end())
+        {
+            left.erase(left.find(x));
+        }
+        else if(right.find(x)!=right.end())
+        {
+            right.erase(right.find(x));
+        }
+        balance();
+    }
+    void add(int num)
+    {
+        if(right.size()>0&&num>*right.begin())
+        {
+            right.insert(num);
+        }
+        else
+        {
+            left.insert(num);
+        }
+        balance();
+    }
+    double med()
+    {
+        long long val1=*left.begin();
+        long long val2=*right.begin();
+        if(left.size()==right.size())
+        {
+            return (double)(val1+val2)/2.0;
+        }
+        else if(left.size()>right.size())
+        {
+            return (double)(*left.begin());
+        }
+        else
+        {
+            return (double)(*right.begin());
+        }
+    }
+    vector<double> medianSlidingWindow(vector<int>& nums, int k) 
+    {
+        vector<double>v;
+        for(int i=0;i<k;i++)
+        {
+            add(nums[i]);
+        }
+        v.push_back(med());
+        for(int i=k;i<nums.size();i++)
+        {
+            remove(nums[i-k]);
+            add(nums[i]);
+            v.push_back(med());
+        }
+        return v;
+    }
+};

@@ -1,0 +1,25 @@
+class Solution {
+public:
+    long long minimumRemoval(vector<int>& a) {
+        long long i,n=a.size(), ans=1e11, res=1e11;
+        if(n==1) return 0;
+        sort(a.begin(), a.end());
+        vector<long long> l(n,0); l[0]=a[0];
+        vector<long long> r(n,0); r[n-1]=a[n-1];
+        for(i=1;i<n;i++) l[i]+=(l[i-1]+a[i]);
+        for(i=n-2;i>=0;i--) r[i]+=(r[i+1]+a[i]);
+        for(i=0;i<n;i++){
+            if(i==0) {
+                res=r[1]-((n-1)*a[0]);
+            }
+            else if(i==n-1) {
+                res=l[n-2];
+            }
+            else {
+                res=(l[i-1])+(r[i+1]-(n-i-1)*a[i]);
+            }
+            ans=min(res, ans);
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,136 @@
+class pointData{
+  public:
+    int row;
+    int col;
+    int value;
+    pointData(int i,int j,int val){
+        row =  i;
+        col = j;
+        value = val;
+    }
+};
+
+bool operator < (pointData pd1,pointData pd2){
+    if(pd1.value < pd2.value){
+        return false;
+    }
+    return true;
+}
+
+class Solution {
+public:
+    int trapRainWater(vector<vector<int>>& heightMap) {
+        
+        int row = heightMap.size();
+        if(row == 0){
+            return 0;
+        }
+        int col = heightMap[0].size();
+        
+        priority_queue<pointData> pq;
+        set<pair<int,int>> st;
+        
+        for(int i=0;i<row;i++){
+            pointData pd(i,0,heightMap[i][0]);
+            pq.push(pd);
+            st.insert(make_pair(i,0));
+        }
+        
+        for(int i=0;i<row;i++){
+            pointData pd(i,col-1,heightMap[i][col-1]);
+            pq.push(pd);
+            st.insert(make_pair(i,col-1));
+        }
+        
+        for(int i=1;i<col-1;i++){
+            pointData pd(0,i,heightMap[0][i]);
+            pq.push(pd);
+            st.insert(make_pair(0,i));
+        }
+        
+        for(int i=1;i<col-1;i++){
+            pointData pd(row-1,i,heightMap[row-1][i]);
+            pq.push(pd);
+            st.insert(make_pair(row-1,i));
+        }
+        
+        
+        
+        
+        int ans = 0;
+        int max = INT_MIN;
+        
+        while(!pq.empty()){
+            
+            pointData pd = pq.top();
+            pq.pop();
+            int i = pd.row;
+            int j = pd.col;
+            if(pd.value > max){
+                max = pd.value;
+            }
+            
+            if(i-1 >=0){
+                int r = i-1;
+                int c = j;
+                pair<int,int> p = make_pair(r,c);
+                if(st.find(p) == st.end()){
+                    if(heightMap[r][c] <= max){
+                        ans += max - heightMap[r][c];
+                    }    
+                    st.insert(p);
+                    pointData pd1(r,c,heightMap[r][c]);
+                    pq.push(pd1);
+                }
+            }
+            
+            if(j-1 >=0){
+                int r = i;
+                int c = j-1;
+                pair<int,int> p = make_pair(r,c);
+                if(st.find(p) == st.end()){
+                    if(heightMap[r][c] <= max){
+                        ans += max - heightMap[r][c];
+                    }    
+                    st.insert(p);
+                    pointData pd1(r,c,heightMap[r][c]);
+                    pq.push(pd1);
+                }
+            }
+            
+            if(i+1  < row){
+                int r = i+1;
+                int c = j;
+                pair<int,int> p = make_pair(r,c);
+                if(st.find(p) == st.end()){
+                    if(heightMap[r][c] <= max){
+                        ans += max - heightMap[r][c];
+                    }    
+                    st.insert(p);
+                    pointData pd1(r,c,heightMap[r][c]);
+                    pq.push(pd1);
+                }
+            }
+            
+            if(j+1 < col){
+                int r = i;
+                int c = j+1;
+                pair<int,int> p = make_pair(r,c);
+                if(st.find(p) == st.end()){
+                    if(heightMap[r][c] <= max){
+                        ans += max - heightMap[r][c];
+                    }    
+                    st.insert(p);
+                    pointData pd1(r,c,heightMap[r][c]);
+                    pq.push(pd1);
+                }
+            }
+            
+            
+            
+            
+        }
+        
+        return ans;
+    }
+};

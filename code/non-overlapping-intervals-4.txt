@@ -1,0 +1,23 @@
+int cmp(const void *x, const void *y)
+{
+    int first_end = ((int **)x)[0][1];
+    int second_end = ((int **)y)[0][1];
+
+    return first_end - second_end;
+}
+
+int eraseOverlapIntervals(int **intervals, int size, int *colsize)
+{
+    int end = INT_MIN, count = 0;
+
+    qsort(intervals, size, sizeof(int *), cmp);
+
+    for (int i = 0; i < size; i++) {
+        if (end <= intervals[i][0]) {
+            count++;
+            end = intervals[i][1];
+        }
+    }
+
+    return size - count;
+}

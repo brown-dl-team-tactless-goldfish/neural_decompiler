@@ -1,0 +1,51 @@
+class Solution {
+public:
+    bool sumGame(string num) {
+        int firstSum = 0;
+        int secondSum = 0;
+        int qFirst = 0;
+        int qSecond = 0;
+        for(int i = 0; i < num.size(); i++) {
+            if(num[i]=='?') {
+                if(i < num.size()/2) 
+                    qFirst++;
+                else 
+                    qSecond++;
+            }
+            else {
+                if(i < num.size()/2) 
+                    firstSum += (num[i]-48);
+                else 
+                    secondSum += (num[i]-48);
+            }
+        }
+        int q = qFirst + qSecond;
+        int aQ = q/2;
+        int bQ = q/2;
+        if(q%2) aQ++;
+        
+        
+        int minLeft = firstSum + 9*min(qFirst, aQ);
+        int maxRight = secondSum;
+        if(aQ > qFirst) {
+            maxRight += (qSecond-(aQ-qFirst))*9;
+        }
+        else {
+            maxRight += qSecond*9;
+        }
+        if(minLeft > maxRight) return true;
+
+        
+        int minRight = secondSum + 9*min(aQ, qSecond);
+        int maxLeft = firstSum;
+        if(aQ > qSecond) {
+            maxLeft += (qFirst - (aQ-qSecond))*9;
+        }
+        else {
+            maxLeft += qFirst*9;
+        }
+        if(minRight > maxLeft) return true;
+
+        return false;
+    }
+};

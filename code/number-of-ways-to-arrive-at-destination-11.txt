@@ -1,0 +1,49 @@
+class Solution {
+public:
+    #define ll long long int
+    int countPaths(int n, vector<vector<int>>& roads) {
+        vector<pair<int, int>> adj[n];
+        for(vector<int> &road: roads) {
+            int src = road[0], dest = road[1], wt = road[2];
+            adj[src].push_back({dest, wt});
+            adj[dest].push_back({src, wt});
+        }
+
+        // {dist, node}
+        priority_queue<pair<ll, int>, vector<pair<ll, int>>, greater<pair<ll, int>>> pq;
+        vector<ll> dist(n, LONG_MAX);
+        vector<ll> numOfWaysToReach(n, 0);
+        int mod = (int)(1e9 + 7);
+
+        pq.push({0, 0});
+        dist[0] = 0;
+        numOfWaysToReach[0] = 1;
+
+        while(pq.empty() == false) {
+            ll dis = pq.top().first;
+            int node = pq.top().second;
+            pq.pop();
+
+            if(node == n - 1) continue;
+
+            for(auto &pr: adj[node]) {
+                int neighbour = pr.first; 
+                ll wt = pr.second;
+
+                // first time arrival with a short path
+                if(dis + wt < dist[neighbour]) {
+                    dist[neighbour] = dis + wt;
+                    numOfWaysToReach[neighbour] = numOfWaysToReach[node];
+                    pq.push({dist[neighbour], neighbour});
+                }
+
+                // Repeated arrivals with the shortest path.
+                else if(dis + wt == dist[neighbour]) {
+                    numOfWaysToReach[neighbour] = (numOfWaysToReach[neighbour] + numOfWaysToReach[node]) % mod;
+                }
+            }
+        }
+
+        return numOfWaysToReach[n-1];
+    }
+};

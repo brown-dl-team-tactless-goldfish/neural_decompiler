@@ -1,0 +1,31 @@
+class Solution {
+    long long MOD = 1e9 + 7;
+public:
+    int numWays(string s) {
+        long long nums = 0, ans;
+        for (int i = 0; i < s.size(); ++i) if (s[i] == '1') nums++;
+        if (nums % 3 != 0) return 0;
+        if (nums == 0) {
+            ans = (s.size() - 1) * (s.size() - 2) / 2 % MOD;
+        } else {
+            unsigned long long a = -1, b = -1, c = -1, d = -1, tmp = 0;
+            for (int i = 0; i < s.size(); ++i) {
+                if (s[i] == '1') tmp++;
+                if (a == -1 && tmp * 3 == nums) {
+                    a = i;
+                }
+                if (b == -1 && tmp == nums / 3 + 1) {
+                    b = i;
+                }
+                if (c == -1 && tmp == nums / 3 * 2) {
+                    c = i;
+                }
+                if (d == -1 && tmp == nums / 3 * 2 + 1) {
+                    d = i;
+                }
+            }
+            ans = (b - a) * (d - c) % MOD;
+        }
+        return ans;
+    }
+};

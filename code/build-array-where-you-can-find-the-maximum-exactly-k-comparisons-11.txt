@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int numOfArrays(int arrSize, int maxVal, int maxCost) {
+        using ll=long long;
+        int MOD = 1e9+7;
+        vector<vector<vector<ll>>> dp(arrSize+1,vector<vector<ll>>(maxVal+1, vector<ll>(maxCost+1,0)));
+        for(int v=1;v<=maxVal;v++) dp[1][v][1]=1;    // for each array of size 1 just 1 way of making it
+
+        for(int s=2;s<=arrSize;s++) {                  // for each size  
+            for(int mv=1;mv<=maxVal;mv++) {               // for each maxVal so far
+                for(int c=1;c<=maxCost && c<=s;c++) {  // for each cost so far; optimization: cost <= arrSizeSoFar
+                    for(int v=1;v<=maxVal;v++) {
+                        if(v<=mv) dp[s][mv][c]+=dp[s-1][mv][c],   dp[s][mv][c]%=MOD;
+                        else      dp[s][v][c] +=dp[s-1][mv][c-1], dp[s][v][c]%=MOD;
+                    }
+                }
+            }
+        }
+        
+        ll res=0;
+        for(int v=1;v<=maxVal;v++)
+            res+= dp[arrSize][v][maxCost], res%=MOD;
+        
+        return res;        
+    }
+};

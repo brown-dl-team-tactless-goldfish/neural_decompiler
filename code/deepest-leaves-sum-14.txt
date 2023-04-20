@@ -1,0 +1,41 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+int findDepth(struct TreeNode *node) {
+        if (!node)
+                return 0;
+        
+        int left = findDepth(node->left);
+        int right = findDepth(node->right);
+        
+        return 1 + (left > right ? left : right);
+}
+
+int getSum(struct TreeNode *node, int depth, int maxDepth) {
+        if (!node)
+                return 0;
+        
+        depth++;
+        
+        if (!node->right && !node->left) {
+                if (depth == maxDepth)
+                        return node->val;
+                else
+                        return 0;
+        }
+        
+        return getSum(node->right, depth, maxDepth) + getSum(node->left, depth, maxDepth);
+}
+
+int deepestLeavesSum(struct TreeNode* root){
+        int depth = findDepth(root);
+        
+        return getSum(root, 0, depth);
+        
+}

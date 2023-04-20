@@ -1,0 +1,48 @@
+int height(struct TreeNode* node)
+{
+    if(node==NULL){
+        return 0;
+    }
+    else{
+        int left = height(node->left);
+        int right = height(node->right);        
+        if(left > right){
+            return (left+1);
+        }else{
+            return (right+1);
+        }
+    }
+}
+int getleftnode(struct TreeNode* node,int level,int *lnode,int *flag)
+{
+    if(node==NULL)
+    {
+        return 0;
+    }
+    if(level == 1 )
+    {
+        printf("%d",node->val);
+        *lnode = node->val; 
+        *flag=1;
+         
+    }else if (level >1)
+    {
+        getleftnode(node->left,level-1,lnode,flag); 
+        if(*flag ==0) {
+         getleftnode(node->right,level-1,lnode,flag);
+        }        
+    }
+    return 0;
+}
+
+int findBottomLeftValue(struct TreeNode* root)
+{
+    int lnode =0,h=0,flag=0;   
+    h = height(root);
+    if(h==1){
+        return root->val;
+    }else{
+        getleftnode(root,h,&lnode,&flag);
+    }    
+    return lnode;
+}

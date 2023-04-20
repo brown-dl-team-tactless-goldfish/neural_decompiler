@@ -1,0 +1,27 @@
+int MaxOf3val(int a, int b, int c){
+    if(a >= b)
+        return fmax(a, c);
+    else
+        return fmax(b, c);
+}
+
+int process(struct TreeNode* root, int* max){
+    if(root == NULL)
+        return 0;
+    int valLeft = process(root->left, max);
+    int valRight = process(root->right, max);
+    
+    int leftPath = root->val + valLeft;
+    int rightPath = root->val + valRight;
+    
+    *max = fmax(*max,  MaxOf3val(leftPath , rightPath , root->val + valLeft + valRight) );
+    *max = fmax(*max, root->val);
+    
+    return MaxOf3val(leftPath, rightPath, root->val);
+}
+
+int maxPathSum(struct TreeNode* root){
+    int max = INT_MIN;
+    process(root, &max);
+    return max;    
+}

@@ -1,0 +1,43 @@
+int numSplits(char * s){
+
+    int i, len, answer = 0;
+    int *fw_table, *bw_table;
+    int left_counter = 0, right_counter = 0;
+
+    len = strlen(s);
+    fw_table = (int *)malloc(sizeof(int)*26);
+    bw_table = (int *)malloc(sizeof(int)*26);
+    memset(fw_table, 0x0, sizeof(int)*26);
+    memset(bw_table, 0x0, sizeof(int)*26);
+
+    /* Record all character number */
+    for(i=0; i<len; i++)
+        bw_table[s[i]-'a']++;
+
+    /* Only conmpute if the counter greater than 0 */
+    for(i=0; i<26; i++)
+        if(bw_table[i])
+            right_counter++;
+
+    for(i=0; i<len; i++) {
+
+        /* Only increase if the counter greater than 0 */
+        if(!fw_table[s[i]-'a'])
+            left_counter++;
+
+        fw_table[s[i]-'a']++;
+        bw_table[s[i]-'a']--;
+
+        /* Only decrease if the counter equal 0 */
+        if(!bw_table[s[i]-'a'])
+            right_counter--;
+
+        if(left_counter == right_counter)
+            answer++;
+    }
+
+    free(fw_table);
+    free(bw_table);
+
+    return answer;
+}

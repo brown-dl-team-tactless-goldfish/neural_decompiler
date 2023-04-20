@@ -1,0 +1,40 @@
+public class Solution 
+{
+    public int MaxSideLength(int[][] mat, int threshold) 
+    {
+        int r = mat.Length, c = mat[0].Length;
+        var sum = new int[r + 1, c + 1];
+        for (int i = 1; i <= r; i++) 
+            for (int j = 1; j <= c; j++) 
+                sum[i, j] = sum[i-1, j] 
+                          + sum[i, j-1] 
+                          - sum[i-1, j-1] 
+                          + mat[i-1][j-1];
+
+        int start = 0, end = Math.Max(r, c);
+        while (start < end) 
+        {
+            int mid = start + (end - start + 1) / 2;
+            if (IsValidSolution(sum, threshold, mid)) 
+                start = mid;    
+            else 
+                end = mid - 1;
+        }
+        
+        return start;
+    }
+    
+    private bool IsValidSolution(int[,] sum, int threshold, int length) 
+    {
+        int r = sum.GetLength(0), c = sum.GetLength(1);
+        for (int i = length; i < r; i++) 
+            for (int j = length; j < c; j++) 
+                if (sum[i, j] 
+                    - sum[i-length, j] 
+                    - sum[i, j-length] 
+                    + sum[i-length, j-length]
+                    <= threshold) 
+                    return true;
+        return false;
+    }
+}

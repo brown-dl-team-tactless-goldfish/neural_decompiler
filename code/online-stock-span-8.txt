@@ -1,0 +1,93 @@
+//StockSpanner.h
+#ifndef StockSpanner_H
+#define StockSpanner_H
+
+struct StockSpanner;
+typedef struct StockSpanner StockSpanner;
+
+StockSpanner * stockSpannerCreate(void);
+void stockSpannerFree(StockSpanner * const pThis);
+int stockSpannerNext(StockSpanner * const pThis, const int price);
+
+#endif /*StockSpanner_H*/
+
+//StockSpanner.c
+#include <stdbool.h>
+#include <stddef.h>
+#include <stdlib.h>
+#include <assert.h>
+//#include "StockSpanner.h"
+
+#define INITIAL_LEN 5
+#define EXPAND_LEN 5
+
+struct StockSpanner{
+	int (* maps)[2];
+	int curLen;
+	int maxLen;
+};
+
+static bool StockSpanner_expand(StockSpanner * const pThis, const int spaceNeeded);
+
+StockSpanner * stockSpannerCreate(void){
+	StockSpanner * pStockSpanner = (StockSpanner *)malloc(sizeof (StockSpanner));
+	if (NULL == pStockSpanner){
+		goto EXCEPTION;
+	}
+	
+	pStockSpanner->maps = (int (*)[2])malloc(sizeof (int [2]) * INITIAL_LEN);
+	if (NULL == pStockSpanner->maps){
+		goto EXCEPTION_OBJ_MALLOCED;
+	}
+	pStockSpanner->curLen = 0;
+	pStockSpanner->maxLen = INITIAL_LEN;
+	
+	return pStockSpanner;
+	
+	assert(0);
+EXCEPTION_OBJ_MALLOCED:
+	free(pStockSpanner);
+	pStockSpanner = NULL;
+EXCEPTION:
+	return NULL;
+}
+
+void stockSpannerFree(StockSpanner * const pThis){
+	free(pThis->maps);
+	free(pThis);
+}
+
+int stockSpannerNext(StockSpanner * const pThis, const int price){
+	int span = 1;
+	while (pThis->curLen > 0 && (pThis->maps)[pThis->curLen - 1][0] <= price){
+		span += (pThis->maps)[pThis->curLen - 1][1];
+		pThis->curLen -= 1;
+	}
+	
+	if (!( pThis->curLen < pThis->maxLen )){
+		const bool result = StockSpanner_expand(pThis, EXPAND_LEN);
+		assert(result);
+	}
+	
+	(pThis->maps)[pThis->curLen][0] = price;
+	(pThis->maps)[pThis->curLen][1] = span;
+	pThis->curLen += 1;
+	
+	return span;
+}
+
+static bool StockSpanner_expand(StockSpanner * const pThis, const int spaceNeeded){
+	assert(spaceNeeded > 0);
+	
+	const int newMaxLen = pThis->maxLen + spaceNeeded;
+	assert(newMaxLen > 0);
+	int (* newMaps)[2] = (int (*)[2])realloc(pThis->maps, sizeof (int [2]) * newMaxLen);
+	if (NULL == newMaps){
+		return false;
+	}
+	
+	pThis->maps = newMaps;
+	pThis->maxLen = newMaxLen;
+	
+	return true;
+}

@@ -1,0 +1,40 @@
+
+int findParent(int *parent, int i){
+    if(parent[i]==-1) return i;
+    return findParent(parent, parent[i]);
+}
+
+int findCircleNum(int** isConnected, int isConnectedSize, int* isConnectedColSize){
+    int * parent=malloc(isConnectedSize*sizeof(int));
+    for(int i=0;i<isConnectedSize;i++){
+        parent[i]=-1;
+    }
+    for(int i=0;i<isConnectedSize;i++){
+        for(int j=0;j<isConnectedColSize[i];j++){
+            if(isConnected[i][j]==1){
+                int x=findParent(parent, i);
+                int y=findParent(parent, j);
+                if(x!=y){
+                    parent[y]=x;
+                }
+            }
+        }
+    }
+    
+    int numProvince=0;
+    for(int i=0;i<isConnectedSize;i++){
+        if(parent[i]==-1)
+            numProvince++;
+    }
+    
+    return numProvince;
+}
+
+/* 
+        1   2   3   4
+    1   1       1   1
+    2
+    3   1
+    4   1            1
+    
+*/

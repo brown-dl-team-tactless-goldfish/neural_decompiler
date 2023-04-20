@@ -1,0 +1,45 @@
+class Solution {
+private:
+    // performs a permutation of the given range according to the task
+    template <typename Iterator>
+    void permute(Iterator first, Iterator last)
+    {
+        if (std::distance(first, last) < 2)
+            return;
+        --last;
+        while (first < last)
+        {
+            std::iter_swap(first, last);
+            first += 2;
+            last  -= 2;
+        }
+    }
+
+public:
+    string reformat(string s) {
+        // if the input string consists of only one letter return it
+        if (1 == s.size())
+            return s;
+        // partition the input string so that it has two groups: letters at the left part, numbers at the right
+        auto numbers = std::partition(s.begin(), s.end(), [](auto c){ return 'a' <= c && c <= 'z'; });
+        // calculate the size of letters and numbers sequences
+        auto const letters_dst = std::distance(s.begin(), numbers);
+        auto const numbers_dst = std::distance(numbers, s.end());
+        // if sizes are equal then permute the string according to the task requirements
+        // starting from the second and finishing with the penultimate number
+        if (letters_dst == numbers_dst)
+            permute(s.begin() + 1, s.end() - 1);
+        // if letters one character more than numbers
+        // permute the string according to the task requirements not including the first letter in the range
+        else if (letters_dst - 1 == numbers_dst)
+            permute(s.begin() + 1, s.end());
+        // if letters one character more than numbers
+        // permute the string according to the task requirements not including the last number in the range
+        else if (numbers_dst - 1 == letters_dst)
+            permute(s.begin(), s.end() - 1);
+        // clear string if conditions above are not met and task cannot be accomplished 
+        else
+            s.clear();
+        return s;
+    }
+};

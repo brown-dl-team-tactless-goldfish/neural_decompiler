@@ -1,0 +1,41 @@
+public class Solution {
+    private TreeNode res = null;
+    private int depth = 0;
+    
+    public TreeNode SubtreeWithAllDeepest(TreeNode root) {
+        if (root == null)
+            return res;
+        
+        if(DFS(root, 1).Item1 == 1)
+            res = root;
+        
+        return res;
+    }
+    
+    private (int, TreeNode) DFS(TreeNode node, int curDepth)
+    {
+        if (node.left == null && node.right == null)
+            return (curDepth, node);
+        
+        (int, TreeNode) l = node.left == null ? (Int32.MinValue, node) : DFS(node.left, curDepth + 1),
+                        r = node.right == null ? (Int32.MinValue, node) : DFS(node.right, curDepth + 1);
+        
+        if (l.Item1 == r.Item1 && l.Item1 >= depth)
+        {
+            res = node;
+            depth = l.Item1;
+        }
+        else if (l.Item1 > r.Item1 && l.Item1 > depth)
+        {
+            res = l.Item2;
+            depth = l.Item1;
+        }
+        else if (l.Item1 < r.Item1 && r.Item1 > depth)
+        {
+            res = r.Item2;
+            depth = r.Item1;
+        }
+        
+        return l.Item1 >= r.Item1 ? l : r;
+    }
+}

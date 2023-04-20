@@ -1,0 +1,28 @@
+void getMaxOfEachLevel(struct TreeNode *root, int **ret, int *len, int depth)
+{
+    if(root == NULL)
+        return;
+
+    if(depth == *len)
+    {
+        *ret = (int *)realloc(*ret, sizeof(int) * (depth + 1));
+        depth[*ret] = root->val;
+        (*len)++;
+    }
+
+    if(depth < *len && root->val > depth[*ret])
+        depth[*ret] = root->val;
+
+    getMaxOfEachLevel(root->left, ret, len, depth + 1);
+    getMaxOfEachLevel(root->right, ret, len, depth + 1);
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* largestValues(struct TreeNode* root, int* returnSize){
+    *returnSize = 0;
+    int *ret = NULL;
+    getMaxOfEachLevel(root, &ret, returnSize, 0);
+    return ret;
+}

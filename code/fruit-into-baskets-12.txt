@@ -1,0 +1,38 @@
+int totalFruit(int* tree, int treeSize){
+    int type1 = -1, type2 = -1;
+    int type1Cnt=0, type2Cnt=0;
+    int lastIndex=1, lastType = -1;
+    int maxfruits=0;
+    
+    if (tree == NULL || treeSize <= 0)
+        return 0;
+    
+    for (int i = 0; i < treeSize; i++) {
+        if (type1 == -1) {
+            type1 = tree[i];
+            type1Cnt=1;
+        } else if (tree[i] == type1) {
+            type1Cnt++;            
+        } else if(type2 == -1) {
+            type2= tree[i];
+            type2Cnt=1;
+        } else if (tree[i] == type2) {
+            type2Cnt++;            
+        } else {
+            // we found different
+            // let's restart from last different we found
+            i = lastIndex - 1;
+            type1 = -1;
+            type2 = -1;
+            if ( maxfruits < (type1Cnt + type2Cnt))
+                maxfruits = type1Cnt + type2Cnt;
+        }
+        if (tree[i] != lastType) {
+            lastType = tree[i];
+            lastIndex = i;
+        }
+    }
+    if ( maxfruits < (type1Cnt + type2Cnt))
+        maxfruits = type1Cnt + type2Cnt;
+    return maxfruits;
+}

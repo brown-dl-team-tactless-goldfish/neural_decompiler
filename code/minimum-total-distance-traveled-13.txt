@@ -1,0 +1,41 @@
+class Solution {
+
+long long dp[101][101][101];
+long long inf = 1e18;
+long long rec(int ind1, int ind2, vector<int>& r, vector<vector<int>>& f) {
+    
+    if(ind1 == r.size())
+        return 0;
+    
+    if(ind2 == f.size())
+        return inf;
+    
+    long long curr = dp[ind1][ind2][f[ind2][1]];
+    if(curr != -1)
+        return curr;
+    
+    long long way1, way2;
+    way1 = way2 = inf;
+    
+    if(f[ind2][1]) {
+        f[ind2][1]--;
+        way1 = abs(f[ind2][0] - r[ind1]) + rec(ind1 + 1, ind2, r, f);
+        f[ind2][1]++;
+    }
+    
+    way2 = rec(ind1, ind2 + 1, r, f);
+    
+    return dp[ind1][ind2][f[ind2][1]] = min(way1, way2);
+}
+
+public:
+long long minimumTotalDistance(vector<int>& r, vector<vector<int>>& f) {
+    
+    sort(r.begin(), r.end());
+    sort(f.begin(), f.end());
+    
+    memset(dp, -1, sizeof(dp));
+    
+    return rec(0, 0, r, f);
+}
+};

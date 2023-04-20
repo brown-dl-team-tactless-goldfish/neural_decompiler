@@ -1,0 +1,35 @@
+ public class PQ {
+     private struct HeapKey{
+         public int Value;
+         public int Index;
+     }
+     
+    private readonly SortedSet<HeapKey> _set;
+    private int index;
+    public PQ(Comparer<int> comparer = null){
+        comparer = comparer ?? Comparer<int>.Default;
+        _set = new SortedSet<HeapKey>(
+            Comparer<HeapKey>.Create((x, y) => 
+                        comparer.Compare(x.Value, y.Value) == 0 ?
+                        x.Index - y.Index :
+                        comparer.Compare(x.Value, y.Value))
+        );
+    }
+    
+    public void Add(int num){
+        _set.Add(new HeapKey{Value= num, Index = index++});
+    }
+    
+    public int Peek(){
+        return _set.First().Value;
+    }
+     
+     public int Pop(){
+         var item = _set.First();
+         _set.Remove(item);
+        return item.Value;
+    }
+     
+    public int Count => _set.Count;
+     
+ }     

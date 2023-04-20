@@ -1,0 +1,75 @@
+
+class Solution {
+public:
+    vector<string> braceExpansionII(string expression)
+    {
+        int end = -1;
+        return helper(expression, 0, end);
+    }
+    
+    std::vector<std::string> helper(const std::string &s, int begin, int &end)
+    {
+        std::vector<std::vector<std::string>> groups;
+        groups.emplace_back();
+
+        for(int i = begin; i <= s.size() && end < 0;){
+            switch(s[i]){
+                case '{':
+                    {
+                        int embededEnd = -1;
+                        groups.back() = strProduct(groups.back(), helper(s, i + 1, embededEnd));
+                        i = embededEnd + 1;
+                        break;
+                    }
+                case '}':
+                    {
+                        end = i;
+                        break;
+                    }
+                case ',':
+                    {
+                        groups.emplace_back();
+                        i++;
+                        break;
+                    }
+                default:
+                    {
+                        groups.back() = strProduct(groups.back(), {std::string(1, s[i++])});
+                        break;
+                    }
+            }
+        }
+        
+        if(end < 0){
+            end = s.size() - 1;
+        }
+
+        std::vector<std::string> res;
+        for(auto &e: groups){
+            res.insert(res.end(), std::make_move_iterator(e.begin()), std::make_move_iterator(e.end()));
+        }
+
+        std::sort(res.begin(), res.end());
+        res.erase(std::unique(res.begin(), res.end()), res.end());
+        return res;
+    }
+
+    std::vector<std::string> strProduct(const std::vector<std::string> &vstr1, const std::vector<std::string> &vstr2)
+    {
+        if(vstr1.empty()){
+            return vstr2;
+        }
+
+        if(vstr2.empty()){
+            return vstr1;
+        }
+
+        std::vector<std::string> res;
+        for(const auto &s1: vstr1){
+            for(const auto &s2: vstr2){
+                res.push_back(s1 + s2);
+            }
+        }
+        return res;
+    }
+};

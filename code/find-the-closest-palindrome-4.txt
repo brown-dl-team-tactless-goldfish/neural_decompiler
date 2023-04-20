@@ -1,0 +1,170 @@
+using LL = long long ;
+class Solution {
+    bool isPalindrome(string s){
+        int n = s.size() ;
+        for(int i = 0 ; i < n/2; i++){
+            if(s[i] != s[n-1-i])
+                return false ;
+        }
+        return true ;
+    }
+    //101 .... 10001
+    bool specialCaseCheck1(string s){
+        int n = s.size() ;
+        if(n == 1)
+            return false ;
+        if(s[0] != '1' || s[n-1] != '1')
+            return false ;
+        for(int i = 1; i < n-1; i++){
+            if(s[i] != '0')
+                return false ;
+        }
+        return true ;
+    }
+    //10... 10000
+    bool specialCaseCheck2(string s){
+        int n = s.size() ;
+        if(n == 1)
+            return false ;
+        if(s[0] != '1')
+            return false ;
+        for(int i = 1; i < n; i++){
+            if(s[i] != '0')
+                return false ;
+        }
+        return true ;
+    }
+    //99... 99999
+    bool specialCaseCheck3(string s){
+        int n = s.size() ;
+        if(n == 1)
+            return false ;
+        for(int i = 0; i < n; i++){
+            if(s[i] != '9')
+                return false ;
+        }
+        return true ;
+    }
+    //909... 9009
+    bool specialCaseCheck4(string s){
+        int n = s.size() ;
+        if(n < 3)
+            return false ;
+        if(s[0] != '9' || s[n-1] != '9')
+            return false ;
+        for(int i = 1;  i < n-1 ; i++){
+            if(s[i] != '0')
+                return false ;
+        }
+        return true ;
+    }
+public:
+    string nearestPalindromic(string n) {
+        int len = n.size() ;
+        if(specialCaseCheck1(n) || specialCaseCheck2(n)){
+            string ret ;
+            for(int i = 0; i < len -1; i++)
+                ret.push_back('9') ;
+            return ret ;            
+        }
+        if(specialCaseCheck3(n)){
+            string ret ;
+            ret.push_back('1') ;
+            for(int i = 1; i < len; i++)
+                ret.push_back('0') ;
+            ret.push_back('1') ;
+            return ret ;
+        }
+        if(specialCaseCheck4(n)){
+            string ret ;
+            ret.push_back('8') ;
+            for(int i = 1; i < len-1; i++)
+                ret.push_back('9') ;
+            ret.push_back('8') ;
+            return ret ;
+        }
+        if(isPalindrome(n))
+        {           
+            if(len == 1){
+                if(n == "0")
+                    return "1" ;
+                else{
+                    string ret = n ;
+                    ret[0] -= 1 ;
+                    return ret ;
+                }
+            }
+            else{
+                if(len % 2 == 1){
+                    string ret = n ;
+                    if(ret[len/2] == '0')
+                        ret[len/2] = '1' ;
+                    else
+                        ret[len/2] -= 1 ;
+                    return ret ;
+                }
+                else{
+                    string ret = n ;
+                    if(ret[len/2] == '0'){
+                        ret[len/2] = '1' ;
+                        ret[len/2-1] = '1' ;
+                    }
+                    else{
+                        ret[len/2] -= 1 ;
+                        ret[len/2-1] -= 1 ;
+                        return ret ;
+                    }
+                }
+            }
+
+        }
+        else
+        {
+            string ret1 = n ;
+            for(int i = 0; i < len/2; i++){
+                  ret1[len-1-i] = ret1[i] ;
+            }
+            string ret2 = ret1, ret3 = ret1;
+
+            if(len % 2 == 1){
+                ret2[len/2] = (ret1[len/2] -'0' + 1) % 10 + '0' ;
+                ret3[len/2] = (ret1[len/2] -'0' - 1 + 10 ) % 10 + '0' ;
+            }
+            else{
+                ret2[len/2-1] = (ret1[len/2-1] -'0' + 1) % 10 + '0' ;
+                ret2[len/2] = ret2[len/2-1] ;
+                ret3[len/2-1] = (ret1[len/2-1] -'0' - 1 + 10 ) % 10 + '0' ;
+                ret3[len/2] = ret3[len/2-1] ;                
+            }
+            cout << "here " ;
+                LL org = 0, val1 = 0, val2 = 0, val3 = 0 ; 
+                for(int i = 0; i < len; i++){
+                    org = org * 10 + n[i] ;
+                }
+                for(int i = 0; i < len; i++){
+                    val1 = val1*10 + ret1[i] ;
+                }
+                for(int i = 0; i < len; i++){
+                    val2 = val2*10 + ret2[i] ;
+                }
+                for(int i = 0; i < len; i++){
+                    val3 = val3*10 + ret3[i] ;
+                }
+                int a = abs(val1 - org) ;
+                int b = abs(val2 - org) ;
+                int c = abs(val3 - org) ;
+
+                vector<string>rets ;
+                if(a <= b && a <= c)
+                    rets.push_back(ret1) ;
+                if(b <= a && b <= c)
+                    rets.push_back(ret2) ;
+                if(c <= a && c <= b)
+                    rets.push_back(ret3) ;
+
+                sort(rets.begin(), rets.end()) ;
+                return rets[0] ;
+        }
+        return "not go here" ;
+    }
+};

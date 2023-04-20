@@ -1,0 +1,21 @@
+from functools import lru_cache, cmp_to_key
+class Solution:
+    
+    def cmp(self, a, b):
+        if a[1] == b[1]:
+            return a[0] - b[0]
+        else:
+            return a[1] - b[1]
+    
+    @lru_cache(None)
+    def getScores(self, i, j):
+        if i == len(self.scores):
+            return 0
+        ans = self.getScores(i + 1, j)
+        if self.scores[i] >= self.scores[j]:
+            ans = max(ans, self.scores[i] + self.getScores(i + 1, i))
+        return ans
+        
+    def bestTeamScore(self, scores: List[int], ages: List[int]) -> int:
+        self.scores = [0] + [score for (score, age) in sorted(zip(scores, ages), key = cmp_to_key(self.cmp))]
+        return self.getScores(1, 0)

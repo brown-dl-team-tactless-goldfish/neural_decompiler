@@ -1,0 +1,19 @@
+    int numberOfWays(int startPos, int endPos, int k) {
+        unordered_map<int, int> mp;
+        int M = (int)1e9+7;
+        mp[startPos]=1;
+        while(k){
+            unordered_map<int, int> nmp;
+            for (auto& [pos, way] : mp){
+                if (abs(endPos - pos) <= k){ // if this point can possibly reach endPos.
+                    nmp[pos-1]+=way;
+                    nmp[pos+1]+=way;
+                    nmp[pos-1]%=M;
+                    nmp[pos+1]%=M; 
+                }
+            }
+            mp = nmp;
+            --k;
+        }
+        return mp[endPos];
+    }

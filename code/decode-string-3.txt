@@ -1,0 +1,65 @@
+void input(char* s, char* ans, int* count, int times, int* i){
+    int start = *count;
+    while (s[*i] >= '1' && s[*i] <= '9'){
+        int k = s[*i]-48;
+        *i += 1;
+        while(s[*i] >= '0' && s[*i] <= '9'){
+            k *= 10;
+            k += s[*i]-48;
+            *i += 1;
+        }
+        *i += 1;
+        input(s, ans, count, k, i);
+        *i += 1;
+    }
+    while (s[*i] >= 'a' && s[*i] <= 'z'){
+        ans[*count] = s[*i];
+        *count += 1;
+        *i += 1;
+        if (s[*i] >= '1' && s[*i] <= '9'){
+            int k = s[*i]-48;
+            *i += 1;
+            while(s[*i] >= '0' && s[*i] <= '9'){
+                k *= 10;
+                k += s[*i]-48;
+                *i += 1;
+            }
+            *i += 1;
+            input(s, ans, count, k, i);
+            *i += 1;
+        }
+    }
+    times--;
+    int end = *count;
+    while (times > 0){ 
+        for (int j = start ; j < end ; j++){
+            ans[*count] = ans[j];
+            *count += 1;
+        }
+        times--;
+    }  
+}
+ 
+char * decodeString(char * s){ 
+    int len = strlen(s);
+    char* ans = malloc(sizeof(char)*100000);;
+    int count = 0;
+    for (int i = 0 ; i < len ; i++){
+        if (s[i] >= '1' && s[i] <= '9'){
+            int times = s[i]-48;
+            i++;
+            while(s[i] >= '0' && s[i] <= '9'){
+                times *= 10;
+                times += s[i]-48;
+                i++;
+            }
+            i++;
+            input(s, ans, &count, times, &i);
+        } else {
+            ans[count] = s[i];
+            count++;
+        }
+    }
+    ans[count] = '\0';
+    return ans;
+}

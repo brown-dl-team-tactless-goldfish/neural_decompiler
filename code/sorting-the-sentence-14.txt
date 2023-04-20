@@ -1,0 +1,102 @@
+#define MAX_STRING_LENGTH 9
+
+int getTokens(char** token, char* s);
+int* getIndex(char** token,int count);
+char* getSortedString(char** token,int* index,int count,int len);
+
+char * sortSentence(char * s){
+    
+    char **token;
+    int * index;
+    char* result;
+    int count;
+    int len;
+    
+    if ( s == NULL)
+        return s;
+    
+    result = (char*) malloc(sizeof(char) * (strlen(s)+1));
+    token = (char**) malloc(sizeof(char*) * MAX_STRING_LENGTH);
+    len = strlen(s)+1 ;    
+  
+    // Tokenize string into array
+    count = getTokens(token,s);
+
+    // Extract sequence 
+    index = getIndex(token,count);
+    
+    // Build new string 
+    result = getSortedString(token,index,len,count);
+    
+    return result;
+    
+
+}
+
+int getTokens(char** token, char* s){
+    
+    int i=0;
+    
+    char* tmp;
+    char delim[] = " ";
+    int count = 0;
+    char* new;
+    
+    tmp = strtok(s,delim);
+    new =  (char*) malloc(sizeof(char) * (strlen(tmp)+1));
+    strcpy(new,tmp);
+    token[i] = new;    
+    count = count + 1;
+    i = i+1;
+    
+    while(tmp!=NULL){
+        tmp = strtok(NULL, delim);
+        if (tmp!=NULL){
+
+        new = (char*) malloc(sizeof(char) * (strlen(tmp)+1));
+        strcpy(new,tmp);
+        token[i] = new;        
+        i++;
+        count++;
+        }     
+    }  
+    
+    return count;
+}  
+
+
+int* getIndex(char** token,int count){
+    int* index;
+    int i,j,pos;
+    
+    index = malloc(sizeof(int) * count);
+    
+    for(i=0;i<count;i++){
+        pos = strlen(token[i]) - 1;
+        j = token[i][pos] - '0';
+        printf("%d\n",j);
+        index[j-1] = i;
+
+    }    
+    return index;    
+}
+
+char* getSortedString(char** token,int* index,int len, int count){
+    char* result;
+    int pos;
+    char* delim = " ";
+
+    
+    result = malloc( (len + count) * sizeof(char));
+    strcpy(result,"");    
+
+    for (int i = 0;i<count ;i++){
+        strcat(result,token[index[i]]);
+        pos = strlen(result)-1;
+        result[pos] = ' ';
+    }        
+    pos = strlen(result)-1;
+    result[pos] = '\0';
+
+    return result;        
+}

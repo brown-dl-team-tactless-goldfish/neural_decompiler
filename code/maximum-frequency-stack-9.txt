@@ -1,0 +1,36 @@
+class FreqStack {
+    unordered_map<int, int> freq;
+    unordered_map<int, stack<int>> group;
+    int maxFreq;
+    
+public:
+    FreqStack() {
+        
+    }
+    
+    void push(int x) {
+        freq[x]++; 
+        
+        maxFreq = max(maxFreq, freq.at(x));
+        
+        group[freq.at(x)].push(x);
+    }
+    
+    int pop() {
+        int x = group.at(maxFreq).top();
+        group.at(maxFreq).pop();
+        
+        freq[x]--;
+        
+        if(group.at(maxFreq).empty()) maxFreq--;
+        
+        return x;
+    }
+};
+
+/**
+ * Your FreqStack object will be instantiated and called as such:
+ * FreqStack* obj = new FreqStack();
+ * obj->push(x);
+ * int param_2 = obj->pop();
+ */

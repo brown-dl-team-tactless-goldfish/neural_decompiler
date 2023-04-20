@@ -1,0 +1,32 @@
+class Solution {
+public:
+    vector<int> smallestMissingValueSubtree(vector<int>& parents, vector<int>& nums) {
+        int n = parents.size(); 
+        vector<int> ans(n, 1); 
+        
+        auto it = find(nums.begin(), nums.end(), 1); 
+        if (it != nums.end()) {
+            vector<vector<int>> tree(n); 
+            for (int i = 0; i < n; ++i) 
+                if (parents[i] != -1) tree[parents[i]].push_back(i); 
+            
+            int miss = 1; 
+            unordered_set<int> seen; 
+            for (int k = it - nums.begin(); k != -1; k = parents[k]) {
+                stack<int> stk; stk.push(k);
+                seen.insert(nums[k]); 
+                while (stk.size()) {
+                    int x = stk.top(); stk.pop(); 
+                    for (auto& xx : tree[x]) 
+                        if (!seen.count(nums[xx])) {
+                            seen.insert(nums[xx]); 
+                            stk.push(xx); 
+                        }
+                }
+                for (; seen.count(miss); ++miss); 
+                ans[k] = miss; 
+            }
+        }
+        return ans; 
+    }
+};

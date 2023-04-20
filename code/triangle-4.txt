@@ -1,0 +1,26 @@
+int minimum (int a, int b){
+    return (a < b) ? a : b;
+}
+
+//voy a utilizar programación dinámica para poder resolver este ejercicio
+int minimumTotal(int** triangle, int triangleSize, int* triangleColSize){
+    //voy a reservar memoria para la tabla de resultados
+    int **solutions = calloc(triangleSize, sizeof(int*));
+    for (int raw = 0; raw < triangleSize; raw++){
+        solutions[raw] = calloc(triangleSize-raw, sizeof(int)); //he creado un triangulo invertido desde la base hasta la punta
+    }
+    
+    //inicializo la base del triangulo de resultados
+    for (int column = 0; column < triangleSize; column++){
+        solutions[0][column] = triangle[triangleSize-1][column];
+    }
+    
+    //y ahora empiezo a calcular la parte iterativa
+    for (int raw = 1; raw < triangleSize; raw++){
+        for(int column = 0; column < triangleSize-raw; column++){
+            solutions[raw][column] = triangle[triangleSize-raw-1][column] + minimum(solutions[raw-1][column], solutions[raw-1][column+1]); 
+        }
+    }
+    
+    return solutions[triangleSize-1][0];
+}

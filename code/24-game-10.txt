@@ -1,0 +1,42 @@
+class Solution {
+public:
+    bool judgePoint24(vector<int>& cards) {
+        vector<double>nums(4) ;
+        for(int i = 0; i < 4; i++)
+            nums[i] = cards[i] ;
+        sort(nums.begin(), nums.end()) ;
+            
+        while(1)
+        {
+            auto rets = helper(nums, 0, 3) ;
+            for(auto& r : rets)
+            {
+                if(abs(r - 24.0) < 1e-10)
+                    return true ;
+            }
+            if(next_permutation(nums.begin(), nums.end()) == false)
+                break ;
+        }
+        return false ;
+    }
+private:
+    unordered_set<double> helper(vector<double>nums, int start, int end){
+        if(start == end)
+            return {nums[start]} ;
+        unordered_set<double>rets ;
+        for(int i = start; i < end; i++){
+            auto A = helper(nums, start, i) ;
+            auto B = helper(nums, i+1, end) ;
+            for(auto& x : A){
+                for(auto& y : B){
+                    rets.insert(x + y) ;
+                    rets.insert(x - y) ;
+                    rets.insert(x * y) ;
+                    if(y > 0)
+                        rets.insert(x / y) ;
+                }
+            }
+        }
+        return rets ;
+    }
+};

@@ -1,0 +1,48 @@
+class Solution {
+public:
+    int maxTaskAssign(vector<int>& tasks, vector<int>& workers, int pills, int strength) {
+        sort(tasks.begin(), tasks.end());
+        sort(workers.begin(), workers.end());
+        int low = 1;
+        int high = min(tasks.size(), workers.size());
+        while(low<=high){
+            int mid = (low+high)/2;
+            int can = 1;
+            int temp = pills;
+            multiset<int> solved_tasks;
+            for(int i = 0; i<mid; i++){
+                solved_tasks.insert(tasks[i]);
+            }
+            
+            for(int i=workers.size()-mid; i<workers.size(); i++){
+                auto it = solved_tasks.upper_bound(workers[i]);
+                if(it != solved_tasks.begin()){
+                    it--;
+                    solved_tasks.erase(it);
+                    continue;
+                }
+                if(temp==0){
+                    can = 0;
+                    break;
+                }
+                it = solved_tasks.upper_bound(workers[i]+strength);
+                if(it != solved_tasks.begin()){
+                    temp--;
+                    it --;
+                    solved_tasks.erase(it);
+                }
+                else{
+                    can = 0;
+                    break;
+                }
+            }
+            if(can){
+                low = mid+1;
+            }
+            else{
+                high = mid-1;
+            }
+        }
+        return low-1;
+    }
+};

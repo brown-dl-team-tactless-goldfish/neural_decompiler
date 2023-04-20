@@ -1,0 +1,108 @@
+typedef struct _Node
+{
+    char val;
+    int key;
+    struct _Node *next;
+}Node;
+
+typedef struct _HashTable
+{
+    int size;
+    Node **arr;
+}HashTable;
+
+HashTable * initHashTable(int size)
+{
+    HashTable * h = (HashTable *)malloc(sizeof(HashTable));
+    h->size = size;
+    h->arr = (Node **)malloc(sizeof(Node *) * size);
+    for(int i = 0; i < size; i++)
+        h->arr[i] = NULL;
+    return h;
+}
+
+int hashFunction(char key, int size)
+{
+    return (int)key % size;
+}
+
+void insert(HashTable *h, char val)
+{
+    int index = hashFunction(val, h->size);
+    Node *node = (Node *)malloc(sizeof(Node));
+    node->val = val;
+    node->key = index;
+    node->next = h->arr[index];
+    h->arr[index] = node;
+}
+
+bool contains(HashTable *h, char val)
+{
+    int index = hashFunction(val, h->size);
+    Node *node = h->arr[index];
+    while(node)
+    {
+        if(node->val == val)
+            return true;
+        node = node->next;
+    }
+    return false;
+}
+
+void delete(HashTable *h, char val)
+{
+    int index = hashFunction(val, h->size);
+    Node *node = h->arr[index];
+    Node *prev = NULL;
+    
+    while(node != NULL)
+    {
+        if(node->val == val)
+        {
+            if(prev)
+            {
+                Node *temp = node;
+                prev->next = node->next;
+                free(node);
+            }
+            else
+            {
+                Node *temp = node->next;
+                h->arr[index] = temp;
+                free(node);
+            }
+            return;
+        }
+        prev = node;
+        node = node->next;
+    }
+}
+int max(int a, int b)
+{
+    return (a > b) ? a:b;
+}
+
+int lengthOfLongestSubstring(char* s) {
+    int size = strlen(s);
+    
+    if(s == NULL || size == NULL)
+        return 0;
+
+    HashTable * h = initHashTable(size);
+    int start = 0;
+    int res = INT_MIN;
+    
+    for(int i = 0; i < size; i++)
+    {
+        while(contains(h,s[i]))
+        {
+            delete(h, s[start]);
+            start++;
+        }
+        
+        insert(h, s[i]);
+        res = max(res, i - start + 1);
+    }
+    return res;
+    
+}

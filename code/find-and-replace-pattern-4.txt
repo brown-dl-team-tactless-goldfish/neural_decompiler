@@ -1,0 +1,44 @@
+bool one_one_map(char *a, char *b) {
+    int len = strlen(a);
+    char arr[26] = {0};
+    for (int i=0; i<len; i++) {
+        if (arr[a[i]-'a'] == 0) {
+            arr[a[i]-'a'] = b[i];
+        } else {
+            if (arr[a[i]-'a'] != b[i]) {
+                return false;
+            }
+        }
+    }
+    memset(arr, 0, sizeof(arr));
+    for (int i=0; i<len; i++) {
+        if (arr[b[i]-'a'] == 0) {
+            arr[b[i]-'a'] = a[i];
+        } else {
+            if (arr[b[i]-'a'] != a[i]) {
+                return false;
+            }
+        }
+    }
+    
+    return true;
+}
+
+char ** findAndReplacePattern(char ** words, int wordsSize, char * pattern, int* returnSize){
+    char **ans = (char **)malloc(sizeof(char *) * wordsSize);
+    int pos = 0;
+    
+    for (int i=0; i<wordsSize; i++) {
+        if (strlen(words[i]) != strlen(pattern)) {
+            continue;
+        }
+        if (one_one_map(words[i], pattern)) {
+            ans[pos] = (char *)malloc(strlen(pattern)+1);
+            memset(ans[pos], 0, strlen(pattern)+1);
+            memcpy(ans[pos], words[i], strlen(words[i]));
+            pos++;
+        }
+    }
+    *returnSize = pos;
+    return ans;
+}

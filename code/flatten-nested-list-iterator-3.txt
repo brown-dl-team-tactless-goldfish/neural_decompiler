@@ -1,0 +1,64 @@
+struct NestedIterator {
+    struct NestedInteger ***stack;
+    int *ind;
+    int *size;
+    int stackSize;
+    int len;
+    int cache;
+};
+
+struct NestedIterator *nestedIterCreate(struct NestedInteger** nestedList, int nestedListSize) {
+    struct NestedIterator *iter = malloc(sizeof(struct NestedIterator));
+    iter->stackSize = 1000;
+    iter->stack = malloc(iter->stackSize * sizeof(struct NestedInteger **));
+    iter->ind = malloc(iter->stackSize * sizeof(int));
+    iter->size = malloc(iter->stackSize * sizeof(int));
+    iter->len = 1;
+    iter->stack[0] = nestedList;
+    iter->ind[0] = 0;
+    iter->size[0] = nestedListSize;
+    return iter;
+}
+
+bool nestedIterHasNext(struct NestedIterator *iter) {
+    if (!iter->len) return false;
+    if (iter->ind[iter->len - 1] == iter->size[iter->len - 1]) {
+        iter->len--;
+        return nestedIterHasNext(iter);
+    }
+    struct NestedInteger **tgt = iter->stack[iter->len - 1][iter->ind[iter->len - 1]];
+    if (NestedIntegerIsInteger(tgt)) return true;
+    iter->ind[iter->len - 1]++;
+    if (iter->len == iter->stackSize) {
+        iter->stackSize += 1000;
+        iter->stack = realloc(iter->stack, iter->stackSize * sizeof(struct NestedInteger **));
+        iter->ind = realloc(iter->ind, iter->stackSize * sizeof(int));
+        iter->size = realloc(iter->size, iter->stackSize * sizeof(int));
+    }
+    iter->stack[iter->len] = NestedIntegerGetList(tgt);;
+    iter->ind[iter->len] = 0;
+    iter->size[iter->len] = NestedIntegerGetListSize(tgt);
+    iter->len++;
+    return nestedIterHasNext(iter);
+}
+
+int nestedIterNext(struct NestedIterator *iter) {
+    struct NestedInteger **tgt = iter->stack[iter->len - 1][iter->ind[iter->len - 1]];
+    iter->ind[iter->len - 1]++;
+    return NestedIntegerGetInteger(tgt);
+}
+
+/** Deallocates memory previously allocated for the iterator */
+void nestedIterFree(struct NestedIterator *iter) {
+    free(iter->stack);
+    free(iter->ind);
+    free(iter->size);
+    free(iter);
+}
+
+/**
+ * Your NestedIterator will be called like this:
+ * struct NestedIterator *i = nestedIterCreate(nestedList, nestedListSize);
+ * while (nestedIterHasNext(i)) printf("%d\n", nestedIterNext(i));
+ * nestedIterFree(i);
+ */

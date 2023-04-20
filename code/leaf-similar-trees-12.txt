@@ -1,0 +1,41 @@
+#define MAX_SZ 201
+
+bool isLeaf(struct TreeNode* node)
+{
+    return !node->left && !node->right;
+}
+
+void getLeafs(struct TreeNode* root, int* arr, int* cnt)
+{
+    if (root == NULL)
+        return;
+    
+    getLeafs(root->left, arr, cnt);
+    getLeafs(root->right, arr, cnt);
+    
+    if (isLeaf(root)) {
+        arr[(*cnt)++] = root->val;
+    }
+}
+
+
+bool leafSimilar(struct TreeNode* root1, struct TreeNode* root2)
+{
+    int cnt1 = 0, cnt2 = 0;
+    bool flag = false;
+    
+    int *leafs1 = (int*) malloc(sizeof(int)*MAX_SZ);
+    int *leafs2 = (int*) malloc(sizeof(int)*MAX_SZ);
+    
+    getLeafs(root1, leafs1, &cnt1);
+    getLeafs(root2, leafs2, &cnt2);
+    
+    if (cnt1 != cnt2)
+        return false;
+    
+    flag = !memcmp(leafs1, leafs2, sizeof(int)*cnt1);
+    free(leafs1);
+    free(leafs2);
+    
+    return flag;
+}

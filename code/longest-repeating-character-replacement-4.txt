@@ -1,0 +1,47 @@
+int findMaxIndex(int* array){
+    int maxIndex=0;
+    for(int i=1;i<26;i++){
+        if(array[maxIndex]<array[i]){
+            maxIndex=i;
+        }
+    }
+    return maxIndex;
+}
+int characterReplacement(char* s, int k) {
+    int len=strlen(s);
+    if(len==0){
+        return 0;
+    }
+    int start=0;
+    int end=0;
+    int* array=(int*)calloc(26,sizeof(int));
+    array[s[0]-'A']++;
+    int maxIndex=s[0]-'A';
+    int maxLen=1;
+    while(end<len&&start<len){
+        int len=end-start+1;
+        if(array[maxIndex]+k<len){
+            array[s[start]-'A']--;
+            if(s[start]-'A'==maxIndex){
+                maxIndex=findMaxIndex(array);
+            }
+            start++;
+        }else if(array[maxIndex]+k>len){
+            end++;
+            array[s[end]-'A']++;
+            if(s[end]-'A'!=maxIndex){
+                maxIndex=findMaxIndex(array);
+            }
+        }else if(array[maxIndex]+k==len){
+            if(maxLen<end-start+1){
+                maxLen=end-start+1;
+            }
+            end++;
+            array[s[end]-'A']++;
+            if(s[end]-'A'!=maxIndex){
+                maxIndex=findMaxIndex(array);
+            }
+        }
+    }
+    return maxLen>end-start?maxLen:end-start;
+}

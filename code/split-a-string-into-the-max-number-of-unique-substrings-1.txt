@@ -1,0 +1,69 @@
+struct t{
+    int len;
+    char s[16];
+};
+bool find(struct t *map,int index,char *temp,int temp_len){
+    if(index==-1) return false;
+    for(int i=0;i<=index;i++){
+        if(map[i].len==temp_len){
+            if(!strncmp(&(map[i].s),temp,temp_len)){
+                return true;
+            }
+        }
+    }
+    return false;
+} 
+bool isvaild(char *s,int slen,int spilt,int *numberOfActiveBits){
+    struct t map[slen];
+    int index=-1;
+    
+    char temp[slen];
+    int temp_len=1;
+    memcpy(&temp[0],&s[0],1);
+    
+    // printf("map[index].s : %s",map[index].s);
+
+    for(int i=0;i<slen-1;i++){
+        if((spilt>>i)&1){
+            if(find(map,index,temp,temp_len)){
+                return false;
+            }
+            index++;
+            memcpy(&(map[index].s),&temp[0],temp_len);
+            map[index].s[temp_len]='\0';
+            map[index].len=temp_len;
+            (*numberOfActiveBits)++;
+            // printf("split : %d | map : %s | len : %d, | numberOfActiveBits : %d\n",spilt,map[index].s,map[index].len,*numberOfActiveBits);
+
+            temp_len=0;
+            temp[temp_len++]=s[i+1];
+            
+            
+        }
+        else{
+            temp[temp_len++]=s[i+1];
+        }
+        
+    }
+    if(temp_len!=0 && find(map,index,temp,temp_len)) return false;
+    // printf("------\n");
+    return true;
+}
+int max(int a,int b){
+    return a>b?a:b;
+}
+int maxUniqueSplit(char * s){
+    int slen=strlen(s);
+    if(slen==1) return 1;
+    int maxsize=pow(2,slen-1);
+    printf("maxsize : %d\n",maxsize);
+    int maximumSplits=0;
+    for(int split=0;split<maxsize;split++){
+        int numberOfBars = 0;
+        if(isvaild(s, slen,split, &numberOfBars))
+            maximumSplits = max(maximumSplits, numberOfBars);
+    }
+    
+    return maximumSplits+1;
+       
+}

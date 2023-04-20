@@ -1,0 +1,22 @@
+class RangeFreqQuery {
+public:
+  unordered_map<int, vector<pair<int,int>> >table;          // <num ,  <id, value >
+  
+  RangeFreqQuery(vector<int>& arr){
+    for(int i = 0; i != arr.size();  i++)
+      if(!table.count(arr[i])) table[arr[i]].push_back({i, 1});
+      else table[arr[i]].push_back({i, table[arr[i]].back().second + 1});
+  }
+    
+  int query(int left, int right, int value) {
+    if(!table.count(value)) return 0;
+    vector<pair<int,int>> *v = &table[value];
+     
+    auto it1 = upper_bound((*v).begin(), (*v).end(), left - 1, [](int a, const pair<int,int> b){return a < b.first;});
+    if(it1 == (*v).end() || it1->first > right) return 0;
+    
+    auto it2 = upper_bound((*v).begin(), (*v).end(), right, [](int a, const pair<int,int> b){return a < b.first;});
+    
+    return (--it2)->second - it1->second + 1;     
+  }
+};

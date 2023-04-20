@@ -1,0 +1,44 @@
+class Solution {
+public:
+    vector<int> bestCoordinate(vector<vector<int>>& towers, int radius) {
+        vector<int> result = {0, 0};
+        int size = towers.size(), tmpSignalSum = 0, maxSignalQualitySum = 0;
+        for (int x = 0; x <= 50; x++) {
+            for (int y = 0; y <= 50; y++) {
+                tmpSignalSum = 0;
+                for (auto tower : towers) {
+                    if (isInsideRadius(tower[0], tower[1], x, y, radius)) {
+                        tmpSignalSum += getSignalQuality(tower[0], tower[1], tower[2], x, y);
+                    }
+                }
+                if (tmpSignalSum >= maxSignalQualitySum) {
+                    if (tmpSignalSum == maxSignalQualitySum) {
+                        if (x <= result[0] && y < result[1]) {
+                            result = {x, y};
+                            maxSignalQualitySum = tmpSignalSum;
+                        }
+                    } else {
+                        result = {x, y};
+                        maxSignalQualitySum = tmpSignalSum;
+                    }
+                }
+            }
+        }
+        return result;
+    }
+    
+    bool isInsideRadius(int x1, int x2, int y1, int y2, int radius) {
+        return (getEucDist(x1, x2, y1, y2) <= radius);
+    }
+    
+    double getSignalQuality(int x1, int x2, int qFactX, int y1, int y2) {
+        double euc = getEucDist(x1, x2, y1, y2);
+        return floor((double)qFactX / (1.0 + euc));
+    }
+    
+    double getEucDist(int x1, int x2, int y1, int y2) {
+        double A = abs(x1 - y1);
+        double B = abs(x2 - y2);
+        return sqrt(pow(A, 2) + pow (B, 2));
+    }
+};

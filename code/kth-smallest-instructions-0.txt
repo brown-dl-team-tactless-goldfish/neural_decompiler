@@ -1,0 +1,62 @@
+
+class Solution {
+public:
+    vector<vector<int>> dp;
+    int binomialCoeff(int n, int k)
+    {
+        dp.resize(n+1, vector<int>(k+1, 0));
+        int i, j;
+        for (i = 0; i <= n; i++)
+        {
+            for (j = 0; j <= min(i, k); j++)
+            {
+                if (j == 0 || j == i)
+                    dp[i][j] = 1;
+
+                else
+                    dp[i][j] = dp[i - 1][j - 1] +
+                              dp[i - 1][j];
+            }
+        }
+
+        return dp[n][k];
+    }
+    
+    string kthSmallestPath(vector<int>& dest, int k) {
+        binomialCoeff(30, 15);
+        int nH = dest[1]-0;
+        int nV = dest[0]-0;
+        string ans = "";
+        while (nH!=0 && nV!=0){
+            if (dp[nH+nV-1][nV]>=k){
+                nH--;
+                ans+="H";
+            }
+            else{
+                k-=dp[nH+nV-1][nV];
+                nV--;
+                ans+="V";
+            }
+            if (dp[nH+nV][nV]==k){
+                while (nV){
+                    ans+="V"; nV--;
+                }
+        
+                while (nH){
+                    ans+="H"; nH--;
+                }
+                break;
+            }
+        }
+        
+        while (nH){
+            ans+="H"; nH--;
+        }
+        
+        while (nV){
+            ans+="V"; nV--;
+        }
+        
+        return ans;
+    }
+};

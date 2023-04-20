@@ -1,0 +1,44 @@
+class Solution {
+    // returns the result as a / b, where gcd(a, b) == 1 
+	// Precondition: a == 0 & b == 1.
+    void read(string &s, long long &a, long long &b) {
+        int i = 0, n = s.size();
+
+        // working on digits before decimal point
+		while (i < n && isdigit(s[i]) != 0) a = a * 10 + s[i++] - '0';
+        
+		// working on digits after decimal point & before repeating digits
+        if (i < n && s[i] == '.') {
+            ++i;
+            int x = 0;
+            while (i < n && isdigit(s[i]) != 0) {
+                x = x * 10 + s[i++] - '0';
+                b *= 10;
+            }
+            a = a * b + x;
+        }
+        
+		// working on repeating digits
+        if (i < n && s[i] == '(') {
+            ++i;
+            int y = 0, d = 1;
+            while (i < n && isdigit(s[i]) != 0) {
+                y = y * 10 + s[i++] - '0';
+                d *= 10;
+            }
+            a = a * (d - 1) + y; 
+            b *= (d - 1);
+        }
+        
+        long long div = gcd(a, b);
+        a /= div;
+        b /= div;
+    }
+public:
+    bool isRationalEqual(string s, string t) {
+        long long a = 0, b = 1, c = 0, d = 1;
+        read(s, a, b);
+        read(t, c, d);
+        return a == c && b == d;
+    }
+};

@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int oddEvenJumps(vector<int>& A) {
+        if (A.size() <= 1)
+            return A.size();
+        map<int, int> post;
+        vector<bool> odd(A.size(), false);
+        vector<bool> even(A.size(), false);
+        odd[A.size() - 1] = true;
+        even[A.size() - 1] = true;
+        post[A[A.size() - 1]] = A.size() - 1;
+        for (int i = A.size() - 2; i >= 0; i--) {
+            if (post.find(A[i]) != post.end()) {
+                odd[i] = even[post[A[i]]];
+                even[i] = odd[post[A[i]]];
+            } else {
+                auto it = post.lower_bound(A[i]);
+                if (it != post.end()) {
+                    odd[i] = even[it->second];
+                }
+                
+                if (it != post.begin()) {
+                    it--;
+                    even[i] = odd[it->second];
+                }
+            }
+            
+            post[A[i]] = i;
+        }
+        int count = 0;
+        for (auto v : odd) {
+            if (v)
+                count++;
+        }
+        return count;
+    }
+};

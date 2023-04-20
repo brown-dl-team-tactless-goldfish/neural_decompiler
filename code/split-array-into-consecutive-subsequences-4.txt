@@ -1,0 +1,32 @@
+class Solution {
+public:
+    bool isPossible(vector<int>& nums) {
+        vector<int> counter(2004, 0);
+        vector<int> seq(2004, 0);
+        
+        for (auto x: nums) {
+            counter[x+1001]++;
+        }
+        
+        for (auto x:nums) {
+            int i = x + 1001;
+            
+            if (counter[i] == 0)
+                continue;
+            
+            counter[i]--;
+            if (seq[i-1] > 0) {
+                seq[i-1]--;
+                seq[i]++;
+            } else if (counter[i+1] > 0 && counter[i+2] > 0) {
+                counter[i+1]--;
+                counter[i+2]--;
+                seq[i+2]++;
+            } else {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+};

@@ -1,0 +1,111 @@
+class AllOne {
+public:  
+    struct Bucket{
+        int bId;
+        unordered_set<string> keys;
+        
+        Bucket(){}
+        Bucket(int id):bId(id){}
+        void addKey(const string &k){
+            keys.insert(k);
+        }
+        
+        bool deleteKey(const string &k){
+            keys.erase(k);
+            return keys.empty();
+        }
+        
+        string getKey(){
+            return *(keys.begin());
+        }
+    };
+    
+    list<Bucket*> buckets;
+    unordered_map<string,list<Bucket*>::iterator> mapper;
+  
+    /** Initialize your data structure here. */
+    AllOne() {
+    }
+    
+    void update(const string &k, bool up){
+        auto iter = mapper[k];
+        int currBid = (*iter)->bId;
+        int NextBid = currBid + (up ? 1 : -1);
+        bool isEmpty = (*iter)->deleteKey(k);
+        
+        if(currBid == 1 && !up){
+            if(isEmpty){
+                buckets.erase(iter);
+            }
+            
+            mapper.erase(k);
+            return;
+        }
+        
+        auto newIter = iter;
+        if(NextBid < (*iter)->bId){
+            if(iter != begin(buckets) && (*prev(iter))->bId == NextBid){
+                newIter = prev(iter);
+            }else{
+                newIter = buckets.insert(iter,new Bucket(NextBid));
+            }
+        }else{
+            if(iter != end(buckets) && (next(iter)) != end(buckets) && (*(next(iter)))->bId == NextBid){
+                newIter = next(iter);
+            }else{
+                newIter = buckets.insert(next(iter),new Bucket(NextBid));
+            }
+        }
+        
+        if(isEmpty){
+            buckets.erase(iter);
+        }
+        
+        (*newIter)->addKey(k);
+        mapper[k]= newIter;
+    }
+    
+    
+    /** Inserts a new key <Key> with value 1. Or increments an existing key by 1. */
+    void inc(string key) {
+        if(mapper.find(key) != mapper.end()){
+            update(key,true);
+        }else{
+            auto bIter = begin(buckets);
+            if(bIter == end(buckets) || (*bIter)->bId > 1){
+                buckets.push_front(new Bucket(1));
+                bIter = begin(buckets);
+            }
+            
+            (*bIter)->addKey(key);
+            mapper[key] = bIter;
+        }
+    }
+    
+    /** Decrements an existing key by 1. If Key's value is 1, remove it from the data structure. */
+    void dec(string key) {
+        if(mapper.find(key) != mapper.end()){
+            update(key,false);
+        }
+    }
+    
+    /** Returns one of the keys with maximal value. */
+    string getMaxKey() {
+        if(buckets.empty() == false){
+            auto &b = buckets.back();
+            return b->getKey();
+        }
+        
+        return "";
+    }
+    
+    /** Returns one of the keys with Minimal value. */
+    string getMinKey() {
+        if(buckets.empty() == false){
+            auto &b = buckets.front();
+            return b->getKey();
+        }
+        
+        return "";
+    }
+};

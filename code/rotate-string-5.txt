@@ -1,0 +1,34 @@
+bool checkstrshift(char *A, int shifts, char *B, int len)
+{   
+	// Base cases: either we found the strings match now, or never do
+    if (strcmp(A, B) == 0) {
+        return (true);
+    }
+    if (shifts == len) {
+        return (false);
+    }
+
+	// Shift all characters left, move leftmost to the end
+    char c = A[0];
+    for (int i = 1; i < len; i++) {
+        A[i - 1] = A[i];
+    }
+    A[len - 1] = c;
+	
+    return (checkstrshift(A, shifts + 1, B, len));
+}
+
+bool rotateString(char * A, char * B)
+{
+    int len = strlen(A);
+    
+    if (len != strlen(B)) {
+        return (false);
+    }
+    
+    char new[len + 1];
+    strcpy(new, A);
+    new[len] = '\0';
+    
+    return (checkstrshift(new, 0, B, len));
+}

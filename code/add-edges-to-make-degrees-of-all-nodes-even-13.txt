@@ -1,0 +1,56 @@
+class Solution {
+public:
+    bool isPossible(int n, vector<vector<int>>& edges) {
+        unordered_map<int, vector<int>> adjList;
+        for(auto& edge: edges){
+            adjList[edge[0]].emplace_back(edge[1]);
+            adjList[edge[1]].emplace_back(edge[0]);
+        }
+        int count = 0;
+        vector<int> nodes;
+        for(int i=1; i<=n; i++){
+            if (adjList[i].size() % 2 != 0){
+                count++;
+                nodes.push_back(i);
+            }
+            
+            if (count > 4){
+                break;
+            }
+        }
+        if (count == 2){
+            for(int i=1; i<=n; i++){
+                if (find(adjList[i].begin(), adjList[i].end(), nodes[0]) == adjList[i].end() && find(adjList[i].begin(), adjList[i].end(), nodes[1]) == adjList[i].end()){
+                    return true;
+                }
+                
+            }
+        }
+        if (count == 4){
+            vector<pair<int, int>> posEdge;
+            for(int i=0; i<4; i++){
+                for(int j=i+1; j<4; j++){
+                    bool flag = true;
+                    for(int nxt: adjList[nodes[i]]){
+                        if (nxt == nodes[j]){
+                            flag = false;
+                            break;
+                        }
+                    }
+                    if (flag){
+                        posEdge.push_back({nodes[i], nodes[j]});
+                    }
+                }
+            }
+            for(int i=0; i<posEdge.size(); i++){
+                for(int j=i+1; j<posEdge.size(); j++){
+                    if (posEdge[i].first != posEdge[j].first && posEdge[i].second != posEdge[j].second && posEdge[i].first != posEdge[j].second && posEdge[i].second != posEdge[j].first){
+                        return true;
+                    }
+                }
+            }
+            
+        }
+        return count == 0;
+    }
+};

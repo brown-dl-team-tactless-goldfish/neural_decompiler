@@ -1,0 +1,49 @@
+class Solution {
+public:
+    int balancedString(string s) {
+        unordered_map<char,unordered_map<int,int>> r;
+        unordered_map<char,int> count;
+        for(int i = 0;i<s.size();i++){
+            char x = s[i];
+            count[x]++;
+            if(!r[x].count(count[x])){
+                r[x][count[x]] = i;
+            }
+        }
+        int len = s.size()/4;
+        unordered_map<char,int> need;
+        for(auto ptr:count){
+            if(ptr.second > len){
+                need[ptr.first] = ptr.second - len;
+            }
+        }
+        if(need.empty()){
+            return 0;
+        }
+        int ret = INT_MAX;
+        unordered_map<char,int> m;
+        for(int i = 0;i<s.size();i++){
+            char x =  s[i];
+            if(!need.count(x)){
+                continue;
+            }
+            m[x]++;
+            int next_i  = i;
+            for(auto ptr:need){
+                int c = m[ptr.first];
+                int next_c = c + ptr.second;
+                if(ptr.first == x){
+                    next_c -= 1;
+                }
+                if(next_c>count[ptr.first]){
+                    return ret;
+                }
+                next_i = max(next_i,r[ptr.first][next_c]);
+            }
+            
+            ret = min(ret,next_i - i + 1);
+        }
+        return ret;
+    }
+    
+};

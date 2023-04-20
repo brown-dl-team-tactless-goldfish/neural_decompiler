@@ -1,0 +1,29 @@
+bool find(struct TreeNode* root, int* ans_d, int depth, int val, int* father){
+    if(root == NULL)
+        return false;
+    if(root->left && root->left->val == val){
+        *father = root->val;
+        *ans_d = depth+1; 
+        return true;
+    }
+    if(root->right && root->right->val == val){
+        *father = root->val;
+        *ans_d = depth+1; 
+        return true;
+    }
+    
+    return find(root->left, ans_d, depth+1, val, father) || find(root->right, ans_d, depth+1, val, father) ;
+    
+}
+bool isCousins(struct TreeNode* root, int x, int y){
+    int father_x = -1;
+    int father_y = -1;
+
+    int d_x, d_y;
+    find(root, &d_x, 0, x, &father_x);
+    find(root, &d_y, 0, y, &father_y);
+
+    if(d_x != d_y || father_x == father_y)
+        return false;
+    return true;
+}

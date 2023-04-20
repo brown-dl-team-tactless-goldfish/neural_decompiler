@@ -1,0 +1,53 @@
+ int numSubarraysWithSum(vector<int>& nums, int goal) {
+     unordered_map<int,int>mp;
+    mp[0]=1;
+    int pre_sum=0;
+        int result=0;
+        for(int i=0;i<nums.size();i++)
+        {
+            pre_sum+=nums[i];
+            result+=mp[pre_sum-goal];
+            mp[pre_sum]++;
+        }
+        return result;
+    }
+
+Time Complexity: O(n)
+Space Complexity: O(n)
+
+
+
+class Solution {
+public:
+    int numSubarraysWithSum(vector<int>& nums, int goal) {
+      return atMost(nums,goal)-atMost(nums,goal-1);
+    }
+    int atMost(vector<int>&nums,int goal)
+    {
+        int i=0;
+        int j=0;
+        int sum=0;
+        int result=0;
+        if(goal<0) return 0;
+        while(j<nums.size())
+        {
+            // Calculation
+            sum+=nums[j];
+            while(sum>goal)
+            {
+                //remove calculation for i
+                sum-=nums[i];
+                i++;
+            }
+            // store result
+            result+=(j-i+1);
+            //Expand window size
+            j++;
+            
+        }
+        return result;
+    }
+};
+
+Time Compelxity: O(n)
+Space Complexity: O(n)

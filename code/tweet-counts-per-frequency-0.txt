@@ -1,0 +1,39 @@
+class TweetCounts {
+public:
+    map<string,multiset<int>> m ;
+    TweetCounts() {
+        ;
+    }
+    
+    void recordTweet(string t, int time) {
+        m[t].insert(time) ;
+    }
+    
+    vector<int> getTweetCountsPerFrequency(string freq, string t, int s, int e) {
+        vector<int> ans ;
+        int invl ;
+        if( freq == "minute" ) invl = 60 ;
+        else if( freq == "hour" ) invl = 3600 ;
+        else invl = 86400 ;
+        auto it = m[t].begin() ;
+        int val,c,a, b = s ;
+        bool done = true ;
+        while(done){
+            a = b ;
+            c = 0 ;
+            b = b + invl ;
+            if( b >= e+1){
+                b = e+1 ;
+                done = false ;
+            }
+            while( it!=m[t].end()){
+                val = *it ;
+                if( val >= a and val < b ) c++ ;
+                else if( val >= b ) break ;
+                it++ ;                
+            }
+            ans.push_back(c) ;
+        }
+        return ans ;
+    }
+};

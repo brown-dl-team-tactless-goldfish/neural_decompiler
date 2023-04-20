@@ -1,0 +1,33 @@
+
+#define BITMASK(b) (1 << ((b) % CHAR_BIT))
+#define BITSLOT(b) ((b) / CHAR_BIT)
+#define BITSET(a, b) ((a)[BITSLOT(b)] |= BITMASK(b))
+#define BITCLEAR(a, b) ((a)[BITSLOT(b)] &= ~BITMASK(b))
+#define BITTEST(a, b) ((a)[BITSLOT(b)] & BITMASK(b))
+#define BITNSLOTS(nb) ((nb + CHAR_BIT - 1) / CHAR_BIT)
+/*C FAQ for above*/
+
+int secondHighest(char * s){
+
+
+#define MAX 10
+
+	char bitarray[BITNSLOTS(MAX)];
+        memset(bitarray, 0, BITNSLOTS(MAX));
+        for (char *p = s; *p != NULL; ++p) {
+                if (isdigit(*p)) {
+                        BITSET(bitarray, (*p - '0'));
+                }
+        }
+          
+        bool first = true;            
+        for (int idx = MAX - 1 ; idx >=0; --idx) {
+                if(BITTEST(bitarray, idx)) {
+                        if (!first)
+                                return idx;
+                        else
+                                first = false;
+                }
+        }
+        return -1;
+}

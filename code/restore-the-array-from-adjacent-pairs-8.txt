@@ -1,0 +1,24 @@
+vector<int> ans;
+unordered_map<int, vector<int>> mp;
+unordered_set<int> visited;
+void dfs(int u){
+    ans.push_back(u);
+    visited.insert(u);
+    for(auto& v : mp[u])
+        if(visited.count(v) == 0)
+            dfs(v);
+}
+vector<int> restoreArray(vector<vector<int>>& edges) {
+    for(auto& e : edges){
+        mp[e[0]].push_back(e[1]);
+        mp[e[1]].push_back(e[0]);
+    }
+    for(auto& p : mp){
+        if(p.second.size() == 1){
+            // this might be the start or the end
+            dfs(p.first);
+            break
+        }
+    }
+    return ans;
+}

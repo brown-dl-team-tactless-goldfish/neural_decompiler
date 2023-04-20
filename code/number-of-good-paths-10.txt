@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int numberOfGoodPaths(vector<int>& vals, vector<vector<int>>& edges) {
+        n = vals.size();
+        for(int i=0;i<n;i++) vroot.push_back(i);
+        sort(begin(edges), end(edges), [&](auto& a, auto& b){
+            return max(vals[a[0]], vals[a[1]]) < max(vals[b[0]], vals[b[1]]);
+        });
+
+        map<int, vector<int>> m; //val, {index}
+        for(int i=0;i<n;i++) m[vals[i]].push_back(i);
+        
+        int res = 0, j = 0;
+        for(auto& [val, v] : m){
+            while(j<edges.size() && max(vals[edges[j][0]], vals[edges[j][1]]) <= val){
+                join(edges[j][0], edges[j][1]);
+                j++;
+            } 
+            unordered_map<int,int> rootCount;
+            for(auto i:v) rootCount[root(i)]++;
+            for(auto [i, n] : rootCount)
+                res += n*(n-1)/2;
+        }
+        return res+n;
+    }
+
+    void join(int i, int j){
+        vroot[root(i)] = root(j);
+    }
+
+    int root(int i){
+        if(vroot[i] == i) return i;
+        return vroot[i] = root(vroot[i]);
+    }
+
+    vector<int> vroot;
+    int n;
+};

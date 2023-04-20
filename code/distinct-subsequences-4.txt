@@ -1,0 +1,62 @@
+# recursion + DP
+# Time:  O(mn)
+# Space: O(mn)
+
+class Solution:
+    def numDistinct(self, s: str, t: str) -> int:
+        # print("s = ", s)
+        # print("t = ", t)
+        
+        #last test case 63
+        news = ""
+        for c in s:
+            if c in t:
+                news += c
+        s = news
+        #last test case 63 end
+        
+        dp = {}
+
+        def helper(curS, curT):
+            # print("helper curS = ", curS)
+            # print("helper curT = ", curT)
+
+            if ((curS, curT) in dp):
+                return dp[(curS, curT)]
+
+            len_s = len(curS)
+            len_t = len(curT)
+
+            if (len_s < len_t):
+                res = 0
+                dp[(curS, curT)] = 0
+                return res
+            elif (len_s == len_t):
+                if (curS == curT):
+                    res = 1
+                    dp[(curS, curT)] = 1
+                    return res
+                else:
+                    res = 0
+                    dp[(curS, curT)] = 0
+                    return res
+            elif (len_t == 0):
+                res = 1
+                dp[(curS, curT)] = 1
+                return res
+
+            else:
+                if (curS[0] == curT[0]):
+                    res1 = helper(curS[1:], curT[1:])
+                    res2 = helper(curS[1:], curT)
+                    dp[(curS, curT)] = res1+res2
+                    return res1+res2
+                else:
+                    res = helper(curS[1:], curT)
+                    dp[(curS, curT)] = res
+                    return res
+
+        res = helper(s, t)
+        # print("end res = ", res)
+        return res
+        

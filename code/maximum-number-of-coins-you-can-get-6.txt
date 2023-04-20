@@ -1,0 +1,93 @@
+
+/*b[100000];
+void mergeSort(int arr[],int low,int high){
+    if(low<high){
+        int mid = low+(high-low)/2;
+        
+        mergeSort(arr,low,mid);
+        mergeSort(arr,mid+1,high);
+        
+        merge(arr,low,mid,high);
+    }
+}
+void merge(int arr[],int l,int m,int r){
+    int i=l;
+    int j=m+1;
+    int  k=l;
+    while(i<=m && j<=r){
+        if(arr[i]<arr[j]){
+            b[k]=arr[i];
+            i++;
+        }
+        else{
+            b[k]=arr[j];
+            j++;
+        }
+        k++;
+    }
+    if(i>m){
+        while(j<=r){
+            b[k]=arr[j];
+            j++;
+            k++;
+        }
+    }
+    else{
+        while(i<=m){
+            b[k]=arr[i];
+            k++;
+            i++;
+        }
+    }
+    for(int z =l;z<=r;z++){
+        arr[z]=b[z];
+    }
+}*/
+void quickSort(int arr[],int low,int high){
+    if(low<high){
+        int pivot =partition(arr,low,high);
+        
+        quickSort(arr,low,pivot-1);
+        quickSort(arr,pivot+1,high);
+    }
+}
+int partition(int arr[],int low, int high){
+    int pivot = arr[low];
+    int i=low;
+    int j=high;
+    int temp;
+    while(i<j){
+        while(arr[i]<=pivot && i<j){
+            i++;
+        }
+        while(arr[j]>pivot){
+            j--;
+        }
+        if(i<j){
+            temp=arr[i];
+            arr[i]=arr[j];
+            arr[j]=temp;
+        }
+    }
+    temp=arr[low];
+    arr[low]=arr[j];
+    arr[j]=temp;
+    return j;
+}
+int maxCoins(int* piles, int pilesSize){
+if(pilesSize==3){
+    return piles[1];
+}
+    int i=pilesSize-2;
+    int j=0;
+   // mergeSort(piles,0,pilesSize-1);
+    quickSort(piles,0,pilesSize-1);
+    int myMax=0;
+    while(i>j){
+        myMax+=piles[i];
+        i-=2;
+        j++;
+    }
+    
+    return myMax;
+}

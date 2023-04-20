@@ -1,0 +1,130 @@
+        public class Solution
+        {
+            private struct DpValue : IEquatable<DpValue>
+            {
+                public readonly ulong Team;
+                public readonly int Size;
+
+                public DpValue(ulong team, int size)
+                {
+                    Team = team;
+                    Size = size;
+                }
+
+                public override bool Equals(object obj)
+                {
+                    return Equals((DpValue) obj);
+                }
+
+                public override int GetHashCode()
+                {
+                    return ((int)(Team * 101) % 3571) + (Size * 117 % 3571);
+                }
+
+                public bool Equals(DpValue other)
+                {
+                    return Team == other.Team && Size == other.Size;
+                }
+            }
+
+            
+            private int[] _maskedPeople;
+            private DpValue[,] _dp;
+            
+
+
+            public int[] SmallestSufficientTeam(string[] req_skills, IList<IList<string>> people)
+            {
+                int skillsBound = (1 << req_skills.Length);
+                int uncoveredSkills = skillsBound - 1;
+                ulong usageOfPeople = (1UL << people.Count) - 1UL;
+                var skill2Mask = new Dictionary<string, int>(req_skills.Length);
+                var indicesMap = new Dictionary<int, int>();
+                int count = 0;
+                foreach (var reqSkill in req_skills)
+                {
+                    skill2Mask.Add(reqSkill, 1 << (count++));
+                }
+
+                //people = people.Where(s => s.Count > 0).ToArray();
+                _maskedPeople = new int[people.Count];
+                for (int i = 0; i < people.Count; i++)
+                {
+                    var skillsOfPerson = people[i];
+                    foreach (var skillOfPerson in skillsOfPerson)
+                    {
+                        _maskedPeople[i] |= skill2Mask[skillOfPerson];
+                    }
+                }
+
+                _dp = new DpValue[skillsBound, _maskedPeople.Length + 1];
+
+                for(int i = 0; i < skillsBound; i++)
+                {
+                    for (int j = 0; j <= _maskedPeople.Length; j++)
+                    {
+                        if (i == 0)
+                        {
+                            _dp[i, j] = new DpValue(0, 0);
+                            continue;
+                        }
+
+                        _dp[i, j] = new DpValue(0, _maskedPeople.Length);
+                    }
+                }
+
+
+                for (int i = 1; i < skillsBound; i++)
+                {
+                    for (int j = 1; j <= _maskedPeople.Length; j++)
+                    {
+                        DpValue current = _dp[i, j];
+                        DpValue withoutThisPerson = _dp[i, j - 1];
+
+                        if (withoutThisPerson.Size < current.Size)
+                        {
+                            current = withoutThisPerson; //don't need this person
+                        }
+
+                        if (_maskedPeople[j - 1] == 0)
+                        {
+                            _dp[i, j] = withoutThisPerson;
+                            continue;
+                        }
+
+                        int skillsMinusSkillsOfPerson = i & (~_maskedPeople[j - 1]);
+
+                        if (skillsMinusSkillsOfPerson == i)
+                        {
+                            //this person does't have appropriate skills
+                            continue;
+                        }
+
+                        for (int k = 0; k < j; k++)
+                        {
+                            var partialSkillsAndTeam =_dp[skillsMinusSkillsOfPerson, k];
+                            if (partialSkillsAndTeam.Size + 1 < current.Size)
+                            {
+                                current = new DpValue(partialSkillsAndTeam.Team | (1UL << (j - 1)), partialSkillsAndTeam.Size + 1);
+                            }
+                        }
+
+                        _dp[i, j] = current;
+
+                    }
+                }
+
+
+                DpValue data = _dp[uncoveredSkills, _maskedPeople.Length];
+                List<int> output = new List<int>(data.Size);
+                for (int i = 0; i < _maskedPeople.Length; i++)
+                {
+                    if ((data.Team & (1UL << i)) > 0)
+                    {
+                        output.Add(i);
+                    }
+                }
+
+                return output.ToArray();
+            }
+        }

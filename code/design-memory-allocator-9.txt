@@ -1,0 +1,51 @@
+public class Allocator 
+{
+    int[] memory;
+    int n;
+    public Allocator(int n)
+    {
+        memory = new int[n];
+        this.n = n;
+    }
+
+    public int Allocate(int size, int mID)
+    {
+        for (int i = 0; i < n; i++)
+        {
+            if (memory[i] == 0)
+            {
+                int start = i;
+                int emptySize = 1;
+                while(i + 1 < n && memory[i+1] == 0 && emptySize < size)
+                {
+                    i++;
+                    emptySize++;
+                }
+                if (emptySize == size)
+                {
+                    for (int j = start; j < start+ size; j++)
+                    {
+                        memory[j] = mID;
+                    }
+                    return start;
+
+                }
+            }
+        }
+        return -1;
+    }
+
+    public int Free(int mID)
+    {
+        int count = 0;
+        for (int i = 0; i < n; i++)
+        {
+            if (memory[i] == mID)
+            {
+                memory[i] = 0;
+                count++;
+            }
+        }
+        return count;
+    }
+}

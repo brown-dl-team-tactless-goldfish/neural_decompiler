@@ -1,0 +1,80 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+struct list{
+    int h;
+    int k;
+    struct list* next;
+};
+struct list* addNode(struct list* head,int h,int k){
+    struct list* p=head;
+    int count=0;
+    if(k==0){
+        struct list* q=(struct list*)malloc(sizeof(struct list));
+        q->h=h;
+        q->k=k;
+        q->next=p;
+        return q;
+    }
+    while(p!=NULL){
+        if(p->h>=h){count++;}
+        if(count==k){
+            struct list* q=(struct list*)malloc(sizeof(struct list));
+            q->h=h;
+            q->k=k;
+            q->next=p->next;
+            p->next=q;
+            return head;
+        }
+        p=p->next;
+    }
+    struct list* q=(struct list*)malloc(sizeof(struct list));
+    q->h=h;
+    q->k=k;
+    q->next=NULL;
+    p=q;
+    return head;
+}
+int** reconstructQueue(int** people, int peopleRowSize, int peopleColSize, int* returnSize) {
+    *returnSize=0;
+    if(peopleRowSize==0){return NULL;}
+    int temp1=0;
+    int temp2=0;
+    for(int i=1;i<peopleRowSize;i++){
+        for(int j=0;j<peopleRowSize-i;j++){
+            if(people[j][0]<people[j+1][0]){
+                temp1=people[j+1][0];
+                temp2=people[j+1][1];
+                people[j+1][0]=people[j][0];
+                people[j+1][1]=people[j][1];
+                people[j][0]=temp1;
+                people[j][1]=temp2;
+            }
+            else if(people[j][0]==people[j+1][0]&&people[j][1]>people[j+1][1]){
+                temp2=people[j+1][1];
+                people[j+1][1]=people[j][1];
+                people[j][1]=temp2;
+            }
+        }
+    } 
+    struct list* p=(struct list*)malloc(sizeof(struct list));
+    p->h=people[0][0];
+    p->k=people[0][1];
+    p->next=NULL;
+    struct list* head=p;
+    for(int i=1;i<peopleRowSize;i++){
+        head=addNode(head,people[i][0],people[i][1]);
+        p=head;
+    }
+    
+    int **ret=(int**)malloc(sizeof(int*)*peopleRowSize);
+    while(head!=NULL){
+        ret[(*returnSize)]=(int*)malloc(sizeof(int)*2);
+        ret[(*returnSize)][0]=head->h;
+        ret[(*returnSize)][1]=head->k;
+        (*returnSize)++;
+        head=head->next;
+    }
+    return ret;
+}

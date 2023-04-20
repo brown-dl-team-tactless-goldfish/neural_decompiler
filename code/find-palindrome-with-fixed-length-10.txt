@@ -1,0 +1,63 @@
+class Solution {
+public:
+    long long get(long long a, long long base) {
+        string s = to_string(a);
+        reverse(s.begin(), s.end());
+        long long b = 0;
+        for (auto c : s) {
+            b = b * 10 + (c - '0');
+        }
+        return b + a * base;
+    }
+    long long get1(long long a, long long base, long long m) {
+        string s = to_string(a);
+        reverse(s.begin(), s.end());
+        long long b = 0;
+        for (auto c : s) {
+            b = b * 10 + (c - '0');
+        }
+        
+        return b + m * base + a*base *10;
+    }
+    vector<long long> kthPalindrome(vector<int>& qs, int n) {
+        vector<long long> ans;
+        if (n == 1) {
+            for (auto q : qs) {
+                if (q >= 10) ans.push_back(-1);
+                else ans.push_back(q );
+            }
+        }
+        else if (n % 2 == 0) {
+            int h = n /2;
+            long long base = pow (10, h - 1);
+            long long bound = base * 10;
+            
+            for (auto q : qs) {
+                long long a = base + q - 1;
+                if (a >= bound) {
+                    ans.push_back(-1);
+                    continue;
+                }
+                long b = get(a, bound);
+                ans.push_back(b);
+            }
+        } else {
+            int h = n / 2;
+            long long base = pow (10, h - 1);
+            long long bound = base * 10;
+            long long rb = (bound - base) * 10;
+            for (auto q : qs) {
+                if (q > rb) {
+                    ans.push_back(-1);
+                    continue;
+                }
+                long long a = (q - 1)/ 10 + base;
+                long long m = (q-1) % 10;
+                
+                long b = get1(a, bound, m);
+                ans.push_back(b);
+            }
+        }
+        return ans;
+    }
+};

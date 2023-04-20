@@ -1,0 +1,35 @@
+class Solution {
+public:       
+    vector<vector<vector<int>>> dp;
+     int solve(int i, bool first, int k, vector<int> &nums){
+        int n=nums.size();
+        if(i >= n or k == 0) return 0;
+        if(dp[i][k][first] != -1) return dp[i][k][first];
+        
+        int op1=0,op2=0;    //pick or not pick
+        
+        if(i == 0){
+            op1 = nums[i] + solve(i+2, true, k-1, nums);
+            op2 = solve(i+1, false, k, nums);
+        }
+        else if(i == n-1){
+            if(!first) return dp[i][k][first] = max(nums[i], 0);
+            else return dp[i][k][first] = 0;
+        }
+        else{
+            op1 = nums[i] + solve(i+2, first, k-1, nums);
+            op2 = solve(i+1, first, k, nums);
+        }
+        
+        return dp[i][k][first] = max(op1, op2);
+    }
+    
+    
+    int maxSizeSlices(vector<int>& slices) {        
+        int n = slices.size();
+        int k = n/3;
+        dp = vector<vector<vector<int>>> (n+1, vector<vector<int>> (k+1, vector<int>(3, -1)));        
+        return solve(0, false, k, slices);
+        // TC: O(n*n), SC: O(n*k)
+    }
+};

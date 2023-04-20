@@ -1,0 +1,39 @@
+int stack[20240];
+int maxcontain[20240];
+
+int longestValidParentheses(char* s) {
+    //memset(stack, 0, sizeof(stack));
+    //memset(maxcontain, 0, sizeof(maxcontain));
+    
+    int max = 0;
+    int top = 0;
+    int i = 0;
+    int len = strlen(s);
+    for(; i < len; ++i)
+    {
+        maxcontain[i] = 0;
+        
+        if(top != 0)
+        {
+            if(s[i] == ')' && s[stack[top - 1]] == '(')
+            {
+                maxcontain[i] = 1;
+                if(i > 0)
+                    maxcontain[i] += maxcontain[i - 1];
+                if(stack[top - 1] > 1)
+                    maxcontain[i] += maxcontain[stack[top - 1] - 1];
+                
+                if(maxcontain[i] > max)
+                    max = maxcontain[i];
+                
+                --top;
+            }
+            else
+                stack[top++] = i;
+        }
+        else
+            stack[top++] = i;
+    }
+    
+    return max * 2;
+}

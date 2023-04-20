@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int minOperationsMaxProfit(vector<int>& customers, int boardingCost, int runningCost) {
+        int x = runningCost / boardingCost;
+        if(x >= 4) return -1;
+        
+        int wait = 0, profit = 0, maxProfit = INT_MIN, ans = -1;
+        int r = 0;
+        while(true) {
+            if(r < customers.size()) wait += customers[r];
+            int board = min(wait, 4); // Board as many people as possible.
+            wait -= board;
+            
+            profit += board * boardingCost - runningCost;
+            
+            if(profit > 0 && profit > maxProfit) {
+                ans = r+1;
+                maxProfit = profit;
+            }
+            
+            if(r >= customers.size() && wait == 0) break;
+            r++;
+        }
+        
+        return ans;
+    }
+};

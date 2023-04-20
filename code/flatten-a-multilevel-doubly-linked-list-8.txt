@@ -1,0 +1,46 @@
+public class Solution {
+    public Node Flatten(Node head) {
+        if (head == null)
+            return head;
+        
+        return Helper(head).head;
+    }
+    
+    private (Node head, Node tail) Helper(Node node)
+    {
+        Node head = node,
+             tail = null;
+        
+        while (node != null)
+        {
+            if (node.child != null)
+            {
+                Node temp = node.next;
+                
+                (Node head, Node tail) pair = Helper(node.child);
+                
+                node.next = pair.head;
+                pair.head.prev = node;
+                
+                pair.tail.next = temp;
+                if (temp != null)
+                    temp.prev = pair.tail;
+                
+                if (pair.tail.next == null)
+                    tail = pair.tail;
+                
+                node.child = null;
+                node = pair.tail.next;
+            }
+            else
+            {
+                if (node.next == null)
+                    tail = node;
+
+                node = node.next;
+            }
+        }
+        
+        return (head, tail);
+    }
+}

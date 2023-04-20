@@ -1,0 +1,97 @@
+int isNumber(char c){
+    if(c<='9'&&c>='0'){
+        return 1;
+    }
+    return 0;
+}
+int isLetter(char c){
+    if((c<='z'&&c>='a')||(c<='Z'&&c>='A')){
+        return 1;
+    }
+    return 0;
+}
+int isContain(char* c){
+    int len=strlen(c);
+    for(int i=0;i<len;i++){
+        if(c[i]=='['){
+            return 1;
+        }
+    }
+    return 0;
+}
+char** split(char* s,int* returnSize){
+    int len=strlen(s);
+    char** ret=(char**)malloc(20*sizeof(char*));
+    int startIndex=0;
+    int count=0;
+    *returnSize=0;
+    for(int i=0;i<len;i++){
+        if(s[i]=='['){
+            count++;
+        }
+        if(s[i]==']'){
+            count--;
+            if(count==0){
+                ret[(*returnSize)]=(char*)malloc((i-startIndex+2)*sizeof(char));
+                for(int j=startIndex;j<=i;j++){
+                    ret[(*returnSize)][j-startIndex]=s[j];
+                }
+                ret[(*returnSize)++][i-startIndex+1]='\0';
+                startIndex=i+1;
+                continue;
+            }
+        }
+        if(count==0&&isLetter(s[i])){
+            ret[(*returnSize)]=(char*)malloc((len+1)*sizeof(char));
+            int index=0;
+            while(isLetter(s[i])){
+                ret[(*returnSize)][index++]=s[i];
+                i++;
+            }
+            ret[(*returnSize)++][index]='\0';
+            startIndex=i;
+            i--;
+        }
+    }
+    return ret;
+}
+char* decodeString(char* s) {
+    int len=strlen(s);
+    char* ret=(char*)malloc(5000*sizeof(char));
+    int count=0;
+    int array_count=0;
+    char** array=split(s,&array_count);
+    if(array_count==1&&!isContain(array[0])){
+        return array[0];
+    }
+    for(int i=0;i<array_count;i++){
+        int len_temp=strlen(array[i]);
+        if(isLetter(array[i][0])){
+            for(int j=0;j<len_temp;j++){
+                ret[count++]=array[i][j];
+            }
+        }else{
+            int temp=0;
+            int num=0;
+            for(;temp<len_temp;temp++){
+                if(isNumber(array[i][temp])){
+                    num=num*10+array[i][temp]-'0';
+                }else{
+                    break;
+                }
+            }
+            temp++;
+            array[i][len_temp-1]='\0';
+            char* s_temp=array[i];
+            s_temp=decodeString(&s_temp[temp]);
+            len_temp=strlen(s_temp);
+            for(int j=0;j<num;j++){
+                for(int k=0;k<len_temp;k++){
+                    ret[count++]=s_temp[k];
+                }
+            }
+        }
+    }
+    ret[count]='\0';
+    return ret;
+}

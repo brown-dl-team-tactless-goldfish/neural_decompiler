@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int gcd(int a, int b) { return (b == 0) ? a : gcd(b, a % b);}
+    
+    long long coutPairs(vector<int>& nums, int k) {
+        vector<int> dp(k + 1, 0);
+        vector<int> facts;
+        for (int i = 1; i <= k; i++) {
+            if ((k % i) == 0)  facts.push_back(i);
+        }
+        for (auto c : nums) {
+            for (auto f : facts) {
+                if ((c % f) == 0) dp[f]++;
+            }
+        }
+        long long ans = 0;
+        for (auto c : nums) { 
+            int a = gcd(c, k);
+            int cnt = dp[k/a];
+            if ((c % (k/a)) == 0) cnt--;
+            ans += cnt;
+        }
+        return ans/2; 
+    }
+};

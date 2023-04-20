@@ -1,0 +1,30 @@
+class Solution {
+    public int minMoves(int[] nums, int k) {
+        ArrayList<Integer> arr = new ArrayList();
+        for(int i = 0; i < nums.length; i++) if(nums[i] == 1) arr.add(i);
+        for(int i = 0; i < arr.size(); i++) arr.set(i, arr.get(i) - i);
+        
+        int median = (k-1)/2;
+        int ans = Integer.MAX_VALUE, l_sum = 0, r_sum = 0;
+        int left, right;
+        if(k % 2 == 1) left = right = k/2;
+        else {
+            left = (k/2 -1);
+            right = k/2;
+        }
+        
+        for(int i = 0; i < median; i++) l_sum += arr.get(median) - arr.get(i);
+        for(int i = median + 1; i < k; i++) r_sum += arr.get(i) - arr.get(median);
+        ans = l_sum + r_sum;
+        
+        for(int i = k; i < arr.size(); i++) {
+            l_sum -= arr.get(median) - arr.get(i - k);
+            l_sum += left * (arr.get(median + 1) - arr.get(median));
+            r_sum += arr.get(i) - arr.get(median + 1);
+            r_sum -= right * (arr.get(median + 1) - arr.get(median));
+            ans = Math.min(ans, l_sum + r_sum);
+            median++;
+        }
+        return ans;
+    }
+}

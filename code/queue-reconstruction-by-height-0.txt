@@ -1,0 +1,32 @@
+int cmpfunc(const void* a, const void* b){
+    int* arr1 = *(int**)a;
+    int* arr2 = *(int**)b;
+    if(arr1[0] == arr2[0])
+        return arr1[1] - arr2[1];
+    else
+        return arr2[0] - arr1[0];
+}
+int** reconstructQueue(int** people, int peopleSize, int* peopleColSize, int* returnSize, int** returnColumnSizes){
+    qsort(people, peopleSize, sizeof(int*), cmpfunc);
+
+    for(int i = 0; i < peopleSize; i++){
+        if(people[i][1] == i)
+            continue;
+        int x = people[i][0];
+        int y = people[i][1];
+        int idx = people[i][1];
+        for(int j = i-1; j >= idx; j--){
+            people[j+1][0] = people[j][0];
+            people[j+1][1] = people[j][1];
+        }
+        people[idx][0] = x;
+        people[idx][1] = y;
+    }
+    *returnSize = peopleSize;
+    *returnColumnSizes = malloc(peopleSize * sizeof(int));
+    for(int i = 0; i < peopleSize; i++){
+        returnColumnSizes[0][i] = *peopleColSize;
+    }
+    
+    return people;
+}

@@ -1,0 +1,59 @@
+class Solution {
+public:
+    int largestVariance(string s) {
+        int n = s.size();
+        int ret = 0;
+        for(int i = 0; i < 26; i ++){
+            for(int j = 0; j < 26; j ++){
+                if(i == j){
+                    continue;
+                }
+                string t;
+                int cnt_i = 0, cnt_j = 0;
+                for(int k = 0; k < n; k ++){
+                    int p = s[k] - 'a';
+                    if(p == i){
+                        t.push_back('0');
+                        cnt_i ++;
+                    }
+                    else if(p == j){
+                        t.push_back('1');
+                        cnt_j ++;
+                    }
+                }
+                if(cnt_i > 0 && cnt_j > 0){
+                    ret = max(ret, getMaxDifference(t));
+                }
+            }
+        }
+        return ret;
+    }
+    int getMaxDifference(string& t){
+        int n = t.size();
+        int ret = 0;
+        int s = 0, pre = -1, ms = 0, st = 0;
+        for(int i = 0, u = 0; i < n; i ++){
+            if(t[i] == '0'){
+                s ++;
+            }
+            else{
+                pre = i;
+                s --;
+            }
+            while(u < pre){
+                if(t[u] == '0'){
+                    st ++;
+                }
+                else{
+                    st --;
+                }
+                ms = min(ms, st);
+                u ++;
+            }
+            if(pre != -1){
+                ret = max(ret, s - ms);
+            }
+        }
+        return ret;
+    }
+};

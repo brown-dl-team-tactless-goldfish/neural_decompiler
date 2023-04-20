@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int memo[1001][1001] = {};
+    int MOD = 1e9+7;
+    int dfs(vector<vector<int>>& types, int pos, int target){
+        if(target == 0) return 1;
+        
+        if(pos >= types.size() || target < 0) return 0;
+        if(memo[pos][target] != -1) return memo[pos][target];
+        int ans = dfs(types, pos+1, target);
+        int temp = target;
+        for(int i = 0; i < types[pos][0]; i++){
+            temp -= types[pos][1];
+            ans += dfs(types, pos+1, temp);
+            ans %= MOD;
+        }
+        return memo[pos][target] = ans;
+    }
+    int waysToReachTarget(int target, vector<vector<int>>& types) {
+        memset(memo, -1, sizeof memo);
+        return dfs(types, 0, target);
+        
+    }
+};

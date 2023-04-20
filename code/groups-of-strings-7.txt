@@ -1,0 +1,49 @@
+class Solution {
+  public int[] groupStrings(String[] words) {
+    HashMap<Integer, Integer> t = new HashMap<>();        //mask , numbers
+    
+    for(String w: words){
+      int simple = 0; 
+      for(int i = 0; i != w.length(); i++) simple |= 1 << (w.charAt(i)-'a');
+      if(t.containsKey(simple)) t.put(simple, t.get(simple) + 1); 
+      else t.put(simple, 1);
+    }
+    
+    int[] ans = {0,0}; 
+    LinkedList<Integer>q = new LinkedList<>();
+    
+    while(!t.isEmpty()){
+      HashMap.Entry<Integer, Integer> firstEntry = t.entrySet().iterator().next();
+
+      q.add(firstEntry.getKey());
+      ans[0]++;
+      int temp = 0;
+      
+      while(!q.isEmpty()){
+        int w = q.pollFirst();
+        
+        if(!t.containsKey(w)) continue;
+        temp += t.get(w);
+            
+        t.remove(w);
+        
+        for(int i = 0, mask = 1; i != 26; i++, mask <<= 1)
+          if( (w & mask) == 0) {if(t.containsKey(w|mask)) q.add(w|mask);}
+          else{
+            w ^= mask;
+            if(t.containsKey(w)) q.add(w);
+            
+            for(int j = 0, mask2 = 1; j != 26; j++, mask2 <<= 1)
+              if(j != i && ( (w & mask2) == 0))
+                if(t.containsKey(w|mask2)) q.add(w|mask2);
+              
+            w ^= mask;
+          }
+        }
+        
+      ans[1] = Math.max(ans[1],temp);
+    }
+    
+    return ans;
+  }
+};      

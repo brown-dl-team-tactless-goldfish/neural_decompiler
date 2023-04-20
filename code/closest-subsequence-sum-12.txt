@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int minAbsDifference(vector<int>& nums, int goal) {
+        int res = abs(goal);
+        
+        int m = nums.size();
+        int n = m / 2;
+        unordered_set<int> s1, s2;
+        s1.insert(0);
+        s2.insert(0);
+        
+        for (int i = 0; i < n; ++i) {
+            unordered_set<int> t1 = s1;
+            for (auto& c: s1) t1.insert(c + nums[i]);
+            swap(s1, t1);
+        }
+        
+        for (int i = n; i < m; ++i) {
+            unordered_set<int> t1 = s2;
+            for (auto& c: s2) t1.insert(c + nums[i]);
+            swap(s2, t1);
+        }
+        
+        vector<int> ss2(s2.begin(), s2.end());
+        sort(ss2.begin(), ss2.end());
+        
+        // two sum
+        for (auto& c: s1) {
+            // c1 + c2 == target
+            int target = goal - c;
+            auto it = lower_bound(ss2.begin(), ss2.end(), target);
+            
+            if (it != ss2.end()) {
+                res = min(res, abs(c + *it - goal));
+            }
+            
+            if (it != ss2.begin()) {
+                --it;
+                res = min(res, abs(c + *it - goal));
+            }
+        }
+        
+        return res;
+    }
+};

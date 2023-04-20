@@ -1,0 +1,40 @@
+#include <stdlib.h>
+
+static int 
+cmp(const void * a, const void * b)
+{
+    return (*((const int *)a) > *((const int *)b))
+        - (*((const int *)a) < *((const int *)b));
+}
+
+int * 
+singleNumber(int * nums, int numsSize, int * returnSize)
+{
+    int * result = (int *)malloc(2 * sizeof(int)), i, result_i = 0;
+    *returnSize = 2;
+    
+    if (numsSize == 2)
+    {
+        result[0] = nums[0];
+        result[1] = nums[1];
+        return result;
+    }
+    
+    qsort(nums, (size_t)numsSize, sizeof(int), cmp);
+    
+    for (i = 0; i < numsSize - 1; ++i)
+    {
+        if (nums[i] != nums[i + 1])
+        {
+            result[result_i++] = nums[i];
+            
+            if (result_i == 2)
+                return result;
+        }
+        else
+            ++i;
+    }
+    
+    result[1] = nums[i];
+    return result;
+}

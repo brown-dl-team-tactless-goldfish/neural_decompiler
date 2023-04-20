@@ -1,0 +1,50 @@
+class Solution {
+public:
+    bool hasValidParantheses(string str) {
+        int count = 0;
+        for (char c : str) {
+            if (c == '(')
+                count++;
+            else if (c == ')')
+                count--;
+
+            if (count < 0) return false;
+        }
+        return (count == 0) ? true : false;
+    }
+
+    vector<string> removeInvalidParentheses(string s) {
+        vector<string> validParantheses;
+        unordered_map<string, bool> visited;
+
+        queue<string> q;
+        q.push(s);
+
+        bool validStringFound = false;
+        while (!q.empty()) {
+            string front = q.front();
+            q.pop();
+            
+            if (visited[front]) continue;
+            visited[front] = true;
+            
+            if (hasValidParantheses(front)) {
+                validParantheses.push_back(front);
+                validStringFound = true;
+            }
+            
+            if (validStringFound) {
+			    // don't go to next level for the current valid parantheses string
+                continue;
+            }
+            
+            for (int i = 0; i < front.length(); i++) {
+                if (front[i] != '(' && front[i] != ')') continue;
+                string nextStr = front.substr(0, i) + front.substr(i + 1);
+                q.push(nextStr);
+            }
+        }
+
+        return validParantheses;
+    }
+};

@@ -1,0 +1,74 @@
+public class Solution {
+  // a/b is graph edge a->b with weight a/b and b/a is b->a with weight  b/a. For a/c we need to find weight of path from a to c
+    public double[] CalcEquation(IList<IList<string>> equations, double[] values, IList<IList<string>> queries) {
+      Dictionary<string, double> map = new Dictionary<string, double>();// a|b as key and a/b as value
+      Dictionary<string, List<string>> neighborsMap = new Dictionary<string, List<string>>();
+      HashSet<string> visiting = new HashSet<string>();
+      double[] ans = new double[queries.Count];
+      // Inititalization
+      for(int i = 0; i < equations.Count; i++)
+      {
+         /*
+         if a/b is given store values for both a/b and b/a
+         */
+          var list = equations[i];
+          string var1 = list[0];
+          string var2 = list[1];
+          string key1 = var1 + "|" + var2;
+          string key2 = var2 + "|" + var1;
+          double value = values[i];
+          
+          map[key1] = value;// var1/var2
+          map[key2] = 1.0/value;  // var2/var1
+        
+          if (!neighborsMap.ContainsKey(var1))
+            neighborsMap[var1] = new List<string>();
+          if (!neighborsMap.ContainsKey(var2))
+            neighborsMap[var2] = new List<string>();
+          
+          neighborsMap[var1].Add(var2);// Avar1 and var2 are neighbors of each other
+          neighborsMap[var2].Add(var1);
+      }
+   
+      // Process all the queries
+      for(int i = 0; i < queries.Count; i++)
+      {
+        var query = queries[i];
+        string source = query[0];
+        string destination = query[1];
+        // if the variables are not present in the neighbor map, they are not reachable so result = -1
+        if(!neighborsMap.ContainsKey(source) || !neighborsMap.ContainsKey(destination))
+        {
+          ans[i] = -1.0;
+          continue;
+        }
+        if(source == destination)
+        {
+          ans[i] = 1.0;
+          continue;
+        }               
+        ans[i] = dfs(source, destination, 1, map, neighborsMap, visiting);        
+      }      
+      return ans;
+  }
+  private double dfs(string source, string destination, double product, Dictionary<string, double> mapValue, Dictionary<string, List<string>> neighborsMap, HashSet<string> visiting)
+  {
+    if(source == destination) return product;    
+    visiting.Add(source); // Mark it as visiting if a visits b , we do not want b to visit a 
+    List<string> neighbors = neighborsMap[source];
+    double result = -1.0;
+    foreach(string neighbor in neighbors)
+    {
+      string key = source+"|"+neighbor; // will be used to get value of source/neighbor
+      if(!visiting.Contains(neighbor))
+      {
+        // visiting each neighbor to find the final destination
+        result = dfs(neighbor, destination, product*mapValue[key], mapValue, neighborsMap, visiting);
+        if(result != -1.0) 
+          break;
+      }
+    }
+    visiting.Remove(source); // remove source from visiting so it can be visited again from a different path
+    return result;    
+  }  
+}

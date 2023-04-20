@@ -1,0 +1,51 @@
+class Solution {
+public:
+    int maximumRobots(vector<int>& charge, vector<int>& runningCosts, long long budget) {
+ // It is mixture of (maximum value in k size sliding window + a normal problem of variable size sliding window with prefix sum)
+        int i=0;
+        int j=0;
+        deque<int>dq;
+        long long prefix_sum=0;
+        int ans=0;
+            
+        // Variable window size problem
+        while(j<runningCosts.size())
+        {
+            // Do pre-calculation 
+               // 1
+                while(!dq.empty()&&(charge[dq.back()]<charge[j]))
+                    dq.pop_back();
+                dq.push_back(j);
+              
+              // 2
+               prefix_sum+=runningCosts[j];
+            
+            long long need=charge[dq.front()]+(long long)(j-i+1)*prefix_sum;
+            
+            // Play with condition
+            while(need>budget)
+            {
+                // Remove the calculation for i
+                
+                if(!dq.empty()&&dq.front()==i)
+                    dq.pop_front();
+                prefix_sum-=runningCosts[i];
+                if(!dq.empty())
+                need=charge[dq.front()]+(long long)(j-i+1)*prefix_sum;
+                else
+                    need=0;
+                i++;
+            } 
+            
+            // Store result
+            ans=max(ans,j-i+1);
+            
+            // Slide the window
+            j++;
+        }
+        return ans;
+    }
+};
+
+Time Complexity: O(3*n)
+Space Complexity: O(n)

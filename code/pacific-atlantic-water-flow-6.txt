@@ -1,0 +1,105 @@
+#define FLOW_MASK       0xF000000
+#define FLOW_PACIFIC    0x1000000
+#define FLOW_ALTANTIC   0x2000000
+#define FLOW_BOTH       0x3000000
+
+#define VALUE_MASK      0xFFFFFF
+
+void PacificAtlanticInner(int** ppnHeights, unsigned char ucRow, unsigned char ucCol, unsigned char ucHeightsSize, unsigned char ucHeightsColSize, int nMask, unsigned short* pusRet)
+{
+    // checked already
+    if(ppnHeights[ucRow][ucCol] & nMask) return;
+
+    // add mask
+    ppnHeights[ucRow][ucCol] |= nMask;
+    if((ppnHeights[ucRow][ucCol] & FLOW_MASK) == FLOW_BOTH) (*pusRet)++;
+
+    // check up
+    if(ucRow && (ppnHeights[ucRow][ucCol]&VALUE_MASK) <= (ppnHeights[ucRow-1][ucCol]&VALUE_MASK))
+    {
+        PacificAtlanticInner(ppnHeights, ucRow-1, ucCol, ucHeightsSize, ucHeightsColSize, nMask, pusRet);
+    }
+
+    // check left
+    if(ucCol && (ppnHeights[ucRow][ucCol]&VALUE_MASK) <= (ppnHeights[ucRow][ucCol-1]&VALUE_MASK))
+    {
+        PacificAtlanticInner(ppnHeights, ucRow, ucCol-1, ucHeightsSize, ucHeightsColSize, nMask, pusRet);
+    }
+
+    // check right
+    if(ucCol < ucHeightsColSize && (ppnHeights[ucRow][ucCol]&VALUE_MASK) <= (ppnHeights[ucRow][ucCol+1]&VALUE_MASK))
+    {
+        PacificAtlanticInner(ppnHeights, ucRow, ucCol+1, ucHeightsSize, ucHeightsColSize, nMask, pusRet);
+    }
+
+    // check down
+    if(ucRow < ucHeightsSize && (ppnHeights[ucRow][ucCol]&VALUE_MASK) <= (ppnHeights[ucRow+1][ucCol]&VALUE_MASK))
+    {
+        PacificAtlanticInner(ppnHeights, ucRow+1, ucCol, ucHeightsSize, ucHeightsColSize, nMask, pusRet);
+    }
+}
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** pacificAtlantic(int** heights, int heightsSize, int* heightsColSize, int* returnSize, int** returnColumnSizes){
+    unsigned char ucHeightsSize = heightsSize - 1, ucHeightsColSize = *heightsColSize - 1;
+    *returnSize = 0;
+    unsigned short usRet = 0;
+
+    //===============
+    // check pacific
+    //===============
+
+    // check first row
+    for(unsigned char j=0; j<=ucHeightsColSize; j++)
+    {
+        PacificAtlanticInner(heights, 0, j, ucHeightsSize, ucHeightsColSize, FLOW_PACIFIC, &usRet);
+    }
+
+    // check first column
+    for(unsigned char i=1; i<=ucHeightsSize; i++)
+    {
+        PacificAtlanticInner(heights, i, 0, ucHeightsSize, ucHeightsColSize, FLOW_PACIFIC, &usRet);
+    }
+
+    //===============
+    // check atlantic
+    //===============
+
+    // check last row
+    for(unsigned char j=0; j<=ucHeightsColSize; j++)
+    {
+        PacificAtlanticInner(heights, ucHeightsSize, j, ucHeightsSize, ucHeightsColSize, FLOW_ALTANTIC, &usRet);
+    }
+
+    // check last column
+    for(unsigned char i=0; i<ucHeightsSize; i++)
+    {
+        PacificAtlanticInner(heights, i, ucHeightsColSize, ucHeightsSize, ucHeightsColSize, FLOW_ALTANTIC, &usRet);
+    }
+
+    // write result
+    if(usRet == 0) return NULL;
+
+    *returnSize = usRet;
+    *returnColumnSizes = (int*) malloc(usRet*sizeof(int));
+    int** ppnRet = (int**) malloc(usRet*sizeof(int*));
+    usRet = 0;
+    for(unsigned char i=0; i<=ucHeightsSize; i++)
+    {
+        for(unsigned char j=0; j<=ucHeightsColSize; j++)
+        {
+            if((heights[i][j] & FLOW_MASK) != FLOW_BOTH) continue;
+
+            (*returnColumnSizes)[usRet] = 2;
+            ppnRet[usRet] = (int*) malloc(2*sizeof(int));
+            ppnRet[usRet][0] = i;
+            ppnRet[usRet++][1] = j;
+        }
+    }
+
+    return ppnRet;
+}

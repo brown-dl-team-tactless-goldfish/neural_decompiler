@@ -1,0 +1,32 @@
+class Solution {
+public:
+    long long kMirror(int k, int n) {
+        auto is_kmirror = [k] (long long num) {
+            string s;
+            for (; num; num /= k) s += char(num % k);
+            return !s.compare({s.rbegin(), s.rend()});
+        };
+        
+        auto next_mirror = [s = string("0")] () mutable {
+            for (int i = s.size() / 2, j = i - (~s.size() & 1); i < s.size(); i++, j--) {
+                if (s[i] != '9') {
+                    s[i] = s[j] = s[i] + 1;
+                    return stoll(s);
+                } else {
+                    s[i] = s[j] = '0';
+                }
+            }
+            s[0] = '1';
+            s += '1';
+            return stoll(s);
+        };
+        
+        long long ans = 0;
+        for (int i = 0; i < n; i++) {
+            long long num = next_mirror();
+            for (; !is_kmirror(num); num = next_mirror());
+            ans += num;
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int ceil(vector<int> v,int st,int end, int x){
+        while(st< end){
+            int mid = st+(end-st)/2;
+            if(v[mid] > x){
+                end = mid;
+            }
+            else 
+                st = mid+1;
+        }
+        return end;
+    }
+    vector<int> longestObstacleCourseAtEachPosition(vector<int>& vec) {
+        vector<int> ans(vec.size()),tail;
+        int n = vec.size();
+        tail.push_back(vec[0]);
+        
+       // int len =1;
+        ans[0] = 1;
+        int t=1;
+        for(int i=1;i<n;i++){
+            if(vec[i] >= tail.back()){
+                tail.push_back(vec[i]);
+                
+                ans[t] = tail.size();
+                t++;
+            }
+            else{
+                int c = ceil(tail,0,tail.size()-1,vec[i]);
+                tail[c] = vec[i];
+                ans[t] = c+1;
+                t++;
+            }
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,32 @@
+public class Solution
+{
+	public int MaxSumMinProduct(int[] nums)
+	{
+		long ans = 0;
+		Stack<int> stack = new Stack<int>();
+		long[] prefixSum = new long[nums.Length];
+		prefixSum[0] = nums[0];
+
+		for (int k = 1; k < nums.Length; k++)
+		{
+			prefixSum[k] += prefixSum[k - 1] + nums[k];
+		}
+
+		int i = 0;
+
+		while (i < nums.Length || stack.Count > 0)
+		{
+			if (stack.Count == 0 || (i < nums.Length && nums[i] > nums[stack.Peek()]))
+				stack.Push(i++);
+			else
+			{
+				int idx = stack.Pop();
+				long start = stack.Count == 0 ? 0 : prefixSum[stack.Peek()];
+				long end =  i < nums.Length ? prefixSum[i - 1]: prefixSum[nums.Length - 1];
+				ans = Math.Max(ans, (end - start) * nums[idx]);
+			}
+		}
+
+		return (int)(ans % 1000000007);
+	}
+}

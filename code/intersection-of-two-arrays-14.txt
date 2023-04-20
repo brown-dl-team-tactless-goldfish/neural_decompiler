@@ -1,0 +1,113 @@
+#define MAX_SIZE (2*3*5+1)
+#define offset_of(TYPE,MEMBER) ( (size_t)&(((TYPE*)0)->MEMBER) )
+#define container_of(TYPE,MEMBER,ptr) ( (void*)ptr - offset_of(TYPE,MEMBER) )
+struct link_node
+{
+    struct link_node **pprev;
+    struct link_node *next;
+};
+typedef struct hash_set
+{
+    struct link_node* set[MAX_SIZE]; //an array of pointer
+
+}hash_set;
+struct int_set
+{
+    struct link_node node;
+    int val;
+};
+void link_add(struct link_node **head,struct link_node *node)
+{
+    if(*head != NULL)
+    {
+        (*head)->pprev = &node;
+    }
+    node->next = *head;
+    node->pprev = NULL;
+    *head = node;
+}
+int hash_contain_of(hash_set *set,int val)
+{
+    int hash_code = val % MAX_SIZE;
+    struct link_node *head = set->set[hash_code];
+
+    while(head != NULL)
+    {
+        struct int_set *p = container_of(struct int_set,node,head);
+        if(p->val == val)
+            return 1;
+        head = head->next;
+    }
+    return 0;
+}
+int get_val(struct link_node* lnode)
+{
+    struct int_set *container = container_of(struct int_set,node,lnode);
+    return container->val;
+}
+
+void hash_set_add(hash_set *set,int val)
+{
+    int flag = 0;
+    int hash_code = val % MAX_SIZE;
+    struct link_node *head = set->set[hash_code];
+    struct link_node **tmp = set->set+hash_code;
+    while(head != NULL)
+    {
+        struct int_set *p = container_of(struct int_set,node,head);
+        if(p->val == val)
+        {
+            flag = 1;
+            break;
+        }
+        head = head->next;
+    }
+    if(flag)
+        return;
+    struct int_set* node = malloc(sizeof(struct int_set));
+    node->val = val;
+    link_add(tmp,&(node->node));
+}
+
+int *enumerator(hash_set *set,int max_len,int *len)
+{
+    int i;
+    int counter = 0;
+    int *ret = malloc(sizeof(int)*max_len);
+    struct link_node *p;
+    for(i=0;i<MAX_SIZE;i++)
+    {
+        p = set->set[i];
+        while(p!=NULL)
+        {
+            ret[counter++] = get_val(p);
+            p=p->next;
+        }
+    }
+    *len = counter;
+    return ret;
+}
+
+int* intersection(int* nums1, int nums1Size, int* nums2, int nums2Size, int* returnSize){
+    hash_set set,result_set;
+    int i;
+    //int *ret = malloc(sizeof(int) * );
+
+    for(i=0;i<MAX_SIZE;i++)
+    {
+        set.set[i] = NULL;
+        result_set.set[i] = NULL;
+    }
+    for(i=0;i<nums1Size;i++)
+    {
+        hash_set_add(&set,nums1[i]);
+    }
+    for(i=0;i<nums2Size;i++)
+    {
+        if(hash_contain_of(&set,nums2[i]))
+        {
+            hash_set_add(&result_set,nums2[i]);
+        }
+    }
+    return enumerator(&result_set,nums1Size>nums2Size?nums1Size:nums2Size,returnSize);
+}

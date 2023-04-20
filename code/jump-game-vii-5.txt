@@ -1,0 +1,46 @@
+struct BIT{
+    vector<int> nums;
+    BIT(int size) : nums(size){}
+    int lowbit(int x) { return x & -x; }
+    void update(int x, int cnt){
+        while (x < nums.size()) {
+            nums[x] += cnt;
+            x += lowbit(x);
+        }
+    }
+    
+    int query(int x) {
+        int sum = 0;
+        if(x <= 0) return 0;
+        while(x > 0) {
+            sum += nums[x];
+            x -= lowbit(x);
+        }
+        return sum;
+    }
+};
+
+class Solution {
+public:
+    bool canReach(string s, int minJump, int maxJump) {
+        vector<int> dist;
+        if(s.back() == '1') return false;
+        if(s.size() == 1) return true;
+        for(int i = 0; i < s.size(); i++){
+            if(s[i] == '0') dist.push_back(i + 1);
+        }
+        BIT bit(1e5 + 10);
+        bit.update(1, 1);
+        for(int i = 1; i < dist.size(); i++) {
+            int r = dist[i] - minJump;
+            int l = max(1, dist[i] - maxJump);
+            if(r <= 0) continue;
+            if(bit.query(r) - bit.query(l - 1) == 0) {
+                continue;
+            }
+            if(i + 1 == dist.size()) return true;
+            bit.update(dist[i], 1);
+        }
+        return false;
+    }
+};

@@ -1,0 +1,44 @@
+#include <vector>
+
+/*
+// Employee info
+class Employee {
+public:
+    // It's the unique ID of each node.
+    // unique id of this employee
+    int id;
+    // the importance value of this employee
+    int importance;
+    // the id of direct subordinates
+    vector<int> subordinates;
+};
+*/
+class Solution {
+public:
+    int getImportance(std::vector<Employee*> employees, int id) {
+        return helper(employees, id);
+    }
+
+    int helper(const std::vector<Employee*>& employees, int id) {
+
+        int sum = 0;
+
+        for (const auto& employee: employees) {
+
+            if (employee->id == id) {
+
+                for (int sub_id : employee->subordinates) {
+                    sum += helper(employees, sub_id);
+                }
+                
+                sum += employee->importance;
+
+            }
+
+        }
+        
+        return sum;
+    }
+};
+
+

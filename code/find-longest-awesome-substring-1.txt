@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int longestAwesome(string s) {
+        int counter = 0;
+        vector<int> state(1<<10, -1);        
+        state[0] = 0;
+        int ans = 0;
+        int cur = 0;
+        for(int i = 0; i < s.size(); ++i) {
+            cur ^= 1 << (s[i] - '0');
+            if(state[cur] == -1)
+                state[cur] = i + 1;
+            ans = max(ans, i - state[cur] + 1);
+            for(int j = 0; j <= 9; ++j) {
+                int ns = cur ^ (1 << j);
+                if(state[ns]>=0)
+                    ans = max(ans, i - state[ns] + 1);
+            }
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,39 @@
+class ThroneInheritance {
+private: 
+    string kingName ;
+    unordered_set<string>dead ;
+    unordered_map<string, vector<string>>family ; //{parent, child}
+    
+    void dfs(string& name, vector<string>&ret){
+        if(!dead.count(name))
+            ret.push_back(name) ;
+        for(auto& child : family[name])
+            dfs(child, ret) ;
+    }
+public:
+    ThroneInheritance(string kingName) {
+        this->kingName = kingName ;        
+    }
+    
+    void birth(string parentName, string childName) {
+        family[parentName].push_back(childName) ;
+    }
+    
+    void death(string name) {
+        dead.insert(name) ;
+    }
+    
+    vector<string> getInheritanceOrder() {
+        vector<string>ans ;
+        dfs(kingName, ans) ;
+        return ans ;
+    }
+};
+
+/**
+ * Your ThroneInheritance object will be instantiated and called as such:
+ * ThroneInheritance* obj = new ThroneInheritance(kingName);
+ * obj->birth(parentName,childName);
+ * obj->death(name);
+ * vector<string> param_3 = obj->getInheritanceOrder();
+ */

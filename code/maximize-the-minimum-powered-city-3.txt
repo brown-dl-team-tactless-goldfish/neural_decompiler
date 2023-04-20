@@ -1,0 +1,55 @@
+class Solution {
+public:
+    const long long INF = 1e18 + 7;
+    long long maxPower(vector<int>& stations, int r, int k) {
+        int n = stations.size();
+        long long sol = 0;
+        int len = 2 * r + 1;
+        vector<long long> prefixSum(n);
+        prefixSum[0] = stations[0];
+        for (int i = 0; i < n - 1; i++) {
+            prefixSum[i + 1] = prefixSum[i] + stations[i + 1];
+        }
+        vector<long long> power(n);
+        for (int i = 0; i < n; i++) {
+            int x = max(0, i - r);
+            int y = min(n - 1, i + r);
+            long long total = prefixSum[y] - (x == 0 ? 0ll : prefixSum[x - 1]);
+            power[i] = total;
+        }
+        auto isPossible = [&] (long long value) -> bool {
+            vector<long long> add(n);
+            long long K = k;
+            for (int i = 0; i < n; i++) {
+                if (power[i] + add[i] < value) {
+                    int nxt = min(n - 1, i + len - 1);
+                    long long ad = value - power[i] - add[i];
+                    K -= ad;
+                    if (K < 0) {
+                        return false;
+                    }
+                    add[i] += ad;
+                    if (nxt + 1 < n) {
+                        add[nxt + 1] -= ad;
+                    }
+                }
+                if (i + 1 < n) {
+                    add[i + 1] += add[i];
+                }
+            }
+            return true;
+        };
+        long long low = 0;
+        long long high = INF;
+        while (low <= high) {
+            long long mid = (low + high) / 2;
+            if (isPossible(mid)) {
+                sol = mid;
+                low = mid + 1;
+            } else {
+                high = mid - 1;
+            }
+        }
+        return sol;
+    }
+};

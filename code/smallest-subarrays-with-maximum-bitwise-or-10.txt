@@ -1,0 +1,42 @@
+    public int[] SmallestSubarrays(int[] nums) 
+    {
+        int[] bitFreq = new int[32];
+        int right = nums.Length - 1;
+        int[] result = new int[nums.Length];
+        for (int left = nums.Length - 1; left >= 0; left--)
+        {
+            string bitStringLeft = Convert.ToString(nums[left], 2).PadLeft(32, '0');
+            for (int i = 0; i < 32; i++)
+            {
+                if (bitStringLeft[i] == '1')
+                {
+                    bitFreq[i]++;
+                }
+            }
+            while (right > left)
+            {
+                string bitStringRight = Convert.ToString(nums[right], 2).PadLeft(32, '0');
+                bool flagNoDelete = false;
+                for (int i = 0; i < 32; i++)
+                {
+                    if (bitStringRight[i] == '1' && bitFreq[i] == 1)
+                    {
+                        flagNoDelete = true;
+                        break;
+                    }
+                }
+                if (flagNoDelete)
+                    break;
+                for (int i = 0; i < 32; i++)
+                {
+                    if (bitStringRight[i] == '1')
+                    {
+                        bitFreq[i]--;
+                    }
+                }
+                right--;
+            }
+            result[left] = right - left + 1;
+        }
+        return result;
+    }

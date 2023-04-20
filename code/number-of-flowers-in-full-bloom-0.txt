@@ -1,0 +1,43 @@
+struct PP{
+    int person;  //start -> rank = 1     end  -> rank = -1;
+    int rank;
+};
+
+int cop(const void* a, const void* b){
+    return (*(struct PP*)a).person > (*(struct PP*)b).person ? 1 : -1; 
+}
+
+int* fullBloomFlowers(int** flowers, int flowersSize, int* flowersColSize, int* persons, int personsSize, int* returnSize){
+    *returnSize = personsSize;
+    int* ans = calloc(personsSize,sizeof(int));
+    struct PP* list = malloc(sizeof(struct PP)*(personsSize));
+    struct PP* tree = malloc(sizeof(struct PP)*(flowersSize*2 + 1));
+    int count = 0;
+    for (int i = 0 ; i < flowersSize ; i++){
+        tree[count].person = flowers[i][0];
+        tree[count].rank = 1;
+        count++;
+        tree[count].person = flowers[i][1]+1;
+        tree[count].rank = -1;
+        count++;
+    }
+    for (int i = 0 ; i < personsSize ; i++){
+        list[i].person = persons[i];
+        list[i].rank = i;
+    }
+    qsort(tree, flowersSize*2, sizeof(struct PP), cop);
+    qsort(list, personsSize, sizeof(struct PP), cop);
+    tree[count].person = INT_MAX;
+    int now = 0;
+    int flower = 0;
+    for (int i = 0 ; i < personsSize ; i++){
+        while (list[i].person >= tree[now].person){
+            flower += tree[now].rank;
+            now++;
+        }
+        ans[list[i].rank] = flower;
+    }
+    free(list);
+    free(tree);
+    return ans;
+}

@@ -1,0 +1,34 @@
+class RLEIterator {
+public:
+    vector<int> q;
+    vector<long> count;
+    long cur = 0;
+    
+    RLEIterator(vector<int>& encoding) {
+        long c = 0;
+        for(int i=0,n=encoding.size(); i<n-1; i+=2)
+        {
+            if(!encoding[i]) continue;
+            
+            if(!q.empty() && q.back() == encoding[i+1])
+            {
+                count.back() += encoding[i];
+            }
+            else
+            {
+                q.push_back(encoding[i+1]);
+                count.push_back(c + encoding[i]);
+            }
+
+            c = count.back();
+        }
+    }
+    
+    int next(int n) {
+        cur += n;
+        auto itr = lower_bound(count.begin(), count.end(), cur);
+        if(itr != count.end()) return q[itr - count.begin()];
+        
+        return -1;
+    }
+};

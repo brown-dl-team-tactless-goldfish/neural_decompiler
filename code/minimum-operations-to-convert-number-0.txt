@@ -1,0 +1,17 @@
+class Solution:
+    def minimumOperations(self, nums: List[int], start: int, goal: int) -> int:
+
+        queue, unseen = deque([(start, 1)]), set(range(1001))   # queue: contains still-possible candidates  
+                                                                # unseen: takes care of already seen and negs
+        while queue:
+            x, ct = queue.popleft()
+            for n in nums:
+
+                for cand in {x+n, x-n, x^n}:                    # <-- set here reduces redundant checks
+                    if cand == goal: return ct                  #     (for example x, n = 3, 0)
+
+                    if cand in unseen:                          
+                        queue.append((cand, ct + 1))
+                        unseen.remove(cand)
+                    
+        return -1

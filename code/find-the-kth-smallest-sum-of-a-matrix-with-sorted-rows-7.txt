@@ -1,0 +1,33 @@
+public class Solution {
+    public int KthSmallest(int[][] mat, int k) {
+        
+        var pq = new SortedSet<(int num, int index)>();
+        int index = 0;
+        
+        for(int i = 0; i < Math.Min(mat[0].Length, k); i++)       
+            pq.Add((mat[0][i], index++));       
+        
+        for(int i = 1; i < mat.Length; i++)
+        {
+            var newpq = new SortedSet<(int num, int index)>();
+            foreach(var item in pq)
+            {
+                for(int j = 0; j < Math.Min(mat[0].Length, k); j++)
+                {                    
+                    var newNum = item.num + mat[i][j];
+                    newpq.Add((newNum, index++));
+                    
+                    if(newpq.Count > k)
+                        newpq.Remove(newpq.Max);
+                }
+            }
+            pq = newpq;
+        }
+        return pq.Max.num;
+    }
+}
+
+//Idea:
+// 1) Store the first k elements from the 1st row in PQ
+// 2) Then loop through the rest of the rows and add value to each of the elements in a new PQ.
+// 3) At the end pick the the Max element of the PQ is the answer.

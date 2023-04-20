@@ -1,0 +1,49 @@
+class Solution {
+public:
+    int colorTheGrid(int m, int n) {
+    
+        unordered_map<long, int> dp;     
+        vector<int> validCols;  
+        
+        generateCols(m, validCols, 0, 0);
+        
+        return getNbSols(validCols, 0, 0, n, dp);
+    }
+    
+    /**
+    * compute the number of valid solutions for the grid, performing a DFS
+    * from each of the precomputed valid colors (3 * 2 ^ (m - 1) possible permutations).
+    * Use the hash map to reuse the dynamically computed solutions.
+    */
+    int getNbSols(vector<int>& validCols, int prevCol, long colIdx, int n, unordered_map<long, int>& dp) {
+        if(colIdx == n) return 1;
+        int ans = 0;
+        for(int col : validCols) {
+            if(not (col & prevCol)) { // check horizontal crossing, not processing adjacent colors
+               if(dp.find((colIdx << 32) + col) == dp.end()) {
+                    dp[(colIdx << 32) + col] = getNbSols(validCols, col, colIdx + 1, n, dp); 
+                }
+                ans = (ans + dp[(colIdx << 32) + col]) % MOD;
+            }
+        }
+        return ans % MOD;
+    }
+    
+    /**
+    * generate all valid color permutations for a column, i.e those who
+    * does not have two same adjacent colors
+    */
+    void generateCols(int m, vector<int>& validCols, int curCol, int rowIdx) {
+        if(rowIdx == m) {validCols.push_back(curCol); return;}
+        for(int c = 0b001; c <= 0b100; c *= 2) {
+            int prev_c = 0;
+            if(rowIdx) prev_c = curCol >> 3 * (rowIdx - 1) & 0b111;
+            if(prev_c != c) { // check vertical crossing, not processing adjacent colors
+                generateCols(m, validCols, c << 3 * rowIdx | curCol, rowIdx + 1);
+            }
+        }
+    }
+
+private:
+    int MOD = 1e9 + 7;
+};

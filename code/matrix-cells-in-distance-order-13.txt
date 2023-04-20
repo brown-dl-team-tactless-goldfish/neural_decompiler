@@ -1,0 +1,40 @@
+class Solution {
+public:
+	vector<vector<int>> allCellsDistOrder(int R, int C, int r, int c) {
+		vector<vector<int>> res;
+		queue<vector<int>> q;
+		set<pair<int, int>> visited;
+
+		q.push({r, c});
+
+		while(!q.empty()) {
+			int size = q.size();
+
+			for(int i = 0; i < size; i++) {
+				auto temp = q.front();
+				q.pop();
+
+				if(visited.count({temp[0], temp[1]}))
+					continue;
+
+				visited.insert({temp[0], temp[1]});
+
+				res.push_back(temp);
+
+				if(temp[0] > 0)
+					q.push({temp[0] - 1, temp[1]});
+
+				if(temp[0] < R - 1)
+					q.push({temp[0] + 1, temp[1]});
+
+				if(temp[1] > 0)
+					q.push({temp[0], temp[1] - 1});
+
+				if(temp[1] < C - 1)
+					q.push({temp[0], temp[1] + 1});
+			}
+		}
+
+		return res;
+	}
+};

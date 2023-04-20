@@ -1,0 +1,46 @@
+char * process(char * s, int n){
+    char* ans = malloc((n+1) * sizeof(char));
+    int end = n-1;
+    int a_id = 0;
+    for(int i = n-1; i>=0; i--){
+        if(s[i] == ' ' && i < end){
+            int l = end - i;
+            strncpy(&ans[a_id], &s[i+1], l);
+            ans[a_id + l] = ' ';
+            a_id = a_id + l + 1;
+            end = n;
+            for(int k = i-1; k >= 0; k--){
+                if(s[k] !=' '){
+                    end = k;
+                    break;
+                }
+            }
+        }
+        else if(i == 0){
+            int l = end - i + 1;
+            strncpy(&ans[a_id], &s[i], l);
+            ans[a_id + l] = '\0';
+        }
+    }
+
+    return ans;
+}
+
+char * reverseWords(char * s){
+    int left = 0;
+    int n = strlen(s);
+    for( left = 0; left < n; left++){
+        if(s[left] != ' ')
+            break;
+    }
+    
+    int right = n-1;
+    for(right = n-1; right >=0; right--){
+        if(s[right] != ' ')
+            break;
+    }
+    if(right < n-1)
+        s[right+1] = '\0';
+    
+    return process(&s[left], right - left + 1);
+}

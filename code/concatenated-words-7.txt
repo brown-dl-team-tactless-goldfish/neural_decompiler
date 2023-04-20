@@ -1,0 +1,128 @@
+    public class Solution
+    {
+        private class TrieNode
+        {
+            public bool HasValue;
+            public readonly Dictionary<char, TrieNode> Next = new Dictionary<char, TrieNode>();
+        }
+
+        private class Trie
+        {
+            private readonly TrieNode _root = new TrieNode();
+
+            private void AddValue(TrieNode node, ref string val, int idx)
+            {
+                if (idx == val.Length)
+                {
+                    node.HasValue = true;
+                    return;
+                }
+
+                char c = val[idx];
+                TrieNode nextNode = null;
+
+                if (node.Next.ContainsKey(c))
+                {
+                    nextNode = node.Next[c];
+                }
+                else
+                {
+                    nextNode = new TrieNode();
+                    node.Next[c] = nextNode;
+                }
+
+                AddValue(nextNode, ref val, idx + 1);
+            }
+
+            public void AddValue(string val)
+            {
+                AddValue(_root, ref val, 0);
+            }
+
+            private int Helper(ref string word, int idx, TrieNode node, IDictionary<string, int> dp)
+            {
+                if (idx == word.Length)
+                {
+                    if (node.HasValue)
+                    {
+                        dp[word] = 1;
+                    }
+                    else
+                    {
+                        dp[word] = 0;
+                    }
+
+                    return dp[word];
+                }
+
+                if (node.HasValue)
+                {
+                    var tail = word.Substring(idx);
+                    var last = Helper(ref tail, dp);
+
+                    if (last != 0)
+                    {
+                        dp[word] = last + 1;
+                        return dp[word];
+                    }
+                }
+
+
+                char c = word[idx];
+
+                if (node.Next.ContainsKey(c))
+                {
+                    return Helper(ref word, idx + 1, node.Next[c], dp);
+                }
+                else
+                {
+                    dp[word] = 0;
+                }
+
+                return dp[word];
+            }
+
+            public int Helper(ref string word, IDictionary<string, int> dp)
+            {
+                if (dp.ContainsKey(word))
+                {
+                    return dp[word];
+                }
+
+                dp[word] = 0;
+                return Helper(ref word, 0, _root, dp);
+            }
+        }
+
+
+        public IList<string> FindAllConcatenatedWordsInADict(string[] words)
+        {
+            Array.Sort(words, (w1, w2) => w1.Length.CompareTo(w2.Length));
+            IList<string> res = new List<string>();
+            Trie trie = new Trie();
+            IDictionary<string, int> dp = new Dictionary<string, int>();
+
+            for (int i = 0; i < words.Length; i++)
+            {
+                var word = words[i];
+                if (trie.Helper(ref word, dp) > 1)
+                {
+                    res.Add(word);
+                }
+
+                trie.AddValue(word);
+
+                if (dp.ContainsKey(word))
+                {
+                    dp[word] = Math.Max(dp[word], 1);
+                }
+                else
+                {
+                    dp[word] = 1;
+                }
+            }
+
+
+            return res;
+        }
+    }

@@ -1,0 +1,52 @@
+int find_parent(int* parent, int x) {
+  if (parent[x] == x) return x;
+  parent[x] = find_parent(parent, parent[x]);
+  return parent[x];
+}
+
+void make_group(int* parent, int u, int v) {
+  int par_u = find_parent(parent, u);
+  int par_v = find_parent(parent, v);
+  // make parent of u as parent of v
+  parent[par_v] = par_u;
+}
+
+bool validateBinaryTreeNodes(int n, int* leftChild, int leftChildSize, int* rightChild, int rightChildSize){
+  int inbound[n];
+  int parent[n];
+  for (int i=0; i<n; ++i) {
+    inbound[i] = 0;
+    parent[i] = i;
+  }
+  
+  // go thorugh all nodes
+  for (int i=0; i<leftChildSize; ++i) {
+    if (leftChild[i] != -1) {
+      if (++inbound[leftChild[i]] > 1) return false;
+      
+      // disjoint set to link i as parent of leftChild[i]
+      make_group(parent, i, leftChild[i]);
+    }
+    
+    if (rightChild[i] != -1) {
+      if (++inbound[rightChild[i]] > 1) return false;
+      
+      make_group(parent, i, rightChild[i]);
+    }
+  }
+  
+  // need to check that only 1 node has inboud = 0, which is the root
+  int cnt_roots = 0;
+  int root = find_parent(parent, parent[0]);
+  for (int i=0; i<n; ++i) {
+    // if not same parent as root, not same tree
+    if (find_parent(parent, parent[i]) != root) return false;
+    
+	// if no inbounds connections, this is the root
+    if (!inbound[i]) ++cnt_roots;
+  }
+  // if no root, means graph loops on itself
+  if (!cnt_roots) return false;
+  
+  return true;
+}

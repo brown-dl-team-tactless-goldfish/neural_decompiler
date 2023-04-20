@@ -1,0 +1,52 @@
+lass Solution {
+    const string base = "http://tinyurl.com/";
+    vector<string> urls;
+
+public:
+
+    // Encodes a URL to a shortened URL.
+    string encode(string longUrl) {
+        urls.push_back(longUrl);
+        return base + encodeB62(urls.size());
+    }
+
+    // Decodes a shortened URL to its original URL.
+    string decode(string shortUrl) {
+        return urls[decodeB62(shortUrl)-1];
+    }
+
+protected:
+    char base62(int n)
+    {
+        if(n < 10) return n+'0';
+        if(n < 36) return n+'A'-10;
+        return n+'a'-36; //if(n < 62)
+    }
+
+    int revb62(char c)
+    {
+        if(c >= '0' && c <= '9') return c-'0';
+        if(c >= 'A' && c <= 'Z') return c-'A'+10;
+        return c-'a'+36;
+    }
+
+    string encodeB62(int n)
+    {
+        string res;
+        while(n)
+        {
+            res += base62(n%62);
+            n /= 62;
+        }
+        return res;
+    }
+
+    int decodeB62(string& s)
+    {
+        int res = 0;
+        int pos = s.find_last_of('/');
+        for(int i = s.size()-1; i > pos; --i)
+            res = res*62 + revb62(s[i]);
+        return res;
+    }
+};

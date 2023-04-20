@@ -1,0 +1,99 @@
+typedef struct TreeNode node;
+
+typedef struct QueueNode
+{
+  node* add;
+  int val;
+  struct QueueNode* next;
+}Qnode;
+
+int cal_and_store(node* root, int* depths, int* max)
+{
+  if(!root)
+    return 0;
+  int left_depth = cal_and_store(root->left, depths, max);
+  int right_depth = cal_and_store(root->right, depths, max);
+  depths[root->val - 1] = 1 + fmax(left_depth, right_depth);
+  (*max) = (root->val > (*max))?root->val:(*max);
+  return 1 + fmax(left_depth, right_depth);
+}
+
+int* treeQueries(struct TreeNode* root, int* queries, int queriesSize, int* returnSize)
+{
+  int max = 0;
+  int* depths = (int*)malloc(1000000 * sizeof(int));
+  int tree_height = cal_and_store(root, depths, &max);
+  depths = realloc(depths, max * sizeof(int));
+  int* results = (int*)malloc(max * sizeof(int));
+  int max1,max2;
+  max1 = max2 = -1;
+  Qnode* head = (Qnode*)malloc(sizeof(Qnode));
+  head->add = root;
+  head->val = root->val;
+  head->next = NULL;
+  Qnode* tail = head;
+  int level = 1;
+  int curr_step_reach = 1;
+  int next_step_reach = 0;
+  while(head && tail)
+  {
+    max1 = max2 = -1;
+    Qnode* level_start = head;
+    for(int i = 0; i < curr_step_reach;i++)
+    {
+      node* curr_add = head->add;
+      int curr_val = head->val;
+      if(depths[curr_val - 1] > max1)
+      {
+        max2 = max1;
+        max1 = depths[curr_val - 1];
+      }
+      else if(depths[curr_val - 1] > max2)
+        max2 = depths[curr_val - 1];
+      if(curr_add->left)
+      {
+        Qnode* temp = (Qnode*)malloc(sizeof(Qnode));
+        temp->add = curr_add->left;
+        temp->val = curr_add->left->val;
+        temp->next = NULL;
+        tail->next = temp;
+        tail = temp;
+        next_step_reach++;
+      }
+      if(curr_add->right)
+      {
+        Qnode* temp = (Qnode*)malloc(sizeof(Qnode));
+        temp->add = curr_add->right;
+        temp->val = curr_add->right->val;
+        temp->next = NULL;
+        tail->next = temp;
+        tail = temp;
+        next_step_reach++;
+      }
+      head = head->next;    
+    }
+    if(curr_step_reach == 1)
+      results[level_start->val - 1] = level - 2;
+    else
+    {
+      for(int i = 0;i < curr_step_reach;i++)
+      {
+        int curr_val = level_start->val;
+        if(depths[curr_val - 1] == max1)
+          results[curr_val - 1] = level + max2 - 2;
+        else
+          results[curr_val - 1] = level + max1 - 2;
+        level_start = level_start->next;
+      }
+    }
+    level++;
+    curr_step_reach = next_step_reach;
+    next_step_reach = 0;
+  }
+  results[root->val - 1] = 0;
+  *returnSize = queriesSize;
+  int* ans = (int*)malloc(queriesSize * sizeof(int));
+  for(int i = 0;i < queriesSize;i++)
+    ans[i] = results[queries[i] - 1];
+  return ans;
+}

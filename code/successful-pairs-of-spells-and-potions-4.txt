@@ -1,0 +1,44 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+int compare(const void *a, const void *b) {
+    return *(int*) a - *(int*) b;
+}
+
+int* successfulPairs(int* spells, int spellsSize, int* potions, int potionsSize, long long success, int* returnSize) {
+    long long prod1, prod2;
+    int i, j, k, m;
+    int *successfulPairs = (int*) malloc(spellsSize * sizeof(int));
+    qsort(potions, potionsSize, sizeof(int), compare);
+    for (i = 0; i < spellsSize; ++i) {
+        j = 0; 
+        k = potionsSize-1;
+        while (1) {
+            m = j + (k - j) / 2;
+            prod1 = (long long) spells[i] * (long long) potions[m];
+            if (prod1 >= success) {
+                if (m > 0) {
+                    prod2 = (long long) spells[i] * 
+                            (long long) potions[m-1];
+                } else {
+                    prod2 = -1L;
+                }
+                if (prod2 < success) {
+                    successfulPairs[i] = potionsSize-m;
+                    break;
+                } else {
+                    k = m-1;
+                }
+            } else {
+                j = m+1;
+                if (j >= potionsSize) {
+                    successfulPairs[i] = 0;
+                    break;
+                }
+            }
+        }
+    }
+    *returnSize = spellsSize;
+    return successfulPairs;
+}

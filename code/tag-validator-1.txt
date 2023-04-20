@@ -1,0 +1,123 @@
+class Solution {
+public:
+    bool isUppercase(const string &s)
+    {
+        for (char c: s)
+            if (c < 'A' || c > 'Z') return false;
+        
+        return true;
+    }
+    
+    bool validateCloseTag(const string &t, stack<string> &tagStack)
+    {
+        if (!isUppercase(t.substr(1)))
+            return false;
+        
+        if (tagStack.empty() || tagStack.top() != t.substr(1))
+            return false;
+        
+        tagStack.pop();
+        
+        return true;
+    }
+    
+    bool validateOpenTag(const string &t, stack<string> &tagStack)
+    {
+        if (!isUppercase(t))
+            return false;
+        
+        tagStack.push(t);
+        
+        return true;
+    }
+    
+    bool validateCDATA(string &t, stringstream &ss)
+    {
+        
+        if (t.substr(t.length() - 2) != "]]")
+        {
+            while (getline(ss, t, '>'))
+            {
+                if (t.length() >= 2 && t.substr(t.length() - 2) == "]]")
+                    break;
+            }
+        }
+
+        if (t.length() < 2 || t.substr(t.length() - 2) != "]]")
+            return false;
+        
+        return true;
+    }
+    
+    bool isValid(string code)
+    {
+        if (code.empty())
+            return true;
+        
+        stack<string> tagStack;
+        
+        stringstream ss(code);
+        string token;
+        int rootCounter = 0;
+        bool isPrefix = true;
+        
+        while (getline(ss, token, '<'))
+        {
+            // remove prefixes outside the tag
+            if (isPrefix && token.length() > 0)
+                return false;
+            
+            isPrefix = false;
+            
+            // tag not closed
+            if (!getline(ss, token, '>'))
+                return false;
+            
+            // empty tag
+            if (token.empty())
+                return false;
+            
+            if (token[0] == '/' && token.length() <= 10)
+            {
+                // check CLOSE TAG
+                if (!validateCloseTag(token, tagStack))
+                    return false;
+            }
+            else if (token[0] != '!' && token.length() <= 9)
+            {
+                // check OPEN TAG
+                if (!validateOpenTag(token, tagStack))
+                    return false;
+            }
+            else if (token.length() >= 8 &&
+                     token.substr(0, 8) == "![CDATA[")
+            {
+                // check CDATA
+                if (!validateCDATA(token, ss))
+                    return false;
+                
+                // need to be inside a tag
+                if (tagStack.empty())
+                    return false;
+            }
+            else
+            {
+                // need to be inside a tag
+                if (tagStack.empty())
+                    return false;
+                
+                // forbidden character
+                if (token.find('<'))
+                    return false;
+            }
+            
+            if (tagStack.empty())
+                ++rootCounter;
+        }
+        
+        if (!tagStack.empty() || rootCounter > 1)
+            return false;
+        
+        return true;
+    }
+};

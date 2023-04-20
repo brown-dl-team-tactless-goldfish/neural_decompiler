@@ -1,0 +1,33 @@
+class Solution {
+public:
+  long long maxPoints(vector<vector<int>>& points) {
+    int y = points.size(), x = points[0].size(), xend = points[0].size() - 1;
+    vector<long long> v(x), t(x);
+    for(int j = 0; j != x; j++) t[j] = points[0][j];   //create vector t and inicialize it
+    
+    
+    for(int i = 1; i != y; i++){    
+      long long m = t[0];                              //current maximum          
+      v[0] = m;
+      for(int j = 1; j < x; j++){                      //from left to right
+        m = max(--m , t[j]);                
+        v[j] = m;                                  
+      }
+      
+      m = max(t[xend], v[xend]);                       //from right to left
+      v[xend] = m;                                
+      for(int j = xend - 1 ; j >= 0; j--){       
+        m = max(--m , max(t[j], v[j]));               
+        v[j] = m;                                 
+      }   
+      
+      for(int j = 0; j < x; j++)                       //combain maximumes and points
+        t[j] = points[i][j] + v[j];    
+    }
+    
+    long long answer = INT_MIN;                        //fetch maximum
+    for(int j = 0; j < x; j++) answer = max(t[j], answer);   
+    
+    return answer;
+  }
+};

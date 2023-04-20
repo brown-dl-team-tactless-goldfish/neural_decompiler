@@ -1,0 +1,53 @@
+
+class Solution
+{
+public:
+    typedef pair<int, pair<int, int>> pr;
+    vector<int> x{1, -1, 0, 0};
+    vector<int> y{0, 0, 1, -1};
+    bool check(int r, int c, vector<vector<int>> &h)
+    {
+        if (r >= 0 && r < h.size() && c >= 0 && c < h[0].size())
+            return true;
+
+        return false;
+    }
+    int swimInWater(vector<vector<int>> &grid)
+    {
+
+        vector<vector<bool>> vis(grid.size(),vector<bool>(grid[0].size(),false));
+        priority_queue<pr,vector<pr>,greater<pr>> pq;
+
+        pq.push(make_pair(grid[0][0], make_pair(0, 0)));
+
+        while (!pq.empty())
+        {
+            auto cur = pq.top();
+
+            int r=cur.second.first;
+            int c=cur.second.second;
+
+            pq.pop();
+
+            if(cur.second.first==grid.size()-1 && cur.second.second==grid[0].size()-1)
+                return cur.first;
+
+
+            for(int k=0;k<x.size();k++)
+                {
+                    int i=r+x[k];
+                    int j=c+y[k];
+
+                    if(check(i,j,grid)&&!vis[i][j])
+                    {
+                        vis[i][j]=true;
+                        pq.push(make_pair(
+                            max(grid[i][j],cur.first),make_pair(i,j)
+                        ));
+                    }
+                }
+        }
+
+        return -1;
+    }
+};

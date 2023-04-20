@@ -1,0 +1,23 @@
+#define ll long long int
+class Solution {
+public:
+    int firstDayBeenInAllRooms(vector<int>& next) {
+        ll n = next.size();
+        ll mod = 1e9+7;
+        vector<ll>time(n);
+        vector<ll>pref(n);
+        pref[0]=2;
+        time[0]=2;
+        ll arr = 2;
+        for(ll i=1; i<n; i++){
+            if(i==n-1)
+                return arr%mod;
+            ll p = next[i];
+            ll end = (arr+1+(pref[i-1]-((p==0) ? 0 : pref[p-1]))+mod)%mod;
+            time[i]=(end-arr+1+mod)%mod;
+            pref[i] = (pref[i-1]+time[i]+mod)%mod;
+            arr=  (end+1+mod)%mod;
+        }
+        return arr;
+    }
+};

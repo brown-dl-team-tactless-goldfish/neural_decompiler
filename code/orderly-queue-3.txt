@@ -1,0 +1,31 @@
+char *substring(char *string, int position, int length){
+    char *p = (char*)malloc(sizeof(char)*(length+1));
+    for (int c = 0; c < length; c++)    {
+        *(p+c) = *(string+position);      
+        string++;  
+    }
+    *(p+c) = '\0';
+    return p;
+}
+int cmpfunc (const void * a, const void * b) {
+   return ( *(char*)a - *(char*)b );
+}
+char * orderlyQueue(char * s, int k){
+    int len = strlen(s);
+    char* ans = (char*)malloc(sizeof(char)*(1+len));
+    if (k == 1) {
+        strcpy(ans,s);
+        for (int i = 0; i < len; ++i) {
+            char* temp = (char*)malloc(sizeof(char)*(1+len));
+            strcpy(temp, substring(s,i,len-i));
+            strcat(temp, substring(s,0,i));
+            if(strcmp(temp,ans) < 0){
+                strcpy(ans,temp);
+            }
+        }
+        return ans;
+    } else {
+        qsort(s,len,sizeof(char),cmpfunc);
+        return s;
+    }
+}

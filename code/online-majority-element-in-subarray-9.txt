@@ -1,0 +1,31 @@
+class MajorityChecker {
+    unordered_map<int,vector<int>> inx;
+    vector<int> v;
+public:
+    MajorityChecker(vector<int>& arr) {
+        v = arr;
+        for(int i=0;i<arr.size();i++){
+            inx[arr[i]].push_back(i);
+        }
+    }
+    
+    int query(int left, int right, int threshold) {
+        srand(time(0));
+        int len = right - left + 1;
+        for(int i=0;i<min(len,30);i++){
+            int randinx = left + rand()%len;    //random index from -> [left .... right]
+            vector<int> &temp = inx[v[randinx]];
+            int c = cnt(temp,right) - cnt(temp,left-1);
+            if(c >= threshold) return v[randinx];
+        }
+        return -1;
+    }
+    //binary search for counting indices less or equal val
+    int cnt(vector<int>& v,int val){
+        int i = -1;
+        for(int j = v.size();j > 0 ;j/=2){
+            while(i+j < v.size() && v[i+j] <= val) i+=j;
+        }
+        return i+1;
+    }
+};

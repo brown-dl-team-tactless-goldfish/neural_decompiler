@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int constrainedSubsetSum(vector<int>& nums, int k) {
+        vector<long long> dp = vector<long long>(nums.size());
+        dp[0] = nums[0];
+        multiset<long long> rbTree = multiset<long long>{dp[0]};
+        for (auto i = 1; i < nums.size(); i++) {
+            if (i > k) {
+                // multiset, must earse by iterator
+                // erase by value may earse multi elements
+                rbTree.erase(rbTree.find(dp[i - k - 1]));
+            }
+            dp[i] = max(*rbTree.rbegin() + nums[i], static_cast<long long>(nums[i]));
+            rbTree.insert(dp[i]);
+        }
+        return static_cast<int>(*max_element(dp.begin(), dp.end()));
+    }
+};

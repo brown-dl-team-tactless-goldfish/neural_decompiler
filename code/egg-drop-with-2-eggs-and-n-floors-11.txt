@@ -1,0 +1,25 @@
+public:
+    int twoEggDrop(int n) {
+        return recur(n);
+    }
+    
+    int recur(int i){
+        if(i == 0) return 0;
+        
+        if(!dp[i]){
+            int temp = INT_MAX - 1;
+            for(int j = 1; j <= i; ++ j){
+				// Throw an egg at each floor from[1, i]. There are two possible results of this first throwed egg: Break or Unbreak
+				// If it break, we only get one egg left, and we need to check the remaining j - 1 floor
+				// if it is not break, this question shrinks to: We still get two eggs, and now we need to check floor [j, i] which is equivalent to check[0, i-j]
+				// Since we need a complete check, so we get the max result from two situation. Also, since we first throw at floot j, we need to add one to it.
+                temp = min(max(recur(i - j), j - 1), temp);
+            }
+            dp[i] = temp + 1;
+        }
+        
+        return dp[i];
+    }
+        
+private:
+    int dp[1001] = {};

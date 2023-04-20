@@ -1,0 +1,106 @@
+class Solution {
+    int earliest(int n, int x, int y, vector<vector<vector<int>>> &dp) {
+        int& r = dp[n][x][y];
+        if (r >= 0) {
+            return r;
+        }
+        if (x + y == n - 1) {
+            return r = 1;
+        }
+        int round = n >> 1;
+        if (n & 1) {
+            const int mid = round;
+            if (x != mid) {
+                --round;
+            }
+            if (y != mid) {
+                --round;
+            }
+        }
+        r = n;
+        for (int mask = (1 << round) - 1; mask >= 0; --mask) {
+            int winners = (n & 1) ? (1 << (n >> 1)) : 0;
+            for (int i = 0, j = n - 1, ind = 0; i < j; ++i, --j) {
+                if (i == x || i == y) {
+                    winners |= 1 << i;
+                } else if (j == x || j == y) {
+                    winners |= 1 << j;
+                } else if (mask & (1 << (ind++))) {
+                    winners |= 1 << i;
+                } else {
+                    winners |= 1 << j;
+                }
+            }
+            int xx = 0, yy = 0, m = 0;
+            for (int i = 0; i < n; ++i) {
+                if (winners & (1 << i)) {
+                    if (i == x) {
+                        xx = m;
+                    } else if (i == y) {
+                        yy = m;
+                    }
+                    ++m;
+                }
+            }
+            r = min(r, earliest(m, xx, yy, dp));
+        }
+        return ++r;
+    }
+    
+    int latest(int n, int x, int y, vector<vector<vector<int>>> &dp) {
+        int& r = dp[n][x][y];
+        if (r >= 0) {
+            return r;
+        }
+        if (x + y == n - 1) {
+            return r = 1;
+        }
+        int round = n >> 1;
+        if (n & 1) {
+            const int mid = round;
+            if (x != mid) {
+                --round;
+            }
+            if (y != mid) {
+                --round;
+            }
+        }
+        r = 0;
+        for (int mask = (1 << round) - 1; mask >= 0; --mask) {
+            int winners = (n & 1) ? (1 << (n >> 1)) : 0;
+            for (int i = 0, j = n - 1, ind = 0; i < j; ++i, --j) {
+                 if (i == x || i == y) {
+                    winners |= 1 << i;
+                } else if (j == x || j == y) {
+                    winners |= 1 << j;
+                } else if (mask & (1 << (ind++))) {
+                    winners |= 1 << i;
+                } else {
+                    winners |= 1 << j;
+                }
+            }
+            int xx = 0, yy = 0, m = 0;
+            for (int i = 0; i < n; ++i) {
+                if (winners & (1 << i)) {
+                    if (i == x) {
+                        xx = m;
+                    } else if (i == y) {
+                        yy = m;
+                    }
+                    ++m;
+                }
+            }
+            r = max(r, latest(m, xx, yy, dp));
+        }
+        return ++r;
+    
+    }
+public:
+    vector<int> earliestAndLatest(int n, int firstPlayer, int secondPlayer) {
+        vector<vector<vector<int>>> a(n + 1, vector<vector<int>>(n, vector<int>(n, -1))), b(n + 1, vector<vector<int>>(n, vector<int>(n, -1)));
+        --firstPlayer;
+        --secondPlayer;
+        return {earliest(n, firstPlayer, secondPlayer, a), latest(n, firstPlayer, secondPlayer, b)};
+        
+    }
+};

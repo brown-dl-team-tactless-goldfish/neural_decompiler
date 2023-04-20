@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int maxScoreWords(vector<string>& words, vector<char>& letters, vector<int>& score) {
+        int n = words.size();
+        unordered_map<char, int> cnt;
+        for(auto c : letters) {
+            cnt[c]++;
+        }
+        int res = 0;
+        for(int i = 0; i < (1<<n); i++) {
+            int value = 0;
+            bool ok = true;
+            unordered_map<char, int> mp;
+            for(int j = 0; j < n; j++) {
+                if(!(i&(1<<j))) continue;
+                for(int k = 0; k < words[j].size(); k++) {
+                    if(++mp[words[j][k]] > cnt[words[j][k]]) {
+                        ok = false;
+                    }
+                    value += score[words[j][k]-'a'];
+                }
+            }
+            if(ok) res = max(res, value);
+        }
+        return res;
+    }
+};

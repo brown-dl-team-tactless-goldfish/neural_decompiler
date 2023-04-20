@@ -1,0 +1,51 @@
+
+
+
+typedef struct {
+    int stack[100000];
+    int k;
+    int value;
+    int cur;
+    int count;
+} DataStream;
+
+
+DataStream* dataStreamCreate(int value, int k) {
+    DataStream* ret = malloc(sizeof(DataStream));
+    ret->k = k;
+    ret->value = value;
+    ret->cur = 0;
+    ret->count = 0;
+    return ret;
+}
+
+bool dataStreamConsec(DataStream* obj, int num) {
+    if(num == obj->value)
+        obj->count++;
+    obj->stack[obj->cur] = num;
+   
+    if( obj->cur >= obj->k){
+        int t = obj->cur - obj->k;       
+        if( obj->stack[t] == obj->value ){
+            obj->count--;
+        }
+    }
+    
+    obj->cur++;
+    if(obj->count == obj->k )
+        return true;
+    else
+        return false;
+}
+
+void dataStreamFree(DataStream* obj) {
+    free(obj);
+}
+
+/**
+ * Your DataStream struct will be instantiated and called as such:
+ * DataStream* obj = dataStreamCreate(value, k);
+ * bool param_1 = dataStreamConsec(obj, num);
+ 
+ * dataStreamFree(obj);
+*/

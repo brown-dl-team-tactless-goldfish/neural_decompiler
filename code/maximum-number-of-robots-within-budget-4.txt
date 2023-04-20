@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int maximumRobots(vector<int>& ct, vector<int>& rt, long long budget) {
+        long long n = ct.size();
+        long long max_robots = 0, i = 0, curr_cost = 0;
+        //we will store the maximum element of a subarray and its corresponding index in a priority queue
+        priority_queue<pair<long long,long long>>pq;
+        for(long long j=0;j<n;j++){
+            curr_cost+=rt[j];
+            pq.push({ct[j],j});
+            //if the current total cost is less than budget update the number of robots
+            if(pq.size() and curr_cost*(j-i+1)+pq.top().first<=budget){
+                max_robots = max(max_robots,j-i+1);
+            }else{
+                //our current total cost is exceeding budget so increment the starting index of current subarray 
+                while(pq.size() and curr_cost*(j-i+1)+pq.top().first>budget){
+                    curr_cost-=rt[i];
+                    //if the maximum element lies in the previous range pop them out until the maximum element is 
+                    //within the range of current subarray
+                    while(pq.size() and pq.top().second<=i){
+                        pq.pop();
+                    }
+                    i++;
+                }
+                //update the max robots if cost is less than budget
+                if(pq.size() and curr_cost*(j-i+1)+pq.top().first<=budget){
+                    max_robots = max(max_robots,j-i+1);
+                }
+            }
+        }
+        return max_robots;
+    }
+};

@@ -1,0 +1,64 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* addToArrayForm(int* num, int numSize, int k, int* returnSize){
+    int add2 = k;
+    int carry = 0;
+    int count1 = 0;
+    int i = numSize-1;
+   while(add2>0){
+       int sum;
+       if(i<0){
+           sum = carry+(add2%10);
+       }
+       else{
+           sum = carry+num[i]+(add2%10);
+       }
+        count1++;
+        carry = sum/10;
+        add2 = add2/10;
+        i--;
+    }
+    while(i>=0){
+        int sum = carry+num[i];
+        count1++;
+        carry = sum/10;
+        i--;
+    }
+    if(carry!=0){
+        count1++;
+    }
+    
+    *returnSize = count1;
+    int *ans = (int *)malloc(sizeof(int)*(*returnSize));
+    int j = count1-1;
+    i = numSize-1;
+    carry = 0;
+    while(k>0){
+        int sum;
+       if(i<0){
+           sum = carry+(k%10);
+       }
+       else{
+            sum = carry+num[i]+(k%10);
+       }
+        ans[j] = (sum%10);
+        carry = sum/10;
+        k = k/10;
+        i--;
+        j--;
+    }
+    while(i>=0){
+        int sum = carry+num[i];
+        ans[j] = sum%10;
+        count1++;
+        carry = sum/10;
+        i--;
+        j--;
+    }
+    if(carry!=0){
+        ans[j] = carry;
+    }
+    return ans;
+    
+}

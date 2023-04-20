@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int idealArrays(int n, int maxValue) {
+        vector<vector<long long>> dp(n,vector<long long>(maxValue + 1, 0));
+        long long ans = 0;
+        int modl = 1000000007;
+        for(int i = 0; i <= maxValue; i++)
+            dp[0][i] = 1;
+        
+        for(int i = 1; i < n; i++)
+        {
+            for(int j = 1; j <= maxValue; j++)
+            {
+                for(int k = 1; k <= sqrt(j); k++)
+                {
+                    
+                    if(j % k == 0)
+                    {
+                        int l = j/k;
+                        dp[i][j] = (dp[i][j] + dp[i-1][k])%modl;
+                        if(l != k)
+                            dp[i][j] = (dp[i][j] + dp[i-1][l])%modl;
+                    }
+                }
+                
+            }
+        }
+        
+        
+        for(int i = 1; i <= maxValue; i++)
+        ans = (ans + dp[n-1][i])%modl;
+        
+        return ans;
+        
+    }
+};

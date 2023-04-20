@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int minimumAverageDifference(vector<int>& nums) {
+        int n = nums.size();
+        vector<long long> pref(n+1), suff(n+1);
+        for(int i=0; i<n; i++) pref[i+1] = pref[i] + nums[i];
+        for(int i=n-1; i>=0; i--) suff[i] = suff[i+1] + nums[i];
+        int ans;
+        long long mn = INT_MAX;
+        for(int i=1; i<=n; i++) {
+            long long lt = pref[i], rt = suff[i];
+            lt /= i;
+            if(n - i) rt /= (n - i);
+            if(abs(lt - rt) < mn) {
+                mn = abs(lt - rt);
+                ans = i-1;
+            }
+        } 
+        return ans;
+    }
+};

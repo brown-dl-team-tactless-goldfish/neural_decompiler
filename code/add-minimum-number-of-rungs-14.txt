@@ -1,0 +1,18 @@
+class Solution {
+public:
+   int addRungs(vector<int>& a, int d) 
+   {
+        int n=a.size();
+        int c=0;
+        if(a[0]>d)
+            c+=(a[0]-1)/d;       
+        for(int i=1;i<n;i++)
+        {
+            if((a[i]-a[i-1])>d)
+            {
+                c+=(a[i]-a[i-1]-1)/d;
+            }
+        }
+        return c;        
+    }
+};

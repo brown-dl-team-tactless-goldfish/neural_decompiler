@@ -1,0 +1,133 @@
+class Solution {
+public:
+    vector<int> longestRepeating(string s, string qc, vector<int>& qi) {
+        int n = s.length(), q = qc.length(), pre = 0;
+        
+        vector<int> ans(q);
+        map<int, int> start_end, end_start;
+        array<set<pair<int, int>>, 26> arr;
+        multiset<int> lens;
+        
+        s.push_back('.');
+        for (int i = 1; i <= n; ++i) {
+            if (s[i] != s[i - 1]) {
+                arr[s[i - 1] - 'a'].insert({pre, i - 1});
+                start_end[pre] = i - 1;
+                end_start[i - 1] = pre;
+                lens.insert(i - pre);
+                pre = i;
+            }
+        }
+        
+        for (int i = 0; i < q; ++i) {
+            char c = qc[i];
+            int idx = qi[i];
+            char pc = s[idx];
+            
+            char prev_c = idx ? s[idx - 1] : '.';
+            char next_c = idx + 1 < n ? s[idx + 1] : '.';
+            
+            if (prev_c != pc && next_c != pc) {
+                arr[pc - 'a'].erase({idx, idx});
+                
+                start_end.erase(idx);
+                end_start.erase(idx);
+                
+                lens.erase(lens.lower_bound(1));
+            } else if (prev_c == pc && next_c != pc) {
+                int find_start = end_start[idx];
+                
+                arr[pc - 'a'].erase({find_start, idx});
+                arr[pc - 'a'].insert({find_start, idx - 1});
+                
+                start_end[find_start] = idx - 1;
+                end_start.erase(idx);
+                end_start[idx - 1] = find_start;
+                
+                lens.erase(lens.lower_bound(idx - find_start + 1));
+                lens.insert(idx - find_start);
+            } else if (prev_c != pc && next_c == pc) {
+                int find_end = start_end[idx];
+                
+                arr[pc - 'a'].erase({idx, find_end});
+                arr[pc - 'a'].insert({idx + 1, find_end});
+                
+                start_end.erase(idx);
+                start_end[idx + 1] = find_end;
+                end_start[find_end] = idx + 1;
+                
+                lens.erase(lens.lower_bound(find_end - idx + 1));
+                lens.insert(find_end - idx);
+            } else {
+                auto [find_start, find_end] = *prev(start_end.lower_bound(idx));
+                
+                arr[pc - 'a'].erase({find_start, find_end});
+                arr[pc - 'a'].insert({find_start, idx - 1});
+                arr[pc - 'a'].insert({idx + 1, find_end});
+                
+                start_end[find_start] = idx - 1;
+                start_end[idx + 1] = find_end;
+                end_start[find_end] = idx + 1;
+                end_start[idx - 1] = find_start;
+                
+                lens.erase(lens.lower_bound(find_end - find_start + 1));
+                lens.insert(find_end - idx);
+                lens.insert(idx - find_start);
+            }
+            
+            if (prev_c != c && next_c != c) {
+                arr[c - 'a'].insert({idx, idx});
+                
+                start_end[idx] = idx;
+                end_start[idx] = idx;
+                
+                lens.insert(1);
+            } else if (prev_c == c && next_c != c) {
+                int find_start = end_start[idx - 1];
+                
+                arr[c - 'a'].erase({find_start, idx - 1});
+                arr[c - 'a'].insert({find_start, idx});
+                
+                start_end[find_start] = idx;
+                end_start.erase(idx - 1);
+                end_start[idx] = find_start;
+                
+                lens.erase(lens.lower_bound(idx - find_start));
+                lens.insert(idx - find_start + 1);
+            } else if (prev_c != c && next_c == c) {
+                int find_end = start_end[idx + 1];
+                
+                arr[c - 'a'].erase({idx + 1, find_end});
+                arr[c - 'a'].insert({idx, find_end});
+                
+                start_end.erase(idx + 1);
+                start_end[idx] = find_end;
+                end_start[find_end] = idx;
+                
+                lens.erase(lens.lower_bound(find_end - idx));
+                lens.insert(find_end - idx + 1);
+            } else {
+                int find_start = end_start[idx - 1];
+                int find_end = start_end[idx + 1];
+                
+                arr[c - 'a'].erase({find_start, idx - 1});
+                arr[c - 'a'].erase({idx + 1, find_end});
+                arr[c - 'a'].insert({find_start, find_end});
+                
+                start_end.erase(idx + 1);
+                start_end[find_start] = find_end;
+                end_start.erase(idx - 1);
+                end_start[find_end] = find_start;
+                
+                lens.erase(lens.lower_bound(find_end - idx));
+                lens.erase(lens.lower_bound(idx - find_start));
+                lens.insert(find_end - find_start + 1);
+            }
+            
+            s[idx] = c;
+            ans[i] = *prev(lens.end());
+        }
+        
+        return ans;
+    }
+};

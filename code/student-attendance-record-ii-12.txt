@@ -1,0 +1,30 @@
+constexpr static int P = 0;
+constexpr static int L = 1;
+constexpr static int A = 2;
+
+long long int perms[3][100001] = {0};
+int permsWithoutAbsent[2][100001] = {0};
+
+class Solution {
+public:
+    int checkRecord(int n) {
+        int mod = 1e9 + 7;
+        memset(perms, 0, sizeof(perms));
+        memset(permsWithoutAbsent, 0, sizeof(permsWithoutAbsent));
+
+        permsWithoutAbsent[P][1] = permsWithoutAbsent[L][1] = perms[A][1] = permsWithoutAbsent[P][0] = 1;
+        for (int i = 2; i <= n; i++) {
+            permsWithoutAbsent[P][i] = (permsWithoutAbsent[P][i - 1] + permsWithoutAbsent[L][i - 1]) % mod;
+            permsWithoutAbsent[L][i] = (permsWithoutAbsent[P][i - 1] + permsWithoutAbsent[P][i - 2]) % mod;
+            perms[A][i] = (permsWithoutAbsent[P][i - 1] + permsWithoutAbsent[L][i - 1]) % mod;
+        }
+
+        perms[P][0] = perms[P][1] = perms[L][1] = 1;
+        for (int i = 2; i <= n; i++) {
+            perms[P][i] = (perms[P][i - 1] + perms[L][i - 1] + perms[A][i - 1]) % mod;
+            perms[L][i] = (perms[P][i - 1] + perms[A][i - 1] + perms[P][i - 2] + perms[A][i - 2]) % mod;
+        }
+
+        return (perms[P][n] + perms[L][n] + perms[A][n]) % mod;
+    }
+};

@@ -1,0 +1,48 @@
+char * multiply(char * num1, char * num2){
+    int i = 0, j = 0, idx;
+    char* result = NULL;
+    int len1,len2,len;
+    int* arr = NULL;
+    
+    if((num1[0]=='0') || (num2[0]=='0'))
+        return "0";
+    len1 = strlen(num1);
+    len2 = strlen(num2);
+    len = len1+len2;
+    
+    arr = (int*)calloc(len,sizeof(int));
+    for(i=len1-1;i>=0;i--)
+    {
+        for(j=len2-1;j>=0;j--)
+        {
+            // len - (len2-j) - (len1-i+1) = j+i+1
+            arr[i+j+1] += (num1[i]-'0')*(num2[j]-'0');
+        }
+    }
+    
+    for(i=len-1;i>0;i--)
+    {
+        arr[i-1] += arr[i]/10;
+        arr[i] %= 10;
+    }
+    
+    if(arr[0]==0)
+    {
+        i = 1;
+    }
+    else
+    {
+        i = 0;
+    }
+    result = (char*)malloc((len-i+1)*sizeof(char));
+    
+    idx = 0;
+    for(;i<len;i++)
+    {
+        result[idx++] = arr[i]+'0';
+    }
+    result[idx] = '\0';
+    
+    free(arr);
+    return result;    
+}

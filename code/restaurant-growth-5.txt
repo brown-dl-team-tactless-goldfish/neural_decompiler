@@ -1,0 +1,8 @@
+select t.visited_on, sum(c.amount) as amount, round(sum(c.amount) / 7, 2) as average_amount
+from (
+    select distinct visited_on
+    from customer
+    where visited_on >= (select DATE_ADD(min(visited_on), INTERVAL 6 DAY) from customer))t
+join customer c on c.visited_on <= t.visited_on and DATE_ADD(c.visited_on, INTERVAL 6 DAY) >= t.visited_on
+group by 1
+order by 1

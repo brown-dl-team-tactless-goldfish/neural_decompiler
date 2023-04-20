@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int minCost(vector<int>& startPos, vector<int>& homePos, vector<int>& rowCosts, vector<int>& colCosts) {
+        int r = startPos[0] - homePos[0], c = startPos[1] - homePos[1], ans = 0;
+        int i = startPos[0], j = startPos[1], n = rowCosts.size(), m = colCosts.size();
+        
+        while(r || c) {
+            int minR = INT_MAX, minC = INT_MAX, r1 = 0, r2 = 0, c1 = 0, c2 = 0;
+            if(r < 0 && i < n - 1) minR = rowCosts[i + 1], r1 = 1;
+            else if(r > 0 && i > 0) minR = rowCosts[i - 1], r2 = 1;
+            
+            if(c < 0 && j < m - 1) minC = colCosts[j + 1], c1 = 1;
+            else if(c > 0 && j > 0) minC = colCosts[j - 1], c2 = 1;
+            
+            if(minR < minC) {
+                r > 0 ? r-- : r++;
+                r1 ? i++ : i--;
+                ans += rowCosts[i];
+            }
+            else {
+                c > 0 ? c-- : c++;
+                c1 ? j++ : j--;
+                ans += colCosts[j];
+            }
+        }
+        return ans;
+    }
+};

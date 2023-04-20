@@ -1,0 +1,26 @@
+class Solution {
+public:
+    string largestPalindromic(string num) {
+        vector<long long> cnt(10, 0);
+        for (auto& c : num)
+            cnt[c - '0']++;
+        string ans = "";
+        for (int d = 9; d >= 0; d--)
+        {
+            if (d == 0 && ans == "")
+                break;
+            ans += string(cnt[d] / 2, d + '0');
+            cnt[d] %= 2;
+        }
+        string half = ans;
+        reverse(half.begin(), half.end());
+        for (int d = 9; d >= 0; d--)
+            if (cnt[d])
+            {
+                ans += string(1, d + '0');
+                break;
+            }
+        ans += half;
+        return ans;
+    }
+};

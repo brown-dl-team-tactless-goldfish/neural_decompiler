@@ -1,0 +1,24 @@
+public:
+    unordered_map<int, set<int>> check;
+    unordered_map<int, int> index_to_num;
+    NumberContainers() {
+        
+    }
+    
+    void change(int index, int number) {
+        // we do not have index ---> num
+        if(index_to_num.find(index) == index_to_num.end()){
+            index_to_num[index] = number;
+            check[number].insert(index);
+        }else{
+            int temp = index_to_num[index];
+            index_to_num[index] = number;
+            check[temp].erase(index);
+            check[number].insert(index);
+        }
+    }
+    
+    int find(int number) {
+        if(check[number].empty()) return -1;
+        return *check[number].begin();
+    }

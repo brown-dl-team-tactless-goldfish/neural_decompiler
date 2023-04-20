@@ -1,0 +1,24 @@
+    vector<int> countRectangles(vector<vector<int>> &rectangles, vector<vector<int>> &points)
+    {
+        vector<array<int, 3>> q;
+        for (auto i = 0; i < points.size(); ++i)
+            q.push_back({points[i][0], points[i][1], i});
+        sort(begin(q), end(q));
+
+        vector<array<int, 2>> p;
+        vector<int> y_axis(101);
+        for (auto &r : rectangles)
+            p.push_back({r[0], r[1]}), ++y_axis[r[1]];
+        sort(begin(p), end(p));
+
+        vector<int> rv(q.size());
+        int k = 0;
+        for (auto &[x, y, i] : q)
+        {
+            while (k < p.size() && p[k][0] < x)
+                --y_axis[p[k][1]], ++k;
+            for (auto j = y; j < 101; ++j)
+                rv[i] += y_axis[j];
+        }
+        return rv;
+    }

@@ -1,0 +1,44 @@
+#define ll long long
+class Solution {
+public:
+    int waysToMakeFair(vector<int>& nums) {
+        int n = nums.size();
+        
+        
+        vector<ll> prefEven(n), prefOdd(n);
+        ll evenSum = 0, oddSum  = 0;
+        
+        for(int i = 0 ;i < n ;i++){
+            if(i % 2 == 0){
+                evenSum += nums[i];
+                prefEven[i] = evenSum;
+            }
+            else{
+                oddSum += nums[i];
+                prefOdd[i] = oddSum;
+            }
+        }
+        
+        int cnt = 0;
+        
+        if(oddSum == evenSum-nums[0]) cnt++;
+        
+        for(int i = 1 ;i < n;i++){
+            if(i % 2 == 0){
+                int es = prefEven[i]-nums[i] + (oddSum - prefOdd[i-1]);
+                int os = prefOdd[i-1] + (evenSum - prefEven[i]);
+                
+                if(es == os) cnt++;
+            }
+                
+                else{
+                    int os = prefOdd[i]-nums[i] + (evenSum - prefEven[i-1]); 
+                    int es = prefEven[i-1] + (oddSum - prefOdd[i]);
+                    
+                    if(es == os) cnt++;
+                }  
+        
+        }
+        return cnt;
+    }
+};

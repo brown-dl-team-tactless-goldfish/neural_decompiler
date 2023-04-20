@@ -1,0 +1,36 @@
+int cmpfunc (const void * a, const void * b)
+{
+   return ( *(int*)a - *(int*)b );
+}
+int** minimumAbsDifference(int* arr, int arrSize, int* returnSize, int** returnColumnSizes){
+    qsort(arr, arrSize, sizeof(int), cmpfunc);
+    int min=INT_MAX,count=0;
+    int **ret;
+    ret=malloc(sizeof(int*)*5000);
+    for(int i=0;i<arrSize-1;i++)
+    {
+        if(arr[i+1]-arr[i]<min)
+        {
+            count=1;
+            ret[count-1]=malloc(sizeof(int)*2);
+            ret[count-1][0]=arr[i];
+            ret[count-1][1]=arr[i+1];
+            min=arr[i+1]-arr[i];
+        }
+        else if(arr[i+1]-arr[i]==min)
+        {
+            count++;
+            ret[count-1]=malloc(sizeof(int)*2);
+            ret[count-1][0]=arr[i];
+            ret[count-1][1]=arr[i+1];
+        }
+    }
+   
+    *returnSize=count;
+    *returnColumnSizes=malloc(sizeof(int)*count);
+    for(int i=0;i<count;i++)
+    {
+        *((*returnColumnSizes)+i)=2;
+    }
+    return ret;
+}

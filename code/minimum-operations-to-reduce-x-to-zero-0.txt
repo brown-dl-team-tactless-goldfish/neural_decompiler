@@ -1,0 +1,77 @@
+int minOperations(int* nums, int numsSize, int x){
+    int n = numsSize; 
+    int mod = 1e5 + 7;
+    bool* table = calloc(mod, sizeof(bool));
+    int** hash = malloc(mod * sizeof(int*));
+
+    long long presum = nums[n-1];
+    hash[presum % mod] = calloc(2 , sizeof(int));
+    hash[presum % mod][0] = nums[n-1] ;
+    hash[presum % mod][1] = n - 1;  
+    table[presum % mod] = true;
+    int i;
+
+    for(i = n-2; i >= 0; i--){
+        presum += nums[i];
+        if(presum > x)
+            break;
+        if( table[presum % mod] == false){
+            table[presum % mod] = true;
+            hash[presum % mod] = calloc(2 , sizeof(int));
+            hash[presum % mod][0] = presum;
+            hash[presum % mod][1] = i;            
+        }
+        else{
+            int pos = presum+1;
+            while(table[pos % mod] == true){
+                pos++;
+            }
+            table[pos % mod] = true;
+            hash[pos % mod] = calloc(2 , sizeof(int));
+            hash[pos % mod][0] = presum;
+            hash[pos % mod][1] = i;  
+        }
+    }
+    if(i == -1 && presum == x)  
+        return n;
+    
+    int min = INT_MAX;
+    int preSum = 0;
+    int k = 0;
+    while(preSum <= x && k < n){
+        int remain = x - preSum;
+        if(remain == 0){
+            min = fmin(min, k);
+            break;
+        }
+        if( table[remain % mod] == true ){
+            if( hash[remain % mod][0] == remain){
+                //boundary, than break
+                if(k >= hash[remain % mod][1])
+                    break;
+                if( n - hash[remain % mod][1] + k < min)
+                    min = n - hash[remain % mod][1] + k;
+            }
+            else{
+                int pos = remain + 1;
+                while(table[pos % mod] == true){
+                    if( hash[pos % mod][0] == remain){
+                        //boundary, than break
+                        if(k >= hash[pos % mod][1])
+                            break;
+                        if( n - hash[pos % mod][1] + k < min)
+                            min = n - hash[pos % mod][1] + k;
+                    }                    
+                    pos++;
+                }
+            }
+        }
+        preSum += nums[k];
+        k++;
+    }
+    
+    if(min == INT_MAX)
+        return -1;
+    else
+        return min;
+}

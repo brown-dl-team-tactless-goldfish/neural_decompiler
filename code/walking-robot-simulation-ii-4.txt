@@ -1,0 +1,49 @@
+	class Robot {
+    pair<int, int> pos;
+    int width, height, perimeter;
+    int dir = 0, dirs[4][2] = {{1,0}, {0, 1}, {-1, 0}, {0, -1}};
+    string dir_text[4] = {"East", "North", "West", "South"};
+    
+public:
+    Robot(int _width, int _height) {
+        width = _width;
+        height = _height;
+        pos = {0, 0};
+        dir = 0;
+        perimeter = 2*(width + height - 2);
+    }
+    
+    void move(int num) {
+        if(num > perimeter) {
+            num %= perimeter;
+            // special case for initial pos
+            // for pos(0, 0), it should south, but east only for initial case
+            // pos(width-1, 0) == east, pos(width-1, height-1) == west, pos(0, 0) == south;
+            if(pos == make_pair(0, 0) && dir == 0)
+                dir = 3;
+        }
+        
+        while(num > 0) {
+            pair<int, int> tmp_pos;
+            tmp_pos.first = pos.first + dirs[dir][0];
+            tmp_pos.second = pos.second + dirs[dir][1];
+            
+            if(tmp_pos.first < 0 || tmp_pos.first >= width
+              || tmp_pos.second < 0 || tmp_pos.second >= height) {
+                dir = (dir+1) % 4;
+            }
+            else {
+                num--;
+                pos = tmp_pos;
+            }
+        }
+    }
+    
+    vector<int> getPos() {
+        return {pos.first, pos.second};
+    }
+    
+    string getDir() {
+        return dir_text[dir];
+    }
+};

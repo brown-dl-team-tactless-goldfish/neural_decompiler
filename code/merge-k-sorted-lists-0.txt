@@ -1,0 +1,66 @@
+struct ListNode* mergeTwoLists(struct ListNode* list1, struct ListNode* list2)
+{
+	if (list1 == NULL && list2 == NULL) return NULL;
+
+	if (list1 == NULL) return list2;
+	if (list2 == NULL) return list1;
+
+	struct ListNode* main = (struct ListNode*)malloc(sizeof(struct ListNode));
+	main->val = -1;
+	main->next = NULL;
+	struct ListNode* travelResult = main;
+	struct ListNode* travel1 = list1;
+	struct ListNode* travel2 = list2;
+
+	while (true)
+	{
+		if (travel1->val <= travel2->val)
+		{
+			travelResult->next = travel1;
+			travelResult = travelResult->next;
+			travel1 = travel1->next;
+
+			if (travel1 == NULL)
+			{
+				while (travel2 != NULL)
+				{
+					travelResult->next = travel2;
+					travelResult = travelResult->next;
+					travel2 = travel2->next;
+				}
+				break;
+			}
+		}
+		else
+		{
+			travelResult->next = travel2;
+			travelResult = travelResult->next;
+			travel2 = travel2->next;
+
+			if (travel2 == NULL)
+			{
+				while (travel1 != NULL)
+				{
+					travelResult->next = travel1;
+					travelResult = travelResult->next;
+					travel1 = travel1->next;
+				}
+				break;
+			}
+		}
+	}
+
+	return main->next;
+}
+
+struct ListNode* mergeKLists(struct ListNode** lists, int listsSize)
+{
+	if (listsSize == 0) return NULL;
+	if (listsSize == 1) return lists[0];
+
+	struct ListNode* result = mergeTwoLists(lists[0], lists[1]);
+	for (int i = 2; i < listsSize; i++)
+		result = mergeTwoLists(result, lists[i]);
+
+	return result;
+}

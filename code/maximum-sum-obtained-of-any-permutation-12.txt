@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int maxSumRangeQuery(vector<int>& nums, vector<vector<int>>& requests) 
+    {
+       int n=nums.size();
+       vector<long long> temp(n+1),cumm(n);
+        for(auto &x : requests){
+            temp[x[0]] += 1;
+            temp[x[1]+1] -= 1;
+        }
+        for(int i=0;i<n;i++)
+            cumm[i] = i==0 ? temp[i] : cumm[i-1] + temp[i];
+       vector<pair<long long,long long>>v;
+       vector<long long>per(nums.size(),0);
+       for(int i=0;i<cumm.size();i++)
+          v.push_back({cumm[i],i});
+       sort(v.begin(),v.end());
+       sort(nums.begin(),nums.end());
+       long long last=nums.size()-1;
+       for(int i=v.size()-1;i>=0;i--)
+       {
+           per[v[i].second]=nums[last];
+           last--;
+       }
+        const int mod = (int)1e9 + 7;
+        long long sum=0;
+       for(int i=0;i<cumm.size();i++)
+       {
+           long long z=((cumm[i]%mod)*(per[i]%mod))%mod;
+           sum=(sum%mod+z%mod)%mod;
+       }
+       return sum%mod;
+    }
+    
+};

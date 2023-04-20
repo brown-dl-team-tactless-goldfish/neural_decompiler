@@ -1,0 +1,84 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+class Solution
+{
+    int Mod = 1e9 + 7;
+
+public:
+    int add(int a, int b)
+    {
+        a += b;
+        if (a >= Mod)
+            a -= Mod;
+        return a;
+    }
+
+    bool ok(vector<int> a)
+    {
+        for (int i : a)
+            if (i > 1)
+                return false;
+        return true;
+    }
+
+    int squareFreeSubsets(vector<int> &nums)
+    {
+        vector<int> p, v(31, 1);
+        v[0] = v[1] = 0;
+
+        for (int i = 2; i < 31; i++)
+        {
+            if (v[i])
+            {
+                p.push_back(i);
+                for (int j = i + i; j < 31; j += i)
+                    v[j] = 0;
+            }
+        }
+
+        int n = nums.size();
+        vector<int> prv(1 << 10);
+        vector<vector<int>> f(n, vector<int>(10));
+        for (int i = 0; i < n; i++)
+        {
+            int x = nums[i];
+            for (int j = 0; j < 10; j++)
+            {
+                while (x % p[j] == 0)
+                {
+                    x /= p[j];
+                    f[i][j]++;
+                }
+            }
+        }
+
+        for (int i = 0; i < n; i++)
+        {
+            vector<int> nxt(prv.begin(), prv.end());
+
+            if (ok(f[i]))
+            {
+                int mask = 0;
+                for (int j = 0; j < 10; j++)
+
+                    if (f[i][j] == 1)
+                    {
+                        mask |= (1 << j);
+                    }
+
+                for (int j = 0; j < (1 << 10); j++)
+                    if ((j & mask) == 0)
+                        nxt[j | mask] = add(nxt[j | mask], prv[j]);
+
+                nxt[mask] = add(nxt[mask], 1);
+            }
+            swap(prv, nxt);
+        }
+
+        int ans = 0;
+        for (int i = 0; i < (1 << 10); i++)
+            ans = add(ans, prv[i]);
+        return ans;
+    }
+};

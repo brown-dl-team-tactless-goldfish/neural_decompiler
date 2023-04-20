@@ -1,0 +1,39 @@
+public class Solution {
+    public int FindRadius(int[] houses, int[] heaters) {
+        var heaterLen = heaters.Length;
+        var houseLen = houses.Length;
+
+        if (heaterLen == 0) return int.MaxValue;
+        if (houseLen == 0) return 0;
+
+        var minRadius = 0;
+
+        Array.Sort(houses);
+        Array.Sort(heaters);
+
+        for (int i = 0; i < houseLen; i++) {
+            var housePosition = houses[i];
+
+            var left = 0;
+            var right = heaterLen;
+
+            while (left < right) {
+                var mid = left + (right - left) / 2;
+                var heaterPosition = heaters[mid];
+
+                if (heaterPosition < housePosition) {
+                    left = mid + 1;
+                } else {
+                    right = mid;
+                }
+            }
+
+            var distance1 = (right == heaters.Length) ? int.MaxValue : heaters[right] - housePosition;
+            var distance2 = (right == 0) ? int.MaxValue : housePosition - heaters[right - 1];
+
+            minRadius = Math.Max(minRadius, Math.Min(distance1, distance2));
+        }
+
+        return minRadius;
+    }
+}

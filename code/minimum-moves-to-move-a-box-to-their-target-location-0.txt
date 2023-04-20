@@ -1,0 +1,110 @@
+class Solution {
+public:
+    int dis[25][25][25][25];
+    int dir[4][2] = {{0, 1}, {1, 0}, {-1, 0}, {0, -1}};
+    bool isValid(int r, int c, vector<vector<char>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        
+        return r >= 0 && r < n && c >= 0 && c < m;
+    }
+    bool canBeMoved(vector<vector<char>>& grid, int& b_r, int& b_c, int r, int c) {
+        
+        bool f = true;
+        if (r == b_r && c == b_c) {
+            f =  false;
+        }
+        
+        if (grid[r][c] == '#') {
+            f = false;
+        }
+        
+        return f;
+        
+    }
+    void dfs(int r, int c, vector<vector<bool>>& vis, vector<vector<char>>& grid, int& b_r, int& b_c) {
+        vis[r][c] = true;
+        
+        for (int d = 0; d < 4; d++) {
+            int n_r = r + dir[d][0];
+            int n_c = c + dir[d][1];
+            
+            if (isValid(n_r, n_c, grid) && !vis[n_r][n_c] && canBeMoved(grid, b_r, b_c, n_r, n_c)) {
+                dfs(n_r, n_c, vis, grid, b_r, b_c);
+            }
+        }
+    }
+    bool isPossible(int p_r, int p_c, int r, int c, int b_r, int b_c, vector<vector<char>>& grid) {
+        vector<vector<bool>> vis(grid.size(), vector<bool>(grid[0].size(), false));
+        dfs(p_r, p_c, vis, grid, b_r, b_c);
+        
+        return vis[r][c];
+    }
+    void assign() {
+        for (int i = 0; i < 25; i++) {
+            for (int j = 0; j < 25; j++) {
+                for (int k = 0; k < 25; k++) {
+                    for (int l = 0; l < 25; l++) {
+                        dis[i][j][k][l] = -1;
+                    }
+                }
+            }
+        }
+    }
+    int minPushBox(vector<vector<char>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        
+        assign();
+        queue<pair<pair<int, int>, pair<int, int> > > q;
+
+        pair<int, int> box, player, target;
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (grid[i][j] == 'B') {
+                    box = make_pair(i, j);
+                    break;
+                } else if (grid[i][j] == 'S') {
+                    player = make_pair(i, j);
+                } else if (grid[i][j] == 'T') {
+                    target = make_pair(i, j);
+                }
+            }
+        }
+        
+        q.push(make_pair(box, player));
+        dis[box.first][box.second][player.first][player.second] = 0;
+        while (!q.empty()) {
+            pair<pair<int, int>, pair<int, int> > node = q.front();
+            q.pop();
+            
+            int r = node.first.first;
+            int c = node.first.second;
+            int p_r = node.second.first;
+            int p_c = node.second.second;
+            
+            //cout<<r<<" "<<c<<" "<<p_r<<" "<<p_c<<" "<<dis[r][c][p_r][p_c]<<endl;
+            
+            if (r == target.first && c == target.second) {
+                return dis[r][c][p_r][p_c];
+            }
+            
+            for (int d = 0; d < 4; d++) {
+                int n_r = r + dir[d][0];
+                int n_c = c + dir[d][1];
+                
+                int n_p_r = r - dir[d][0];
+                int n_p_c = c - dir[d][1];
+                
+                if (isValid(n_r, n_c, grid) && isValid(n_p_r, n_p_c, grid) && dis[n_r][n_c][n_p_r][n_p_c] == -1 && grid[n_r][n_c] != '#'  && 
+                    isPossible(p_r, p_c, n_p_r, n_p_c, r, c, grid)) {
+                    dis[n_r][n_c][n_p_r][n_p_c] = dis[r][c][p_r][p_c] + 1;
+                    q.push({{n_r, n_c}, {n_p_r, n_p_c}});
+                }
+            }
+        }
+        
+        return -1;
+    }
+};

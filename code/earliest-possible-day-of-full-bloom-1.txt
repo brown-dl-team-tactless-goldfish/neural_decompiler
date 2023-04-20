@@ -1,0 +1,32 @@
+struct Plant{
+    int all;
+    int plant;
+    int grow;
+};
+
+int comp(const void* a, const void* b){
+    return (*(struct Plant*)b).grow - (*(struct Plant*)a).grow;
+}
+
+int earliestFullBloom(int* plantTime, int plantTimeSize, int* growTime, int growTimeSize){
+    struct Plant* list = malloc(sizeof(struct Plant)*plantTimeSize);
+    for (int i = 0 ; i < plantTimeSize ; i++){
+        list[i].plant = plantTime[i];
+        list[i].grow = growTime[i];
+        list[i].all = plantTime[i] + growTime[i];
+    }
+    qsort (list, plantTimeSize, sizeof(struct Plant), comp);
+    int ans = list[0].all;
+    int freetime = list[0].plant;
+    int after;
+    for (int i = 1 ; i < plantTimeSize ; i++){
+        after = freetime + list[i].all > ans ? freetime + list[i].all : ans;
+        ans += list[i].plant;
+        if (after < ans){
+            ans = after;
+        }
+        freetime += list[i].plant;
+    }
+    free(list);
+    return ans;
+}

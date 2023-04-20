@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int c = 0;
+    set <int> vis;
+    
+    void dfs(vector <int> g[], int x) {
+        vis.insert(x);
+        c++;
+        
+        for(int i=0;i<g[x].size();i++) {
+            if(vis.find(g[x][i]) == vis.end()) 
+                dfs(g, g[x][i]);
+            else 
+                return;
+        }
+    }
+    
+    int arrayNesting(vector<int>& nums) {
+        vis.clear();
+        vector <int> g[nums.size()];
+        for(int i=0;i<nums.size();i++) {
+            g[nums[i]].push_back(nums[nums[i]]);
+        }
+        
+        int ans = INT_MIN;
+        
+        for(int i=0;i<nums.size();i++) {
+            if(vis.find(nums[i]) == vis.end()) {
+                c = 0;
+                dfs(g, nums[i]);
+                
+                ans = max(ans, c);
+            }
+        }
+        
+        return ans;
+        
+    }
+};

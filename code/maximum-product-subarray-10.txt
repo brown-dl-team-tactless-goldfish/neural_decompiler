@@ -1,0 +1,40 @@
+int maxProduct(int* nums, int numsS)
+{
+  if(numsS <= 0 || !nums) return 0;
+  if(numsS == 1)          return *nums;
+  /* 3 variable buffers
+     1. localMax
+     2. localMin
+     3. overallMax
+  */
+  int lMax = (nums[0]>0)?nums[0]:0;
+  int lMin = (nums[0]<0)?nums[0]:0;
+  int oMax = lMax;
+
+  /* printf("n:%d\tlMax:%d\tlMin:%d\toMax:%d\n", nums[0], lMax, lMin, oMax); */
+  
+  for(int i =1, tmp; i<numsS; i++)
+  {
+    if(nums[i]>0)
+    {
+      /* keeps on accumulating; note zero trap before will be carried over */
+      lMax = (lMax == 0)? nums[i] : lMax * nums[i];
+      lMin *= nums[i];
+    }
+    else if(nums[i]<0)
+    {
+      /* switch the local max/min for a neg */
+      tmp = lMax;
+      lMax = lMin * nums[i];
+      lMin = (tmp == 0)?  nums[i]: tmp*nums[i];
+    }
+    else  /* a zero-trap */
+      lMax = lMin = 0;
+
+    oMax = (oMax>=lMax)?oMax:lMax;
+
+    /* printf("n:%d\tlMax:%d\tlMin:%d\toMax:%d\n", nums[i], lMax, lMin, oMax); */
+  }
+
+  return oMax;
+}

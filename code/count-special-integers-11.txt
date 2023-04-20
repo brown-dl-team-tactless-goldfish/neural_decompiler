@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int findSize(int n){
+        int re = 0;
+        while(n){ re++; n=n/10; }
+        return re;
+    }
+    int dfs(string& s,int vis,string re,int in,int a,int b){
+        if(a<b) return 0;
+        if(in>=s.size()) return 1;
+        long long ans = 0;
+        if(a>b){
+            int l = 10-in;
+            long long m = 1;
+            for(int i = in;i<s.size();++i) { m = m*l; l--;}
+            return ans+m;
+        }
+        for(int i = 0; i<=s[in]-'0';++i){
+            if(bool(vis&(1<<i))==0){
+                ans+=dfs(s,vis^(1<<i),re+to_string(i),in+1,a*10+(s[in]-'0'),b*10+i);
+            }
+        }
+        return ans;
+    }
+    int countSpecialNumbers(int n) {
+        if(n<=10) return n;
+        int size = findSize(n);
+        long long re = 0, l = 10, m = 1;
+        for(int i = 0; i<size-1;++i){
+            if(i==0) {m = m*(l-1); l--; re+=m;}
+            else{ m = m*l; l--; re+=m; }
+        }
+        string s = to_string(n);
+        for(int i = 1; i<10;++i){
+            re+= dfs(s,(1<<i),to_string(i),1,s[0]-'0',i);
+        }
+        return re;
+    }
+};

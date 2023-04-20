@@ -1,0 +1,31 @@
+int* pathInZigZagTree(int label, int* returnSize){
+    // check odd/even
+    int k = label;
+    int tmp = 0;
+    int order = 0;
+    while(k > 1) {
+        k >>= 1;
+        order++;
+    }
+    int* returnArray = (int*)malloc(sizeof(int)*(order + 1));
+    *returnSize = order + 1;
+
+    int lo = pow(2,order);
+    int sub = lo * 3 - 1;
+    tmp = sub - label;
+    tmp >>= 1;
+
+    bool oddeven = 0;
+    while(order >= 0) {
+        if(oddeven == 1) {
+            returnArray[order] = tmp;
+            tmp >>= 2;
+        } else {
+            returnArray[order] = label;
+            label >>= 2;
+        }
+        order--;
+        oddeven ^= 1;
+    }
+    return returnArray;
+}

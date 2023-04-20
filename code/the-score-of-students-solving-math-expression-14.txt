@@ -1,0 +1,114 @@
+class Solution {
+ public:
+  enum Operation {
+    kPlus,
+    kTimes,
+  };
+
+  int scoreOfStudents(const string& s, const vector<int>& answers) {
+    // It's hacky to cache this state in member variables, we do it just to
+    // spare having extra parameters in the other methods.
+    parseNumbersAndOperations(s);
+    max_answer_ = *max_element(answers.begin(), answers.end());
+    possible_results_.assign(numbers_.size(),
+                             vector<set<int>>(numbers_.size()));
+
+    const int correct_result = getCorrectResult();
+    int score_sum = 0;
+    for (int answer : answers) {
+      if (answer == correct_result) {
+        score_sum += 5;
+      } else if (getPossibleResults(0, (int)(numbers_.size() - 1))
+                     .count(answer)) {
+        score_sum += 2;
+      }
+    }
+
+    return score_sum;
+  }
+
+  void parseNumbersAndOperations(const string& s) {
+    int num_start = 0;
+    for (int i = 0; i <= s.size(); i++) {
+      bool parse_number = false;
+      if (i == s.size()) {
+        // Last number, won't be followed by any operation.
+        parse_number = true;
+      } else if (s[i] == '+') {
+        operations_.push_back(kPlus);
+        parse_number = true;
+      } else if (s[i] == '*') {
+        operations_.push_back(kTimes);
+        parse_number = true;
+      }
+
+      if (parse_number) {
+        numbers_.push_back(stoi(s.substr(num_start, i - num_start)));
+        num_start = i + 1;
+      }
+    }
+  }
+
+  // Let S be the set of possible results of the expression [left, right].
+  // This returns the set obtained from S by replacing every number bigger than
+  // `max_answer_` with one single `max_answer_ + 1`. This spares computing all
+  // possible results by using that sum and multiplication are increasing
+  // functions.
+  // The method inserts `max_answer_ + 1` instead of nothing to avoid empty
+  // sets. E.g. consider computing the possible results of [0] * [] instead of
+  // [0] * [max_answer + 1].
+  const set<int>& getPossibleResults(int left, int right) {
+    if (!possible_results_[left][right].empty()) {
+      return possible_results_[left][right];
+    }
+
+    const int max_answer_exceeded_token_ = max_answer_ + 1;
+    if (left == right) {
+      // Single number.
+      const int result = numbers_[left] <= max_answer_
+                             ? numbers_[left]
+                             : max_answer_exceeded_token_;
+      possible_results_[left][right] = {result};
+      return possible_results_[left][right];
+    }
+
+    for (int mid = left; mid < right; mid++) {
+      const set<int>& possible_lhs_values = getPossibleResults(left, mid);
+      const set<int>& possible_rhs_values = getPossibleResults(mid + 1, right);
+      // Iterate over both sets in increasing order.
+      for (int lhs : possible_lhs_values) {
+        // We must not early return here if |lhs| > `max_answer_`, because
+        // multiplying by 0 gives 0 and that's a valid result.
+        for (int rhs : possible_rhs_values) {
+          int result = operations_[mid] == kPlus ? lhs + rhs : lhs * rhs;
+          if (result > max_answer_) {
+            possible_results_[left][right].insert(max_answer_exceeded_token_);
+            // Results will be even bigger from now on, stop searching.
+            break;
+          }
+          possible_results_[left][right].insert(result);
+        }
+      }
+    }
+
+    return possible_results_[left][right];
+  }
+
+  int getCorrectResult() {
+    int result = 0;
+    int product = 1;
+    for (int i = 0; i < numbers_.size(); i++) {
+      product *= numbers_[i];
+      if (i == numbers_.size() - 1 || operations_[i] == kPlus) {
+        result += product;
+        product = 1;
+      }
+    }
+    return result;
+  }
+
+  vector<int> numbers_;
+  vector<Operation> operations_;
+  int max_answer_ = -1;
+  vector<vector<set<int>>> possible_results_;
+};

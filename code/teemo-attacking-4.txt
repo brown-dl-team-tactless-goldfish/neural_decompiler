@@ -1,0 +1,18 @@
+int findPoisonedDuration(int* timeSeries, int timeSeriesSize, int duration)
+{
+    int start_time, prev_end_time  = -1, total = 0;
+    
+    for (int i = 0; i < timeSeriesSize; i++) {
+        start_time = timeSeries[i];
+        
+        /* Check if the current start time overlaps with the previous end time */
+        if (start_time <= prev_end_time)
+            total -= (prev_end_time - start_time) + 1; // deduce the overlapping time
+        
+        total += duration; 
+        
+        prev_end_time = start_time + duration - 1; // store the end point of the attack
+    }
+    
+    return total;
+}

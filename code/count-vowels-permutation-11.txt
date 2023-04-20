@@ -1,0 +1,30 @@
+class Solution {
+    // total,a,b,c,d,e -> // {a+2b+4c+2d+e, b+c+e, a+c, b+d, c, c+d}
+    const int modulo = 1e9+7;
+    
+public:
+    int countVowelPermutation(int n) {
+        vector<long long> dp = {1,1,1,1,1};
+        rec(n, dp);
+
+        return (dp[0]+dp[1]+dp[2]+dp[3]+dp[4])%modulo;
+    }
+    
+    void rec(int n, vector<long long>& dp)
+    {     
+        if(n<2)return;
+        long long a = dp[0];
+        long long b = dp[1];
+        long long c = dp[2];
+        long long d = dp[3];
+        long long e = dp[4];
+
+        dp[0] = ((b+c+e) % modulo);       
+        dp[1] = ((a+c) % modulo);       
+        dp[2] = ((b+d) % modulo);       
+        dp[3] = (c % modulo);       
+        dp[4] = ((c+d) % modulo);  
+        
+        rec(n-1,dp);
+    }
+};

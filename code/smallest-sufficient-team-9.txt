@@ -1,0 +1,47 @@
+class Solution {
+public:
+    void f(int n,const vector<vector<int>>& can,string people,int count, int& small, string& s){
+        if(n==can.size()){
+            if(count<small){
+                small = count;
+                s = people;
+            }
+            return;
+        } else if(count>=small){
+            return;
+        } 
+        for(int p : can[n]){
+            if(people[p] == '1'){
+                f(n+1,can,people,count,small,s);
+            } else{
+                people[p] = '1';
+                f(n+1,can,people,count+1,small,s);
+                people[p] = '0';
+            }
+        }
+    }
+    vector<int> smallestSufficientTeam(vector<string>& req_skills, vector<vector<string>>& people) {
+        unordered_map<string,vector<int>> m;
+        for(int i = 0;i<people.size();i++){
+            for(string& s : people[i]){
+                m[s].push_back(i);
+            }
+        }
+        vector<vector<int>> can(req_skills.size());
+        for(int i =0;i<req_skills.size();i++){
+            can[i] = m[req_skills[i]];
+        }
+        string select(people.size(),'0');
+        vector<unordered_map<string,int>> dp(can.size());
+        int small = INT_MAX;
+        string s;
+        f(0,can,select,0,small,s);
+        vector<int> ret;
+        for(int i = 0;i<s.size();i++){
+            if(s[i] == '1'){
+                ret.push_back(i);
+            }
+        }
+        return ret;
+    }
+};

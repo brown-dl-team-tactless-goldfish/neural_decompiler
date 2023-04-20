@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int closestToTarget(vector<int>& arr, int target)
+{
+    int len = (int)arr.size();
+    vector<vector<int> > tab(30);
+    for(int i = 0; i < len; i++)
+        for(int j = 0; j < 30; j++) if((arr[i] >> j) & 1)
+            tab[j].push_back(i);
+    
+    vector<int> dp(len);
+    int ans = abs(arr[0] - target);
+    for(int i = len - 1; i >= 0; i--)
+    {
+        for(int j = 0; j < 30; j++) if(!((arr[i] >> j) & 1))
+            while(!tab[j].empty() && tab[j].back() > i) 
+            {
+                dp[tab[j].back()] -= 1 << j;
+                tab[j].pop_back(); 
+            }
+        dp[i] = arr[i];
+        int l = i, r = len;
+        while(l < r)
+        {
+            int m = l + (r - l) / 2;
+            if(dp[m] > target) l = m + 1;
+            else r = m;
+        }
+        if(l == len) ans = min(ans, abs(target - dp[l - 1]));
+        else if(l == i) ans = min(ans, abs(target - dp[l]));
+        else ans = min(ans, min(abs(target - dp[l]), abs(target - dp[l - 1])));
+    }
+    return ans;
+}
+};

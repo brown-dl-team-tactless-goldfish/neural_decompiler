@@ -1,0 +1,45 @@
+#define MAX_LEVEL 1024
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+void helper(struct TreeNode* root, int level, int* result, int* depth)
+{
+    if(root==NULL)
+        return;
+    
+    if(root->val > result[level])
+    {
+        result[level] = root->val;
+    }
+    if((level+1) > *depth)
+    {
+        *depth = level+1;
+    }
+    
+    helper(root->left, level+1, result, depth);
+    helper(root->right, level+1, result, depth);
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* largestValues(struct TreeNode* root, int* returnSize){
+    int* result = (int*)malloc(MAX_LEVEL*sizeof(int));
+    int i;
+    int depth = 0;
+    
+    for(i=0;i<MAX_LEVEL;i++)
+        result[i] = INT_MIN;
+    
+    helper(root,0,result,&depth);
+    
+    *returnSize = depth;
+    return result;
+}

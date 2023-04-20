@@ -1,0 +1,26 @@
+void split(long long finalSum, long long prevNum, long long* ans, int* ansIdx){
+    if(!finalSum) return;
+    if(finalSum <= prevNum){
+        /* no need to process more, add the res into the preview element */
+        ans[*ansIdx - 1] += finalSum;
+    }
+    else{
+        long long currNum = prevNum + 2;
+        ans[(*ansIdx)++] = currNum;
+        split(finalSum - currNum, currNum, ans, ansIdx);
+    }
+}
+
+long long* maximumEvenSplit(long long finalSum, int* returnSize){
+    *returnSize = 0;
+    if(finalSum & 1) return NULL;
+    
+    long long* ans = (long long*)calloc(100000, sizeof(long long));
+    int ansIdx = 0;
+    
+    ans[ansIdx++] = 2;
+    split(finalSum - 2, 2, ans, &ansIdx);
+
+    *returnSize = ansIdx;
+    return ans;
+}

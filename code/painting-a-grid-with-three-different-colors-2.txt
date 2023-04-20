@@ -1,0 +1,62 @@
+class Solution {
+public:
+    const int mod = 1e9+7;
+    
+    vector<uint16_t> valids;
+    
+    int colorTheGrid(int m, int n) {
+        setValids(0, m, 3, 0); //get all valid pairs that are represent in bitmask
+        
+        vector<int> validsprevs[1<<(m<<1)];
+        
+        for (long now : valids) //compute previous valid pairs for each valid pair
+            for (long prev : valids){
+                for (int j = (m<<1)-2; j >= 0; j-=2) //compare colors at each position in m
+                    if ((uint16_t(now<<(14-j))>>14) == (uint16_t(prev<<(14-j))>>14)) 
+                        goto next; //if there is a color at the same position between now and prev, give up this prev.
+                
+                validsprevs[now].push_back(prev);
+                next:;
+            }
+        
+        int* dp = new int[1<<(m<<1)];
+        int* dptmp = new int[1<<(m<<1)];
+        
+        memset(dp, 0, sizeof(dp)); //for memory optimization
+        memset(dptmp, 0, sizeof(dptmp)); //1D DP
+        
+        for (auto now : valids) //init dp with n = 0
+            dp[now] = 1;
+        
+        for (int i = 1; i < n; i++){
+            for (auto now : valids){
+                int res = 0;
+                for (auto prev : validsprevs[now]){
+                    res += dp[prev];
+                    if (res >= mod) res -= mod;
+                }
+                dptmp[now] = res;
+            }
+            swap(dp, dptmp);
+        }
+            
+        int ans = 0;
+        for (auto now: valids){ //sum up answers
+            ans += dp[now];
+            if (ans >= mod) ans -= mod;
+        }
+
+        return ans;
+    }
+    
+    void setValids(int i, int m, int prevcolor, int mask){
+        if (i == (m<<1)){
+            valids.push_back(mask);
+            return;
+        }
+        
+        for (int c = 0; c < 3; c++)
+            if (c != prevcolor)
+                setValids(i+2, m, c, mask|(c<<i));
+    }
+};

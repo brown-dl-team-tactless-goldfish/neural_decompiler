@@ -1,0 +1,65 @@
+typedef struct TreeNode TreeNode;
+struct node{
+    struct node*next;
+    TreeNode* val;
+};
+typedef struct node node;
+struct queue{
+    node*root;
+    node*tail;
+    int size;
+};
+typedef struct queue queue;
+node* createnode(){
+    node*temp = (node*)malloc(sizeof(node));
+    temp->val = NULL;
+    temp->next = NULL;
+    return temp;
+}
+void push(queue*q,TreeNode*val){
+    node*new = createnode();
+    new->val = val;
+    if(q->size==0)
+        q->root = new;
+    else
+        q->tail->next = new;
+    q->tail = new;
+    q->size++;
+}
+TreeNode*pop(queue*q){
+    node*temp = q->root;
+    TreeNode*ret = temp->val;
+    if(q->size==1)
+        q->tail = NULL;
+    q->root = q->root->next;
+    q->size--;
+    return ret;
+}
+int maxLevelSum(struct TreeNode* root){
+    queue* q = (queue*)malloc(sizeof(queue));
+    q->size=0;
+    q->root=NULL;
+    q->tail=NULL;
+    push(q,root);
+    int level=0;
+    int result=1;
+    int maxSum=root->val;
+    while(q->size){
+        level++;
+        int size = q->size;
+        int currSum = 0;
+        for(int i=0;i<size;i++){
+            root = pop(q);
+            currSum+=root->val;
+            if(root->left)
+                push(q,root->left);
+            if(root->right)
+                push(q,root->right);
+        }
+        if(maxSum < currSum){
+            maxSum = currSum;
+            result = level;
+        }
+    }
+    return result;
+}

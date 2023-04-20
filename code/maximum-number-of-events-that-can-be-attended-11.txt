@@ -1,0 +1,45 @@
+class Solution {
+public:
+    static bool mycomp( vector<int> &a , vector<int> &b)
+    {
+        if(a[1]==b[1])
+        {
+            return a[0]<b[0];//if end days are equal sort according to start days 
+        }
+        
+        return a[1]<b[1];//sorting according to end days
+    }
+    int maxEvents(vector<vector<int>>& events) {
+        int n=events.size();
+        
+        sort(events.begin(),events.end(),mycomp);
+        
+         set<int> s;
+        
+        for(int i=1;i<=100000;i++)
+        {
+            s.insert(i);
+        }
+        int ans=0;
+        for(auto event:events)
+        {
+            int se=event[0],e=event[1];
+            
+            auto it=s.lower_bound(se);//equal or just greater than start day event
+            
+            if(it==s.end() || *it>e)
+            {
+                continue;
+                // day is not available 
+            }
+            else
+            {
+                ans++;
+                s.erase(it);//if day is available do ans++ and  remove that day
+            }
+            
+        }
+        
+        return ans;
+    }
+};

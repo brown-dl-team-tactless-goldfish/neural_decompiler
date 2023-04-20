@@ -1,0 +1,37 @@
+int numRookCaptures(char** board, int boardRowSize, int *boardColSizes) {
+    int x = 0, y = 0;
+    int east = 1, west = 1, north = 1, south = 1;
+    int ans = 0;
+    
+    for (int Y = 0; Y < 8; Y++){
+        for (int X = 0; X < 8; X++){
+            if(board[Y][X] == 'R'){
+                x = X;
+                y = Y;
+                goto mainLoop;
+            }
+        }
+    }
+   
+    mainLoop:
+    for (int n = 0; n < 8; n++){
+       if (east == 1 && x-n > -1){
+           if (board[y][x-n] == 'p') { ans++; east = 0; }  
+           if (board[y][x-n] == 'B') east = 0;   
+       }
+       if (west == 1 && x+n < 8){
+           if (board[y][x+n] == 'p') { ans++; west = 0; }  
+           if (board[y][x+n] == 'B') west = 0;   
+       }
+       if (north == 1 && y+n < 8){
+           if (board[y+n][x] == 'p') { ans++; north = 0; }  
+           if (board[y+n][x] == 'B') north = 0;   
+       }
+       if (south == 1 && y-n > -1){
+           if (board[y-n][x] == 'p') { ans++; south = 0; }  
+           if (board[y-n][x] == 'B') south = 0;   
+       }
+    }
+    
+    return ans;
+}

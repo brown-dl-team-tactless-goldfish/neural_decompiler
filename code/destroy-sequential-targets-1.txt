@@ -1,0 +1,33 @@
+/*
+	given, 
+	nums[i] + c * space = num
+	c * space = (num-nums[i])
+	c = (num-nums[i])/space
+	since c is non-negative integer, (num-nums[i]) should be evenly divisible by space
+	so, num%space == nums[i] gives max answer
+*/
+
+class Solution {
+public:
+    int destroyTargets(vector<int>& nums, int space) {
+        map<int, int> rem;
+        for(int i: nums) {
+            rem[i%space] += 1;
+            //cout <<i << "->" <<i%space << endl;
+        }
+        
+        int ans = nums[0];
+        int mx = 0;
+        for(int i: nums) {
+            int x = i%space;
+            if(rem[x] > mx) {
+                ans = i;
+                mx = rem[x];
+            } else if(rem[x] == mx) {
+                ans = min(i, ans);
+            }
+        }
+            
+        return ans;
+    }
+};

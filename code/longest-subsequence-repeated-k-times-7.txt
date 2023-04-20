@@ -1,0 +1,91 @@
+#define debug(...) //printf(__VA_ARGS__)
+
+class Solution {
+public:
+    string longestSubsequenceRepeatedK(string s, int k) {
+        memset(frequency, 0, sizeof(frequency));
+        for (char c : s)
+            frequency[c]++;
+        for (char i = 97; i < 97 + 26; i++){
+            if (frequency[i] >= k){
+                found[1].insert(string(1, i));
+            }
+        }
+        
+        if (found[1].empty())
+            return "";
+        for (int i = 2; i < 10; i++){
+            found[i].clear();
+            for (auto it1 = found[i - 1].begin(); it1 !=found[i - 1].end(); it1++)
+                for (auto it2 = it1; it2 !=found[i - 1].end(); it2++){
+                    auto s_v = merge(*it1, *it2);
+                    for (auto& ss : s_v)
+                        if (verify(ss) && contains(s, ss, k)){
+                            found[i].insert(ss);             
+                        }
+                }
+            if (found[i].empty()){
+                string ans = "";
+                for (auto& sss : found[i - 1]){
+                    ans = max(ans, sss);
+                }
+                return ans;
+            }
+        }
+        
+        return "";
+    }
+private:
+    unordered_set<string> found[10], verified;
+    
+    int frequency[127];
+    vector<string> merge(string s1, string s2){
+        vector<string> ans;
+        
+        int pos = -1;
+        for (int i = 0; i <s1.size(); i++)
+            if (s1[i] != s2[i]){
+                if (pos != -1)
+                    return ans;
+                pos = i;
+            }
+        if (pos == -1){
+            if (s1.compare(string(s1.size(), s1[0])) == 0)
+                ans.emplace_back(s1.size() + 1, s1[0]);
+            return ans;
+        }
+        
+        string first = s1.substr(0, pos), last = s1.substr(pos + 1);
+        
+        ans.push_back(first + s1[pos] + s2[pos] + last);
+        ans.push_back(first + s2[pos] + s1[pos] + last);
+        
+        return ans;
+    }
+    
+    bool verify(string& s){
+        if (verified.count(s))
+            return false;
+        verified.insert(s);
+        auto& f = found[s.size() - 1];
+        for (int i = 0; i < s.size(); i++)
+            if (!f.count(s.substr(0, i) + s.substr(i + 1)))
+                return false;
+        return true;
+    }
+    
+    bool contains(string& s, string& sub, int k){
+        int pos = 0, i, j;
+        for (i = 0; i < k; i++){
+            j = 0;
+            while (pos < s.size() && j < sub.size()){
+                if (s[pos] == sub[j]){
+                    j++;
+                }
+                pos++;                    
+            }
+        }
+        
+        return i == k && j == sub.size();
+    }
+};

@@ -1,0 +1,55 @@
+class Solution {
+public:
+    #define ll long long int 
+    int maxProfit(vector<int>& inv, int order) {
+        int n = inv.size();
+       priority_queue<ll>pq ; 
+        int mod=1e9+7;
+        ll ans=0;
+        for(int i=0;i<n;i++)
+            pq.push(inv[i]);
+        while(order > 0){
+            ll val = pq.top();pq.pop();
+            ll c=1;
+            while(pq.size()>0 && pq.top()==val )
+            {
+                c++; pq.pop();
+            }
+          
+            if(pq.size()>0){
+              
+               ll req = val-pq.top();
+               req *=c ; 
+                if(order>=req){
+                    ans = (ans +  c*((val)*(val+1)/2 - (pq.top())*(pq.top()+1)/2)%mod)%mod;
+                    order-=req ; 
+                }
+                else{
+                    ll u = order/c ; ll v = order%c ;
+              
+                      ans =(ans+ c*((val)*(val+1)/2 - (val-u)*(val-u+1)/2)%mod)%mod;
+                   
+                    val-=u ; 
+                    ans+=v*(val);
+                    order=0;
+                    
+                }
+                if(order<=0)return ans%mod;
+                int add = pq.top();
+                while(c){pq.push(add);c--;}
+                
+            }
+            else{
+               
+                   ll u = order/c ; ll v = order%c ;
+            
+                    ans =(ans+ c*((val)*(val+1)/2 - (val-u)*(val-u+1)/2)%mod)%mod;
+                
+                    val-=u ; 
+                    ans+=v*(val);
+                    order=0;
+            }
+        }
+        return ans%mod;
+    }
+};

@@ -1,0 +1,64 @@
+class Solution {
+public:
+    typedef vector<unordered_set<int>> Graph;
+    
+    vector<int> topsort(Graph &g, Graph &indeg) {
+        vector<int> ret;
+        queue<int> q;
+        
+        for (int i=1; i<g.size(); i++) {
+            if (indeg[i].size() == 0) {
+                q.push(i);
+            }
+        }
+        
+        while (!q.empty()) {
+            int curr = q.front();
+            q.pop();
+            ret.push_back(curr);
+            for (int n : g[curr]) {
+                indeg[n].erase(curr);
+                if (indeg[n].size() == 0) {
+                    q.push(n);
+                }
+            }
+        }
+        
+        return ret;
+    }
+    
+    vector<vector<int>> buildMatrix(int k, vector<vector<int>>& rowConditions, vector<vector<int>>& colConditions) {
+        Graph gr(k+1), gc(k+1);
+        Graph indegr(k+1), indegc(k+1);
+        
+        for (auto c : rowConditions) {
+            gr[c[0]].insert(c[1]);
+            indegr[c[1]].insert(c[0]);
+        }
+        for (auto c : colConditions) {
+            gc[c[0]].insert(c[1]);
+            indegc[c[1]].insert(c[0]);
+        }
+        
+        auto sr = topsort(gr, indegr);
+        auto sc = topsort(gc, indegc);
+        
+        if (sr.size() < k || sc.size() < k) return {};
+        
+        unordered_map<int, pair<int, int>> mp;
+        for (int i=0; i<sr.size(); i++) {
+            mp[sr[i]].first = i;
+            mp[sr[i]].second = -1;
+        }
+        for (int i=0; i<sc.size(); i++) {
+            mp[sc[i]].second = i;
+        }
+        
+        vector<vector<int>> ans(k, vector<int>(k, 0));
+        for (int i=1; i<=k; i++) {
+            ans[mp[i].first][mp[i].second] = i;
+        }
+        
+        return ans;
+    }
+};

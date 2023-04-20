@@ -1,0 +1,39 @@
+// https://leetcode.com/problems/check-if-a-parentheses-string-can-be-valid/discuss/1650613/Intuition-Explained-oror-Balanced-Parentheses-Greedy-Approach-oror-C%2B%2B-Clean-Code
+
+class Solution {
+public:
+    bool canBeValid(string s, string locked) {
+        
+        int n = s.length();
+        if(n & 1) return false;
+        
+        //left to right. If u encounter more ')' and it is locked(so u can't change it) 
+        // then game over. Eg: ) or ())) '0111'
+        
+        int balance = 0;
+        
+        for(int i = 0; i < n; i++) {
+            
+            if(s[i] == '(' || locked[i] == '0') balance++;
+            
+            else {
+                balance--;
+            }
+            
+            if(balance < 0) return false;
+        }
+        
+        balance = 0;
+        // right to left -> You encounter more ( and u can't change it.
+        
+        for(int i = n-1; i >= 0; i--) {
+            
+            if(s[i] == ')' || locked[i] == '0') balance++;
+            else balance--;
+            
+            if(balance < 0) return false;
+        }
+        
+        return true;
+    }
+};

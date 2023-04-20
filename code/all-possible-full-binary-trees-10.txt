@@ -1,0 +1,24 @@
+class Solution {
+public:
+    vector<TreeNode*> allPossibleFBT(int N) {
+        if(N % 2 == 0) return {};
+        std::vector<vector<TreeNode*>> dp(N+1);
+        std::vector<TreeNode*> res;
+        dp[1].emplace_back(new TreeNode(0));
+        for(int i{3}; i <= N; i += 2)
+            for(int j{1}; j < i; j += 2)
+                for(const auto l: dp[j])
+                    for(const auto r: dp[i-j-1])
+                        dp[i].emplace_back(new TreeNode(0, copy(l), copy(r)));
+
+        return dp[N];
+    }
+    
+    TreeNode* copy(TreeNode* node) {
+        if(!node) return nullptr;
+        TreeNode* cpy = new TreeNode(node->val);
+        cpy->left = copy(node->left);
+        cpy->right = copy(node->right);
+        return cpy;
+    }
+};

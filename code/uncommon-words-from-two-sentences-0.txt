@@ -1,0 +1,107 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+*/
+typedef struct _data{
+    char* str;
+    unsigned int val;
+    int count;
+}data;
+
+// RS Hash Function
+unsigned int RSHash(char *str)
+{
+    unsigned int b = 378551;
+    unsigned int a = 63689;
+    unsigned int hash = 0;
+
+    while (*str)
+    {
+        hash = hash * a + (*str++);
+        a *= b;
+    }
+
+    return (hash & 0x7FFFFFFF);
+}
+
+char ** uncommonFromSentences(char * s1, char * s2, int* returnSize){
+    int N = 200;
+    data** hash = calloc(N, sizeof(data*)) ;
+    int n1 = strlen(s1);
+    int n2 = strlen(s2);
+    int begin = 0;
+    for(int i = 0; i < n1 ; i++){
+        if(s1[i] == ' ' || (i == (n1 - 1) ) ){
+            if(s1[i] == ' ')
+                s1[i] = '\0' ;
+            unsigned int val = RSHash(&s1[begin]);
+            unsigned int d = val ;
+            while(1){
+                if(hash[d % N] == NULL){
+                    hash[d % N] = malloc(sizeof(data));
+                    int n = strlen(&s1[begin]);
+                     hash[d % N]->str = malloc((n+1) * sizeof(char) );
+                     hash[d % N]->str[n] = '\0' ;
+                     strncpy(hash[d % N]->str, &s1[begin], n);
+                     hash[d % N]->val = val ;
+                     hash[d % N]->count = 1;    
+                     break;
+                }
+                else if(hash[d % N]->val == val){
+                    hash[d % N]->count += 1;
+                    break;
+                }
+                else
+                    d++;
+            }
+            begin = i + 1;
+        }
+    }
+
+    begin = 0;
+    for(int i = 0; i < n2 ; i++){
+        if(s2[i] == ' ' || (i == (n2 - 1) ) ){
+            if(s2[i] == ' ')
+                s2[i] = '\0' ;
+            unsigned int val = RSHash(&s2[begin]);
+            unsigned int d = val ;
+            while(1){
+                if(hash[d % N] == NULL){
+                    hash[d % N] = malloc(sizeof(data));
+                    int n = strlen(&s2[begin]);
+                     hash[d % N]->str = malloc((n+1) * sizeof(char) );
+                     hash[d % N]->str[n] = '\0' ;
+                     strncpy(hash[d % N]->str, &s2[begin], n);
+                     hash[d % N]->val = val ;
+                     hash[d % N]->count = 1;    
+                     break;
+                }
+                else if(hash[d % N]->val == val){
+                    hash[d % N]->count += 1;
+                    break;
+                }
+                else
+                    d++;
+            }
+            begin = i + 1;
+        }
+    }
+
+    char** ans = malloc(100 * sizeof(char*));
+    int a_idx = 0;
+    for(int i = 0; i < N; i++){
+        if(hash[i] == NULL)
+            continue;
+        if(hash[i]->count == 1){
+            int n = strlen(hash[i]->str) ;
+            ans[a_idx] = malloc((n+1) * sizeof(char)) ;
+            ans[a_idx][n] = '\0';
+            strncpy(ans[a_idx], hash[i]->str, n);
+            a_idx++;
+            free(hash[i]);
+        }
+    }
+    free(hash);
+    ans = realloc(ans, a_idx* sizeof(char*));
+    *returnSize = a_idx ;
+    return ans;
+}

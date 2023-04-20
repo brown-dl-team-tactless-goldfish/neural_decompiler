@@ -1,0 +1,62 @@
+#include <stdio.h>
+#include <stdlib.h>
+
+/* 
+create a struct that holds both:
+    - array of ints
+    - length of the array
+*/
+
+typedef struct {
+    int* data;
+    int len;
+} intArr;
+
+intArr* intToArr(int n) {
+    // create a string to store ints inside
+    char str_n[10000];
+    
+    // convert n to our string_n
+    // i.e 138 -> "138"
+    sprintf(str_n, "%d", n);
+    
+    // init an array of ints
+    int* ints;
+    
+    // get length or our array
+    // i.e if "138" -> len = 3
+    int len = strlen(str_n);
+    
+    // allocate enough space for our int array
+    ints = malloc(sizeof(int)* len);
+    
+    // iterate through the string up to its final digit
+    // cast char to int => ascii table shows: 
+    /*  '0' => 48 / '1' => 49 etc... */
+    for (int i = 0; i < len; i++) {
+        ints[i] = (int)str_n[i] - 48;
+    }
+    
+    // instantiate our struct
+    intArr* arr;
+    arr = malloc(sizeof(intArr)* 1);
+    
+    // fill it with the values we want
+    arr->data = ints;
+    arr->len = len;
+    
+    return arr;
+}
+
+int subtractProductAndSum(int n){
+    long product = 1;
+    long sum = 0;
+    // convert our int to array of ints
+    intArr* ints = intToArr(n);
+    for (int i = 0; i < ints->len; i++) {
+        // get our product and sum accessing the struct data
+        product *= ints->data[i];
+        sum += ints->data[i];
+    }
+    return product-sum;
+}

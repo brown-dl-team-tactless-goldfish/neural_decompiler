@@ -1,0 +1,36 @@
+int dp[55][55];
+    
+    int dfs(int i,int j,int m,int n,vector<vector<int>>& grid, vector<vector<int>>& moveCost)
+    {
+        int cost = 0;
+        cost += grid[i][j];
+        
+        if(i+1 == m)
+            return cost;
+        
+        if(dp[i][j] != -1)
+            return dp[i][j];
+        
+        int mn = INT_MAX;
+        
+        for(int k=0;k<n;k++)
+        {
+            mn = min(mn, dfs(i+1,k,m,n,grid,moveCost) + moveCost[grid[i][j]][k]);
+        }
+        
+        return dp[i][j] = mn+cost;
+    }
+    
+    int minPathCost(vector<vector<int>>& grid, vector<vector<int>>& moveCost) {
+        int cost = 0 ,res = INT_MAX , m = grid.size() , n = grid[0].size();
+        
+        memset(dp,-1,sizeof(dp));
+        
+        for(int i=0;i<n;i++)
+        {
+            cost = dfs(0,i,m,n,grid,moveCost);
+            res = min(res,cost);
+        }
+        
+        return res;
+    }

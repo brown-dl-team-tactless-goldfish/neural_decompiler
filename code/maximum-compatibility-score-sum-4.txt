@@ -1,0 +1,52 @@
+    //compatibility score for 
+    int cmp(vector<int>& s, vector<int>& m)
+    {
+        int score = 0;
+        for(int i = 0; i < s.size(); i++)
+        {
+            if(s[i] == m[i])
+                score++;            
+        }
+        return score;
+    }
+    
+    //Recur for all available mentor combination for the given student.
+    void recur(vector<vector<int>>& s, vector<vector<int>>& m, int sz, int& r, int si, unordered_set<int>& visited, int& tmp){
+        
+        //Reached all the students
+        if(si >= sz){            
+            r = max(r, tmp);
+            return;
+        }
+        
+        for(int i = 0; i < sz; i++){
+            
+            //Already assigned this mentor to some other student.
+            if(visited.find(i) != visited.end())
+                continue;
+            
+            //Check compatibility with this mentor, and recur.
+            visited.insert(i);
+            int c = cmp(s[si], m[i]);
+            tmp += c;
+            
+            recur(s, m, sz, r, si+1, visited, tmp);
+            
+            //Wipe off this mentor, student combination.            
+            tmp -= c;
+            visited.erase(i);
+            
+        }
+    }
+
+    
+    int maxCompatibilitySum(vector<vector<int>>& s, vector<vector<int>>& m) {
+        int r = 0;
+        int sz = s.size();
+        unordered_set<int> visited;
+        int t = 0;
+        //Recur for all available mentor combination for the given student.
+        recur(s, m, sz, r, 0, visited, t);
+        return r;
+    }
+};

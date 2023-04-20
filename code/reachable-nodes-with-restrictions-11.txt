@@ -1,0 +1,41 @@
+class Solution {
+public:
+    
+    void dfs(unordered_map<int, vector<int>> &G, int &cnt, vector<int> &vis, set<int> &R, int start) {
+        
+        for(auto u : G[start]) {
+            if(R.count(u)) continue;
+            
+            if(!vis[u]) {
+                vis[u] = 1;
+                cnt++;
+                dfs(G, cnt, vis, R, u);
+            }
+        }
+    }
+    
+    int reachableNodes(int n, vector<vector<int>>& edges, vector<int>& restricted) {
+        
+        unordered_map<int, vector<int>> G;
+        set<int> R(restricted.begin(), restricted.end());
+        
+        for(auto &e : edges) {
+            int u = e[0], v = e[1];
+            G[u].push_back(v);
+            G[v].push_back(u);
+        }
+        
+        int cnt = 0;
+		// Create a visited array to keep track of visited nodes.
+        vector<int> vis(n, 0);
+
+        dfs(G, cnt, vis, R, 0);
+        
+        if(cnt == 0) {
+            return 1;
+        } else {
+            return cnt;
+        }
+        
+    }
+};

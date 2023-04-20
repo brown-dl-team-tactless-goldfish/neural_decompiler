@@ -1,0 +1,64 @@
+class Solution {
+public:
+    bool isPossible(int n, vector<vector<int>>& edges) {
+        
+        vector<vector<int>> adj(n + 1); // adjacency list
+        
+        for(auto a : edges) {
+            adj[a[0]].push_back(a[1]);
+            adj[a[1]].push_back(a[0]);
+        }
+        
+        vector<int> odd; // nodes with odd degree
+        vector<int> even; // nodes with even degree
+        
+        for(int i = 1 ; i <= n ; i++) {
+            if(adj[i].size() % 2)
+                odd.push_back(i);
+            else
+                even.push_back(i);
+        }
+        
+        int os = odd.size(); // no. of nodes with odd degree
+        
+        if(os == 0) // there is no node with odd degree
+            return true;
+        else if(os == 2) 
+        {
+            int a = odd[0] , b = odd[1];
+
+            // if direct edge is possible b/w these 2 vertices
+            if(find(adj[a].begin() , adj[a].end() , b) == adj[a].end())
+                return true; 
+            else
+            {
+                // checking if there is any node which does not have an edge with any of these 2 odd degree nodes, 
+                // so we can make 2 edges between that node and each of these 2 odd degree nodes 
+                // this will keep the degree of that node even only as we are adding 2 edges to it
+                // and it will make the degree of our 2 odd degree nodes as even because we are adding 1 edge each to them
+                
+                for(int i = 1 ; i <= n && i != odd[0] && i != odd[1] ; i++)
+                {
+                    if(find(adj[i].begin() , adj[i].end() , odd[0]) == adj[i].end() && find(adj[i].begin() , adj[i].end() , odd[1]) == adj[i].end())
+                        return true;
+                }
+            }
+            return false;
+        }
+        else if(os == 4) 
+        {
+            int a = odd[0] , b = odd[1] , c = odd[2] , d = odd[3];
+            if(find(adj[a].begin() , adj[a].end() , b) == adj[a].end() && find(adj[c].begin() , adj[c].end() , d) == adj[c].end())
+                return true; // if we can make the edges a-b and c-d
+            else if(find(adj[a].begin() , adj[a].end() , c) == adj[a].end() && find(adj[b].begin() , adj[b].end() , d) == adj[b].end())
+                return true; // if we can make the edges a-c and b-d
+            else if(find(adj[a].begin() , adj[a].end() , d) == adj[a].end() && find(adj[b].begin() , adj[b].end() , c) == adj[b].end())
+                return true; // if we can make the edges a-d and b-c
+            else
+                return false;
+        }
+        
+        // if the no. of nodes with odd degree is odd or it is greater than 4, then making all degrees as even is not possible
+        return false;
+    }
+};

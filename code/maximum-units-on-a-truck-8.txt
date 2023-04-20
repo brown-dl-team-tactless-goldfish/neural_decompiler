@@ -1,0 +1,33 @@
+class Solution {
+public:
+    static bool comp(vector<int> &a, vector<int> &b)
+    {
+        return a[1] > b[1];
+    }
+    
+    int maximumUnits(vector<vector<int>>& boxTypes, int truckSize)
+    {
+        int length = boxTypes.size();
+        int units = 0;
+        
+         // sort in descending order acc to number of boxes per unit
+        sort(boxTypes.begin(), boxTypes.end(), comp);
+        int i=0;
+        for(int i=0;i<length;i++)
+        {
+            if(boxTypes[i][0] <= truckSize) // if number of boxes < truck size
+            {
+                units += boxTypes[i][0] * boxTypes[i][1]; // take all boxes in that unit
+                truckSize -= boxTypes[i][0]; // decrease truckSize by that number of boxes
+            }
+            else if(boxTypes[i][0] > truckSize)
+            {
+                // if truckSize < number of boxes
+                // take the boxes equal to the remaining truck size
+                units += truckSize * boxTypes[i][1];
+                break;
+            }
+        }
+        return units;
+    }
+};

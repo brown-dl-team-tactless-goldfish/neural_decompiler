@@ -1,0 +1,67 @@
+class Solution {
+public:
+    string predictPartyVictory(string senate) {
+        int r = 0;
+        int d = 0;
+        int rm = 0;
+        int dm = 0;
+        
+        for (char c : senate) {
+            if (c == 'R') { r++; }
+            else if (c == 'D') { d++; }
+        }
+        while (senate.length() > 0) {
+            for (int i = 0; i < senate.length(); i++) {
+                char c = senate[i];
+                if (c == 'R') {
+                    if (rm < 0) {
+                        rm++;
+                        senate[i] = 'C';
+                    }
+                    else if (d == 0) {
+                        return "Radiant";
+                    }
+                    else {
+                        d--;
+                        dm--;
+                    }
+                }
+                else if (c == 'D') {
+                    if (dm < 0) {
+                        dm++;
+                        senate[i] = 'C';
+                    }
+                    else if (r == 0) {
+                        return "Dire";
+                    }
+                    else {
+                        r--;
+                        rm--;
+                    }
+                }
+            }
+            r = 0;
+            d = 0;
+            string tmp = "";
+            for (char c : senate) {
+                if (c == 'R') { 
+                    r++;
+                    tmp += c;
+                }
+                else if (c == 'D') {
+                    d++;
+                    tmp += c;
+                }
+            }
+            senate = tmp;
+        }
+        
+        if (r == 0) {
+            return "Dire";
+        }
+        else if (d == 0) {
+            return "Radiant";
+        }
+        return "";
+    }
+};

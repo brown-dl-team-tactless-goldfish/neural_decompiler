@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int minSkips(vector<int>& dist, int speed, int ho) 
+    {
+        int n = dist.size();
+        long long sp = speed , hr = ho;
+        vector<vector<long long>> dp(n+1 , vector<long long>(n+1,LLONG_MAX));
+        dp[0][0] = 0;
+        for(int i = 1 ; i<=n ; i++) dp[i][0] = dp[i-1][0] + dist[i-1];  \\ All rests are skipped
+        for(int i = 1 ; i<=n ; i++)  \\ iteration on roads 
+        {
+            for(int j = 1 ; j<i ; j++) \\ iteration on halts taken before ith road
+            {
+                dp[i][j] = min(dp[i-1][j] , dp[i-1][j-1] + (sp - dp[i-1][j-1]%sp)%sp) + dist[i-1];  \\ dp[i][j] denotes minimum time required to take j halts while covering i roads.
+            }
+        }
+        int ans = -1;
+        for(int i = 0 ; i<n; i++)
+        {
+            if(dp[n][i]<=hr*sp) ans = i; \\ checking for maxm number of halts (minimum number of skips)
+        }
+        if(ans == -1) return ans;
+        return n-1-ans;
+        
+        
+    }
+};

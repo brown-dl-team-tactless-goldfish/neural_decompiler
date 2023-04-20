@@ -1,0 +1,35 @@
+class Solution {
+public:
+    vector<int> bestCoordinate(vector<vector<int>>& towers, int radius) {
+        sort(towers.begin(), towers.end(), [](auto &v1, auto &v2){
+            if(v1[0] == v2[0])
+                return v1[1] < v2[1];
+            return v1[0] < v2[0];
+        });
+        vector<int> result;
+        int ind = -1;
+        int max_dist = INT_MIN;
+        for(int i=0;i<towers.size();i++){
+            auto v1 = towers[i];
+            int len = 0;
+            for(int j=0;j<towers.size();j++){
+                auto v2 = towers[j];
+                int p = abs(v1[0] - v2[0]);
+                int q = abs(v1[1] - v2 [1]);
+                int dist = p * p + q * q;
+                double val = sqrt(dist);
+                if(val > radius)
+                    continue;
+                
+                int k= floor(v2[2]/ (1 + val));
+                len += k;
+            }
+            if(max_dist < len){
+                ind = i;
+                max_dist = len;
+            }
+        }
+
+        return vector<int> {towers[ind][0], towers[ind][1]};
+    }
+};

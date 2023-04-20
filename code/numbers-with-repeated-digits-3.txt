@@ -1,0 +1,102 @@
+    public class Solution
+    {
+        private bool CheckNumber(int num)
+        {
+            bool[] presented = new bool[10];
+            while (num != 0)
+            {
+                int d = num % 10;
+                if (presented[d])
+                {
+                    return false;
+                }
+
+                presented[d] = true;
+                num /= 10;
+            }
+
+            return true;
+        }
+
+        public int NumDupDigitsAtMostN(int n)
+        {
+            checked
+            {
+                int digitsCount = (int)Math.Floor(Math.Log10(n)) + 1;
+                long allDistinctCount = 0;
+                for (int l = 1; l < digitsCount; l++)
+                {
+                    long curr = 9;
+                    long prod = curr;
+                    for (int i = 1; i < l; i++)
+                    {
+                        prod *= (curr--);
+                    }
+                    allDistinctCount += prod;
+                }
+
+                int num = n;
+                List<int> digits = new List<int>(digitsCount);
+                while (num != 0)
+                {
+                    int d = num % 10;
+                    digits.Add(d);
+                    num /= 10;
+                }
+
+                digits.Reverse();
+
+                ISet<int> presented = new HashSet<int>();
+
+                int tmp = 0;
+                for (int i = 0; i < digitsCount; i++)
+                {
+                    tmp *= 10;
+                    tmp += digits[i];
+                    int pow = (int)Math.Pow(10, digitsCount - i - 1);
+                    num = tmp * pow;
+
+                    int start = 0;
+                    if (i == 0)
+                    {
+                        start = 1;
+                    }
+
+                    for (int j = start; j < digits[i]; j++)
+                    {
+                        if (!presented.Contains(j))
+                        {
+                            var remainder = digitsCount - i - 1;
+                            if (remainder == 0)
+                            {
+                                allDistinctCount++;
+                            }
+                            else
+                            {
+                                long curr = 9 - presented.Count;
+                                long prod = curr;
+                                for (int k = 1; k < digitsCount - i - 1; k++)
+                                {
+                                    prod *= (--curr);
+                                }
+                                allDistinctCount += prod;
+                            }
+                        }
+                    }
+
+
+                    if (!presented.Add(digits[i]))
+                    {
+                        break;
+                    }
+                }
+
+                if (CheckNumber(num))
+                {
+                    allDistinctCount++;
+                }
+
+                return n - (int)allDistinctCount;
+            }
+        }
+    }

@@ -1,0 +1,44 @@
+class Solution {
+public: 
+    int s , d ;  
+    int vis[(int)1005] ;
+    int C = 0 ;
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) 
+    {
+    vector< vector < int > > v ( 1005 ) ;
+        for(int i = 0 ; i < edges.size() ; i ++ )
+        {
+           for(int j = 0 ; j < 2 ; j ++ )
+           {
+               v[  edges[i][0] ].push_back( edges[i][1] ) ;
+               v[  edges[i][1] ].push_back( edges[i][0] ) ;
+           }    
+        }
+        vector<int>ans;
+        for(int i = edges.size() - 1 ; i >= 0  ; i -- ){
+               s = edges[i][0] ; 
+               d = edges[i][1] ;
+               vis[1] = ++C ;
+               solve( 1 , v )   ;
+               if( vis[s] == C && vis[d] == C )
+               {
+                   ans.push_back(s);
+                   ans.push_back(d);
+                   break ;
+               }
+        }
+        return ans ;
+    }
+    void solve( int u  , vector<vector<int>>&v )
+    {
+          for(int i = 0 ; i < v[u].size() ; i ++ )
+          {
+             if( (u == s && v[u][i] == d) || ( u == d && v[u][i] == s ) ) continue ;
+             else if( vis[v[u][i]] != C )
+             { 
+                 vis[v[u][i]] = C      ; 
+                 solve( v[u][i]  , v ) ;    
+             } 
+          }    
+    }
+};

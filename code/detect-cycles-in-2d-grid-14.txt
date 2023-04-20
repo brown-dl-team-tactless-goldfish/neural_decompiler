@@ -1,0 +1,65 @@
+	bool containsCycle(vector<vector<char>>& grid) {
+        
+        int n = grid.size();
+        int m = grid[0].size();
+        
+        int dy[4] = {0, -1, 0, 1};
+        int dx[4] = {-1, 0, 1, 0};
+        
+        vector<vector<bool>> used;
+        for (int i = 0; i < n; i++) {
+            vector<bool> temp;
+            for (int j = 0; j < m; j++) {
+                temp.push_back(false);
+            }
+            used.push_back(temp);
+        }
+        
+        int cnt = 0;
+        
+        for (int i = 0; i < grid.size(); i++) {
+            for (int j = 0; j < grid[i].size(); j++) {
+                if (!used[i][j]) {
+                    queue<pair<int, int>> q;
+                    queue<pair<int, int>> qPrev;
+                    vector<vector<bool>> used;
+
+                    map<pair<int, int>, int> mp;
+
+                    q.push(make_pair(i, j));
+                    qPrev.push(make_pair(-1, -1));
+                    mp[make_pair(i, j)]++;
+
+                    while (!q.empty()) {
+                        pair<int, int> front = q.front();
+                        int y = front.first;
+                        int x = front.second;
+                        pair<int, int> frontPrev = qPrev.front();
+                        int yPrev = frontPrev.first;
+                        int xPrev = frontPrev.second;
+
+                        for (int k = 0; k < 4; k++) {
+                            cnt++;
+                            if (cnt > 1e6) {
+                                return false;
+                            }
+                            if (y + dy[k] >= 0 && y + dy[k] < n && x + dx[k] >= 0 && x + dx[k] < m) {
+
+                                if (grid[y][x] == grid[y + dy[k]][x + dx[k]] && (y + dy[k] != yPrev || x + dx[k] != xPrev)) {
+                                    q.push(make_pair(y + dy[k], x + dx[k]));
+                                    qPrev.push(make_pair(y, x));
+                                    if (mp.find(make_pair(y + dy[k], x + dx[k])) != mp.end()) {
+                                        return true;
+                                    }
+                                    mp[make_pair(y + dy[k], x + dx[k])]++;
+                                }
+                            }
+                        }
+                        q.pop();
+                        qPrev.pop();
+                    }
+                }
+            }
+        }
+        return false;
+    }

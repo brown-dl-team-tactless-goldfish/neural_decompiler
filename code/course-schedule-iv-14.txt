@@ -1,0 +1,50 @@
+#include<list>
+#include<unordered_map>
+class Graph{
+    public:
+    unordered_map<int,list<int>>graph;
+    vector<bool>seen;
+    int n;
+    Graph(int n){
+        this->n=n;
+        this->seen=vector<bool>(this->n,false);
+    }
+    void addEdge(int s,int e){
+        this->graph[s].push_back(e);
+    }
+    void reset(){
+        this->seen=vector<bool>(this->n,false);
+    }
+    bool dfs(int s,int e){
+        if(s==e){
+            return true;
+        } else {
+            this->seen[s]=true;
+            for(list<int>::iterator it=this->graph[s].begin();it!=this->graph[s].end();it++){
+                int vertex=*it;
+                if(!this->seen[vertex]){
+                    bool isReached=this->dfs(vertex,e);
+                    if(isReached){
+                        return true;
+                    }
+                }
+            }
+            return false;
+        }
+    }
+};
+class Solution {
+public:
+    vector<bool> checkIfPrerequisite(int numCourses, vector<vector<int>>& prerequisites, vector<vector<int>>& queries) {
+        Graph graph(numCourses);
+        for(int i=0;i<prerequisites.size();i++){
+            graph.addEdge(prerequisites[i][0],prerequisites[i][1]);
+        }
+        vector<bool>ans;
+        for(int i=0;i<queries.size();i++){
+            ans.push_back(graph.dfs(queries[i][0],queries[i][1]));
+            graph.reset();
+        }
+        return ans;
+    }
+};

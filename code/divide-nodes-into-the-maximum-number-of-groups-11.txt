@@ -1,0 +1,57 @@
+class Solution {
+public:
+    bool dfs(vector<vector<int>>& adj, vector<int>& visited, vector<int>& comp, int node, int color) {
+        visited[node] = color;
+        comp.push_back(node);
+        color = (color + 1) % 2;
+        for (int i : adj[node]) {
+            if (visited[i] != -1) {
+                if (visited[i] != color) return false;
+                continue;
+            }
+            if (not dfs(adj, visited, comp, i, color)) return false;
+        }
+        return true;
+    }
+
+    int bfs(int n, vector<vector<int>>& adj, vector<int>& comp) {
+        int res = 1;
+        for (int i : comp) {
+            vector<bool> visited(n);
+            queue<pair<int, int>> q;
+            visited[i] = true;
+            q.push({i, 1});
+            while (not q.empty()) {
+                int node = q.front().first, dist = q.front().second;
+                q.pop();
+                res = max(dist, res);
+                for (int j : adj[node]) {
+                    if (visited[j]) continue;
+                    visited[j] = true;
+                    q.push({j, dist + 1});
+                }
+            }
+        }
+        return res;
+    }
+
+    int magnificentSets(int n, vector<vector<int>>& edges) {
+        int ans = 0;
+        vector<int> visited(n, -1);
+        vector<vector<int>> adj(n), concomp;
+        for (vector<int>& v : edges) {
+            int a = v[0], b = v[1];
+            a--;
+            b--;
+            adj[a].push_back(b);
+            adj[b].push_back(a);
+        }
+        for (int i = 0; i < n; i++) {
+            if (visited[i] != -1) continue;
+            concomp.push_back({});
+            if (not dfs(adj, visited, concomp.back(), i, 0)) return -1;
+        }
+        for (vector<int>& v : concomp) ans += bfs(n, adj, v);
+        return ans;
+    }
+};

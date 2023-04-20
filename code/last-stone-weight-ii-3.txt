@@ -1,0 +1,34 @@
+class Solution {
+public:
+    int n;
+    vector<vector<int>>dp;
+    int subsetSum(int target,vector<int>&stones,int sum,int i){
+        if(i >= n) return sum;
+        int a = INT_MIN;
+        int b = INT_MIN;
+        int c = INT_MIN;
+        if(dp[i][sum]!=-1) return dp[i][sum];
+       if(sum+stones[i] <= target){
+           a = subsetSum(target,stones,sum+stones[i],i+1);
+           b = subsetSum(target,stones,sum,i+1);
+       }
+        else{
+            c = subsetSum(target,stones,sum,i+1);
+        }
+        return dp[i][sum] = max(a,max(b,c));
+    }
+    int lastStoneWeightII(vector<int>& stones) {
+        n = stones.size();
+        int sum = 0 ;
+        for(int i = 0;i<stones.size();i++){
+            sum+=stones[i];
+        }
+    
+        int half = sum/2;
+        dp.resize(n+1,vector<int>(half+1,-1));
+        int first_subset = subsetSum(half,stones,0,0);
+        int second_subset = sum - first_subset;
+        
+        return abs(first_subset-second_subset);
+    }
+};

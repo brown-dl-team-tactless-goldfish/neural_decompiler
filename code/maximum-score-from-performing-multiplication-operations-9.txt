@@ -1,0 +1,44 @@
+class Solution {
+    private:
+    vector<vector<double>>memo;
+    int n;
+public:
+    int maximumScore(vector<int>& nums, vector<int>& multipliers) {
+        
+        int m=multipliers.size();
+        memo.resize(m+1,vector<double>(m+1,LONG_MIN));
+         n=nums.size();
+        int y=n;
+        int x=-1;
+        return fun(nums,multipliers,m,x,y);
+    }
+    
+    int fun(vector<int>&nums,vector<int>&multi,int m,int &start,int &end)
+    {
+        if(m==0)
+         return 0;
+        
+        if(memo[start+1][n-end]!=LONG_MIN)
+            return memo[start+1][n-end];
+        
+        int result1=1;
+        int result2=1;
+        // Choose from front
+          // Do precalculatoin
+             start+=1;
+             result1=(multi[multi.size()-m]*nums[start])+fun(nums,multi,m-1,start,end);
+          // Do postcalculation
+             start-=1;
+        
+        // Choose from end
+          // Do precalculation
+             end-=1;
+             result2=(multi[multi.size()-m]*nums[end])+fun(nums,multi,m-1,start,end);
+         // Do postcalculation
+             end+=1;
+        return memo[start+1][n-end]=max(result1,result2);      
+    }
+};
+
+Time Complexity: O(m^2)
+Space Complexity: O(m^2)

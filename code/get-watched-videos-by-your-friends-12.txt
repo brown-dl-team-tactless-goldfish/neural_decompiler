@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<string> watchedVideosByFriends(vector<vector<string>>& watchedVideos, vector<vector<int>>& friends, int id, int level) {
+        unordered_map<string, int> freq;
+        vector<bool> visited(friends.size(), false);
+        queue<int> q;
+        q.push(id);
+        visited[id] = true;
+        while (!q.empty() && level-- > 0) {
+            for (int i = q.size(); i > 0; i--) {
+                int f = q.front(); q.pop();
+                for (int j : friends[f]) {
+                    if (!visited[j]) {
+                        q.push(j);
+                        visited[j] = true;
+                    }
+                }
+            }
+        }
+        while (!q.empty()) {
+            for (string& video : watchedVideos[q.front()]) freq[video]++;
+            q.pop();
+        }
+        vector<pair<int, string>> pairs;
+        for (auto& p : freq) pairs.push_back({p.second, p.first});
+        sort(pairs.begin(), pairs.end());
+        vector<string> res;
+        for (auto& p : pairs) res.push_back(p.second);
+        return res;
+    }
+};

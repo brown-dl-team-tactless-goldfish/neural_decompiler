@@ -1,0 +1,18 @@
+    int maximumANDSum(vector<int>& nums, int &numSlots) {
+        const int n=1<<(numSlots*2);
+        int dp[n];
+        for(int i=0;i<n;i++) dp[i]=0;
+        for(auto &x:nums){
+            for(int i=n-1;i>=1;i--){
+                for(int j=0;j<numSlots;j++){ 
+                    if(i&(1<<(2*j))){
+                        dp[i]=max(dp[i],(x&(j+1))+dp[i^(1<<(2*j))]);
+                    }
+                    else if(i&(1<<(2*j+1))){
+                        dp[i]=max(dp[i],(x&(j+1))+dp[i^(1<<((2*j)+1))]);
+                    }
+                }
+            }
+        }
+        return dp[n-1];
+    }

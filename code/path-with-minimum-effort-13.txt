@@ -1,0 +1,40 @@
+class Solution {
+public:
+    const int dx[4] = {-1,0,1,0} ;
+    const int dy[4] = {0,1,0,-1} ;
+    int r , c ;
+    bool check(int i , int j ,vector<vector<int>>& heights , int barrier){
+        vector<vector<int>> visited(r,vector<int>(c,0)) ;
+        queue<pair<int,int>> q ;
+        q.push({0,0}) ;
+        
+        while(q.size()){
+            auto [x,y] = q.front() ; q.pop() ;
+            if(x == r-1 and y == c - 1) return true ;
+            if(visited[x][y]) continue ;
+            visited[x][y] = 1 ;
+            
+            for(int itr = 0 ; itr < 4 ; ++itr ){
+                int xx = x + dx[itr] , yy = y + dy[itr] ;
+                if(xx >= 0 and yy >= 0 and xx < r and yy < c){
+                    if(abs(heights[xx][yy] - heights[x][y]) <= barrier) q.push({xx,yy}) ;
+                }
+            }
+        }
+        
+        return false ;
+    }
+    
+    int minimumEffortPath(vector<vector<int>>& heights) {
+        r = heights.size() , c = heights[0].size() ;
+        int lo = 0 , hi = 10000000 , minDiff = 0 ;
+        while(lo <= hi){
+            int mid = lo + (hi-lo) / 2 ;
+            if(check(0,0,heights,mid)){
+                minDiff = mid ;
+                hi = mid - 1 ;
+            } else lo = mid + 1 ;
+        }
+        return minDiff ;
+    }
+};

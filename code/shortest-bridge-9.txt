@@ -1,0 +1,118 @@
+public int ShortestBridge(int[][] grid)
+        {
+
+            Queue<(int, int)> q1 = new Queue<(int, int)> ();
+            Queue<(int, int)> q2 = new Queue<(int, int)> ();
+
+            int[][] visited1 = new int[grid.Length][];
+            for (int i = 0; i < grid.Length; i++) { 
+                visited1[i] = new int[grid[0].Length];
+                Array.Fill(visited1[i], -1);
+            }
+
+            int[][] visited2 = new int[grid.Length][];
+            for (int i = 0; i < grid.Length; i++)
+            {
+                visited2[i] = new int[grid[0].Length];
+                Array.Fill(visited2[i], -1);
+            }
+
+			// Seed the Queue and corresponding visited array using DFS on the island.
+            for (int i = 0; i < grid.Length; i++) {
+                for (int j = 0; j < grid[0].Length; j++) {
+                    if (grid[i][j] == 1) {
+                        if (q1.Count == 0) {
+                            DFS(i, j, visited1, grid, q1);
+                        }
+                        else
+                        {
+                            DFS(i, j, visited2, grid, q2);
+                        }
+                        
+                    }
+                }
+            }
+
+
+            // Bidirectial BFS
+
+            while (q1.Count > 0 && q2.Count > 0) {
+
+                int c1 = q1.Count;
+                for (int i = 0; i < c1; i++) { 
+                    (var r, var c ) = q1.Dequeue();
+
+                    foreach (var item in GetConnected(r, c, grid)) {
+                        if (visited1[item[0]][item[1]] == -1) { 
+                            visited1[item[0]][item[1]] = visited1[r][c]+1;
+                            q1.Enqueue((item[0], item[1]));
+
+                            if (visited2[item[0]][item[1]] != -1)
+                            {
+                                return visited2[item[0]][item[1]] + visited1[r][c];
+                            }
+                        }
+                    }
+                }
+
+
+                int c2 = q2.Count;
+                for (int i = 0; i < c2; i++)
+                {
+                    (var r, var c) = q2.Dequeue();
+
+                    foreach (var item in GetConnected(r, c, grid))
+                    {
+                        if (visited2[item[0]][item[1]] == -1)
+                        {
+                            visited2[item[0]][item[1]] = visited2[r][c] + 1;
+                            q2.Enqueue((item[0], item[1]));
+
+                            if (visited1[item[0]][item[1]] != -1) {
+                                return visited1[item[0]][item[1]] + visited2[r][c];
+                            }
+                        }
+                    }
+                }
+            }
+            return -1;
+        }
+
+        void DFS(int i, int j, int[][] visited, int[][] grid, Queue<(int, int)> q) {
+
+            grid[i][j] = 0;
+            visited[i][j] = 0;
+            q.Enqueue((i, j));
+
+            foreach (var item in GetConnected(i, j, grid)) {
+
+                if (visited[item[0]][item[1]] == -1 && grid[item[0]][item[1]] == 1) {
+                    DFS(item[0], item[1], visited, grid, q);
+                }
+            }
+        }
+        List<int[]> GetConnected(int r, int c, int[][] image)
+        {
+
+            List<int[]> result = new List<int[]>();
+
+            int[][] dirs = new int[4][]{
+                new int[]{1,0},
+                new int[]{0,1},
+                new int[]{-1,0},
+                new int[]{0, -1}
+        };
+
+            foreach (var item in dirs)
+            {
+                int newr = r + item[0];
+                int newc = c + item[1];
+
+                if ((newr >= 0 && newr < image.Length) && (newc >= 0 && newc < image[0].Length))
+                {
+                    result.Add(new int[] { newr, newc });
+                }
+            }
+
+            return result;
+        }

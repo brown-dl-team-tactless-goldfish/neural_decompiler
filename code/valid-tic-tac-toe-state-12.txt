@@ -1,0 +1,38 @@
+class Solution {
+public:
+    
+   bool win(const vector<string> &board,char c){
+           return ((board[0][0] == c) && 
+                   ((board[0][1] == c && board[0][2] == c) ||
+                    (board[1][1] == c && board[2][2] == c) ||
+                    (board[1][0] == c && board[2][0] == c))) || 
+                    (board[0][1] == c && board[1][1] == c && board[2][1] == c) ||
+                    (board[0][2] == c && board[1][2] == c && board[2][2] == c) ||
+                    (board[0][2] == c && board[1][1] == c && board[2][0] == c) ||
+                    (board[1][0] == c && board[1][1] == c && board[1][2] == c) ||
+                    (board[2][0] == c && board[2][1] == c && board[2][2] == c);
+   }
+    
+    bool validTicTacToe(vector<string>& board) {
+        vector<int> sum = 
+        accumulate(board.begin(),board.end(),vector<int>(2,0),[](const vector<int> &s,const string & str){
+           vector<int> temp = accumulate(str.begin(),str.end(),vector<int>(2,0),[](const vector<int> &acc, char c){
+               vector<int> v = acc;
+               if(c == 'X'){
+                   v[0]++;
+               }
+               else if(c == 'O'){
+                   v[1]++;
+               }
+               
+               return v;
+           });
+            
+           temp[0] += s[0];
+           temp[1] += s[1];
+           return temp;
+        });
+        
+        return (sum[0] == sum[1] && !win(board,'X')) || (sum[0] == sum[1] + 1 && !win(board,'O'));
+    }
+};

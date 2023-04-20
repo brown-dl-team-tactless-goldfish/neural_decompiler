@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int networkBecomesIdle(vector<vector<int>>& es, vector<int>& p) {
+        int n = p.size(), ans = 0;
+        vector<vector<int>> adj(n);
+        vector<int> shortest(n, INT_MAX);
+        for (auto &e : es) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        queue<int> q;
+        q.push(0);
+        shortest[0] = 0;
+        for (int i = 1; !q.empty(); i++) {
+            for (int j = 0, e = q.size(); j < e; j++) {
+                int cur = q.front();
+                q.pop();
+                for (auto a : adj[cur]) {
+                    if (shortest[a] == INT_MAX) {
+                        shortest[a] = i;
+                        q.push(a);
+                    }
+                }
+            }
+        }
+        
+        for (int i = 1; i < n; i++) {
+            int t = shortest[i] << 1;
+            if (t > p[i]) t += t - (t - 1) % p[i] - 1;
+            ans = max(ans, t + 1);
+         }
+        
+        return ans;
+    }
+};

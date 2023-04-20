@@ -1,0 +1,32 @@
+public class Solution {
+    public int ShortestSubarray(int[] A, int K) {
+        int[] P = new int[A.Length + 1];
+        P[0] = 0;
+        for (int i = 0; i < A.Length; i++) {
+            P[i+1] = P[i] + A[i];
+        }
+        
+        var I = new LinkedList<int>();
+        
+        var result = int.MaxValue;
+        
+        for (int i = 0; i < P.Length; i++) {
+            
+            while (I.Count > 0 && P[I.Last.Value] >= P[i]) {
+                I.RemoveLast();
+            }
+            I.AddLast(i);
+            
+            while (I.Count > 1 && P[i] - P[I.First.Next.Value] >= K) {
+                I.RemoveFirst();
+            }
+            
+            if (i > 0 && P[i] - P[I.First.Value] >= K) {
+                result = Math.Min(result, i - I.First.Value);
+            }
+            
+        }
+        
+        return int.MaxValue == result ? -1 : result;
+    }
+}

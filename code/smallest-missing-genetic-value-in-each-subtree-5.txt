@@ -1,0 +1,25 @@
+class Solution {
+public:
+    vector<int> smallestMissingValueSubtree(vector<int>& p, vector<int>& n) {
+        int N = n.size();
+        vector<int> res(N, 1);
+        vector<vector<int>> child(N, vector<int>());
+        for(int i = 0; i < N; i++) if(p[i] != -1) child[p[i]].push_back(i);
+        auto pos = find(begin(n), end(n), 1)-begin(n);
+        bool seen[10000001]{};
+        std::function<void(const int&)>dfs;
+        dfs = [&](const int& r) {
+            if(!seen[n[r]]) {
+                seen[n[r]] = true;
+                for(auto nxt : child[r]) dfs(nxt);
+            }
+        };
+        int missing = 2;
+        for(int t = pos; pos < N && t != -1; t = p[t]) {
+            dfs(t);
+            while(seen[missing]) missing++;
+            res[t] = missing;
+        }
+        return res;
+    }
+};

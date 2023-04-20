@@ -1,0 +1,26 @@
+int map[26] = {1, 2, 2, 1, 0, 1, 1, 1, 0, 1, 1, 1, 2, 2, 0, 0, 0, 0, 1, 0, 0, 2, 0, 2, 0, 2};
+
+char** findWords(char** words, int wordsSize, int* returnSize) {
+    *returnSize = 0;
+    char** res = (char**) malloc(wordsSize * sizeof(char*));
+    for (int i = 0; i < wordsSize; i++) {
+        bool IsOk = true;
+        int len = strlen(words[i]);
+        int tmp = isupper(words[i][0]) > 0 ? map[words[i][0] - 'A'] : map[words[i][0] - 'a'];
+        for (int j = 1; j < len; j++) {
+            if (isupper(words[i][j])) {
+                if (map[words[i][j] - 'A'] != tmp) {
+                    IsOk = false;
+                    break;
+                }
+            } else {
+                if (map[words[i][j] - 'a'] != tmp) {
+                    IsOk = false;
+                    break;
+                }
+            }
+        }
+        if (IsOk) res[(*returnSize)++] = words[i];
+    }
+    return res;
+}

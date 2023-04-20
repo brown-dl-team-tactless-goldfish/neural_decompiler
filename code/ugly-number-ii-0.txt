@@ -1,0 +1,46 @@
+int nthUglyNumber(int n) {
+    int nmap[3][2]={{2,0},{3,0},{5,0}};
+    int cnt=0;
+    int* array=(int*)calloc(n+1,sizeof(int));
+    array[cnt++]=1;
+    while(cnt<n){
+        int min=INT_MAX;
+        for(int i=0;i<3;i++){
+            int product=nmap[i][0]*array[nmap[i][1]];
+            if(product<min){
+                min=product;
+            }
+        }
+        array[cnt++]=min;
+        for(int i=0;i<3;i++){
+            if(nmap[i][0]*array[nmap[i][1]]==min){
+                nmap[i][1]++;
+            }
+        }
+    }
+    return array[n-1];
+}
+// Time Limit Exceeded
+// int nthUglyNumber(int n) {
+//     if(n<7){return n;}
+//     int cnt=6;
+//     for(int i=7;;i++){
+//         int tmp=i;
+//         while(tmp%3==0){
+//             tmp/=3;
+//         }
+//         while(tmp%2==0){
+//             tmp/=2;
+//         }
+//         while(tmp%1==0){
+//             tmp/=1;
+//         }
+//         if(tmp==1){
+//             cnt++;
+//             if(cnt==n){
+//                 return i;
+//             }
+//         }
+//     }
+//     return 0;
+// }

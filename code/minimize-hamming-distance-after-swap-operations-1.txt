@@ -1,0 +1,66 @@
+void dfs(vector<vector<int>>& adj, int ind, vector<int>& visited, vector<int>& found) {
+    found.push_back(ind);
+    visited[ind] = 1;
+    
+    for (auto& a : adj[ind]) {
+        if (visited[a] == 0) {
+            dfs(adj, a, visited, found);
+        }
+    }
+}
+
+unordered_map<int, int> check(vector<int>& source, vector<int>& fnd) {
+    unordered_map<int, int> res;
+    
+    res.reserve(source.size());
+    
+    for (auto& f : fnd) {
+        auto it = find(source.begin(), source.end(), source[f]);
+        if (it != source.end()) {
+            res[*it]++;
+        }
+    }
+    
+    return res;
+}
+
+void intersect(unordered_map<int, int>& cnt1, unordered_map<int, int>& cnt2, vector<int>& res) {
+    for (auto& c : cnt1) {
+        auto it = cnt2.find(c.first);
+        if (it != cnt2.end()) {
+            res.push_back(min(c.second, it->second));
+        }
+    }
+}
+
+int minimumHammingDistance(vector<int>& source, vector<int>& target, vector<vector<int>>& allowedSwaps) {
+   vector<vector<int>> adj(source.size());
+    int res = source.size();
+    
+    for (auto& a : allowedSwaps) {
+        adj[a[0]].push_back(a[1]);
+        adj[a[1]].push_back(a[0]);
+    }
+    
+    vector<int> visited(source.size(), 0);
+    
+    for (int i = 0; i < source.size(); i++) {
+        if (visited[i] == 0) {
+            vector<int> found;
+            vector<int> cnt;
+            
+            found.reserve(source.size());
+            
+            dfs(adj, i, visited, found);
+            
+            unordered_map<int, int> cnt1(check(source, found));
+            unordered_map<int, int> cnt2(check(target, found));
+            
+            intersect(cnt1, cnt2, cnt);
+            
+            res -= accumulate(cnt.begin(), cnt.end(), 0);
+        }
+    }
+    
+    return res;
+}

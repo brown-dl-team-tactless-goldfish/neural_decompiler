@@ -1,0 +1,55 @@
+public class Solution {
+    public IList<string> RemoveAnagrams(string[] words) {
+        var result = new List<string>();
+        
+        for(var i = 0; i < words.Length; i++) {
+            if(words[i] == string.Empty) {
+                continue;
+            }
+            
+            bool isAnagram = true;
+            
+            for(var j = i + 1; j < words.Length && isAnagram; j++) {
+                if(IsAnagram(words[i], words[j])) {
+                    words[j] = string.Empty;
+                } else {
+                    isAnagram = false;
+                }                
+            }
+        }
+        
+        foreach(var w in words) {
+            if(w != string.Empty) {
+                result.Add(w);
+            }
+        }
+            
+        return result;
+    }
+    
+    private bool IsAnagram(string s1, string s2) {
+        var s1Dict = new Dictionary<char, int>();
+        
+        foreach(var c in s1) {
+            if(!s1Dict.ContainsKey(c)) {
+                s1Dict[c] = 0;
+            }
+            
+            s1Dict[c]++;
+        }
+        
+        foreach(var c in s2) {
+            if(!s1Dict.ContainsKey(c)) {
+                return false;
+            }
+            
+            s1Dict[c]--;
+            
+            if(s1Dict[c] == 0) {
+                s1Dict.Remove(c);
+            }
+        }
+        
+        return s1Dict.Count() == 0;
+    }
+}

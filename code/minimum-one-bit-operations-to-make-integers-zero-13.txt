@@ -1,0 +1,79 @@
+    public class Solution
+    {
+        private int Zeroing(int num, IDictionary<(int bit, int num), int> changingBits, IDictionary<int, int> zeroing)
+        {
+            if (zeroing.ContainsKey(num))
+            {
+                return zeroing[num];
+            }
+                
+            for (int i = 31; i >= 0; i--)
+            {
+                if ((num & (1 << i)) != 0)
+                {
+                    //if bit set whe should unset it!
+                    var changeBit = Change(num, i, changingBits, zeroing);
+                    var zeroRemains = 0;
+                    if (i > 0)
+                    {
+                        // after that remains will be in the form of 1[sequence of 0]. We should make it zero too.
+                        zeroRemains += Zeroing(1 << (i - 1), changingBits, zeroing);
+                    }
+
+                    var res = changeBit + zeroRemains;
+                    zeroing[num] = res;
+                    return res;
+                }
+            }
+
+            zeroing[num] = 0;
+            return 0;
+        }
+
+        private int Change(int num, int bit, IDictionary<(int bit, int num), int> changingBits, IDictionary<int, int> zeroing)
+        {
+            (int bit, int num) key = (bit, num);
+            if (changingBits.ContainsKey(key))
+            {
+                return changingBits[key];
+            }
+
+            if (bit == 0)
+            {
+                //simple operation of first type
+                changingBits[key] = 1;
+                return changingBits[key];
+            }
+
+            int res = 1; //step to switch current byte
+
+            if ((num & (1 << (bit - 1))) != 0) //if (i-1)th set => we should simply set zero to prefix
+            {
+                if (bit - 2 >= 0)
+                {
+                    res += Zeroing((num & ((1 << (bit - 1)) - 1)), changingBits, zeroing);
+                }
+            }
+            else
+            {
+                res += Change(num, bit - 1, changingBits, zeroing); //firstly we need to set (i - 1)th bit
+                if (bit - 2 >= 0) // after that remains will be in the form of 1[sequence of 0]. We should make it zero too.
+                {
+                    res += Zeroing( 1 << (bit - 2), changingBits, zeroing);
+                }
+            }
+
+            changingBits[key] = res;
+            return res;
+        }
+
+        public int MinimumOneBitOperations(int n)
+        {
+            checked
+            {
+               IDictionary<(int bit, int num), int> changingBits = new Dictionary<(int bit, int num), int>();
+               IDictionary<int, int> zeroing = new Dictionary<int, int>();
+               return Zeroing(n, changingBits, zeroing);
+            }
+        }
+    }

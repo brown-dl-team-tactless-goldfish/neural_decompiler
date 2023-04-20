@@ -1,0 +1,30 @@
+int numDistinct(char * s, char * t){
+    int rows = strlen(t) + 1;
+    int cols = strlen(s) + 1;
+    
+    long long int** table = (long long int**)malloc(rows * sizeof(long long int*));
+    
+    for (int i = 0; i < rows; i++) {
+        table[i] = (long long int*)malloc(cols * sizeof(long long int));
+    }
+    
+    for (int i = 0; i < rows; i++) {
+        for (int j = 0; j < cols; j++) {
+            if (i == 0) {
+                table[i][j] = 1;
+                continue;
+            } else if (j == 0) {
+                table[i][j] = 0;
+                continue;
+            }
+            
+            if (t[i - 1] == s[j - 1]) {
+                table[i][j] = table[i][j - 1] + table[i - 1][j - 1];
+            } else {
+                table[i][j] = table[i][j - 1];
+            }
+        }
+    }
+    
+    return table[rows - 1][cols - 1];
+}

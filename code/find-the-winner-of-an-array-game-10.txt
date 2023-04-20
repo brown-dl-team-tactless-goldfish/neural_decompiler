@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int getWinner(vector<int>& arr, int k) {
+        if(arr.size() <= k) return *max_element(arr.begin(), arr.end());
+        
+        unordered_map<int, int> m;
+        queue<int> q;
+        for(int i : arr) q.push(i);
+        int a = -1, b = -1;
+
+        while(true) {
+            if(a == -1) {a = q.front(), q.pop();}
+            if(b == -1) {b = q.front(), q.pop();}
+            
+            if(a > b) {
+                m[a]++;
+                if(m[a] == k) return a;
+                q.push(b);
+                b = -1;
+            }
+            else {
+                m[b]++;
+                if(m[b] == k) return b;
+                q.push(a);
+                a = -1;
+            }
+        }
+        return -1;
+    }
+};

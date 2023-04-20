@@ -1,0 +1,23 @@
+class Solution {
+public:
+vector<pair<int, int>> kSmallestPairs(vector<int>& nums1, vector<int>& nums2, int k) {
+        vector<pair<int, int>> res;
+        int m = (int)nums1.size();
+        int n = (int)nums2.size();
+        k = min(k, m * n);
+        vector<int> indice(m, 0);
+        while(k-- > 0){
+            int tmp_index = 0;
+            long tmp_sum = LONG_MAX;
+            for(int i = 0; i < m; i++){
+                if(indice[i] < n && tmp_sum >= nums1[i] + nums2[indice[i]]){
+                    tmp_index = i;
+                    tmp_sum = nums1[i] + nums2[indice[i]];
+                }
+            }
+            res.push_back(make_pair(nums1[tmp_index], nums2[indice[tmp_index]]));
+            indice[tmp_index]++;
+        }
+        return res;
+    }
+};

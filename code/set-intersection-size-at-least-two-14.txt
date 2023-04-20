@@ -1,0 +1,34 @@
+class Solution {
+public:
+    int intersectionSizeTwo(vector<vector<int>>& a) {
+        int n = a.size();
+        
+        map<vector<int>, int> alive;
+        set<int> event;
+        unordered_map<int, vector<vector<int>>> start, end;
+        
+        for(auto v : a){
+            start[v[0]].push_back(v);
+            end[v[1]].push_back(v);
+            event.insert(v[0]);
+            event.insert(v[1]);
+        }
+        
+        int tot = 0;
+        for(int t: event){
+            for(auto v : start[t]) alive[v] = 2;
+            
+            int need = 0;
+            for(auto v : end[t]) need = max(need, alive[v]);
+            tot += need;
+            
+            for(auto it=alive.begin(); it!=alive.end(); ){
+                it->second -= min(need, t - it->first[0] + 1);
+                if(it->second <= 0) it = alive.erase(it);
+                else it++;
+            }
+        }
+        return tot;
+        
+    }
+};

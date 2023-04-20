@@ -1,0 +1,5 @@
+With CTE as (
+select * from (
+select Products.*, ROW_NUMBER() over (partition by product_id order by change_date desc) as change_time from Products where change_date<='2019-08-16' ) where change_time = 1)
+
+select distinct a.product_id, case when c.new_price is null then 10 else c.new_price end as price from Products A left join CTE C on a.product_id = c.product_Id 

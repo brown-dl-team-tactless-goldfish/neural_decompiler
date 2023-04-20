@@ -1,0 +1,23 @@
+
+with t as 
+(
+    select lat, lon, count(*) as cnt
+    from insurance 
+    group by 1,2
+    having cnt =1
+    
+)
+
+, f as
+(
+    select tiv_2015, count(*) as cnt
+    from insurance 
+    group by 1
+    having cnt>1
+)
+
+
+select sum(a.tiv_2016) TIV_2016 
+from insurance a
+join t b on a.lat = b.lat and a.lon = b.lon
+join f c on a.tiv_2015 = c.tiv_2015

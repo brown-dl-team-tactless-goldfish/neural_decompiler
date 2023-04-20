@@ -1,0 +1,101 @@
+class Solution {
+public:
+    string n02(int d){
+        if(d == 1) return "One";
+        if(d == 2) return "Two";
+        if(d == 3) return "Three";
+        if(d == 4) return "Four";
+        if(d == 5) return "Five";
+        if(d == 6) return "Six";
+        if(d == 7) return "Seven";
+        if(d == 8) return "Eight";
+        if(d == 9) return "Nine";
+        return "";
+    }
+    
+    string n1(int d){
+        if(d == 2) return "Twenty";
+        if(d == 3) return "Thirty";
+        if(d == 4) return "Forty";
+        if(d == 5) return "Fifty";
+        if(d == 6) return "Sixty";
+        if(d == 7) return "Seventy";
+        if(d == 8) return "Eighty";
+        if(d == 9) return "Ninety";
+        return "";
+    }
+    
+    string n1if1(int d){
+        if(d == 10) return "Ten";
+        if(d == 11) return "Eleven";
+        if(d == 12) return "Twelve";
+        if(d == 13) return "Thirteen";
+        if(d == 14) return "Fourteen";
+        if(d == 15) return "Fifteen";
+        if(d == 16) return "Sixteen";
+        if(d == 17) return "Seventeen";
+        if(d == 18) return "Eighteen";
+        if(d == 19) return "Nineteen";
+        return "";
+    }
+    
+    string milbil(int d){
+        if(d == 0) return "Billion";
+        if(d == 1) return "Million";
+        if(d == 2) return "Thousand";
+        return "";
+    }
+    
+    string numberToWords(int num) {
+        if(num == 0) return "Zero";
+        string snum = to_string(num);
+        reverse(snum.begin(), snum.end());
+        int slen = snum.length();
+        
+        int m = 4, n = 3;
+        vector<vector<int>> digits(m, vector<int>(n, 0));
+        int i = m - 1, j = n - 1, k = 0;
+        
+        while(k < slen){
+            int d = (snum[k++] - '0');
+            
+            digits[i][j] = d;
+            j--;
+            if(j < 0){
+                i--;
+                j = n - 1;
+            }
+        }
+        
+        string ans = "";
+        for(int i = 0; i < m; ++i){
+            int a = digits[i][0];
+            int b = digits[i][1];
+            int c = digits[i][2];
+            
+            if(a == 0 && b == 0 && c == 0) continue;
+            if(a != 0){
+                ans = ans + " " + n02(a) + " Hundred";
+            }
+            if(b == 1){
+                b = b * 10 + c;
+                c = -1;
+                ans = ans + " " + n1if1(b);
+            }else if(b > 1){
+                ans = ans + " " + n1(b);
+            }
+            if(c > 0){
+                ans = ans + " " + n02(c);
+            }
+            
+            ans = ans + " " + milbil(i);
+        }
+        
+        ans = ans.substr(1, ans.length());
+        if(ans[ans.length() - 1] == ' '){
+            ans = ans.substr(0, ans.length() - 1);
+        }
+        
+        return ans;
+    }
+};

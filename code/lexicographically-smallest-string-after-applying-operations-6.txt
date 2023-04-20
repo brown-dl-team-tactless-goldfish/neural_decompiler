@@ -1,0 +1,29 @@
+class Solution {
+    int n;
+    unordered_set<string> set;
+public:
+    string findLexSmallestString(string s, int a, int b) {
+        n = s.length();
+        string res(n, '9');
+		//just to create a string with maximum possible number
+        backtrack(s, a, b, res);
+        return res;
+    }
+    void backtrack(string& s, int a, int b, string& res) {
+        if(set.count(s)) return;
+        set.emplace(s);
+        if(s < res) {
+            res = s;
+        }
+        string s1 = s;
+		//this string is for addition with a
+        for(int i = 1; i < n; i+=2) {
+            int c = s1[i] - '0';
+            s1[i] = ((c+a)%10) + '0';
+        }
+        string s2 = s.substr(n-b, b) + s.substr(0, n-b);
+		//this string is for rotation by b
+        backtrack(s1, a, b, res);
+        backtrack(s2, a, b, res);
+    }
+};

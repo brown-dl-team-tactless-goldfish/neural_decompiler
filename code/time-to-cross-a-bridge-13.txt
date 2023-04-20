@@ -1,0 +1,158 @@
+class Solution {
+public:
+
+    enum class State
+    {
+        WaitingLeft,
+        CrossingLeftToRight,
+        Picking,
+        WaitingRight,
+        CrossingRightToLeft,
+        Putting
+    };
+    
+    struct Worker
+    {
+        bool operator<(Worker const& other) const 
+        {
+            if(m_efficiency != other.m_efficiency)
+                return m_efficiency < other.m_efficiency; 
+            return m_idx < other.m_idx;
+        }
+        
+        uint16_t m_leftToRight;
+        uint16_t m_pick;
+        uint16_t m_rightToLeft;
+        uint16_t m_put;
+        uint16_t m_efficiency = 0;
+        uint16_t m_idx = 0;
+        State m_state = State::WaitingLeft;
+        int m_currStateTimeRemaining = 0;
+    };
+    
+    int findCrossingTime(int n, int k, vector<vector<int>>& time) {
+        
+        vector<Worker> workers(k);
+        
+        // Init worker objects
+        for(int workerIdx = 0; workerIdx<k; ++workerIdx)
+        {
+            auto const& t = time[workerIdx];
+         
+            Worker& w = workers[workerIdx];
+            w.m_leftToRight = t[0];
+            w.m_pick = t[1];
+            w.m_rightToLeft = t[2];
+            w.m_put = t[3];
+            w.m_efficiency = w.m_leftToRight + w.m_rightToLeft;
+            w.m_idx = workerIdx;
+        }
+        
+        auto cmpEff = [](Worker* w1, Worker* w2) {return *w1 < *w2;};
+        auto isDone = [](Worker* w) { return w->m_currStateTimeRemaining==0; };
+     
+        // Priority queues for workers waiting to use the bridge
+        priority_queue<Worker*, vector<Worker*>, decltype(cmpEff)> leftQ(cmpEff), rightQ(cmpEff);
+
+        // Warehouses where workers are either picking or putting boxes
+        vector<Worker*> leftWH, rightWH;
+
+        // Bridge
+        Worker* bridge = nullptr;
+ 
+        // Init all workers waiting on the left shore
+        for(Worker& w : workers)
+            leftQ.push(&w);
+        
+        int t = 0;
+        int remainingBoxesToPick = n;
+        int nbrBoxesOnLeftShore = 0;
+        while(nbrBoxesOnLeftShore != n) // Once all boxes are back to left shore, sim ends
+        {
+            // Populate bridge with less efficient worker if we have some in waiting
+            if(bridge == nullptr)
+            {
+                // If worker is waiting on the right, it has priority
+                if(!rightQ.empty())
+                {
+                    bridge = rightQ.top();
+                    rightQ.pop();
+                    bridge->m_state = State::CrossingRightToLeft;
+                    bridge->m_currStateTimeRemaining = bridge->m_rightToLeft;
+                }
+                else if(!leftQ.empty() && (remainingBoxesToPick > 0)) // Only assign a worker if there will be a box to pick
+                {
+                    bridge = leftQ.top();
+                    leftQ.pop();
+                    bridge->m_state = State::CrossingLeftToRight;
+                    bridge->m_currStateTimeRemaining = bridge->m_leftToRight;
+                    --remainingBoxesToPick;
+                }
+            }
+            
+            // Compute time slice we can safely advance without going negative 
+            // for any active worker time remaining for current state
+            int minT = INT_MAX;
+            for(auto w : leftWH)
+                minT = min(minT, w->m_currStateTimeRemaining);
+            
+            for(auto w : rightWH)
+                minT = min(minT, w->m_currStateTimeRemaining);
+            
+            if(bridge != nullptr)
+                minT = min(minT, bridge->m_currStateTimeRemaining);
+            
+            // Add to total time
+            t += minT;
+            
+            // Simulate
+            for(auto w : leftWH)
+            {
+                w->m_currStateTimeRemaining -= minT;
+                if(w->m_currStateTimeRemaining == 0)
+                {
+                    w->m_state = State::WaitingLeft;
+                    leftQ.push(w); 
+                }
+            }
+            leftWH.erase(remove_if(leftWH.begin(), leftWH.end(), isDone), leftWH.end()); 
+            
+            for(auto w : rightWH)
+            {
+                w->m_currStateTimeRemaining -= minT;
+                if(w->m_currStateTimeRemaining == 0)
+                {
+                    w->m_state = State::WaitingRight;
+                    rightQ.push(w); 
+                }
+            }
+            rightWH.erase(remove_if(rightWH.begin(), rightWH.end(), isDone), rightWH.end());
+                     
+            if(bridge != nullptr)
+            {
+                bridge->m_currStateTimeRemaining -= minT;
+                if(bridge->m_currStateTimeRemaining==0)
+                {
+                    if(bridge->m_state == State::CrossingRightToLeft)
+                    {
+                        bridge->m_state = State::Putting;
+                        bridge->m_currStateTimeRemaining = bridge->m_put;
+                        leftWH.push_back(bridge);
+                        nbrBoxesOnLeftShore++;
+                    }
+                    else
+                    {
+                        bridge->m_state = State::Picking;
+                        bridge->m_currStateTimeRemaining = bridge->m_pick;
+                        rightWH.push_back(bridge);
+                    }
+                    
+                    // Bridge is now available
+                    bridge = nullptr;
+                }
+            }
+        }
+        
+        return t;
+    }
+};

@@ -1,0 +1,31 @@
+int min(int x, int y, int z)
+{
+    if (x < y)
+        return x < z ? x : z;
+    return y < z ? y : z;
+}
+
+int max(int x, int y) { return x > y ? x : y; }
+
+int mincostTickets(int *days, int daysSize, int *costs, int costsSize)
+{
+    bool day_list[366] = { false };
+    int dp[366];
+
+    for (int i = 0; i < daysSize; ++i)
+        day_list[days[i]] = true;
+
+    dp[0] = 0;
+    for (int i = 1; i < 366; ++i) {
+        if (!day_list[i]) {
+            dp[i] = dp[i - 1];
+            continue;
+        }
+
+        dp[i] = min(dp[i - 1] + costs[0],
+                    dp[max(0, i - 7)] + costs[1],
+                    dp[max(0, i - 30)] + costs[2]);
+    }
+
+    return dp[365];
+}

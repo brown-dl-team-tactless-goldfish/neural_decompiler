@@ -1,0 +1,60 @@
+public class Solution 
+{
+    int[] dx = new int[] {0, 0, 1, 0, -1, 1, 1, -1, -1};
+    int[] dy = new int[] {0, 1, 0, -1, 0, 1, -1, 1, -1};
+    
+    public int[] GridIllumination(int n, int[][] lamps, int[][] queries) 
+    {
+        Dictionary<int, int> col = new Dictionary<int, int>(), row = new Dictionary<int, int>();
+        Dictionary<int, int> dia1 = new Dictionary<int, int>(), dia2 = new Dictionary<int, int>();
+        HashSet<string> allLamps = new HashSet<string>(); 
+        var result = new List<int>();
+        foreach(var lamp in lamps)
+        {
+            int x = lamp[0], y = lamp[1];
+            var key = x + ":" + y;
+            allLamps.Add(key);
+            UpdateDictionary(col, x, 1);
+            UpdateDictionary(row, y, 1);
+            UpdateDictionary(dia1, x + y, 1);
+            UpdateDictionary(dia2, x - y, 1);
+        }
+        
+        foreach(var query in queries)
+        {
+            int x = query[0], y = query[1];
+            var key = x + ":" + y;
+            if(col.ContainsKey(x) || row.ContainsKey(y) || dia1.ContainsKey(x + y) || dia2.ContainsKey(x - y))
+            {
+                result.Add(1);
+                for(int i = 0; i < dx.Length; i++)
+                {
+                    int nx = x + dx[i], ny = y + dy[i];
+                    key = nx + ":" + ny;
+                    if(allLamps.Contains(key))
+                    {
+                        UpdateDictionary(col, nx, -1);
+                        UpdateDictionary(row, ny, -1);
+                        UpdateDictionary(dia1, nx + ny, -1);
+                        UpdateDictionary(dia2, nx - ny, -1);
+                        allLamps.Remove(key);
+                    }
+                }
+            }
+            else
+                result.Add(0);
+            
+        }
+        
+        return result.ToArray();
+    }
+    
+    private void UpdateDictionary(Dictionary<int, int> dict, int index, int add)
+    {
+        if(!dict.ContainsKey(index)) 
+            dict[index] = 0;
+        dict[index] = dict[index] + add;
+        if(dict[index] == 0)
+                dict.Remove(index);
+    }
+}

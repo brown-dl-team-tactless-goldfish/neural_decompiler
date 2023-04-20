@@ -1,0 +1,26 @@
+class Solution 
+{
+    public:
+    int findSign(int a, int b)
+    {
+        return a!=b ? (a-b)/abs(a-b) : 0;
+    }
+    
+    int maxTurbulenceSize(vector<int>& A) 
+    {
+        int n = A.size(), ans = 1, initial = 0;
+        
+        for(int i = 1 ; i < n ; i++)
+        {
+            int c = findSign(A[i-1],A[i]);
+            if (c == 0)
+                initial = i;
+            else if (i == n - 1 || c*findSign(A[i],A[i+1]) != -1)
+            {
+                ans = max(ans, i - initial + 1);
+                initial = i;
+            }
+        }
+        return ans;
+    }
+};

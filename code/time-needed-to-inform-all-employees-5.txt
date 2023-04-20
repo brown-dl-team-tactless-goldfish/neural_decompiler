@@ -1,0 +1,30 @@
+int getInformTime(int n, int * manager, int * informTime, int eid, int * t2k) {
+    if (t2k[eid] != -1) {
+        return t2k[eid];
+    } else {
+        t2k[eid] = getInformTime(n, manager, informTime, manager[eid], t2k) + informTime[manager[eid]];
+        return t2k[eid];
+    }
+}
+
+int numOfMinutes(int n, int headID, int* manager, int managerSize, int* informTime, int informTimeSize){
+     int * time2know = malloc(n*sizeof(int));
+    if (time2know == NULL) {
+         return -1;
+    }
+    memset(time2know, -1, sizeof(int)*n);
+
+    time2know[headID] = 0;
+
+    int max = 0;
+    for (int i=0; i<n; i++) {
+        int r = getInformTime(n, manager, informTime, i, time2know);
+        if (r > max) {
+            max = r;
+        }
+    }
+
+    free(time2know);
+
+    return max;
+}

@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int minTime(int n, vector<vector<int>>& edges, vector<bool>& hasApple) {
+         vector<vector<int>> g(n);
+        for(auto& e:edges){
+            g[e[0]].push_back(e[1]);
+            g[e[1]].push_back(e[0]);
+        }
+        return 2 * dfs(0, -1, g, hasApple).first;
+    }
+    
+    //return the minTime and hasApple
+    pair<int, bool> dfs(int i, int parent, const vector<vector<int>>& g, vector<bool>& hasApple){
+        int time=0;
+        bool has = hasApple[i];
+        for(auto& j:g[i]){
+            if(j == parent) continue;
+            auto [t, flag] = dfs(j, i, g, hasApple);
+            if(flag) time += 1+t;
+            has |= flag;
+        }
+        return {time, has};
+    }
+};

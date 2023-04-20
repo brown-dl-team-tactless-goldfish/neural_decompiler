@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int garbageCollection(vector<string>& garbage, vector<int>& travel) {
+        int res = 0;
+        int lastM = 0, lastP = 0, lastG = 0;
+        for (int i = 0; i < garbage.size(); i++) {
+            string house = garbage[i];
+            for (char c : house) {
+                res++;
+                if (c == 'M') lastM = i;
+                if (c == 'P') lastP = i;
+                if (c == 'G') lastG = i;
+            }
+        }
+
+        for (int i = 0; i < travel.size(); i++) {
+            int time = travel[i];
+            int trucks = (i < lastM) + (i < lastP) + (i < lastG);
+            res += trucks * time;
+        }
+        return res;
+    }
+};

@@ -1,0 +1,54 @@
+struct Que
+{
+    char gene[9];
+    int mutation;
+};
+int minMutation(char * start, char * end, char ** bank, int bankSize){
+    
+    if (strcmp(start,end) == 0)
+        return 0;
+    if (bankSize == 0)
+        return -1;
+    
+    struct Que *Q = (struct Que *)malloc(sizeof(struct Que)*(bankSize+1));
+    memset(Q,0,sizeof(struct Que)*(bankSize+1));
+    bool *bankVis = (bool *)malloc(sizeof(bool)*bankSize);
+    memset(bankVis,0,sizeof(bool)*bankSize);
+    
+    int qidx=0;
+    int idx=0;
+    int i;
+    int p,c=0;
+    strcpy(Q[qidx].gene,start);
+    qidx++;
+    
+    while (idx < qidx)
+    {
+        for (i=0; i < bankSize; i++)
+        {
+            if (bankVis[i] == 1)
+                continue;
+            c=0;
+            p=0;
+            while (bank[i][p]!=NULL && Q[idx].gene[p]!=NULL)
+            {
+                if (bank[i][p] != Q[idx].gene[p])
+                    c++;
+                p++;
+            }
+            if (c==1)
+            {
+                strcpy(Q[qidx].gene,bank[i]);
+                Q[qidx].mutation = Q[idx].mutation+1;
+                qidx++;
+                bankVis[i] = 1;
+            }
+        }
+        idx++;
+        if (strcmp(Q[idx].gene,end) == 0)
+        {
+            return Q[idx].mutation;
+        }
+    }
+    return -1;
+}

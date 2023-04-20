@@ -1,0 +1,75 @@
+/*The reurned result of e or f is a pair. 
+The first element represents the original parsed boolean vlaue from the expression.
+The second element represents the number of operation needed to flip the boolean value. */
+class Solution {
+public:
+    pair<bool,int> e(string& str, int& i) {
+        auto ret = f(str,i);
+        bool v = ret.first; 
+        int need = ret.second; 
+        while(i != str.size() && str[i] != ')') {
+            if(str[i] == '|') {
+                i++;
+                auto tmp = f(str,i);
+                if(v == false) {
+                    if(tmp.first == false) {
+                        v = false; 
+                        need = min(need,tmp.second);
+                    } else {
+                        v = true; 
+                        need = 1; 
+                    }
+                } else {
+                    if(tmp.first == true) {
+                        v = true; 
+                        need = min(need,tmp.second) + 1; 
+                    } else {
+                        v = true; 
+                        need = 1; 
+                    }
+                }
+            } else {
+                i++;
+                auto tmp = f(str,i);
+                if(v == true) {
+                    if(tmp.first == true) {
+                        v = true; 
+                        need = min(need,tmp.second);
+                    } else {
+                        v = false; 
+                        need = 1; 
+                    }
+                } else {
+                    if(tmp.first == true) {
+                        v = false; 
+                        need = 1; 
+                    } else {
+                        v = false; 
+                        need = min(need,tmp.second) + 1; 
+                    }
+                }
+            }
+        }
+        return {v,need}; 
+    }
+    
+    pair<bool,int> f(string& str, int& i) {
+        if(str[i] == '0') {
+            i++;
+            return {false,1}; 
+        } else if(str[i] == '1') {
+            i++;
+            return {true,1}; 
+        } 
+        i++;
+        auto ret = e(str,i);
+        i++;
+        return ret; 
+    }
+    
+    int minOperationsToFlip(string str) {
+        int i = 0; 
+        auto ret = e(str,i);
+        return ret.second; 
+    }
+};

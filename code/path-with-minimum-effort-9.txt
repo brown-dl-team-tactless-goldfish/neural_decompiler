@@ -1,0 +1,45 @@
+class Solution {
+public:
+    
+    bool helper(vector<vector<int>>& heights,int mid,int visited[100][100],int i,int j,int r,int c){
+        if(i == r-1 and j == c - 1){
+            return true;
+        }
+        visited[i][j] = 1;
+        bool ans = false;
+        if(i>0 and visited[i-1][j] == 0 and abs(heights[i-1][j]-heights[i][j]) <= mid){
+            ans = ans || helper(heights,mid,visited,i-1,j,r,c);
+        }
+        if(j>0 and visited[i][j-1] == 0 and abs(heights[i][j-1] - heights[i][j] ) <= mid){
+            ans = ans || helper(heights,mid,visited,i,j-1,r,c);
+        }
+        if(i < r-1 and visited[i+1][j] == 0 and abs(heights[i+1][j] - heights[i][j]) <= mid){
+            ans = ans || helper(heights,mid,visited,i+1,j,r,c);
+        }
+        if(j < c-1 and visited[i][j+1] == 0 and abs(heights[i][j+1] - heights[i][j]) <= mid){
+            ans = ans || helper(heights,mid,visited,i,j+1,r,c);
+        }
+        return ans;
+    }
+    int minimumEffortPath(vector<vector<int>>& heights) {
+        int r = heights.size();
+        int c = heights[0].size();
+        
+        int left = 0 , right = INT_MAX;
+        int res = INT_MAX;
+        while(left<=right){
+            int visited[100][100];
+            memset(visited,0,sizeof(visited));
+            int mid = left + (right-left)/2;
+            if(helper(heights,mid,visited,0,0,r,c)){
+                res=min(res,mid);
+                right = mid-1;
+                
+            }
+            else{
+                left = mid+1;
+            }
+        }
+        return res;
+    }
+};

@@ -1,0 +1,57 @@
+struct Queue
+{
+    uint64_t idx;
+    uint64_t addr;
+};
+int widthOfBinaryTree(struct TreeNode* root){
+    
+    struct Queue queue[2][20000]={0};
+    int qIdx=0;
+    int _2dIdx=0;
+    queue[_2dIdx][0].idx = 0;
+    queue[_2dIdx][0].addr=root;
+    int total=1;
+    int width=0;
+    int max=1,p,q;
+    int i;
+    int fs,ls;
+    struct TreeNode* ptr=NULL;
+    while (total)
+    {
+        qIdx=0;
+        p=0;
+        fs=-1;ls=-1;
+        while (total)
+        {
+            ptr = ( struct TreeNode*)queue[_2dIdx][p].addr;
+            if (fs==-1 && ls==-1)
+            {
+                fs = queue[_2dIdx][p].idx;
+            }
+            if (fs!=-1)
+            {
+                ls = queue[_2dIdx][p].idx;
+            }
+            if (ptr->left!=NULL) {
+                queue[1-_2dIdx][qIdx].idx = queue[_2dIdx][p].idx*2+1;
+                queue[1-_2dIdx][qIdx].addr = ptr->left;
+                qIdx++;
+            }
+            if (ptr->right!=NULL)
+            {
+                queue[1-_2dIdx][qIdx].idx = queue[_2dIdx][p].idx*2+2;
+                queue[1-_2dIdx][qIdx].addr = ptr->right;
+                qIdx++;
+            }
+            p++;
+            total--;
+        }
+        width = ls-fs+1;
+        if (width > max)
+            max=width;
+        total=qIdx;
+        memset(&queue[_2dIdx][0],0,sizeof(struct Queue)*20000);
+        _2dIdx = 1 - _2dIdx;
+    }
+    return max;
+}

@@ -1,0 +1,85 @@
+    num_rows = len(board)
+    num_cols = len(board[0])
+
+    grid = [[0 for i in range(num_cols)] for j in range(num_rows)]
+    dp = [[[0, 0] for i in range(num_cols)]
+          for j in range(num_rows)]
+    for i in range(num_rows):
+        for j in range(num_cols):
+            if (board[i][j] == "E" or board[i][j] == "S"):
+                grid[i][j] = 0
+            elif (board[i][j] == "X"):
+                grid[i][j] = float('-inf')
+            else:
+                grid[i][j] = int(board[i][j])
+
+    # print("end grid = ", grid)
+    # print("dp = ", dp)
+
+    for i in range(num_rows):
+        for j in range(num_cols):
+            # print("i = ", i, " j = ", j)
+            if ((i == 0 and j == 0)):
+                dp[i][j][1] = 1
+                continue
+            elif (grid[i][j] == float('-inf')):
+                # print("block, grid[i][j] = ", grid[i][j])
+                dp[i][j] = [float('-inf'), 0]
+                continue
+
+            tmpMax = 0
+
+            tmp_1, tmp_2, tmp_3 = float(
+                '-inf'), float('-inf'), float('-inf')
+
+            ways_1, ways_2, ways_3 = 0, 0, 0
+            if (i == 0 and j != 0):
+                tmp_1 = dp[i][j-1][0]
+                ways_1 = dp[i][j-1][1]
+
+            elif (i != 0 and j == 0):
+                tmp_2 = dp[i-1][j][0]
+                ways_2 = dp[i-1][j][1]
+
+            else:
+
+                tmp_1 = dp[i][j-1][0]
+                # ways_1 = dp[i][j-1][1]
+
+                tmp_2 = dp[i-1][j][0]
+                # ways_2 = dp[i-1][j][1]
+
+                tmp_3 = dp[i-1][j-1][0]
+                # ways_3 = dp[i-1][j-1][1]
+
+            # print("tmp_1 = ", tmp_1, " tmp_2 = ",
+            #       tmp_2, " tmp_3 = ", tmp_3)
+            tmpMax = max(tmp_1, tmp_2, tmp_3) + grid[i][j]
+
+            dp[i][j][0] = tmpMax
+
+            tmpWays = 0
+            if (tmpMax == tmp_1 + + grid[i][j]):
+                ways_1 = dp[i][j-1][1]
+                tmpWays += ways_1
+
+            if (tmpMax == tmp_2 + grid[i][j]):
+                ways_2 = dp[i-1][j][1]
+                tmpWays += ways_2
+
+            if (tmpMax == tmp_3 + grid[i][j]):
+                ways_3 = dp[i-1][j-1][1]
+                tmpWays += ways_3
+
+            dp[i][j][1] = (ways_1 + ways_2 + ways_3) % (10**9+7)
+            print("dp[i][j] = ", dp[i][j])
+
+    # print("end dp = ")
+    # for i in range(num_rows):
+    #     print(dp[i])
+
+    if (dp[-1][-1][0] == float('-inf')):
+        return [0, 0]
+    else:
+        return dp[-1][-1]
+		

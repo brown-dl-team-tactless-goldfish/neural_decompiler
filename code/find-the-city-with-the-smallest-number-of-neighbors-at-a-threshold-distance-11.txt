@@ -1,0 +1,48 @@
+class Solution {
+public:
+    int findTheCity(int n, vector<vector<int>>& edges, int distanceT) {
+
+        // floyd warshell algo
+        vector<vector<long>>adjMatrix(n,vector<long>(n,INT_MAX));
+
+    // Prepare Adjacency Matrix
+        for(auto edge:edges)
+        {
+            adjMatrix[edge[0]][edge[1]]=edge[2];
+            adjMatrix[edge[1]][edge[0]]=edge[2];
+        }
+
+        for(int i=0;i<n;i++)
+          adjMatrix[i][i]=0;
+    
+    // Iterate over it with every possible path having each node in between
+    for(int k=0;k<n;k++)
+    for(int i=0;i<n;i++)
+      for(int j=0;j<n;j++)
+        adjMatrix[i][j]=min(adjMatrix[i][k]+adjMatrix[k][j],adjMatrix[i][j]);
+        
+    // for(int i=0;i<n;i++)
+    //    {for(int j=0;j<n;j++)
+    //      cout<<adjMatrix[i][j]<<"   ";
+    //      cout<<endl;}
+    // store ans
+    int val=INT_MAX;
+    int ans;
+    for(int i=0;i<n;i++)
+      {  int cnt=-1;
+          for(int j=0;j<n;j++)
+           if(adjMatrix[j][i]<=distanceT)
+               cnt++; 
+        val=min(val,cnt);
+        if(cnt<=val)
+          {
+              val=cnt;
+              ans=i;
+          }
+        
+    }
+
+    
+return ans;
+    }
+};

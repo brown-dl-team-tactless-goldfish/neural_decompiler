@@ -1,0 +1,41 @@
+class Solution {
+public:
+    void dfs(int i, vector<vector<int>> &adj, vector<vector<int>> &freq, string &s, vector<int> &ans){
+        
+        // loop through all children of parent node i
+        for(int v: adj[i]){
+            dfs(v, adj, freq, s, ans); // this is a bottom-up aproach I believe
+            
+            for(int j = 0; j < 26; j++)
+                freq[i][j] += freq[v][j]; // always updating the parent char frequency with the updated child frequency 
+            
+        }
+        freq[i][s[i]-'a']++;
+        ans[i] = freq[i][s[i]-'a'];
+    }
+    vector<int> countSubTrees(int n, vector<vector<int>>& v, string s) {
+        vector<vector<int>> adj(n), adjinv(n);
+        
+        // Since v is an undirected tree, I gotta order somehow the adjancy list
+        // For example, for the tree [[0,2], [1,2]], since the 2 appeared before as
+        // a child of 0 (who is always the parent), instead of doing adj[1] = 2, I do 
+        // adj[2] = 1
+        adjinv[0].push_back(1); // since 0 is the root
+        for(int i = 0; i < v.size(); i++){
+            if(adjinv[v[i][1]].size()==0){
+                adj[v[i][0]].push_back(v[i][1]);
+                adjinv[v[i][1]].push_back(v[i][0]);
+            }
+            else{
+                adj[v[i][1]].push_back(v[i][0]);
+                adjinv[v[i][0]].push_back(v[i][1]);
+            }
+        }
+        
+        vector<vector<int>> freq(n, vector<int>(26, 0)); // frequency of chars for each node
+        vector<int> ans(n, 0);
+        
+        dfs(0, adj,freq, s, ans);
+        return ans;
+    }
+};

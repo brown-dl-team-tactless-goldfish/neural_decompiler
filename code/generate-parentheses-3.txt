@@ -1,0 +1,58 @@
+int size(int);
+
+char ** generateParenthesis(int n, int* returnSize) {
+    // Calculate the returnSize first for memory saving
+    *returnSize = size(n);
+    
+    // Initiate the answer's memory
+    char** ans = (char**)malloc(sizeof(char*) * (*returnSize));
+    memset(ans, 0, sizeof(char*) * (*returnSize));
+    
+    // [Explain about each Variable]
+    // "sum" | Checking whether the present result is valide
+    //
+    //   "i" | Whether every digit is '(' or ')'
+    //       | "i" can be understood in binary way:
+    //       | E.g. When n=2 and i=3, then i=0b0011
+    //       |      Let's define '(' as 1 and ')' as 0, then:
+    //       |      0b0011 reverse => 1 1 0 0
+    //       |                        ↓ ↓ ↓ ↓
+    //       |                        ( ( ) )
+    //
+    //   "j" | Searching in the sequence
+    //
+    //   "k" | Count the present index of answer string
+    int sum, j, k = 0;
+    
+    for(int i = 0; i < (1 << (2 * n)); i++) {
+        // Check Validity
+        sum = 0;
+        for(j = 0; j < 2 * n; j++) {
+            sum += (i&(1<<j)) ? 1 : -1;
+            if(sum < 0)
+                break;
+        }
+        
+        // If Valid then Output
+        if(!sum) {
+            ans[k] = (char*)malloc(sizeof(char) * 2 * n + 1);
+            for(j = 0; j < 2 * n; j++)
+                ans[k][j] = ((i&(1<<j)) ? '(' : ')');
+            ans[k][j] = 0;
+            k++;
+        }
+    }
+    
+    return ans;
+}
+
+// You can calculate the size by integer sequence A000108 on OEIS 
+// refrence to https://oeis.org/A000108
+int size(int n) {
+    int ans = 1;
+    for(int i = 0; i < n; i++)
+        ans *= (2 * n - i);
+    for(int i = 0; i < n; i++)
+        ans /= (n + 1 - i);
+    return ans;
+}

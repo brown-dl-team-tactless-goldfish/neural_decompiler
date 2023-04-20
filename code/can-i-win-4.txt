@@ -1,0 +1,30 @@
+ map<pair<int,int>,bool>m;
+  bool solve(int mask,int dt,int sum,int mi,int turn){
+    if(m.find({mask,turn})!=m.end()){
+      return m[{mask,turn}];
+    }
+       
+    for(int i=mi-1;i>=0;i--){
+     
+      if(mask & (1<<i)){
+         if(sum+i+1>=dt){
+             return  m[{mask,turn}] = true;
+           }
+         if(!solve((mask^(1<<i)),dt,sum+i+1,mi,!turn)){
+            return m[{mask,turn}]= true; 
+            }
+         
+       }
+    
+    }
+    
+    return m[{mask,turn}]= false;
+   
+  }
+
+    bool canIWin(int mi, int dt) {
+      int mask = (1<<mi)-1;
+      if((mi*(mi+1))/2<dt) return false;
+      return solve(mask,dt,0,mi,1);
+    }
+

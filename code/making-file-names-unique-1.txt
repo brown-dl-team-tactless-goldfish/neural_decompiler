@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<string> getFolderNames(vector<string>& names) {
+        
+        int n = names.size();
+        vector<string>res;
+        unordered_map<string, int>hm;
+        for (int i = 0; i < n; i++) {
+            if (hm.find(names[i]) != hm.end()) {
+                int j = hm[names[i]]+1;
+                string p = '(' + to_string(j) + ')';
+                while (hm.find(names[i] + p) != hm.end()) {
+                    j++;
+                    p = '(' + to_string(j) + ')';
+                }
+                hm[names[i]] = j;
+                hm[names[i]+p] = 0;
+                res.push_back(names[i]+p);
+            } else {
+                res.push_back(names[i]);
+                hm[names[i]] = 0;
+            }
+        }
+        
+        return res;
+    }
+};

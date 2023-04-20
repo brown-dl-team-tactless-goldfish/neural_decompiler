@@ -1,0 +1,36 @@
+int diameterOfBinaryTree(struct TreeNode* root){
+    if (root == NULL)
+        return 0;
+    int max = 0;
+    nodeDepth(root, &max);
+    return max;
+}
+
+int nodeDepth(struct TreeNode * root, int * max){
+    if (root->left == NULL && root->right == NULL){
+        max = 0;
+        return 1;
+    }
+    int leftDepth = 0, rightDepth = 0;
+    int rightMax, leftMax;
+    if (root->left == NULL){
+        rightDepth = nodeDepth(root->right, max);
+        if (rightDepth > *max)
+            *max = rightDepth;
+    }
+    else if (root->right == NULL){
+        leftDepth = nodeDepth(root->left, max);
+        if (leftDepth > *max)
+            *max = leftDepth;
+    }
+    else{
+        rightDepth = nodeDepth(root->right, max);
+        rightMax = *max;
+        leftDepth = nodeDepth(root->left, max);
+        leftMax = *max;
+        if (rightMax > leftMax)
+            leftMax = rightMax;
+        *max = (rightDepth + leftDepth > leftMax)?(rightDepth + leftDepth):leftMax;
+    }
+    return (rightDepth > leftDepth)?rightDepth + 1:leftDepth + 1;
+}

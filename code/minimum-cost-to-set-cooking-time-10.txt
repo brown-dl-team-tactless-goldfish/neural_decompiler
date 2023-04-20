@@ -1,0 +1,31 @@
+public class Solution {
+    public int MinCostSetTime(int startAt, int moveCost, int pushCost, int targetSeconds) {
+        var ts=new List<string>();
+        int min=targetSeconds/60,sec=targetSeconds%60;
+        ts.Add((min>0?(min).ToString():"")+((min>0&&sec<10)?"0":"")+(sec).ToString());
+        if(ts[0].Length>4)
+            ts.RemoveAt(0);
+        if(min>0&&sec+60<=99)
+            ts.Add(((min>1)?(min-1).ToString():"")+(sec+60).ToString());
+        int ret=int.MaxValue;
+        foreach(var t in ts)
+        {
+            Console.WriteLine(t);
+            ret=Math.Min(ret,helper(t,startAt,moveCost,pushCost));
+        }
+        return ret;
+    }
+    public int helper(string str,int startAt,int moveCost,int pushCost)
+    {
+        int ret=0;
+        for(int i=0;i<str.Length;i++)
+        {
+            int cur=str[i]-'0';
+            ret+=(cur!=startAt)?moveCost:0;
+            ret+=pushCost;
+
+            startAt=cur;
+        }
+        return ret;
+    }
+}

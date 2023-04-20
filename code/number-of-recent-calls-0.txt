@@ -1,0 +1,29 @@
+typedef struct {
+    int ping[10000];
+    int cur ;
+    int head;
+} RecentCounter;
+
+
+RecentCounter* recentCounterCreate() {
+    RecentCounter* ret = malloc(sizeof(RecentCounter));
+    ret->cur = 0;
+    ret->head = 0;
+    return ret;
+}
+
+int recentCounterPing(RecentCounter* obj, int t) {
+    obj->ping[obj->cur] = t;
+    while(1){
+        if( (obj->ping[obj->cur] - obj->ping[obj->head]) <= 3000 )
+            break;
+        else
+            obj->head += 1;
+    }
+    obj->cur +=1 ;
+    return obj->cur - obj->head;
+}
+
+void recentCounterFree(RecentCounter* obj) {
+    
+}

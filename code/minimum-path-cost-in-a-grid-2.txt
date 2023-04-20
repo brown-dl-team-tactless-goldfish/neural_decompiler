@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int findSum(vector<vector<int>>& grid, vector<vector<int>>& cost, vector<vector<int>>& dp, int r, int c) {
+        if(r == grid.size() - 1)
+            return grid[r][c];
+        if(dp[r][c] != -1)
+            return dp[r][c];
+        
+        int val = grid[r][c];
+        int minval = INT_MAX;
+        for(int i = 0;i < cost[val].size();i++) {
+            minval = min(minval, val+cost[val][i]+findSum(grid, cost, dp, r+1, i));
+        }
+        return dp[r][c] = minval;
+    }
+    int minPathCost(vector<vector<int>>& grid, vector<vector<int>>& cost) {
+        int minval = INT_MAX;
+        int r = grid.size();
+        int c = grid[0].size();
+        vector<vector<int>> dp(r, vector<int> (c, -1));
+        for(int i = 0;i < c;i++) {
+            minval = min(minval, findSum(grid, cost, dp, 0, i));
+        }
+        return minval;
+    }
+};

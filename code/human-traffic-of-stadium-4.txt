@@ -1,0 +1,23 @@
+/* Write your PL/SQL query statement below */
+WITH mid as (
+    SELECT 
+    id, 
+    people, 
+    LAG(id) OVER (order by id) as l, 
+    LEAD(id) over (order by id) as r
+    from stadium
+),
+IDS as (
+    select L.id a, mid.id b, R.id c from mid
+
+    join stadium L on L.id = l
+    join stadium R on R.id = r
+    where
+    mid.people >= 100 and
+    L.people >= 100 and
+    R.people >= 100
+)
+select distinct id, TO_CHAR(visit_date) as visit_date, people
+from stadium
+join IDS on IDS.a = id or IDS.b = id or IDS.c = id
+ORDER BY id;

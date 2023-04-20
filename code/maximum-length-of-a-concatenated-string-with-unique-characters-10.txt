@@ -1,0 +1,77 @@
+struct ArrRecord
+{
+    int nBitMask;
+    char cLen;
+
+    struct ArrRecord* pstNext;
+};
+
+int maxLength(char ** arr, int arrSize){
+    char cArrSize = arrSize, cRet = 0;
+    struct ArrRecord* pstHead = NULL;
+    while(cArrSize-- > 0)
+    {
+        // parse current arr
+        char cLen = 0;
+        int nBitMask = 0;
+        while(**arr)
+        {
+            int nBit = 1 << (**arr - 'a');
+            if(nBitMask & nBit)
+            {
+                cLen = 0;
+                break;
+            }
+            
+            nBitMask |= nBit;
+            cLen++;
+            (*arr)++;
+        }
+
+        // skip if current arr is invalid
+        if(cLen == 0)
+        {
+            arr++;
+            continue;
+        }
+
+        struct ArrRecord* pstTmp = pstHead;
+
+        // add current arr into pstNew
+        struct ArrRecord* pstNew = (struct ArrRecord*) malloc(sizeof(struct ArrRecord));
+        pstNew->nBitMask = nBitMask;
+        pstNew->cLen = cLen;
+        pstNew->pstNext = pstHead;
+
+        pstHead = pstNew;
+        if(pstNew->cLen > cRet) cRet = pstNew->cLen;
+
+        while(pstTmp)
+        {
+            if((pstTmp->nBitMask & pstNew->nBitMask) == 0)
+            {
+                struct ArrRecord* pstSum = (struct ArrRecord*) malloc(sizeof(struct ArrRecord));
+                pstSum->nBitMask = pstTmp->nBitMask | pstNew->nBitMask;
+                pstSum->cLen = pstTmp->cLen + pstNew->cLen;
+                pstSum->pstNext = pstHead;
+
+                pstHead = pstSum;
+                if(pstSum->cLen > cRet) cRet = pstSum->cLen;
+            }
+
+            pstTmp = pstTmp->pstNext;
+        }
+
+        arr++;
+    }
+
+    // free memory
+    while(pstHead)
+    {
+        struct ArrRecord* pstDel = pstHead;
+        pstHead = pstHead->pstNext;
+        free(pstDel);
+    }
+
+    return cRet;
+}

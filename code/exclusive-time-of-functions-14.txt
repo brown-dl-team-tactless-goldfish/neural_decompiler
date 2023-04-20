@@ -1,0 +1,32 @@
+using PII = pair<int, int> ;
+class Solution {
+public:
+    vector<int> exclusiveTime(int n, vector<string>& logs) {
+        stack<PII>stk ;   //{id, timeStamp}
+        vector<int>ret(n) ;
+        for(auto& s : logs)
+        {
+            int pos1 = s.find(":") ;
+            int pos2 = s.find(":", pos1+1) ;
+            int id = stoi(s.substr(0, pos1) );
+            bool flag = (s.substr(pos1+1, pos2-pos1-1) == "start") ? true : false ;
+            int timeStamp = stoi(s.substr(pos2+1)) ;
+            if(flag)
+            {
+                stk.push({id, timeStamp}) ;    
+            }
+            else{
+                int start = stk.top().second ;
+                stk.pop() ;
+                int gap = timeStamp - start + 1;
+                ret[id] += gap ;
+                if(!stk.empty())
+                {
+                    int prevId = stk.top().first ;
+                    ret[prevId] -= gap ;
+                }
+            }
+        }
+        return ret ;
+    }
+};

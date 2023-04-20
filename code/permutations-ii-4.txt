@@ -1,0 +1,50 @@
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** dfs(int* nums,int numsSize,int* returnSize,int** returnColumnSizes,int** ret,int* used,int *tmp,int level) {
+    // terminator
+    if (level == numsSize) {
+        // process result
+        ret[*returnSize] = malloc(sizeof(int) * numsSize);
+        memcpy(ret[*returnSize],tmp,sizeof(int)*numsSize);
+        (*returnColumnSizes)[*returnSize] = numsSize;
+        (*returnSize)++; 
+        return 0;
+    }
+    // process current logic
+    for (int i=0;i < numsSize;i++) {
+        if (!used[i]) {
+            if (i > 0 && !used[i-1] && nums[i] == nums[i-1]) {
+               continue;
+             } 
+             used[i] = 1;
+             tmp[level] = nums[i];
+             // drill down
+             dfs(nums,numsSize,returnSize,returnColumnSizes,ret,used,tmp,level+1);
+             // reverse status
+            used[i] = 0;
+        }
+    }
+    return ret;
+}
+
+int comp(const void * a, const void * b)
+{
+   return ( *(int*)a - *(int*)b );
+}
+
+int** permuteUnique(int* nums, int numsSize, int* returnSize, int** returnColumnSizes){
+    int **ret = malloc(sizeof(int *) * 10000);
+    *returnSize = 0;
+    (*returnColumnSizes) = malloc(sizeof(int) * 10000);
+    int *used = malloc(sizeof(int) * numsSize);
+    int *tmp = malloc(sizeof(int) * numsSize);
+    memset(used,0,sizeof(int) * numsSize);
+    qsort(nums,numsSize,sizeof(int),comp);
+    dfs(nums,numsSize,returnSize,returnColumnSizes,ret,used,tmp,0);
+    return ret;
+}
+

@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int ans = INT_MAX;
+    
+    void rec(int i, int n, vector<int> &cook, vector<int> &buckets, int k)
+    {
+        if(i == n)
+        {
+            ans = min(ans, *max_element(buckets.begin(), buckets.end()));
+            return;
+        }
+        
+        //ith element can go in any of the buckets
+        for(int j=0; j<k; ++j)
+        {
+            buckets[j] += cook[i];
+            
+            rec(i+1, n, cook, buckets, k);
+            
+			//backtrack
+            buckets[j] -= cook[i];
+        }
+    }
+    int distributeCookies(vector<int>& cook, int k) {
+        vector<int> buckets(k, 0);
+        
+        rec(0, cook.size(), cook, buckets, k);
+        
+        return ans;
+    }
+};

@@ -1,0 +1,28 @@
+class Solution {
+public:
+    bool circularArrayLoop(vector<int>& nums) {
+        int N = int(nums.size());
+        for (int i = 0; i < N; i++) {
+            if (!nums[i])
+                continue;
+            
+            bool ok = true;
+            for (int j = (i + N + nums[i] % N) % N, k = 0; k++ < N; j = (j + N + nums[j] % N) % N) {
+                if (1ll * nums[i] * nums[j] <= 0 || nums[j] % N == 0) { // no cycle
+                    for (k = i; k != j; ) {
+                        int prev = k;
+                        k = (k + N + nums[k] % N) % N;
+                        nums[prev] = 0;
+                    }
+
+                    ok = false;
+                    break;
+                }
+            }
+
+            if (ok)
+                return true;
+        }
+        return false;
+    }
+};

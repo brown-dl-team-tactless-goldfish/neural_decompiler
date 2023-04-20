@@ -1,0 +1,51 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     int numNeighbors;
+ *     struct Node** neighbors;
+ * };
+ */
+
+#define MAX_SIZE 101
+
+struct Node * ptr_ref[MAX_SIZE];
+bool visited[MAX_SIZE];
+
+struct Node*  dfs (struct Node* s)
+{
+    if (!s)
+        return NULL;
+    if (visited[s->val])
+        return ptr_ref[s->val];
+
+    if (!ptr_ref[s->val])
+    {
+        ptr_ref[s->val] = (struct Node*) malloc (sizeof(struct Node));
+        ptr_ref[s->val]->val = s->val;
+        ptr_ref[s->val]->numNeighbors = s->numNeighbors;
+        ptr_ref[s->val]->neighbors = NULL;
+        
+        visited[s->val] = 1;
+
+        if (s->neighbors)
+        {
+            ptr_ref[s->val]->neighbors = (struct Node**) malloc (sizeof(struct Node*) * s->numNeighbors);
+
+            for (int i = 0; i < s->numNeighbors; i++)
+            {
+                ptr_ref[s->val]->neighbors[i] = dfs (s->neighbors[i]);
+            }
+        }
+    }
+    return ptr_ref[s->val];
+}
+
+struct Node *cloneGraph(struct Node *s) 
+{
+
+    memset (ptr_ref, 0, sizeof(struct Node*) * MAX_SIZE);
+    memset (visited, 0, sizeof(bool) * MAX_SIZE);
+
+    return dfs (s);	
+}

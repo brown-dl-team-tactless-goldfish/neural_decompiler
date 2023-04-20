@@ -1,0 +1,47 @@
+class Solution
+{
+public:
+    bool is_prime(int n)
+    {
+        if (n == 1)
+        {
+            return false;
+        }
+        int i = 2;
+        while (i * i <= n)
+        {
+            if (n % i == 0)
+            {
+                return false;
+            }
+            i += 1;
+        }
+        return true;
+    }
+
+    vector<int> closestPrimes(int left, int right)
+    {
+        if (left == right)
+            return {-1, -1};
+        vector<int> primes;
+        for (int i = left; i <= right; i++)
+        {
+            if (is_prime(i))
+                primes.push_back(i);
+        }
+
+        int diff = INT_MAX;
+        vector<int> arr(2, -1);
+
+        for (int i = 0; i < primes.size() - 1; i++)
+        {
+            if (primes[i + 1] - primes[i] < diff)
+            {
+                diff = primes[i + 1] - primes[i];
+                arr[0] = primes[i];
+                arr[1] = primes[i + 1];
+            }
+        }
+        return arr;
+    }
+};

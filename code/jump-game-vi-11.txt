@@ -1,0 +1,17 @@
+class Solution {
+public:
+    int dfs(vector<int> &nums, vector<int> &memo, int indx, int k) {
+        if (indx >= nums.size()) return 0;
+        if (indx == nums.size() - 1) return nums[indx];
+        if (memo[indx] > INT_MIN) return memo[indx];
+        for (int i = indx + 1; i < nums.size() && i <= indx + k; i++) {
+            memo[indx] = max(memo[indx], dfs(nums, memo, i, k));
+            if (nums[i] >= 0) break;
+        }
+        return memo[indx] += nums[indx];
+    }
+    int maxResult(vector<int>& nums, int k) {
+        vector<int> memo(nums.size(), INT_MIN);
+        return dfs(nums, memo, 0, k);
+    }
+};

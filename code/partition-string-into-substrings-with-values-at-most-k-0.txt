@@ -1,0 +1,29 @@
+int minimumPartition(char * s, int k){
+    int n = strlen(s);
+    int* digit = malloc(n * sizeof(int));
+    for(int i = 0; i < n; i++){
+        digit[i] = s[i] -'0';
+        if(digit[i] > k)
+            return -1;
+    }
+    int* dp = malloc((n+1) * sizeof(int));
+    dp[0] = 0;
+    dp[1] = 1;
+    for(int i = 1; i < n; i++){
+        long long val = digit[i];
+        dp[i+1] = INT_MAX;
+        int p = 1;
+        while(val <= k){
+            dp[i+1] = fmin(dp[i+1], 1 + dp[i+1-p]);
+            if((i-p ) < 0)
+                break;
+            val = pow(10, p)*digit[i-p] + val;
+            p++;
+        } 
+    }
+    int ans  = -1;
+    if(dp[n] < INT_MAX)
+        ans = dp[n];
+    free(dp);
+    return ans;
+}

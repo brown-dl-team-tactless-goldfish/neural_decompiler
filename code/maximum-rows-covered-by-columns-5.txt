@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int ans=0;
+    void help(vector<vector<int>>mat, int cols, int i){
+        if(cols == 0){
+            int c = 0;
+            for(int i = 0; i<mat.size(); i++){
+                bool f = 1;
+                for(int j = 0; j<mat[0].size(); j++){
+                    if(mat[i][j] == 1){
+                        f = 0;
+                    }
+                }
+                if(f)c++;
+            }
+            ans = max(ans, c);
+            return;
+        }
+        if(i == mat[0].size())return;
+        
+        help(mat, cols, i+1);
+        for(int j = 0; j<mat.size(); j++)
+            mat[j][i] = 0;
+        help(mat, cols-1, i+1);
+    }
+    int maximumRows(vector<vector<int>>& mat, int cols) {
+        ans = 0; 
+        help(mat, cols, 0);
+        return ans;
+    }
+};

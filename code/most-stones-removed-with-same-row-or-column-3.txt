@@ -1,0 +1,34 @@
+void dfs(int **stones, int stonesSize, int stoneIndex, bool *visited)
+{
+    // base case
+    if (visited[stoneIndex])
+        return;
+    
+    // recursive steps
+    visited[stoneIndex] = true;
+    for (int i = 0; i < stonesSize; i++) {
+        if(!visited[i] && \
+           ((stones[i][0] == stones[stoneIndex][0]) || \
+            (stones[i][1] == stones[stoneIndex][1]))) {
+            dfs(stones, stonesSize, i, visited);
+        }
+    }
+    return;
+}
+
+int removeStones(int **stones, int stonesSize, int *stonesColSize){
+    bool visited[stonesSize]; 
+    // bool *visited = malloc(stonesSize * sizeof(bool));
+    for (int i = 0; i < stonesSize; i++)
+        visited[i] = false;
+        
+    int non_adjacency_count = 0;
+    for (int i = 0; i < stonesSize; i++) {
+        if (visited[i])
+            continue;
+        dfs(stones, stonesSize, i, visited);
+        non_adjacency_count++;
+    }
+
+    return stonesSize - non_adjacency_count;
+}

@@ -1,0 +1,57 @@
+class Solution {
+public:
+  int findGoodStrings(int n, string s1, string s2, string evil) {
+    init(evil);
+    auto noMoreThanS2 = lessThan(n, s2) + (s2.find(evil) == string::npos);
+    auto lessThanS1 = lessThan(n, s1);
+    auto res = (noMoreThanS2 + mod - lessThanS1) % mod;
+    return res;
+  }
+
+  long lessThan(int n, string s) {
+    auto pre = vector(m+1, pair{0LL, 0LL}), cur = pre;  //pair::first: num of curString < s; second: curString == s
+    pre[0] = pair{0, 1};
+    for (auto c : s) {
+      for (int i = 0; i < m; i++) {
+        for (int j = 0; j < 26; j++) {
+          int k = mat[i][j];
+          if (k == m) continue;
+          cur[k].first += pre[i].first;
+          if ('a' + j == c) cur[k].second += pre[i].second;
+          if ('a' + j < c)  cur[k].first += pre[i].second;
+        }
+      }
+      pre = move(cur);
+      for (auto &[x, y] : pre) {
+        x %= mod;
+        y %= mod;
+      }
+      cur = vector(m+1, pair{0LL, 0LL});
+    }
+    long res = 0;
+    for (auto &[x, y] : pre) res += x;
+    return res % mod;
+  }
+
+  void init(const string evil) {
+    m = evil.size();
+    mat = vector<vector<int>>(m + 1, vector<int>(26, 0));
+    for (int i = 0; i <= m; i++) {
+      auto prefix = evil.substr(0, i);
+      for (int k = 0; k < 26; k++) {
+        auto prefixK = prefix + char('a' + k);
+        for (int j = 0; j < prefixK.size(); j++) {
+          auto suffix = prefixK.substr(j);
+          if (evil.find(suffix) == 0) {
+            mat[i][k] = suffix.size();
+            break;
+          }
+        }
+      }
+    }
+  }
+
+  int m = 0;
+  vector<vector<int>> mat; // i is the cur len match eval prefix, j is 0-25,  // mat[i][j] is the len match after add 'a'+j
+  const long mod = 1e9 + 7;
+};

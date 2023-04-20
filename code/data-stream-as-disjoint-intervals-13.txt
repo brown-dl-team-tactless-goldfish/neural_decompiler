@@ -1,0 +1,49 @@
+class SummaryRanges {
+public:
+    /** Initialize your data structure here. */
+    
+    map<int,int> intervals;
+    
+    SummaryRanges() {
+    }
+    
+    void addNum(int val) {
+	
+		// insert the new interval and get an iterator to it in the tree
+        auto ins = intervals.insert({val,val}).first;
+        
+		// if the iterator is not the begining of the tree...
+        if(ins != intervals.begin()){
+            auto prv = prev(ins);
+            
+			// combine it with the previous element in the tree (if applicable)
+            if((val >= prv->first && val <= prv->second) ||(val == prv->second + 1)){
+                prv->second = max(prv->second,val);
+                intervals.erase(ins);
+                ins = prv;
+            }
+        }
+            
+		// if the iterator is not pointing to the last element of the tree
+        if(next(ins) != intervals.end()){
+            auto nxt = next(ins);
+			
+			// if we can combine with the next element 
+            if((nxt->first >= ins->first && nxt->first <= ins->second) || (nxt->first == ins->second + 1)){
+                ins->second = max(ins->second,nxt->second);
+                intervals.erase(nxt);
+            }
+        }
+    }
+    
+    vector<vector<int>> getIntervals() {
+        vector<vector<int>> result;
+        
+		// iterate through the tree and push the results
+        for(auto &p : intervals){
+            result.push_back({p.first,p.second});    
+        }
+        
+        return result;
+    }
+};```

@@ -1,0 +1,27 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** onesMinusZeros(int** grid, int gridSize, int* gridColSize, int* returnSize, int** returnColumnSizes){
+    int *row=(int*)calloc(gridSize,sizeof(int));
+    int *col=(int*)calloc(*gridColSize,sizeof(int));
+    
+    *returnColumnSizes=(int*)malloc(gridSize*sizeof(int));
+    *returnSize=gridSize;
+
+    for(int r=0;r<gridSize;r++){
+        (*returnColumnSizes)[r]=*gridColSize;
+        for(int c=0;c<*gridColSize;c++){
+            row[r]+=grid[r][c];
+            col[c]+=grid[r][c];
+        }
+    }
+    for(int r=0;r<gridSize;r++){
+        for(int c=0;c<*gridColSize;c++){
+            grid[r][c]=row[r]+col[c]-(gridSize-row[r])-(*gridColSize-col[c]);
+        }
+    }
+    
+    return grid;
+}

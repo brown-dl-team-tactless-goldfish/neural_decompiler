@@ -1,0 +1,22 @@
+class Solution {
+public:
+    vector<vector<int>> reconstructMatrix(int upper, int lower, vector<int>& colsum) {
+        int n = colsum.size();
+        vector<vector<int>> matrix(2, vector<int>(n));
+        for (int i = 0; i < n; i++) {
+            if (colsum[i] == 2) {
+                matrix[0][i] = matrix[1][i] = 1;
+                upper--;
+                lower--;
+            }
+            else if (colsum[i] == 1) {
+                int bit = upper >= lower;
+                matrix[0][i] = bit;
+                matrix[1][i] = !bit;
+                upper -= bit;
+                lower -= !bit;
+            }
+        }
+        return upper || lower ? vector<vector<int>>{} : matrix;
+    }
+};

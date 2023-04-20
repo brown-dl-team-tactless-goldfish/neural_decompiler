@@ -1,0 +1,38 @@
+#define inf 1000000007
+class Solution {
+public:
+    vector<int> g[1005];
+    int ans;
+    void bfs(int n) {
+        for(int i=0; i<n; i++) {
+            vector<int> dis(n, inf), par(n, -1);
+            dis[i] = 0;
+            queue<int> q;
+            q.push(i);
+            while(!q.empty()) {
+                int u = q.front();
+                q.pop();
+                for(auto v: g[u]) {
+                    if(dis[v] == inf) {
+                        dis[v] = dis[u] + 1;
+                        par[v] = u;
+                        q.push(v);
+                    }
+                    else if(par[u] != v and par[v] != u)
+                        ans = min(ans, dis[u] + dis[v] + 1);
+                }
+            }
+        }
+        
+    }
+    int findShortestCycle(int n, vector<vector<int>>& edges) {
+        for(auto x: edges) {
+            g[x[0]].push_back(x[1]);
+            g[x[1]].push_back(x[0]);
+        }
+        ans = INT_MAX;
+        bfs(n);
+        if(ans == INT_MAX) return -1;
+        else return ans;
+    }
+};

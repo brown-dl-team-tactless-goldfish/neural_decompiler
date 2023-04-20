@@ -1,0 +1,78 @@
+
+struct node {
+        int x;
+        int y;
+};
+
+void update_around(int **rt, int h, int w, int x, int y, struct node *q, int *head, int d)
+{
+        if (x > 0 && rt[x - 1][y] < 0) {
+                ++(*head);
+                q[*head].x = x - 1;
+                q[*head].y = y;
+                rt[x - 1][y] = d;
+        }
+        if (x + 1 < h && rt[x + 1][y] < 0) {
+                ++(*head);
+                q[*head].x = x + 1;
+                q[*head].y = y;
+                rt[x + 1][y] = d;
+        }
+        if (y > 0 && rt[x][y - 1] < 0) {
+                ++(*head);
+                q[*head].x = x;
+                q[*head].y = y - 1;
+                rt[x][y - 1] = d;
+        }
+        if (y + 1 < w && rt[x][y + 1] < 0) {
+                ++(*head);
+                q[*head].x = x;
+                q[*head].y = y + 1;
+                rt[x][y + 1] = d;
+        }
+}
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** updateMatrix(int** mat, int matSize, int* matColSize, int* returnSize, int** returnColumnSizes)
+{
+        int i, j;
+        int w = matColSize[0];
+        int h = matSize;
+        
+        int **rt = malloc(sizeof(int *) * h); //return matrix initlize to -1
+        for (i = 0; i < h; i++) {
+                rt[i] = malloc(w * sizeof(int));
+                memset(rt[i], 0xff, sizeof(int) * w);
+        }
+        
+        struct node *q = malloc(sizeof(struct node) * 40000);
+        int head = -1;
+        int tail = -1;
+        
+        int d = 1;
+        for (i = 0; i < h; i++) {
+                for (j = 0; j < w; j++) {
+                        if (!mat[i][j]) {
+                                rt[i][j] = 0;
+                                update_around(rt, h, w, i, j, q, &head, d);
+                        }
+                }
+        }
+        
+        while (tail < head) {
+                d++;
+                int tmp_head = head;
+                int tmp_tail = tail;
+                while (++tmp_tail <= tmp_head)
+                        update_around(rt, h, w, q[tmp_tail].x, q[tmp_tail].y, q, &head, d);
+                tail = tmp_head;
+        }
+        
+        *returnSize = matSize;
+        *returnColumnSizes = matColSize;
+        return rt;
+        
+}

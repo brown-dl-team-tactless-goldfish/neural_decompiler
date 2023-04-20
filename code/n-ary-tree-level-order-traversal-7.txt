@@ -1,0 +1,105 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     int numChildren;
+ *     struct Node** children;
+ * };
+ */
+
+typedef struct linkedList {
+    struct Node* root;
+    struct linkedList* next;
+} linkedList;
+
+typedef struct Queue {
+    struct linkedList* head;
+    struct linkedList* tail;
+} Queue;
+
+linkedList* createNode(struct Node* root) {
+    linkedList* listNode = (linkedList*)malloc(sizeof(linkedList));
+    listNode->root = root;
+    listNode->next = NULL;
+    return listNode;
+}
+
+Queue* createQueue() {
+    Queue* queue = (Queue*)malloc(sizeof(Queue));
+    queue->head = NULL;
+    queue->tail = NULL;
+    return queue;
+}
+
+void enqueue(Queue* queue, struct Node* root) {
+    linkedList* listNode = createNode(root);
+    if (!queue->head) {
+        queue->head = listNode;
+        queue->tail = listNode;
+    } else {
+        queue->tail->next = listNode;
+        queue->tail = listNode;     
+    }
+}
+
+struct Node* dequeue(Queue* queue) {
+    struct Node* res = queue->head->root;
+    if (queue->head == queue->tail) {
+        queue->head = NULL;
+        queue->tail = NULL;
+    } else {
+        linkedList* temp = queue->head;
+        queue->head = temp->next;
+    }
+    return res;
+}
+
+int treeLevel(struct Node* root) {
+    if (!root) return 0;
+    if (root->numChildren == 0) return 1;
+    
+    int max, temp;
+    max = treeLevel(root->children[0]);
+    for (int i = 1; i < root->numChildren; i++) {
+        temp = treeLevel(root->children[i]);
+        if (temp > max) max = temp;
+    }
+    return 1 + max;
+}
+
+int** levelOrder(struct Node* root, int* returnSize, int** returnColumnSizes) {
+    // get the level of tree
+    int level = treeLevel(root);
+    *returnSize = level;
+    
+    int currLevelSize = 0, currLevel = 0;
+    if (root) {
+        currLevelSize = 1;
+    }
+    
+    int** res = (int** ) malloc(sizeof(int*) * level);
+    *returnColumnSizes = (int*) malloc(sizeof(int) * level);
+    int i, size;
+    
+    // malloc the returnColumnSize is the critical problem in this case.
+    // using currLevelSize to malloc the returnColumnSizes in every level.
+    Queue* queue = createQueue();
+    enqueue(queue, root);
+    while (currLevelSize) {
+        res[currLevel] = (int* ) malloc(sizeof(int) * currLevelSize);
+        (*returnColumnSizes)[currLevel] = currLevelSize;
+      
+        for (size = currLevelSize, i = 0, currLevelSize = 0; size > 0; size--, i++) {
+            struct Node* temp = dequeue(queue);
+            res[currLevel][i] = temp->val;
+            for (int j = 0; j < temp->numChildren; j++) {
+                currLevelSize++;
+                enqueue(queue, temp->children[j]);
+            }
+            free(temp);
+        }
+        currLevel++;
+    }
+    
+    return res;   
+}

@@ -1,0 +1,53 @@
+#define LAND (1)
+#define WATER (0)
+
+class Solution {
+public:
+    int countSubIslands(vector<vector<int>> &grid1, vector<vector<int>> &grid2) {
+        rows = grid1.size(), cols = grid1[0].size();
+
+        vector<vector<bool>> visited(rows, vector<bool>(cols, false));
+        int answer = 0;
+        for (int r = 0; r < rows; ++r) {
+            for (int c = 0; c < cols; ++c) {
+                if (grid2[r][c] == LAND && !visited[r][c]) {
+                    int res = 1;
+                    dfs(grid1, grid2, visited, r, c, res);
+                    answer += res;
+                }
+            }  // end of for-loop
+        } // end of for-loop
+
+        return answer;
+    }
+
+private:
+    int rows;
+    int cols;
+
+    void dfs(vector<vector<int>> &grid1, vector<vector<int>> &grid2, vector<vector<bool>> &visited, int r, int c, int &res) {
+        if (r < 0 || rows <= r || c < 0 || cols <= c || grid2[r][c] != LAND || visited[r][c]) {
+            return;
+        }
+
+        // grid1[r][c] | grid2[r][c] |  Is grid2[r][c] a subisland of grid2[r][c]?
+        // ------------+-------------+--------------------------------------------
+        //    WATER    |   WATER     |         No
+        // ------------+-------------+--------------------------------------------
+        //    WATER    |   LAND      |         No
+        // ------------+-------------+--------------------------------------------
+        //    LAND     |   WATER     |         Yes
+        // ------------+-------------+--------------------------------------------
+        //    LAND     |   LAND      |         Yes
+        if ((grid1[r][c] == WATER && grid2[r][c] == LAND) ||
+            (grid1[r][c] == WATER && grid2[r][c] == WATER)) {
+            res = 0; // not subisland
+        }
+
+        visited[r][c] = true;
+        dfs(grid1, grid2, visited, r - 1, c, res);
+        dfs(grid1, grid2, visited, r + 1, c, res);
+        dfs(grid1, grid2, visited, r, c - 1, res);
+        dfs(grid1, grid2, visited, r, c + 1, res);
+    }
+};

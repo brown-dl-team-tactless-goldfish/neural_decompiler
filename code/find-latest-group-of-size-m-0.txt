@@ -1,0 +1,37 @@
+int findLatestStep(int* arr, int arrSize, int m){
+    int i, j;
+    
+    if(arrSize == m){
+        return m;
+    }
+    int* dp = malloc(arrSize * sizeof(int));
+    
+    for(i = 0; i < arrSize; i++){
+        dp[arr[i] -1] = i + 1;
+    }
+
+    int ans = -1;
+    int bound;
+    
+    for(i = 0; i <= arrSize - m; i++){
+        bound = INT_MAX;
+        if(i > 0){
+            bound = fmin(bound, dp[i-1]);
+        }
+        if(i < (arrSize - m)){
+            bound = fmin(bound, dp[i + m]);
+        }
+
+        for(j = i; j < i+m; j++){
+            if(dp[j] > bound)
+                goto next;
+        }
+        
+        ans = fmax(ans, bound - 1);
+        next:
+            continue;
+    }
+    
+    free(dp);    
+    return ans;
+}

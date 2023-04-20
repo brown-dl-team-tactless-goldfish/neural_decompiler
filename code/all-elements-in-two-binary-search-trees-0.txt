@@ -1,0 +1,34 @@
+#define MAX    5000
+
+void traverse(struct TreeNode* root, int *arr, int *idx)
+{
+    if(!root)
+        return;
+    traverse(root->left, arr, idx);
+    arr[(*idx)++] = root->val;
+    traverse(root->right, arr, idx);
+}
+
+int* getAllElements(struct TreeNode* root1, struct TreeNode* root2, int* returnSize){
+    int arr1[MAX];
+    int arr2[MAX];
+    int idx1 = 0, idx2 = 0, idx = 0, i = 0, j = 0;
+    memset(arr1, 0, sizeof(arr1));
+    memset(arr2, 0, sizeof(arr2));
+    
+    traverse(root1, arr1, &idx1);
+    traverse(root2, arr2, &idx2);
+    *returnSize = idx1 + idx2;
+
+    int *ret = malloc(sizeof(int) * (*returnSize));
+    while(i < idx1 && j < idx2)
+        ret[idx++] = arr1[i] < arr2[j] ? arr1[i++] : arr2[j++];
+
+    while(i < idx1)
+        ret[idx++] = arr1[i++];
+    
+    while(j < idx2)
+        ret[idx++] = arr2[j++];
+    
+    return ret;
+}

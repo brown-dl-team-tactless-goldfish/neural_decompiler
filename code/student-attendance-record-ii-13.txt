@@ -1,0 +1,32 @@
+class Solution {
+public:
+    
+    long long add(long long a,long long b)
+    {
+        long long c=1e9+7;
+        return ( ( a % c ) + ( b % c ) ) % c;
+    }
+    
+    int dp[100001][2][3];
+    int solve(int n , int countL, int countA )
+    {
+        if(n==0)
+         return 1;
+        if(dp[n][countA][countL]!=-1)
+            return dp[n][countA][countL];
+        long long ans=0;
+        if(countL<=1)
+           ans=add(ans,solve(n-1, countL+1 ,countA));
+        if(countA<1)
+           ans= add(ans,solve(n-1, 0 , countA+1));
+        ans= add(ans,solve(n-1,0 , countA));
+        return dp[n][countA][countL]=ans;
+        
+    }
+    
+    
+    int checkRecord(int n) {
+        memset(dp,-1,sizeof(dp));
+        return solve(n,0,0);
+    }
+};

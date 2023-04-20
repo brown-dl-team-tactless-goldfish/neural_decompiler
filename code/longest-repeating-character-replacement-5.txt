@@ -1,0 +1,92 @@
+int lut[26];
+
+int get_counts (int* minor_count)
+{
+    /*
+    Algo:
+        1. Update lut count for char c. 
+        2. Determine major char.
+        3. Get minor count. 
+        4. Return major + minor total count.
+    */
+    int major_count = lut[0];
+    int total_count = lut[0];
+
+    for (int i = 1; i < 26; i++)
+    {
+        total_count += lut[i];
+        if (lut[i] > major_count)
+            major_count = lut[i];
+    }
+    *minor_count = total_count - major_count;
+    return total_count;
+}
+
+
+int characterReplacement(char * s, int k)
+{
+    memset (lut, 0, sizeof(int) * 26);
+
+    int h, t, max_len = 0;
+    int minor_count, len = 0;
+
+    h = 0;
+    t = 0;
+
+    /*
+    Algo:
+        1. Consume new char at head pointer (which leads tail pointer.)
+           and update lut.
+        2. Get total count and minor count (i.e. total count - count of dominant character
+           between h & t pointers).
+        3. If minor count is less than or equal to k, increment head pointer.
+            else
+        4. increment tail pointer until minor count is less than or equal to k.
+    */
+
+    while (1)
+    {
+        // Loop to increment head pointer
+        while (1)
+        {
+            // If EoW is reached, return result
+            // Also takes care of edge case
+            if (s[h] == '\0')
+                return max_len;
+
+            // Consider char at 'h'
+            lut[s[h] - 'A']++;
+            h++;
+
+            // Update length and minor count
+            len = get_counts(&minor_count);
+            if (minor_count > k)
+                break;
+            
+            // Update maximum length
+            max_len = max_len < len ? len : max_len;
+
+            // If EoW is reached, return result
+            if (s[h] == '\0')
+                return max_len;
+
+        }
+
+        // Loop to increment tail pointer
+        while (1)
+        {
+            // If minor character count is less than or equal to k
+            // the result is acceptable. Hence break out of this loop.
+            if (minor_count <= k)
+                break;
+
+            // Discard char at 't'
+            lut[s[t] - 'A']--;
+            t++;
+
+            // Update length and minor count
+            len = get_counts(&minor_count);
+        }
+    }
+    return 0;
+}

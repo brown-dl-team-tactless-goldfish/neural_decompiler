@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<int> decode(vector<int>& encoded) {
+        // If we can find the 1st element a, then the 2nd element b is encoded[0] ^ a, 3rd element is encoded[1] ^ b ...
+        // Since encoded[0] ^ encoded[1] = a ^ c, encoded[0] ^ ... ^ encoded[2] = a ^ d ...,
+        // we can get create another array xors to store the values of a ^ b, a ^ c, ... etc, the size will be n - 1.
+        // Since n - 1 is even, we get xors[0] ^ xors[1] ^ ... which is b ^ c ^ ..., hence we can get a by calculating
+        // 1 ^ 2 ^ ... ^ n = sum, and b ^ c ^ ... ^ sum == a.
+        // a is the 1st element of perm, we can get perm[1], perm[2] etc as mentioned earlier.
+        int n = encoded.size() + 1, sum = 0;
+        vector<int> res(n, encoded[0]), xors(n - 1, encoded[0]);
+        for (int i = 1; i < n - 1; ++i)
+        {
+            xors[i] = (encoded[i] ^ xors[i - 1]);
+            res[0] ^= xors[i];
+        }
+        
+        for (int i = 1; i <= n; ++i)
+        {
+            sum ^= i;
+        }
+        
+        res[0] ^= sum;
+        for (int i = 1; i < n; ++i)
+        {
+            res[i] = (encoded[i - 1] ^ res[i - 1]);
+        }
+        
+        return res;
+    }
+};

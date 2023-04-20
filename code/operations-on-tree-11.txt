@@ -1,0 +1,80 @@
+class LockingTree {
+private: 
+    vector<vector<int>> state;
+    vector<int> parent;
+    map<int,vector<int>> adj;
+    bool isUnlocked(int num){
+        if(this->state[num][0]==0)
+            return true;
+        return false;
+    }
+    void adminUnlock(int num){
+        this->state[num][0]=0;
+        this->state[num][1]=0;
+    }
+    bool isLocked(int num){
+        if(this->state[num][0]==1)
+            return true;
+        return false;
+    }
+    bool parentUnlocked(int num)
+    {
+        if(num==-1)
+            return true;
+        if(isLocked(num)){
+            return false;
+        }
+        return parentUnlocked(parent[num]);
+    }
+    bool descendentLocked(int num){
+        bool ans=false;
+        for(auto i: adj[num])
+        {
+            if(isLocked(i))
+            {
+                ans=true;
+                adminUnlock(i);
+            }
+            ans = ans | descendentLocked(i);
+        }
+        return ans;
+    }
+public:
+    LockingTree(vector<int>& parent) {
+        this->parent=parent;
+        int n=parent.size();
+        this->state=vector<vector<int>> (n,vector<int>(2,0));
+        for(int i=1;i<n;i++)
+        {
+            this->adj[parent[i]].push_back(i);
+        }
+    }
+    
+    bool lock(int num, int user) {
+        if(this->state[num][0]==0){
+            this->state[num][0]=1;
+            this->state[num][1]=user;
+            return true;
+        }
+        return false;
+    }
+    
+    bool unlock(int num, int user) {
+        if(this->state[num][0]==1 && this->state[num][1]==user){
+            this->state[num][0]=0;
+            this->state[num][1]=0;
+            return true;
+        }
+        return false;
+    }
+    
+    bool upgrade(int num, int user) {
+        bool ans=isUnlocked(num);
+        ans = ans & parentUnlocked(this->parent[num]);
+        if(ans){
+            ans= ans & descendentLocked(num);
+            if(ans) lock(num,user);
+        }
+        return ans;
+    }
+};

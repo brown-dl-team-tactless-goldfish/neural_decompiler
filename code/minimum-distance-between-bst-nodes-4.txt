@@ -1,0 +1,51 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+#define Min(a, b) a > b ? b : a
+
+int compfunc(const void *p1, const void *p2)
+{
+    int n1 = *(int*)p1;
+    int n2 = *(int*)p2;
+    
+    return n2 - n1;
+}
+
+void DFSinBST(int* node_arr, int* node_cnt, struct TreeNode* root)
+{
+	if (root == NULL) return;
+
+	//left search
+	DFSinBST(node_arr, node_cnt, root->left);
+	node_arr[*node_cnt] = root->val;
+	*node_cnt += 1;
+
+	//right search
+	DFSinBST(node_arr, node_cnt, root->right);
+}
+
+int minDiffInBST(struct TreeNode* root)
+{
+    int* node_arr = (int*)calloc(100, sizeof(int));
+	int node_cnt = 0;
+    int min = 100001;
+
+	DFSinBST(node_arr, &node_cnt, root);
+
+	qsort(node_arr, node_cnt, sizeof(int), compfunc);
+    
+    for(int i = 0; i<node_cnt-1; i++)
+    {
+        for(int j=i+1; j < node_cnt; j++)
+        {
+            min = Min(min, node_arr[i]-node_arr[j]);
+        }
+    }
+    
+    return min;
+}

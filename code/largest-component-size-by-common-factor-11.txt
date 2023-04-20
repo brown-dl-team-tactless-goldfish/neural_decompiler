@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int find(int x,vector<int>&p){
+        if(p[x]==-1) return x;
+        p[x]=find(p[x],p);
+        return p[x];
+    }
+    void Union(int x,int y,vector<int>&p){
+        x=find(x,p);
+        y=find(y,p);
+        if(x!=y) p[y]=x;
+    }
+    int largestComponentSize(vector<int>& nums) {
+        vector<int>p(100001,-1);
+        for(int i=0;i<nums.size();i++){
+            for(int j=2;j*j<=nums[i];j++){
+                if(nums[i]%j==0) {
+                    Union(nums[i],j,p);
+                    Union(nums[i],nums[i]/j,p);
+                }
+            }
+        }
+        unordered_map<int,int> mp;
+        int count=0;
+        for(int i=0;i<nums.size();i++)
+        {
+            int p1 = find(nums[i],p);
+            count = max(count,1+mp[p1]);
+            mp[p1]+=1;
+        }
+        return count;
+    }
+};

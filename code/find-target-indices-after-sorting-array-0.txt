@@ -1,0 +1,43 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+void SortArr(int*,int);
+int* targetIndices(int* nums, int numsSize, int target, int* returnSize){
+    int len=0, i, flag=0;
+    int* results = malloc(sizeof(int)*numsSize);
+    SortArr(nums, numsSize);
+    for(i=0; i< numsSize;i++){
+        if (nums[i] == target){
+            results[len] = i;
+            len++;
+            flag = 1;
+        }
+        if(flag==1 && nums[i]>nums[results[len-1]])
+            break;
+    }
+    (*returnSize) = len;
+    
+    return results;
+
+}
+
+void SortArr(int* nums,int numsSize){
+    int i,j, temp, temp_idx; 
+    
+    for (i=0; i< numsSize-1;i++){
+        temp = nums[i];
+        for(j=i+1;j<numsSize;j++){
+            if (temp > nums[j]){
+                temp = nums[j];
+                temp_idx = j;
+            }
+        }
+        if(temp_idx >=0){
+        nums[temp_idx] = nums[i];
+        nums[i] = temp;
+        temp_idx = -1;
+        }
+    }   
+}

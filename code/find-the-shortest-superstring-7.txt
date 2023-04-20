@@ -1,0 +1,244 @@
+class Solution {
+public:
+	//Is front[front_index : front.size() - 1] == the first front.size() - front_index characters of back?
+    inline int DoesOverlap(const string &front, const string &back, int front_index) {
+        int back_index = 0;
+        while (front_index < front.size()) {
+            if (front[front_index++] != back[back_index++])
+                return 0;
+        }
+        return back_index; //The number of characters that overlap
+    }
+	//Computes the largest value of n such that the last n characters of front are == the first n characters of back.
+	//So if front = "abc" and back = "bcd" then this function returns 2.
+    inline int DoesOverlap(const string &front, const string &back) {
+        int front_index = 0;
+        if (front.size() > back.size())
+            front_index = front.length() - back.length();
+        if (back.length() == 1) {
+            if (front[front_index] == back[0])
+                return 1;
+            return 0;
+        }
+        while (front_index + 1 < front.length()) {
+		    //This if statement is not necessary, but it is included as an optimization.
+            if (front[front_index] != back[0] || front[front_index + 1] != back[1]) {
+                front_index++;
+                continue ;
+            }
+            int overlap = DoesOverlap(front, back, front_index);
+            if (overlap > 0)
+                return overlap;
+            front_index++;
+        }
+        assert(front_index == front.length() - 1);
+        if (front[front_index] == back[0])
+            return 1;
+        return 0;
+    }
+	//Assumes that the last overlap_count characters of front are == the first overlap_count characters of back.
+	//Returns the result of merging front and back on these overlap_count characters
+	//So if front = "abc", back = "bcd", and overlap_count = 2 then this function returns "abcd".
+    inline string GetCombinedWord(const string &front, const string &back, int overlap_count) {
+        if (overlap_count == 0)
+            return front + back;
+        return front + back.substr(overlap_count);
+    }
+    inline string GetCombinedWord(const string &front, const string &back) {
+        return GetCombinedWord(front, back, DoesOverlap(front, back));
+    }
+    string shortestSuperstring(vector<string>& A) {
+        if (A.size() <= 1) {
+            if (A.size() == 0)
+                return string();
+            return A[0];
+        }
+        sort(A.begin(), A.end());
+        string answer;
+        int answer_length = INT_MAX;
+        ShortestSuperstringGreedy(A, answer, answer_length); //This solution may not always be correct but it does not TLE
+        //ShortestSuperstringPermutations(A, answer, answer_length); //This solution is correct but TLE
+        return answer;
+    }
+    
+    void ShortestSuperstringGreedy(vector<string>& A, string &answer, int &answer_length) {
+        RemoveEmptyStrings(A);
+        sort(A.begin(), A.end());
+        auto A_copy = A;
+        if (A.size() <= 2) {
+             if (A.size() == 1) {
+                if (answer_length <= A[0].size())
+                    return ;
+                answer_length = A[0].size();
+                answer = A[0];
+            }
+            if (A.size() == 0)
+                return ;
+            if (A.size() == 2) {
+                string word1 = GetCombinedWord(A[0], A[1]);
+                string word2 = GetCombinedWord(A[1], A[0]);
+                if (word2.size() < word1.size())
+                    swap(word1, word2);
+                if (answer_length <= word1.size())
+                    return ;
+                answer_length = word1.size();
+                answer = word1;
+                return ;
+            }
+        }
+        vector<int> overlaps_saved(A.size() * A.size());
+        int max_common_overlap = 0;
+        for (int i = 0; i < A.size(); ++i) {
+            if (A[i].size() >= answer_length)
+                return ;
+            for (int j = 0; j < A.size(); ++j) {
+                if (i == j)
+                    continue ;
+                int overlap = DoesOverlap(A[i], A[j]);
+                overlaps_saved[i * A.size() + j] = overlap;
+                if (overlap > max_common_overlap)
+                    max_common_overlap = overlap;
+            }
+        }
+        if (max_common_overlap == 0) {
+            //Computing the resulting string's length is less expensive than computing the resulting string.
+            int length = 0;
+            for (int i = 0; i < A.size(); ++i)
+                length += A[i].size();
+            if (length < answer_length) {
+                string str;
+                for (int i = 0; i < A.size(); ++i)
+                    str += A[i];
+                answer_length = str.size();
+                answer = str;
+            }
+            return ;
+        }
+        for (int i = 0; i < A.size(); ++i) {
+            if (A[i].size() >= answer_length)
+                return ;
+            for (int j = 0; j < A.size(); ++j) {
+                if (i == j || overlaps_saved[i * A.size() + j] < max_common_overlap)
+                    continue ;
+                int overlap = overlaps_saved[i * A.size() + j];
+                string combined_str = GetCombinedWord(A[i], A[j], overlap);
+                if (A.size() == 2) { //This if() is included as an optimization
+                    if (combined_str.size() < answer_length) {
+                        answer_length = combined_str.size();
+                        answer = combined_str;
+                    }
+                    continue ;
+                }
+                if (combined_str.size() >= answer_length)
+                    continue ;
+                vector<string> B = A;
+                B[j] = combined_str;
+                B.erase(B.begin() + i);
+                ShortestSuperstringGreedy(B, answer, answer_length);
+            }
+        }
+        return ;
+    }
+	
+	///////////////////////////////////////////
+	//NOTE: NONE OF THE CODE BELOW IS EXECUTED.
+	//It is included because a solution should be correct, not just accepted.
+	//Since this problem is equivalent to the traveling salesman problem (as discussed elsewhere), any greedy solution can not be correct
+	// even if it is accepted.
+	//So even though the above solution is accepted, it is impossible for it to be correct.
+	//The following solution is correct but it TLE.
+	//It goes through each permutation of A and merges the strings together. It then picks the smallest string for the answer. It includes optimizations.
+	///////////////////////////////////////////
+	
+	//The following solution that is but is not used because of TLE
+    void ShortestSuperstringPermutations(vector<string> &A, string &answer, int &answer_length) {
+        if (A.size() <= 2) {
+             if (A.size() == 1) {
+                if (answer_length <= A[0].size())
+                    return ;
+                answer_length = A[0].size();
+                answer = A[0];
+            }
+            if (A.size() == 0)
+                return ;
+            if (A.size() == 2) {
+                string word1 = GetCombinedWord(A[0], A[1]);
+                string word2 = GetCombinedWord(A[1], A[0]);
+                if (word2.size() < word1.size())
+                    swap(word1, word2);
+                if (answer_length <= word1.size())
+                    return ;
+                answer_length = word1.size();
+                answer = word1;
+                return ;
+            }
+            if (A.size() == 3) { //This isn't necessary code but it is the solution for when A.size() == 3.
+			    //This if() can be ignored.
+                string word01 = GetCombinedWord(A[0], A[1]), word10 = GetCombinedWord(A[1], A[0]); 
+                string word12 = GetCombinedWord(A[1], A[2]), word21 = GetCombinedWord(A[2], A[1]);
+                string word02 = GetCombinedWord(A[0], A[2]), word20 = GetCombinedWord(A[2], A[0]);
+                string word012 = GetCombinedWord(A[0], word12);
+                string word021 = GetCombinedWord(A[0], word21);
+                string word102 = GetCombinedWord(A[1], word02);
+                string word120 = GetCombinedWord(A[1], word20);
+                string word201 = GetCombinedWord(A[2], word01);
+                string word210 = GetCombinedWord(A[2], word10);
+                string min_string = word012;
+                if (word021.size() < min_string.size()) min_string = word021;
+                if (word102.size() < min_string.size()) min_string = word102;
+                if (word120.size() < min_string.size()) min_string = word120;
+                if (word201.size() < min_string.size()) min_string = word201;
+                if (word210.size() < min_string.size()) min_string = word210;
+                if (answer_length <= min_string.size())
+                    return ;
+                answer_length = min_string.size();
+                answer = min_string;
+                return ;
+            }
+            return ;
+        }
+        sort(A.begin(), A.end());
+        do {
+            string combined_str = GetStringsMerged(A, answer_length, A.size());
+            if (combined_str.size() < answer_length) {
+                answer_length = combined_str.size();
+                answer = combined_str;
+            }
+        } while (next_permutation(A.begin(), A.end()));
+        return ;
+    }
+    map<vector<string>, string> merges;
+	
+	//If A = { "ab", "bc", "cd", "e"} then this function returns the string "abcde"
+    string GetStringsMerged(vector<string> &A, int max_size, int original_size_of_A) {
+        if (merges.count(A) > 0)
+            return merges[A];
+        if (A.size() <= 2) {
+            string answer;
+            if (A.size() == 1) {
+                answer = A[0];
+            } else if (A.size() == 0)
+                answer = string();
+            else if (A.size() == 2) {
+                answer = GetCombinedWord(A[0], A[1]);
+            }
+            merges[A] = answer;
+            return answer;
+        }
+        auto B = A;
+        B.pop_back();
+        string merged_B = GetStringsMerged(B, max_size, original_size_of_A); //Merge together A[0], ..., A[A.size() - 2]
+        if (merged_B.size() >= max_size) {
+		    //If A.size() == original_size_of_A then there is no point in saving this result since it'll likely never be used again.
+			//Ditto if A.size() == original_size_of_A - 1.
+            if (A.size() < original_size_of_A - 1)
+                merges[A] = merged_B; //Any string of length >= max_size would do here.
+            return merged_B;          //Any string of length >= max_size would do here.
+        }
+        string answer = GetCombinedWord(merged_B, A.back());  //Merge together A[0], ..., A[A.size() - 1]
+        if (A.size() < original_size_of_A - 1)
+            merges[A] = answer;
+        return answer;
+    }
+	}
+	```

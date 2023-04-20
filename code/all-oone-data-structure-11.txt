@@ -1,0 +1,98 @@
+class Pair{
+public:
+    int freq;
+    list<string>::iterator iter;
+    
+    Pair(int freq, list<string>::iterator iter){
+        this->freq  = freq;
+        this->iter  = iter;
+    }  
+    
+    void updateFreq(int freq, list<string>::iterator iter){
+        this->freq = freq;
+        this->iter = iter;
+    }
+};
+
+class AllOne {
+private:
+    unordered_map<string, Pair*> keys;
+    unordered_map<int, list<string>> freq;
+    
+    int minCount = 0, maxCount = 0;
+public:
+    /** Initialize your data structure here. */
+    AllOne() {
+        minCount = maxCount = 1;
+    }
+    
+    /** Inserts a new key <Key> with value 1. Or increments an existing key by 1. */
+    void inc(string key) {
+        if(keys.find(key) == keys.end()){           
+            minCount = 1;
+            
+            freq[minCount].push_front(key);
+            keys[key] = new Pair(minCount, freq[minCount].begin());            
+            return;
+        }
+        
+        int frequency = keys[key]->freq;
+        list<string>::iterator iter = keys[key]->iter;
+        
+        freq[frequency].erase(iter);
+        if(freq[frequency].empty()) {
+            if(frequency == minCount) minCount++;
+            freq.erase(frequency);
+        }
+        
+        maxCount = max(maxCount, frequency + 1);        
+        freq[frequency + 1].push_front(key);
+        keys[key]->updateFreq(frequency + 1, freq[frequency + 1].begin());
+    }
+    
+    /** Decrements an existing key by 1. If Key's value is 1, remove it from the data structure. */
+    void dec(string key) {
+        if(keys.find(key) == keys.end()) return;
+        
+        int frequency = keys[key]->freq;
+        list<string>::iterator iter = keys[key]->iter;
+        
+        freq[frequency].erase(iter);   
+        if(freq[frequency].empty()){
+            if(frequency == maxCount) maxCount--;
+            if(frequency == minCount) minCount++;
+            freq.erase(frequency);
+        }      
+        
+        if(frequency - 1 == 0) keys.erase(key);
+        
+        else{
+            minCount = min(minCount, frequency - 1);
+            freq[frequency - 1].push_front(key);
+            keys[key]->updateFreq(frequency - 1, freq[frequency - 1].begin());   
+        }        
+    }
+    
+    /** Returns one of the keys with maximal value. */
+    string getMaxKey() {
+        if(freq.empty()) return "";
+        
+        return !freq[maxCount].empty() ? *freq[maxCount].begin() : *freq[minCount].begin();
+    }
+    
+    /** Returns one of the keys with Minimal value. */
+    string getMinKey() {
+        if(freq.empty()) return "";
+        
+        return !freq[minCount].empty() ? *freq[minCount].begin() : *freq[maxCount].begin();
+    }
+};
+
+/**
+ * Your AllOne object will be instantiated and called as such:
+ * AllOne* obj = new AllOne();
+ * obj->inc(key);
+ * obj->dec(key);
+ * string param_3 = obj->getMaxKey();
+ * string param_4 = obj->getMinKey();
+ */

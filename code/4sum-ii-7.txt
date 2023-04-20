@@ -1,0 +1,97 @@
+
+typedef struct myHash{
+    int data;
+    int cnt;
+    struct myHash *next;
+}myHash;
+
+#define MAX_HASH 250000+5
+myHash *hash= NULL;
+//N의 갯수가 500개라..250000 개를 잡는다. 
+void init_hash( void)
+{
+    hash = calloc(MAX_HASH, sizeof(myHash));
+}
+
+//insert hash
+int calc_hash(int data)
+{
+    if(data < 0)
+        return (-data) % MAX_HASH;
+    else
+        return data % MAX_HASH;
+}
+
+void insert_hash(int data)
+{
+     int ret = calc_hash(data);
+//    printf("insert hash %d %d\n",data, ret);
+    
+    if(hash[ret].cnt ==0)
+    {
+        hash[ret].cnt++;
+        hash[ret].data = data;
+    }else
+    {
+        myHash *p = &hash[ret];
+        myHash *pre = p;
+        for(p; p!= NULL; p=p->next)
+        {
+            if(p->data == data)
+            {
+                p->cnt++;
+                return;
+            }
+            pre = p;
+        }
+
+        myHash * add_node = calloc(1, sizeof(myHash));
+        add_node->data=data;
+        add_node->cnt++;
+        pre->next = add_node;  
+    }      
+}
+
+int fourSumCount(int* A, int ASize, int* B, int BSize, int* C, int CSize, int* D, int DSize) {
+    // AB 더하구.. 
+    // CD 더하구
+    // 쏘팅하고..
+    // 양쪽을 더해서 0이 되는걸 찾는다. 중복된걸 찾으면 안될것 같은데.. 
+    // 가장 좋은건 hash인데 hash가 안되면 CD쪽에서 
+    int ret = 0;
+    int n = ASize;
+    int* sum1 = calloc(n*n, sizeof(int));
+ 
+    int cnt =0;
+    
+    init_hash();
+    
+    for(int i =0; i < n; i++)
+        for(int j =0; j< n; j++)
+        {
+            sum1[cnt]=A[i]+B[j];
+            insert_hash(C[i]+D[j]);
+            cnt++;
+        }
+    
+    int l = 0;
+    int r = 0;
+    for(int i =0; i < n*n; i++)
+    {
+        int hash_num = calc_hash(-sum1[i]);
+        // printf("%d %d \n",-sum1[i], hash_num);
+        // printf("%d \n",hash[hash_num].cnt);
+        if(hash[hash_num].cnt !=0)
+        {
+            // printf("mmmmm\n");
+            myHash* tmp = &hash[hash_num];
+            for(tmp; tmp!=NULL; tmp= tmp->next)
+            {
+               if(tmp->data == -sum1[i])
+                   ret = ret+ tmp->cnt;
+            }    
+        }
+    }
+    
+    return ret;
+}

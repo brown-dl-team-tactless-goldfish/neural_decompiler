@@ -1,0 +1,59 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+
+int cnt = 0;
+bool isValid(TreeNode* root, TreeNode* minNode, TreeNode* maxNode) {
+    if(!root) return true;
+    cnt++;
+    if(minNode && root->val <= minNode->val || maxNode && root->val >= maxNode->val)
+        return false;
+    return isValid(root->left, minNode, root) && isValid(root->right, root, maxNode);
+}
+class Solution {
+public:
+    TreeNode* canMerge(vector<TreeNode*>& trees) {
+        int n = 0;
+        vector<TreeNode*> root(50001, nullptr),leaf(50001, nullptr);
+        for(auto ptr:trees){
+            root[ptr->val] = ptr;
+            n++;
+            if(ptr->left) {
+                n++;
+                if(leaf[ptr->left->val]) return nullptr; //from observation 1
+                leaf[ptr->left->val] = ptr->left;
+            }
+            
+            if(ptr->right){
+                n++;
+                if(leaf[ptr->right->val]) return nullptr;  //from observation 1              
+                leaf[ptr->right->val] = ptr->right;
+            }
+        }
+        TreeNode* head = nullptr;
+        for(auto ptr : root){
+            if(ptr){
+                auto pp = leaf[ptr->val];
+                if(!pp && !head) { head = ptr; continue;}  //from observation 2
+                else if(!pp) return nullptr; //from observation 2
+                // cout<<pp->val<<endl;
+                pp->left  = ptr->left;    //merging
+                pp->right = ptr->right;  //merging
+            }
+        }
+        
+        cnt = 0;
+        bool ff = isValid(head, nullptr, nullptr);
+        
+        return ff && cnt== n-trees.size()+1? head : nullptr;
+        
+    }
+};

@@ -1,0 +1,105 @@
+#define N 4
+int x_offset[N] = {0, -1, 0, 1};
+int y_offset[N] = {1, 0, -1, 0};
+
+typedef struct node_s {
+    int r, c;
+    struct node_s *next;
+} node_t;
+
+void enqueue(node_t **tail, int r, int c) {
+    node_t *ptr = (node_t *) malloc(sizeof(node_t));
+    ptr->r = r;
+    ptr->c = c;
+    if (*tail == NULL) {
+		*tail = ptr;
+		(*tail)->next = *tail;
+	} else {
+		ptr->next = (*tail)->next;
+		(*tail)->next = ptr;
+		*tail = ptr;
+	}
+    return;
+}
+
+int dequeue(node_t **tail, int *r, int *c) {
+    node_t *ptr;
+    int status;
+    
+	if (*tail != NULL) {
+		status = 1;
+		if (*tail == (*tail)->next) {
+			*r = (*tail)->r;
+            *c = (*tail)->c;
+			free(*tail);
+			*tail = NULL;
+		} else {
+			ptr = (*tail)->next;
+            *r = ptr->r;
+            *c = ptr->c;
+			(*tail)->next = ptr->next;
+			free(ptr);
+		}
+	} else {
+		status = 0;
+	}
+    return status;
+}
+
+void queueFree(node_t *tail) {
+    if (tail == NULL)
+        return;
+    if (tail->next == NULL) {
+        free(tail);
+        return;
+    }
+    node_t *ptr = tail->next;
+    while (ptr != tail) {
+        node_t *p = ptr;
+        ptr = ptr->next;
+        free(p);
+    }
+    free(tail);
+    return;
+}
+
+int orangesRotting(int** grid, int gridSize, int* gridColSize){
+    node_t *queue = NULL;
+    int freshOranges = 0, ROWS = gridSize, COLS = gridColSize[0];
+    int x, y;
+    for (int r = 0; r < ROWS; r++) {
+        for (int c = 0; c < COLS; c++) {
+            if (grid[r][c] == 2)
+                enqueue(&queue, r, c);
+            else if (grid[r][c] == 1)
+                freshOranges++;
+        }
+    }
+    
+    enqueue(&queue, -1, -1); 
+    
+    int minElapsed = -1;
+    
+    while (queue != NULL) {
+        dequeue(&queue, &x, &y);
+        if (x == -1) {
+            minElapsed++;
+            if (queue != NULL)
+                enqueue(&queue, -1, -1);  
+        } else {
+            for (int i = 0; i < N; i++) {
+                int xx = x + x_offset[i];
+                int yy = y + y_offset[i];
+                if (xx >= 0 && xx < ROWS && yy >= 0 && yy < COLS) {
+                    if (grid[xx][yy] == 1) {
+                        grid[xx][yy] = 2;
+                        freshOranges--;
+                        enqueue(&queue, xx, yy);
+                    }
+                }
+            }
+        }
+    }
+    queueFree(queue);
+    return freshOranges == 0 ? minElapsed : -1;
+}

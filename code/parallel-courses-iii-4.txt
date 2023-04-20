@@ -1,0 +1,39 @@
+#define ll long long
+
+class Solution {
+public:
+    int minimumTime(int n, vector<vector<int>>& relations, vector<int>& time) {
+        vector<vector<int>> adj(n);
+        vector<int> deg(n, 0);
+        vector<int> ret(n, 0);
+        for (auto &r : relations) {
+            int u = r[0] - 1, p = r[1] - 1;
+            adj[p].push_back(u);
+            deg[u]++;
+        }
+        queue<int> q;
+        for (int i = 0; i < deg.size(); i++) {
+            if (deg[i] == 0) {
+                q.push(i);
+            }
+        }
+        while (!q.empty()) {
+            int mx = 0;
+            queue<int> nq;
+            while (!q.empty()) {
+                auto u = q.front(); q.pop();
+                ret[u] += time[u];
+                mx = max(mx, time[u]);
+                for (auto &v : adj[u]) {
+                    deg[v]--;
+                    if (deg[v] == 0) {
+                        nq.push(v);
+                    }
+                    ret[v] = max(ret[v], ret[u]);                    
+                }
+            }
+            swap(q, nq);
+        }
+        return *max_element(ret.begin(), ret.end());
+    }
+};

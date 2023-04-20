@@ -1,0 +1,52 @@
+double getval(int num, int den){
+    double d = den;
+    double n = num;
+	
+    double ans = (d-n)/(d*d + d);
+    return ans;
+}
+
+
+double getmean(vector<vector<int>> &v){
+    double ans = 0;
+    double n = v.size();
+    for(int i=0;i<n;i++){
+        double tmp = (double)v[i][0] / (double)v[i][1];
+        ans += tmp;
+    }
+    return (double)ans / (double)n;
+}
+
+typedef pair<double, int> pi; 
+
+
+class Solution {
+public:
+    double maxAverageRatio(vector<vector<int>>& classes, int extraStudents) {
+        priority_queue<pi> pq;
+        
+        int n = classes.size();
+        
+        for(int i=0;i<n;i++){    
+            double val = getval(classes[i][0], classes[i][1]);
+            pq.push(make_pair(val, i));
+        }
+        
+        for(int i=0;i<extraStudents; i++){
+            pair<double,int> c = pq.top();
+            pq.pop();
+
+            int index = c.second;
+                    
+            classes[index][0] ++;
+            classes[index][1] ++;
+            
+            double val = getval(classes[index][0], classes[index][1]);
+        
+            pq.push(make_pair(val, index));
+        }
+
+        double ans = getmean(classes);        
+        return ans;
+    }
+};

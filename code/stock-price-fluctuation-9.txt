@@ -1,0 +1,46 @@
+class StockPrice {
+public:
+    map<int,int> map;
+    priority_queue<int> maxHeap;
+    priority_queue<int,vector<int>,greater<int>> minHeap;
+    unordered_multiset<int> set;
+    StockPrice() {
+       
+    }
+    
+   
+    void update(int timestamp, int price) {
+        if(map.find(timestamp)==map.end())
+            map[timestamp] = price;
+        else
+        {
+            set.insert(map[timestamp]);
+            map[timestamp] = price;
+        }
+        maxHeap.push(price);
+        minHeap.push(price);
+    }
+    
+    int current() {
+        auto it = map.rbegin();
+        return it->second;
+    }
+    
+    int maximum() {
+        while(set.find(maxHeap.top())!=set.end())
+        {
+            set.erase(set.find(maxHeap.top()));
+            maxHeap.pop();
+        }
+        return maxHeap.top();
+    }
+    
+    int minimum() {
+        while(set.find(minHeap.top())!=set.end())
+        {
+            set.erase(set.find(minHeap.top()));
+            minHeap.pop();
+        }
+        return minHeap.top();
+    }
+};

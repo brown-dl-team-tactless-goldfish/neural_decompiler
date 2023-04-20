@@ -1,0 +1,41 @@
+public class Solution {
+    public IList<bool> CheckArithmeticSubarrays(int[] nums, int[] l, int[] r) {
+        
+        List<bool> res = new List<bool>();
+        if(nums == null || nums.Length < 2)
+            return res;
+        
+        for(int i = 0; i < l.Length; i++)
+            res.Add(isArithmetic(nums, l[i], r[i]));   
+        
+        return res;
+    }
+    
+    private bool isArithmetic(int[] nums, int l, int r)
+    {
+        if(r - l < 1)
+            return false;
+       
+        int min = Int32.MaxValue, max = Int32.MinValue;
+        HashSet<int> set = new HashSet<int>();
+        for(int i = l; i <= r; i++)
+        {
+            min = Math.Min(min, nums[i]);
+            max = Math.Max(max, nums[i]);
+            set.Add(nums[i]);
+        }
+        
+        int diffSum = max - min;
+        if(diffSum % (r - l) != 0)
+            return false;
+        
+        int diff = (max - min) / (r - l);
+        for(int i = 0; i < r-l; i++)
+        {
+            if(!set.Contains(min + i * diff))
+                return false;
+        }
+            
+        return true;
+    }
+}

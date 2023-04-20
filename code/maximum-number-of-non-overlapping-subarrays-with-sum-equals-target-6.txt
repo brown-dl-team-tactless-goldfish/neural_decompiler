@@ -1,0 +1,17 @@
+class Solution {
+public:
+    int maxNonOverlapping(vector<int>& nums, int target) {
+        int size{(int)nums.size()}, max_{0};
+        std::vector<int> dp(size+1, 0);
+        std::unordered_map<int,int> m;
+        m[0] = 0;
+        for(int i{1}, acc{0}; i <= size; ++i) {
+            acc += nums[i-1];
+            dp[i] = dp[i-1];
+            if(m.count(acc-target)) dp[i] = std::max(dp[i], dp[m[acc-target]] + 1);
+            m[acc] = i;
+            max_ = std::max(max_, dp[i]);
+        }
+        return max_;
+    }
+};

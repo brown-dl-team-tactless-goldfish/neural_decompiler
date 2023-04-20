@@ -1,0 +1,97 @@
+#define MAX_SIZE 1000002
+#define ll long long
+
+ll heap[MAX_SIZE];
+int heapSize;
+
+// Heap Push
+void heapPush( ll value)
+{
+    
+	heap[heapSize] = value;
+
+	int current = heapSize;
+	while (current > 0 && heap[current] < heap[(current - 1) / 2]) 
+	{
+		int temp = heap[(current - 1) / 2];
+		heap[(current - 1) / 2] = heap[current];
+		heap[current] = temp;
+		current = (current - 1) / 2;
+	}
+
+	heapSize++;
+
+	
+}
+
+// Heap Pop
+void heapPop(ll *value)
+{
+
+	*value = heap[0];
+	heapSize--;
+
+	heap[0] = heap[heapSize];
+
+	int current = 0;
+	while (current * 2 + 1 < heapSize)
+	{
+		int child;
+		if (current * 2 + 2 == heapSize)
+		{
+			child = current * 2 + 1;
+		}
+		else
+		{
+			child = heap[current * 2 + 1] < heap[current * 2 + 2] ? current * 2 + 1 : current * 2 + 2;
+		}
+
+		if (heap[current] < heap[child])
+		{
+			break;
+		}
+
+		ll temp = heap[current];
+		heap[current] = heap[child];
+		heap[child] = temp;
+
+		current = child;
+	}
+	
+}
+
+int arr[] = {2,3,5};
+
+
+int nthUglyNumber(int n){
+    heapSize = 0;
+    heapPush(1);
+    
+    ll preValue = 0;
+    while(n > 0){
+        ll value ;
+		// Pop the current least ugly number
+        heapPop(&value);
+		
+		/* if this ugly number is already generated, we will skip its children generation */
+        if(value != preValue){
+            preValue = value;
+            n--;
+        }
+        else continue;
+		
+		/* if n equal to zero, we get our number */
+        if(n == 0) return value;
+        
+		/* what is the children of current ugly number?
+		 example :
+		 suppose current ugly number is 4 then its children will be these: 4 * 2, 4 * 3, 4 * 5 & we will push those in heap*/
+        for(int i = 0; i < 3; i++){
+            if(value * arr[i] <= INT_MAX) heapPush(value * arr[i]); 
+			/* this check is for avoiding overflow , we know from problem description that value will always be integer so we don't need to push any
+			 value greater than integer*/
+        }
+    }
+    
+    return 1;
+}

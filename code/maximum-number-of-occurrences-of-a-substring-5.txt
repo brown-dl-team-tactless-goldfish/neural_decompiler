@@ -1,0 +1,33 @@
+class Solution {
+public:
+    unordered_map<string, int> strcnt;
+    int maxFreq(string s, int maxLetters, int minSize, int maxSize) {
+        int l = 0, r = 0, res = 0;
+        for(int i = minSize; i <= maxSize; i++) {
+            findStr(s, maxLetters, i);
+            if(strcnt.size())
+                break;
+        }
+        for(auto v: strcnt) {
+            res = max(res, v.second);
+        }
+        return res;
+    }
+    void findStr(string s, int maxLetters, int len){
+        unordered_map<char, int> hashmap;
+        int l = 0, r = 0;
+        while(r < s.size()) {
+            while(r < s.size() and r-l < len) {
+                hashmap[s[r]]++;
+                r++;
+                string curr = s.substr(l, r-l);
+                if(r-l == len and hashmap.size() <= maxLetters)
+                    strcnt[curr]++;
+            }
+            hashmap[s[l]]--;
+            if(hashmap[s[l]] == 0)
+                hashmap.erase(s[l]);
+            l++;
+        }
+    }
+};

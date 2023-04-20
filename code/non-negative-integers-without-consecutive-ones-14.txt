@@ -1,0 +1,40 @@
+public class Solution {
+        Dictionary<int, int> cache = new Dictionary<int, int>();
+        public int FindIntegers(int num)
+        {
+            if (num < 3) return num + 1;
+
+            if (cache.ContainsKey(num)) return cache[num];
+            var binary = Convert(num);
+            var count = 0;
+            if (binary[1] == 1)
+            {
+                // for 11,xxx case, only count nums small than 11000, 
+                var next = (binary.Count > 2 ? (3 << binary.Count - 2) : num) - 1;
+                count += FindIntegers(next); // count 11,000-1;
+            }
+            else
+            {
+                var mask = (1 << (binary.Count - 1)) - 1;
+                var rest = num & mask;
+                count += FindIntegers(rest);// f(10xxx) equals f(xxx); 
+                count += FindIntegers((1 << (binary.Count - 1)) - 1); // count 10,000-1
+            }
+            cache[num] = count;
+            Console.WriteLine("{0},{1}", num, count);
+            return count;
+        }
+        
+        public List<int> Convert(int n)
+        {
+            var res = new List<int>();
+            do
+            {
+                res.Add(n % 2);
+                n /= 2;
+            } while (n != 0);
+
+                res.Reverse();
+            return res;
+        }
+}

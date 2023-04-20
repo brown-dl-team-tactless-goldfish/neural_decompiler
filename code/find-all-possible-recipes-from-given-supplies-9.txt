@@ -1,0 +1,38 @@
+    vector<string> findAllRecipes(vector<string>& recipes, vector<vector<string>>& ingredients, vector<string>& supplies) {
+        // construct a graph, make ingredients point to recipes
+        // if a recipe is pointed to, increase its indegree
+        // then check all supplies, if its indegree is 0, put it into a queue, and we will do topological sorting to find all possible recipes
+        unordered_map<string, vector<string>> graph;
+        unordered_map<string, int> indegree;
+        for (int i = 0; i < ingredients.size(); i++) {
+            for (auto& ig : ingredients[i]) {
+                if (indegree.find(ig) == indegree.end()) {
+                    indegree[ig] = 0;
+                }
+                graph[ig].push_back(recipes[i]);
+                indegree[recipes[i]]++;
+            }
+        }
+        // ingredient queue
+        queue<string> igQ;
+        vector<string> res;
+        for (auto& sp : supplies) {
+            if (indegree.find(sp) != indegree.end() && indegree[sp] == 0) {
+                igQ.push(sp);
+            }
+        }
+        while (igQ.size() > 0) {
+            auto& frontS = igQ.front();
+            for (auto& r : graph[frontS]) {
+                indegree[r]--;
+                // if a recipe can be created, then it means that it can be used as ingredient in the future
+                // so add it to the result and also to the ingredient queue
+                if (indegree[r] == 0) {
+                    res.push_back(r);
+                    igQ.push(r);
+                }
+            }
+            igQ.pop();
+        }
+        return res;
+    }

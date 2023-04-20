@@ -1,0 +1,27 @@
+class Solution {// Greedy: Binary search
+public: // Time/Space: O(NlogN); O(N)
+    vector<int> avoidFlood(vector<int>& rains) {
+        const int n = rains.size();
+        unordered_map<int, int> last_rain; // lake->lastRainDay
+        vector<int> ans(n, -1); // default: 
+        set<int> dry; //ordered set to collect day slots to dry lakes.
+        for(int i = 0; i < n; i++){
+            int lake = rains[i];
+            if(lake == 0) {
+                dry.insert(i);
+                ans[i]=1; //Warning: do not forget. Dry machine must keep working on non-raining day
+                continue;
+            }else{
+                if(last_rain.count(lake)){
+                    // Find the first day to dry 'lake'
+                    auto it = dry.upper_bound(last_rain[lake]); // binary search
+                    if(it == dry.end()) return {};
+                    ans[*it]=lake;
+                    dry.erase(it);
+                }
+            }
+            last_rain[lake]=i;            
+        }
+        return ans;        
+    }
+};

@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int maxValueAfterReverse(vector<int>& nums) {
+        int ret = 0;
+        int vmin = INT_MAX, vmax = INT_MIN;
+        int ladd = 0, radd = 0;
+        int n = nums.size();
+        for(int i = 1; i < n; i++) {
+            vmin = min(vmin, max(nums[i-1], nums[i]));
+            vmax = max(vmax, min(nums[i-1], nums[i]));
+            ladd = max(ladd, abs(nums[0] - nums[i]) - abs(nums[i-1] - nums[i]));
+            radd = max(radd, abs(nums[n-1] - nums[i-1]) - abs(nums[i-1] - nums[i]));
+            ret += abs(nums[i-1] - nums[i]);
+        }
+        int add = max(radd, max(2*(vmax-vmin), ladd));
+        return ret+add;
+    }
+};

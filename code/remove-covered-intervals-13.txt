@@ -1,0 +1,46 @@
+// custom comparator
+bool comparator(const vector<int>&a, const vector<int>&b)
+{
+    // a_x < b_x or a_x==b_x && a_y > b_y
+    
+    return (a[0]<b[0] || (a[0]==b[0] && a[1]>b[1]));
+}
+
+class Solution {
+public:
+    
+    int removeCoveredIntervals(vector<vector<int>>& intervals) {
+    
+        // sort intervals with custom comparator
+        sort(intervals.begin(),intervals.end(),comparator);
+        
+        // start and end index
+        int start = 0;
+        int end = 1;
+        
+        // overlap counts
+        int count = 0;
+        
+        // Loop until end of intervals
+        while(end<intervals.size())
+        {
+            // overlaps as start_y >= end_y
+            
+            if(intervals[start][1]>=intervals[end][1])
+            {
+                // increment overlap count
+                count++;
+            }
+            else 
+            {
+                // end_y is the new max y and so we will compare new max y with next intervals 
+                start = end;
+            }
+           
+            end++;
+        }
+        
+        // return remaining array size
+        return intervals.size()-count;
+    }
+};

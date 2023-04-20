@@ -1,0 +1,32 @@
+public class Solution {
+    
+    private static int Covered(int[][] mat, int mask) {
+        int result = 0;
+        
+        foreach (var row in mat) {
+            int add = 1;
+            
+            for (int c = 0; c < row.Length; ++c) 
+                if ((mask & (1 << c)) == 0)
+                    if (row[c] == 1) {
+                        add = 0;
+                        
+                        break;
+                    }
+                        
+            result += add;
+        }
+        
+        return result;
+    }
+        
+    public int MaximumRows(int[][] mat, int cols) {
+        int result = 0;
+        
+        for (int mask = 0; mask < (1 << mat[0].Length); ++mask) 
+            if (BitOperations.PopCount((uint)mask) == cols)
+                result = Math.Max(result, Covered(mat, mask));
+               
+        return result;
+    }
+}

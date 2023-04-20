@@ -1,0 +1,26 @@
+class Solution {
+    static bool cmp(const vector<int>& v1, const vector<int>& v2)
+    {
+        if (v1[0] < v2[0]) 
+            return true;
+        else if (v1[0] == v2[0])
+            return v1[2] > v2[2];
+        else 
+            return false;
+    }
+    
+public:
+    int maxTwoEvents(vector<vector<int>>& events) {
+        int n = events.size();
+        sort(events.begin(), events.end(), cmp);
+        int ans = events[n-1][2];
+        for(int i=n-2; i>=0; i--)
+        {
+            auto it = upper_bound(events.begin() + i + 1, events.end(), vector<int>({events[i][1],0,0}), cmp);
+            ans = max(((it == events.end())?0:events[it-events.begin()][2])
+                        + events[i][2], ans);
+            events[i][2] = max(events[i+1][2], events[i][2]);
+        }
+        return ans;
+    }
+};

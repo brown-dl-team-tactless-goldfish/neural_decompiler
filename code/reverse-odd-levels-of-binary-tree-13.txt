@@ -1,0 +1,50 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    TreeNode* reverseOddLevels(TreeNode* root) {
+        queue<TreeNode*> bfs;
+        bfs.push(root);
+        int dep = -1;
+        while(!bfs.empty()){
+            dep++;
+            if(dep & 1){
+                queue<TreeNode*> temp = bfs;
+                vector<int> str;
+                // string str;
+                while(!temp.empty()){
+                    str.push_back(temp.front()->val);
+                    temp.pop();
+                }
+                reverse(str.begin(), str.end());
+                int k = bfs.size();
+                for(int i = 1; i <= k; i++){
+                    auto node = bfs.front();
+                    bfs.pop();
+                    node->val = str[i - 1];
+                    if(node->left) bfs.push(node->left);
+                    if(node->right) bfs.push(node->right);
+                }
+            }
+            else{
+                int k = bfs.size();
+                for(int i = 1; i <= k; i++){
+                    auto node = bfs.front();
+                    bfs.pop();
+                    if(node->left) bfs.push(node->left);
+                    if(node->right) bfs.push(node->right);
+                }
+            }
+        }
+        return root;
+    }
+};

@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<int> countRectangles(vector<vector<int>>& rectangles, vector<vector<int>>& points) {
+        int n = rectangles.size();
+        int m = points.size();
+        vector<int> count(m);
+        
+        vector<vector<int>> v(101);
+        for (auto &r : rectangles) {
+            int l = r[0], h = r[1];
+            v[h].emplace_back(l);
+        }
+        
+        for (int i = 1; i <= 100; i++) {
+            sort(v[i].begin(), v[i].end());
+        }
+        
+        for (int i = 0; i < m; i++) {
+            int x = points[i][0], y = points[i][1];
+            
+            for (int j = y; j <= 100; j++) {
+                count[i] += (v[j].end() - lower_bound(v[j].begin(), v[j].end(), x));
+            }
+        }
+        
+        return count;
+    }
+};

@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int smallestChair(vector<vector<int>>& times, int targetFriend) {
+        int n = times.size();
+        set<int> chairs;
+        vector<int> p2c(n, -1);
+        
+        for (int i = 0; i < n; ++i)
+            chairs.insert(i);
+        vector<vector<int>> events;
+        for (int i = 0; i < n; ++i){
+            events.push_back({times[i][0], i, 0}); // arrival
+            events.push_back({times[i][1], i, 1}); // departure
+        }
+        sort(events.begin(), events.end(), [](vector<int>&a, vector<int>&b){
+            return a[0] < b[0] or (a[0] == b[0] and a[2] > b[2]);
+        });
+
+        for (auto e: events){
+            if (e[2])
+                chairs.insert(p2c[e[1]]); // add chair back when leaving
+            else {
+                auto t = chairs.begin();
+                if (e[1] == targetFriend) return *t;
+                p2c[e[1]] = *t;
+                chairs.erase(*t); // remove chair when arriving
+            }
+        }
+        return -1;
+    }
+};

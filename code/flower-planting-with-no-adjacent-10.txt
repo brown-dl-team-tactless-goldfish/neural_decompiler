@@ -1,0 +1,35 @@
+class Solution {
+public:
+    using VI = vector< int >;
+    using VVI = vector< VI >;
+    using Graph = unordered_map< int, unordered_set< int > >;
+    using Unique = unordered_set< int >;
+    using Queue = queue< int >;
+    VI gardenNoAdj( int N, VVI& paths, Graph G={}, Queue q={}, Unique seen={}, VI ans={} ){
+        for( auto& path: paths ){
+            auto u = path[ 0 ],
+                 v = path[ 1 ];
+            G[ u ].insert( v );
+            G[ v ].insert( u );
+        }
+        VI color( N+1, 0 );
+        for( int i{ 1 }; i <= N; ++i ){
+            if( seen.insert( i ).second )
+                q.push( i );
+            while( ! q.empty() ){
+                auto cur = q.front(); q.pop();
+                Unique candidates{{ 1,2,3,4 }};
+                for( auto adj: G[ cur ] ){
+                    if( 0 < color[ adj ] )
+                        candidates.erase( color[ adj ] );
+                    if( seen.insert( adj ).second )
+                        q.push( adj );
+                }
+                color[ cur ] = *candidates.begin();
+            }
+        }
+        for( auto i{ 1 }; i <= N; ++i )
+            ans.push_back( color[ i ] );
+        return ans;
+    }
+};

@@ -1,0 +1,90 @@
+    bool checkforallnines(string n) {
+        for (char& c : n) {
+            if (c != '9')
+                return false;
+        }
+        return true;
+    }
+    
+    string mirror(string s) {
+        if (s.length() == 1)
+            return s;
+        
+        string firsthalf = s.substr(0, s.length()/2);
+        string rfirsthalf(firsthalf.rbegin(), firsthalf.rend());
+        
+        if (s.length() % 2 == 1)
+            firsthalf += s[s.length()/2];
+        
+        return firsthalf + rfirsthalf;
+    }
+    
+    string findlargest (string s) {
+        int idx = (s.length() - 1) / 2 ;
+        
+        while (idx >= 0 && s[idx] == '9') {
+            s[idx--] = '0';
+        }
+        
+        if (idx >= 0) {
+            s[idx] = ((s[idx] - '0') + 1) + '0';
+        }
+        
+        return mirror(s);
+    }
+    
+    string findsmallest(string s) {
+        int idx = (s.length() - 1) / 2 ;
+        
+        while (idx >= 0 && s[idx] == '0') {
+            s[idx--] = '9';
+        }
+        
+        if (idx == 0 && s[idx] == '1') {
+            s.erase(0, 1);
+            s[(s.length()-1)/2] = '9';
+        }
+        else {
+            s[idx] = ((s[idx] - '0') - 1) + '0';
+        }
+        
+        return mirror(s);
+    }
+    
+    string nearestPalindromic(string n) {
+        if (n.length() == 1)
+            return to_string((n[0] - '0') - 1);
+        
+        if (checkforallnines(n)) {
+            string out = "1";
+            out.append(n.length()-1, '0');
+            return out + "1";
+        }
+        
+        // mirror num is formed from firsthalf, odd, and reverse first half
+        // rpnum is the palindrome no by adding 1
+        // spnum is the palindrome no by subtracting 1
+        string mirrornum = mirror(n);
+        string lpnum = findlargest(n);
+        string spnum = findsmallest(n);
+        
+        long long int diff1 = std::abs(stoll(n) - stoll(spnum));
+        long long int diff2 = std::abs(stoll(n) - stoll(mirrornum));
+        long long int diff3 = std::abs(stoll(n) - stoll(lpnum));
+        
+        int smallest = diff1 <= diff2 ? diff1 : diff2;
+        string npal = diff1 <= diff2 ? spnum : mirrornum;
+        if (diff2 == 0) {
+            // Mirrornum no is same as input no,
+            // in that case need to take the smallest palindrom
+            smallest = diff1;
+            npal = spnum;
+        }
+        
+        npal = smallest <= diff3 ? npal : lpnum;
+        
+        return npal;
+    }
+	
+Runtime: 0 ms, faster than 100.00% of C++ online submissions for Find the Closest Palindrome.
+Memory Usage: 6.1 MB, less than 91.01% of C++ online submissions for Find the Closest Palindrome.

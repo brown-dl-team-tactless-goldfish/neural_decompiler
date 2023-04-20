@@ -1,0 +1,50 @@
+void bestchoose(int* list, int i, int numsSize, int k, int* best, int* count){
+    *best = list[i];
+    *count = k;
+    k--;
+    for (int j = i+1 ; j < numsSize  ; j++){
+        if (list[j] > *best){
+            *best = list[j];
+            *count = k;
+        }
+        k--;
+    }
+}
+
+int maxResult(int* nums, int numsSize, int k){
+    int* list = malloc(sizeof(int)*numsSize);
+    int end = numsSize-1;
+    list[end] = nums[end];
+    int count = k;
+    int best = list[end];
+    int i = end-1;
+    end = end-k < 0 ? -1 : end-k;
+    
+    for (; i > end ; i--){
+        list[i] = nums[i] + best;
+        if (nums[i] >= 0){
+            best = list[i];
+            count = k;
+        } else {
+            count--;
+            if (count == 0){
+                bestchoose(list, i, numsSize, k, &best, &count);
+            }
+        }
+    }
+    for (; i >= 0 ; i--){
+        list[i] = nums[i] + best;
+        if (nums[i] >= 0){
+            best = list[i];
+            count = k;
+        } else {
+            count--;
+            if (count == 0){
+                bestchoose(list, i, i+k, k, &best, &count);
+            }
+        }
+    }
+    int ans = list[0];
+    free(list);
+    return ans;
+}

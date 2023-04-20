@@ -1,0 +1,39 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+struct hash_entry {
+    int id;            /* we'll use this field as the key */
+    UT_hash_handle hh; /* makes this structure hashable */
+};
+
+bool helper(struct TreeNode* root, int k, struct hash_entry *u)
+{
+    if(!root)
+        return false;
+    
+    struct hash_entry *s;
+    int user_id = k - root->val;
+    HASH_FIND_INT(u, &user_id, s);
+    if(s)
+        return true;
+    
+    int id = root->val;
+    s = malloc(sizeof *s);
+    s->id = root->val;
+    HASH_ADD_INT(u, id, s);
+    
+    return helper(root->left, k, u) || helper(root->right, k, u);
+}
+
+bool findTarget(struct TreeNode* root, int k){
+
+    struct hash_entry *users = NULL;
+    
+    return helper(root, k, users);
+}

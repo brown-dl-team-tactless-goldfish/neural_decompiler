@@ -1,0 +1,113 @@
+public TreeNode CanMerge(IList<TreeNode> trees)
+{
+	Dictionary<int, TreeNode> map = new Dictionary<int, TreeNode>();
+	HashSet<TreeNode> visited = new HashSet<TreeNode>();
+	Dictionary<TreeNode, TreeNode> parentMap = new Dictionary<TreeNode, TreeNode>();
+
+	foreach (var tree in trees)
+	{
+		map[tree.val] = tree;
+	}
+
+	foreach (var tree in trees)
+	{
+		TreeNode parent = null;
+		if (parentMap.ContainsKey(tree))
+		{
+			parent = parentMap[tree];
+		}
+
+		// Check for left node
+		if (tree.left != null && map.ContainsKey(tree.left.val) && !visited.Contains(tree.left))
+		{
+			var currentRoot = map[tree.left.val];
+			bool hasCycle = checkCycle(parentMap, parent, currentRoot);
+
+			if (!hasCycle)
+			{
+				tree.left = currentRoot;
+				parentMap[currentRoot] = tree;
+				visited.Add(currentRoot);
+			}
+		}
+
+		// Check for right node
+		if (tree.right != null && map.ContainsKey(tree.right.val) && !visited.Contains(tree.right))
+		{
+			var currentRoot = map[tree.right.val];
+			bool hasCycle = checkCycle(parentMap, parent, currentRoot);
+
+			if (!hasCycle)
+			{
+				tree.right = currentRoot;
+				parentMap[currentRoot] = tree;
+				visited.Add(currentRoot);
+			}
+		}
+	}
+
+	if (visited.Count != trees.Count - 1)
+	{
+		return null;
+	}
+
+	foreach (var tree in trees)
+	{
+		if (!visited.Contains(tree))
+		{
+			if (isValidBST(tree))
+			{
+				return tree;
+			}
+
+			return null;
+		}
+	}
+
+	return null;
+}
+
+private bool checkCycle(Dictionary<TreeNode, TreeNode> parentMap, TreeNode parent, TreeNode currentRoot)
+{
+	bool hasCycle = false;
+
+	while (parent != null)
+	{
+		if (parent == currentRoot)
+		{
+			hasCycle = true;
+			break;
+		}
+
+		if (parentMap.ContainsKey(parent))
+		{
+			parent = parentMap[parent];
+		}
+		else
+		{
+			parent = null;
+		}
+	}
+
+	return hasCycle;
+}
+
+private bool isValidBST(TreeNode root)
+{
+	return Validate(root, long.MinValue, long.MaxValue);
+}
+
+private bool Validate(TreeNode root, long min, long max)
+{
+	if (root == null)
+	{
+		return true;
+	}
+
+	if (root.val <= min || root.val >= max)
+	{
+		return false;
+	}
+
+	return Validate(root.left, min, root.val) && Validate(root.right, root.val, max);
+} 

@@ -1,0 +1,29 @@
+class Solution {
+public:
+    vector<int> tree;
+    void update(int idx, int element){
+        for(int i = idx; i < tree.size(); i+=(i&(-i))){
+            tree[i]^= element;
+        }
+    }
+    int query(int idx){
+        int ans = 0;
+        for(int i = idx; i > 0; i-=(i&(-i))){
+            ans^=tree[i];
+        }
+        return ans;
+    }
+    vector<int> xorQueries(vector<int>& arr, vector<vector<int>>& queries) {
+        tree.resize(arr.size()+1, 0);
+        for(int i = 0; i < arr.size(); i++){
+            update(i+1, arr[i]);
+        }
+        vector<int> ans;
+        for(auto x: queries){
+            int first = query(x[0]);
+            int second = query(x[1] + 1);
+            ans.push_back(second^first);
+        }
+        return ans;
+    }
+};

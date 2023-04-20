@@ -1,0 +1,32 @@
+    public IList<IList<string>> MostPopularCreator(string[] creators, string[] ids, int[] views) 
+    {
+        // key: Creator     -  value TotalView - HighestView - HighestId
+        Dictionary<string, (int, int, string)> freq = new Dictionary<string, (int, int, string)>();
+        for (int i = 0; i < creators.Length; i++)
+        {
+            if (freq.ContainsKey(creators[i]))
+            {
+                int totalView = freq[creators[i]].Item1 + views[i];
+                int highestView = freq[creators[i]].Item2;
+                string highestId = freq[creators[i]].Item3;
+                if (views[i] > freq[creators[i]].Item2 || (views[i] == freq[creators[i]].Item2 && string.Compare(ids[i], freq[creators[i]].Item3) < 0))
+                {
+                    highestView = views[i];
+                    highestId = ids[i];
+                }
+                freq[creators[i]] = (totalView, highestView, highestId);
+            }
+            else
+            {
+                freq.Add(creators[i], (views[i], views[i], ids[i]));
+            }
+        }
+        int max = freq.Max(f => f.Value.Item1);
+
+        IList<IList<string>> result = new List<IList<string>>();
+        foreach (var kv in freq.Where(f => f.Value.Item1 == max))
+        {
+            result.Add(new List<string> { kv.Key, kv.Value.Item3 });
+        }
+        return result;
+    }

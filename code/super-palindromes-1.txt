@@ -1,0 +1,49 @@
+class Solution {
+public:
+    int superpalindromesInRange(string left, string right) {
+        const string min_{std::to_string((int64_t)std::sqrt(std::stol(left)))},                                                        max_{std::to_string((int64_t)std::sqrt(std::stol(right)))};
+        int count{0};
+        for(size_t i{min_.size()}; i <= max_.size(); ++i) {
+            string tmp(i, '.');
+            dfs(min_, max_, count, tmp, 0, i-1);
+        }
+        
+        return count;
+    }
+    
+    void dfs(const string& left, const string& right, int& count, string& tmp, int i, int j) {
+        if(i > j) {
+
+            if(less(tmp, left) || less(right, tmp)) return;
+            
+            string square{std::to_string((std::stol(tmp)*std::stol(tmp)))};
+            
+            for(int i{0}, j{(int)square.size()-1}; i < j; ++i, --j) {
+                if(square[i] != square[j]) return;
+            }
+            
+            ++count;
+            return;
+        }
+        
+        for(char c{'0'}; c <= '9'; ++c) {
+            if(c == '0' && i == 0) continue;
+            tmp[i] = tmp[j] = c;
+            dfs(left, right, count, tmp, i+1, j-1);
+        }
+    }
+    
+    // Return true if a < b;
+    bool less(const string& a, const string& b) {
+	
+        if(a.size() < b.size()) return true;
+        else if(a.size() > b .size()) return false;
+        
+        for(int i{0}, size{(int)a.size()}; i < size; ++i) {
+            if(a[i] < b[i]) return true;
+            else if(a[i] > b[i]) return false;
+        }
+        
+        return false;
+    }
+};

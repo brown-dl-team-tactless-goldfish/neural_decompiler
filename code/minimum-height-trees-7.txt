@@ -1,0 +1,70 @@
+class Solution {
+public:
+    vector<int> findMinHeightTrees(int n, vector<vector<int>>& edges) {
+      //Let's take siimple example, if it is single linkedy linked list, if we have to find min hight tree,
+        //It will be the middle of the list.
+        //Same concept is applied here. Start from all the leaf node, and traverse inside until 1 or 2 nodes are 
+        //left. Those nodes will be minimum height tree root nodes.
+        //Refer snapshot.
+ 
+
+        //In the case of graph, we need to hold the adjacent nodes. E.g. garph [[1,2],[1,3]]
+        //Adj list will be like below, Lets take the vector<HashSet<int>> to hold this
+        //It's undirected graph, the adj should be added for both the node of the edge
+        //1->(2,3)
+        //2->(1)
+        //3->(1)
+        
+        
+        //edge case if there is single node then node with value 0 will be the output
+        if(n==1)
+        {
+            return vector<int>(1,0);
+        }
+        
+        vector<unordered_set<int>> adj(n);
+        for(vector<int> ed:edges)
+        {
+            adj[ed[0]].insert(ed[1]);
+            adj[ed[1]].insert(ed[0]);
+        }
+        
+        queue<int> q;
+        for(int i=0; i<adj.size(); ++i)
+        {            
+            if(adj[i].size()==1)//if set size is 1.
+                q.push(i);
+        }
+        //start BFS with these leaf nodes.      
+        
+        //Run the loop until there is only two nodes left
+        while(n>2)
+        {
+            int len = q.size();
+            n=n-len;
+            for(int i=0; i<len; ++i)
+            {
+                int node = q.front(); q.pop();
+                unordered_set<int> &ad=adj[node];                 
+                //Actually we need to the current leaf node from each node in the adj list.
+                //In the above example for leaf node 2. THe adj list is (1). So, fetch adj list of node 1
+                //And remove 2 from there.
+                for(auto a:ad)
+                {
+                    unordered_set<int> &adOfAdjNode=adj[a]; 
+                    adOfAdjNode.erase(node);
+                    if(adOfAdjNode.size()==1)//for new leaf node, add it in the queue
+                        q.push(a);
+                }
+            }
+        }
+        
+        //Now we need to get the values from queue and add it in the output
+        vector<int> out;
+        while(!q.empty())
+        {
+            out.push_back(q.front()); q.pop();
+        }
+        return out;
+    }
+};

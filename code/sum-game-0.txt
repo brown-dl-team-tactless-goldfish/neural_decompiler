@@ -1,0 +1,51 @@
+bool sumGame(char * num){
+    int n = strlen(num) ;
+    int lMark = 0, rMark = 0 ;
+    int lsum = 0, rsum = 0 ;
+    for(int i = 0; i < n/2; i++){
+        if(num[i] == '?')
+            lMark++ ;
+        else
+            lsum += num[i] -'0' ;    
+    }
+    for(int i = n-1; i >=n/2; i--){
+        if(num[i] == '?')
+            rMark++ ;
+        else
+            rsum += num[i] -'0' ; 
+    }
+    if(lsum == rsum){
+        if(lMark == rMark)
+            return false ; //equal , bob wins
+        else
+            return true ; //not equal , alice wins
+    }
+    else if(lsum > rsum){
+        if(lMark >= rMark)
+            return true ;  //not equal , alice wins
+        else{
+            int gap = lsum - rsum ;
+            int k = rMark - lMark;
+            if(k == 1)
+                return true ;
+            if(gap < 9* (k/2 + k%2) || gap > 9*(k/2))
+                return true ;  //not equal , alice wins
+            else
+                return false ; //equal , bob wins
+        }
+    }
+    else{
+        if(lMark <= rMark)
+            return true ;  //not equal , alice wins
+        else{
+            int gap = rsum - lsum ;
+            int k = lMark - rMark ;
+            if(k == 1)
+                return true ;
+            if(gap < 9* (k/2 + k%2) || gap > 9*(k/2) )
+                return true ;  //not equal , alice wins
+            else
+                return false ; //equal , bob wins
+        }        
+    }
+}

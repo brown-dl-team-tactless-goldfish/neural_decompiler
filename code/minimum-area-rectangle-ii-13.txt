@@ -1,0 +1,30 @@
+class Solution {
+public:
+	double minAreaFreeRect(vector<vector<int>>& points) {
+		set<vector<int>>num;
+		for(const auto &s:points)num.insert(s);
+
+		double res=DBL_MAX;
+
+		for(int i=0;i<=points.size()-3;++i){
+			for(int j=i+1;j<=points.size()-2;++j){
+				for(int k=j+1;k<points.size();++k){
+					double slop_y1=points[j][1]-points[i][1];
+					double slop_x1=points[j][0]-points[i][0];
+					double slop_y2=points[k][1]-points[i][1];
+					double slop_x2=points[k][0]-points[i][0];
+					if(slop_y1*slop_y2+slop_x1*slop_x2!=0)continue;
+
+					int lasty=slop_y1+points[k][1];
+					int lastx=slop_x1+points[k][0];
+
+					if(num.count({lastx,lasty})){                        
+						res=min(res,sqrt(pow(slop_y1,2)+pow(slop_x1,2))*sqrt(pow(slop_y2,2)+pow(slop_x2,2)));
+					}
+				}
+			}
+		}
+
+		return res==DBL_MAX?0:res;
+	}
+};

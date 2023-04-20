@@ -1,0 +1,32 @@
+class Solution {
+public:
+    enum Act{
+        OUT = 0,
+        IN = 1,
+    };
+
+    int smallestChair(vector<vector<int>>& times, int targetFriend) {
+        const int n = times.size();
+        set<int> st;
+        vector<tuple<int, Act, int>> v;    
+        vector<int> seats(n, -1);    
+        for(int i = 0; i<n; i++) {
+            st.insert(i);
+            v.emplace_back(times[i][0], IN, i);
+            v.emplace_back(times[i][1], OUT, i);
+        }
+        sort(begin(v), end(v));
+        for(auto [t, act, i] : v){
+            if(act == IN){
+                int seat = *st.begin();
+                seats[i] = seat;
+                if(targetFriend == i) return seat;
+                st.erase(seat);
+            }
+            else{
+                st.insert(seats[i]);
+            }
+        }
+        return -1;
+    }
+};

@@ -1,0 +1,19 @@
+int minimumBoxes(int n) {
+    auto cubes = [](int d) { return (long)d * (d + 1) * (d + 2) / 6; };
+    auto p_sum = [](int d) { return d * (d + 1) / 2; };
+    int dia_sz = 0, inc = 1, last_dia = 0;
+    while (n >= cubes(dia_sz + inc)) {
+        while (n >= cubes(dia_sz + inc * 2))
+            inc *= 2;
+        dia_sz += inc;
+        inc = 1;
+    }
+    n -= cubes(dia_sz);
+    while (n > p_sum(last_dia)) {
+        while (n > p_sum(last_dia + inc * 2))
+            inc *= 2;
+        last_dia += inc;
+        inc = 1;
+    }
+    return p_sum(dia_sz) + last_dia;
+}

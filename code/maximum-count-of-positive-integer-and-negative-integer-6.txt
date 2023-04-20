@@ -1,0 +1,61 @@
+int maximumCount(int* nums, int numsSize){
+
+    int res;
+    int high;
+    int low;
+    int mid;
+    int lastneg;
+    int lastpos;
+
+    
+    if(nums[0] > 0 || nums[numsSize -1] < 0)
+        return numsSize;
+    if(nums[0] == 0 && nums[numsSize -1] == 0)
+        return 0;
+    low = 0;
+    high = numsSize -1;
+
+    while(high - low > 1)
+    {
+        mid = low + ((high - low) / 2);
+        if(nums[low] < 0 && nums[low + 1] >= 0)
+        {
+            lastneg = low;
+            break;
+        }
+        else if (nums[mid] >= 0)
+            high = mid;
+        else if (nums[mid] < 0)
+            low = mid;
+    }
+
+    res = lastneg + 1;
+
+    if(nums[lastneg] > 0)
+        lastpos = lastneg + 1;
+    else
+    {
+        low = lastneg;
+        high = numsSize -1;
+
+        while(high - low > 1)
+        {
+            mid = low + ((high - low) / 2);
+            if(nums[high] > 0 && nums[high - 1] <= 0)
+            {
+                lastpos = high;
+                break;
+            }
+            else if (nums[mid] <= 0)
+                low = mid;
+            else if (nums[mid] > 0)
+                high = mid;
+        }
+    }
+    
+    if(numsSize - lastpos > res)
+        res = numsSize - lastpos;
+
+    return res;
+
+}

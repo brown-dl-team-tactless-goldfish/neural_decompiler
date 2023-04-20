@@ -1,0 +1,36 @@
+class Solution {
+public:
+    bool isRectangleCover(const vector<vector<int>>& rectangles) {
+        int area = 0, x1 = INT32_MAX, x2 = INT32_MIN, y1 = INT32_MAX, y2 = INT32_MIN;
+        unordered_set<int> s;
+        for(const auto &r: rectangles) {
+            x1 = min(x1, r[0]);
+            y1 = min(y1, r[1]);
+            x2 = max(x2, r[2]);
+            y2 = max(y2, r[3]);
+            area += (r[2]-r[0])*(r[3]-r[1]);
+            int s1 = hash(r[0], r[1]),
+               s2 = hash(r[0], r[3]),
+               s3 = hash(r[2], r[1]),
+               s4 = hash(r[2], r[3]);
+            if(s.count(s1)) s.erase(s1);
+            else s.insert(s1);
+            if(s.count(s2)) s.erase(s2);
+            else s.insert(s2);
+            if(s.count(s3)) s.erase(s3);
+            else s.insert(s3);
+            if(s.count(s4)) s.erase(s4);
+            else s.insert(s4);
+        }
+        return area == (x2-x1)*(y2-y1) && s.size() == 4 
+            && s.count(hash(x1,y1))
+            && s.count(hash(x1,y2))
+            && s.count(hash(x2,y1)) 
+            && s.count(hash(x2,y2));
+    }
+    static inline int hash(const int& a, const int& b) {
+        return a*7 + b*7*7*7;
+    }
+};
+
+auto gucciGang = []() {std::ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);return 0;}();

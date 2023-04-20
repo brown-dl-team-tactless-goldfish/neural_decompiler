@@ -1,0 +1,38 @@
+#define new_node()  malloc(sizeof(struct Node))
+struct Node* lookup_table[65536];
+int hash(struct Node* n){
+    return (uint16_t) n;
+}
+
+void lookup_put(struct Node* key, struct Node* value){
+    lookup_table[hash(key)] = value;
+}
+
+struct Node* lookup_get(struct Node* key){
+    return lookup_table[hash(key)];
+}
+
+struct Node* copyRandomList(struct Node* head) {
+    if (!head) return head;
+    struct Node* new_head = new_node();
+    struct Node* fin=new_head;
+    struct Node* p = head;
+    while (p){
+        fin->val = p->val;
+        if (p->next)
+            fin->next = new_node();
+        else
+            fin->next = NULL;
+        lookup_put(p, fin);
+        fin = fin->next;
+        p = p->next;
+    }
+    fin = new_head;
+    while(head){
+        fin->random = lookup_get(head->random);
+        head = head->next;
+        fin = fin->next;
+    }
+    int x = 1;
+    return new_head;
+}

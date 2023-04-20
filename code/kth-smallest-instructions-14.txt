@@ -1,0 +1,48 @@
+using LL = long long ;
+class Solution {
+    LL combination(int n, int m)
+    {        
+        LL ret = 1;
+        if(n == m || m == 0)
+            return 1 ;
+        for(int i = 0; i < m; i++){
+            ret *= n - i;
+            ret /= (i + 1);
+        }
+        return ret;
+    }
+public:
+    string kthSmallestPath(vector<int>& destination, int k) {
+        int V = destination[0] ;
+        int H = destination[1] ;
+        int n = V + H ;
+        string ret ;
+        for(int i = 0; i < n; i++){
+            if(H == 0){
+                while(V){
+                    ret.push_back('V') ;
+                    V-- ;
+                }
+                break ;
+            }    
+            if(V == 0){
+                while(H){
+                    ret.push_back('H') ;
+                    H-- ;
+                }
+                break ;
+            }
+            LL sum = combination(H-1 + V, V) ;
+            if(k <= sum){
+                ret.push_back('H') ;
+                H-- ;
+            }
+            else{
+                k -= sum;  //important 
+                ret.push_back('V') ;
+                V-- ;
+            }
+        }
+        return ret ;
+    }
+};

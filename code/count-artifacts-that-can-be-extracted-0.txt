@@ -1,0 +1,33 @@
+int digArtifacts(int n, int** artifacts, int artifactsSize, int* artifactsColSize, int** dig, int digSize, int* digColSize){
+    bool** table = malloc(n * sizeof(bool*));
+    for(int i = 0; i < n; i++){
+        table[i] = calloc(n , sizeof(bool));
+    }
+    
+    for(int i = 0; i < digSize; i++){
+        int r = dig[i][0];
+        int c = dig[i][1];
+        table[r][c] = true;
+    }
+
+    int ans = 0; 
+    for(int i = 0; i < artifactsSize; i++){
+        int r1 = artifacts[i][0];
+        int c1 = artifacts[i][1];
+        int r2 = artifacts[i][2];
+        int c2 = artifacts[i][3];
+        ans++;
+        for(int m = r1; m <= r2; m++){
+            for(int n = c1; n <= c2; n++){
+                if(table[m][n] == false)  {
+                    ans--;
+                    goto next;
+                }  
+            }
+        }
+        next:
+            continue;
+    }
+    
+    return ans;
+}

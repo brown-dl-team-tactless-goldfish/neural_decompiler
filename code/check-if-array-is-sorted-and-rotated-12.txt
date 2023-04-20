@@ -1,0 +1,31 @@
+bool check(int* nums, int numsSize){
+    bool hasDetectedRotationStart = false;
+    int firstValueOfRotatedArray = nums[0]; // Every int value AFTER the rotation place - MUST be smaller that this value
+    int i, rotationStartIndex;
+    
+    for(i = 1; i < numsSize && !hasDetectedRotationStart; ++i)
+    {
+        if(nums[i - 1] > nums[i])
+        {
+            hasDetectedRotationStart = true;
+            rotationStartIndex = i - 1;
+            break;
+        }
+    }
+    
+    if(!hasDetectedRotationStart) // Is ordered without any rotation
+    {
+        return true;
+    }
+    
+    // Continue the loop with a new condition:
+    for(; i < numsSize; ++i)
+    {
+        if(nums[i] > firstValueOfRotatedArray || (nums[i - 1] > nums[i] && i - 1 != rotationStartIndex /* Its the rotation starting place - num[i - 1] must be greater than nums[i] after the condition of the above loop */))
+        {
+            return false;
+        }
+    }
+    
+    return true;
+}

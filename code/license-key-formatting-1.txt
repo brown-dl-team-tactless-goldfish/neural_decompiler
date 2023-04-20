@@ -1,0 +1,41 @@
+void reverse(char* str) {
+    int l = 0, r = strlen(str) - 1;
+    while (l < r) {
+        char tmp = str[l];
+        str[l] = str[r];
+        str[r] = tmp;
+        l++;
+        r--;
+    }
+}
+
+char* licenseKeyFormatting(char* s, int k) {
+    int sl = strlen(s), cnt = 0, idx = 0;
+    for (int i = 0; i < sl; i++) {
+        if (s[i] >= 97 && s[i] <= 122) s[i] = toupper(s[i]);
+    }
+    char* res = (char*) malloc(2 * sl * sizeof(char));
+    for (int i = sl - 1; i >= 0; i--) {
+        if (cnt < k) {
+            if (s[i] == '-') continue;
+            res[idx++] = s[i];
+            cnt++;
+        } else {
+            res[idx++] = '-';
+            cnt = 0;
+            i++;
+        }
+    }
+    res[idx] = '\0';
+    reverse(res);
+    if (res[0] == '-') {
+        int num = 0;
+        for (int i = 0; i < idx; i++) {
+            if (res[i] != '-') break;
+            if (res[i] == '-') num++;
+        }
+        memmove(res, res + num, (idx - num) * sizeof(char));
+        res[idx - num] = '\0';
+    }
+    return res;
+}

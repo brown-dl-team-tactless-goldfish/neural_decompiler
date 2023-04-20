@@ -1,0 +1,38 @@
+public class Solution 
+{
+    Dictionary<string, int> dict;
+    public int KSimilarity(string A, string B) 
+    {
+        dict = new Dictionary<string, int>() {{B, 0}};
+        return KSimilarity(A.ToCharArray(), B, 0);
+    }
+    
+    private int KSimilarity(char[] A, string B, int i) 
+    {
+        var str = new string(A);
+        if (!dict.ContainsKey(str))
+        {
+            int min = 20;
+            while (i < A.Length && A[i] == B[i]) 
+                i++;
+            for (int j = i + 1; j < B.Length; j++) 
+            {
+                if (A[j] == B[i]) 
+                {
+                    Swap(A, i, j);
+                    min = Math.Min(min, 1 + KSimilarity(A, B, i + 1));
+                    Swap(A, i, j);
+                }
+            }
+            dict[str] = min;
+        }
+        return dict[str];
+    }
+    
+    private void Swap(char[] charArray, int i, int j) 
+    {
+        var temp = charArray[i];
+        charArray[i] = charArray[j];
+        charArray[j] = temp;
+    }
+}

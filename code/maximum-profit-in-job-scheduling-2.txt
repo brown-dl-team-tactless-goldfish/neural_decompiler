@@ -1,0 +1,41 @@
+# define ar array
+// mp[i] stores the maximum profit taking elements from the suffix starting at i.
+class Solution {
+public:
+    vector<ar<int,3>> a;
+    map<int,int> s;
+    map<int,int> mp;
+    
+    int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
+        int n = startTime.size();
+        
+        for(int i=0;i<n;++i){
+            a.push_back({startTime[i],endTime[i],profit[i]});
+        }
+        sort(a.begin(),a.end());
+        
+        // for(auto i : a){
+        //     cout << i[0] << " " << i[1] << " " << i[2] << "\n";
+        // }
+    
+        int ans = -1;
+        for(int i=n-1; i>=0; --i){
+            // try to find an element in set with stime >= endtime
+            auto it = s.lower_bound( a[i][1] );
+            if (it != s.end() ){
+                mp[a[i][0]] = max({ ans, (*it).second + a[i][2] });
+            }else{
+                mp[a[i][0]] = max({a[i][2],ans,mp[a[i][0]] });
+            }
+            
+            s[a[i][0]]=max(s[a[i][0]],mp[a[i][0]]);
+            ans = max(ans,mp[a[i][0]]);
+        }
+        
+        // for( auto i : s ){
+        //     cout << i.first << " " << i.second << "\n";
+        // }
+        
+        return ans;
+    }
+};

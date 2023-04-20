@@ -1,0 +1,41 @@
+class Solution {
+public:
+  string subStrHash(string s, int power, int modulo, int k, int hashValue) {
+    long hash = 0, first_power = 1, last_power = 1, hashV = hashValue;
+    
+    for(int i = 0; i != k; i++){                   //construct first hash
+      hash += (s[i] - '`') * last_power;
+      
+      last_power *= power;
+      last_power %= modulo;
+    } 
+      
+    hash %= modulo; 
+    
+    for(int i = 0, j = k; ; i++, j++){
+      if(hash == hashV){                              //for false alarm
+        long h = 0, p = 1; 
+        
+        for(int id = i, lim = id + k; id != lim; id++){
+          h += (s[id] - '`') * p;
+          p *= power;
+          p %= modulo;
+        }
+        h %= modulo; 
+        
+        if(h == hashValue) return s.substr(i,k);
+      } 
+      
+      hash       -= ((s[i] - '`')*first_power)%modulo;   //update hash
+      hash       += ((s[j] - '`')*last_power )%modulo; 
+      hash       += modulo;                            
+      hash       %= modulo;
+                                      
+      first_power = (first_power*power)%modulo;          //update all parameters                   
+      last_power  = (last_power *power)%modulo;
+      hashV       = (hashV      *power)%modulo;
+    }
+      
+    return "";
+  }
+};

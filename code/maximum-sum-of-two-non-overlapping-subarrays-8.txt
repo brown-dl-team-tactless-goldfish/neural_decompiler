@@ -1,0 +1,23 @@
+public int MaxSumTwoNoOverlap(int[] A, int L, int M) {
+	var n = A.Length;
+	int lMax = 0, mMax = 0, lSum = 0, mSum = 0;
+	var ls = new int[n]; var ms = new int[n];
+	var le = new int[n]; var me = new int[n];
+	for (var i = 0; i < L; i++) lSum += A[i];
+	for (var i = 0; i < M; i++) mSum += A[i];
+	for (var i = 0; i < n - L; i++) { ls[i] = lSum; lSum += A[i + L] - A[i]; }
+	for (var i = 0; i < n - M; i++) { ms[i] = mSum; mSum += A[i + M] - A[i]; }
+	ls[n - L] = lSum; ms[n - M] = mSum;
+	for (var i = n - 1; i >= L; i--) { le[i] = lSum; lSum -= A[i] - A[i - L]; }
+	for (var i = n - 1; i >= M; i--) { me[i] = mSum; mSum -= A[i] - A[i - M]; }
+	le[L - 1] = lSum; me[M - 1] = mSum;
+	for (var i = n - 1; i >= 0; i--) { if (ls[i] > lMax) lMax = ls[i]; ls[i] = lMax; }
+	for (var i = n - 1; i >= 0; i--) { if (ms[i] > mMax) mMax = ms[i]; ms[i] = mMax; }
+	lMax = mMax = 0;
+	for (var i = 0; i < n; i++) { if (le[i] > lMax) lMax = le[i]; le[i] = lMax; }
+	for (var i = 0; i < n; i++) { if (me[i] > mMax) mMax = me[i]; me[i] = mMax; }
+	lMax = mMax = 0;
+	for (var i = 0; i < n - 1; i++) { var l = le[i] + ms[i + 1]; if (l > lMax) lMax = l; }
+	for (var i = 0; i < n - 1; i++) { var m = me[i] + ls[i + 1]; if (m > mMax) mMax = m; }
+	return lMax > mMax ? lMax : mMax;
+}

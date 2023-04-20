@@ -1,0 +1,171 @@
+class Solution:
+    # Clearly a DP problem
+    # Once we have the first row, we find we can refer from the previous row, mapping possible mapping to the next row
+    # For example, 'RYR' can only be mapped to 'GRY','GRG', 'YGY', 'YRG', 'YRY'
+    # So the problem can be solved in log(n) time by matrix multiplication.
+    
+    def matrix_multiply(self, A, B, MOD):
+        n = len(A)
+        C = [[0 for i in range(n)] for j in range(n)]
+        for i in range(n):
+            for k in range(n):
+                for j in range(n):
+                    C[i][k] += A[i][j]*B[j][k]
+                    C[i][k] %= MOD
+        return C
+    
+    def numOfWays(self, n: int) -> int:
+        # Get all the candidates
+        colors, MOD = 'RYG', pow(10,9) + 7
+        candidates = set()
+        candidates.add('')
+        for i in range(3):
+            candidates_new = set()
+            for item in candidates:
+                for color in colors:
+                    if not item or item[-1] != color:
+                        candidates_new.add(item + color)
+            candidates = candidates_new
+        if n == 1:
+            return len(candidates)
+        
+        # Get the mapping matrix A
+        candidates = list(candidates)
+        nc = len(candidates)
+        A = [[0 for i in range(nc)] for j in range(nc)]
+        for i in range(nc):
+            for j in range(nc):
+                if all([x != y for x, y in zip(candidates[i], candidates[j])]):
+                    A[i][j] += 1        
+        B = [[0 for i in range(nc)] for j in range(nc)]
+        for i in range(nc):
+            B[i][i] = 1
+        
+        # Matrix multiplication
+        count = n-1
+        for i in range(count.bit_length()):
+            if count & (1 << i):
+                B = self.matrix_multiply(A,B,MOD)
+            A = self.matrix_multiply(A,A,MOD)
+        result = 0
+        u = [1]*nc
+        for i in range(nc):
+            for j in range(nc):
+                result += B[i][j]*u[j]
+                result %= MOD
+        return result
+public class Solution {
+    public long[,] MultiplyMatrix(long[,] A, long[,] B, long MOD)
+    {
+        int rA = A.GetLength(0);
+        int cA = A.GetLength(1);
+        int rB = B.GetLength(0);
+        int cB = B.GetLength(1);
+        long temp;
+        long[,] C = new long[rA, cB];
+
+        for (int i = 0; i < rA; i++)
+        {
+            for (int j = 0; j < cB; j++)
+            {
+                temp = 0;
+                for (int k = 0; k < cA; k++)
+                {
+                    temp += A[i,k]*B[k,j];
+                }
+                temp %= MOD;
+                C[i, j] = temp;
+            }
+        }
+        return C;
+    }
+    
+    /// <summary>Gets the number of bits needed to represent the number.</summary>
+    public static int Size(int bits)
+    {
+        var size = 0;
+        while(bits != 0)
+        {
+            bits >>= 1;
+            size++;
+        }
+        return size;
+    }
+    
+    public int NumOfWays(int n) {
+        string colors = "RYG";
+        long MOD = 1000000007;
+        HashSet<string> candidates = new HashSet<string>();
+        candidates.Add("");
+        for (int i=0; i<3; i++)
+        {
+            HashSet<string> candidates_new = new HashSet<string>();
+            foreach (string item in candidates)
+            {
+                foreach (char color in colors)
+                {
+                    if (item.Length == 0 || item[item.Length-1] != color)
+                    {
+                        candidates_new.Add(item + color);
+                    }
+                }
+            }
+            candidates = candidates_new;
+        }
+        if (n == 1)
+        {
+            return candidates.Count;
+        }
+        
+        int nc = candidates.Count;
+        string[] candidatesArray = new string[nc];
+        candidates.CopyTo(candidatesArray);
+        long[,] A = new long[nc,nc];
+        long[,] B = new long[nc,nc];
+        for (int i = 0; i < nc; i++)
+        {
+            for (int j = 0; j < nc; j++)
+            {
+                bool[] noMatch = new bool[3];
+                Array.Fill(noMatch, true);
+                for (int k = 0; k < 3; k++)
+                {
+                    if (candidatesArray[i][k] == candidatesArray[j][k])
+                    {
+                        noMatch[k] = false;
+                    }
+                }
+                if (noMatch.All(x => x))
+                {
+                    A[i,j] = 1;
+                }
+                else
+                {
+                    A[i,j] = 0;
+                }
+            }
+            B[i,i] = 1;
+        }
+        
+        int count = n - 1;
+        for (int i = 0; i < Size(count); i++)
+        {
+            if ((count & (1<<i)) != 0)
+            {
+                B = MultiplyMatrix(A, B, MOD); 
+            }
+            A = MultiplyMatrix(A, A, MOD); 
+        }
+        
+        long result = 0;
+        for (int i=0; i<nc; i++)
+        {
+            for (int j=0; j<nc; j++)
+            {
+                result += B[i,j];
+                result %= MOD;
+            }
+        }
+        return (int)result;
+    }
+}

@@ -1,0 +1,55 @@
+    #define ll long long
+    #define pp pair<long long, int>
+    
+long long kSum(vector<int>& A, int k) {
+        
+        int n = A.size();
+        
+        vector<ll> sub;
+        
+        ll mx = 0;
+        
+        
+        for(int i =0; i<n; i++){
+                
+                if(A[i]>=0){
+                        mx+=A[i];
+                } else{
+                        
+                        A[i] = abs(A[i]);
+                }
+        }
+        
+        sort(A.begin(), A.end());
+        
+        priority_queue<pp ,vector<pp>, greater<pp>> q;
+        
+        q.push({A[0], 0});
+        
+        while(q.size()){
+                
+                auto it = q.top(); q.pop();
+                
+                ll val = it.first;
+                int ind = it.second;
+                
+                sub.push_back(val);
+                
+                if(sub.size()>=k-1) break;
+                
+                if(ind<n-1){
+                        
+                        q.push({val+(ll)A[ind+1], ind+1});
+                        q.push({(ll)A[ind+1]+(val-(ll)A[ind]), ind+1});
+                }
+        }
+        
+        vector<ll> ans;
+        ans.push_back(mx);
+        
+        for(int i =0; i<sub.size(); i++){
+                ans.push_back(mx-sub[i]);
+        }
+        
+      return ans[k-1];
+}

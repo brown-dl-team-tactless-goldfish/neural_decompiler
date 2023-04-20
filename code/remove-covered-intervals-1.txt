@@ -1,0 +1,30 @@
+int compare ( const void *pa, const void *pb ) {
+    const int *a = *(const int **)pa;
+    const int *b = *(const int **)pb;
+    if(a[0] == b[0])
+        return a[1] - b[1];
+    else
+        return a[0] - b[0];
+}
+
+int removeCoveredIntervals(int** intervals, int intervalsSize, int* intervalsColSize){
+    if(intervalsSize <= 1) return intervalsSize;
+    qsort(intervals, intervalsSize, sizeof(intervals[0]),compare);
+    int ans = intervalsSize;
+    int cur = 0;
+    for(int i=1;i<intervalsSize;i++){
+        int cur_start = intervals[cur][0], cur_end = intervals[cur][1];
+        while(cur_start == intervals[i][0] && cur_end < intervals[i][1]){
+            ans-=1;
+            cur=i;
+            cur_start = intervals[cur][0], cur_end = intervals[cur][1];
+            i++;
+        }
+        if(cur_start <= intervals[i][0] && intervals[i][1] <= cur_end )
+            ans-=1;
+        else{
+            cur = i;
+        }
+    }
+    return ans;
+}

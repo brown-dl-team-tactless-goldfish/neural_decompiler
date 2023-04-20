@@ -1,0 +1,48 @@
+class Solution {
+public:
+    unordered_map<int, vector<int>> mpr, mpc;
+    int ans = 0;
+    
+    int countServers(vector<vector<int>>& grid) {    
+        int r = grid.size(), c = grid[0].size();
+        
+        vector<vector<bool>> visited(r, vector<bool>(c, false));
+        
+        for(int i=0;i<r;i++)
+            for(int j=0;j<c;j++)
+                if(grid[i][j]){
+                    mpr[i].push_back(j);
+                    mpc[j].push_back(i);
+                }
+        
+        for(auto m: mpr)
+            for(int c: m.second)
+                if(!visited[m.first][c] && dfs(m.first, c, visited))
+                    ans++;
+        
+        return ans;
+    }
+    
+    bool dfs(int r, int c, vector<vector<bool>>& visited){
+        visited[r][c] = true;
+        bool isPos = false;
+        
+        for(int nc: mpr[r]){
+            if(!visited[r][nc]){
+                dfs(r, nc, visited);
+                ans++;
+                isPos = true;
+            }
+        }
+        
+        for(int nr: mpc[c]){
+            if(!visited[nr][c]){
+                dfs(nr, c, visited);
+                ans++;
+                isPos = true;
+            }
+        }
+        
+        return isPos;
+    }
+};

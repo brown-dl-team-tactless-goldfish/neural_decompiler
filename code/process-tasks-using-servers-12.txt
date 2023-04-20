@@ -1,0 +1,76 @@
+class compare1
+{
+    public:
+    bool operator()(pair<int,pair<int,int>>&a ,pair<int,pair<int,int>>&b)
+    {
+        
+        if(a.first == b.first)
+        {
+            if(a.second.first == b.second.first)
+                return (a.second.second > b.second.second);
+            return (a.second.first > b.second.first);
+        }
+        return (a.first > b.first);
+    }
+};
+class compare2
+{
+    public:
+    bool operator()(pair<int,int>&a ,pair<int,int>&b)
+    {
+        if(a.first == b.first)
+            return (a.second > b.second);
+        return (a.first > b.first);
+    }
+};
+
+class Solution {
+public:
+    vector<int> assignTasks(vector<int>& s, vector<int>& t) 
+    {
+        int n = s.size();
+        int m = t.size();
+        priority_queue<pair<int,pair<int,int>>,vector< pair<int,pair<int,int>> >,compare1>processing;
+        priority_queue<pair<int,int>,vector< pair<int,int> >,compare2>free;
+        queue<int>q;
+        vector<int>assign(m,0);
+        for(int i = 0; i < n; i++)
+        {
+            free.push({s[i],i});
+        }
+        for(int i = 0; i < m; i++)
+        {
+            while(!processing.empty() and processing.top().first <= i)
+            {
+                free.push({processing.top().second.first,processing.top().second.second});
+                processing.pop();
+            }
+            q.push(i);
+            while(!free.empty() and !q.empty())
+            {
+                int cur = q.front();
+                q.pop();
+                pair<int,int>best = free.top();
+                free.pop();
+                assign[cur] = best.second;
+                processing.push({i + t[cur], {best.first,best.second} });
+            }
+        }
+        while(!q.empty())
+        {
+            int cur = q.front();
+            q.pop();
+            pair<int,pair<int,int>>out = processing.top(); 
+            free.push({processing.top().second.first,processing.top().second.second});
+            processing.pop();
+            pair<int,int>best = free.top();
+            free.pop();
+            assign[cur] = best.second;
+            processing.push({out.first + t[cur],{best.first,best.second}} );
+        }
+        return assign;
+        
+        
+        
+    }
+};

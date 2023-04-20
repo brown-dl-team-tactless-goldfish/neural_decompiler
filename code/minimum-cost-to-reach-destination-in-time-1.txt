@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int minCost(int T, vector<vector<int>>& E, vector<int>& F) {
+        unordered_map<int, unordered_map<int, int>> g;
+        for(auto & e : E) {
+            if(g[e[0]].find(e[1]) == g[e[0]].end()) g[e[0]][e[1]] = e[2];
+            else g[e[0]][e[1]] = min(g[e[0]][e[1]], e[2]);
+            if(g[e[1]].find(e[0]) == g[e[1]].end()) g[e[1]][e[0]] = e[2];
+            else g[e[1]][e[0]] = min(g[e[1]][e[0]], e[2]);
+        }
+
+        priority_queue<array<int, 3>> pq;
+        pq.push({-F[0], 0, 0});
+
+        int N = F.size();
+        vector<int> cost(N, INT_MAX), time(N, INT_MAX);
+        cost[0] = F[0];
+        time[0] = 0;
+
+        while(!pq.empty()) {
+            auto cur = pq.top(); pq.pop();
+            if(cur[2] == N-1) return -cur[0];
+            if(g.find(cur[2]) == g.end()) continue;
+            for(auto& [node, t_nxt] : g[cur[2]]) {
+                int c = -cur[0]+ F[node];
+                int t = cur[1] + t_nxt;
+                if(t <= T && (t < time[node] || c < cost[node])) {
+                    cost[node] = min(cost[node], c);
+                    time[node] = min(time[node], t);
+                    pq.push({-c, t, node});
+                }
+            }
+        }
+        return -1;
+    }
+};

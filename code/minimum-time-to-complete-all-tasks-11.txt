@@ -1,0 +1,30 @@
+class Solution {
+public:
+    static bool comp(vector<int>& v1,vector<int>& v2){
+        if(v1[1]==v2[1])
+            return v1[0] < v2[0];
+        return v1[1]<v2[1];
+    }
+    int findMinimumTime(vector<vector<int>>& tasks) {
+        sort(tasks.begin(),tasks.end(),comp);
+        int n=tasks.size(),count=0;
+        vector<int> vec(2001);
+        for(int i=0;i<n;i++){
+            int duration=tasks[i][2],start=tasks[i][0],end=tasks[i][1];
+            for(int j=start;j<=end;j++)
+                if(vec[j])
+                    duration--;
+            while(duration>0){
+                if(!vec[end]){
+                    vec[end]=1;
+                    duration--;
+                }
+                end--;
+            }
+        }
+        for(auto it:vec)
+            if(it)
+                count++;
+        return count;
+    }
+};

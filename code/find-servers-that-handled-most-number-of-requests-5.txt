@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<int> busiestServers(int k, vector<int>& arrival, vector<int>& load) {
+        set<int> svs;
+        for(int i = 0; i < k; i++) svs.insert(i);
+        priority_queue<array<int, 2>> pq;
+        int N = arrival.size(), cnt[100001]{}, r = 0, server = 0, max_v = 0;
+        for(int i = 0; i < N; i++) {
+            while(!pq.empty() && -pq.top()[0] <= arrival[i]) {
+                svs.insert(pq.top()[1]);
+                pq.pop();
+            }
+            r = i%k;
+            if(svs.size()) {
+                auto p = svs.lower_bound(r);
+                if(p != svs.end()) server = *p;
+                else server = *begin(svs);
+                max_v = max(max_v, ++cnt[server]);
+                svs.erase(server);
+                pq.push({-(arrival[i]+ load[i]), server});
+            }
+        }
+        vector<int> res;
+        for(int i = 0; i < k; i++) if(cnt[i] == max_v) res.push_back(i);
+        return res;
+    }
+};

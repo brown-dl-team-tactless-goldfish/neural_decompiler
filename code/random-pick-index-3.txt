@@ -1,0 +1,25 @@
+public class Solution 
+{
+    Random random;
+    IDictionary<int, int[]> nums;
+    
+    public Solution (int[] nums) 
+    {
+        this.random = new Random();
+        this.nums = nums
+            // First, make key-value pairs of item and index
+            .Select((item, index) => new KeyValuePair<int, int>(item, index))
+            // Second, group by item and select only a value of kvpair,
+            // which makes resulting grouping an enumerable of indices of that item
+            .GroupBy(kv => kv.Key, kv => kv.Value)
+            // Third, convert it to normal Dictionary<int, int[]>
+            .ToDictionary(group => group.Key, group => group.ToArray());
+            
+    }
+    
+    public int Pick (int target) 
+    {
+        int[] indices = this.nums[target];
+        return indices[random.Next(indices.Length)];
+    }
+}

@@ -1,0 +1,36 @@
+class Solution {
+private:
+    
+    bool isOK(char l, char r, char u, unordered_set<string>& allow) {
+        string s = "ZZZ";
+        s[0] = l; s[1] = r; s[2] = u;
+        return allow.count(s);
+    }
+    bool pt(string bottom, unordered_set<string>& allow, string op){
+        int n = bottom.size();
+        if (n == 1) return true;
+        string ans(n - 1, 'Z');
+        return (dfs(bottom, ans, 0, op, allow)) ;
+    }
+    
+    bool dfs(string bottom, string ans, int idx, string op, unordered_set<string>& allow) {
+        if (idx == ans.size()) {
+            return pt(ans, allow, op);
+        }
+        for (char c : op) {
+            if (isOK(bottom[idx], bottom[idx + 1], c, allow)) {
+                ans[idx] = c;
+                if (dfs(bottom, ans, idx + 1, op, allow)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+public:
+    bool pyramidTransition(string bottom, vector<string>& allowed) {
+        string op = "ABCDEFG";
+        unordered_set<string> allow(allowed.begin(), allowed.end());
+        return pt(bottom, allow, op);
+    }
+};

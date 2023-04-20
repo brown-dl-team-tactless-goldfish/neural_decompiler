@@ -1,0 +1,63 @@
+    bool is_can_run(vector<int>& arr, long long k, long long mid)
+    {
+        int n = arr.size();
+        
+        long long need = (k * mid); 
+        
+        long long curr = 0;
+        
+        for(int i = 0; i < n; i++)
+        {
+            if(arr[i] > mid)
+            {
+                curr += mid;
+            }
+            else
+            {
+                curr += arr[i];
+            }
+        }
+        
+        if(curr >= need)
+            return true;
+        
+        return false;
+    }
+    
+    long long maxRunTime(int k, vector<int>& arr) {
+        
+        int n = arr.size();
+        
+        sort(arr.begin(), arr.end(), greater<int>());
+        
+        long long sum = 0;
+        
+        for(int i = 0; i < n; i++)
+        {
+            sum += arr[i];
+        }
+        
+        long long low = arr[k - 1];
+        
+        long long high = sum / k;
+        
+        long long ans = 0;
+        
+        while(low <= high)
+        {
+            long long mid = (low + high) / 2 ;
+            
+            if(is_can_run(arr, k, mid))
+            {
+                ans = mid;
+                
+                low = mid + 1;
+            }
+            else
+            {
+                high = mid - 1;
+            }
+        }
+        
+        return ans;
+    }

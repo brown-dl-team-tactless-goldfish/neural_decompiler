@@ -1,0 +1,63 @@
+public int[] helper(string s)
+{
+	// Manacher's Algorithm
+	int[] d = new int[s.Length];
+	int left = 0, right = -1;
+
+	for (int i = 0; i < s.Length; i++)
+	{
+		int k = (i > right) ? 1 : Math.Min(d[left + right - i], right - i + 1);
+		while (0 <= i - k && i + k < s.Length && s[i - k] == s[i + k])
+		{
+			k++;
+		}
+
+		d[i] = k;
+		k--;
+		if (i + k > right)
+		{
+			left = i - k;
+			right = i + k;
+		}
+	}
+
+	// Find max range for given element and find max palindrome upto i
+	int[] maxRange = new int[s.Length];
+	int n = s.Length;
+
+	for (int i = 0; i < n; i++)
+	{
+		maxRange[i - d[i] + 1] = i;
+	}
+
+	int max = 0;
+	int[] maxL = new int[n];
+	Array.Fill(maxL, 1);
+
+	for (int i = 0; i < n; i++)
+	{
+		max = Math.Max(maxRange[i], max);
+		maxL[i] = Math.Max((max - i) * 2 + 1, maxL[i]);
+	}
+
+	for (int i = n - 2; i >= 0; i--)
+	{
+		maxL[i] = Math.Max(maxL[i + 1], maxL[i]);
+	}
+
+	return maxL;
+}
+
+public long MaxProduct(string s)
+{
+	int[] left = helper(s);
+	int[] right = helper(new string(s.Reverse().ToArray()));
+
+	long result = 0L;
+	for (int i = 1; i < s.Length; i++)
+	{
+		result = Math.Max(result, 1L * left[i] * right[s.Length - i]);
+	}
+
+	return result;
+}

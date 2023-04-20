@@ -1,0 +1,51 @@
+struct pair {
+    int idx;
+    int val;
+};
+
+int cmp(const void* a, const void* b) {
+    struct pair pa = *(const struct pair*) a;
+    struct pair pb = *(const struct pair*) b;
+    if (pa.val == pb.val) return pa.idx - pb.idx;
+    return pa.val - pb.val;
+}
+
+int** groupThePeople(int* groupSizes, int groupSizesSize, int* returnSize, int** returnColumnSizes) {
+    struct pair* arr = (struct pair*) malloc(groupSizesSize * sizeof(struct pair));
+    for (int i = 0; i < groupSizesSize; i++) {
+        arr[i].idx = i;
+        arr[i].val = groupSizes[i];
+    }
+    qsort(arr, groupSizesSize, sizeof(struct pair), cmp);
+    int* map = (int*) calloc(1 + arr[groupSizesSize-1].val, sizeof(int));
+    for (int i = 0; i < groupSizesSize; i++) {
+        map[arr[i].val]++;
+    }
+    int rSize = 0;
+    for (int i = 1; i < 1 + arr[groupSizesSize-1].val; i++) {
+        rSize += (map[i] / i);
+    }
+    int cidx = 0;
+    *returnColumnSizes = (int*) malloc(rSize * sizeof(int));
+    for (int i = 1; i < 1 + arr[groupSizesSize-1].val; i++) {
+        if (map[i] != 0) {
+            int cnt = map[i] / i;
+            while (cnt > 0) {
+                (*returnColumnSizes)[cidx++] = i;
+                cnt--;
+            }
+        }
+    }
+    int arridx = 0;
+    int** res = (int**) malloc(rSize * sizeof(int*));
+    for (int r = 0; r < rSize; r++) {
+        res[r] = (int*) malloc((*returnColumnSizes)[r] * sizeof(int));
+        for (int c = 0; c < (*returnColumnSizes)[r]; c++) {
+            res[r][c] = arr[arridx++].idx;
+        }
+    }
+    *returnSize = rSize;
+    free(arr);
+    free(map);
+    return res;
+}

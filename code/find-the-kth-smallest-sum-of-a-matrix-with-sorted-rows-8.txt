@@ -1,0 +1,23 @@
+class Solution:
+    def kthSmallest(self, mat: List[List[int]], k: int) -> int:
+        m, n = len(mat), len(mat[0])
+        if m == 1: return mat[0][k-1]
+        
+        ans = self.kSmallestSumPairs(mat[0], mat[1], k)
+        for r in range(2, m):
+            ans = self.kSmallestSumPairs(ans, mat[r], k)
+        return ans[k-1]
+            
+    def kSmallestSumPairs(self, arr1, arr2, k):  # Return up to `k` smallest sum of pairs of `arr1` and `arr2`
+        minHeap = []
+        for c in range(min(len(arr1), k)):
+            heappush(minHeap, (arr1[c] + arr2[0], c, 0))
+
+        ans = []
+        while k > 0 and minHeap:
+            _sum, c1, c2 = heappop(minHeap)
+            ans.append(_sum)
+            if c2 + 1 < len(arr2):
+                heappush(minHeap, (arr1[c1] + arr2[c2+1], c1, c2+1))
+            k -= 1
+        return ans

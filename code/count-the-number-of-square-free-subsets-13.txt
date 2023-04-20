@@ -1,0 +1,61 @@
+class Solution {
+public:
+    #define mod 1000000007
+    unordered_map<int,int> mp;
+    vector<int> p;
+    int dp[1001][2100];
+    int solve(vector<int>& nums, int i=0, int mask=0)
+    {
+        
+       if(i== nums.size())
+       {
+           //cout<< mask<< endl;
+           return 1;
+       }
+        
+        if(dp[i][mask] !=-1) return dp[i][mask];
+        
+         bool fg= true;
+        int m= mask;
+        
+       
+        for(int j=0;j<p.size();j++)
+        {
+      
+            if(nums[i] % p[j] ==0)
+            {
+                int x= p[j]* p[j];
+               
+                if(nums[i] % x  ==0)  {fg= false; break;}
+                //cout<< nums[i]<< endl;
+                int a= (1<<j);
+                if(m & a) {fg= false; break;}
+                m |= a;
+                if(i==0)cout<< a<< " "<<m<< endl;
+            }
+        }
+        
+        int op1,op2;
+        op1=op2=0;
+        // cout<< i<< " "<< m<< " "<< fg<< endl;
+        if(fg) op1= solve(nums, i+1, m); //take it
+        op2= solve(nums,i+1, mask);
+      
+        return  dp[i][mask]= (op1% mod + op2% mod) % mod;
+        
+       
+    }
+    int squareFreeSubsets(vector<int>& nums) {
+        // no prime no has a power of 2 
+        
+        memset(dp,-1, sizeof(dp));
+        p={2,3,5,7,11,13,17,19,23,29};
+       // for(int i=0;i<p.size();i++) cout<< p[i]<< endl;
+        
+        return (solve(nums , 0, 0) -1 + mod) % mod;
+    
+        
+        
+        
+    }
+};

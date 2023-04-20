@@ -1,0 +1,38 @@
+class Solution {
+public:
+    void rev (ListNode *head, int n) {
+        ListNode *cur = head->next, *t = cur, *prev = nullptr;
+        for (int i = 0; i < n; i++) {
+            auto tmp = cur->next;
+            cur->next = prev;
+            prev = cur;
+            cur = tmp;
+            if(!cur) break;
+        }
+        head->next = prev;
+        t->next = cur;
+    }
+    int count(ListNode *head, int n) {
+        int i = 0;
+        for (; i < n && head; i++) head = head->next;
+        return i;
+    }
+    ListNode* reverseEvenLengthGroups(ListNode* head) {
+        int i = 1;
+        ListNode *cur = head, *prev = nullptr;
+        for (; cur; i++) {
+            int cnt = count(cur, i);
+            if (cnt & 1) {
+                for (int j = 0; j < cnt; j++) {
+                    prev = cur;
+                    cur = cur->next;
+                }
+            } else {
+                rev(prev, cnt);
+                prev = cur;
+                if (cur) cur = cur->next;
+            }
+        }
+        return head;
+    }
+};

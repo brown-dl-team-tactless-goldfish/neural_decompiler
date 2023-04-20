@@ -1,0 +1,58 @@
+class Solution {
+public:
+    vector<int>par;
+    vector<int>rk;
+    int findpar(int node){
+        if(node == par[node])
+            return node;
+        return par[node] = findpar(par[node]);
+    }
+    void unionfun(int u,int v){
+        u = findpar(u);
+        v = findpar(v);
+        if(rk[u] < rk[v])
+            par[u]=v;
+        else if(rk[v] < rk[u])
+            par[v]=u;
+        else{
+            rk[u]++;
+            par[v]=u;
+        }
+    }
+    vector<bool> friendRequests(int n, vector<vector<int>>& a, vector<vector<int>>&b) {
+        int m = b.size();
+        rk.resize(n,0);
+        par.resize(n);
+        for(int i=0;i<n;i++){
+            par[i]=i;
+        }
+        vector<bool>ans(m,0);
+        for(int i=0;i<m;i++){
+            int u = b[i][0];
+            int v = b[i][1];
+            vector<int>trk=rk;
+            vector<int>tpar=par;
+            unionfun(u,v);
+            int ok=0;
+            for(int j=0;j<a.size();j++){
+                int f = a[j][0];
+                int s = a[j][1];
+                int par1=findpar(f);
+                int par2=findpar(s);
+                if(par1 == par2){
+                    ok=1;
+                    break;
+                }
+            }
+            if(ok == 1){
+                ans[i]=0;
+                par = tpar;
+                rk = trk;
+            }
+            else{
+                ans[i]=1;
+            }
+        }
+        return ans;
+    }
+};

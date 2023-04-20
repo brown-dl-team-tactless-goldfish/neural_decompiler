@@ -1,0 +1,44 @@
+int minFallingPathSum(int** A, int ARowSize, int *AColSizes) {
+    
+	// Allocate the DP matrix
+    int* mFPSThrough = (int*) malloc(ARowSize*ARowSize*sizeof(int));
+    
+	// Initialize the bottom row base case for our DP matrix
+    int r, c;
+    for(c = 0; c < ARowSize; ++c) {
+        mFPSThrough[((ARowSize-1)*ARowSize) + c] = A[ARowSize-1][c]; 
+    }
+    
+	// Iterate upwards starting from the 2nd to last row
+    for (r = ARowSize - 2; r >= 0; r--) {
+        for (c = 0; c < ARowSize; ++c) {
+            int index = (r*ARowSize) + c;
+            
+            // All paths can take the same column for the next row, so we start with this as the mFPS value through this column
+            int cellMin = mFPSThrough[((r + 1)*ARowSize) + c];
+            
+            // If not leftmost col, check path through [r+1][c-1]
+            if (c > 0) {
+                int leftNext = mFPSThrough[((r + 1)*ARowSize) + (c - 1)];
+                cellMin = (cellMin < leftNext) ? cellMin : leftNext;
+            }
+            
+            // If not rightmost col, check path through [r+1][c+1]
+            if (c < (ARowSize - 1)) {
+                int rightNext = mFPSThrough[((r + 1)*ARowSize) + (c + 1)];
+                cellMin = (cellMin < rightNext) ? cellMin : rightNext;
+            }
+
+            // Need to include current cell's value for sum of path through cell
+            mFPSThrough[index] = cellMin + A[r][c];
+        }
+    }
+    
+	// Now find the smallest mFPS
+	int minFPSum = INT_MAX;
+    for (c = 0; c < ARowSize; ++c) {
+        minFPSum = (mFPSThrough[c] < minFPSum) ? mFPSThrough[c] : minFPSum;
+    }
+    
+    return minFPSum;
+}

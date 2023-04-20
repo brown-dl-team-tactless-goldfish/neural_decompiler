@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int postInd;
+    unordered_map<int, int> mp;
+    TreeNode* BuildTree(vector<int>& inorder, vector<int>& postorder, int ll, int hh) {
+        if(ll > hh) return nullptr;
+        TreeNode* root = new TreeNode(postorder[postInd--]);
+        int fit = mp[root->val];
+        root->right = BuildTree(inorder, postorder, fit + 1, hh);
+        root->left = BuildTree(inorder, postorder, ll, fit - 1);
+        return root;
+    }
+    
+    TreeNode* buildTree(vector<int>& inorder, vector<int>& postorder) {
+        int n = inorder.size();
+        postInd = n - 1;
+        for(int i=0;i<n;i++)
+            mp[inorder[i]] = i;
+        
+        return BuildTree(inorder, postorder, 0, n - 1);
+    }
+};

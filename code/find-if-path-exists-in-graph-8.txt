@@ -1,0 +1,32 @@
+class Solution {
+public:
+    bool validPath(int n, vector<vector<int>>& edges, int start, int end) {
+        if( n == 1 )
+            return start == end and start == 0;
+        unordered_map< int, vector< int > > m;
+        for( auto p : edges )
+        {
+            m[p[0]].push_back(p[1]);
+            m[p[1]].push_back(p[0]);
+        }
+        
+        unordered_set<int> vis;
+        deque<int> d;
+        for( auto v : m[start])
+            d.push_back( v );
+        while( not d.empty())
+        {
+            auto c = d.front();
+            d.pop_front();
+            if( end == c )
+                return true;
+            vis.insert( c );
+            for( auto v : m[c] )
+                if( not vis.count( v ) )
+                    d.push_back( v );
+                
+        }
+
+        return false;
+    }
+};

@@ -1,0 +1,42 @@
+class Solution 
+{
+public:
+    vector<vector<int>> imageSmoother(vector<vector<int>>& img) 
+    {      
+        std::vector<std::vector<int>> res(img.size(), std::vector<int>(img[0].size(), 0));
+        for (int r = 0; r < res.size(); r++)
+        {
+            for (int c = 0; c < res[r].size(); c++)
+            {
+                res[r][c] = makeItSmooth(img, r, c);
+            }
+        }
+        
+        return res;
+    }
+private:
+    int dirRow[9] = { -1, -1, -1, 0, 0, 0, 1, 1, 1 };
+    int dirCol[9] = { -1, 0, 1, -1, 0, 1, -1, 0, 1 };
+    
+    bool insideTheImage(const std::vector<std::vector<int>>& img, int r, int c)
+    {
+        return r >= 0 && r < img.size() && c >= 0 && c < img[0].size();
+    }
+    
+    int makeItSmooth(const std::vector<std::vector<int>>& img, int r, int c)
+    {
+        double sum = 0;
+        int count = 0;
+        for (int i = 0; i < 9; i++)
+        {
+            int nextRow = r + dirRow[i];
+            int nextCol = c + dirCol[i];
+            if (insideTheImage(img, nextRow, nextCol))
+            {
+                sum += img[nextRow][nextCol];
+                count++;
+            }
+        }
+        return std::floor(sum / count);
+    }
+};

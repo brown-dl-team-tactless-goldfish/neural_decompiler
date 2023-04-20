@@ -1,0 +1,48 @@
+class Solution {
+public:
+    string smallestNumber(string pattern) {
+        int n = pattern.size() + 1;
+        vector<int> ind(n, 0);
+        vector<vector<int>> graph(n);
+        for (int i = 0; i < n - 1; i++) {
+            if (pattern[i] == 'I') {
+                ind[i + 1] += 1;
+                graph[i].push_back(i + 1);
+            }
+            else {
+                ind[i] += 1;
+                graph[i + 1].push_back(i);
+            }
+        }
+        string s(n, '1');
+        priority_queue<int, vector<int>, greater<int>> q;
+        vector<bool> digitVisit(100, 0);
+        for (int i = 0; i < n; i++) {
+            if (ind[i] == 0) {
+                q.push(i);
+            }
+        }
+        vector<bool> vis(n, 0);
+        while (!q.empty()) {
+            int i = q.top();
+            q.pop();
+            vis[i] = 1;
+            for (char c = s[i]; c <= '9'; c++) {
+                if (!digitVisit[c - '1']) {
+                    s[i] = c;
+                    digitVisit[c - '1'] = 1;
+                    break;
+                }
+            }
+            for (int j : graph[i]) {
+                s[j] = max(s[j], char(s[i] + 1));
+                --ind[j];
+                if (ind[j] == 0)
+                {
+                    q.push(j);
+                }
+            }
+        }
+        return s;
+    }
+};

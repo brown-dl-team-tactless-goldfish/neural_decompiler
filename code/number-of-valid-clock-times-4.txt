@@ -1,0 +1,44 @@
+class Solution {
+public:
+    int countTime(string time) {
+        const auto& t = time;
+        return hourCombo(t[0], t[1]) * minuteCombo(t[3], t[4]);
+    }
+    
+private:
+    // ab:cd hh:mm
+    static int hourCombo(char a, char b) {
+        if (a == '?') {
+            if (b == '?') {
+                return 24;
+            } else {
+                if ('0' <= b && b <= '3') {
+                    return 3; // a from 0 to 2
+                } else {
+                    return 2; // a from 0 to 1.
+                }
+            }
+        } else { // a is a digit
+            if (b == '?') {
+                return a == '2' ? 4 : 10;
+            } else {
+                return 1; // b is a digit
+            }
+        }
+    }
+    
+    static int minuteCombo(char c, char d) {
+        if (c == '?')  {
+            if (d == '?') {
+                return 60;
+            } else {
+                return 6; // c ranges from 0 to 5
+            }
+        } else { // c is a digit
+            if (d == '?') {
+                return 10; // d from 0 to 9
+            }
+            return 1;
+        }
+    }
+};

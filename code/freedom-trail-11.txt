@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int findRotateSteps(string ring, string key) {
+        
+        vector<int> ring_idx[26]; //for each character in a-z, record the indices in ring
+        for(int i=0; i<ring.size(); i++)
+            ring_idx[ring[i]-'a'].push_back(i);
+        
+        int rsize = ring.size();
+        vector<int> dp(rsize,0); //record the minimum step for each character on ring
+        
+        for(int i=0; i<key.size(); i++)
+        {
+            
+            vector<int> prev_idcs = (i>0) ? ring_idx[key[i-1]-'a'] : vector<int>(1,0); //previous char indices on the ring
+
+            for(int curr_idx : ring_idx[key[i]-'a']) //current char indices on the ring
+            { 
+                
+                int min_step = INT_MAX;
+                
+                // for each current char on the ring, find the minimum step rotated from all the previous char indices
+                for(int prev_idx : prev_idcs)
+                    min_step = min(min_step,dp[prev_idx]+dist(curr_idx,prev_idx,rsize));
+                
+                //update the dp table
+                dp[curr_idx] = min_step;
+            }
+        }
+        
+        int ans = INT_MAX;
+        for(int last_char_idx : ring_idx[key.back()-'a'])
+            ans = min(ans,dp[last_char_idx]);
+        return ans+key.size();
+    }
+    
+    //return the minimum distance between two char indices
+    int dist(int i, int j, const int size){
+        int d = abs(i-j);
+        return min(d,size-d);
+    }
+};

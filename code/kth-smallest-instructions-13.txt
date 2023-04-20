@@ -1,0 +1,51 @@
+class Combination{
+public:
+    using ll=long long;
+    Combination(int size) : factorial(size) {
+        factorial[0] = 1;
+        for(int i=1; i<size; i++) factorial[i] = i * factorial[i-1] % mod;
+    }
+    
+    ll power(ll a, ll b){ 
+        ll x = 1, y = a % mod; 
+        while (b > 0){ 
+            if (b%2) x = x * y % mod; 
+            y = y * y % mod; 
+            b /= 2; 
+        } 
+        return x % mod; 
+    }	 
+ 
+    ll modular_inverse(ll n){ 
+        return power(n, mod-2); 
+    } 
+
+    ll nCr(ll n, ll k){ 
+        if(k<0) return 0;
+        return factorial[n] * modular_inverse(factorial[k] * factorial[n - k]) % mod;
+    } 
+    
+    vector<ll> factorial;
+    static constexpr ll mod = 1e9+7;
+};
+
+class Solution {
+public:
+    string kthSmallestPath(vector<int>& dest, int k) {
+        int n = dest[1], m = dest[0], q = n+m;
+        Combination comb(30);
+        string res;
+        while(q--){
+            if(comb.nCr(n+m-1, n-1) < k){
+                k -= comb.nCr(n+m-1, n-1);
+                res += 'V';
+                m--;
+            }
+            else{
+                n--;
+                res += 'H';
+            }
+        }
+        return res;
+    }
+};

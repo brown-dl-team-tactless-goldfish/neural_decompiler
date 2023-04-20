@@ -1,0 +1,44 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+void getTreeLevel(struct TreeNode* root, int* height, int curLevel){
+    if(*height < curLevel) *height=curLevel;
+    if(!root){
+        return;
+    }
+    getTreeLevel(root->left, height, curLevel+1);
+    getTreeLevel(root->right, height, curLevel+1);
+}
+
+void BFS(struct TreeNode* root, double* ans, int* levelElementCount, int level){
+    
+    if(!root)return;
+
+    BFS(root->left, ans, levelElementCount, level+1);
+    levelElementCount[level]+=1;
+    //printf("%d\n",level);
+    ans[level]+=root->val;
+    BFS(root->right, ans, levelElementCount, level+1);
+}
+double* averageOfLevels(struct TreeNode* root, int* returnSize){
+    *returnSize=0;
+    getTreeLevel(root, returnSize, 0);
+    double* ans=calloc(sizeof(double),(*returnSize));
+    int* levelElementCount=calloc(sizeof(int),(*returnSize));
+   
+    BFS(root, ans, levelElementCount, 0);
+    for(int i=0; i<*returnSize; i++){
+        ans[i]=ans[i]/levelElementCount[i];
+    }
+    return ans;
+}

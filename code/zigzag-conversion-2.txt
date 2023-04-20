@@ -1,0 +1,33 @@
+
+
+char * convert(char * s, int numRows) {
+    char tmp[1024];
+    int tmpI = 0;
+    if (numRows == 1)
+        return s;
+    
+    const int maxGap = (numRows - 1) * 2;
+    const int step = 2;
+    const int len = strlen(s);
+    
+    for (int i = 0; i < numRows; ++i) {
+        int Max = maxGap - step * i;
+        int Min = step * i;
+        
+        //Corner cases for first/last row
+        if (!Max)
+            Max = Min;
+        else if(!Min)
+            Min = Max;
+        
+        bool IsMin = false;
+        for (int j = i; j < len; j += (IsMin) ? Min : Max,
+                                      IsMin = !IsMin) {
+            tmp[tmpI++] = s[j];
+        }
+    }
+    
+    tmp[tmpI++] = '\0';
+    strcpy(s, tmp);
+    return s;
+}

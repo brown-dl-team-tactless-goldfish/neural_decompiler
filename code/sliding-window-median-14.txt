@@ -1,0 +1,65 @@
+class Solution {
+public:
+    vector<double> medianSlidingWindow(vector<int>& nums, int k) {
+        vector<int> left(nums.size(),0);
+        vector<int> right(nums.size(),0);
+        priority_queue<pair<int,int>> l;
+        priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> r;
+        int leftc=0,rightc=0;
+        for(int i = 0; i<k;++i){ l.push({nums[i],i}); leftc++; left[i] = 1;}
+        while(leftc!=k-k/2){
+            rightc++; leftc--;
+            auto t = l.top(); l.pop();
+            left[t.second] = 0; right[t.second]=1;
+            r.push(t);
+        }
+        int st = 0;
+        vector<double> re;
+        if(k%2==1) re.push_back(l.top().first);
+        else{
+            double t = ((long  double)l.top().first+r.top().first)/2;
+            re.push_back(t);
+        }
+        for(int i = k;i<nums.size();++i){
+            if(left[st]==1){leftc--,left[st]=0;}
+            if(right[st]==1){rightc--,right[st]=0;}
+            
+            while(!l.empty() && left[l.top().second]==0) l.pop();
+            while(!r.empty() && right[r.top().second]==0) r.pop();
+            
+            if(leftc && l.top().first>=nums[i]){
+                left[i] = 1;leftc++; l.push({nums[i],i});
+            }
+            else{
+                right[i] = 1;rightc++; r.push({nums[i],i});
+            }
+            
+            int temp = k-k/2;
+            while(leftc!=temp){
+                if(leftc>rightc){
+                    auto[val,in] = l.top(); l.pop();
+                    if(left[in]==0) continue;
+                    right[in]=1,left[in]=0; leftc--,rightc++;
+                    r.push({val,in});
+                }
+                else{
+                    auto[val,in] = r.top(); r.pop();
+                    if(right[in]==0) continue;
+                    left[in]=1,right[in]=0; rightc--,leftc++;
+                    l.push({val,in});
+                }
+            }
+            
+            while(!l.empty() && left[l.top().second]==0) l.pop();
+            while(!r.empty() && right[r.top().second]==0) r.pop();
+            
+            if(k%2==1) re.push_back(l.top().first);
+            else{
+                double t = ((long double)l.top().first+r.top().first)/2;
+                re.push_back(t);
+            }
+            st++;
+        }
+        return re;
+    } 
+};

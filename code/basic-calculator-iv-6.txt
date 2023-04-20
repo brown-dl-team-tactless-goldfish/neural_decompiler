@@ -1,0 +1,170 @@
+class Poly {
+public:
+    map<vector<string>, int> map;
+
+    // put in current polynomial
+    void update(vector<string> key, int val) {
+        if (!this->map.count(key)) {
+            this->map[key] = 0;
+        }
+        this->map[key] += val;
+    }
+
+    Poly add(Poly &rhs) {
+        Poly ans;
+        for (auto [key, value] : this->map) {
+            ans.update(key, value);
+        }
+        for (auto [key, value]: rhs.map) {
+            ans.update(key, value);
+        }
+        return ans;
+    }
+
+    Poly sub(Poly &rhs) {
+        Poly ans;
+        for (auto [key, value] : this->map) {
+            ans.update(key, value);
+        }
+        for (auto [key, value] : rhs.map) {
+            ans.update(key, -value);
+        }
+        return ans;
+    }
+
+    Poly mul(Poly &rhs) {
+        Poly ans;
+        for (auto [key1, value1] : this->map) {
+            for (auto [key2, value2] : rhs.map) {
+                vector<string> curKey;
+                int curValue = value1 * value2;
+                for (auto item : key1) curKey.push_back(item);
+                for (auto item : key2) curKey.push_back(item);
+                sort(curKey.begin(), curKey.end());
+                ans.update(curKey, curValue);
+            }
+        }
+        return ans;
+    }
+
+    Poly evaluate(unordered_map<string, int> &evalMap) {
+        Poly ans;
+        for (auto [key, value] : this->map) {
+            vector<string> remaining;
+            int curValue = value;
+            for (auto item : key) {
+                if (evalMap.count(item)) {
+                    curValue *= evalMap[item];
+                } else {
+                    remaining.push_back(item);
+                }
+            }
+            ans.update(remaining, curValue);
+        }
+        return ans;
+    }
+
+    vector<string> toList() {
+        vector<string> ans;
+        vector<vector<string>> keys(this->map.size());
+        int i = 0;
+        for (auto &[key, value] : this->map) {
+            keys[i++] = key;
+        }
+        sort(keys.begin(), keys.end(), [](const vector<string> &lhs, const vector<string> &rhs) {
+            return lhs.size() != rhs.size() ? lhs.size() > rhs.size() : lhs < rhs;
+        });
+        for (auto key : keys) {
+            int value = this->map[key];
+            if (!value) continue;
+            string word = to_string(value);
+            for (string &token : key) {
+                word.push_back('*');
+                word.append(token);
+            }
+            ans.push_back(word);
+        }
+        return ans;
+    }
+};
+
+class Solution {
+public:
+    vector<string> basicCalculatorIV(string expression, vector<string>& evalvars, vector<int>& evalints) {
+        unordered_map<string, int> map;
+        int len = evalvars.size();
+        for (int i = 0; i < len; ++i) {
+            map[evalvars[i]] = evalints[i];
+        }
+        auto poly = parse(expression);
+        return poly.evaluate(map).toList();
+    }
+
+    Poly make(string expr) {
+        Poly ans;
+        vector<string> vec;
+        if (isdigit(expr[0])) {
+            ans.update(vec, stoi(expr));
+        } else {
+            vec.push_back(expr);
+            ans.update(vec, 1);
+        }
+        return ans;
+    }
+
+    Poly combine(Poly left, Poly right, char symbol) {
+        if (symbol == '+') return left.add(right);
+        if (symbol == '-') return left.sub(right);
+        return left.mul(right);
+    }
+
+    Poly parse(string expr) {
+        vector<Poly> buckets;
+        vector<char> symbols;
+        int i = 0;
+        while (i < expr.length()) {
+            if (expr[i] == '(') {
+                int bal = 0, j = i;
+                for (; j < expr.length(); ++j) {
+                    if (expr[j] == '(') bal++;
+                    else if (expr[j] == ')') bal--;
+                    if (bal == 0) break;
+                }
+                buckets.push_back(parse(expr.substr(i + 1, j - i - 1)));
+                i = j;
+            } else if (isalnum(expr[i])) {
+                int j = i;
+                for (; j < expr.length(); ++j) {
+                    if (expr[j] == ' ') {
+                        buckets.push_back(make(expr.substr(i, j - i)));
+                        break;
+                    }
+                }
+                // if processed till the end, push into buckets
+                if (j == expr.length()) {
+                    buckets.push_back(make(expr.substr(i)));
+                }
+                i = j;
+            } else if (expr[i] != ' ') {
+                symbols.push_back(expr[i]);
+            }
+            ++i;
+        }
+        int len = symbols.size();
+        for (i = len - 1; i >= 0; --i) {
+            if (symbols[i] == '*') {
+                buckets[i] = combine(buckets[i], buckets[i + 1], symbols[i]);
+                buckets.erase(buckets.begin() + i + 1);
+                symbols.erase(symbols.begin() + i);
+            }
+        }
+        if (buckets.empty()) {
+            return Poly();
+        }
+        Poly ans = buckets[0];
+        for (int j = 0; j < symbols.size(); ++j) {
+            ans = combine(ans, buckets[j + 1], symbols[j]);
+        }
+        return ans;
+    }
+};

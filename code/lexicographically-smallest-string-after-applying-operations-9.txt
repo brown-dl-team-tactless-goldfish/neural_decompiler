@@ -1,0 +1,42 @@
+class Solution {
+private:
+    int n ;
+    string add(string cur, int a){
+        for(int i = 1; i < n; i+= 2)
+            cur[i] = (cur[i] - '0' + a)%10 + '0' ;
+        return cur ;
+    }    
+    
+    string roate(string cur, int b){
+        string front = cur.substr(0, n-b) ;
+        string back = cur.substr(n-b) ;
+        return back + front ;
+    }
+public:
+    string findLexSmallestString(string s, int a, int b) {
+        this->n = s.size() ;
+        string ret = s ;
+        unordered_set<string>used ;
+        queue<string>q{{s}} ;
+        used.insert(s) ;
+        while(!q.empty())
+        {
+            auto cur = q.front() ;
+            q.pop() ;
+            ret = min(ret, cur) ;
+            string adds = add(cur, a) ;
+            while(used.count(adds) == 0){
+                used.insert(adds) ;
+                q.push(adds) ;
+                adds = add(adds, a) ;
+            }
+            string roas = roate(cur, b) ;
+            while(used.count(roas) == 0){
+                used.insert(roas) ;
+                q.push(roas) ;
+                roas = roate(roas, b) ;
+            }
+        }
+        return ret ;
+    }
+};

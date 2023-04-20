@@ -1,0 +1,57 @@
+typedef struct Root {
+    int time;
+    int numsChildren;
+    int currIdx;
+    struct Root** children;
+} Root;
+
+int maxTime(Root* root) {
+    if (!root) return 0;
+    int max = root->time;
+
+    for (int i = 0; i < root->numsChildren; i++) {
+        int temp = maxTime(root->children[i]) + root->time;
+        max = max > temp ? max : temp;
+    }
+    return max;
+}
+
+int numOfMinutes(int n, int headID, int* manager, int managerSize, int* informTime, int informTimeSize){
+    int i, res;
+      
+    // store the information of children number of each root. 
+    int* numsChildrens = (int* )malloc(sizeof(int) * n);
+    for (i = 0; i < n; i++) numsChildrens[i] = 0;
+    for (i = 0; i < n; i++) {
+        if (i != headID) numsChildrens[manager[i]]++;   
+    }
+    
+    // generate the root 
+    Root** roots = (Root** )malloc(sizeof(Root* ) * n); // array to store each root
+    for (i = 0; i < n; i++) {
+        Root* root = (Root* )malloc(sizeof(Root));
+        root->time = informTime[i];
+        root->numsChildren = numsChildrens[i];
+        root->currIdx = 0;
+        if (numsChildrens[i] > 0) {
+            Root** children = (Root** )malloc(sizeof(Root* ) * numsChildrens[i]);
+            root->children = children;            
+        } else {
+            root->children = NULL;
+        }
+        roots[i] = root;
+    }
+    free(numsChildrens);
+    
+    // Build up the relation of root
+    for (i = 0; i < n; i++) {
+        if (i != headID) {
+            Root* temp = roots[manager[i]];
+            temp->children[temp->currIdx++] = roots[i];            
+        }
+    }
+    Root* headRoot = roots[headID];
+    free(roots);
+    
+    return maxTime(headRoot);
+}

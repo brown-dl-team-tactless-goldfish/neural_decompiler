@@ -1,0 +1,141 @@
+
+/* linked list of nodes stored in the queue */
+struct node{
+    char gene[9];       /* 8 characters per gene + null termination */
+    int num_mutations;  /* track number of mutations it took to get to this node */
+    struct node *next;  /* ptr to next node in queue */
+};
+
+/* queue struct */
+struct queue{
+    struct node * top;
+    int num_elements;
+};
+
+/* returns the number of different characters between two strings */
+int numDiffs(char * str1, char * str2)
+{
+    int num_diffs = 0;
+    for(int i = 0; i < strlen(str1) && i < strlen(str2); i++)
+    {
+        if(str1[i] != str2[i])
+            num_diffs++;
+    }
+
+    return num_diffs;
+}
+
+/* looks through all elements in queue and checks if gene is in the queue */
+bool isGeneInQueue(struct queue * queue, char * gene)
+{
+    struct node * ptr = queue->top;
+    while(ptr != NULL)
+    {
+        if(0 == strcmp(ptr->gene, gene))
+            return true;
+        ptr = ptr->next;
+    }
+    return false;
+}
+
+/* initialize queue */
+void initQueue(struct queue * queue)
+{
+    queue->top = NULL;
+    queue->num_elements = 0;
+}
+
+/* create a struct node object and copy the gene string */
+struct node * createNode(char * gene)
+{
+    struct node * node = (struct node *)malloc(sizeof(struct node));
+    strcpy(node->gene, gene);
+    node->num_mutations = 0;
+    return node;
+}
+
+/* add a node to the queue */
+void enqueue(struct queue * queue, struct node * gene)
+{
+    gene->next = NULL;
+
+    if(queue->top == NULL)
+        queue->top = gene;
+    else
+    {
+        struct node* x = queue->top;
+        while (x->next != NULL)
+            x = x->next;
+        x->next = gene;
+    }
+    queue->num_elements++;
+}
+
+/* remove node from the queue */
+struct node * dequeue(struct queue * queue)
+{
+    if(queue->num_elements > 0)
+    {
+        struct node * ptr = queue->top;
+        queue->top = queue->top->next;
+        queue->num_elements--;
+        return ptr;
+    }
+    else
+        return NULL;
+}
+
+int minMutation(char * start, char * end, char ** bank, int bankSize)
+{
+    /* check if 'end' is in bank, if not return -1 */
+    bool found = false;
+    for(int i = 0; i < bankSize; i++)
+    {
+        if(0 == strcmp(end, bank[i]))
+        {
+            found = true;
+            break;
+        }
+    }
+
+    if(!found)
+        return -1;
+
+    /* perform BFS where we go through all possible mutations that exist in bank */
+    struct queue Q, V; /* queue of nodes we need to visit, and queue of visited nodes */
+    initQueue(&Q);
+    initQueue(&V);
+
+    /* add the start node to Q */
+    struct node * start_node = createNode(start);
+    enqueue(&Q, start_node);
+
+    /* keep looping until we have no more nodes to process */
+    while(Q.num_elements != 0)
+    {
+        /* remove from Q and add to V */
+        struct node * curr_node = dequeue(&Q);
+        if(!isGeneInQueue(&V, curr_node->gene))
+            enqueue(&V, curr_node);
+
+        /* check if current node matches end */
+        if(0 == strcmp(curr_node->gene, end))
+            return curr_node->num_mutations;
+
+        /* check all valid mutations of the gene in curr_node and enqueue into Q all the ones that we haven't visited (not in V) */
+        for(int i = 0; i < bankSize; i++)
+        {
+            /* a valid mutation is when two genes differ by 1 character, and it hasn't already been visited */
+            if( numDiffs(curr_node->gene, bank[i]) == 1 && !isGeneInQueue(&V, bank[i]))
+            {
+                /* create bank[i] node, increate num_mutations by 1, and add to Q */
+                struct node * node = createNode(bank[i]);
+                node->num_mutations = curr_node->num_mutations + 1;
+                enqueue(&Q, node);
+            }
+        }
+    }
+
+    return -1;
+}
+

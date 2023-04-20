@@ -1,0 +1,14 @@
+    long long minimumMoney(vector<vector<int>>& transactions) {
+        // res - c1 + cb1 - c2 + cb2 +... -cn >=0
+        // res >= (c1+c2+...+cn) - (cb1-cb2-...cbn) + cbn
+        long long maxDelta, maxCostPos = 0, maxCbNag = 0;
+        for(auto& v:transactions){
+            if (v[0] < v[1])
+                maxCostPos = max<int>(maxCostPos, v[0]);
+            else {
+                maxCbNag = max<int>(maxCbNag, v[1]);
+                maxDelta += v[0] - v[1];
+            }
+        }
+        return maxDelta + max(maxCostPos , maxCbNag);
+    }

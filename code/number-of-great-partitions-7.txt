@@ -1,0 +1,50 @@
+class Solution {
+public:
+  long mod = 1000000007;
+
+  long getPow2(int n) {
+    if (n == 0) return 1;
+    long pow2NMinus1 = getPow2(n - 1);
+    return (2 * pow2NMinus1) % mod;
+  }
+
+  int countPartitions(vector<int>& nums, int k) {
+    int n = nums.size();
+    long s = 0;
+    for (int num : nums) {
+      s += num;
+      s %= mod;
+    }
+    if (s < 2 * k) return 0;
+    unordered_map<long, long> sums;
+    if (nums[n - 1] < k) {
+      sums[nums[n - 1]]++;
+    }
+    for (int i = n - 2; i >= 0; --i) {
+      unordered_map<long, long> newSums;
+      if (nums[i] < k) {
+        newSums[nums[i]]++;
+        newSums[nums[i]] %= mod;
+      }
+      for (auto it = sums.begin(); it != sums.end(); ++it) {
+        newSums[it->first] += it->second;
+        newSums[it->first] %= mod;
+        if (it->first + nums[i] < k) {
+          newSums[it->first + nums[i]] += it->second;
+          newSums[it->first + nums[i]] %= mod;
+        }
+      }
+      sums = std::move(newSums);
+    }
+    long tot = 0;
+    for (auto it = sums.begin(); it != sums.end(); ++it) {
+        tot += it->second;
+        tot %= mod;
+    }
+    long m = getPow2(n) - (long)2 - (long)(2l * tot);
+    if (m < 0) {
+      m = -(-m % mod) + mod;
+    }
+    return m % mod;
+  }
+};

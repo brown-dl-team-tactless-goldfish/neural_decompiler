@@ -1,0 +1,36 @@
+At the end (2) and (3) both have equal possibility to give the minimum answer so we take the minimum of the both the returned value.
+
+unordered_map<int,int>mp;
+int leastOpsExpressTarget(int x, int target) {
+    if(target==1){
+        if(x==1){
+            return 0;
+        }
+        return 1;
+    }
+    if(mp.find(target)!=mp.end()){
+        return mp[target];
+    }
+    long prod=x;
+    int op=0;
+    int c1=INT_MAX;
+    int c2=INT_MAX;
+    while(prod<target){
+        prod*=x;
+        op++;
+    }
+    if(prod==target){
+        c1=op;
+    }
+    else if(prod-target<target){
+        c1=op+1+leastOpsExpressTarget(x,prod-target);
+    }
+    prod/=x;
+    if(op==0){
+        c2=2+leastOpsExpressTarget(x,target-prod);
+    }
+    else{
+        c2=op+leastOpsExpressTarget(x,target-prod);
+    }
+    return mp[target]=min(c1,c2);
+}

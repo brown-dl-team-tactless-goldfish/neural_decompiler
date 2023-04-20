@@ -1,0 +1,56 @@
+typedef struct Node {
+    int v;
+    struct Node* next;
+} Node;
+
+typedef struct Graph {
+    int V;
+    Node** list;
+} Graph;
+
+Graph* createGraph(int V) {
+    Graph* graph = (Graph*)malloc(sizeof(Graph));
+    graph->V = V;
+    graph->list = (Node**)malloc(V * sizeof(Node*));
+    for (int i = 0; i < V; i++) {
+        graph->list[i] = NULL;
+    }
+    return graph;
+}
+
+void addEdge(Graph* graph, int u, int v) {
+    Node* node = (Node*)malloc(sizeof(Node));
+    node->v = v;
+    node->next = graph->list[u];
+    graph->list[u] = node;
+}
+
+int dfs(Graph* graph, bool* visited, bool* hasApple, int index) {
+    int result = 0;
+    visited[index] = true;
+    for (Node* node = graph->list[index]; node; node = node->next) {
+        if (!visited[node->v]) {
+            result += dfs(graph, visited, hasApple, node->v);
+        }
+    }
+
+    if (index == 0) {
+        return result;
+    }
+    return result + ((hasApple[index] || result > 0) ? 2 : 0);
+}
+
+int minTime(int n, int** edges, int edgesSize, int* edgesColSize, bool* hasApple, int hasAppleSize) {
+    Graph* graph = createGraph(n);
+    for (int i = 0; i < edgesSize; i++) {
+        addEdge(graph, edges[i][0], edges[i][1]);
+        addEdge(graph, edges[i][1], edges[i][0]);
+    }
+
+    bool visited[n];
+    for (int i = 0; i < n; i++) {
+        visited[i] = false;
+    }
+
+    return dfs(graph, visited, hasApple, 0);
+}

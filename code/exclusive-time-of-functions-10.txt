@@ -1,0 +1,38 @@
+class Solution {
+public:
+    vector<int> exclusiveTime(int n, vector<string>& logs) {
+        vector<int> out(n, 0);
+        stack<vector<int>> Stack; //id // time stamp //time
+        for(string s : logs)
+        {
+            int pos = s.find(':');
+            int id = stoi(s.substr(0, pos));
+            s = s.substr(pos+1, s.size()-pos-1);
+            pos = s.find(':');
+            bool ifStart = (s.substr(0, pos) == "start");
+            int time = stoi(s.substr(pos+1, s.size()-pos-1));
+            if(ifStart)
+            {
+                if(!Stack.empty())
+                {
+                    vector<int> last = Stack.top(); Stack.pop();
+                    last = {last[0], last[1], last[2]+time-last[1]};
+                    Stack.push(last);
+                }
+                Stack.push({id, time, 0});
+            }
+            else
+            {
+                vector<int> last = Stack.top(); Stack.pop();
+                out[last[0]] += time+1-last[1]+last[2];
+                if(!Stack.empty())
+                {
+                    vector<int> last = Stack.top(); Stack.pop();
+                    last = {last[0], time+1, last[2]};
+                    Stack.push(last);
+                }
+            }
+        }
+        return out;
+    }
+};

@@ -1,0 +1,97 @@
+
+void merge(int left, int mid, int right, int *bitCount, int *arr) {
+    int i, j, k;
+    int tempLeftSize = mid - left + 1;
+    int tempRightSize = right - mid;
+
+    /* Temporary copy of the left and right sub array */
+    int tempLeftBitCount[tempLeftSize], tempRightBitCount[tempRightSize];
+    int tempLeftArr[tempLeftSize], tempRightArr[tempRightSize];
+    for (i = 0; i < tempLeftSize; i++) {
+        tempLeftBitCount[i] = bitCount[left + i];
+        tempLeftArr[i] = arr[left + i];
+    }
+    for (i = 0; i < tempRightSize; i++) {
+        tempRightBitCount[i] = bitCount[mid + 1 + i];
+        tempRightArr[i] = arr[mid + 1 + i];
+    }
+    i = 0; j = 0; k = left;
+    while(i < tempLeftSize && j < tempRightSize) {
+        /* In case the number of bits are equal, compare the 
+         * actual value of the integer */
+        if (tempLeftBitCount[i] == tempRightBitCount[j]) {
+            if(tempLeftArr[i] < tempRightArr[j]) {
+                bitCount[k] = tempLeftBitCount[i];
+                arr[k] = tempLeftArr[i];
+                i++;
+                k++;
+            } else {
+                bitCount[k] = tempRightBitCount[j];
+                arr[k] = tempRightArr[j];
+                j++;
+                k++;
+            }
+        }
+        else if (tempLeftBitCount[i] < tempRightBitCount[j]) {
+            bitCount[k] = tempLeftBitCount[i];
+            arr[k] = tempLeftArr[i];
+            i++;
+            k++;
+        } else {
+            bitCount[k] = tempRightBitCount[j];
+            arr[k] = tempRightArr[j];
+            j++;
+            k++;
+        }
+    }
+    while (i < tempLeftSize) {
+        bitCount[k] = tempLeftBitCount[i];
+        arr[k] = tempLeftArr[i];
+        k++;
+        i++;
+    }
+    while (j < tempRightSize) {
+        bitCount[k] = tempRightBitCount[j];
+        arr[k] = tempRightArr[j];
+        j++;
+        k++;
+    }
+}
+
+void mergesort(int left, int right, int *bitCount, int *arr) {
+    int mid;
+
+    if (left < right) {
+        mid = (left + right)/2;
+        mergesort(left, mid, bitCount, arr);
+        mergesort(mid + 1, right, bitCount, arr);
+        merge(left, mid, right, bitCount, arr);
+    }
+}
+
+int countBits(int x) {
+	/* create a map of number of 1s for 0-15 */
+    int map[] = {0, 1, 1, 2, 1, 2, 2, 3, 1, 2, 2, 3, 2, 3, 3, 4};
+    int count = 0;
+    while(x) {
+		/* check 4 bits at once instead of right shifting each bit and checking */
+        count += map[0xf & x];
+        x = x >> 4;
+    }
+    return count;
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* sortByBits(int* arr, int arrSize, int* returnSize) {
+    int i;
+    *returnSize = arrSize;
+    int *bitCount = (int *)malloc(arrSize * sizeof(int));
+    for(i = 0; i < arrSize; i++) {
+        bitCount[i] = countBits(arr[i]);
+        //printf("%d: %d \n", arr[i], bitCount[i]);
+    }
+    mergesort(0, arrSize - 1, bitCount, arr);
+    return arr;
+}

@@ -1,0 +1,21 @@
+int minCost(int n, vector<int>& cuts) {
+    cuts.insert(cuts.begin(),0);
+    cuts.insert(cuts.end(),n);        
+    sort(cuts.begin(),cuts.end());
+    
+    int m = cuts.size();
+    vector<vector<int>> dp(m+1,vector<int>(m+1,0));
+    
+    for(int i=m-2;i>=1;i--){
+        for(int j=i;j<=m-2;j++){                
+            int mini = 1e9;
+            for(int index =i; index<=j;index++){
+                   int cost = cuts[j+1]-cuts[i-1] + dp[i][index-1] + dp[index+1][j];
+                  mini=min(mini,cost);
+             }
+            dp[i][j] = mini;
+        }
+    }
+    
+    return dp[1][cuts.size()-2];
+}

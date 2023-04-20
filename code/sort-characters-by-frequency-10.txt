@@ -1,0 +1,45 @@
+char* frequencySort(char* s) {
+    
+    if(NULL==s)
+    {
+        return NULL;
+    }
+    
+    int countCharBuf[128]={0};
+    char *str=s;
+    
+    while(*str!='\0')
+    {
+        ++countCharBuf[*str++];
+    }
+    
+    int countCharBufIndexDecreaseOrder[128]={0};
+    for(int i=0;i<128;++i)
+    {
+        countCharBufIndexDecreaseOrder[i]=i;
+    }
+    
+    for(int i=0;i<128;++i)
+    {
+        for(int j=i+1;j<128;++j)
+        {
+            if(countCharBuf[countCharBufIndexDecreaseOrder[i]]<countCharBuf[countCharBufIndexDecreaseOrder[j]])
+            {
+                int tmp=countCharBufIndexDecreaseOrder[i];
+                countCharBufIndexDecreaseOrder[i]=countCharBufIndexDecreaseOrder[j];
+                countCharBufIndexDecreaseOrder[j]=tmp;
+            }
+        }
+    }
+    
+    str=s;
+    for(int i=0;i<128;++i)
+    {
+        for(int j=0;j<countCharBuf[countCharBufIndexDecreaseOrder[i]];++j)
+        {
+            *str++=countCharBufIndexDecreaseOrder[i];
+        }
+    }
+    
+    return s;
+}

@@ -1,0 +1,44 @@
+class Solution {
+private:
+    int m, n ;
+    vector<vector<int>>dirs{{1,0},{-1,0},{0,1},{0,-1},{0,0}} ;
+    bool check(vector<vector<int>>mat, int state)
+    {
+        for(int i = 0; i < m*n; i++){
+            if(state % 2 == 1 ){
+                int r = i/n ;
+                int c = i%n ;
+                for(int k = 0; k < 5; k++){
+                    int x = r + dirs[k][0] ;
+                    int y = c + dirs[k][1] ;
+                    if(x < 0 || y < 0 || x >= m || y >= n)
+                        continue ;
+                    mat[x][y] = 1 - mat[x][y] ;
+                }
+            }
+            state /= 2 ;
+        }
+        for(int i = 0; i < m; i++){
+            for(int j  = 0; j <n; j++){
+                if(mat[i][j])
+                    return false ;
+            }
+        }
+        return true ;
+    }
+public:
+    int minFlips(vector<vector<int>>& mat) {
+        m = mat.size() ;
+        n = mat[0].size() ;
+        int ret = INT_MAX ;
+        for(int state = 0; state < (1 << (m*n)); state++ )
+        {
+            if(check(mat, state))
+            {
+                int ones = __builtin_popcount(state);
+                ret = min(ret, ones) ;
+            }
+        }
+        return (ret == INT_MAX) ? -1 : ret ;
+    }
+};

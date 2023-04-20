@@ -1,0 +1,49 @@
+//#define WIDE_RANGE
+
+#ifdef WIDE_RANGE
+#define KEY_MASK    0x1ffff
+typedef uint32_t keyy_t;
+#else
+#define KEY_MASK    0xffff
+typedef uint16_t keyy_t;
+#endif // WIDE_RANGE
+
+#define KEY(a)      ((uintptr_t)(a) & KEY_MASK)
+
+struct srlz_data {
+    int val;
+    keyy_t loff, roff;   
+} __attribute__ ((packed));
+
+struct srlz {
+    size_t sz; // To help on-disk storage/retrieval, etc
+    size_t n;
+    struct srlz_data z[100000];
+} __attribute__ ((packed));
+    
+char* serialize(struct TreeNode* root) {
+    int of[KEY_MASK] = { 0 }, i = 1, k;
+    struct TreeNode *n[10000] = { root };
+    struct srlz *d = malloc(sizeof *d);
+    struct srlz_data *z = d->z;
+    d->sz = sizeof *d;
+    of[KEY(root)] = i++;        
+    for (int f = 0, b = 1 ; root && f < b ; f++) {
+        z[of[k = KEY(n[f])]].val = n[f]->val;
+        z[of[k]].loff = n[f]->left ? of[KEY(n[b++] = n[f]->left)] = i++ : 0;
+        z[of[k]].roff = n[f]->right ? of[KEY(n[b++] = n[f]->right)] = i++ : 0;
+    }
+    return d->n = root ? i : 0, (char *)d;
+}
+
+struct TreeNode* deserialize(char* data) {
+    struct srlz *d = (void *)data;
+    struct srlz_data *z = d->z + 1;
+    size_t c = d->n;
+    struct TreeNode *n[100000] = { [1] = c ? malloc(sizeof **n) : NULL };
+    for (int i = 1 ; i < c ; n[i++]->val = z++->val) {
+        n[i]->left = z->loff ? n[z->loff] = malloc(sizeof **n) : NULL;
+        n[i]->right = z->roff ? n[z->roff] = malloc(sizeof **n) : NULL;
+    }
+    return n[1];
+}

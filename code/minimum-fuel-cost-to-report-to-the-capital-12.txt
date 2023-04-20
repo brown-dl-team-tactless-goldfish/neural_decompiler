@@ -1,0 +1,38 @@
+class Solution {
+public:
+    
+    long long ans=0;
+    pair<int,long long> dfs(vector<vector<int>>&adj,int node,int parent,int seats){
+        
+        int sz=0;
+        long long cost=0;
+        for(auto x : adj[node]){
+            if(x==parent)continue;
+            pair<int,long long>p=dfs(adj,x,node,seats);
+            sz+=p.first;
+            cost+=p.second;
+        }
+        
+        sz++;
+        if(node==0){
+            ans=cost;
+        }
+        cost+=(sz+seats-1ll)/seats;
+        return {sz,cost};
+        
+    }
+        
+    long long minimumFuelCost(vector<vector<int>>& roads, int seats) {
+        
+        int n=roads.size();
+        vector<vector<int>>adj(n+1);
+        for(auto x:roads){
+            adj[x[0]].push_back(x[1]);
+            adj[x[1]].push_back(x[0]);
+        }
+        
+       dfs(adj,0,-1,seats);
+       return ans;
+        
+    }
+};

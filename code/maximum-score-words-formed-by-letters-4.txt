@@ -1,0 +1,23 @@
+int maxScoreWords(vector<string>& words, vector<char>& letters, vector<int>& score) {
+	vector<int> numLetters(26), wordValue(words.size());
+	for (char c : letters) ++numLetters[c - 'a'];
+	for (int i = 0; i < words.size(); i++)
+		for (char c : words[i])
+			wordValue[i] += score[c - 'a'];
+	return dfs(words, wordValue, numLetters, 0);
+}
+
+int dfs(vector<string> &words, vector<int> &wordValue, vector<int> &numLetters, int start) {
+	int res = 0;
+	for (int i = start; i < words.size(); i++) {
+		bool canTake = true;
+		for (char c : words[i])
+			if (--numLetters[c - 'a'] < 0) 
+				canTake = false;
+		if (canTake)
+			res = max(res, wordValue[i] + dfs(words, wordValue, numLetters, i + 1));
+		for (char c : words[i])
+			++numLetters[c - 'a'];
+	}
+	return res;
+}

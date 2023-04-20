@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int f(int i, const vector<int>& qs, vector<int>& dp, const vector<vector<int>>& r) {
+        if(dp[i] != -1){
+            return dp[i];
+        }
+        int result = i; 
+        for(int j : r[i]){
+            int tmp = f(j,qs,dp,r);
+            if(qs[tmp]<qs[result]) {
+                result = tmp; 
+            }
+        }
+        return dp[i] = result;       
+    }
+    
+    vector<int> loudAndRich(vector<vector<int>>& richer, vector<int>& quiet) {
+        vector<int> dp(quiet.size(),-1);
+        vector<vector<int>> r(quiet.size());
+        for(auto& x: richer){
+            r[x[1]].push_back(x[0]);
+        }
+        for(int i =0;i<dp.size();i++){
+            f(i,quiet,dp,r);
+        }
+        return dp; 
+    }
+};

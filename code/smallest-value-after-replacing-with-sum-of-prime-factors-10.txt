@@ -1,0 +1,61 @@
+class Solution {
+public:
+    int primeFactorsFind(int n)
+    {
+        int newNum=0;
+        while (n % 2 == 0)
+        {
+            newNum += 2;
+            n = n/2;
+        }
+
+       
+        for (int i = 3; i <= sqrt(n); i = i + 2)
+        {
+           
+            while (n % i == 0)
+            {
+                 newNum += i;
+                n = n/i;
+            }
+        }
+
+        if (n > 2)
+            newNum += n;
+        return newNum;
+    }
+    
+    bool isPrimeNum(int n)
+    {
+        
+        for (int i = 2; i * i <= n; i++) {
+            if (n % i == 0)
+                return false;
+        }
+        return true;
+    }
+    
+    int smallestValue(int n) {
+        
+        unordered_set<int> st;
+        
+        while(1){
+            
+            st.insert(n);
+            
+            //checking wheteher n is prime or not
+            if(isPrimeNum(n))   
+                return n;
+            
+            //finding sum of it's prime factors
+            n = primeFactorsFind(n);
+            
+            //checking whether value of n is repeating or not
+            if(st.find(n) != st.end()){
+                return n;
+            }
+            
+        }
+        return n;
+    }
+};

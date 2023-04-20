@@ -1,0 +1,4 @@
+with customer as(select customer_id,min(order_date) as first from delivery group by 1)
+
+select round((sum(case when order_date=customer_pref_delivery_Date then 1 else 0 end)*100/count(delivery_id)),2) as immediate_percentage
+from delivery d join customer c on d.customer_id=c.customer_id and d.order_date=c.first

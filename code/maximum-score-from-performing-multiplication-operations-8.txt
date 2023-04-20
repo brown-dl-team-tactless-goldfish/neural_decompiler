@@ -1,0 +1,30 @@
+class Solution {
+public:
+    
+  
+    int dfs(vector<int>& nums, vector<int>& multipliers, int left, int i,  vector<vector<int>>& dp) {
+        
+        int m = multipliers.size();
+        int n = nums.size();  
+        
+        if (i >= m) return 0;
+        
+        if (!dp[left][i]) {
+            
+            int right = n - 1 - (i - left);
+            
+            dp[left][i] = max(nums[left] * multipliers[i] + dfs(nums, multipliers, left + 1, i + 1,dp), 
+                           nums[right] * multipliers[i] + dfs(nums, multipliers, left, i + 1 , dp) );
+        }
+        return dp[left][i];
+    }
+    int maximumScore(vector<int>& nums, vector<int>& multipliers) {
+        
+        int m = multipliers.size();
+        int n = nums.size();  
+        
+        vector<vector<int>> dp(m,vector<int>(m));
+        
+        return dfs(nums, multipliers, 0, 0,dp);
+    }
+};

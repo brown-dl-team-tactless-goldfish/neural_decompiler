@@ -1,0 +1,48 @@
+class Solution {
+    vector<int> tree;
+
+    // range max tree
+    int buildTree(int i, int l, int r, vector<int> &nums) {
+        if (l == r) 
+            return tree[i] = nums[l];
+        int mid = (l + r) / 2;
+        return tree[i] = max(buildTree(2*i+1, l, mid, nums), buildTree(2*i+2, mid+1, r, nums));
+    }
+
+    int query(int num, int pos, int i, int l, int r, vector<int> &nums) {
+        if(tree[i] <= num || r < pos)
+            return INT_MAX;
+        else if(l == r)
+            return l;
+
+        int mid = (l + r) / 2;
+        int res = query(num, pos, 2*i+1, l, mid, nums);
+        if (res == INT_MAX)
+            res = query(num, pos, 2*i+2, mid+1, r, nums);
+
+        return res;
+    }
+
+public:
+    vector<int> secondGreaterElement(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> ans(n, -1);
+
+        tree.resize(4*n);
+        buildTree(0, 0, n-1, nums);
+
+        for (int i = 0; i < n; i++) {
+            int ng = query(nums[i], i+1, 0, 0, n-1, nums);
+            if(ng != INT_MAX) {
+                int sng = query(nums[i], ng+1, 0, 0, n-1, nums);
+                cout << sng << " ";
+                if(sng != INT_MAX)
+                    ans[i] = nums[sng];
+            } 
+        }
+
+        return ans;
+    }
+};
+
+

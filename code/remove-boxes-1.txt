@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int removeBoxes(vector<int>& boxes) {
+        if(boxes.size() <= 0) return 0;
+        string strBoxes = convertBoxesToStr(boxes);
+        unordered_map<string, int> cache;
+        int maxPoints = 0;
+        maxPoints = removeBoxesUtil(strBoxes, cache);
+        return maxPoints;
+    }
+    
+    string convertBoxesToStr(vector<int>& boxes) {
+        string str = "";
+        for(int i=0; i<boxes.size(); i++) {
+            char c = boxes[i] + '0';
+            str.push_back(c);
+        }
+        return str;
+    }
+    
+    int removeBoxesUtil(string strBoxes, unordered_map<string, int> &cache) {
+        if(strBoxes.length() <= 0) {
+            return 0;
+        }
+        if(cache.find(strBoxes) != cache.end()) {
+            return cache[strBoxes];
+        }
+        char c = strBoxes[0];
+        int start = 0;
+        int points = 0;
+        int maxPoints = 0;
+        string str = "";
+        int index = 1;
+        for(index=1; index<strBoxes.length(); index++) {
+            if(strBoxes[index] == c) {
+                continue;
+            }
+            str = strBoxes.substr(0,start) + strBoxes.substr(index,strBoxes.length() - index);
+            points = ((index-start) * (index-start)) + removeBoxesUtil(str, cache);
+            maxPoints = max(maxPoints, points);
+            start = index;
+            c = strBoxes[index];
+        }
+        str = strBoxes.substr(0,start);
+        points = ((index-start) * (index-start)) + removeBoxesUtil(str, cache);
+        maxPoints = max(maxPoints, points);
+        cache[strBoxes] = maxPoints;
+        return maxPoints;
+    }
+};

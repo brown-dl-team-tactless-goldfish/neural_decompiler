@@ -1,0 +1,108 @@
+class LockingTree {
+public:
+    
+    vector<int>locks;   // track lock owner of node
+    vector<int>locksCount;  // track lock count of the descendant
+    vector<vector<int>>child;   // child list
+    vector<int>parents; // original parent list
+    
+    LockingTree(vector<int>& parent) {
+        
+        int n = parent.size();
+        swap(parents,parent);
+        locksCount.resize(n,0);
+        child.resize(n);
+        
+        // set initial unlocks for each node and generate child list
+        locks.push_back(-1);        
+        for(int i=1;i<n;i++)
+        {
+            child[parents[i]].push_back(i);
+            locks.push_back(-1);
+        }
+    }
+    
+    bool lock(int num, int user) {
+        
+        // check if node is unlocked
+        if(locks[num]==-1)
+        {
+            // set lock owner and increment count of the parent nodes
+            locks[num]=user;
+            locksCount[num]++;
+            
+            while(parents[num]!=-1)
+            {
+                locksCount[parents[num]]++;
+                num = parents[num];
+            }
+            return true;
+        }
+        else return false;
+    }
+    
+    bool unlock(int num, int user) {
+        
+        // check if node is locked by current user
+        if(locks[num]==user)
+        {
+            // reset lock owner and decrement count of parent nodes
+            locks[num]=-1;
+            locksCount[num]--;
+                        
+            while(parents[num]!=-1)
+            {
+                locksCount[parents[num]]--;
+                num = parents[num];
+            }
+            return true;
+        }
+        else return false;
+    }
+    
+    // recursively reset locks of the child nodes
+    void unlockChild(int num)
+    {
+        locksCount[num]=0;
+        locks[num]=-1;
+        
+        for(int i=0;i<child[num].size();i++)
+            unlockChild(child[num][i]);
+    }
+    
+    bool upgrade(int num, int user) {
+        
+        // check if node is unlocked
+        if(locks[num]==-1)
+        {
+            // check if node has descendant lock count > 0, otherwise return false
+            if(locksCount[num]==0)return false;
+            
+            // check if parent nodes are locked, if then return false
+            int val = num;
+            while(parents[val]!=-1)
+            {
+                if(locks[parents[val]]!=-1)return false;
+                val = parents[val];
+            }
+            
+            // set lock owner and increment count of the parent nodes
+            locksCount[num] = 1;
+            locks[num] = user;
+                        
+            val = num;
+            while(parents[val]!=-1)
+            {
+                locksCount[parents[val]]++;
+                val = parents[val];
+            }
+            
+            // reset locks of the child nodes
+            for(int i=0;i<child[num].size();i++)
+                unlockChild(child[num][i]);
+            
+            return true;
+        }
+        else return false;
+    }
+};

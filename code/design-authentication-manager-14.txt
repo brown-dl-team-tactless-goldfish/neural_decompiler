@@ -1,0 +1,43 @@
+public class AuthenticationManager
+{    
+    private readonly int ttl;
+    private readonly Dictionary<string, int> tokens;
+
+    public AuthenticationManager(int timeToLive) 
+    {
+        ttl = timeToLive;
+        tokens = new Dictionary<string, int>();
+    }
+    
+    public void Generate(string tokenId, int currentTime)
+    {
+        tokens.Add(tokenId, currentTime);
+    }
+    
+    public void Renew(string tokenId, int currentTime) 
+    {
+        if(tokens.ContainsKey(tokenId))
+        {
+            var tokenTime = tokens[tokenId] + ttl;
+            if(tokenTime > currentTime)
+            {
+                tokens[tokenId] = currentTime;
+            }            
+        }
+    }
+    
+    public int CountUnexpiredTokens(int currentTime) 
+    {
+        int count = 0;
+        
+        foreach(var t in tokens.Keys)
+        {
+            if(tokens[t] + ttl > currentTime)
+            {
+                count++;
+            }
+        }
+        
+        return count;
+    }
+}

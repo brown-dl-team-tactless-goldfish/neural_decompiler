@@ -1,0 +1,107 @@
+void quicksort98(long double* a, int left, int right) {
+    int i, j;
+    long double t, temp;
+    if(left > right)
+        return;
+    temp = a[left]; //temp中存的就是基准数
+    i = left;
+    j = right;
+    while(i != j) { //顺序很重要，要先从右边开始找
+        while(a[j] >= temp && i < j)
+            j--;
+        while(a[i] <= temp && i < j)//再找右边的
+            i++;
+        if(i < j)//交换两个数在数组中的位置
+        {
+            t = a[i];
+            a[i] = a[j];
+            a[j] = t;
+        }
+    }
+    //最终将基准数归位
+    a[left] = a[i];
+    a[i] = temp;
+    quicksort98(a,left, i-1);//继续处理左边的，这里是一个递归的过程
+    quicksort98(a,i+1, right);//继续处理右边的 ，这里是一个递归的过程
+}
+
+int maxPoints(struct Point* points, int pointsSize){
+    if (pointsSize == 0 || pointsSize == 1) {
+        return pointsSize;
+    }
+    
+    long double* averageOfLevels = (long double*)malloc(sizeof(long double) * (pointsSize * (pointsSize -1) / 2));
+    
+    
+    int max = 0;
+    
+    for (int i = 0; i< pointsSize; i++) {
+        struct Point pi =  points[i];
+        int smaple = 0;
+        int index = 0;
+        
+        for (int j = 0; j< pointsSize; j++) {
+            if (i==j) {
+                continue;
+            }
+            struct Point pj =  points[j];
+            
+            long double x = pi.x - pj.x;
+            long double y = pi.y - pj.y;
+            
+            if (x ==0) {
+                if (y==0) {//同一个点
+                    smaple++;
+                }
+                else{
+                    averageOfLevels[index++] =INT_MAX;
+                }
+            }
+            else{
+                averageOfLevels[index] = ((long double)y)/x;
+                index++;
+            }
+        }
+        
+        quicksort98(averageOfLevels, 0, index-1);
+        
+        
+        int temp = 1;
+        int maxtemp = 0;
+        long double pd ;
+        long double ld =  INT_MIN;
+        
+        for (int i = 0; i < index-1; i++) {
+            pd = averageOfLevels[i];
+            ld = averageOfLevels[i +1];
+            if (pd == ld) {
+                temp++;
+            }else{
+                if (temp > maxtemp) {
+                    maxtemp = temp;
+                }
+                temp=1;
+            }
+        }
+        
+        
+        if (temp > maxtemp) {
+            maxtemp = temp;
+        }
+        
+        if (index >0) {
+            maxtemp++;
+        }
+        
+        maxtemp = maxtemp+ smaple;
+        
+        if ( maxtemp > max) {
+            max = maxtemp;
+        }
+
+        free(averageOfLevels);
+        averageOfLevels = (long double*)malloc(sizeof(long double) * (pointsSize * (pointsSize -1) / 2));
+    }
+    free(averageOfLevels);
+    return max;
+}

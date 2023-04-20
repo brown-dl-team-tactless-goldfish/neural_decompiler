@@ -1,0 +1,73 @@
+class Solution {
+public:
+    long long numberOfPairs(vector<int>& nums1, vector<int>& nums2, int diff) {
+        int n = nums1.size();
+        vector<int> nums(n, 0);
+        for(int i=0;i<n;i++) {
+            nums[i] = nums1[i] - nums2[i];
+        }
+
+        unordered_set<long long> set;
+        for(auto& ele: nums) {
+            set.insert(ele);
+            set.insert(ele-diff);
+            set.insert(ele+diff);
+        }
+        vector<long long> values(set.begin(), set.end());
+        sort(values.begin(), values.end());
+        unordered_map<int, int> map;
+        for(int i=0;i<values.size();i++) {
+            cout << values[i] <<" ";
+            map[values[i]] = i;
+        }
+
+        int values_size = values.size();
+        vector<long long> treenode(4*values.size()+1, 0);
+
+        long long res = 0;
+        for(int i=0;i<nums.size();i++) {
+            int pos = map[nums[i]+diff];
+            long long count = query(treenode, 1, 0, values.size()-1, 0, pos);
+            res += count;
+
+            int insert_pos = map[nums[i]];
+            update(treenode, 1, 0, values.size()-1, insert_pos, 1);
+        }
+
+        return res;
+    }
+
+
+    void update(vector<long long>& treenode, int node, int start, int end, int index, int val) {
+         if(start == end) {
+             treenode[node] += val;
+         }else {
+             int mid = (start + end)/2;
+             if(index<=mid) {
+                 update(treenode, 2*node, start, mid, index, val);
+             }else{
+                 update(treenode, 2*node+1, mid+1, end, index, val);
+             }
+
+
+             treenode[node] = treenode[2*node] + treenode[2*node+1];
+         }
+    }
+
+
+    long long query(vector<long long>& treenode, int node, int start, int end, int left, int right) {
+        if(right < start || left > end) {
+            return 0;
+        }
+
+        if(left<=start && end <= right) {
+            return treenode[node];
+        }
+
+        int mid = (start+end)/2;
+        int left_sum = query(treenode, 2*node, start, mid, left, right);
+        int right_sum = query(treenode, 2*node+1, mid+1, end, left, right);
+        return left_sum + right_sum;
+    }
+
+};

@@ -1,0 +1,40 @@
+class Solution {
+public:
+    
+    vector<int> helper(int temp, vector<int>& nums){
+        //temp = 2*k 
+        vector<int> ans;
+        
+        unordered_map<int,int> fre;
+        for(auto &e : nums) fre[e]++;
+        
+        for(int e : nums){
+            if(fre[e]>0 && fre.find(e+temp)!=fre.end() && fre[e+temp]>0){
+                ans.push_back(e+temp/2);
+                fre[e]--;
+                fre[e+temp]--;
+            }
+        }
+        
+        return ans;
+    }
+    
+	
+    vector<int> recoverArray(vector<int>& nums) {
+        int n = nums.size();
+        sort(nums.begin(), nums.end());
+        
+        set<int> diff;
+        for(auto &num : nums){
+            int temp = num - nums[0];
+            if(temp>0 && (temp&1)==0) diff.insert(temp);
+        }
+        
+        vector<int> ans;
+        for(auto &temp : diff){
+             ans = helper(temp, nums);
+            if(ans.size() == n/2) return ans;
+        }
+        return {};
+    }
+};

@@ -1,0 +1,25 @@
+class Solution {
+public:
+    vector<int> arrayChange(vector<int>& nums, vector<vector<int>>& operations) {
+        map<int, int> idxMap;
+        int n = nums.size();
+        for(int i = 0; i<n; i++) {
+            idxMap[nums[i]] = i;
+        }
+        for(auto i : operations) {
+            if(idxMap.find(i[0]) != idxMap.end()) {
+                int idx = idxMap[i[0]];
+                idxMap.erase(i[0]);
+                idxMap[i[1]] = idx;
+            }
+        }
+        vector<int> res(n, -1);
+        for(auto i : idxMap) {
+            res[i.second] = i.first;
+        }
+        for(int i = 0; i<n; i++) {
+            if(res[i] == -1) res[i] = nums[i];
+        }
+        return res;
+    }
+};

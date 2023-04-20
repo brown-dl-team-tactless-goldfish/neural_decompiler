@@ -1,0 +1,33 @@
+class Solution {
+public:
+	int minSumOfLengths(vector<int>& arr, int target) {
+		int n=arr.size();
+		vector<int> minlens(n,INT_MAX/2);
+		int s=0;
+		int ans=INT_MAX;
+		int right=0,left=0;
+		int sum=0;
+		int minlen=INT_MAX/2;
+		while(right<n)
+		{
+			sum+=arr[right];
+			while(sum>target)
+			{
+				sum-=arr[left++];
+			}
+			if(sum==target)
+			{
+				int cur=right-left+1;
+
+				if(left>0)
+				{
+					 ans=min(ans,cur+minlens[left-1]);
+				}
+				minlen=min(minlen,cur);   
+			}
+			minlens[right++]=minlen;
+		}
+		return ans>=INT_MAX/2 ? -1:ans;;
+
+	}
+};

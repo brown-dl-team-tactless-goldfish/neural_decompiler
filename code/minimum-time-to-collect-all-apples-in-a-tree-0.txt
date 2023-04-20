@@ -1,0 +1,89 @@
+struct Node
+{
+    int id;
+    bool visited;
+    int children;
+    int *adjList;
+};
+
+int dfs(struct Node **root, int curNode, bool* hasApple);
+
+int minTime(int n, int** edges, int edgesSize, int* edgesColSize, bool* hasApple, int hasAppleSize)
+{
+    int i;
+    int *count = malloc(sizeof(int) * n);   
+    struct Node **root = malloc(sizeof(struct Node *) * n);
+    struct Node *curNode;
+
+    memset(count, 0, sizeof(int) * n);
+
+    for(i = 0; i < edgesSize; i++)
+    {
+        count[edges[i][0]] += 1;
+        count[edges[i][1]] += 1;
+    }
+
+    for(i = 0; i < n; i++)
+    {
+        root[i] = malloc(sizeof(struct Node));
+        root[i]->id = i;
+        root[i]->visited = false;
+        root[i]->children = 0;
+        root[i]->adjList = malloc(sizeof(int) * count[i]);
+    }
+
+    for(i = 0; i < edgesSize; i++)
+    {
+        curNode = root[edges[i][0]];
+        curNode->adjList[curNode->children] = edges[i][1]; 
+        curNode->children += 1;
+
+        curNode = root[edges[i][1]];
+        curNode->adjList[curNode->children] = edges[i][0]; 
+        curNode->children += 1;
+    }
+
+    int result = dfs(root, 0, hasApple);
+
+    free(count);
+
+    for(i = 0; i < n; i++)
+    {
+        free(root[i]->adjList);
+        free(root[i]);
+    }
+
+    free(root);
+
+    if(result == 0)
+        return 0;
+    else
+        return result - 2;
+}
+
+int dfs(struct Node **root, int curNode, bool* hasApple)
+{
+    int i;
+    int curChild;
+    int result = 0;
+
+    root[curNode]->visited = true;
+
+    for(i = 0; i < root[curNode]->children; i++)
+    {
+        curChild = root[curNode]->adjList[i];
+        if(!root[curChild]->visited)
+        {
+            result += dfs(root, curChild, hasApple);
+        }
+    }
+
+    if(result == 0)
+    {
+        if(hasApple[curNode])
+            return 2;
+        else
+            return 0;
+    } else
+        return result + 2;
+}

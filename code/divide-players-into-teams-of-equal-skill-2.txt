@@ -1,0 +1,55 @@
+void merge(int *A, int *B, int l, int r, int c) {
+    int i, j, k;
+
+    for (i = l, j = c + 1, k = l; i <= c && j <= r;) {
+        if (A[i] <= A[j])
+            B[k++] = A[i++];
+        else
+            B[k++] = A[j++];
+    }
+
+    while (i <= c)
+        B[k++] = A[i++];
+    while ( j <= r)
+        B[k++] = A[j++];
+
+    for (k = l; k <= r; k++)
+        A[k] = B[k];
+
+    return;
+}
+
+void merge_sort_r(int *A, int *B, int l, int r) {
+    if (r <= l)
+        return;
+    int c = (l + r) / 2;
+    merge_sort_r(A, B, l, c);
+    merge_sort_r(A, B, c + 1, r);
+    merge(A, B, l, r, c);
+}
+
+void merge_sort(int *A, int N) {
+    int l = 0, r = N - 1;
+    int *B = (int *) malloc(N * sizeof(int));
+    merge_sort_r(A, B, l, r);
+    free(B);
+}
+
+long long dividePlayers(int* skill, int skillSize){
+    
+    if(skillSize < 3)
+        return skill[0]*skill[1];
+    
+    merge_sort(skill, skillSize);
+    
+    long long int Tskill = skill[0] + skill[skillSize - 1];
+    long long int chemistry = skill[0] * skill[skillSize - 1];
+    int i, j;
+    for (i = 1, j = skillSize - 2; i < j; i++, j--) {
+        if (skill[i] + skill[j] != Tskill)
+            return -1;
+        chemistry += skill[i] * skill[j];
+    }
+    
+    return chemistry;
+}

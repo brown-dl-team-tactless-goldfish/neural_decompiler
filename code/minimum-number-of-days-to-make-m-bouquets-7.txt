@@ -1,0 +1,32 @@
+class Solution {
+public:
+	// Checks if there are m bouqs.
+    bool kb(int m, int k, vector<int>&bd, int d) {
+        int c = 0, kc = 0;
+        for(int i : bd) {
+				if(d >= i) {       // If current day d is greater than i th day
+                kc++;              // consecutive count of flower grow increases by 1
+                if(kc == k) {   // when the consecutive count is k increase bouqs by 1
+                    kc = 0;
+                    c++;
+                }
+            }
+            else kc = 0; 
+        }
+        return c>=m;
+    }
+	
+    int minDays(vector<int>& bd, int m, int k) {
+        int lo = INT_MAX, hi = 0; 
+        for(int i : bd) {
+            lo = min(lo, i); hi = max(hi, i);
+        }
+        if(!kb(m,k,bd,hi)) return -1; // If there are no m bouqs on the last day return -1. 
+        while(lo <= hi) { // Simple binary search over number of days for lo to hi
+            int mid = (lo+hi) >> 1;
+            if (kb(m, k, bd, mid)) hi = mid-1;
+            else lo = mid+1;
+        }
+        return lo;
+    }
+};

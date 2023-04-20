@@ -1,0 +1,53 @@
+    public class Solution
+    {
+        private IList<TreeNode> Helper(int from, int to, IDictionary<int, IList<TreeNode>> cache)
+        {
+            if (from == to)
+            {
+                return new List<TreeNode>(){new TreeNode(0)};
+            }
+
+            if (to < from)
+            {
+                return null;
+            }
+
+            if (cache.ContainsKey(to - from))
+            {
+                return cache[to - from];
+            }
+
+            IList<TreeNode> res = new List<TreeNode>();
+
+            for (int i = from; i <= to; i++)
+            {
+                var left = Helper(from, i - 1, cache);
+                var right = Helper(i + 1, to, cache);
+
+                if (left != null && right != null)
+                {
+                    foreach (var l in left)
+                    {
+                        foreach (var r in right)
+                        {
+                            var root = new TreeNode(0);
+                            root.left = l;
+                            root.right = r;
+                            res.Add(root);
+                        }
+                    }
+                }
+            }
+
+            res = (res.Count == 0 ? null : res);
+            cache[to - from] = res;
+            return res;
+        }
+
+        public IList<TreeNode> AllPossibleFBT(int n)
+        {
+            IDictionary<int, IList<TreeNode>> cache = new Dictionary<int, IList<TreeNode>>();
+            var res = Helper(1, n, cache);
+            return res == null ? new List<TreeNode>() : res;
+        }
+    }

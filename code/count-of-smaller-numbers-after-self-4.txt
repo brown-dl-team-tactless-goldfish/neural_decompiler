@@ -1,0 +1,145 @@
+struct NumsRecord
+{
+    short sVal;
+    int nCount;             // store the counts with the same sVal
+    int nAllLeftLeafCount;  // store all left leaf counts
+
+    struct NumsRecord* pstLeft;
+    struct NumsRecord* pstRight;
+};
+
+int InsertTree(struct NumsRecord* pstRoot, short sVal)
+{
+    int nRet = 0;
+    if(pstRoot->sVal > sVal)
+    {
+        // add nAllLeftLeafCount since new input sVal is smaller current tree node
+        pstRoot->nAllLeftLeafCount++;
+
+        // keep tracing further left leaf node
+        if(pstRoot->pstLeft)
+        {
+            nRet = InsertTree(pstRoot->pstLeft, sVal);
+        }
+        else
+        {
+            pstRoot->pstLeft = (struct NumsRecord*) malloc(sizeof(struct NumsRecord));
+            pstRoot->pstLeft->sVal = sVal;
+            pstRoot->pstLeft->nCount = 1;
+            pstRoot->pstLeft->nAllLeftLeafCount = 0;
+            pstRoot->pstLeft->pstLeft = NULL;
+            pstRoot->pstLeft->pstRight = NULL;
+        }
+    }
+    else if(pstRoot->sVal < sVal)
+    {
+        // get all left leaf count and current count
+        nRet = pstRoot->nCount + pstRoot->nAllLeftLeafCount;
+
+        // keep tracing further right leaf node
+        if(pstRoot->pstRight)
+        {
+            nRet += InsertTree(pstRoot->pstRight, sVal);
+        }
+        else
+        {
+            pstRoot->pstRight = (struct NumsRecord*) malloc(sizeof(struct NumsRecord));
+            pstRoot->pstRight->sVal = sVal;
+            pstRoot->pstRight->nCount = 1;
+            pstRoot->pstRight->nAllLeftLeafCount = 0;
+            pstRoot->pstRight->pstLeft = NULL;
+            pstRoot->pstRight->pstRight = NULL;            
+        }
+    }
+    else
+    {
+        // same value, add count directly
+        pstRoot->nCount++;
+
+        // get all left leaf count
+        nRet = pstRoot->nAllLeftLeafCount;
+    }
+
+    return nRet;
+}
+
+void DeleteTree(struct NumsRecord* pstRoot)
+{
+    if(pstRoot->pstLeft) DeleteTree(pstRoot->pstLeft);
+    if(pstRoot->pstRight) DeleteTree(pstRoot->pstRight);
+
+    free(pstRoot);
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* countSmaller(int* nums, int numsSize, int* returnSize){
+    *returnSize = numsSize;
+
+    // if numsSize == 1
+    if(numsSize == 1)
+    {
+        *nums = 0;
+        return nums;
+    }
+
+    // trace last value first
+    numsSize--;
+    nums += numsSize;
+    struct NumsRecord* pstHead = (struct NumsRecord*) malloc(sizeof(struct NumsRecord));
+    pstHead->sVal = *nums;
+    pstHead->nCount = 1;
+    pstHead->nAllLeftLeafCount = 0;
+    pstHead->pstLeft = NULL;
+    pstHead->pstRight = NULL;
+
+    int nMin = *nums, nMax = nMin;
+    *nums = 0;
+
+    // trace rest values
+    while(numsSize)
+    {
+        nums--;
+
+        if(*nums < nMin)
+        {
+            // ***special case***, if input value is smaller than nMin, use new input as head
+            struct NumsRecord* pstNew = (struct NumsRecord*) malloc(sizeof(struct NumsRecord));
+            pstNew->sVal = *nums;
+            pstNew->nCount = 1;
+            pstNew->nAllLeftLeafCount = 0;
+            pstNew->pstLeft = NULL;
+            pstNew->pstRight = pstHead;
+
+            pstHead = pstNew;
+            nMin = *nums;
+            *nums = 0;
+        }
+        else if(*nums > nMax)
+        {
+            // ***special case***, if input value is larger than nMax, use new input as head
+            struct NumsRecord* pstNew = (struct NumsRecord*) malloc(sizeof(struct NumsRecord));
+            pstNew->sVal = *nums;
+            pstNew->nCount = 1;
+            pstNew->nAllLeftLeafCount = *returnSize - numsSize;
+            pstNew->pstLeft = pstHead;
+            pstNew->pstRight = NULL;
+
+            pstHead = pstNew;
+            nMax = *nums;
+            *nums = pstNew->nAllLeftLeafCount;            
+        }
+        else
+        {
+            *nums = InsertTree(pstHead, *nums);
+        }
+
+        numsSize--;
+    }
+
+    // free memory
+    DeleteTree(pstHead);
+
+    return nums;
+}

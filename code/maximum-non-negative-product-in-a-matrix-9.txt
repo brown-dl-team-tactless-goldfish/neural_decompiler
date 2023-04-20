@@ -1,0 +1,59 @@
+class Solution {
+public:
+    
+int maxProductPath(vector<vector<int>>& grid) 
+{
+	if (grid[0][0] == 0)
+		return 0;
+
+	vector<vector<long long int>> pos(grid.size(), vector<long long int>(grid[0].size(), 0));
+	vector<vector<long long int>> neg(grid.size(), vector<long long int>(grid[0].size(), 0));
+
+	if (grid[0][0] > 0)
+		pos[0][0] = grid[0][0];
+	else
+		neg[0][0] = grid[0][0];
+	bool zero = false;
+	for (int i = 0; i < grid.size(); i++)
+	{
+		for (int j = 0; j < grid[i].size(); j++)
+		{
+			zero |= grid[i][j] == 0;
+			if (i == 0 && j == 0)
+				continue;
+			
+			if (i > 0) 
+			{
+				if (grid[i][j] < 0) 
+				{
+					pos[i][j] = (neg[i - 1][j] < 0) * neg[i - 1][j] * grid[i][j];
+					neg[i][j] = (pos[i - 1][j] > 0) * pos[i - 1][j] * grid[i][j];
+				} 
+				else
+				{
+					pos[i][j] = max(pos[i][j], pos[i - 1][j] * grid[i][j]);
+					neg[i][j] = min(neg[i][j], neg[i - 1][j] * grid[i][j]);
+				}
+			}
+
+			if (j > 0)
+			{
+				if (grid[i][j] < 0)
+				{
+					pos[i][j] = max(pos[i][j], neg[i][j - 1] * grid[i][j]);
+					neg[i][j] = min(neg[i][j], pos[i][j - 1] * grid[i][j]);
+				}
+				else
+				{
+					pos[i][j] = max(pos[i][j], pos[i][j - 1] * grid[i][j]);
+					neg[i][j] = min(neg[i][j], neg[i][j - 1] * grid[i][j]);
+				}
+			}
+		}
+	}
+
+	int mod = 1e9 + 7;
+	return pos.back().back() == 0 && !zero ? -1 : pos.back().back() % mod;
+}
+    
+};

@@ -1,0 +1,45 @@
+class Solution {
+public:
+    struct trie {
+        bool isword;
+        map < char , trie* > next;
+        trie() {
+            isword = false;
+        }
+    };
+    void insert(string s , trie *r) {
+        for(char c : s){
+            if(!r->next[c]) r->next[c] = new trie();
+            r = r->next[c];
+        }
+        r->isword = true;
+    }
+    
+    bool dfs(int i , string &s , int left , trie *r) {
+        if(left < 0) return false;
+        if(i == s.size()){
+            return r->isword;
+        }
+        int can = 0;
+        for(auto a : r->next) {
+            if(a.first == s[i]) can = dfs(i + 1 , s , left , r->next[a.first]);
+            else can = dfs(i + 1 , s , left - 1 , r->next[a.first]);
+            if(can) return  true;
+        }
+        return false;
+    }
+    
+    vector<string> twoEditWords(vector<string>& queries, vector<string>& dictionary) {
+        set < string > ok1;
+        trie *root = new trie();
+        for(auto a : dictionary) {
+            insert(a , root);
+        }
+        vector < string > ans;
+        for(auto b : queries) {
+            if(dfs(0 , b , 2 , root)) ans.push_back(b);
+        }
+        return ans;
+        
+    }
+};

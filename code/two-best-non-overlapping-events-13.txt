@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int maxTwoEvents(vector<vector<int>>& events) {
+        const int SIZE = events.size(); 
+        sort(begin(events), end(events)); 
+        
+        map<int, int> dp; 
+        int maxSum = 0;
+        for (int i = SIZE - 1, maxEvent = 0; 0 <= i; --i) {
+            maxEvent = max(maxEvent, events[i][2]); 
+            dp[events[i][0]] = max(dp[events[i][0]], maxEvent); 
+            auto it = dp.upper_bound(events[i][1]); 
+            if (it == dp.end()) {
+                maxSum = max(maxSum, events[i][2]);
+            } else {
+                maxSum = max(maxSum, events[i][2] + it->second);
+            }
+        }
+        return maxSum;
+    }
+};

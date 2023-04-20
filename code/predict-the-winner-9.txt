@@ -1,0 +1,42 @@
+long long dp[22][22][2];
+
+int ok(int i, int j,int chance, vector<int>& nums)
+{
+    if(i > j)
+    {
+        return 0;
+    }
+    
+    if(dp[i][j][chance] != -1)
+    {
+        return dp[i][j][chance];
+    }
+    
+    
+    if(chance == 0)
+    {
+        return dp[i][j][chance] = max(nums[i]+ok(i+1, j, 1, nums), nums[j]+ok(i,j-1,1,nums));
+    }
+    else
+    {
+       return dp[i][j][chance] = min(ok(i+1,j,0,nums), ok(i,j-1,0,nums)) ;
+    }
+    
+}
+bool PredictTheWinner(vector<int>& nums) {
+    
+    long long two;
+    
+    int n = nums.size( )-1;
+    
+    memset(dp,-1,sizeof(dp));
+    
+    two = accumulate(nums.begin(),nums.end( ), 0);
+    
+    long long one = (long long)ok(0,n, 0, nums);
+    
+    two = two - one;
+    
+    return one >= two;
+    
+}

@@ -1,0 +1,58 @@
+class Solution {
+public:
+
+    string ans;
+
+    void solve(TreeNode* root, vector<int> &res)
+    {
+        if(root == NULL) return ; 
+        if(root->left == NULL and root->right == NULL){
+            res.push_back(root->val);
+            string curr = "";
+            for(auto x : res){
+                char c = char(x) + 'a';
+                curr+=c;
+            }
+            res.pop_back();
+            reverse(curr.begin(),  curr.end());
+            if(ans == ""){
+                ans = curr;
+                return ;
+            }
+            else{
+                if(curr == ans) return;
+                bool found = false; 
+                for(int i = 0 ; i < min(curr.length() , ans.length()) ; ++i){
+                    if(curr[i] == ans[i]) continue;
+                    else if(curr[i] > ans[i]){
+                        return;
+                    }
+                    else {
+                        ans = curr;
+                        found = true; 
+                        break;
+                    }
+                }
+                if(found) return; 
+                if(curr.length() < ans.length()){
+                    ans = curr; 
+                    return; 
+                }
+            }
+            return ;
+        }
+        else{
+            res.push_back(root->val);
+            solve(root->left, res);
+            solve(root->right, res) ;
+            res.pop_back();
+        }
+    }
+
+    string smallestFromLeaf(TreeNode* root) {
+        vector<int> res;
+        ans = "";
+        solve(root, res);
+        return ans;
+    }
+};

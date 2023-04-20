@@ -1,0 +1,43 @@
+struct ListNode* findMid(struct ListNode* head) {
+  struct ListNode* cur = head;
+  struct ListNode* slow = head;
+  struct ListNode* fast = head;
+
+  while (fast && fast->next && fast->next->next) {
+    fast = fast->next->next;
+    slow = slow->next;
+  }
+  return slow;
+}
+
+struct ListNode* merge(struct ListNode* l, struct ListNode* r) {
+  struct ListNode* cur = (struct ListNode*)malloc(sizeof(struct ListNode));
+  struct ListNode* dummy = cur;
+
+  while (l && r) {
+    if (l->val < r->val) {
+      cur->next = l;
+      l = l->next;
+    } else {
+      cur->next = r;
+      r = r->next;
+    }
+    cur = cur->next;
+  }
+  if (l) cur->next = l;
+  if (r) cur->next = r;
+
+  return dummy->next;
+}
+
+struct ListNode* sortList(struct ListNode* head) {
+  if (!head || !head->next) return head;
+  struct ListNode* mid = findMid(head);
+  struct ListNode* head2 = mid->next;
+  mid->next = NULL;
+
+  struct ListNode* l = sortList(head);
+  struct ListNode* r = sortList(head2);
+
+  return merge(l, r);
+}

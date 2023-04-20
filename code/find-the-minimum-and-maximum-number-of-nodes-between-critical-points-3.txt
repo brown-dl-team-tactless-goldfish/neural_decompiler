@@ -1,0 +1,76 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* nodesBetweenCriticalPoints(struct ListNode* head, int* returnSize)
+{
+    *returnSize = 2;
+    int * ret_arr = (int *)malloc(sizeof(int) * (*returnSize));
+    ret_arr[0] = -1;
+    ret_arr[1] = -1;
+    
+    if(head->next->next == NULL)
+    {
+        return ret_arr;    
+    }
+    
+    struct ListNode * prev = head;
+    struct ListNode * trav = head->next;
+    struct ListNode * end  = trav->next;
+
+    int allocation_size = 100;
+    
+    int * arr = (int *)malloc(sizeof(int) * allocation_size);
+    int arr_index = 0;
+    int index = 1;
+    
+    int diff = INT_MAX;
+    
+    while(end)
+    {
+        if((trav->val > prev->val && trav->val > end->val) || (trav->val < prev->val && trav->val < end->val))  //Local Minima or Local Maxima
+        {
+            if(arr_index == allocation_size)    //Resize the array
+            {
+                allocation_size += 100;
+                arr = (int *)realloc(arr, sizeof(int)*allocation_size);
+            }
+
+            arr[arr_index++] = index;
+            
+            if(arr_index > 1)
+            {
+                int local_diff = arr[arr_index-1] - arr[arr_index-2];
+                if(local_diff < diff)
+                    diff = local_diff;
+            }
+            
+        }
+        
+        prev = trav;
+        trav = end;
+        if(end)
+            end = end->next;
+        index++;
+    }
+    
+    if(diff == INT_MAX)
+        diff = -1;
+    
+    ret_arr[0] = diff;
+    
+    if(arr_index <= 1)
+        ret_arr[1] = -1;
+    else
+        ret_arr[1] = arr[arr_index-1] - arr[0]; 
+        
+    return ret_arr;
+}

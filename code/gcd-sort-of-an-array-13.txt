@@ -1,0 +1,75 @@
+        public bool GcdSort(int[] nums)
+        {
+            int n = nums.Length;
+            var set = nums.ToHashSet();
+            int max = nums.Max();
+            var uf = new UnionFind(max + 1);
+            bool[] arr = new bool[max + 1];
+            //using Sieve_of_Eratosthenes to check every prime between [2,max]
+            //https://en.wikipedia.org/wiki/Sieve_of_Eratosthenes
+            for (int i = 2; i <= max; i++)
+            {
+                if (arr[i] == true) continue;//if i is not a prime, skip
+                int k = -1;//first existed number in nums which is times of this i-prime
+                for (int j = 1; j * i <= max; j++)
+                {
+                    arr[i * j] = true;//check all times of this i-prime, j is in range of [1, max/i]
+                    if(set.Contains(i * j))
+                    {
+                        if (k == -1) k = i * j;//this is the first number
+                        else uf.Union(k, i * j);//Union with the first k, eg.[21,3,7], this will union(3,21) and (7,21)
+                    }
+                }
+            }
+            var sortedArr = nums.OrderBy(x => x).ToArray();
+            for(int i = 0; i < n; i++)
+            {
+                if (uf.Find(nums[i]) != uf.Find(sortedArr[i]))
+                    return false;
+            }
+            return true;
+        }
+		
+    //Impl of UnionFind
+    public class UnionFind
+    {
+        public int[] parent;
+        public int[] rank;
+        public int GroupCount;
+        public UnionFind(int n)
+        {
+            GroupCount = n;
+            parent = new int[n];
+            rank = new int[n];
+            for(int i = 0; i < n; i++)
+                parent[i] = i;
+        }
+        public int Find(int i)
+        {
+            while (parent[i] != i)
+                i = parent[i];
+            return i;
+        }
+        public bool IsConnected(int x, int y)
+        {
+            return Find(x) == Find(y);
+        }
+        public bool Union(int p, int q)
+        {
+            int rootP = Find(p);
+            int rootQ = Find(q);
+            if (rootP == rootQ) return false;
+            if (rank[rootQ] > rank[rootP])
+            {
+                parent[rootP] = rootQ;
+            }
+            else
+            {
+                parent[rootQ] = rootP;
+                if (rank[rootP] == rank[rootQ])
+                    rank[rootP]++;
+            }
+            GroupCount--;
+            return true;
+        }
+    }

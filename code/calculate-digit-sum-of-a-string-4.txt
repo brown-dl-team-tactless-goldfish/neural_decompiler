@@ -1,0 +1,44 @@
+	//base case
+	if (strlen(s) <= k)
+		return s;
+
+	//iterate through s using sPtr
+	int j = 0;
+	char *sPtr = s;
+	while (*sPtr != '\0')
+	{
+		int sum = 0;
+
+		//calculating the sum of groups of k
+		for (int i = 0; (i < k) && (*sPtr!='\0'); i++)
+		{
+			sum += *sPtr - '0';
+			sPtr++;
+		}
+
+		//if sum is more than one digit, the sum is casted to a string and read in reverse
+		if (sum > 9)
+		{
+			int i = 0;
+			char s1[k];
+			while (sum != 0)
+			{
+				s1[i++] = sum%10 + '0';
+				sum /= 10;
+			}
+			i--;
+			char *ptr = s1 + i;
+			while (i >= 0)
+			{
+				s[j++] = s1[i--];
+			}
+		}
+
+		else
+			s[j++] = sum + '0';
+
+	}
+	s[j] = '\0';
+
+	//recursive call for the new s
+	return digitSum(s, k);

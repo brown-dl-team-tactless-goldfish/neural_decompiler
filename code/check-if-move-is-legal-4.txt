@@ -1,0 +1,51 @@
+class Solution {
+public:
+    bool checkMove(vector<vector<char>>& board, int rMove, int cMove, char color) {
+
+        int row = board.size();
+        int col = board[0].size();
+
+        vector<vector<int>>direction = {{1,0},{0,1},{-1,0},{0,-1},{1,1},{-1,-1},{-1,1},{1,-1}};
+
+        for (auto d : direction){
+            if (legal_move(board, rMove, cMove, color, d, row, col)){
+                return true;
+            }
+        }
+
+        return false;
+        
+    }
+
+
+private:
+    bool legal_move(vector<vector<char>>& board,int rMove, int cMove, char color, vector<int>dir, int row, int col){
+
+        int r = rMove + dir[0]; 
+        int c = cMove + dir[1];
+
+        int length = 2;
+
+        while(true){
+            if (r < 0 || c < 0 || r == row || c == col){
+                return false;
+            }
+
+            if (board[r][c] == '.'){
+                return false;
+            }
+            if (board[r][c] == color){
+                if (length >= 3){
+                    return true;
+                }
+                else{
+                    return false;
+                }
+            }
+
+            r = r + dir[0];
+            c = c + dir[1];
+            length++;
+        }
+    }
+};

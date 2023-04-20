@@ -1,0 +1,55 @@
+class Solution
+{
+public:
+	vector<int> getBiggestThree(vector<vector<int>>& grid)
+	{
+		const int R = (int)grid.size();
+		const int C = (int)grid[0].size();
+
+		vector<vector<int>> psr(R + 1, vector<int>(C + 1));
+		for (int r = 1; r <= R; r++)
+			for (int c = 1; c <= C; c++)
+				psr[r][c] = psr[r - 1][c - 1] + grid[r - 1][c - 1];
+
+		vector<vector<int>> psl(R + 1, vector<int>(C + 2));
+		for (int r = 1; r <= R; r++)
+			for (int c = 1; c <= C; c++)
+				psl[r][c] = psl[r - 1][c + 1] + grid[r - 1][c - 1];
+
+		set<int> pq;
+
+		for (int r = 1; r <= R; ++r)
+		{
+			for (int c = 1; c <= C; ++c)
+			{
+				int HC = min(c, C - c + 1);
+				int half = min((R - r + 1 + 1) / 2, HC);
+				for (int h = 1; h <= half; ++h)
+				{
+					int st = h - 1;
+
+					int sum = 
+						psr[r + st][c + st] - psr[r - 1][c - 1] +
+						psr[r + st + st][c] - psr[r + st - 1][c - st - 1] +
+						psl[r + st][c - st] - psl[r - 1][c + 1] + 
+						psl[r + st + st][c] - psl[r + st - 1][c + st + 1];
+
+					if (st)
+						sum -= grid[r - 1][c - 1];
+					sum -= grid[r + st - 1][c + st - 1];
+					sum -= grid[r + st - 1][c - st - 1];
+					sum -= grid[r + st + st - 1][c - 1];
+
+					pq.insert(sum);
+					if (pq.size() > 3)
+						pq.erase(pq.begin());
+				}
+			}
+		}
+		vector<int> res;
+		for (auto val : pq)
+			res.push_back(val);
+		reverse(res.begin(), res.end());
+		return res;
+	}
+};

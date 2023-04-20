@@ -1,0 +1,47 @@
+int numDistinct(char* s, char* t) {
+	int len1, len2;
+	if((len1 = strlen(s)) == 0 || (len2 = strlen(t)) == 0){
+		return 0;
+	}
+
+	int dp[len2], i, j;
+	int cur = 0;
+	memset(dp, 0, sizeof(int) * len2);
+
+	for(i = 0; i < len1; ++i){
+		if(cur != len2){
+			if(cur == 0){
+				if(s[i] == t[cur]){
+					dp[cur++] = 1;
+				}
+				continue;
+			}
+
+			for(j = cur; j > -1; --j){
+				if(t[j] == s[i]){
+				    if(j == 0){
+				        dp[j] = dp[j] + 1;
+				        continue;
+				    }
+					dp[j] = dp[j] + 1 * dp[j-1];
+					if(j == cur){
+						cur++;
+					}
+				}
+			}
+		}
+		else{
+			for(j = cur - 1; j > -1; --j){
+				if(t[j] == s[i]){
+				    if(j == 0){
+				        dp[j] = dp[j] + 1;
+				        continue;
+				    }
+					dp[j] = dp[j] + 1 * dp[j-1];
+				}
+			}
+		}
+	}
+
+	return dp[len2-1];
+}

@@ -1,0 +1,104 @@
+bool CG (int* nums, int numsSize, int k){
+    for (int i = 0 ; i < numsSize ; i++){
+        if (nums[i] == k){
+            return true;
+        }
+    }
+    return false;
+}
+
+void check (int** can_to, int* can_to_count, int** Guess, int* Guess_count, int from, int now, int* correct){
+    for (int i = 0 ; i < can_to_count[now] ; i++){
+        if (can_to[now][i] == from){
+            i++;
+            while (i < can_to_count[now]){
+                if (CG(Guess[now], Guess_count[now], can_to[now][i])){
+                    *correct += 1;
+                }
+                check (can_to, can_to_count, Guess, Guess_count, now, can_to[now][i], correct);
+                i++;
+            }
+        } else {
+            if (CG(Guess[now], Guess_count[now], can_to[now][i])){
+                *correct += 1;
+            }
+            check (can_to, can_to_count, Guess, Guess_count, now, can_to[now][i], correct);
+        }
+    }
+}
+
+void change_root (int** can_to, int* can_to_count, int** Guess, int* Guess_count, int from, int now, int correct, int* ans){
+    for (int i = 0 ; i < can_to_count[now] ; i++){
+        if (can_to[now][i] == from){
+            continue;
+        }
+        int count = correct;
+        if (CG(Guess[now], Guess_count[now], can_to[now][i])){
+            count--;
+        }
+        if (CG(Guess[can_to[now][i]], Guess_count[can_to[now][i]], now)){
+            count++;
+        }
+        if (count >= 0){
+            *ans += 1;
+        }
+        change_root (can_to, can_to_count, Guess, Guess_count, now, can_to[now][i], count, ans);
+    }
+}
+
+int rootCount(int** edges, int edgesSize, int* edgesColSize, int** guesses, int guessesSize, int* guessesColSize, int k){
+    int m = edgesSize+1;
+    
+    int** can_to = malloc(sizeof(int*)*m);
+    int* can_to_count = calloc(m, sizeof(int));
+    
+    int** Guess = malloc(sizeof(int*)*m);
+    int* Guess_count = calloc(m, sizeof(int));
+    
+    //此處是為了節省記憶體空間才這樣設計 如果將 Guess 改成一個 m*m 大小的 bool 直接搜尋下來可以更加快速 就不用 CG 函式 也不怕一個點連接超過20個點
+    
+    for (int i = 0 ; i < m ; i++){
+        can_to[i] = malloc(sizeof(int)*20);
+        Guess[i] = malloc(sizeof(int)*20);
+    }
+    
+    for (int i = 0 ; i < edgesSize ; i++){
+        can_to[edges[i][0]][can_to_count[edges[i][0]]] = edges[i][1];
+        can_to_count[edges[i][0]]++;
+        can_to[edges[i][1]][can_to_count[edges[i][1]]] = edges[i][0];
+        can_to_count[edges[i][1]]++;
+    }
+    for (int i = 0 ; i < guessesSize ; i++){
+        Guess[guesses[i][0]][Guess_count[guesses[i][0]]] = guesses[i][1];
+        Guess_count[guesses[i][0]]++;
+    }
+    
+    int correct = 0;
+    int ans = 0;
+    
+    for (int i = 0 ; i < can_to_count[0] ; i++){
+        if (CG(Guess[0], Guess_count[0], can_to[0][i])){
+            correct += 1;
+        }
+        check (can_to, can_to_count, Guess, Guess_count, 0, can_to[0][i], &correct);
+    }
+    
+    correct -= k;
+        
+    if (correct >= 0){
+        ans++;
+    }
+    
+   change_root (can_to, can_to_count, Guess, Guess_count, -1, 0, correct, &ans);
+    
+    free(can_to_count);
+    free(Guess_count);
+    for (int i = 0 ; i < m ; i++){
+        free(can_to[i]);
+        free(Guess[i]);
+    }
+    free(can_to);
+    free(Guess);
+    
+    return ans;
+}

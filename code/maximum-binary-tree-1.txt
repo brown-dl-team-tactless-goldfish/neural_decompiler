@@ -1,0 +1,17 @@
+struct TreeNode* constructMaximumBinaryTree(int* nums, int numsSize){
+    if (numsSize == 0) {
+        return NULL;
+    }
+    int left = 0,right = 0, max = 0, divided=0;
+    for (int i=0;i<numsSize;i++) {
+        if (nums[i]>max) {
+            max = nums[i];
+            divided = i;
+        }
+    }
+    struct TreeNode* node = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    node->val = max;
+    node->left = constructMaximumBinaryTree(nums, divided);
+    node->right = constructMaximumBinaryTree(nums+divided+1, numsSize-divided-1);
+    return node;
+}

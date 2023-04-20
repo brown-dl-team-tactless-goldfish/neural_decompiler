@@ -1,0 +1,37 @@
+void
+dfs(struct TreeNode *node, int level, int **sums, int *cap)
+{
+    if (!node) {
+        return;
+    }
+    int newcap = level;
+    if (*cap < newcap) {
+        *sums = realloc(*sums, sizeof(int) * newcap);
+        memset((*sums) + (*cap), 0, sizeof(int) * (newcap - (*cap)));
+        *cap = newcap;
+    }
+    (*sums)[level - 1] += node->val;
+    dfs(node->left, level + 1, sums, cap);
+    dfs(node->right, level + 1, sums, cap);
+}
+
+int
+maxLevelSum(struct TreeNode *root)
+{
+    int level = 1;
+    int cap   = level;
+    int *sums = malloc(sizeof(int) * cap);
+    memset(sums, 0, sizeof(int) * cap);
+    sums[level - 1] = root->val;
+    dfs(root->left, level + 1, &sums, &cap);
+    dfs(root->right, level + 1, &sums, &cap);
+    int max = sums[0];
+    for (int i = 1; i < cap; i++) {
+        if (sums[i] > max) {
+            max   = sums[i];
+            level = i + 1;
+        }
+    }
+    free(sums);
+    return level;
+}

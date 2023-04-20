@@ -1,0 +1,63 @@
+class Solution {
+public:
+    vector<long long> maximumEvenSplit(long long finalSum) {
+        
+        // If the finalSum is odd
+        // As we know sum of evens != odd result
+        
+        if(finalSum & 1) return {};
+        
+        // f = Number of 2s that can sum up to FinalSum
+        // Like 2 + 2 +...2(fth) = finalSum
+        
+        long long f = finalSum / 2;
+        
+          // Now partition the 2s into some groups in increasing order of elements
+          // 2 + (2 + 2) + (2 + 2 + 2) + (2 + 2 + 2 + 2) + ......rth group(contains r 2s)
+         // r = Number of group 
+        
+        long long r = (sqrt(1 + 8 * f) - 1) / 2;
+        
+        // store sum of all groups in ans array
+        vector<long long> ans;
+        
+        long long sum = 0;
+        
+        for(long long i = 1 ; i <= r ; i++) {
+            ans.push_back(2 * i);
+            sum += 2 * i;
+        }
+        
+        // If the group sum of all groups is equal to finalSum then we got our answer
+        
+        if(sum == finalSum) return ans;
+        
+        
+        // If sum < finalSum then we have to include an additional even
+        // The best choice for that even element would be the (r + 1) th even number as it is the minimum number that
+        // we haven't added
+        
+        ans.push_back(2 * (r + 1));
+        
+        // Adding the (r + 1)th number may exceed the finalSum
+        // Thats why we have to erase an existing element in the ans array
+        // The element should be the diff between the (current sum - finalSum)
+        // current sum = sum + 2 *(r + 1)
+        
+        long long rem = 2 * (r + 1) + sum - finalSum;
+        
+        // Now search for the element in the array and erase it
+        // That's all you got your ans
+        
+        for(auto it = ans.begin(); it != ans.end() ; ++it) {
+            if(*it == rem) {
+                ans.erase(it);
+                return ans;
+            }
+        }
+        
+        return {};
+        
+        
+    }
+};

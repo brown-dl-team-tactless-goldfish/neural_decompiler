@@ -1,0 +1,41 @@
+class Solution {
+private:
+    int dp[1001][1001];
+public:
+    int helper(string &floor,int numCarpets,int n,int &carpetLen,int prefix[]) {
+        
+        if(n <= 0)
+            return 0;
+        
+        if(numCarpets == 0)
+            return prefix[n-1];
+        
+        if(dp[n][numCarpets] != -1)
+            return dp[n][numCarpets];
+        
+        
+        return dp[n][numCarpets] = min({helper(floor,numCarpets-1,n-carpetLen,carpetLen,prefix),
+                                        helper(floor,numCarpets-1,n-1,carpetLen,prefix),
+                                        helper(floor,numCarpets,n-1,carpetLen,prefix) + (floor[n-1] == '1' ? 1 : 0)});
+        
+    }
+    int minimumWhiteTiles(string floor, int numCarpets, int carpetLen) {
+        
+        int prefix[floor.length()];
+        memset(prefix,0,sizeof(prefix));
+        memset(dp,-1,sizeof(dp));
+        
+        if(floor[0] == '1')
+            prefix[0] = 1;
+        
+        for(int i=1;i<floor.length();i++){
+            if(floor[i] == '1')
+                prefix[i] = 1+prefix[i-1];
+            else 
+                prefix[i] = prefix[i-1];
+        }
+        
+        return helper(floor,numCarpets,floor.length(),carpetLen,prefix);
+        
+    }
+};

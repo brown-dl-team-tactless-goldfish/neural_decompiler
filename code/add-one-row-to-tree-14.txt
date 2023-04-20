@@ -1,0 +1,46 @@
+struct TreeNode* newNode_left(struct TreeNode* root,int v){
+struct TreeNode* p=(struct TreeNode*)malloc(sizeof(struct TreeNode));
+        p->val=v;
+        p->left=root;
+        p->right=NULL;
+        return p;
+}
+struct TreeNode* newNode_right(struct TreeNode* root,int v){
+struct TreeNode* p=(struct TreeNode*)malloc(sizeof(struct TreeNode));
+        p->val=v;
+        p->left=NULL;
+        p->right=root;
+        return p;
+}
+struct TreeNode* newNode(int v){
+ struct TreeNode* p=(struct TreeNode*)malloc(sizeof(struct TreeNode));
+        p->val=v;
+        p->left=NULL;
+        p->right=NULL;
+        return p;
+}
+void addOneRow2Tree(int val, struct TreeNode* node, int depth, int n) {
+        if (node == NULL)
+            return;
+        if (depth == n - 1) {
+            struct TreeNode* t = node->left;
+            node->left = newNode_left(node,val);
+            node->left->left = t;
+            t = node->right;
+            node->right = newNode_right(node,val);
+            node->right->right = t;
+        } else {
+            addOneRow2Tree(val, node->left, depth + 1, n);
+            addOneRow2Tree(val, node->right, depth + 1, n);
+        }
+    }
+
+struct TreeNode* addOneRow(struct TreeNode* root, int val, int depth){
+        if (depth == 1) {
+            struct TreeNode* n = newNode(val);
+            n->left = root;
+            return n;
+        }
+        addOneRow2Tree(val, root, 1, depth);
+        return root;
+}

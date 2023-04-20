@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int maximalNetworkRank(int n, vector<vector<int>>& roads) {
+        vector<int> g[105];
+        int ans = 0;
+        for(auto x: roads) {
+            g[x[0]].push_back(x[1]);
+            g[x[1]].push_back(x[0]);
+        }
+        for(int i=0; i<n-1; i++) {
+            for(int j=i+1; j<n; j++) {
+                int cnt = g[i].size() + g[j].size();
+                for(auto x: g[i]) {
+                    if(x == j) {
+                        cnt--;
+                        break;
+                    }
+                }
+                ans = max(ans, cnt);
+            }
+        }
+        return ans;
+    }
+};

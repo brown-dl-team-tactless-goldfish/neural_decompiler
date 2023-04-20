@@ -1,0 +1,42 @@
+struct Node * copyNode(struct Node *input){
+    struct Node *ret = malloc(sizeof(struct Node));
+    ret->val = input->val;
+    ret->numNeighbors = input->numNeighbors;
+    if(ret->numNeighbors != 0)
+    {
+        ret->neighbors = malloc(sizeof(struct Node *) * ret->numNeighbors);
+        memcpy(ret->neighbors, input->neighbors, sizeof(struct Node *) * ret->numNeighbors);
+    } else {
+        ret->neighbors =0;
+    }
+    return ret;
+}
+
+
+struct Node *cloneGraph(struct Node *s) {
+    if(s == NULL)
+        return NULL;
+    struct Node *queue[101];
+    int allocated[101];
+    struct Node *ret = copyNode(s);
+    int pushPtr, popPtr;
+    memset(queue, 0, 101 * sizeof(struct Node *));
+    memset(allocated, 0, 101 * sizeof(int));
+    queue[0] = ret;
+    allocated[ret->val] = 1;
+    pushPtr = 1;
+    popPtr = 0;
+    while(pushPtr > popPtr)
+    {
+        struct Node * currentNode = queue[popPtr++];
+        for(int cnt=0; cnt<currentNode->numNeighbors; cnt++) {
+            if(allocated[currentNode->neighbors[cnt]->val])
+                continue;
+            currentNode->neighbors[cnt] = copyNode(currentNode->neighbors[cnt]);
+            queue[pushPtr++] = currentNode->neighbors[cnt];
+            allocated[currentNode->neighbors[cnt]->val] = 1;
+        }
+    }
+
+    return ret;
+}

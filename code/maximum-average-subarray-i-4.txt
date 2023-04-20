@@ -1,0 +1,27 @@
+double findMaxAverage(int* nums, int numsSize, int k){
+    // sliding window...
+    int i = 0;
+    int sum = 0;
+
+    while (i < k)
+    {
+        sum += nums[i];
+        i++;
+    }
+    int max = sum;
+    int length = numsSize - k;
+    
+    for (i = 1; i <= length; )
+    {
+        sum -= nums[i - 1];
+        sum += nums[i + k - 1];
+        __asm__ (
+            "cmpl %0, %1;"
+            "cmovg %1, %0;"
+            : "+r" (max) : "r" (sum) :
+        );
+        i ++;
+    }
+    
+    return ((double)max / k);
+}

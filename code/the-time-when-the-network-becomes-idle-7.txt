@@ -1,0 +1,48 @@
+class Solution {
+public:
+    vector<int> dij(vector<int> adj[], int n){
+        vector<int> dist_to(n, INT_MAX);
+        dist_to[0] = 0;
+        
+        priority_queue<pair<int, int>, vector<pair<int, int>>, greater<pair<int, int>>> pq;
+        pq.push({0, 0});
+        while(!pq.empty()){
+            int v = pq.top().second;
+            int d = pq.top().first;
+            
+            pq.pop();
+            
+            if(d != dist_to[v]) continue;
+            
+            for(auto child: adj[v]){
+                if(dist_to[child] > dist_to[v] + 1){
+                    dist_to[child] = dist_to[v] + 1;
+                    pq.push({dist_to[child], child});
+                }
+            }
+        }
+        return dist_to;
+    }
+    int networkBecomesIdle(vector<vector<int>>& ed, vector<int>& pat) {
+        int n = pat.size();
+        vector<int> adj[n];
+        for(auto it: ed){
+            adj[it[0]].push_back(it[1]);
+            adj[it[1]].push_back(it[0]);
+        }
+        
+        vector<int> short_path = dij(adj, n);
+        long maxi = INT_MIN;
+        for(int i = 1; i < n; i++){
+            long num = 2*(short_path[i]);
+            long last_send_msg = num / pat[i];
+            if(num % pat[i] == 0) last_send_msg--;
+            long last_send_msg_time = last_send_msg * pat[i];
+            
+            long ans = last_send_msg_time + num + 1;
+            
+            maxi = max(maxi, ans);
+        }
+        return maxi;
+    }
+};

@@ -1,0 +1,21 @@
+class Solution {
+public:
+    long long mostPoints(vector<vector<int>>& questions) {
+        long long result = 0;
+        vector<long long> dp(questions.size()+1, 0);
+        
+       for(int i=0;i<questions.size();i++){
+           int j= questions[i][1]+1+i;
+//             if i dont use current element
+           dp[i+1] = max(dp[i+1], dp[i]);
+//             if i use current element
+           if(j<questions.size()){
+               dp[j] = max(dp[j], dp[i]+questions[i][0]);
+           }else{
+               result = max(result, dp[i]+questions[i][0]);
+           }
+           result = max(dp[i], result);
+       }
+        return result;
+    }
+};

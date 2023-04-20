@@ -1,0 +1,66 @@
+
+    public class Solution
+    {
+        public string PredictPartyVictory(string senate)
+        {
+            Queue<LinkedListNode<char>> radiants = new Queue<LinkedListNode<char>>();
+            Queue<LinkedListNode<char>> dires = new Queue<LinkedListNode<char>>();
+            LinkedList<char> llSenators = new LinkedList<char>();
+
+            for (int i = 0; i < senate.Length; i++)
+            {
+                var c = senate[i];
+                var last = llSenators.AddLast(c);
+
+                if (c == 'R')
+                {
+                    radiants.Enqueue(last);
+                }
+                else
+                {
+                    dires.Enqueue(last);
+                }
+            }
+
+
+            if (radiants.Count == 0)
+            {
+                return "Dire";
+            }
+
+            if (dires.Count == 0)
+            {
+                return "Radiant";
+            }
+
+            
+            while (true)
+            {
+                var currSenator = llSenators.First;
+
+                if (currSenator.Value == 'R')
+                {
+                    radiants.Enqueue(radiants.Dequeue());
+                    llSenators.Remove(dires.Dequeue());
+
+                    if (dires.Count == 0)
+                    {
+                        return "Radiant";
+                    }
+                }
+                else
+                {
+                    dires.Enqueue(dires.Dequeue());
+                    llSenators.Remove(radiants.Dequeue());
+
+                    if (radiants.Count == 0)
+                    {
+                        return "Dire";
+                    }
+                }
+
+                llSenators.Remove(currSenator);
+                llSenators.AddLast(currSenator);
+            }
+        }
+    }

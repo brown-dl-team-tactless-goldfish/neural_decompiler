@@ -1,0 +1,69 @@
+      public class Solution
+    {
+
+        public int BoxDelivering(int[][] boxes, int portsCount, int maxBoxes, int maxWeight)
+        {
+            int[] dp = new int[boxes.Length];
+            int right = boxes.Length - 1;
+            int lastPort = -1;
+            int[] diff = new int[boxes.Length];
+            for (int i = 0; i < boxes.Length; i++)
+            {
+                if (i == 0)
+                {
+                    lastPort = boxes[i][0];
+                }
+                else
+                {
+                    if (lastPort != boxes[i][0])
+                    {
+                        lastPort = boxes[i][0];
+                        diff[i] = diff[i - 1] + 1;
+                    }
+                    else
+                    {
+                        diff[i] = diff[i - 1];
+                    }
+                }
+            }
+
+            SortedDictionary<int, int> map = new SortedDictionary<int, int>();
+            int bc = 0;
+            int bw = 0;
+
+            for (int left = boxes.Length - 1 ; left >= 0; left--)
+            {
+
+                bc++;
+                bw += boxes[left][1];
+
+                var newSum = diff[left] + ((left == boxes.Length - 1) ? 1 : dp[left + 1] + 2);
+                if (!map.ContainsKey(newSum))
+                {
+                    map[newSum] = 0;
+                }
+                map[newSum]++;
+
+                while (bw > maxWeight || bc > maxBoxes)
+                {
+                    bc--;
+                    bw -= boxes[right][1];
+
+                    int remains = (right == boxes.Length - 1 ? 1 : dp[right + 1] + 2);
+                    int curr = diff[right];
+                    int sum = curr + remains;
+                    map[sum]--;
+                    if (map[sum] == 0)
+                    {
+                        map.Remove(sum);
+                    }
+
+                    right--;
+                }
+
+                dp[left] = map.First().Key - diff[left];
+            }
+
+            return dp[0] + 1;
+        }
+    }

@@ -1,0 +1,48 @@
+vector<string> removeInvalidParentheses(string s) {
+        vector<string> result;
+        unordered_set<string> visited;
+        visited.insert(s);
+        queue<string> Q;
+        Q.push(s);
+        bool found = false;
+        while (!Q.empty()) {
+            string str = Q.front();
+            Q.pop();
+            if (CheckValid(str)) {
+                result.push_back(str);
+                found = true;
+            }
+            if (found == true) {
+                continue;
+            }
+            for (int i = 0; i < str.size(); ++i) {
+                if (str[i] != ')' && str[i] != '(') {
+                    continue;
+                }
+                string tmp = str.substr(0, i) + str.substr(i + 1);
+                if (visited.count(tmp) == 0) {
+                    visited.insert(tmp);
+                    Q.push(tmp);
+                }
+            }
+        }
+        if (result.empty()) {
+            result.push_back("");
+        }
+        return result;
+    }
+    
+    bool CheckValid(const string& str) {
+        int count = 0;
+        for (auto c : str) {
+            if (c == '(') {
+                ++ count;
+            } else if (c == ')') {
+                -- count;
+                if (count < 0) {
+                    return false;
+                }
+            }
+        }
+        return count == 0;
+    }

@@ -1,0 +1,36 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+int getHigh(struct TreeNode* t,int*high){
+    if(t==NULL)
+        return 0;
+    if(high[t->val]==-1){
+        int l=getHigh(t->left,high);
+        int r=getHigh(t->right,high);
+        high[t->val]=(l>r?l+1:r+1);
+    }
+    return high[t->val];
+}
+struct TreeNode*getResult(struct TreeNode* t,int*high){
+    int l=getHigh(t->left,high);
+    int r=getHigh(t->right,high);
+    if(l==r)
+        return t;
+    else if(l>r)
+        return getResult(t->left,high);
+    else
+        return getResult(t->right,high);
+}
+struct TreeNode* lcaDeepestLeaves(struct TreeNode* root){
+    int high[1005];
+    int index=0;
+    memset(high,-1,sizeof(int)*1005);
+    return getResult(root,high);
+}
+

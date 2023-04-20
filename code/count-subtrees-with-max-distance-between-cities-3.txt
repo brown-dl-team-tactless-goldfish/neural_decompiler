@@ -1,0 +1,50 @@
+class Solution {
+public:
+    vector<int> countSubgraphsForEachDiameter(int n, vector<vector<int>>& edges) {
+        g.resize(n);
+        for(auto& e:edges){
+            g[e[0]-1].push_back(e[1]-1);
+            g[e[1]-1].push_back(e[0]-1);
+        }
+        
+        vector<int> res(n-1);
+        for(int mask = 1; mask < (1<<n); mask++){
+            int visited = 0, diameter = 0;
+            depth(mask, findAnyIn(mask), visited, diameter);
+            if(visited == mask && diameter>0) res[diameter-1]++;
+        }
+        return res;
+    }
+    
+    // return -1 if invalid subtree
+    int depth(int mask, int i, int& visited, int& diameter) const{
+        add(i, visited);
+        vector<int> vdepth = {0,0}; //add 0 so later don't need to check size
+        for(auto j:g[i]){
+            if(in(j, visited) || !in(j, mask)) continue;
+            vdepth.push_back(depth(mask, j, visited, diameter));
+        }
+        sort(vdepth.begin(), vdepth.end(), greater());
+        diameter = max(diameter, vdepth[0] + vdepth[1]);
+        return 1+vdepth[0];
+    }
+    
+    bool in(int i, int mask) const{
+        return (1<<i) & mask;
+    }
+    
+    void add(int i, int& mask) const{
+        mask |= (1<<i);
+    }
+    
+    int findAnyIn(int mask){
+        int i = 0;
+        while(!(mask & 1)){
+            i++;
+            mask >>=1;
+        } 
+        return i;
+    }
+    
+    vector<vector<int>> g;
+};

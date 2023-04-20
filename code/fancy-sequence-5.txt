@@ -1,0 +1,48 @@
+#define mod 1000000007
+#define ll long long
+class Fancy {
+private:
+    vector<pair<int, int>> arr;
+    vector<pair<int, int>> operations;
+public:
+    Fancy() {
+        arr.clear();
+        arr.resize(0);
+        
+        operations.clear();
+        operations.resize(0);
+    }
+    
+    void append(int val) {
+        arr.push_back({val, operations.size()});
+        return;
+    }
+    
+    void addAll(int inc) {
+        operations.push_back({0, inc});
+        return;
+    }
+    
+    void multAll(int m) {
+        operations.push_back({1, m});
+        return;
+    }
+    
+    int getIndex(int idx) {
+        if(idx >= arr.size()) return -1;
+        
+        ll res = arr[idx].first;
+        
+        for(int i=arr[idx].second;i<operations.size();i++){
+            auto op = operations[i];
+            if(op.first){
+                res = ((res % mod)*(op.second % mod) % mod);
+            }
+            else{
+                res = (res + op.second) % mod;
+            }
+        }
+        
+        return res;
+    }
+};

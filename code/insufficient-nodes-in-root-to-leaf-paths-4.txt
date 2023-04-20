@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int solve(TreeNode* root)
+    {
+        if(!root) return -1e9;
+        if(!root->left && !root->right) return root->val;
+        int a = solve(root->left);
+        int b = solve(root->right);
+        return root->val = root->val + max(a, b);
+    }
+    TreeNode* make(TreeNode* root)
+    {
+        if(!root) return NULL;
+        TreeNode* temp = new TreeNode(root->val);
+        temp->left = make(root->left);
+        temp->right = make(root->right);
+        return temp;
+    }
+    TreeNode* makenull(TreeNode* temp, TreeNode* root, int sum, int limit)
+    {
+        if(!root || ((root->val + sum) < limit)) return NULL;
+        TreeNode* res = new TreeNode(temp->val);
+        res->left = makenull(temp->left, root->left, sum+temp->val, limit);
+        res->right = makenull(temp->right, root->right, sum+temp->val, limit);
+        return res;
+    }
+    TreeNode* sufficientSubset(TreeNode* root, int limit) {
+        TreeNode* temp = make(root);
+        solve(root);
+        TreeNode* res = makenull(temp, root, 0, limit);
+        return res;
+    }
+};

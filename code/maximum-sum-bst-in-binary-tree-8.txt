@@ -1,0 +1,37 @@
+public class Solution {
+    public int maxSum = Int32.MinValue;
+    public int MaxSumBST(TreeNode root) {
+        //first need to check whether the sub tree is BST;
+        Helper(root);
+        return maxSum<0?0:maxSum;
+    }
+    private info Helper(TreeNode node)
+    {
+        if (node == null) return new info(0, true, Int32.MinValue, Int32.MaxValue);
+        var left = Helper(node.left);
+        var right = Helper(node.right);
+        bool isValid = false;
+        int sum = node.val + left.sum + right.sum;
+        if (left.isBST && right.isBST && (left.max == null || node.val > left.max) &&
+           (right.min == null || (node.val < right.min)))
+        {
+            isValid = true;
+            maxSum = Math.Max(maxSum, sum);
+        }
+        return new info(sum, isValid, Math.Max(left.max,node.val),Math.Min(right.min, node.val));
+    }
+    public class info
+    {
+        public int sum;
+        public bool isBST;
+        public int  max;
+        public int  min;
+        public info(int sum, bool isBst, int max, int min)
+        {
+            this.sum = sum;
+            this.isBST = isBst;
+            this.max = max;
+            this.min = min;
+        }
+    }
+}

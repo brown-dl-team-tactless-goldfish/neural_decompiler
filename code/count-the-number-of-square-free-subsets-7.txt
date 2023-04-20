@@ -1,0 +1,67 @@
+#define mod int(1e9+7)
+int prime_number[] = {2,3,5,7,11,13,17,19,23,29};
+int dp[1001][1025];
+class Solution {
+public:
+    int h(vector<int> &a, int in, int mask) {
+        if(in == a.size()) {
+            return 0;
+        }
+        if(dp[in][mask] != -1) {
+            return dp[in][mask];
+        }
+        // no take - use the mask without updation
+        int do_not_take = h(a, in+1, mask) % mod;
+        
+        // take
+        int take = 1, new_mask = mask;
+        for(int i=0 ; i<10 ; ++i) {
+            // if a[in] is divisible by prime_number[i], then
+            // prime_number[i] will also be a factor of the 
+            // current product, so update the mask accordingly
+            if(a[in] % prime_number[i] == 0) {
+                
+                // if we previously have the i'th bit set (1), 
+                // then there will exit a square of higher power 
+                // of prime_number[i], so we can't take this 
+                // product. therefore, don't check further
+                if(mask & (1<<i)) {
+                    take = 0;
+                    break;
+                }
+
+                // if i'th bit of mask is unset (0), then 
+                // update mask by enabling (setting) the i'th bit
+                new_mask |= (1<<i);
+            }
+        }
+        if(take == 1) {
+            // use the modified mask here
+            take = (1ll + h(a, in+1, new_mask)) % mod;
+        }
+        
+        return dp[in][mask] = (do_not_take + take) % mod;
+    }
+    int squareFreeSubsets(vector<int>& a) {
+        memset(dp, -1, sizeof(dp));
+
+        // removing all those numbers form input array 
+        // which are a factor of (prime_number[j])^2
+        vector<int> t;
+        for(auto i: a) {
+            bool use_this_number = 1;
+            for(int j=0 ; j<10 ; ++j) {
+                if(i % (prime_number[j] * prime_number[j]) == 0) {
+                    use_this_number = 0;
+                    break;
+                }
+            }
+            if(use_this_number) {
+                t.push_back(i);
+            }
+        }
+
+        // get the answer
+        return h(t, 0, 0);
+    }
+};

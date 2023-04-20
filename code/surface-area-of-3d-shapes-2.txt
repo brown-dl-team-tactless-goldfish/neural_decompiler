@@ -1,0 +1,29 @@
+#define MIN(a,b) (((a)<(b))?(a):(b))
+
+int surfaceArea(int** grid, int gridRowSize, int *gridColSizes) 
+{
+	int totalSurface = 0;
+	const int oneCubeSurface = 6;
+	for (int i = 0; i < gridRowSize; i++)
+	{
+		for (int j = 0; j < *gridColSizes; j++)
+		{
+			if (grid[i][j] != 0)
+			{
+				totalSurface += grid[i][j] * oneCubeSurface;
+				totalSurface -= 2 * (grid[i][j] - 1);
+
+				if (i < gridRowSize - 1)
+				{
+					totalSurface -= 2 * MIN(grid[i][j], grid[i + 1][j]);
+				}
+
+				if (j < *gridColSizes - 1)
+				{
+					totalSurface -= 2 * MIN(grid[i][j], grid[i][j+1]);
+				}
+			}
+		}
+	}
+	return totalSurface;
+}

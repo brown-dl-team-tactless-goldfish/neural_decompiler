@@ -1,0 +1,30 @@
+class Solution {
+    int best = 0;
+    
+    struct Ret {
+        int sum;
+        int l;
+        int r;
+    };
+    
+    Ret helper(TreeNode* node) {
+        if (!node) return {0, INT_MAX, INT_MIN};
+        
+        auto lt = helper(node->left);
+        auto rt = helper(node->right);
+        int sum = lt.sum + rt.sum + node->val;
+        
+        if (node->val > lt.r && node->val < rt.l) {
+            best = max(best, sum);
+            return {sum, min(lt.l, node->val), max(rt.r, node->val)};
+        } else {
+            return {0, INT_MIN, INT_MAX};   
+        }
+    }
+    
+public:
+    int maxSumBST(TreeNode* root) {
+        helper(root);
+        return best;
+    }
+};

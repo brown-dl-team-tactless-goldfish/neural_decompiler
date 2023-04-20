@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int stoneGameVIII(vector<int>& stones) {
+        vector<int>prefix(stones.size());
+        prefix[0] = stones[0];
+        int i, j;
+        for(i = 1; i < stones.size(); i++){
+            prefix[i] = prefix[i - 1] + stones[i];
+        }
+        vector<pair<int, int>>dp(stones.size());
+        dp[stones.size() - 1].first = prefix.back();
+        dp[stones.size() - 1].second = -1 * prefix.back();
+        for(i = stones.size() - 2; i >= 0; i--){
+            dp[i].first = max(dp[i + 1].first, prefix[i] + dp[i + 1].second);
+            dp[i].second = min(dp[i + 1].second, -1 * prefix[i] + dp[i + 1].first);
+        }
+        return dp[1].first;
+    }
+};

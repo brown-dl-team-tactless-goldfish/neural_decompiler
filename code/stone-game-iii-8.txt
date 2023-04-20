@@ -1,0 +1,30 @@
+class Solution {
+public:
+    string stoneGameIII(vector<int>& stoneValue) {
+        int n = stoneValue.size();
+        vector<int> dp(n, INT_MIN);
+        int res = helper(stoneValue, 0, dp);
+        
+        if(res > 0) return "Alice";
+        else if(res < 0) return "Bob";
+        return "Tie";
+    }
+    
+    int helper(vector<int>& stone, int cur, vector<int>& dp) {
+        int n = stone.size();
+        if(cur == n) return 0;
+
+        if(dp[cur] != INT_MIN) return dp[cur];
+        
+        int res = stone[cur] - helper(stone, cur+1, dp);
+        if(cur + 1 < n) {
+            res = max(res, stone[cur] + stone[cur+1] - helper(stone, cur+2, dp));
+        }
+        if(cur + 2 < n) {
+            res = max(res, stone[cur] + stone[cur+1] + stone[cur+2] - helper(stone, cur+3, dp));
+        }
+         
+        dp[cur] = res;
+        return res;
+    }
+};

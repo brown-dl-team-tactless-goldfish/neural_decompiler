@@ -1,0 +1,39 @@
+int cmp(int *a, int *b) {
+    return *b - *a;
+}
+
+bool backtracking(int *matchsticks, int length, int *sum, int index, int side_length) {
+    // printf("%d\n", index);
+    if(index == length) {
+        // printf("%d, %d, %d, %d\n", sum[0], sum[1], sum[2], sum[3]);
+        if( sum[0] == side_length &&
+            sum[1] == side_length &&
+            sum[2] == side_length &&
+            sum[3] == side_length) {
+            return true;
+        }
+        return false;
+    }
+
+    for(int i=0;i<4;i++) {
+        if(sum[i] + matchsticks[index] <= side_length) {
+            sum[i] += matchsticks[index];
+            if(backtracking(matchsticks, length, sum, index+1, side_length)) return true;
+            sum[i] -= matchsticks[index];
+        }
+    }
+    return false;
+}
+
+bool makesquare(int *matchsticks, int matchsticksSize) {
+    int sum[4] = {0, 0, 0, 0};
+    int temp_sum = 0;
+    for(int i=0;i<matchsticksSize;i++) temp_sum += matchsticks[i];
+    
+    if(temp_sum % 4 != 0) return false;
+    
+    // printf("side length: %d\n", temp_sum>>2);
+    
+    qsort(matchsticks, matchsticksSize, sizeof(int), cmp);
+    return backtracking(matchsticks, matchsticksSize, sum, 0, temp_sum>>2);
+}

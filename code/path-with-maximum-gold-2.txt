@@ -1,0 +1,33 @@
+class Solution {
+private:
+    int dfs(vector<vector<int>>& grid, int i, int j, int m, int n){
+        
+        if(i<0 or j<0 or i>=m or j>=n or grid[i][j] == 0) return 0;
+        
+        int gold = grid[i][j];
+        grid[i][j] = 0;
+        
+        int left  = dfs(grid, i, j-1, m, n);
+        int right = dfs(grid, i, j+1, m, n);
+        int up    = dfs(grid, i-1, j, m, n);
+        int down  = dfs(grid, i+1, j, m, n);
+        
+        grid[i][j] = gold;
+        
+        return gold + max({left, right, up, down});
+    }
+public:
+    int getMaximumGold(vector<vector<int>>& grid) {
+        
+        int m = grid.size(), n = grid[0].size();
+        int maxGold = 0;
+        
+        for(int i=0;i<m;i++){
+            for(int j=0;j<n;j++){
+                int gold = dfs(grid, i, j, m, n);
+                maxGold = max(gold, maxGold);
+            }
+        }
+        return maxGold;
+    }
+};

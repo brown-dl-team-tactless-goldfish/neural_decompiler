@@ -1,0 +1,21 @@
+int cmp(const void *a, const void *b){
+    return *(int*)a - *(int*)b ;
+}
+int maxArea(int h, int w, int* horizontalCuts, int horizontalCutsSize, int* verticalCuts, int verticalCutsSize){
+    qsort(horizontalCuts, horizontalCutsSize, sizeof(int), cmp ) ;
+    qsort(verticalCuts, verticalCutsSize, sizeof(int), cmp ) ;
+    int maxHorizon =  horizontalCuts[0] ;
+    int mod = 1e9 + 7 ;
+    for(int i = 1; i < horizontalCutsSize; i++){
+        maxHorizon = fmax(maxHorizon, horizontalCuts[i] - horizontalCuts[i-1] ) ;
+    }
+    maxHorizon = fmax(maxHorizon, h - horizontalCuts[horizontalCutsSize-1] ) ;
+    
+    int maxVertical =  verticalCuts[0] ;
+    for(int i = 1; i < verticalCutsSize; i++){
+        maxVertical = fmax(maxVertical, verticalCuts[i] - verticalCuts[i-1] ) ;
+    }
+    maxVertical = fmax(maxVertical, w - verticalCuts[verticalCutsSize-1] ) ;
+    
+    return ((long long)maxHorizon * maxVertical) % mod ;
+}

@@ -1,0 +1,45 @@
+class Solution {
+public:
+    long long minimumTotalCost(vector<int>& nums1, vector<int>& nums2) {
+        int n = nums1.size();
+        
+        unordered_map<int,int> counter;
+        for ( int i : nums1 ) counter[i]++;
+        for ( int i : nums2 ) counter[i]++;
+        for ( int i=1; i<=n; ++i ) if ( counter[i] > n ) return -1;
+        counter.clear();
+        
+        vector<int> equalIndex;
+        unordered_map<int,bool> isEqualIndex, isEqualValue;
+        for ( int i=0; i<n; ++i ) {
+            if ( nums1[i] == nums2[i] ) {
+                equalIndex.emplace_back(i);
+                isEqualIndex[i] = true;
+                isEqualValue[nums1[i]] = true;
+                counter[nums1[i]]++;
+            }
+        }
+        
+        int mx = 1;
+        for ( int i=2; i<=n; ++i ) if ( counter[mx] < counter[i] ) mx = i;
+        int ret = counter[mx] - (equalIndex.size()-counter[mx]);
+        long long ans = 0;
+        for ( int i : equalIndex ) ans += i;
+        // case 1
+        if ( ret > 0 ) {
+            for ( int i=0; i<n; ++i ) {
+                if ( isEqualIndex[i] || nums1[i] == mx || nums2[i] == mx ) continue;
+                ret--;
+                ans += i;
+                if ( ret == 0 ) break;
+            }
+        } // case 2
+        else if ( ret < 0 && equalIndex.size()%2 == 1 ) {
+            for ( int i=0; i<n; ++i ) {
+                if ( isEqualIndex[i] || isEqualValue[nums1[i]] || isEqualValue[nums2[i]] ) continue;
+                break;
+            }
+        }
+        return ans;
+    }
+};

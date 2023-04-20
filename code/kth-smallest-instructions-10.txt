@@ -1,0 +1,23 @@
+class Solution {
+public:
+    string kthSmallestPath(vector<int>& d, int k) {
+        long long dp[101][101];
+        int r = d[0], c = d[1];
+        for(int i = r; i >= 0; i--) {
+            for(int j = c; j >= 0; j--) {
+                if(i == r and j == c) dp[i][j] = 1;
+                else dp[i][j] = (i+1 <= r?dp[i+1][j]:0)+(j+1 <= c?dp[i][j+1]:0);
+            }
+        }
+        
+        int i = 0, j = 0;
+        long long t = k;
+        string s;
+        while(!(i == r and j == c)) {
+            if(j+1 <= c and dp[i][j+1] >= t) s += 'H', j++;
+            else s += 'V',  t -= ((j+1 <= c)? dp[i][j+1]:0), i++;
+        }
+        
+        return s;
+    }
+};

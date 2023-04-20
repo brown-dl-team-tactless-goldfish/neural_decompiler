@@ -1,0 +1,102 @@
+
+
+// firstly i am precomputing the maximum path sum for each node (called sub) using dfs function assuming tree rooted at node 0.
+// Now we are olny left with rerooting at all the nodes and get the maximum of all. I am storing it in dp 
+
+//explanation of rerooting function
+consider the tree
+           0
+		 /   \
+      1       2
+	/   \    /  \
+ 3      4  5    6
+ prices:= 1,2,3,4,5,6,7
+ 
+ suppose we are at 0th node then we have to reroot at all the child of node 0 i.e.(1,2)
+ now suppose i go for node 2 then what i am doing that assume 2 is not a child of node 0 and calculate the maximum path sum for node 0.
+ 
+ long long mx=0;
+            for(auto it:g[v]){
+                if(it==to)continue;
+                mx=max(mx,sub[it]);
+            }
+now it is quite simple that dp[2]=max(sub[2]-price[2],mx+price[2]);
+ dp[to]=max(sub[to]-price[to],mx+price[v]);
+ 
+ //one thing to note that when we go gor node 2 the path sum value of node 0 (sub[0]) will change for that subtree that's why i am doing
+    sub[v]=mx+price[v];
+	
+	and after coming out of reroot call 
+	setting it to the initial value(long long tmp=sub[v])
+     sub[v]=tmp;
+	 
+
+
+CODE:-
+
+  vector<long long>sub; 
+bool comp(int &i,int &j){
+        return (sub[i]>sub[j]);
+    }
+class Solution {
+public:
+  
+    
+    long long solve(int v,int p,vector<int>g[],vector<int>&price){
+        sub[v]=price[v];
+        long long mx=0;
+        for(auto to:g[v]){
+            if(to==p)continue;
+            mx=max(mx,solve(to,v,g,price));
+        }
+        sub[v]+=mx;
+        return sub[v];
+    }
+    void reroot(int v,int p,vector<int>g[],vector<int>&price,long long &ans,vector<long long>&dp){
+       long long tmp=sub[v];
+    
+        for(auto to:g[v]){
+            if(to==p)continue;
+           
+            long long mx=0;
+            int j=0;//to ensure we are checking just two childs
+            for(auto it:g[v]){
+                if(it==to){
+                    continue;
+              j++;}
+                mx=max(mx,sub[it]);
+                j++;
+                if(j>2)break;
+            }
+            sub[v]=mx+price[v];
+            dp[to]=max(sub[to]-price[to],mx+price[v]);
+            reroot(to,v,g,price,ans,dp);
+            sub[v]=tmp;
+        }
+       
+    }
+  
+    long long maxOutput(int n, vector<vector<int>>& edges, vector<int>& price) {
+        vector<int>g[n];
+        
+        for(auto it:edges){
+            g[it[0]].push_back(it[1]);
+            g[it[1]].push_back(it[0]);
+        }
+        sub=vector<long long>(n);
+        vector<long long>dp(n);// dpi denotes the answer if i is root
+        solve(0,-1,g,price);
+        
+        for(int i=0;i<n;i++){
+            sort(g[i].begin(),g[i].end(),comp);
+        }
+        
+        long long ans=0;
+        dp[0]=sub[0]-price[0];
+        reroot(0,-1,g,price,ans,dp);
+        
+      for(int i=0;i<n;i++)ans=max(ans,dp[i]);
+       
+        return ans;
+    }
+};

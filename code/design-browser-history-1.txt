@@ -1,0 +1,47 @@
+typedef struct {
+    char* arr[5001];
+    int top;
+    int size;
+} BrowserHistory;
+
+BrowserHistory* browserHistoryCreate(char* homepage) {
+    BrowserHistory* obj = (BrowserHistory*) calloc(1, sizeof(BrowserHistory));
+    obj->arr[(obj->top)++] = homepage;
+    obj->size = obj->top;
+    return obj;
+}
+
+void browserHistoryVisit(BrowserHistory* obj, char* url) {
+    obj->arr[(obj->top)++] = url;
+    obj->size = obj->top;
+}
+
+char* browserHistoryBack(BrowserHistory* obj, int steps) {
+    int idx = obj->top - 1;
+    for (int i = steps; i > 0; i--) {
+        idx--;
+        if (idx < 0) {
+            idx = 0;
+            break;
+        }
+    }
+    obj->top = idx + 1;
+    return obj->arr[idx];
+}
+
+char* browserHistoryForward(BrowserHistory* obj, int steps) {
+    int idx = obj->top - 1;
+    for (int i = 1; i <= steps; i++) {
+        idx++;
+        if (idx >= obj->size) {
+            idx = obj->size - 1;
+            break;
+        }
+    }
+    obj->top = idx + 1;
+    return obj->arr[idx];
+}
+
+void browserHistoryFree(BrowserHistory* obj) {
+    free(obj);
+}

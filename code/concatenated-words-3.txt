@@ -1,0 +1,59 @@
+class Trie{
+    public:
+    vector<Trie*> dict; 
+    bool isEnd;
+    Trie(){
+        dict.assign(26,NULL);
+        isEnd = false;
+    }
+};
+
+class Solution {
+public:
+    
+    bool isWord(Trie* root, int left , int right, string s){
+        Trie* curr =root;
+        for(int i=left;i<=right;i++){
+            if(!curr->dict[s[i]-'a'])
+                return 0;
+            curr = curr->dict[s[i]-'a'];
+        }
+        return curr->isEnd;
+    }
+    
+    bool dfs(string s, int left,int right, Trie* root) {
+        Trie* curr = root;
+        for(int i=left;i<=right;i++){
+            if(!curr->dict[s[i]-'a']) 
+                return false;
+            curr = curr->dict[s[i]-'a'];
+            if(curr->isEnd){
+                if(isWord(root,i+1,right,s) || dfs(s , i+1, right, root)) //a word can be a concatenation of 2 or more words. 
+                    return true;
+            }
+        }
+        return false;
+    }
+    
+    vector<string> findAllConcatenatedWordsInADict(vector<string>& words) {
+        Trie* root = new Trie();
+        //insert all the words into the trie. 
+        for(string word : words) {
+            Trie* curr = root; 
+            for(char c : word){
+                if(!curr->dict[c-'a']) 
+                    curr->dict[c-'a'] = new Trie();
+                curr = curr->dict[c-'a'];
+            }
+            if(curr!=root)curr->isEnd = true; //there might be empty strings words
+        }
+        vector<string> result;
+        
+        for(string word : words) {
+            if(dfs(word,0,word.length()-1 , root))
+                result.push_back(word);
+        }        
+        
+        return result;
+    }
+};

@@ -1,0 +1,80 @@
+/*
+Observations-
+      1- Since we required to find smallest range than it is guranteed that lower and higher limit of range will  be from given elements.
+	  
+      2-we need to ensure that atleast one element from all list present in that range ---> 
+         
+         we will use priority queue for it-
+         
+         a - we will push 1st elements of all lists int priority queue( minimum queue )
+         
+         b- every time we push element in queue we find maximum value
+         
+         c - top element of priority queue will give us lower limit of range and maximum value will give us the  higher range ( satisfy the codition that atleast one element is present from each list)
+         
+         d- now will will pop smallest element from queue to find minimum range we push next element of list  whose element is at top (to ensure that atleast one element of all list is present in range)
+            
+         e- if any list is exhausted will break loop and return our answer
+         
+   Dry run this on 2-3 test cases you will get an idea how it is working.
+*/
+
+
+class Solution {
+public:
+    vector<int> smallestRange(vector<vector<int>>& nums) {
+        
+        int n=nums.size();
+        priority_queue<vector<int> , vector<vector<int>> , greater<vector<int>> >pq;
+        // element , i index , j index
+        
+        
+        int mx=pow(10,-5);
+        
+        int res_length=0;
+        
+        for(int i=0;i<n;i++)
+        {
+            mx=max(mx,nums[i][0]);
+            pq.push({nums[i][0],i,0});
+        }
+        
+        int low=pq.top()[0];
+        int high=mx;
+        
+        while(true)
+        {
+            vector<int>temp=pq.top();
+            pq.pop();
+            
+            int element=temp[0];
+            int i=temp[1];
+            int j=temp[2];
+            
+            
+            if((high-low)>(mx-element))
+            {
+                high=mx;
+                low=element;
+            }
+            
+            if(j+1<(nums[i].size()))
+            {
+                pq.push({nums[i][j+1],i,j+1});
+                mx=max(nums[i][j+1],mx);
+            }
+            else
+            {
+                break;
+            }
+        }
+        
+        vector<int>ans;
+        ans.push_back(low);
+        ans.push_back(high);
+        
+        return ans;
+    
+        
+    }
+};

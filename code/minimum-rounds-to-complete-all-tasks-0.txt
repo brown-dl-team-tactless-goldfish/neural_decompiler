@@ -1,0 +1,41 @@
+struct hash {
+    int val;
+    int count;
+};
+
+int input(int tasks, struct hash* list){
+    int now = tasks % 99993;
+    while (list[now].val != 0 && list[now].val != tasks){
+        now++;
+    }
+    if (list[now].val == 0){
+        list[now].val = tasks;
+    }
+    return now;
+}
+
+
+int minimumRounds(int* tasks, int tasksSize){
+    int cant = 0;
+    int ans = 0;
+    struct hash list[100000] = {0};
+    for (int i = 0 ; i < tasksSize ; i++){
+        int now = input(tasks[i], list);
+        list[now].count++;
+        if (list[now].count == 1){
+             cant++;
+        } else if (list[now].count == 2){
+            ans++;
+            cant--;
+        } else if (list[now].count == 4){
+            ans++;
+        } else if (list[now].count == 7){
+            ans++;
+            list[now].count = 4;
+        }
+    }
+    if (cant > 0){
+        return -1;
+    }
+    return ans;
+}

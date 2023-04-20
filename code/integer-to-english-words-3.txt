@@ -1,0 +1,139 @@
+const char * wordTable[] = {
+    "Zero",
+    "One",      "Two",
+    "Three",    "Four",
+    "Five",     "Six",
+    "Seven",    "Eight",
+    "Nine",     "Ten",
+    "Eleven",   "Twelve",
+    "Thirteen", "Fourteen",
+    "Fifteen",  "Sixteen",
+    "Seventeen","Eighteen",
+    "Nineteen", "Twenty",
+    "Thirty",   "Forty",
+    "Fifty",    "Sixty",
+    "Seventy",  "Eighty",
+    "Ninety"
+};
+
+const char * groupTable[] = {
+    " Billion", " Million", " Thousand"
+};
+
+const int groupValues[] = {
+    1000000000, 1000000, 1000
+};
+
+unsigned int measureHundred(int num){
+    unsigned int count = 0;
+    
+    if(num >= 100){
+        count += strlen(wordTable[num / 100]);
+        count += strlen(" Hundred");
+        
+        if((num %= 100) == 0)
+            return count;
+        
+        ++count;
+    }
+    
+    if(num > 20){
+        count += strlen(wordTable[20 + (num - 20) / 10]);
+        
+        if(num % 10){
+            ++count;
+            count += strlen(wordTable[num % 10]);
+        }
+    }else{
+        count += strlen(wordTable[num]);
+    }
+    
+    return count;
+}
+
+unsigned int measure(int num){
+    unsigned int count = 0;
+    int i, base;
+    
+    for(i = 0; i < 3; ++i){
+        base = groupValues[i];
+        
+        if(num >= base){
+            count += measureHundred(num / base);
+            count += strlen(groupTable[i]);
+            
+            if(num %= base)
+                ++count;
+        }
+    }
+    
+    count += measureHundred(num);
+    
+    return count;
+}
+
+char * output(char * out, const char * in){
+    while(*out = *in){
+        ++out;
+        ++in;
+    }
+    
+    return out;
+}
+
+char * doHundred(char * out, int num){
+    if(num >= 100){
+        out = output(out, wordTable[num / 100]);
+        out = output(out, " Hundred");
+        
+        if((num %= 100) == 0)
+            return out;
+        
+        *out++ = ' ';
+        *out = '\0';
+    }
+    
+    if(num > 20){
+        out = output(out, wordTable[20 + (num - 20) / 10]);
+        
+        if(num % 10){
+            *out++ = ' ';
+            *out = '\0';
+            out = output(out, wordTable[num % 10]);
+        }
+    }else{
+        out = output(out, wordTable[num]);
+    }
+    
+    return out;
+}
+
+char * numberToWords(int num){
+    char * str = malloc(measure(num) + 1);
+    char * out = str;
+    int i, base;
+    
+    if(str == NULL)
+        return NULL;
+    
+    out[0] = '\0';
+    
+    for(i = 0; i < 3; ++i){
+        base = groupValues[i];
+        
+        if(num >= base){
+            out = doHundred(out, num / base);
+            out = output(out, groupTable[i]);
+            
+            if((num %= base) == 0)
+                return str;
+            
+            *out++ = ' ';
+            *out = '\0';
+        }
+    }
+    
+    out = doHundred(out, num);
+    
+    return str;
+}

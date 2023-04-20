@@ -1,0 +1,13 @@
+with cte as (
+    select buyer_id, count(buyer_id) as ct from Orders where YEAR(order_date) = '2019' group by buyer_id
+)
+select
+    u.user_id as buyer_id,
+    u.join_date,
+    (case when c.ct is not null then c.ct else 0 end) as orders_in_2019 
+from 
+    cte c 
+right join 
+    Users u
+on
+    c.buyer_id  = u.user_id 

@@ -1,0 +1,149 @@
+public class Solution 
+{
+    public double MaxProbability(int n, int[][] edges, double[] succProb, int start, int end) 
+    {
+        List<List<(int n,double p)>> adjList = new List<List<(int n,double p)>>();
+        
+        for(int i=0;i<n;i++)
+            adjList.Add(new List<(int n,double p)>());
+        
+        for(int i=0;i<edges.Length;i++)
+        {
+            adjList[edges[i][0]].Add((edges[i][1], succProb[i]));
+            adjList[edges[i][1]].Add((edges[i][0], succProb[i]));
+        }
+        
+        return Dijkstra(adjList,start,end);
+    }
+    
+    private double Dijkstra(List<List<(int n,double p)>> adjList,int st,int en)
+    {
+        int n = adjList.Count;
+        double[] minDis = new double[n];
+        Array.Fill(minDis, double.MinValue);
+        minDis[st] = 1;
+        int[] finalized = new int[n];
+        
+        PriorityQueue<(int n,double p)> qu = new PriorityQueue<(int n,double p)>(true);
+        // if diff less than 1 then it will be considered equal, hence multiply by 100000 for 5 dig precision
+        qu.compare = (x,y)=>Convert.ToInt32((x.p-y.p)*100000); 
+        qu.Enqueue((st,1));
+        
+        while(qu.Count>0)
+        {
+            var cur = qu.Dequeue();
+            finalized[cur.n] = 1;
+            
+            if(cur.n==en)
+                return cur.p;
+            
+            foreach(var nd in adjList[cur.n])
+            {
+                if(finalized[nd.n]==1)
+                    continue;
+                
+                if(minDis[nd.n] < minDis[cur.n] * nd.p)
+                {
+                    minDis[nd.n] = minDis[cur.n] * nd.p;
+                    qu.Enqueue((nd.n,minDis[nd.n]));
+                }
+            }
+        }
+        
+        return 0;
+    }
+}
+
+//https://gist.github.com/paralleltree/31045ab26f69b956052c
+
+class PriorityQueue<T>
+{
+    private List<T> list;
+    public int Count { get { return list.Count; } }
+    public readonly bool IsDescending;
+    public Comparison<T> compare;
+
+    public PriorityQueue()
+    {
+        list = new List<T>();
+    }
+
+    public PriorityQueue(bool isdesc)
+        : this()
+    {
+        IsDescending = isdesc;
+    }
+
+    public PriorityQueue(int capacity)
+        : this(capacity, false)
+    { }
+
+    public PriorityQueue(IEnumerable<T> collection)
+        : this(collection, false)
+    { }
+
+    public PriorityQueue(int capacity, bool isdesc)
+    {
+        list = new List<T>(capacity);
+        IsDescending = isdesc;
+    }
+
+    public PriorityQueue(IEnumerable<T> collection, bool isdesc)
+        : this()
+    {
+        IsDescending = isdesc;
+        foreach (var item in collection)
+            Enqueue(item);
+    }
+
+
+    public void Enqueue(T x)
+    {
+        list.Add(x);
+        int i = Count - 1;
+
+        while (i > 0)
+        {
+            int p = (i - 1) / 2;
+            if ((IsDescending ? -1 : 1) * compare(list[p], x) <= 0) break;
+
+            list[i] = list[p];
+            i = p;
+        }
+
+        if (Count > 0) list[i] = x;
+    }
+
+    public T Dequeue()
+    {
+        T target = Peek();
+        T root = list[Count - 1];
+        list.RemoveAt(Count - 1);
+
+        int i = 0;
+        while (i * 2 + 1 < Count)
+        {
+            int a = i * 2 + 1;
+            int b = i * 2 + 2;
+            int c = b < Count && (IsDescending ? -1 : 1) * compare(list[b], list[a]) < 0 ? b : a;
+
+            if ((IsDescending ? -1 : 1) * compare(list[c], root) >= 0) break;
+            list[i] = list[c];
+            i = c;
+        }
+
+        if (Count > 0) list[i] = root;
+        return target;
+    }
+
+    public T Peek()
+    {
+        if (Count == 0) throw new InvalidOperationException("Queue is empty.");
+        return list[0];
+    }
+
+    public void Clear()
+    {
+        list.Clear();
+    }
+}

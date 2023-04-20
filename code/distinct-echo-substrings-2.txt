@@ -1,0 +1,47 @@
+class Solution {
+public:
+    #define ll long long int
+    ll q=1000000037;
+    vector<ll>h;
+    vector<ll>p;
+    void build_hash(string &s)
+    {
+        ll n=s.size(),d=1000000007;
+        h.resize(n+1);
+        p.resize(n+1);
+        p[0]=1,h[0]=0;
+        for(int i=1;i<=n;i++)
+        {
+            h[i]=(h[i-1]*d+s[i-1])%q;
+            p[i]=(p[i-1]*d)%q;
+        }
+    }
+    ll hash(int i,int j)
+    {
+        ll res=(h[j+1]-h[i]*p[j-i+1])%q;
+        if(res<0)
+            res+=q;
+        return res;
+    }
+    int distinctEchoSubstrings(string s) 
+    {
+        unordered_set<int>res;
+        build_hash(s);
+        int n=s.size();
+        for(int i=0;i<n;i++)
+        {
+            for(int j=i;j<n;j++)
+            {
+                int len=j-i+1;
+                if(j+len<n)
+                {
+                    if(hash(i,j)==hash(j+1,j+len))
+                    {
+                        res.insert(hash(i,j));
+                    }
+                }
+            }
+        }
+        return res.size();
+    }
+};

@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int maxDiff(int num) {
+		// n: length of the num string
+		// Time Complexity: O(n)
+		// Space Complexity: O(n)
+		
+        string s(to_string(num));
+        char c1(' '), c2(' '), e;
+		// num1: first time pick and replace to get the min
+		// num2: second time pick and replace to get the max
+        string num1(s), num2(s);
+        
+        for (int i = 0; i < s.length(); ++i) {
+            if (c1 != ' ') {
+				// replace the remaining same digits
+                if (s[i] == c1)
+                    num1[i] = e;
+            } else if (s[0] != '1') {
+				// if the first digit is not 1, replace it with 1
+                num1[0] = e = '1';
+                c1 = s[0];
+            } else if (s[i] != '0' && s[i] != s[0]) {
+				// otherwise, we can replace a non-first digit as leftmost as possible with 0
+				// the digit to replace must be different from the first one to avoid leading zero(s)
+                num1[i] = e = '0';
+                c1 = s[i];
+            }
+            
+            if (c2 != ' ') {
+				// replace the remaining same digits
+                if (s[i] == c2)
+                    num2[i] = '9';
+            } else if (s[i] != '9') {
+				// replace the first non-9 digit with 9
+                num2[i] = '9';
+                c2 = s[i];
+            }
+        }
+        
+        return stoi(num2) - stoi(num1);
+    }
+};

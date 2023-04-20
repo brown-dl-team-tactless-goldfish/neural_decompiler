@@ -1,0 +1,119 @@
+typedef struct 
+{
+    int n;
+    sem_t number_;
+    sem_t fizz_;
+    sem_t buzz_;
+    sem_t fizzbuzz_;
+    
+} FizzBuzz;
+
+FizzBuzz* fizzBuzzCreate(int n) 
+{
+    FizzBuzz* obj = (FizzBuzz*) malloc(sizeof(FizzBuzz));
+    obj->n = n;
+    
+    //initialize the semaphores
+    sem_init(&obj->number_, 0, 1);
+    sem_init(&obj->fizz_, 0, 0);
+    sem_init(&obj->buzz_, 0, 0);
+    sem_init(&obj->fizzbuzz_, 0, 0);
+    
+    return obj;
+}
+
+// printFizz() outputs "fizz".
+void fizz(FizzBuzz* obj) 
+{
+    for(int i = 3; i <= obj->n; i += 3)
+    {
+        //if number is divisible by 3 but not by 5
+        if (i % 15)
+        {
+            sem_wait(&obj->fizz_);
+            printFizz();
+            
+            
+            //check what should be printed next (next number cannot be divisible by 3)
+            if ((i + 1) % 5 == 0)
+                sem_post(&obj->buzz_);
+            else
+                sem_post(&obj->number_);
+        }
+        
+        
+        
+    }
+}
+
+// printBuzz() outputs "buzz".
+void buzz(FizzBuzz* obj) 
+{
+    for(int i = 5; i <= obj->n; i += 5)
+    {
+        //if number is divisible by 5 but not by 3
+        if (i % 15)
+        {
+            sem_wait(&obj->buzz_);
+            printBuzz();
+            
+            //check what should be printed next (next number cannot be divisible by 5)
+            if ((i + 1) % 3 == 0)
+                sem_post(&obj->fizz_);
+            else
+                sem_post(&obj->number_);
+        }
+        
+    }
+}
+
+// printFizzBuzz() outputs "fizzbuzz".
+void fizzbuzz(FizzBuzz* obj) 
+{
+    for(int i = 15; i <= obj->n; i += 15)
+    {
+        sem_wait(&obj->fizzbuzz_);
+        printFizzBuzz();
+        
+        //next number is not divisible by 3 or 5
+        sem_post(&obj->number_);
+    }
+}
+
+// You may call global function `void printNumber(int x)`
+// to output "x", where x is an integer.
+void number(FizzBuzz* obj) 
+{
+    for(int i = 1; i <= obj->n; i++)
+    {
+        //if number is not divisible by 3 and 5
+        if(i % 3 && i % 5)
+        {
+            sem_wait(&obj->number_);
+            printNumber(i);
+        
+            //check what should be printed next
+            if((i + 1) % 3 == 0 && (i + 1) % 5 == 0)
+                sem_post(&obj->fizzbuzz_);
+            else if ((i + 1) % 3 == 0)
+                sem_post(&obj->fizz_);
+            else if ((i + 1) % 5 == 0)
+                sem_post(&obj->buzz_);
+            else
+                sem_post(&obj->number_);
+        }
+    }
+}
+
+void fizzBuzzFree(FizzBuzz* obj) 
+{
+    //destroy semaphores
+    sem_destroy(&obj->number_);
+    sem_destroy(&obj->fizz_);
+    sem_destroy(&obj->buzz_);
+    sem_destroy(&obj->fizzbuzz_);
+    
+    //free allocated memory
+    free(obj);
+    obj = NULL;
+}

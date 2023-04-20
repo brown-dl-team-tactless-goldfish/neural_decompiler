@@ -1,0 +1,31 @@
+public class Solution {
+    public int[][] MatrixBlockSum(int[][] mat, int K) {
+        int r = mat.Length;
+        int c = mat[0].Length;
+        int[,] sum = new int[r+1,c+1];
+        
+        for(int i = 0; i < r; i++)
+        {
+            for(int j = 0; j < c; j++)
+            {
+                sum[i+1,j+1] = sum[i+1,j] + sum[i,j+1] - sum[i,j] + mat[i][j];
+            }
+        }
+        
+        int[][] res = new int[r][];
+        for(int i = 0; i < r; i++)
+        {
+            res[i] = new int[c];
+            for(int j = 0; j < c; j++)
+            {
+                int maxR = Math.Min(i+K, r-1) + 1;
+                int minR = Math.Max(i-K-1, -1) + 1;
+                int maxC = Math.Min(j+K, c-1) + 1;
+                int minC = Math.Max(j-K-1, -1) + 1;
+                res[i][j] = sum[maxR,maxC] - sum[minR,maxC] - sum[maxR,minC] + sum[minR,minC];
+            }
+        }
+        
+        return res;
+    }
+}

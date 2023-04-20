@@ -1,0 +1,39 @@
+class Solution {
+    long long getDist(vector<int> a, vector<int> b){
+        long long x = a[0] - b[0] ;
+        long long y = a[1] - b[1] ;
+        return x*x + y*y ;
+    }
+public:
+    double minAreaFreeRect(vector<vector<int>>& points) {
+        unordered_map<string, vector<pair<int, int>>>Map ; //len+center,  pair of points 
+        for(int i = 0; i < points.size(); i++)
+        {
+            for(int j = i+1; j < points.size(); j++)
+            {
+                long long dist =  getDist(points[i], points[j]) ;
+                double centerX = ( points[i][0] + points[j][0] ) / 2.0 ;
+                double centerY = ( points[i][1] + points[j][1] ) / 2.0 ;
+                Map[to_string(dist) + "_" + to_string(centerX) + "_" + to_string(centerY)].push_back({i, j}) ;
+            }            
+        }
+        double ret = INT_MAX ;
+        for(auto&m : Map){
+            auto& vec = m.second ;
+            if(vec.size() < 2)
+                continue ;
+            for(int i = 0; i < vec.size(); i++){
+                for(int j = i+1; j < vec.size(); j++){
+                    int p1 = vec[i].first ;
+                    int p2 = vec[i].second ;
+                    int p3 = vec[j].first ;
+                    double len1 = sqrt(getDist(points[p1], points[p3])) ;
+                    double len2 = sqrt(getDist(points[p2], points[p3])) ;
+                    ret = min(ret, len1 * len2) ;
+                }
+            }
+        }
+        
+        return (ret == INT_MAX) ? 0 :  ret ;
+    }
+};

@@ -1,0 +1,35 @@
+    Node* intersect(Node* quadTree1, Node* quadTree2) {
+        Node *a1=quadTree1->topLeft, *a2=quadTree2->topLeft;
+        Node *b1=quadTree1->topRight, *b2=quadTree2->topRight;
+        Node *c1=quadTree1->bottomLeft, *c2=quadTree2->bottomLeft;
+        Node *d1=quadTree1->bottomRight, *d2=quadTree2->bottomRight;
+        if(quadTree1->isLeaf&&quadTree2->isLeaf) return new Node(quadTree1->val||quadTree2->val, true, NULL, NULL, NULL, NULL);
+        else if(!quadTree1->isLeaf&&quadTree2->isLeaf) {
+            a2=new Node(quadTree2->val, true, NULL, NULL, NULL, NULL);
+            b2=new Node(quadTree2->val, true, NULL, NULL, NULL, NULL);
+            c2=new Node(quadTree2->val, true, NULL, NULL, NULL, NULL);
+            d2=new Node(quadTree2->val, true, NULL, NULL, NULL, NULL);
+        }
+        else if(quadTree1->isLeaf&&!quadTree2->isLeaf) {
+            a1=new Node(quadTree1->val, true, NULL, NULL, NULL, NULL);
+            b1=new Node(quadTree1->val, true, NULL, NULL, NULL, NULL);
+            c1=new Node(quadTree1->val, true, NULL, NULL, NULL, NULL);
+            d1=new Node(quadTree1->val, true, NULL, NULL, NULL, NULL);
+        }
+        Node* res=new Node(true, false, NULL, NULL, NULL, NULL);
+        res->topLeft=intersect(a1, a2);
+        res->topRight=intersect(b1, b2);
+        res->bottomLeft=intersect(c1, c2);
+        res->bottomRight=intersect(d1, d2);
+        bool f1=res->topLeft->val||res->topRight->val||res->bottomLeft->val||res->bottomRight->val;
+        bool f2=res->topLeft->val&&res->topRight->val&&res->bottomLeft->val&&res->bottomRight->val;
+        if(res->topLeft->isLeaf&&res->topRight->isLeaf&&res->bottomLeft->isLeaf&&res->bottomRight->isLeaf&&f1==f2) {
+            res->val=f1;
+            res->isLeaf=true;
+            res->topLeft=NULL;
+            res->topRight=NULL;
+            res->bottomLeft=NULL;
+            res->bottomRight=NULL;
+        }
+        return res;
+    }

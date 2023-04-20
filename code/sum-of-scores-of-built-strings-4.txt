@@ -1,0 +1,36 @@
+class Solution {
+public:
+    long long sumScores(string s) {
+        int n = s.length();
+        vector<long long> z(n, 0);
+        int l = 0, r = 0;
+        for (int k = 1; k < n; k++)
+        {
+            if (k > r)
+            {
+                l = r = k;
+                while (r < n && s[r] == s[r - l])
+                    r++;
+                z[k] = (r - l);
+                r--;
+            }
+            else
+            {
+                int d = k - l;
+                if (z[d] < r - k + 1)
+                    z[k] = z[d];
+                else
+                {
+                    l = k;
+                    while (r < n && s[r] == s[r - l])
+                        r++;
+                    z[k] = r - l;
+                    r--;
+                }
+            }
+        }
+        long long ans = n;
+        ans += accumulate(z.begin(), z.end(), 0LL);
+        return ans;
+    }
+};

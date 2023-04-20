@@ -1,0 +1,60 @@
+int longestOnes(int* A, int ASize, int K){
+    int left,right;
+    int maxlen = 0;
+    int count = K;
+    
+    if((A==NULL) || (ASize==0))
+        return 0;
+    
+    left = 0;
+    right = 0;
+    while(right < ASize)
+    {
+        // k=0, manually help it to move the pointer
+        if(K==0)
+        {
+            while((right < ASize) && (A[right]==0))
+            {
+                right++;
+            }
+            left = right;
+        }
+        if(right==ASize)
+            return maxlen;
+        
+        // move the right pointer when 1 and there is more credit
+        while(count || A[right])
+        {
+            if(A[right] == 0)
+            {
+                A[right] = -1;
+                if(count)
+                    count--;
+            }
+            
+            right++;
+            if(right==ASize)
+                break;
+        }
+        if((right-left) > maxlen)
+            maxlen = right - left;
+        
+        if(right==ASize)
+            return maxlen;
+        
+        // move left pointer to the position where we changed
+        while(A[left] != -1)
+        {
+            left++;
+            if(left==right)
+                break;
+        }
+        if(A[left] == -1)
+        {
+            A[left++] = 0;
+            count++;
+        }
+    }
+    
+    return maxlen;
+}

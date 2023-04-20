@@ -1,0 +1,165 @@
+#define LAND 0
+
+int g_counter = 0;
+bool dbg = false;
+
+bool isBorder(int width, int height, int i, int j) {
+    if ( (j == 0) ||
+         (j == height-1) ||
+         (i == 0) ||
+         (i == (width-1)) ) {
+        return true;
+    } else {
+        return false;
+    }
+}
+
+// if its out of boundary of WATER, it will return -1
+// othersie, return the LAND's mark
+// WATER marked as -1 by memset
+int getLeftMark(int *mark, int width, int height, int i, int j) {
+    if (i % (width) == 0) {
+        return -1;
+    } else {
+        return mark[j*width+i-1];
+    }
+}
+
+int getTopMark(int *mark, int width, int height, int i, int j) {
+    if (j == 0) {
+        return -1;
+    } else {
+        return mark[(j-1)*width + i];
+    }
+}
+
+void reMark(int * mark, int oldMark, int newMark, int currentPos) {
+    if (oldMark <= 0) {
+        return;
+    }
+    if (dbg) {
+        printf("%d is remarked to %d\n", oldMark, newMark);
+    }
+    for (int i=0; i< currentPos; i++ ) {
+        if (mark[i] == oldMark) {
+            mark[i] = newMark;
+        }
+    }
+    return;
+}
+
+// scan and mark
+int closedIsland(int** grid, int gridSize, int* gridColSize){
+    g_counter = 0;
+    int height = gridSize;
+    int width = gridColSize[0];
+    if (dbg) {
+        printf("start. height(%d) width(%d)\n", height, width);
+        fflush(stdout);
+    }
+
+    int* mark = malloc(width * height*sizeof(int));
+    if (mark == NULL) {
+        return -1;
+    }
+    memset(mark, -1, width * height*sizeof(int));
+
+    // large enough array to hold the max counter
+    // one counter can only be reduced once, so we need an array to check
+    // in the graph, a counter is reduced means the graph with that mark 
+    // is connected with other already-makred part. 
+    // so it makes sense that one counter can be reduced only one
+    bool * voided = malloc(width * height*sizeof(int));
+    memset(voided, 0, width * height*sizeof(int));
+    
+    for (int j = 0; j < height; j++) {
+        for (int i = 0; i < width; i++) {
+            if (dbg) {
+                printf(("loop for j(%d), i(%d)\n"), j, i);
+                fflush(stdout);
+            }
+
+            if (grid[j][i] != LAND) {
+                // who cares water
+                continue;
+            }
+
+            int leftMark = getLeftMark(mark, width, height, i, j);
+            int topMark = getTopMark(mark, width, height, i, j);
+            if (dbg) {
+                printf(("Get leftMark(%d), topMark(%d)\n"), leftMark, topMark);
+                fflush(stdout);
+            }
+
+            if ( isBorder(width, height, i, j) ||
+                 leftMark == 0 ||
+                 topMark == 0) {
+                // mark as 0 for border LAND
+                mark[j*width+i] = 0;
+                reMark(mark, leftMark, 0, j*width+i);
+                reMark(mark, topMark, 0, j*width+i);
+                if (dbg) { printf("case 1\n"); fflush(stdout);}
+            } else if (leftMark == -1 && topMark == -1) {
+                // this is the only change to get a new counter
+                mark[j*width + i] = ++g_counter;
+                if (dbg) { 
+                    printf("case 2\n"); 
+                    printf("g_counter becomes %d\n", g_counter);
+                    fflush(stdout);
+                }
+            } else if (leftMark == topMark) {
+                mark[j*width+i] = leftMark;
+                if (dbg) { printf("case 3\n"); fflush(stdout);}
+            } else if (leftMark == -1) {
+                mark[j*width+i] = topMark;
+                if (dbg) { printf("case 4\n"); fflush(stdout);}
+            } else if (topMark == -1) {
+                mark[j*width+i] = leftMark;
+                if (dbg) { printf("case 5\n"); fflush(stdout);}
+            } else if (leftMark > topMark) {
+                mark[j*width+i] = topMark;
+                reMark(mark, leftMark, topMark, j*width+i);
+                if (dbg) { printf("case 6\n"); fflush(stdout);}
+            } else if (leftMark < topMark) {
+                mark[j*width+i] = leftMark;
+                reMark(mark, topMark, leftMark, j*width+i);
+                if (dbg) { printf("case 7\n"); fflush(stdout);}
+            } else {
+                printf("should never happen\n");
+                exit(-1);
+            }
+        }
+    }
+
+    int realCount = 0;
+    // count start from 1 and end with g_counter, some count between will be removed [1, g_counter]
+    bool * count = malloc(g_counter*sizeof(int));
+    memset(count, 0, g_counter*sizeof(int));
+
+    
+    for (int j=0; j< height; j++) {
+        for (int i=0; i < width; i++) {
+            if (dbg) {
+                printf("%3d, ", mark[j*width+i]);
+            }
+            if (mark[j*width+i] > 0) {
+                count[mark[j*width+i] - 1] = true;
+            }
+        }
+        if (dbg) {
+            printf("\n");
+        }
+    }
+
+    for (int i=0; i< g_counter ; i++) {
+        if (dbg) {
+            printf("%d, bool %d\n", i, count[i]);
+            fflush(stdout);
+        }
+        if (count[i] == true) {
+            realCount++;
+        }
+    }
+
+    return realCount;
+}

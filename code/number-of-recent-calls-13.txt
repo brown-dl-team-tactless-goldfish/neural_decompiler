@@ -1,0 +1,38 @@
+
+
+typedef struct {
+    int first; // to remove from front of the queue first will be updated.
+    int counter; // to maintain where queue ends
+    int *queue; 
+    
+} RecentCounter;
+
+
+RecentCounter* recentCounterCreate() {
+    RecentCounter* q = (RecentCounter*)malloc(sizeof(RecentCounter));
+    if (!q) return NULL;
+    q->first = 0;
+    q->counter = 0;
+    q->queue = (int*)malloc(sizeof(int) * 10000);
+    return q;
+}
+
+int recentCounterPing(RecentCounter* obj, int t) {
+    obj->queue[obj->counter++] = t; // adding t in queue while incrementing counter
+    while(t - obj->queue[obj->first] > 3000) // if there are t older than 3000 ms 
+      obj->first++; // moving front of queue to next element.
+    return obj->counter - obj->first; // Returning count between front and last element of queue.
+}
+
+void recentCounterFree(RecentCounter* obj) {
+    free(obj->queue);
+    free(obj);
+}
+
+/**
+ * Your RecentCounter struct will be instantiated and called as such:
+ * RecentCounter* obj = recentCounterCreate();
+ * int param_1 = recentCounterPing(obj, t);
+ 
+ * recentCounterFree(obj);
+*/

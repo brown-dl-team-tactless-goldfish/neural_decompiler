@@ -1,0 +1,38 @@
+#define max(a,b) (a>b?a:b)
+int* addToArrayForm(int* A, int ASize, int K, int* returnSize) {
+    int temp = K;
+    int digit = 0, size;
+    while(temp)
+    {
+        temp /= 10;
+        digit++;
+    }
+    size = max(ASize, digit) + 1;
+    int* ans = calloc(size, sizeof(int));
+
+    int i = size-1, j = ASize - 1, carry = 0;
+    while(K)
+    {
+        if(j >= 0)
+        {
+            A[j] += K;
+            ans[i] = A[j] % 10;
+            K = A[j] / 10;
+            j--;
+        }
+        else
+        {
+            ans[i] = K % 10;
+            K /= 10;
+        }
+        i--;
+    }
+    while(j >= 0)
+    {
+        ans[i] = A[j];
+        j--;
+        i--;
+    }
+    *returnSize = size - i - 1;
+    return &ans[i+1];
+}

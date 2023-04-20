@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int maxNumberOfFamilies(int n, vector<vector<int>>& reservedSeats) {
+	
+		//Group reserved seats by row
+        unordered_map<int,set<int>> rowseating;
+        for (auto& r : reservedSeats){
+            if(r[1] >= 2 && r[1] <= 9){
+                rowseating[r[0]].insert(r[1]);
+            }
+        }
+		
+		//Start count with empty rows *2, iterate through rows with reservations and count the family slots available
+        int count = (n-rowseating.size())*2;
+        for (auto& rs : rowseating){
+            if (rs.second.count(2)==0 && rs.second.count(3) == 0 && rs.second.count(4) == 0 && rs.second.count(5) == 0){
+                if (rs.second.count(6)>0 || rs.second.count(7) > 0 || rs.second.count(8) > 0 || rs.second.count(9) > 0){
+                    count++;
+                } else {
+                    count += 2;
+                }
+            } else if (rs.second.count(6)==0 && rs.second.count(7)==0 && rs.second.count(8)==0 && rs.second.count(9)==0){
+                count++;
+            } else if (rs.second.count(4)==0 && rs.second.count(5)==0 && rs.second.count(6)==0 && rs.second.count(7)==0){
+                count++;
+            }
+        }
+        return count;
+    }
+};

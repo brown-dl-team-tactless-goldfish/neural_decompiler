@@ -1,0 +1,83 @@
+/* Solution inspired by https://leetcode.com/problems/snakes-and-ladders/solutions/2622634/self-explanatory-c-bfs/
+   on how to calculate the destination (findCoord), and by trial and error of when to take the ladder or snake or not
+*/
+
+// Global variables so you don't need to pass them as arguments on functions
+bool* vis; //Array to keep track of visited positions
+int* dist; //Arreay to keep distances of reached positions
+int* queue; //Queue to do a BF
+int size; //Size of matrix
+
+// All these are initialized bellow
+
+// Find which row and col is the target place
+void findCoord(int target, int n, int* x, int* y){
+    int row = (target - 1)/n;
+    int col = (target - 1)%n;
+
+    *x = n - 1 - row;
+    *y = row%2==0 ? col : n - 1 - col; 
+}
+
+// BF (smallest path on no weight graph)
+void BF(int** board, int n, int m, int or){
+    // Init vars
+    int cur, first = 0, last = 0, x, y, steps;
+    vis[or] = true;
+    queue[last++] = or;
+    // While there's spots we can reach
+    while(first!=last){
+        cur = queue[first++];
+        findCoord(cur, n, &x, &y);
+        steps = 1;
+        // Check if we can reach the six closet spots
+        while(steps<=6){
+            // If we reach the last one, theres no need to keep going
+            if(cur+steps==size){ 
+                dist[size] = dist[cur]+1;
+                return;
+            }
+            findCoord(cur+steps, n, &x, &y);
+            // Check if we are on a ladder or snake
+            if(board[x][y]!=-1){
+                // if we already visited the position were the ladder or snake is going we should just take another path
+                if(vis[board[x][y]]){
+                    steps++;
+                    continue;    
+                }
+                // else we should continue on the path of the ladder or snake to see where it goes
+                dist[board[x][y]] = dist[cur] + 1;
+                queue[last++] = board[x][y];
+                vis[board[x][y]] = true;
+                if(board[x][y]==size) return;
+            }
+            // If it's not a ladder or snake and we haven't visited the position we should add it to the queue and see where it leads
+            else if(!vis[cur+steps]){
+                queue[last++] = cur+steps;
+                vis[cur+steps] = true;
+                dist[cur+steps] = dist[cur]+1;
+            } 
+            steps++;
+        }
+    }
+}
+
+int snakesAndLadders(int** board, int boardSize, int* boardColSize){
+    //Variables initialization
+    size = boardSize*boardSize;
+    vis = calloc(size+1, sizeof(bool));
+    dist = calloc(size+1, sizeof(int));
+    queue = calloc(size, sizeof(int));
+    BF(board, boardSize, *boardColSize, 1);
+
+    //If distance on last position is 0 it means we haven't reach that position
+    //If board was 1x1 this would give us a wrong answer, but since the restrictions say it's at least a 2x2 board, we can do this
+    //In a 1x1 board we would simply return 0, since the begin == end
+    int ans = dist[size]==0?-1:dist[size];
+    
+    // We don't want memory leaks :)
+    free(vis);
+    free(dist);
+    free(queue);
+    return ans;
+}

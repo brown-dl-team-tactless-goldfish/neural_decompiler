@@ -1,0 +1,23 @@
+    vector<string> getFolderNames(vector<string>& names) {
+        unordered_map<string, int> mmap;
+        vector<string> ans;
+        
+        for (auto &name: names) {
+            if (mmap.find(name) == mmap.end()) {
+                ans.push_back(name);
+                mmap[name] = 0;
+            }
+            else {
+                while (mmap.find(name) != mmap.end()) {
+                    string key = name + "(" + to_string(++mmap[name]) + ")";  // note here that we can increase mmap[name] safely
+                    if (mmap.find(key) == mmap.end()) {
+                        ans.push_back(key);
+                        mmap[key] = 0;  // this is needed for cases like: ["pes", "pes", "pes(1)"] => ["pes", "pes(1)", "pes(1)(1)"]
+                        break;
+                    }
+                }
+            }
+        }
+        
+        return ans;
+    }

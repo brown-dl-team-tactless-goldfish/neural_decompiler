@@ -1,0 +1,68 @@
+void arrZero(int *pieces, int *arr, int arrSize, int piecesColSize){
+    int position;
+    bool f = false;
+    int i = 0;
+    
+    while (i < arrSize && f == false){
+        if (pieces[0] == arr[i]){
+            position = i;
+            f = true;
+        }
+        i++;
+    }
+    
+    for (int i=0; i<piecesColSize; i++){
+        if (position < arrSize && arr[position] == pieces[i]){
+            arr[position] = 0;
+        }
+        position++;
+    }
+}
+
+void toZero(int *arr, int **pieces, int arrSize, int piecesSize, int *piecesColSize){
+    for (int i=0; i<piecesSize; i++){
+        arrZero(pieces[i], arr, arrSize, piecesColSize[i]);
+    }
+}
+
+bool checkArr(int *arr, int arrSize){
+    for (int i=0; i<arrSize; i++){
+        if (arr[i] != 0)
+            return false;
+    }
+    return true;
+}
+
+bool checkEl(int **pieces, int piecesSize, int value){
+    bool r = false;
+    
+    for (int i=0; i<piecesSize; i++){
+        if (pieces[i][0] == value)
+            r = true;
+    }
+    return r;
+}
+
+bool canFormArray(int* arr, int arrSize, int** pieces, int piecesSize, int* piecesColSize){
+    int flag = 0;
+    bool check = false;
+    
+    if (arrSize == *piecesColSize && piecesSize == 1){
+        for (int i=0; i<arrSize; i++){
+            if (arr[i] == pieces [0][i])
+                flag++;
+        }
+        if (flag == arrSize)
+            return true;
+        else
+            return false;
+    }
+    else{
+        toZero(arr, pieces, arrSize, piecesSize, piecesColSize);
+        
+        if (checkArr(arr, arrSize) == true)
+            return true;
+        else
+            return false;
+    }
+}

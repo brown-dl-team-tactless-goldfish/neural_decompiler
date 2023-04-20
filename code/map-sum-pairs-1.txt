@@ -1,0 +1,72 @@
+struct node{
+    char *key;
+    int val;
+    struct node *next;
+};
+
+struct table{
+    int size;
+    struct node **list;
+};
+
+struct table *createTable(int size){
+    struct table *t = (struct table*)malloc(sizeof(struct table));
+    t->size = size;
+    t->list = (struct node**)malloc(sizeof(struct node*)*size);
+    int i;
+    for(i=0;i<size;i++)
+        t->list[i] = NULL;
+    return t;
+}
+
+typedef struct {
+    struct table *t;
+} MapSum;
+
+int hashCode(struct table *t,char *key){
+    return *key%t->size;
+}
+/** Initialize your data structure here. */
+
+MapSum* mapSumCreate() {
+    MapSum* obj=malloc(sizeof(MapSum));
+    obj->t = createTable(26);
+    return obj;
+}
+
+void mapSumInsert(MapSum* obj, char * key, int val) {
+  int pos = hashCode(obj->t,key);
+    struct node *list = obj->t->list[pos];
+    struct node *newNode = (struct node*)malloc(sizeof(struct node));
+    struct node *temp = list;
+    while(temp){
+        if(strcmp(temp->key,key)==0){
+            temp->val = val;
+            return;
+        }
+        temp = temp->next;
+    }
+    newNode->key = key;
+    newNode->val = val;
+    newNode->next = list;
+    obj->t->list[pos] = newNode;  
+}
+
+int mapSumSum(MapSum* obj, char * prefix) {
+    int pos = hashCode(obj->t,prefix);
+    struct node *list = obj->t->list[pos];
+    struct node *temp = list;
+    int sum=0;
+    while(temp){
+        if(strncmp(temp->key,prefix,strlen(prefix))==0){
+            sum+= temp->val;
+        }
+        temp = temp->next;
+    }
+    return sum;
+}
+
+void mapSumFree(MapSum* obj) {
+    free(obj->t);
+    free(obj);
+}

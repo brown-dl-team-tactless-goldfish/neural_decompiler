@@ -1,0 +1,70 @@
+typedef enum Status_s { ZERO, ODD, EVEN } Status;
+
+typedef struct {
+    int n;
+    Status s;
+    pthread_mutex_t m;
+    pthread_condattr_t az;
+    pthread_condattr_t ae;
+    pthread_condattr_t ao;
+    pthread_cond_t cz;
+    pthread_cond_t ce;
+    pthread_cond_t co;
+} ZeroEvenOdd;
+
+ZeroEvenOdd* zeroEvenOddCreate(int n) {
+    ZeroEvenOdd* obj = (ZeroEvenOdd*) malloc(sizeof(ZeroEvenOdd));
+    obj->n = n;
+    obj->s = ZERO;
+    pthread_mutex_init(&obj->m, NULL);
+    pthread_cond_init(&obj->cz, &obj->az);
+    pthread_cond_init(&obj->ce, &obj->ae);
+    pthread_cond_init(&obj->co, &obj->ao);
+    return obj;
+}
+
+void zero(ZeroEvenOdd* obj) {
+    int i;
+    pthread_mutex_lock(&obj->m);
+    for(i=0;i<obj->n;i++)
+    {
+        while(obj->s != ZERO) pthread_cond_wait(&obj->cz, &obj->m);
+        printNumber(0);
+        obj->s = i%2 ? EVEN : ODD;
+        pthread_cond_signal(i%2 ? &obj->ce : &obj->co);
+    }
+    pthread_mutex_unlock(&obj->m);
+}
+
+void even(ZeroEvenOdd* obj) {
+    int i;
+    pthread_mutex_lock(&obj->m);
+    for(i=2;i<=obj->n;i+=2)
+    {
+        while(obj->s != EVEN) pthread_cond_wait(&obj->ce, &obj->m);
+        printNumber(i);
+        obj->s = ZERO;
+        pthread_cond_signal(&obj->cz);
+    }
+    pthread_mutex_unlock(&obj->m);
+}
+
+void odd(ZeroEvenOdd* obj) {
+    int i;
+    pthread_mutex_lock(&obj->m);
+    for(i=1;i<=obj->n;i+=2)
+    {
+        while(obj->s != ODD) pthread_cond_wait(&obj->co, &obj->m);
+        printNumber(i);
+        obj->s = ZERO;
+        pthread_cond_signal(&obj->cz);
+    }
+    pthread_mutex_unlock(&obj->m);
+}
+
+void zeroEvenOddFree(ZeroEvenOdd* obj) {
+    pthread_mutex_destroy(&obj->m);
+    pthread_cond_destroy(&obj->cz);
+    pthread_cond_destroy(&obj->ce);
+    pthread_cond_destroy(&obj->co);
+}

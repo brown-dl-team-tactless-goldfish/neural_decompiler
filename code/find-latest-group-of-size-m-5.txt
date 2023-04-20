@@ -1,0 +1,45 @@
+class Solution {
+    int getf(const int x, vector<int> &f) {
+        return f[x] != x ? (f[x] = getf(f[x], f)) : x;
+    }
+    
+    void merge(const int x, const int y, vector<int> &f, vector<int> &num) {
+        int xx = getf(x, f), yy = getf(y, f);
+        if (num[xx] < num[yy]) {
+            f[xx] = yy;
+            num[yy] += num[xx];
+            
+        } else {
+            f[yy] = xx;
+            num[xx] += num[yy];
+        }
+    }
+
+public:
+    int findLatestStep(vector<int>& arr, int m) {
+        const int n = arr.size();
+        vector<int> f(n), num(n), v(n);
+        for (int i = 0; i < n; ++i) {
+            f[i] = i;
+            num[i] = 1;
+        }
+        int r = -1;
+        for (int i = 1, total = 0; i <= n; ++i) {
+            const int x = arr[i - 1] - 1;
+            v[x] = 1;
+            if (x + 1 < n && v[x + 1]) {
+                int y = getf(x + 1, f);
+                if (num[y] == m) --total;
+                merge(x, y, f, num);
+            }
+            if (x - 1 >= 0 && v[x - 1]) {
+                int y = getf(x - 1, f);
+                if (num[y] == m) --total;
+                merge(x, y, f, num);
+            }
+            if (num[getf(x, f)] == m) ++total;
+            if (total) r = i;
+        }
+        return r;
+    }
+};

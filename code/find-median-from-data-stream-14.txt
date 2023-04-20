@@ -1,0 +1,53 @@
+// Using min-heap and max_heap:
+   // Accepted
+     // Time Complexity: addNum()-> O(logN), findMedian()-> O(1) 
+     // Space Complexity: O(N)
+       // where 'N' is number of element added from data stream
+struct comp
+{
+    bool operator() (int &val1,int &val2)
+    {
+        return val1>val2;
+    }
+};
+class MedianFinder {
+    private:
+    priority_queue<int>max_heap;
+    priority_queue<int,vector<int>,comp>min_heap;
+public:
+    MedianFinder() {
+        
+    }
+    
+    void addNum(int num) {
+
+        // Just insert the value in heap(S)
+        if(max_heap.empty() || max_heap.top()>num)
+         max_heap.push(num);
+        else
+          min_heap.push(num);
+
+        // Now make those heap(s) as lower-half and upper-half
+
+      while((max_heap.size()-1!=min_heap.size()) &&(min_heap.size()!=max_heap.size()))
+       {
+           if(min_heap.size()>max_heap.size())
+            {
+                max_heap.push(min_heap.top());
+                min_heap.pop();
+            }
+           else
+           {
+               min_heap.push(max_heap.top());
+               max_heap.pop();
+           }
+       }
+    }
+    
+    double findMedian() {
+       int total_size=min_heap.size()+max_heap.size();
+       
+       // return the result
+       return total_size%2 ? max_heap.top() : double(max_heap.top()+min_heap.top())/2;
+    }
+};

@@ -1,0 +1,35 @@
+void visit_friends(int i, int** m, bool* visited, int size) {
+    visited[i] = true;
+    for(int friend = 0; friend < size; friend++) {
+        // Don't analyze self 
+        if(friend == i)
+            continue;
+        
+        // Don't analyze visited node(infinite recursion)
+        if(visited[friend])
+            continue;
+
+        // visit all of this friends friends
+        if(m[i][friend] == 1)
+            visit_friends(friend, m, visited, size);
+    }
+}
+
+int findCircleNum(int** M, int MRowSize, int MColSize) {
+    int circles = 0;
+    // depth first search because when we hit a friend, go to that friend and add his friends
+    bool visited[MRowSize];
+    for(int i = 0; i < MRowSize; i++)
+        visited[i] = false;
+    
+    for(int i = 0; i < MRowSize; i++) {
+        // Don't analyze visited person
+        if(visited[i])
+            continue;
+        
+        visit_friends(i, M, visited, MRowSize);
+        circles++;
+    }
+    
+    return circles;
+}

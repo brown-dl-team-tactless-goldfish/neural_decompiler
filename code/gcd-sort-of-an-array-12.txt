@@ -1,0 +1,58 @@
+class DSU{
+	private :
+	static const int N = 1e6 + 1 ;
+	int _rank[N] ;
+	int _parent[N] ;
+
+	public :
+	DSU(int n){ // makes a set of size n
+		for(int i = 0 ; i <= n ; i++){
+			_parent[i] = i ;
+			_rank[i] = 0 ;
+		}
+	}
+
+	int findPar(int u){ // path compression + finding _parent node of the set
+		if(_parent[u] == u) 	return u ;
+		return _parent[u] = findPar(_parent[u]) ;
+	}
+
+	void _union(int u , int v){ // merges two sets
+		u = findPar(u) ;
+		v = findPar(v) ;
+
+		if(u == v) return ;
+
+		if(_rank[u] < _rank[v]){
+			_parent[u] = v ;
+		}else if(_rank[u] > _rank[v]){
+			_parent[v] = u ;
+		}else{
+			_parent[u] = v ;
+			_rank[v]++ ;
+		}
+	}
+};
+class Solution {
+public:
+    bool gcdSort(vector<int>& a) {
+        int n = a.size() ; 
+        int mx = *max_element(a.begin() , a.end()) ;
+        DSU dsu(mx + 1) ; 
+        for(int i : a){
+            for(int j = 2 ; j <= sqrt(i) ; j++){
+                if(i%j == 0){
+                    dsu._union(i , j) ; 
+                    dsu._union(i , i/j) ;
+                }
+            }
+        }
+        vector<int> r = a ; 
+        sort(r.begin() , r.end()) ; 
+        vector<int> f(n , 0) ; 
+        for(int i = 0 ; i < n ; i++){
+            if(dsu.findPar(r[i]) != dsu.findPar(a[i]))  return false ; 
+        }
+        return true ; 
+    }
+};

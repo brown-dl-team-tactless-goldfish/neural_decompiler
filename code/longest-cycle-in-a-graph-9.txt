@@ -1,0 +1,49 @@
+class Solution {
+public:
+    void dfs(int node, vector<int> &edges, int &cnt, vector<int> &vis) {
+        vis[node] = 1;
+        cnt++;
+        int v = edges[node];
+        if(v != -1 and !vis[v]) dfs(v, edges, cnt, vis);
+        else return;
+    }
+    int longestCycle(vector<int>& edges) {
+        int n = edges.size();
+
+        vector<int> indegree(n);
+        for(auto i: edges) {
+           if(i != -1) indegree[i]++;
+        }
+
+        queue<int> q;
+        for(int i = 0; i < n; i++){
+            if(indegree[i] == 0) q.push(i);
+        }
+
+        int count = 0;
+        while(!q.empty()) {
+            int node = q.front();
+            q.pop();
+            
+            count++;
+            int v = edges[node];
+            if(v != -1){
+                indegree[v]--;
+                if(indegree[v] == 0) q.push(v);
+            }
+        }
+
+        if(count == n) return -1;
+
+        vector<int> vis(n);
+        int ans = INT_MIN;
+        for(int i = 0; i < n; i++) {
+            if(indegree[i] != 0) {
+                int c = 0;
+                dfs(i, edges, c, vis);
+                ans = max(c, ans);
+            }
+        }
+        return ans;
+    }
+};

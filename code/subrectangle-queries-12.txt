@@ -1,0 +1,31 @@
+class SubrectangleQueries {
+    vector<vector<int>> matrix;
+    vector<vector<int>> changes;
+    int m, n, c;
+public:
+    SubrectangleQueries(vector<vector<int>>& rectangle) {
+        matrix = rectangle;
+        m = matrix.size();
+        n = matrix[0].size();
+        changes = vector<vector<int>>();
+        c = 0;
+    }
+    
+    void updateSubrectangle(int row1, int col1, int row2, int col2, int newValue) {
+        changes.push_back({row1, row2, col1, col2, newValue});
+        c++;
+    }
+    
+    int getValue(int row, int col) {
+        int i = c-1;
+        while(i>=0) {
+            int r1 = changes[i][0], r2 = changes[i][1], c1 = changes[i][2], c2 = changes[i][3], nv = changes[i][4];
+            if(row >= r1 && row <= r2 && col >= c1 && col <= c2) {
+                //found the latest change
+                return nv;
+            }
+            i--;
+        }
+        return matrix[row][col];
+    }
+};

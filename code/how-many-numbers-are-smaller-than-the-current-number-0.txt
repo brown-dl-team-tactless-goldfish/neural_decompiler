@@ -1,0 +1,22 @@
+int cmp(const void* a, const void* b) {
+    return *(const int*) a - *(const int*) b;
+}
+
+int* smallerNumbersThanCurrent(int* nums, int numsSize, int* returnSize) {
+    int map[101];
+    memset(map, -1, 101*sizeof(int));
+    int* arr = (int*) calloc(numsSize, sizeof(int));
+    for (int i = 0; i < numsSize; i++) {
+        arr[i] = nums[i];
+    }
+    qsort(arr, numsSize, sizeof(int), cmp);
+    for (int i = 0; i < numsSize; i++) {
+        if (map[arr[i]] == -1) map[arr[i]] = i;
+    }
+    for (int i = 0; i < numsSize; i++) {
+        nums[i] = map[nums[i]];
+    }
+    free(arr);
+    *returnSize = numsSize;
+    return nums;
+}

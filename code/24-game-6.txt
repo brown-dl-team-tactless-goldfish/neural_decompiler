@@ -1,0 +1,51 @@
+class Solution {
+public:
+    double eval(double a, double b, int op) {
+        switch (op) {
+            case 0: return a + b;
+            case 1: return a - b;
+            case 2: return a * b;
+            case 3: return a / b;
+        }
+        return 0;
+    }
+    
+    bool is24(double x) { return abs(x - 24.0) < 1e-6; }
+    
+    bool judgePoint24(vector<int>& cards) {
+        sort(cards.begin(), cards.end());
+        do {
+            
+            for (int i = 0; i < 4; i ++)
+                for (int j = 0; j < 4; j ++)
+                    for (int k = 0; k < 4; k ++) {
+                        double a = cards[0], b = cards[1],
+                               c = cards[2], d = cards[3];
+                        
+                        // (((a b) c) d)
+                        double ans = eval(eval(eval(a, b, i), c, j), d, k);
+                        if (is24(ans))
+                            return true;
+                        // ((a b) (c d))
+                        ans = eval(eval(a, b, i), eval(c, d, k), j);
+                        if (is24(ans))
+                            return true;
+                        // (a (b (c d)))
+                        ans = eval(a, eval(b, eval(c, d, k), j), i);
+                        if (is24(ans))
+                            return true;
+                        // ((a (b c)) d)
+                        ans = eval(eval(a, eval(b, c, j), i), d, k);
+                        if (is24(ans))
+                            return true;
+                        // (a ((b c) d)))
+                        ans = eval(a, eval(eval(b, c, j), d, k), i);
+                        if (is24(ans))
+                            return true;
+                    }
+            
+        } while (next_permutation(cards.begin(), cards.end()));
+        
+        return false;
+    }
+};

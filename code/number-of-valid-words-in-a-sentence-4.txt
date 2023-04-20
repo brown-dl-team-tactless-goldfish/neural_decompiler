@@ -1,0 +1,33 @@
+public class Solution {
+    public int CountValidWords(string sentence) {
+        string[] words = sentence.Split(" ");
+        int r = 0;
+        
+        HashSet<char> digs = new HashSet<char>() { '1', '2', '3', '4', '5', '6', '7', '8', '9', '0' };
+        HashSet<char> punc = new HashSet<char>() { '!', '.', ',' };
+        
+        foreach (string word in words) {
+            bool valid = !string.IsNullOrWhiteSpace(word);
+            int hc = 0;
+            for (int i = 0; i < word.Length; ++i) {
+                char c = word[i];
+                if (digs.Contains(c) // char is a digit
+                    || (punc.Contains(c) && i != word.Length - 1) // char is a punctuation mark not at the end of the word
+                    || (c == '-' // char is a hyphen that's either the second hyphen seen, is at the beginning or end of word, or is surrounded by non lowercase letters
+                        && (++hc > 1 
+                            || i == 0 
+                            || i == word.Length - 1 
+                            || word[i - 1] - 'a' > 25 
+                            || word[i - 1] - 'a' < 0 
+                            || word[i + 1] - 'a' < 0 
+                            || word[i + 1] - 'a' > 25))) {
+                        valid = false;
+                }
+            }
+
+            if (valid) r++;
+        }
+        
+        return r;
+    }
+}

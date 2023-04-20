@@ -1,0 +1,53 @@
+
+
+char * licenseKeyFormatting(char * S, int K){
+    char *ret;
+    char *p;
+    int i, w;
+    int len = 0;
+    int fglen; // first group length
+    int gsize; // number of groups i.e. number of dashes
+    
+    // count the alphanumeric characters excluding dashes
+    p = S;
+    while(*p != '\0') {
+        if(*p != '-') len++;
+        p++;
+    }
+    
+    fglen = len % K;
+    if(fglen == 0) gsize = len/K;
+    else gsize = len/K + 1;
+    //printf("K - %d, len %d, fglen %d, gsize %d\n", K, len, fglen, gsize);
+
+    ret = (char *)malloc(sizeof(char)*(len+gsize+3));
+
+    // when empty string or string with only dashes are given
+    if(len == 0) {
+        ret[0] = '\0';
+        return ret;
+    }
+
+    p = S;  w = 0; i=0;
+    while(*p != '\0') {
+        // skip all the original dashes
+        if(*p != '-') {
+            if('a'<=*p && *p<='z') // if alphabet is lower
+                ret[w++] = *p + 'A' - 'a';
+            else // if it's number or upper case
+                ret[w++] = *p;
+
+            i++; // used as an index for inserting new dashes.
+            if(*(p+1)!='\0' && i%K == fglen) // insert dash
+                ret[w++] = '-';
+        }
+        p++;
+    }
+    
+    if(ret[w-1] == '-') // in case original string ends with a dash or more.
+        ret[w-1] = '\0';
+    else
+        ret[w] = '\0';
+    
+    return ret;
+}

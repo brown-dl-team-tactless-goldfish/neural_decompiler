@@ -1,0 +1,26 @@
+class Solution
+{
+public:
+    int numSpecial(vector<vector<int>> &mat)
+    {
+        int r = mat.size();
+        int c = mat[0].size();
+        int colsumArray[c];  //array to store sum each column
+        int ans = 0;
+        for (int i = 0; i < c; ++i)
+        {
+            int sum = 0;
+            for (int j = 0; j < r; ++j) sum += mat[j][i];
+            colsumArray[i] = sum;
+        }
+        for (int i = 0; i < r; ++i)
+        {
+          int rowsum=(accumulate(mat[i].begin(),mat[i].end(),0));   //finding sum of a sum, if the sum of a particular row is 1 then it means only one '1' is present
+          auto it=find(mat[i].begin(),mat[i].end(),1);   //mark the index of '1' in that row
+          int iIndice=-1;
+          if(it!=mat[i].end()) iIndice=it-mat[i].begin();
+          if(rowsum==1 and colsumArray[iIndice]==1) ++ans;  //if the rowsum is one and column of '1' in that row is one , then it means we have found a special position
+        }
+        return ans;
+    }
+};

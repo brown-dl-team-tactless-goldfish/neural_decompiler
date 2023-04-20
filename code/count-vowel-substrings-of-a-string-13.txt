@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int countVowelSubstrings(string word) {
+        int res = 0;
+
+        const auto N = word.size();
+
+        size_t i = 0;
+        for (; i < N; ++i) {
+            if (isVowel(word[i])) {
+                size_t j = i;
+                int flag = 0;
+                for (; j < N && isVowel(word[j]); ++j) {
+                    flag |= (1 << flagBit(word[j]));
+                    if (flag == 0b11111)
+                        res++;
+                }
+            }
+        }
+
+        return res;
+    }
+private:
+    bool inline isVowel(const char c) const {
+        return c == 'a' || c == 'e' || c == 'i' || c == 'o' || c == 'u';
+    }
+
+    int inline flagBit(const char c) const {
+        switch (c) {
+            case 'a': return 0;
+            case 'e': return 1;
+            case 'i': return 2;
+            case 'o': return 3;
+            case 'u': return 4;
+        }
+        return 0;
+    }
+};

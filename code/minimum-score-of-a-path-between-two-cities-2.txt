@@ -1,0 +1,77 @@
+class Solution {
+public:
+    class DSU{
+        public:
+        vector<int>rank;
+        vector<int>parent;
+        DSU(int n)
+        {
+            rank=vector<int>(n+1,0);
+            for(int i=0;i<=n;i++)
+            {
+                parent.push_back(i);
+            }
+        }
+        int findParent(int node)
+        {
+            if(parent[node]==node)
+                return parent[node];
+            return parent[node]=findParent(parent[node]);
+        }
+        void join(int u,int v)
+        {
+            u=findParent(u);
+            v=findParent(v);
+            if(u==v)return;
+            if(rank[u]<rank[v])
+            {
+                parent[u]=v;
+            }
+            else if(rank[u]>rank[v])
+            {
+                parent[v]=u;
+            }
+            else
+            {
+                if(u<v)
+                {
+                    parent[v]=u;
+                    rank[u]++;
+                }
+                else
+                {
+                    parent[u]=v;
+                    rank[v]++;
+                }
+            }
+    }
+    };  
+    //sorting according to distance of roads
+    static bool cmp(vector<int>&a,vector<int>&b)
+    {
+        return a[2]<b[2];
+    }
+
+    int minScore(int n, vector<vector<int>>& roads) {
+        //initializing dsu
+        DSU *d=new DSU(n);
+
+        for(auto road:roads)
+        {
+            //union of the roads to make components
+            d->join(road[0],road[1]);
+        }
+        //sort in ascending order
+        sort(roads.begin(),roads.end(),cmp);
+        //parent of city 1
+        int p1=d->findParent(1);
+        for(auto &r:roads)
+        {
+            int a=d->findParent(r[0]);
+            int b=d->findParent(r[1]);
+            if(a==p1 and b==p1)return r[2];
+        }
+        //this will never occur but still we need a return statement
+        return -1;
+    }
+};

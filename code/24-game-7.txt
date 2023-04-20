@@ -1,0 +1,50 @@
+class Solution {
+    double error=0.001;
+    vector<double> opnxy(double x, double y)
+    {
+        vector<double> ans;
+        if(x > error)
+            ans.push_back(x/y);
+        if(y > error)
+            ans.push_back(y/x);
+        ans.push_back(x+y);
+        ans.push_back(x*y);
+        ans.push_back(x-y);
+        ans.push_back(y-x);
+        return ans;
+    }
+    bool dfs(vector<double> &dbl)
+    {
+        if(dbl.size() == 1){
+            if(abs(24-dbl[0]) < error)
+                return true;
+            return false;
+        }
+        for(int i = 0; i < dbl.size(); i++)
+        {
+            for(int j = 0; j < i; j++)
+            {
+                if(i == j)
+                    continue;
+                double x = dbl[i], y = dbl[j];
+                vector<double> opn = opnxy(x, y);
+                dbl.erase(dbl.begin()+i);
+                dbl.erase(dbl.begin()+j);
+                for(double &val : opn)
+                {
+                    dbl.push_back(val);
+                    if(dfs(dbl)) return true;
+                    dbl.pop_back();
+                }
+                dbl.insert(dbl.begin()+j,y);
+                dbl.insert(dbl.begin()+i,x);
+            }
+        }
+        return false;
+    }
+public:
+    bool judgePoint24(vector<int>& cards) {
+        vector<double> dbl (cards.begin(),cards.end());
+        return dfs(dbl);
+    }
+};

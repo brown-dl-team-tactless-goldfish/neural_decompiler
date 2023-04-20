@@ -1,0 +1,8 @@
+WITH t1 AS (SELECT DISTINCT c1.visited_on AS start_date, 
+            DATE_ADD(c1.visited_on, INTERVAL 6 DAY) AS end_date
+            FROM Customer AS c1
+            INNER JOIN Customer AS c2 ON DATE_ADD(c1.visited_on, INTERVAL 6 DAY) = c2.visited_on)
+
+SELECT DISTINCT end_date AS visited_on, SUM(amount) OVER(PARTITION BY end_date) AS amount, ROUND(SUM(amount) OVER(PARTITION BY end_date)/7, 2) AS average_amount
+FROM t1
+LEFT JOIN Customer AS c ON start_date <= visited_on AND visited_on <= end_date

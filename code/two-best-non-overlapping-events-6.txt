@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int binarySearch(int lo, int hi, int key, vector<vector<int>>& events){
+           int idx = -1;
+           while(lo <= hi){
+               int mid = lo + (hi - lo) / 2;
+               if(events[mid][0] > key){
+                   idx = mid;
+                   hi = mid - 1;
+               }
+               else lo = mid + 1;
+           }
+        return idx;
+    }
+    
+    int maxTwoEvents(vector<vector<int>>& events) {
+         int n = events.size();
+         sort(events.begin(), events.end());
+         // its not actually dp, its just used to store the pre-computed maximum values
+         int dp[n];
+         dp[n-1] = events[n-1][2];
+         for(int i=n-2 ; i>=0 ; i--){
+             dp[i] = max(dp[i+1], events[i][2]);
+         }
+        
+         int mx_sum = 0;
+         for(int i = 0; i<n; i++){
+             int idx = binarySearch(i,n-1,events[i][1], events);
+             if(idx != -1) {
+                 mx_sum = max(mx_sum, events[i][2] + dp[idx]);
+             }
+             mx_sum = max(mx_sum, events[i][2]);
+         }
+        return mx_sum;
+    }
+};

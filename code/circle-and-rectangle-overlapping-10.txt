@@ -1,0 +1,25 @@
+    bool checkOverlap(int radius, int x_center, int y_center, int x1, int y1, int x2, int y2) {
+		// first compute the x and y distances between the center of the circle and the center of the rectangle
+        double distx = abs(x_center - (x1 + x2) / 2.0);
+        double disty = abs(y_center - (y1 + y2) / 2.0);
+        double half_width = (x2 - x1) / 2.0, half_height = (y2 - y1) / 2.0;
+        
+		// if the distances are too large, the circle is definitely outside of the rectangle
+        if (distx > radius + half_width || disty > radius + half_height)
+            return false;
+        
+		// if both distances are small enough, the center of the circle is within the rectangle, hence they overlap
+        if (distx <= half_width && disty <= half_height)
+            return true;
+        
+		// the following scenario indicates the neareast point on the rectangle that's closest to the circle is a rectangle corner
+        if (distx > half_width && disty > half_height) {
+			// this basically computes the distance between the circle center and the rectangle corner
+            double distc = (distx - half_width) * (distx - half_width) + (disty - half_height) * (disty - half_height);
+            if (distc <= radius * radius)
+                return true;
+            return false;
+        }
+		// here, it can be either distx <= half_width or disty <= half_width, the circle and rectangle overlap
+        return true;
+    }

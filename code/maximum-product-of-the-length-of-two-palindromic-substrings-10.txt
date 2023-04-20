@@ -1,0 +1,36 @@
+    int n = s.size(),c=0,r=0,mx=1,p[n],left[100000]={0};
+    left[0]=1;
+    for(int i=0;i<n;i++){
+        p[i]=1;
+        if(i<r)
+            p[i] = min((r-i)*2+1,p[c-(i-c)]);
+        
+        int dist=p[i]/2 + 1;
+        while(i+dist<n && i-dist>=0 && s[i+dist]==s[i-dist])
+            p[i]+=2, dist++;
+        
+        if(i+dist-1>r)
+            c=i, r= i + dist-1;
+        for(int val = p[i],x=i+p[i]/2;left[x]==0;x--,val-=2)
+            left[x]=max(mx,val);
+        mx = max(mx,p[i]);
+    }
+    mx=1;
+    long long ans = 1;
+    int lefti = n;
+    for(int i=n-1;i>=1;i--){
+        int l, r, x=i-p[i]/2, val=p[i];
+        
+        if(i-p[i]/2 <1)
+            x++,val-=2;
+		r = left[x-1];
+		
+        for(;x<lefti ; x++,val-=2){
+            l = r, r = left[x], left[x]=max(mx,val);
+            ans = max(ans,1ll*l*left[x]);
+        }
+        mx = max(mx,p[i]);
+        lefti = min(lefti,i-p[i]/2);
+    }
+    return ans;
+}                                               

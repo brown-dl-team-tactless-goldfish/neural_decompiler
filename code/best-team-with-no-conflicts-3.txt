@@ -1,0 +1,44 @@
+void swap(int* list, int i, int j) {
+    int tmp = *(list+i);
+    *(list+i) = *(list+j);
+    *(list+j) = tmp;
+}
+
+void sortByAgeThenScore(int* scores, int scoresSize, int* ages, int agesSize) {
+    for (int i = 0; i < scoresSize - 1; i++) {
+        for (int j = i+1; j < scoresSize; j++) {
+            if ((ages[i] == ages[j] && scores[i] > scores[j]) || ages[i] > ages[j]) {
+                swap(ages, i, j);
+                swap(scores, i, j);
+            }
+        }
+    }
+}
+
+int chooseNext(int index, int* ages, int agesSize, int* scores, int scoresSize, int lastIndex, int* memo) {
+    if (index >= agesSize) return 0;
+
+    int* memoIndex = memo + (lastIndex + 1) * agesSize + index;
+    if (*(memoIndex)) return *(memoIndex);
+    
+    int score1, score2;
+    score1 = score2 = 0;
+    if (lastIndex < 0 || scores[index] >= scores[lastIndex]) {
+        score1 = scores[index] + chooseNext(index+1, ages, agesSize, scores, scoresSize, index, memo);
+    }
+    score2 = chooseNext(index+1, ages, agesSize, scores, scoresSize, lastIndex, memo);
+
+    if (score1 < score2) {
+        return *(memoIndex) = score2;
+    };
+    return *(memoIndex) = score1;
+}
+
+int bestTeamScore(int* scores, int scoresSize, int* ages, int agesSize){
+    sortByAgeThenScore(scores, scoresSize, ages, agesSize);
+
+    int memo[agesSize][agesSize];
+    memset(memo, 0, agesSize*agesSize*sizeof(int));
+    
+    return chooseNext(0, ages, agesSize, scores, scoresSize, -1, memo);
+}

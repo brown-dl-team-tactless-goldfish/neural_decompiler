@@ -1,0 +1,33 @@
+
+int dp(int* coins, int coinsSize, int amount, int *memo)
+{
+        int min = 0x7fffffff;
+        int i;
+        int tmp;
+        
+        if (!amount)
+                return 0;
+        if (memo[amount - 1] != 0)
+                return memo[amount - 1];
+        
+        for (i = 0; i < coinsSize; i++) {
+                if (coins[i] > amount)
+                        continue;
+                tmp = 1 + dp(coins, coinsSize, amount - coins[i], memo);
+                if (tmp != 0 && tmp < min)
+                        min = tmp;
+        }
+        
+        if (min == 0x7fffffff)
+                min = -1;
+        memo[amount - 1] = min;
+        return min;
+}
+
+int coinChange(int* coins, int coinsSize, int amount)
+{
+        int *memo = malloc(sizeof(int) * amount);
+        memset(memo, 0, sizeof(int) * amount);
+
+        return dp(coins, coinsSize, amount, memo);
+}

@@ -1,0 +1,83 @@
+class Solution {
+public:
+    int maxTrailingZeros(vector<vector<int>>& grid) {
+        
+        int m = grid.size();
+        int n = grid[0].size();
+        
+        // track  number of 2 and 5 in numbers row wise and column wise => row 0 , column 1 => pair<2,5> count
+        vector<vector<vector<pair<int,int>>>>dp(m,vector<vector<pair<int,int>>>(n,vector<pair<int,int>>(2,{0,0})));
+        
+        // loop through grid and store the prefix sum of 2 and 5 factor count row wise and column wise
+        int twoC, fiveC,val;
+        for(int i=0;i<m;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                twoC = 0;
+                fiveC = 0;
+                val = grid[i][j];
+                while(val%5 ==0)
+                {
+                    fiveC++;
+                    val/=5;
+                }
+                while(val%2 ==0)
+                {
+                    twoC++;
+                    val/=2;
+                }
+                
+                // row wise prefix sum of factor 2 and 5
+                if(j > 0)
+                {
+                    dp[i][j][0].first += dp[i][j-1][0].first + twoC;
+                    dp[i][j][0].second += dp[i][j-1][0].second + fiveC;
+                }
+                else
+                {
+                    dp[i][j][0].first += twoC;
+                    dp[i][j][0].second += fiveC;                    
+                }
+
+                // column wise prefix sum of factor 2 and 5
+                if(i > 0)
+                {
+                    dp[i][j][1].first += dp[i-1][j][1].first + twoC;
+                    dp[i][j][1].second += dp[i-1][j][1].second + fiveC;
+                }
+                else
+                {
+                    dp[i][j][1].first += twoC;
+                    dp[i][j][1].second += fiveC;                    
+                }
+            }
+        }
+        
+        // max trailing zeroes
+        int maxZero = 0;   
+        
+        // loop through dp and calculate max trailing zeroes for 4 possible cases
+        for(int i=0;i<m;i++)
+        {
+            for(int j=0;j<n;j++)
+            {
+                // left sum + up sum 
+                maxZero = max(maxZero,min(dp[i][j][1].first + (j>0 ? dp[i][j-1][0].first : 0), dp[i][j][1].second + (j>0 ? dp[i][j-1][0].second : 0)));
+                
+                // right sum + up sum
+                maxZero = max(maxZero,min(dp[i][j][1].first + (dp[i][n-1][0].first - dp[i][j][0].first), dp[i][j][1].second + (dp[i][n-1][0].second - dp[i][j][0].second)));
+                
+                // left sum + down sum
+                maxZero = max(maxZero,min((dp[m-1][j][1].first - dp[i][j][1].first) + dp[i][j][0].first, (dp[m-1][j][1].second - dp[i][j][1].second) + dp[i][j][0].second));
+                
+                // right sum + down sum
+                maxZero = max(maxZero,min((dp[m-1][j][1].first - dp[i][j][1].first) + (dp[i][n-1][0].first - (j>0 ? dp[i][j-1][0].first : 0)), (dp[m-1][j][1].second - dp[i][j][1].second) + (dp[i][n-1][0].second - (j> 0 ? dp[i][j-1][0].second : 0))));
+
+            }
+        }
+        
+        
+        return maxZero;
+    }
+};

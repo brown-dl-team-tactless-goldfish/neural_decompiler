@@ -1,0 +1,55 @@
+int backtrack(int** grid, int start_row, int start_col, int max_row, int max_col, int remain, int path_count){
+    // base case for the termination of backtracking
+    if (grid[start_row][start_col] == 2 && remain == 1){
+        path_count++;
+        return path_count;
+    }
+    // mark the square as visited. case: 0, 1, 2 
+    int temp = grid[start_row][start_col];
+    grid[start_row][start_col] = -4;
+    remain -= 1;// we now have one less square to visit
+    int vector[4][2] = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+
+    // explore the 4 potential directions around
+    for(int i = 0;i<4;i++){
+        int next_row = start_row + vector[i][0];
+        int next_col = start_col + vector[i][1];
+        if (next_row >= max_row || next_col >= max_col || next_row < 0 || next_col < 0){
+            continue;
+        }
+        else if (grid[next_row][next_col] < 0){
+            continue;
+        }
+        
+        path_count = backtrack(grid, next_row, next_col, max_row, max_col, remain, path_count);
+    }
+    
+    // unmark the square after the visit
+    grid[start_row][start_col] = temp;
+    return path_count;
+}
+
+int uniquePathsIII(int** grid, int gridSize, int* gridColSize){
+    
+    //step1. initialize the conditions for backtracking 
+    //       i.e. initial state and final state
+    int path_count = 0;
+    int non_obstacle = 0;
+    int start_row = 0, start_col = 0;
+    int max_row = gridSize, max_col = *gridColSize;
+    for(int i = 0;i<gridSize;i++){
+        for(int j = 0;j<*gridColSize;j++){
+            if (grid[i][j] >= 0){
+                non_obstacle++;
+            }
+            if (grid[i][j] == 1){
+                start_row = i;
+                start_col = j;
+            }
+        }
+    }
+    
+    path_count = backtrack(grid, start_row, start_col, max_row, max_col, non_obstacle, path_count);
+    
+    return path_count;
+}

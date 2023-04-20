@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int waysToReachTarget(int target, vector<vector<int>>& types) {
+        int mod = 1e9 + 7;
+        vector<int> ways(target + 1);
+        ways[0] = 1;
+        
+        for (auto& q : types) {
+            vector<int> nxt = ways;
+            for (int j = 0; j < q[0]; ++j) {
+                int c = (j + 1) * q[1];
+                for (int s = c; s <= target; ++s) {
+                    nxt[s] = (nxt[s] + ways[s - c]) % mod;
+                }
+            }
+            swap(nxt, ways);
+        }
+        return ways[target];
+    }
+};

@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int R, C;
+    vector<bool> mk;
+    int maxR;
+    
+    void opt(int st_i, vector<vector<int>> &M) {
+        int curmaxR = 1;
+        mk[st_i] = true;
+        for (int i = st_i + 1; i < R; i++) {
+            if (!mk[i]) {
+                int j = 0;
+                int onec = 0;
+                int zeroc = 0;
+                for (; j < C; j++) {
+                    if (M[i][j] != M[st_i][j]) {
+                        onec++;
+                    }
+                    else {
+                        zeroc++;
+                    }
+                }
+                if (zeroc == 0 || onec == 0) {
+                    curmaxR++;
+                    mk[i] = true;
+                }
+            }
+        }
+        maxR = max(maxR, curmaxR);
+    }
+    int maxEqualRowsAfterFlips(vector<vector<int>>& matrix) {
+        maxR = 0;
+        R = matrix.size();
+        C = matrix[0].size();
+        mk = vector<bool>(R, false);
+        for (int i = 0; i < R; i++) {
+            if (!mk[i]) {
+                opt(i, matrix);
+            }
+        }
+        return maxR;
+    }
+};

@@ -1,0 +1,61 @@
+void funcPopulate(char * arrC, int * arrI, int arrCLen){ 
+  
+  for(int i = 0; i < arrCLen; i++){
+    arrI[arrC[i] - 'a']++; 
+  }
+  
+}
+
+bool funcIsRow(char * arrC, int * arrI){
+  
+  int len = strlen(arrC);
+  
+  for(int i = 0; i < len; i++){
+    
+    if(arrI[tolower(arrC[i]) - 'a'] == 0)
+      return false;
+    
+  }
+  
+  return true;
+}
+
+char ** findWords(char ** words, int wordsSize, int* returnSize){
+
+  char firstR[11] = "qwertyuiop";
+  char secondR[10] = "asdfghjkl";
+  char thirdR[8] = "zxcvbnm";
+  
+  int firstRC[26] = {0};
+  int secondRC[26] = {0};
+  int thirdRC[26] = {0};
+
+  funcPopulate(firstR, firstRC, 10);
+  funcPopulate(secondR, secondRC, 9);
+  funcPopulate(thirdR, thirdRC, 7);
+
+  int iRes = 0;
+
+  char **result = (char**)calloc(wordsSize, sizeof(char*));
+  
+  for(int i = 0; i < wordsSize; i++){
+    result[i] = (char *)calloc(101, sizeof(char));
+  }
+
+  for(int i = 0; i < wordsSize; i++){
+    
+    if(funcIsRow(words[i], firstRC) == true){
+      strcpy(result[iRes++], words[i]);
+    }
+    if(funcIsRow(words[i], secondRC) == true){
+      strcpy(result[iRes++], words[i]);
+    }
+    if(funcIsRow(words[i], thirdRC) == true){
+      strcpy(result[iRes++], words[i]);
+    }
+    
+  }
+  
+  *returnSize = iRes;
+  return result;
+}

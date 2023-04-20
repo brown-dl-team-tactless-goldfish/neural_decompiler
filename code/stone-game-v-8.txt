@@ -1,0 +1,37 @@
+class Solution {
+    vector<vector<int>> dp;
+    vector<int> sums;
+public:
+    int stoneGameV(vector<int>& stoneValue) {
+        int n = stoneValue.size();
+        dp.resize(n, vector<int>(n, -1));
+        sums = {0};
+        for(int i=0; i<n; i++) sums.push_back(sums[i] + stoneValue[i]);
+        
+        return helper(stoneValue, 0, n-1);
+    }
+    
+    int helper(vector<int>& stoneValue, int start, int end) {
+        if(start == end) return 0;
+        
+        if(dp[start][end] != -1) return dp[start][end];
+        
+        int ans = 0;
+        for(int i=start; i<end; ++i) {
+            int leftSum = sums[i+1] - sums[start];
+            int rightSum = sums[end+1] - sums[i+1];
+            
+            if(leftSum < rightSum) {
+                ans = max(ans, leftSum + helper(stoneValue, start, i));
+            } else if (leftSum > rightSum) {
+                ans = max(ans, rightSum + helper(stoneValue, i+1, end));
+            } else {
+                int big = max(helper(stoneValue, start, i), helper(stoneValue, i+1, end));
+                ans = max(ans, big + leftSum);
+            }
+        }
+        
+        dp[start][end] = ans;
+        return ans;
+    }
+};

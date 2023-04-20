@@ -1,0 +1,48 @@
+class Solution {
+public:
+    const int mod = 1e9 + 7;
+    int numberOfUniqueGoodSubsequences(string binary) {
+        int n = binary.size();
+        vector<int> dp(n + 1);
+        dp[n] = 1;
+        int one = -1;
+        int zero = -1;
+        for (int i = n - 1; i >= 0; i--) {
+            if (binary[i] == '1') {
+                dp[i] = (2 * dp[i + 1]) % mod;
+                if (one != -1) {
+                    dp[i] -= dp[one + 1];
+                    if (dp[i] < 0) {
+                        dp[i] += mod;
+                    }
+                }
+                one = i;
+            }
+            else {
+                dp[i] = (2 * dp[i + 1]) % mod;
+                if (zero != -1) {
+                    dp[i] -= dp[zero + 1];
+                    if (dp[i] < 0) {
+                        dp[i] += mod;
+                    }
+                }
+                zero = i;
+            }
+        }
+        int sol = dp[0] - 1;
+        if (sol < 0) {
+            sol += mod;
+        }
+        for (int i = 0; i < n; i++) {
+            if (binary[i] == '0') {
+                sol -= dp[i + 1];
+                if (sol < 0) {
+                    sol += mod;
+                }
+                sol = (sol + 1) % mod;
+                break;
+            }
+        }
+        return sol;
+    }
+};

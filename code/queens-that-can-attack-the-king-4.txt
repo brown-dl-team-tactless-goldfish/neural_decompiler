@@ -1,0 +1,34 @@
+class Solution {
+public:
+    vector<vector<int>> queensAttacktheKing(vector<vector<int>>& queens, vector<int>& king) {
+        int dc[] = {-1, 1, 0, 0, 1, -1, 1, -1};
+        int dr[] = {0, 0, -1, 1, -1, 1, 1, -1};
+        vector<vector<int>> res;
+        unordered_map<string, int> x;
+        for(vector<int> i : queens){
+            x[to_string(i[0]) + ',' + to_string(i[1])] = 1;
+        }
+        for(vector<int> i  :queens){
+            int r = i[0];
+            int c = i[1];
+            bool ok = false;
+            int rr, cc;
+            for(int j = 0;j<8 && !ok;j++){
+                rr = r + dr[j];
+                cc = c + dc[j];
+                while(rr >= 0 && rr < 8 && cc >= 0 && cc < 8 && x.find(to_string(rr) + ',' + to_string(cc)) == x.end()){
+                    if(rr == king[0] && cc == king[1]){
+                        ok = true;
+                        break;
+                    }
+                    rr += dr[j];
+                    cc += dc[j];
+                }
+            }
+            if(ok){
+                res.push_back(i);
+            }
+        }
+        return res;
+    }
+};

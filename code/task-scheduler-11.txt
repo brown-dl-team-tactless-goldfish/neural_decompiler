@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int leastInterval(vector<char>& tasks, int n) {
+        if (tasks.empty()) {
+            return 0;
+        }
+        
+        unordered_map<char, int> counter;
+        
+        int cycles = 0;
+        char baseTask = tasks[0];
+        for (char task: tasks) {
+            if (++counter[task] > cycles) {
+                cycles = counter[task];
+                baseTask = task;
+            }
+        }
+        
+        /*
+                                        │
+                                        3*(n+1)
+                                        ▼
+        ┌───┐     ┌───┐     ┌───┐     ┌───┐
+        │ A │     │ A │     │ A │     │ A │
+        └─0─┘     └n+1┘     2n+2┘     └3n+3
+
+        time includes (cycles - 1) complete cycles and one incomplete cycle( last one only with baseTask )
+        */
+        int time = (cycles - 1) * (n + 1) + 1;
+        
+        for (auto &[task, count]: counter) {
+            // find those different tasks with same cycles
+            // we will insert one into the last cycle.
+            if (count == cycles && task != baseTask) {
+                // only the task with same count with A will need an additional slot after last A
+                time++;
+            }
+        }
+        
+		// other tasks with smaller count will be inserted into every cycle, no idle slots needed now.
+        return max(time, (int)tasks.size());
+    }
+};

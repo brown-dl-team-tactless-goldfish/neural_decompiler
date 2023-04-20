@@ -1,0 +1,48 @@
+int cmp(const void* a, const void* b){
+    return *(int*)a - *(int*)b ;
+}
+int BS1(int* nums, int n, int left, int right, int lower){
+    int l = left ;
+    int r = right ;
+    if(nums[r] < lower)
+        return -1 ;
+    while(l < r){
+        int mid = l + (r-l)/2 ;
+        if(nums[mid] < lower)
+            l = mid + 1;
+        else
+            r = mid ;
+    }
+    return l ;
+}
+
+int BS2(int* nums, int n, int left, int right, int upper){
+    int l = left ;
+    int r = right ;
+    if(nums[l] > upper)
+        return -1 ;
+    while(l < r){
+        int mid = r - (r-l)/2 ;
+        if(nums[mid] > upper)
+            r = mid - 1;
+        else
+            l = mid ;
+    }
+    return l ;
+}
+long long countFairPairs(int* nums, int numsSize, int lower, int upper){
+    int n = numsSize ;
+    long long ans = 0 ;
+    qsort(nums, n, sizeof(int), cmp) ;
+    for(int i = 0; i < n-1; i++){
+        
+        int left = BS1(nums, n, i+1, n-1, lower - nums[i]) ;
+        int right = BS2(nums, n, i+1, n-1, upper- nums[i]) ;
+
+        if(left != -1 && right != -1)
+            ans += right - left + 1 ;
+    }
+
+    return ans ;
+    
+}

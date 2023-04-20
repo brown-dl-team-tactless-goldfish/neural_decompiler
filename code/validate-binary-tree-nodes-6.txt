@@ -1,0 +1,94 @@
+class Solution {
+public:
+    
+    void dfs(int u, vector<bool> &vis, vector<vector<int>> &g)
+    {
+        vis[u] = 1;
+        for(int i = 0; i < g[u].size(); i++)
+        {
+            if(vis[g[u][i]] == 0)
+                dfs(g[u][i], vis, g);
+        }
+    }
+    
+    bool check(int u, vector<int>&vis, vector<vector<int>> &g)
+    {
+        vis[u] = 1;
+        
+        for(int i = 0; i < g[u].size(); i++)
+        {
+            int v = g[u][i];
+            if(vis[v] >= 1)
+                return 0;
+            if(vis[v] == 0)
+            {
+                if(check(v, vis, g) == 0)
+                    return 0;
+            }
+        }
+        
+        vis[u] = 2;
+        return 1;
+    }
+    
+    bool validateBinaryTreeNodes(int n, vector<int>& leftChild, vector<int>& rightChild) {
+        vector<vector<int>> g(n);
+        for(int i = 0; i < leftChild.size(); i++)
+        {
+            if(leftChild[i] != -1)
+            {
+                g[i].push_back(leftChild[i]);
+                g[leftChild[i]].push_back(i);
+            }
+            if(rightChild[i] != -1)
+            {
+                g[i].push_back(rightChild[i]);
+                g[rightChild[i]].push_back(i);
+            }
+        }
+        
+        vector<bool> vis(n);
+        int c = 0;
+        for(int i = 0; i < n; i++)
+        {
+            if(vis[i] == 0)
+            {
+                c++;
+                dfs(i, vis, g);
+            }
+            
+            if(c > 1)
+                return 0;
+        }
+        
+        if(c > 1)
+            return 0;
+        
+        g.clear();
+        g = vector<vector<int>> (n);
+        
+        for(int i = 0; i < leftChild.size(); i++)
+        {
+            if(leftChild[i] != -1)
+            {
+                g[i].push_back(leftChild[i]);
+            }
+            if(rightChild[i] != -1)
+            {
+                g[i].push_back(rightChild[i]);
+            }
+        }
+        
+        vector<int> vis1(n);
+        
+        for(int i = 0; i < n; i++)
+        {
+            if(vis1[i] == 0)
+            {
+                if(check(i, vis1, g) == 0)
+                    return 0;
+            }
+        }
+        return 1;
+    }
+};

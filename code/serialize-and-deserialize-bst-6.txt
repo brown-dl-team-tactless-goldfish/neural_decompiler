@@ -1,0 +1,82 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/** Encodes a tree to a single string. */
+
+typedef struct TreeNode Node;
+
+Node* buildTree(int* preorder, int preorderSize, int* inorder, int inorderSize){
+    if (preorderSize <= 0 || inorderSize <= 0) return NULL;
+    int root_val = preorder[0];
+    int i = 0;
+    int curr_val;
+    do {
+        curr_val = inorder[i];
+        i++;
+    } while (i < inorderSize && curr_val != root_val);
+    // for inorder:
+    // [....][....][....]|[root]|[i-th][....][....][....]
+    // for postorder:
+    // [....][....][....][....]|[(i-1)th][....][....]|[root]
+    Node* root = malloc(sizeof(Node));
+    root->val = root_val;
+    root->left = buildTree(preorder+1, i-1, inorder, i-1);
+    root->right = buildTree(preorder+i, preorderSize-i, inorder+i, inorderSize-i);
+    return root;
+}
+
+int get_size(int* arr) {
+    int i = 0;
+    while (arr[i] >= 0)
+        i++;
+    return i;
+}
+
+char* serialize(struct TreeNode* root) {
+    if (!root) {
+        int* total = malloc(sizeof(int));
+        total[0] = EOF;
+        return (char*)total;
+    }
+    
+    int* left = serialize(root->left);
+    int* right = serialize(root->right);
+    
+    int len_left = get_size(left);
+    int len_right = get_size(right);
+    int len_total = len_left+len_right+2; // strlen() of total, don't contain '\0'
+    int* total = malloc((len_total+1)*sizeof(int));
+    
+    // deal with first half, which is a preorder of vals in the tree
+    total[0] = root->val;
+    memcpy(total+1, left, len_left/2 * sizeof(int));
+    memcpy(total+len_left/2+1, right, len_right/2 * sizeof(int));
+    
+    // deal with second half, which is an inorder of vals in the tree
+    memcpy(total+len_total/2, left+len_left/2, len_left/2 * sizeof(int));
+    total[len_total/2+len_left/2] = root->val;
+    memcpy(total+len_total/2+len_left/2+1, right+len_right/2, len_right/2 * sizeof(int));
+    
+    total[len_total] = EOF;
+    free(left);
+    free(right);
+    
+    return total;
+}
+
+/** Decodes your encoded data to tree. */
+struct TreeNode* deserialize(char* data) {
+    int* data_int = (int*)data;
+    int len_total = get_size(data);
+    
+    return buildTree(data_int, len_total/2, data_int+len_total/2, len_total/2);
+}
+
+// Your functions will be called as such:
+// char* data = serialize(root);
+// deserialize(data);

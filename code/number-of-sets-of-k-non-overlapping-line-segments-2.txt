@@ -1,0 +1,27 @@
+#define ll long long
+#define debug(x) cout<<#x<<" --> "<<x<<endl;
+class Solution {
+public:
+    const int mod = 1000000007;
+    ll fact[2002], inv[2002], invfact[2002];
+    void factorial(){
+        fact[0] = fact[1] = inv[0] = inv[1] = invfact[0] = invfact[1] = 1;
+        for(int i=2;i<=2001;++i){
+            fact[i]=(fact[i-1]*i)%mod;
+            inv[i] = mod - (mod/i) * inv[mod%i] % mod;
+            invfact[i] = (invfact[i-1]*inv[i])%mod;
+        }
+    }
+    
+    ll ncr(int n, int k){
+        ll x = fact[n];
+        ll y = invfact[n-k];
+        ll z = invfact[k];
+        return (x*((y*z)%mod))%mod;
+    }
+    
+    int numberOfSets(int n, int k) {
+        factorial();
+        return (int)ncr(n+k-1,2*k);
+    }
+};

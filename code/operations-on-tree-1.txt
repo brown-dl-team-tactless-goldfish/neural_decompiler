@@ -1,0 +1,77 @@
+class LockingTree {
+private: 
+    vector<int>parent ;
+    vector<int>locked ;
+    vector<vector<int>>Tree ;
+public:
+    LockingTree(vector<int>& parent) {
+        this->parent = parent ;
+        int n = parent.size() ;
+        locked.resize(n) ;
+        Tree.resize(n) ;
+        for(int i = 0 ; i < parent.size(); i++)
+        {
+            if(parent[i] != -1)
+                Tree[parent[i]].push_back(i) ;
+        }            
+    }
+    
+    bool lock(int num, int user) {
+        if(locked[num])
+            return false ;
+        locked[num] = user ;
+        return true ;
+    }
+    
+    bool unlock(int num, int user) {
+        if(locked[num] != user)
+            return false ;
+        locked[num] =  0 ;
+        return true ;
+    }
+    
+    bool upgrade(int num, int user) {
+        //The node is unlocked,
+        //It does not have any locked ancestors. 
+        //It has at least one locked descendant (by any user), and
+        
+        //step 1
+        if(locked[num])
+            return false ;
+        //step 2
+        int cur = num ;
+        while(cur != -1){
+            if(locked[cur])
+                return false ;
+            cur = parent[cur] ;
+        }
+        //step 3
+        vector<int>descendant ;
+        queue<int> q ;
+        q.push(num) ;
+        while(!q.empty()){
+            int cur = q.front() ;
+            q.pop() ;
+            if(locked[cur])
+                descendant.push_back(cur) ;
+            for(auto& child : Tree[cur])
+                q.push(child) ;
+        }
+        
+        if(descendant.size()){
+            locked[num] = user ;
+            for(auto& x : descendant)
+                locked[x] = 0 ;
+            return true ;
+        }
+        return false ;
+    }
+};
+
+/**
+ * Your LockingTree object will be instantiated and called as such:
+ * LockingTree* obj = new LockingTree(parent);
+ * bool param_1 = obj->lock(num,user);
+ * bool param_2 = obj->unlock(num,user);
+ * bool param_3 = obj->upgrade(num,user);
+ */

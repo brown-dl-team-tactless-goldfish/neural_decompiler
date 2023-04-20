@@ -1,0 +1,74 @@
+class Solution {
+public:
+    long long minimumDifference(vector<int>& nums) {
+        
+        
+        int n=nums.size();
+        vector<int>num(n+1);//for 1 based indexing
+        
+        for(int i=0;i<n;i++){
+            num[i+1]=nums[i];
+        }
+        
+        int cnt=n/3;
+        
+        priority_queue<int,vector<int>,greater<int>>pq;  
+        
+        long long int sum=0;
+        for(int i=n;i>=0;i--){
+            pq.push(num[i]);
+            sum+=num[i];
+            cnt--;
+            if(cnt==0)break;
+        }
+        
+       long long int right[n+1]; //max sum we can get by choosing n/3 elements from i to n
+        
+        right[2*(n/3)+1]=sum;
+        
+        for(int i= 2*(n/3);i>n/3;i--){
+            
+            if(num[i]>pq.top()){
+			
+               sum= sum-pq.top();
+                pq.pop();
+               sum+=num[i];
+               pq.push(num[i]);
+                
+            }
+            
+            right[i]=sum;    
+        }
+        
+       long long int left[n+1];   //min sum we can get by choosing n/3 elements from 1 to i
+        
+        priority_queue<int>pq2;
+        sum=0;
+		
+        for(int i=1;i<=n/3;i++){
+            pq2.push(num[i]);
+            sum+=num[i];
+        }
+		
+        left[n/3]=sum;
+        
+        for(int i=n/3+1;i<=2*(n/3);i++){
+            
+             if(num[i]<pq2.top()){
+               sum= sum-pq2.top();
+                pq2.pop();
+               sum+=num[i];
+               pq2.push(num[i]);
+            }
+            left[i]=sum;
+        }
+        
+       long long int ans=LONG_MAX;
+	   
+        for(int j=n/3;j<=2*(n/3);j++){
+            ans=min(ans,left[j]-right[j+1]);
+        }        
+       return ans;
+
+    }
+};

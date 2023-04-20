@@ -1,0 +1,77 @@
+class Solution {
+public:
+    vector<vector<int>> circles;
+    vector<vector<bool>> counted;
+    int x_max, x_min, y_max, y_min;
+        
+    bool isInside(int x, int y, int x_c, int y_c, int r){
+        r = r*r;
+        int dist = (x-x_c)*(x-x_c) + (y-y_c)*(y-y_c);
+        if(r >= dist)
+            return true;
+        return false;
+    }
+    
+    bool isPointConsidered(int x, int y){
+        int i = x - x_min;
+        int j = y - y_min;
+        return counted[i][j];
+    }
+    
+    void markCounted(int x, int y){
+        int i = x - x_min;
+        int j = y - y_min;
+        counted[i][j] = true;
+        return;
+    }
+    
+    void getPointsInsideCircle(vector<int>& c, vector<pair<int,int>>& points){
+        int x_min = INT_MAX;
+        int x_max = INT_MIN;
+        int y_max = INT_MIN;
+        int y_min = INT_MAX;
+
+        x_max = max(x_max, c[0] + c[2]);
+        x_min = min(x_min, c[0] - c[2]);
+        y_max = max(y_max, c[1] + c[2]);
+        y_min = min(y_min, c[1] - c[2]);
+
+        for(int x = x_min ; x <= x_max ; x++){
+            for(int y = y_min; y <= y_max ; y++){
+                if(isPointConsidered(x,y))
+                    continue;
+                if(isInside(x, y, c[0], c[1], c[2])){
+                    points.push_back({x,y});
+                    markCounted(x,y);
+                }
+            }
+        }
+
+        return;
+    }
+    
+    int countLatticePoints(vector<vector<int>>& CIRCLES) {
+        circles = CIRCLES;
+        vector<pair<int,int>> points;
+        
+        x_min = INT_MAX;
+        x_max = INT_MIN;
+        y_max = INT_MIN;
+        y_min = INT_MAX;
+        
+        for(auto c : circles){
+            x_max = max(x_max, c[0] + c[2]);
+            x_min = min(x_min, c[0] - c[2]);
+            y_max = max(y_max, c[1] + c[2]);
+            y_min = min(y_min, c[1] - c[2]);
+        }
+        
+        counted = vector<vector<bool>> (x_max-x_min+1, vector<bool> (y_max-y_min+1, false));
+        
+        for(vector<int> circle : circles){
+            getPointsInsideCircle(circle, points);
+        }
+        
+        return points.size();
+    }
+};

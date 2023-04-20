@@ -1,0 +1,50 @@
+void dfs(char **board, int m , int n, int r, int c, char from, char to)
+{
+    if (r < 0 || c < 0 || r >= m || c >= n)
+        return;
+    
+    if (board[r][c] == from)
+        board[r][c] = to;
+    else
+        return;
+    
+    dfs(board, m, n, r - 1, c, from, to);
+    dfs(board, m, n, r, c + 1, from, to);
+    dfs(board, m, n, r + 1, c, from, to);
+    dfs(board, m, n, r, c - 1, from, to);
+}
+
+/*
+ * Replace all cells that are dfs reachable from the edges to 'Z' from 'O'
+ * Then all the cells that are  left with 'O' are covered by X's, so replace
+ * them with X's
+ */
+
+void solve(char** board, int boardSize, int* boardColSize){
+    
+    int i, j, m, n;
+    
+    if (!board || !boardColSize || !boardSize) return;
+    
+    m = boardSize;
+    n = *boardColSize;
+    
+    for (i = 0; i < n; i++)
+        dfs(board, m, n, 0, i, 'O', 'Z');
+    for (i = 0; i < m; i++)
+        dfs(board, m, n, i, 0, 'O', 'Z');
+    for (i = 0; i < m; i++)
+        dfs(board, m, n, i, n - 1, 'O', 'Z');
+    for (i = 0; i < n; i++)
+        dfs(board, m, n, m - 1, i, 'O', 'Z');
+    
+    for (i = 0; i < m; i++)
+        for (j = 0; j < n; j++) {
+            if (board[i][j] == 'Z')
+                board[i][j] = 'O';
+            else if (board[i][j] == 'O')
+                board[i][j] = 'X';
+        }
+        
+
+}

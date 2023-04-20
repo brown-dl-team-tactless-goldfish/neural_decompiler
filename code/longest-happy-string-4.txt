@@ -1,0 +1,147 @@
+
+//Store abc in sequence order. For example if a=2, b=3, c=6 then store  "abcabcbc" in tmp array until a and b become 0. 
+//After that, make a separate logic for inserting remaing c characters in such a way that no 3 c's come together. I have used one another array to accomplish this.
+//My code is little dirty. Sorry for that.
+char * longestDiverseString(int a, int b, int c){
+    
+    int len = a+b+c;
+    char *result = (char *)malloc(sizeof(char) * 301);
+    memset(result,0,sizeof(char) * 301);
+    char tmp[302]={0};
+    int i=0;
+    char ch;
+    int p,f=0,r;
+    if (!a && !b && !c)
+        return "";
+    
+    while (a && b && c)
+    {
+        tmp[i] = 'a';
+        i++;
+        tmp[i] = 'b';
+        i++;
+        tmp[i] = 'c';
+        i++;
+        a--;b--;c--;
+    }
+   
+    while (a && c)
+    {
+        tmp[i] = 'a';
+        i++;
+        tmp[i] = 'c';
+        i++;
+        a--;c--;
+    }
+    
+    while (b && c)
+    {
+        tmp[i] = 'b';
+        i++;
+        tmp[i] = 'c';
+        i++;
+        b--;c--;
+    }
+    
+    while (a && b)
+    {
+        tmp[i] = 'a';
+        i++;
+        tmp[i] = 'b';
+        i++;
+        a--;
+        b--;
+    }
+	// Insert remaining characters in such way that no 3 same characters come together.
+    r = a+b+c;
+    
+    if (a > 0)
+    {
+        ch = 'a';
+    }
+    else if (b > 0)
+    {
+        ch = 'b';
+    }
+    else
+    {
+        ch = 'c';
+    }
+    i = 0;
+    p = 0;
+
+    while (r && tmp[i]!=NULL)
+    {
+        if (f)
+        {
+            result[p] = tmp[i];
+            p++;
+            i++;
+            f=0;
+            continue;
+        }
+        if (tmp[i] == ch)
+        {
+            result[p] = ch;
+            p++;
+            r--;
+            result[p] = tmp[i];
+            p++;
+            i++;
+            f=1;
+        }
+        else
+        {
+
+            if (r > 1)
+            {
+                result[p] = ch;
+                p++;
+                r--;
+                result[p] = ch;
+                p++;
+                r--;
+                result[p] = tmp[i];
+                p++;
+                i++;
+            }
+            else
+            {
+                result[p] = ch;
+                p++;
+                r--;
+                result[p] = tmp[i];
+                p++;
+                i++;
+                
+            }
+        }
+    }
+    if (tmp[i] == NULL && f==0 && r)
+    {
+        
+        if (p==0 || result[p-1] != ch)
+        {
+            result[p] = ch;
+            p++;
+            result[p] = ch;
+            p++;
+        }
+        else
+        {
+            result[p] = ch;
+            p++;
+        }
+    }
+    if (tmp[i] != NULL)
+    {
+        while (tmp[i]!=NULL)
+        {
+            result[p] = tmp[i];
+            p++;
+            i++;
+        }
+    }
+    result[p]=NULL;
+    return &result[0];
+}

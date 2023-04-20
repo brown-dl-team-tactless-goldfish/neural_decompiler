@@ -1,0 +1,28 @@
+void dfs(int** grid, int m, int n, int i, int j, int val, int* ans){
+    
+    if(i < 0 || j < 0 || i == m || j == n || grid[i][j] == 0){
+        *ans = fmax(*ans, val) ;
+        return ;
+    }
+
+    int org = grid[i][j] ;
+    grid[i][j] = 0 ;
+    dfs(grid, m, n, i+1, j, val+org, ans) ;
+    dfs(grid, m, n, i-1, j, val+org, ans) ;
+    dfs(grid, m, n, i, j+1, val+org, ans) ;
+    dfs(grid, m, n, i, j-1, val+org, ans) ;
+    grid[i][j] = org ;
+}
+int getMaximumGold(int** grid, int gridSize, int* gridColSize){
+    int ans = 0 ;
+    int m = gridSize ;
+    int n = *gridColSize ;
+    for(int i = 0; i < m; i++){
+        for(int j = 0; j < n; j++){
+            if(grid[i][j] == 0)
+                continue ;
+            dfs(grid, m, n, i, j, 0, &ans) ;
+        }
+    }
+    return ans ;
+}

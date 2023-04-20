@@ -1,0 +1,56 @@
+class Solution {
+public:
+
+    int dfs(vector<vector<bool>>& vis, int i, int j, vector<vector<int>>& g){
+        if(i < 0 || j < 0 || i >= g.size() || j >= g[0].size() || !g[i][j] || vis[i][j]) return 0;
+        vis[i][j] = 1;
+        return 1 + dfs(vis,i+1,j, g) + dfs(vis,i,j+1, g) + dfs(vis,i-1,j, g) + dfs(vis,i,j-1, g);
+    }
+
+    int icnt(vector<vector<int>>& g){
+        int ino = 0;
+        vector<vector<bool>> vis(g.size(),vector<bool>(g[0].size(),0));
+        for(int i=0;i<g.size();i++){
+            for(int j=0;j<g[0].size();j++){
+                if(g[i][j] && !vis[i][j]){
+                    dfs(vis,i,j,g);
+                    ino++;
+                }
+            }
+        }
+        return ino;
+    }
+
+    int minDays(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        int noi = 0, size = 0;
+        vector<vector<bool>> vis(m,vector<bool>(n,0));
+        int x = 0, y = 0;
+        // first we count number of islands
+        for(int i=0;i<m;i++){
+            for(int j=0;j<n;j++){
+                if(grid[i][j] && !vis[i][j]){
+                    size = dfs(vis,i,j,grid);
+                    x = i, y = j;
+                    noi++;
+                }
+                if(noi > 1) return 0;
+            }
+        }
+        if(noi == 0) return 0;
+        // now we will try to flip every one and check if doing this will make 2 island
+        if(size < 3) return size;
+        for(int i=0;i<m;i++){
+            for(int j=0;j<n;j++){
+                if(grid[i][j]){
+                    grid[i][j] = 0;
+                    // Now do icnt
+                    if(icnt(grid) >= 2) return 1;
+                    grid[i][j] = 1;
+                }
+            }
+        }
+        return 2;
+    }
+};

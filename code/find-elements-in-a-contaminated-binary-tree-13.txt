@@ -1,0 +1,51 @@
+class FindElements {
+private: 
+    TreeNode* root;
+public:
+    FindElements(TreeNode* root) {
+        queue<TreeNode*> q;
+        root->val = 0;
+        q.push(root);
+        while (!q.empty())
+        {
+            auto cur = q.front();
+            q.pop();
+            if (cur->left != nullptr)
+            {
+                cur->left->val = 2 * cur->val + 1;
+                q.push(cur->left);
+            }
+            if (cur->right != nullptr)
+            {
+                cur->right->val = 2 * cur->val + 2;
+                q.push(cur->right);
+            }
+        }
+        this->root = root;
+    }
+    
+    bool find(int target) {
+        if (target < 0) return false;
+        vector<int> path;
+        path.push_back(target);
+        while (path.back() > 0)
+        {
+            path.push_back((path.back() -1) / 2);
+        }
+        TreeNode* cur = root;
+        while (path.size() > 1)
+        {
+            path.pop_back();
+            if (path.back() % 2 == 1)
+            {
+                cur = cur->left;
+            }
+            else
+            {
+                cur = cur->right;
+            }
+            if (cur == nullptr) return false;
+        }
+        return true;
+    }
+};

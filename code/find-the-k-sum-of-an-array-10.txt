@@ -1,0 +1,51 @@
+class Solution {
+    using integer = long long;
+    static constexpr integer kZero = 0;
+
+    enum Indexing : int {
+        VALUE = 0, INDEX        
+    };
+    
+public:
+    long long kSum(vector<int>& nums, int k) {        
+        std::vector<integer> vals_abs;
+        vals_abs.reserve(nums.size());
+        integer total = kZero;
+        for (const integer val : nums) {
+            vals_abs.push_back(std::abs(val));
+            total += std::max(kZero, val);
+        }
+        std::sort(vals_abs.begin(), vals_abs.end());
+        std::priority_queue<
+            integer, 
+            std::vector<integer>, 
+            std::greater<integer>> vals_ord;
+        vals_ord.push(total);
+        std::priority_queue<std::pair<integer, int>> records_ord;
+        records_ord.push({
+            total - vals_abs[0],
+            0
+        });
+        
+        while (vals_ord.size() < k) {
+            assert(!records_ord.empty());
+            const auto record = records_ord.top();
+            records_ord.pop();
+            const integer val = std::get<Indexing::VALUE>(record);
+            vals_ord.push(val);
+            const int idx = std::get<Indexing::INDEX>(record);
+            if (idx + 1 < vals_abs.size()) {
+                records_ord.push({
+                    val - vals_abs[idx + 1],
+                    idx + 1
+                });
+                records_ord.push({
+                    val + vals_abs[idx] - vals_abs[idx + 1],
+                    idx + 1
+                });
+            }
+        }
+        
+        return vals_ord.top();
+    }
+};

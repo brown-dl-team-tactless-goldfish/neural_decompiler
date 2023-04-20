@@ -1,0 +1,60 @@
+class Solution {
+public:
+    vector<int> minReverseOperations(int n, int p, vector<int>& banned, int k) {
+        const int inf = 1E9;
+        vector<int> dist(n, inf);
+        queue<int> q;
+        dist[p] = 0;
+        q.push(p);
+        
+        set<int> allowed[2];
+        for (int i = 0; i < n; i++) {
+            allowed[i % 2].insert(i);
+        }
+        allowed[p % 2].erase(p);
+        for (int e : banned) {
+            allowed[e % 2].erase(e);
+        }
+        
+        while (q.size()) {
+            int now = q.front();
+            q.pop();
+
+            int op_left = max(0, now - k + 1);
+            int op_right = min(now, n - k);
+
+            if (op_left > op_right) {
+                continue;
+            }
+
+            int l = op_left + (k - 1) - (now - op_left);
+            int r = op_right + (k - 1) - (now - op_right);
+            
+            //                    k % 2 == 0   k % 2 == 1
+            //   now % 2 == 0              1            0
+            //   now % 2 == 1              0            1
+            auto &allowed_ref = allowed[1 ^ (k % 2) ^ (now % 2)];
+
+            auto lower = allowed_ref.lower_bound(l);
+            auto upper = allowed_ref.upper_bound(r);
+            vector<int> to_erase;
+            for (auto it = lower; it != upper; it++) {
+                int next = *it;                
+                if (dist[next] > dist[now] + 1) {
+                    dist[next] = dist[now] + 1;
+                    q.push(next);
+                    to_erase.push_back(next);
+                }
+            }
+            for (auto e: to_erase) {
+                allowed[e % 2].erase(e);
+            }
+        }
+        for (auto &e : dist) {
+            if (e == inf) {
+                e = -1;
+            }
+        }
+        return dist;
+    }
+};

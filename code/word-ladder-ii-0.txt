@@ -1,0 +1,145 @@
+bool transformable (char* aWord, char* bWord, int len){
+    int different = 0;
+    for (int k = 0 ; k < len ; k++){
+        if (aWord[k] != bWord[k]){    //發現不一樣就++ 如果 > 1代表沒辦法換 就不用繼續檢查了 
+            different++;
+            if (different > 1){
+                return false;
+            }
+        }
+    }
+    return true;
+}
+
+void input(char* beginWord, char*** ans, char** wordList, int* returnSize, int* step, int* fromCount, int** from, int count, int total, int now, int len){
+    if (count+1 == total){
+        ans[*returnSize] = malloc(sizeof(char*)*(total));
+        ans[*returnSize][0] = malloc(sizeof(char)*(len));
+        strcpy(ans[*returnSize][0],beginWord);
+        for (int i = 0 ; i < count ; i++){
+            ans[*returnSize][i+1] = malloc(sizeof(char)*(len));
+            strcpy(ans[*returnSize][i+1],wordList[step[i]]);
+        }
+        *returnSize += 1;
+        return;
+    }
+    for (int i = 0 ; i < fromCount[now] ; i++){
+        step[count] = from[now][i];
+        input(beginWord, ans, wordList, returnSize, step, fromCount, from, count+1, total, from[now][i], len);
+    }
+}
+
+void free_from(int** from, int wordListSize){
+    for (int i = 0 ; i < wordListSize ; i++){
+        free(from[i]);
+    }
+    free(from);
+}
+
+char *** findLadders(char * beginWord, char * endWord, char ** wordList, int wordListSize, int* returnSize, int** returnColumnSizes){
+    //初始
+    int len = strlen(beginWord);
+    char*** ans = malloc(sizeof(char**)*100);
+    *returnSize = 0;
+    int count = 2;
+    
+    int canGoCount = 0;
+    int cnaGo[500];
+    
+    int fromCount[500] = {0};
+    int** from = malloc(sizeof(int*)*wordListSize);
+    
+    int endPlace = -1;                    //先假設字串裡沒有endWord 將endWord在字串的位置設定成-1
+    bool beginPlace[wordListSize];        //從 beginWord 開始 能換到字串內的單字可能不只一個
+    bool finish[wordListSize];
+    bool finish_ed[wordListSize];
+    
+    for (int i = 0 ; i < wordListSize ; i++){
+        finish[i] = true;
+        finish_ed[i] = true;
+        from[i] = malloc(sizeof(int)*wordListSize); 
+        beginPlace[i] = false;
+    }
+    
+    for (int i = 0 ; i < wordListSize ; i++){     
+        if (strcmp(endWord, wordList[i]) == 0){
+            endPlace = i;
+            break;
+        }
+    }  //首先先找出字串內 endWord 的位置
+    if (endPlace == -1){            
+        ans = realloc(ans,sizeof(char**)*(*returnSize));
+        free_from(from, wordListSize);
+        return ans;
+    }                       //如果位置還是在-1 代表字串內沒有endWord 直接回傳NULL
+         
+    if (transformable(beginWord, endWord, len)){
+        int step[count];
+        step[0] = endPlace;
+        input(beginWord, ans, wordList, returnSize, step, fromCount, from, 1, count, endPlace, len+1);
+        *returnColumnSizes = malloc(sizeof(int)*(*returnSize));
+        for (int i = 0 ; i < *returnSize ; i++){
+            (*returnColumnSizes)[i] = 2;
+        }
+        ans = realloc(ans,sizeof(char**)*(*returnSize));
+        free_from(from, wordListSize);
+        return ans;
+    }     //如果beginWord跟endWord只差一個字母 那就代表只有一種解答 直接回傳
+    
+    bool notfind = true;
+    for (int i = 0 ; i < wordListSize ; i++){
+        if (transformable(wordList[i], beginWord, len)){    //如果等於可以轉換
+            beginPlace[i] = true;
+            notfind = false;
+        }
+    }         //再來找出字串內 beginWord 可以轉換的位置 這些位置代表終點 (因為從尾巴找回來)
+    if (notfind){
+        ans = realloc(ans,sizeof(char**)*(*returnSize));
+        free_from(from, wordListSize);
+        return ans;
+    }    //如果beginWord無法換進任何一個字
+    
+    
+    int last = 0;
+    int copy = 0;
+    cnaGo[canGoCount] = endPlace;
+    canGoCount++;
+    finish[endPlace] = false;
+    notfind = true;
+    
+    while (last < canGoCount && notfind){
+        copy = canGoCount;
+        count++;
+        for ( ; last < copy ; last++ ){
+            if (finish_ed[cnaGo[last]]){
+                for (int i = 0 ; i < wordListSize ; i++){     //逐一檢查字串內 找出可以換的單字
+                    if (finish[i] && transformable(wordList[i], wordList[cnaGo[last]], len)){    //如果可以轉換
+                        cnaGo[canGoCount] = i;
+                        canGoCount++;
+                        from[i][fromCount[i]] = cnaGo[last];   //如果想到達 i 是從 cnaGo[k] 來的
+                        fromCount[i]++;
+                    }
+                }
+                finish_ed[cnaGo[last]] = false;
+            }
+        }
+
+        for (int i = last ; i < canGoCount ; i++){
+            if (finish[cnaGo[i]] && beginPlace[cnaGo[i]]){
+                int step[count];
+                step[0] = cnaGo[i];
+                input(beginWord, ans, wordList, returnSize, step, fromCount, from, 1, count, cnaGo[i], len+1);
+                notfind = false;
+            }
+            finish[cnaGo[i]] = false;
+        }
+    }
+    
+    *returnColumnSizes = malloc(sizeof(int)*(*returnSize));
+    for (int i = 0 ; i < *returnSize ; i++){
+        (*returnColumnSizes)[i] = count;
+    }
+    ans = realloc(ans,sizeof(char**)*(*returnSize));
+    free_from(from, wordListSize);
+    return ans;
+}

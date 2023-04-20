@@ -1,0 +1,56 @@
+#include <stdlib.h>
+
+int valid(int hour, int min){
+    if (hour >= 12 || min >= 60)
+        return 0;
+    return 1;
+}
+
+char *to_text(int hour, int min){
+    char *ret;
+    int idx = 0;
+    if (hour >= 10){
+        ret = malloc(sizeof(char) * 6);
+        ret[idx++] = hour / 10 + 48;
+    }
+    else
+        ret = malloc(sizeof(char) * 5);
+    ret[idx++] = hour % 10 + 48;
+    ret[idx++] = ':';
+    ret[idx++] = min / 10 + 48;
+    ret[idx++] = min % 10 + 48;
+    ret[idx++] = 0;
+    return ret;
+}
+
+void backtrack(char **ret, int turnedOn, int hour, int min, int* returnSize){
+    int val;
+    if (!turnedOn){
+        ret[(*returnSize)++] = to_text(hour, min);
+        return;
+    }
+    if (!min){
+        val = 8;
+        while (val > hour){
+            if (valid(hour + val, min))
+                backtrack(ret, turnedOn - 1, hour + val, min, returnSize);
+            val >>= 1;
+        }
+    }
+    val = 32;
+    while (val > min){
+        if (valid(hour, min + val))
+            backtrack(ret, turnedOn - 1, hour, min + val, returnSize);
+        val >>= 1;
+    }
+}
+
+char ** readBinaryWatch(int turnedOn, int* returnSize){
+    char **ret = malloc(sizeof(char *) * 300);
+    if (!ret)
+        return 0;
+    *returnSize = 0;
+    if (turnedOn <= 8)
+        backtrack(ret, turnedOn, 0, 0, returnSize);
+    return ret;
+}

@@ -1,0 +1,40 @@
+class Solution {
+public:
+#define ll long long
+#define usll unsigned  long long
+    
+	void processCur(vector<int> arr, vector<ll> &ans) {
+		int n = arr.size();
+		vector<ll> prefix(n, 0);
+		prefix[0] = arr[0];
+
+		for (int i = 1; i < n; i++) prefix[i] = prefix[i - 1] + arr[i];
+
+		for (int i = 0; i < n; i++) {
+			ll rightSum = (prefix[n - 1] - (i > 0 ? prefix[i - 1] : 0)) - (ll)(((ll)(n - i) * (ll)arr[i]));
+			ll leftSum = (ll)((ll)(i + 1) * (ll)arr[i]) - (ll)prefix[i];
+			ans[arr[i]] = leftSum + rightSum;
+		}
+
+	}
+
+
+
+	vector<long long> getDistances(vector<int>& arr) {
+		int n = arr.size();
+		unordered_map<int, vector<int>> mp;
+		vector<long long> ans(n);
+
+		for (int i = 0; i < n; i++) {
+			mp[arr[i]].push_back(i);
+		}
+
+		for (auto m : mp) {
+			vector<int> currentIndices = m.second;
+			sort(currentIndices.begin(), currentIndices.end());
+			processCur(currentIndices, ans);
+		}
+
+		return ans;
+	}
+};

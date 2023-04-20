@@ -1,0 +1,85 @@
+class Solution {
+public:
+    
+    struct comparator { 
+        bool operator()(pair<int,double> const& a, pair<int,double> const& b)  
+        { 
+            // get max probability cost item from priority queue
+            return (b.second - a.second) > 0.00001;  
+        } 
+    }; 
+    
+    double maxProbability(int n, vector<vector<int>>& edges, vector<double>& succProb, int start, int end) {
+        
+        // graph Adjacency list containing connected node and probability cost
+        vector<vector<pair<int,double>>>graph(n);
+        
+        // edge cost
+        int edge_size = edges.size();
+        
+        // populate adjacency list from given edges containing both node and probability cost
+        for(int i=0;i<edge_size;i++)
+        {
+            graph[edges[i][0]].push_back(make_pair(edges[i][1],succProb[i]));
+            graph[edges[i][1]].push_back(make_pair(edges[i][0],succProb[i]));
+        }
+        
+        // max probability cost track vector of nodes
+        vector<double>probCost(n,DBL_MIN);
+
+        // priority queue of <node,probability cost> based on maximum probability cost
+        priority_queue<pair<int,double>,vector<pair<int,double>>, comparator>Q;
+        
+        // insert start node with max probability 1
+        Q.push(make_pair(start,1.0));
+        
+        // update start node probability in probCost
+        probCost[start] = 1.0;
+        
+        // max probability of end node
+        double maxProb = 0.0;
+        
+        int node;
+        double nodeProb;
+        int neighbour;
+        double edgeProb;
+        
+        // Run BFS until end node is reached or Q is empty
+        while(!Q.empty())
+        {
+            node = Q.top().first;
+            nodeProb = Q.top().second;
+            
+            Q.pop();
+            
+            // If current node probability cost > nodeProb then ignore 
+            if(probCost[node]>nodeProb) continue;
+            
+            // If end node is reached then retuen node probability and end BFS
+            if(node==end)
+            {
+                maxProb = max(maxProb,nodeProb);
+                break;
+            }
+            
+            // Loop through all neighbour nodes
+            for(int i=0;i<graph[node].size();i++)
+            {
+                neighbour = graph[node][i].first;
+                edgeProb = graph[node][i].second;
+                
+                // If node-> neighbour probability cost * nodeProb > probCost[neighbour] 
+                // then update probCost of neigbour and push it to the queue
+                if(edgeProb*probCost[node]>probCost[neighbour])
+                {
+                    probCost[neighbour] = edgeProb*probCost[node];
+                    Q.push(make_pair(neighbour,probCost[neighbour]));
+                }
+            }
+        }
+        
+        // return max probability of end node
+        return maxProb;
+    }
+
+};

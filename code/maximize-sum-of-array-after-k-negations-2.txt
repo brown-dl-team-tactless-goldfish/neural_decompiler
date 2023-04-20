@@ -1,0 +1,25 @@
+int cmp(const void *a, const void *b){
+    return *(int*)a > *(int*)b;
+}
+
+int largestSumAfterKNegations(int* nums, int numsSize, int k){
+    // Sort the array first. 
+    qsort(nums, numsSize, sizeof(int), cmp);
+    int i, N = numsSize, j = 0, sum = 0;
+    
+    // Concept: Flip the smallest element at each round. If it becomes larger than the next smallest element, don't flip it in later rounds and switch to the next element. 
+    for(; k > 0; k--){  
+        nums[j] = -nums[j];
+        if(j == N - 1){
+            continue;
+        }
+        if(nums[j] > nums[j + 1]){
+            j++;
+        }
+    }
+    for(i = 0; i < N; i++){
+        sum += nums[i];
+    }
+    
+    return sum;
+}

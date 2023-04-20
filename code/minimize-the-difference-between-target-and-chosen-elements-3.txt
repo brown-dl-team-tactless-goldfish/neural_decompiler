@@ -1,0 +1,40 @@
+public class Solution {
+    public int MinimizeTheDifference(int[][] mat, int target) {
+        
+        if(mat == null || mat.Length == 0)
+            return Int32.MaxValue;
+        
+        HashSet<int> set = new HashSet<int>(new int[]{0});
+        int m = mat.Length, n = mat[0].Length, minDiff = Int32.MaxValue;
+        
+        for(int i = 0; i < m ;i++)
+        {
+            HashSet<int> tmp = new HashSet<int>();    
+            int minMax = Int32.MaxValue; // track the miminal sum that is greater than target  
+            
+            for(int j = 0; j < n; j++)
+            {  
+                foreach(var sum in set)
+                {
+                    int currSum = sum + mat[i][j];
+                    
+                    if(currSum > target)
+                        minMax = Math.Min(minMax, currSum);
+                    else
+                        tmp.Add(currSum);
+                    
+                    if(i == m - 1)
+                        minDiff = Math.Min(Math.Abs(sum + mat[i][j] - target), minDiff);   
+                }
+            }
+            
+            if(minMax != Int32.MaxValue)
+                tmp.Add(minMax);   
+            
+            if(i < m - 1)
+                set = tmp;
+        }
+
+        return minDiff;
+    }
+}

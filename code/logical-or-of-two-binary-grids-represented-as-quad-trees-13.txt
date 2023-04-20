@@ -1,0 +1,34 @@
+class Solution {
+public:
+    Node* intersect(Node* quadTree1, Node* quadTree2) {
+        Node* node;
+        if(quadTree1->isLeaf && quadTree2->isLeaf){
+            node = new Node(quadTree1->val || quadTree2->val, true, NULL, NULL, NULL, NULL);
+        }else if(quadTree1->isLeaf){
+            if(quadTree1->val) node = quadTree1;
+            else node = quadTree2;
+        }else if(quadTree2->isLeaf){
+            if(quadTree2->val) node = quadTree2;
+            else node = quadTree1;
+        }else{
+            node = new Node(quadTree1->val || quadTree2->val, false, NULL, NULL, NULL, NULL);
+            
+            node->topLeft = intersect(quadTree1->topLeft, quadTree2->topLeft);
+            node->topRight = intersect(quadTree1->topRight, quadTree2->topRight);
+            node->bottomLeft = intersect(quadTree1->bottomLeft, quadTree2->bottomLeft);
+            node->bottomRight = intersect(quadTree1->bottomRight, quadTree2->bottomRight);
+            
+            if(node->topLeft->isLeaf && node->topRight->isLeaf && node->bottomLeft->isLeaf && node->bottomRight->isLeaf  // all leaves
+               && ((node->topLeft->val && node->topRight->val && node->bottomLeft->val && node->bottomRight->val)        // all true
+               || (!node->topLeft->val && !node->topRight->val && !node->bottomLeft->val && !node->bottomRight->val))){  // all false
+                node->val = node->topLeft->val;
+                node->topLeft = NULL;
+                node->topRight = NULL;
+                node->bottomLeft = NULL;
+                node->bottomRight = NULL;
+                node->isLeaf = true;
+            }
+        }
+        return node;
+    }
+};

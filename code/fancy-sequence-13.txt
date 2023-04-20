@@ -1,0 +1,63 @@
+class Fancy {
+public:
+    vector<int> nums;
+    int op[100001];
+    int opidx[100001];
+    int opval[100001];
+    int opCnt;
+    bool add = false;
+    Fancy() {
+        opCnt = 0;
+    }
+    
+    void append(int val) {
+        nums.push_back(val);
+        add = true;
+    }
+    
+    void addAll(int inc) {
+        if (!add && opCnt && op[opCnt-1] == 1) { // if there is no new number added after previous add operation then append the operation to previous one.
+            opval[opCnt-1] += inc;
+        } else {
+            op[opCnt] = 1;
+            opval[opCnt] = inc;
+            opidx[opCnt++] = nums.size();
+        }
+        add = false;
+    }
+    
+    void multAll(int m) {
+        if (!add && opCnt && op[opCnt-1] == 2) { // if there is no new number added after previous mul operation then append the operation to previous one.
+            opval[opCnt-1] *= m;
+        } else {
+            op[opCnt] = 2;
+            opval[opCnt] = m;
+            opidx[opCnt++] = nums.size();
+        }
+        add = false;
+    }
+    
+    int getIndex(int idx) {
+        if (idx >= nums.size())
+            return -1;
+        long res = nums[idx];
+        for (int i = 0; i < opCnt; i++) {
+            if (idx < opidx[i]) {
+                if (op[i] == 1)
+                    res = (res + opval[i])%1000000007;
+                else if (op[i] == 2)
+                    res = (res * opval[i])%1000000007;
+            }
+        }
+        return res%1000000007;
+    }
+};
+
+/**
+ * Your Fancy object will be instantiated and called as such:
+ * Fancy* obj = new Fancy();
+ * obj->append(val);
+ * obj->addAll(inc);
+ * obj->multAll(m);
+ * int param_4 = obj->getIndex(idx);
+ */

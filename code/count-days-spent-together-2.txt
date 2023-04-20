@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int countDaysTogether(string arriveAlice, string leaveAlice, string arriveBob, string leaveBob) {
+        vector<int> days = {31, 28, 31, 30, 31, 30, 31, 31, 30, 31, 30, 31};
+        vector<int> prefixSum(13,0);
+        prefixSum[1] = days[i-1];
+        for(int i=2;i<=12;i++){
+            prefixSum[i] = prefixSum[i-1]+days[i-1];
+        }
+        
+        stringstream alice(arriveAlice),lalice(leaveAlice),bob(arriveBob),lbob(leaveBob);
+        int a,b,c,d,e,f,g,h;
+        alice >> a >> b;
+        lalice >> c >> d;
+        bob >> e >> f;
+        lbob >> g >> h;
+        int daysA1 = prefixSum[a-1]+abs(b);
+        int daysA2 = prefixSum[c-1]+abs(d);
+        int daysB1 = prefixSum[e-1]+abs(f);
+        int daysB2 = prefixSum[g-1]+abs(h);
+        
+        int res = 0;
+        for(int i=0;i<=365;i++){
+            if(i>=daysA1 && i>=daysB1 && daysA2>=i && daysB2>=i)    res++;
+        }
+        
+        return res;
+    }
+};

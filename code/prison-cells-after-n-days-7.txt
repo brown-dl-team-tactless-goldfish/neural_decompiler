@@ -1,0 +1,30 @@
+void intcpy(int* a,int *b){
+    int i;
+    for(i=0;i<8;i++) a[i] = b[i];
+}
+int* change(int* cells,int* c){
+    int j;
+    for(j=1;j<7;j++) c[j]=(cells[j-1]==cells[j+1]?1:0);
+    intcpy(cells,c);
+    return cells;
+}
+int isEqual(int* cells,int* b){
+    int j;
+    for(j=0;j<8;j++) if(cells[j]-b[j]) return 0;
+    return 1;
+}
+int* prisonAfterNDays(int* cells, int cellsSize, int N, int* returnSize) {
+    *returnSize = cellsSize;
+    if(!N) return cells;
+    int b[8], c[8] = {0};
+    int i,j,flag=1,count=0;
+    cells = change(cells,c);
+    intcpy(b,cells);
+    // while(flag){
+    //     change(cells,c);
+    //     if(isEqual(cells,b)) flag=0;
+    //     count++;    //printf("%d",count)    14 times
+    // }
+    for(i=0;i<(N-1)%14;i++) change(cells,c);
+    return cells;
+}

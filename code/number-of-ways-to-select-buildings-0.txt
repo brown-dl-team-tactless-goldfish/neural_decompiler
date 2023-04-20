@@ -1,0 +1,39 @@
+long long numberOfWays(char * s){
+    int n = strlen(s);
+    //prefix record '0'
+    int* prefix = malloc(n * sizeof(int));
+    //suffix record '0'
+    int* suffix = malloc(n * sizeof(int));
+    if(s[0] == '0')
+        prefix[0] = 1;
+    else 
+        prefix[0] = 0;
+    for(int i = 1; i < n; i++){
+        prefix[i] = prefix[i-1];
+        if(s[i] == '0'){
+            prefix[i]++;
+        }
+    }
+    if(s[n-1] == '0')
+        suffix[n-1] = 1;
+    else
+        suffix[n-1] = 0;
+    for(int i = n-2; i >=0 ; i--){
+        suffix[i] = suffix[i+1];
+        if(s[i] == '0'){
+            suffix[i]++;
+        }
+    }
+    
+    long long ans = 0;
+    for(int i = 1; i < (n-1); i++ ){
+        if(s[i] == '1'){
+            ans += prefix[i-1]*suffix[i+1];
+        }
+        else{
+            ans += ( i - prefix[i-1])*(n - (i+1)  - suffix[i+1]);
+        }
+    }
+    
+    return ans;
+}

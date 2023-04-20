@@ -1,0 +1,84 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** matrixReshape(int** mat, int matSize, int* matColSize, int r, int c, int* returnSize, int** returnColumnSizes){
+    int** pRetVal = NULL;
+    int i, j;
+
+    if ((matSize * (*matColSize)) != (r * c))
+    {
+        pRetVal = mat;
+        (*returnSize) = matSize;
+        (*returnColumnSizes) = (int*)malloc((*returnSize) * sizeof(int));
+        if ((*returnColumnSizes) == NULL)
+        {
+            perror("malloc");
+            return pRetVal;
+        }
+        for (i=0; i<(*returnSize); ++i)
+        {
+            (*returnColumnSizes)[i] = (*matColSize);
+        }
+
+        return pRetVal;
+    }
+
+    (*returnSize) = r;
+    (*returnColumnSizes) = (int*)malloc((*returnSize) * sizeof(int));
+    if ((*returnColumnSizes) == NULL)
+    {
+        perror("malloc");
+        return pRetVal;
+    }
+    for (i=0; i<(*returnSize); ++i)
+    {
+        (*returnColumnSizes)[i] = c;
+    }
+    pRetVal = (int**)malloc((*returnSize) * sizeof(int*));
+    if (pRetVal == NULL)
+    {
+        perror("malloc");
+        free((*returnColumnSizes));
+        (*returnColumnSizes) = NULL;
+        return pRetVal;
+    }
+
+    int m = 0;
+    int n = 0;
+    for (i=0; i<(*returnSize); ++i)
+    {
+        pRetVal[i] = (int*)malloc(((*returnColumnSizes)[i]) * sizeof(int));
+        if (pRetVal[i] == NULL)
+        {
+            perror("malloc");
+            free((*returnColumnSizes));
+            (*returnColumnSizes) = NULL;
+            for (j=0; j<i; ++j)
+            {
+                free(pRetVal[j]);
+                pRetVal[j] = NULL;
+            }
+            free(pRetVal);
+            pRetVal = NULL;
+            return pRetVal;
+        }
+
+        for (j=0; j<((*returnColumnSizes)[i]); ++j)
+        {
+            pRetVal[i][j] = mat[m][n++];
+            if (n == (*matColSize))
+            {
+                ++m;
+                n = 0;
+            }
+            if (m == matSize)
+            {
+                return pRetVal;
+            }
+        }
+    }
+
+    return pRetVal;
+}

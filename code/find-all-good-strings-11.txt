@@ -1,0 +1,69 @@
+class Solution {
+public:
+    const int mod=1E9+7;
+    typedef vector<int> PI;
+    typedef vector<PI> PII;
+    typedef vector<PII> PIII;
+    typedef vector<PIII> PIIII;
+    PIIII dp;
+    PI table;
+    int findGoodStrings(int n, string s1, string s2, string evil) {
+        int m=evil.size();
+        dp=PIIII(n,PIII(m,PII(2,PI(2,-1))));
+        table=vector<int>(m);
+        int i=1;
+        int len=0;
+        while(i<m){
+            if(evil[len]==evil[i]){
+                len++;
+                table[i]=len;
+                i++;
+            }else{
+                if(len==0){
+                    table[i]=0;
+                    i++;
+                }else{
+                    len=table[len-1];
+                }
+            }
+        }
+        return dfs(0,0,1,1,n,s1,s2,evil);
+    }
+    
+    int dfs(int i, int j, int follow1, int follow2, int n, string& s1, string& s2, string& evil){
+        if(j==evil.size()) return 0;
+        if(i==n) return 1;
+        if(dp[i][j][follow1][follow2]!=-1) return dp[i][j][follow1][follow2];
+            
+        long long res=0;
+        for(char c='a';c<='z';c++){
+            int nj=j;
+            while(nj>0 && evil[nj]!=c) nj=table[nj-1];
+            if(evil[nj]==c) nj++;
+            else nj=0;
+            int nfollow1=follow1;
+            int nfollow2=follow2;
+            if(follow1==1 && follow2==1){
+                if(c>=s1[i] && c<=s2[i]){
+                    nfollow1=(c==s1[i])?1:0;
+                    nfollow2=(c==s2[i])?1:0;
+                    res+=dfs(i+1,nj,nfollow1,nfollow2,n,s1,s2,evil);
+                }
+            }else if(follow1==1 && follow2==0){
+                if(c>=s1[i]){
+                    nfollow1=(c==s1[i])?1:0;
+                    res+=dfs(i+1,nj,nfollow1,nfollow2,n,s1,s2,evil);
+                }
+            }else if(follow1==0 && follow2==1){
+                if(c<=s2[i]){
+                    nfollow2=(c==s2[i])?1:0;
+                    res+=dfs(i+1,nj,nfollow1,nfollow2,n,s1,s2,evil);
+                }
+            }else{
+                res+=dfs(i+1,nj,nfollow1,nfollow2,n,s1,s2,evil);
+            }
+            res%=mod;
+        }
+        return dp[i][j][follow1][follow2]=res;
+    }
+};

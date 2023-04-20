@@ -1,0 +1,70 @@
+class Solution {
+public:
+    
+    // return true if subtree has a valid preorder match with voyage
+    bool dfs(TreeNode *root, vector<int>&voyage, int& index, int &n, vector<int>&result)
+    {
+        // 3 Base cases 
+        
+        // index out of range and root not NULL then it is not valid, so return false
+        if(root!=NULL && index>=n) return false;
+        
+        // if root NULL or index out of range then it is valid, so return true
+        if(root==NULL || index>=n) return true;
+        
+        // root value != preorder index value, so return false
+        if(root->val!=voyage[index]) return false;
+              
+        // store the current index
+        int cindex = index;
+        
+        // left and right subtree has valid preorder match with voyage
+        bool lval = true;
+        bool rval = true;
+        
+        // call recursion for left and right subtree without flip 
+        if(root->left)
+            lval = dfs(root->left,voyage,++index,n,result);
+        if(root->right)
+            rval = dfs(root->right,voyage,++index,n,result);
+        
+        // If preorder match with voyage without child node flip then return true 
+        if(lval&&rval) return true;
+
+        // left and right subtree has valid preorder match with voyage        
+        lval = true;
+        rval = true;
+        
+        // set current index 
+        index = cindex;
+        
+        // call recursion for left and right subtree with flip
+        if(root->right)
+            rval = dfs(root->right,voyage,++index,n,result);
+        if(root->left)
+            lval = dfs(root->left,voyage,++index,n,result);
+        
+        // If preorder match with voyage with child node flip then store root in to result
+        if(lval && rval) result.push_back(root->val);
+        
+        // return true if preorder match with voyage with flip 
+        return lval &&rval;
+    }
+    
+    vector<int> flipMatchVoyage(TreeNode* root, vector<int>& voyage) {
+        
+        // result vector
+        vector<int>result;
+        
+        // size of voyage
+        int n = voyage.size();
+        
+        // initial index
+        int index = 0;
+        
+        // call recursion from root node
+        // If tree has a valid preorder match with voyage then return result, otherwise return -1
+        if(dfs(root,voyage,index,n,result)) return result;
+        else return {-1};
+    }
+};

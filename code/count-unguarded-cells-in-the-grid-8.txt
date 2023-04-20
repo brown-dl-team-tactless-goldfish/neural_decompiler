@@ -1,0 +1,60 @@
+class Solution {
+public:
+    
+    int countUnguarded(int m, int n, vector<vector<int>>& guards, vector<vector<int>>& walls) {
+        
+        int grid[m][n]; //grid to maintain the position of walls, guards, watchhed cells and unwatched cells
+		//wall cell->1
+		//guard cell->2
+		//watched cell->3
+		//unwatched cell->4
+		
+        for(int i=0;i<m;i++){ //initiating all cells to be unwatched
+            for(int j=0;j<n;j++) grid[i][j]=0;
+        }
+        for(int i=0;i<walls.size();i++){ //setting wall wall cells as 1
+            grid[walls[i][0]][walls[i][1]]=1;
+        }
+        for(int i=0;i<guards.size();i++){ // setting all guards as 2
+            grid[guards[i][0]][guards[i][1]]=2;
+        }
+		//we set the position of all guards before exploring the cells watched by guards as a pruning step. This is because we can stop expolring once we reach the other guard
+        for(int i=0;i<guards.size();i++){
+            
+            int tr=guards[i][0]; int tc=guards[i][1]; //temporary row and column indices
+            tc--;
+            while(tc!=-1&&grid[tr][tc]!=2&&grid[tr][tc]!=1){ //exploring down
+                grid[tr][tc]=3;
+                tc--;
+            }
+            tr=guards[i][0];tc=guards[i][1];
+            tc++;
+            while(tc!=n&&grid[tr][tc]!=2&&grid[tr][tc]!=1){//exploring up
+                grid[tr][tc]=3;
+                tc++;
+            }
+            tr=guards[i][0];tc=guards[i][1];
+            tr--;
+            while(tr!=-1&&grid[tr][tc]!=2&&grid[tr][tc]!=1){//exploring left
+                grid[tr][tc]=3;
+                tr--;
+            }
+            tr=guards[i][0];tc=guards[i][1];
+            tr++;
+            while(tr!=m&&grid[tr][tc]!=2&&grid[tr][tc]!=1){ //exploring right
+                grid[tr][tc]=3;
+                tr++;
+            }
+            
+        }
+        int ans=0; // checking for unwatched cells
+        for(int i=0;i<m;i++){
+            for(int j=0;j<n;j++){
+                if(grid[i][j]==0)ans++;     
+            }
+        }
+        
+        return ans;
+        
+    }
+};

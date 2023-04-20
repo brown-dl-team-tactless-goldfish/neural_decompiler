@@ -1,0 +1,69 @@
+class Solution {
+    void debug(unordered_map<string,vector<pair<string,string>>>& content_pathFile)
+    {
+        for (const auto& [content,pathFile] : content_pathFile)
+        {
+            cout << content << ":";
+            for (const auto& [path,file] : pathFile)
+                cout << path << "-" << file << ", ";
+            cout << endl;
+        }
+    }
+public:
+    vector<vector<string>> findDuplicate(vector<string>& paths) {
+        unordered_map<string,vector<pair<string,string>>> content_pathFile;
+        
+        for (const auto& path_ : paths)
+        {
+            stringstream sso(path_);
+            string path;
+            
+            sso >> path;
+            path.push_back('/');
+            
+            string buffer;
+            while (sso >> buffer)
+            {
+                string file, content;
+                bool isBrace = false;
+            
+                for (const auto& c : buffer)
+                {
+                    if (c == '(')
+                    {
+                        isBrace = true;
+                        continue;
+                    }
+                    else if (c == ')')
+                        break;
+                
+                    if (isBrace)
+                        content.push_back(c);
+                    else
+                        file.push_back(c);
+                }
+            
+                if (content_pathFile.find(content) == content_pathFile.end())
+                    content_pathFile[content] = {{path,file}};
+                else
+                    content_pathFile[content].push_back({path,file});
+            } 
+        }
+
+        // debug(content_pathFile);
+        
+        vector<vector<string>> res;
+        for (const auto& [content,pathFile] : content_pathFile)
+        {
+            if (pathFile.size() == 1)
+                continue;
+            
+            vector<string> dups;
+            for (const auto& [path,file] : pathFile)
+                dups.push_back(path + file);
+            res.push_back(dups);
+        }
+        
+        return res;
+    }
+};

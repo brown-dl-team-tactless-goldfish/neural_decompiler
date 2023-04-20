@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int dp[101][101][201];
+    int n, m;
+    int val(char c)
+    {
+        return c == '(' ? 1 : -1;
+    }
+    bool dfs(int x, int y, int sum, vector<vector<char>>& grid)
+    {
+        if (sum < 0)
+            return false;
+        if (x == n - 1 and y == m - 1)
+            return (sum == 0);
+        if (dp[x][y][sum] != -1)
+            return dp[x][y][sum];
+        int &ans = dp[x][y][sum] = 0;
+        if (x < n - 1)
+            ans |= dfs(x + 1, y, sum + val(grid[x + 1][y]), grid);
+        if (y < m - 1)
+            ans |= dfs(x, y + 1, sum + val(grid[x][y + 1]), grid);
+        return ans;
+    }
+    bool hasValidPath(vector<vector<char>>& grid) {
+        this-> n = grid.size();
+        this-> m = grid[0].size();
+        memset(dp, -1, sizeof(dp));
+        return dfs(0, 0, val(grid[0][0]), grid);
+    }
+};

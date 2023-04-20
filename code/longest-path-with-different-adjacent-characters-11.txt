@@ -1,0 +1,39 @@
+class Solution {
+public:
+    void dfs(vector<vector<int>>& graph, string &s, int u, vector<bool>& vis, int &ans, vector<int>& len){
+        vis[u] = true;
+        int max1 = 0, max2 = 0;
+        for(auto &v : graph[u]){
+            if(vis[v] == false){
+                dfs(graph, s, v, vis, ans, len);
+                if(s[u] != s[v]){
+                    if(len[v] >= max1){
+                        max2 = max1;
+                        max1 = len[v];
+                    }else if(len[v]>=max2){
+                        max2 = len[v];
+                    }
+                }
+            }
+        }
+        ans = max(ans, 1+max1+max2); 
+        len[u] = 1+max(max1,max2);
+    }
+    
+    int longestPath(vector<int>& parent, string s) {
+        int n = s.size(), ans = 0;
+        vector<vector<int>> edge(n);
+        
+        for(int i=0; i<n; ++i){
+            if(parent[i] != -1){
+                edge[i].push_back(parent[i]);
+                edge[parent[i]].push_back(i);
+            }
+        }
+        
+        vector<int> len(n, 0);
+        vector<bool> vis(n, false);
+        dfs(edge, s, 0, vis, ans, len);
+        return ans;
+    }
+};

@@ -1,0 +1,27 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+bool* canEat(int* candiesCount, int candiesCountSize, int** queries, int queriesSize, int* queriesColSize, int* returnSize){
+    bool* ans = malloc(queriesSize * sizeof(bool)) ;
+    long long* prefix = malloc((candiesCountSize + 1) * sizeof(long long)) ;
+    prefix[0] = 0 ; 
+    for(int i = 0; i < candiesCountSize; i++){
+        prefix[i+1] = (long long)prefix[i] + candiesCount[i] ;
+    }
+    
+    for(int i = 0; i < queriesSize; i++){
+        int favoriteType = queries[i][0] ;
+        int favoriteDay = queries[i][1] ;
+        int dailyCap = queries[i][2] ;
+         
+        long long minDays = prefix[favoriteType]/dailyCap ;
+        long long maxDays = prefix[favoriteType+1] - 1 ;
+        if((favoriteDay >= minDays) && (favoriteDay <= maxDays))
+            ans[i] = true ;
+        else
+            ans[i] = false ;
+    }
+    free(prefix) ;
+    *returnSize = queriesSize ;
+    return ans ;
+}

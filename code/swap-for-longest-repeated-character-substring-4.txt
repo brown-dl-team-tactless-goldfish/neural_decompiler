@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int maxRepOpt1(string text) {
+        vector<int> count(26, 0);
+        vector<int> window(26, 0);
+        for(auto& ch : text)
+            count[ch - 'a']++;
+        
+        int res = 0;
+        window[text[0]-'a']++;
+        for(int i = 0, first = 0 ; i < text.size(); ){
+            int cnt = 0, index = 0;
+            for(int c = 0; c < 26; ++c){
+                if(window[c] > cnt){
+                    cnt = window[c];
+                    index = c;
+                }
+            }
+            if(cnt == i - first + 1 || cnt == i - first && cnt < count[index]){
+                res = max(res, i - first + 1);
+                ++i;
+                if(i < text.size()) window[text[i]-'a']++;
+            }else{
+                window[text[first]-'a']--;
+                first++;
+            }
+        }
+        return res;
+    }
+};

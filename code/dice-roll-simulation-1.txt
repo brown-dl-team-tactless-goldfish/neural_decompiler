@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int mod = 1e9 + 7;
+    int dieSimulator(int n, vector<int>& rollMax) {
+        vector<vector<vector<int>>> dp(n,vector<vector<int>>(6,vector<int>(15,0)));
+        for(int i = 0;i<6;i++){
+            dp[0][i][0] = 1;
+        }
+        for(int i = 1;i<n;i++){
+            vector<int> tmp(6,0);
+            for(int j = 0;j<6;j++){
+                for(int k = 0;k<15;k++){
+                    tmp[j] += dp[i-1][j][k];
+                    tmp[j] %= mod;
+                }
+            }
+            long long sum = 0;
+            for(int j = 0;j<6;j++){
+                sum += tmp[j];
+            }
+            for(int j = 0;j<6;j++){
+                dp[i][j][0] = (sum - tmp[j]) % mod;
+                int limit = rollMax[j];
+                for(int k = limit-1;k>0;k--){
+                    dp[i][j][k] = dp[i-1][j][k-1];
+                }
+            }
+        }
+        long long sum = 0;
+        for(int j = 0;j<6;j++){
+            for(int k = 0;k<15;k++){
+                //cout<<dp[n-1][j][k]<<" ";
+                sum += dp[n-1][j][k];
+                sum %= mod;
+            }
+            //cout<<endl;
+        }
+        return sum;
+    }
+};

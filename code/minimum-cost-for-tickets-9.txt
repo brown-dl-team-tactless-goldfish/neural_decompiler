@@ -1,0 +1,47 @@
+class Solution {
+public:
+
+    int n, c1,c7,c30;
+    vector<int> day;
+    int dp[405];
+
+    int solve(int ind)
+    {
+        if(ind >= n) return 0;
+        if(dp[ind] != -1) return dp[ind];
+        int oneind=n , sevenind = n, thirtyind = n;
+        for(int i= ind + 1 ; i <= n - 1 ; ++i){
+            if(day[i] >= (day[ind] + 1)){
+                oneind = i;
+                break;
+            }
+        }
+        for(int i = ind + 1 ; i <= n - 1 ; ++i){
+            if(day[i] >= (day[ind] + 7)){
+                sevenind = i;
+                break;
+            }
+        }
+        for(int i = ind + 1 ; i <= n - 1 ; ++i){
+            if(day[i] >= (day[ind] + 30)){
+                thirtyind = i;
+                break;
+            }
+        }
+        int ans = 1e9;
+        int a = c1 + solve(oneind);
+        int b = c7 + solve(sevenind);
+        int c = c30+solve(thirtyind);
+        ans = min({ans , a , b , c}) ;
+        dp[ind] = ans;
+        return ans;
+    }
+
+    int mincostTickets(vector<int>& days, vector<int>& c) {
+        day = days;
+        n = day.size();
+        c1 = c[0]; c7=c[1]; c30=c[2];
+        for(int i = 0 ; i < 402 ; ++i) dp[i] = -1;
+        return solve(0);
+    }
+};

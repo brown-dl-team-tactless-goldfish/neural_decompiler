@@ -1,0 +1,30 @@
+class Solution {
+public:
+    bool is_letter(char c) {
+        return (c >= 'a' && c <= 'z');
+    }
+    
+    string decodeAtIndex(string S, int K) {
+        long final_length = 0;
+        for (int i = 0; i < S.length(); ++i) {
+            if (is_letter(S[i])) {
+                final_length += 1;
+            } else {
+                final_length *= (S[i] - '0');
+            }
+        }
+        for (int i = S.length() - 1; i >= 0; --i) {
+            if (!is_letter(S[i])) {
+                final_length /= (S[i] - '0');
+                K %= final_length;
+            } else {
+                K %= final_length;
+                if (K == 0) {
+                    return S.substr(i, 1);
+                }
+                final_length -= 1;
+            }
+        }
+        return "";
+    }
+};

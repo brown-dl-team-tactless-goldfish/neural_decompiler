@@ -1,0 +1,92 @@
+#define KEY_RANGE 10000    
+
+
+// doubly-linked list with a reference to key:
+
+struct CacheListNode{
+	int val;
+	int tokey;
+	struct CacheListNode* next;
+    struct CacheListNode* prev;	
+};
+
+// basic variables for the LRU cache:
+
+struct CacheListNode* map[ KEY_RANGE];      //should be a hash table, but single array works well here.
+
+struct CacheListNode* head;
+struct CacheListNode* tail;
+int maxsize;
+int size;
+
+// add new element or update recently used element in the map and at the end of the list. 
+
+void add(int n,int key){
+	size++;
+    struct CacheListNode* temp=(struct CacheListNode*)malloc(sizeof(struct CacheListNode*));
+	temp->val=n;
+	temp->tokey=key;
+	temp->prev=tail;
+	temp->next=NULL;
+	tail->next=temp;
+    tail=temp;
+	map[key]=temp;
+	return;
+}
+
+// delete an element at specified position: 
+
+void deletenode(struct CacheListNode* temp){
+	size--;
+	map[temp->tokey]=NULL;
+	if(temp!=tail){
+        temp->prev->next=temp->next;
+	    temp->next->prev=temp->prev;
+	}else{
+		tail=temp->prev;
+		tail->next=NULL;
+	}
+	free (temp);
+	return;
+}
+
+// create the cache:
+
+void lruCacheInit(int capacity) {  
+    head=(struct CacheListNode*)malloc(sizeof(struct CacheListNode*));
+	tail=head;
+	maxsize=capacity;
+	size=0;
+ memset(&map,0, KEY_RANGE);
+}
+
+// destroy the cache:
+
+void lruCacheFree() {
+    memset(&map,0, KEY_RANGE);
+    while(head->next)
+      deletenode(head->next);
+return;
+}
+
+// get the value for a specified key:
+
+int lruCacheGet(int key) {
+   if (map[key]==NULL) return -1;
+   int value=map[key]->val; 
+   deletenode(map[key]);
+   add(value,key);
+   map[key]=tail;
+   return value;
+}
+
+// set a value for a specified key :
+
+void lruCacheSet(int key, int value) {
+ if (map[key]==NULL && size==maxsize)
+    deletenode(head->next);	 
+ if (map[key]!=NULL)
+    deletenode(map[key]);
+  add(value,key);
+ return;
+}

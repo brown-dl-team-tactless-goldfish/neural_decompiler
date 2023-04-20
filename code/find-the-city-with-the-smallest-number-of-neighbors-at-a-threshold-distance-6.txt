@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int findTheCity(int n, vector<vector<int>>& edges, int disMax) {
+        int dp[n][n];
+        for(int i=0; i<n; i++) {
+            for(int j=0; j<n; j++) {
+                if(i==j) dp[i][j] = 0;
+                else dp[i][j] = INT_MAX;
+            }
+        }
+        for(auto &edge: edges) {
+            dp[edge[0]][edge[1]] = dp[edge[1]][edge[0]] = edge[2];
+        }
+        
+        
+        for(int k=0; k<n; k++) {
+            for(int i=0; i<n; i++) {
+                for(int j=0; j<n; j++) {
+                    if(dp[i][k]!=INT_MAX && dp[k][j]!=INT_MAX && dp[i][j] > dp[i][k] + dp[k][j]) dp[i][j] = dp[i][k] + dp[k][j];
+                }   
+            }
+        }
+        int res = -1, minn = INT_MAX;
+        for(int i=0; i<n; i++) {
+            int c = 0;
+            for(int j=0; j<n; j++) {
+                if(dp[i][j] <= disMax) c++;
+            }
+            if(c <= minn) {
+                minn = c;
+                res = i;
+            }
+        }
+        return res;
+    }
+};

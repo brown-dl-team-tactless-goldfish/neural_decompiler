@@ -1,0 +1,38 @@
+class Solution {
+private:
+    int directions[3] = {-1,0,1};
+    int dp[70][70][70];
+    vector<vector<int>> g;
+    int r,c;
+    int helper(int r1,int c1,int c2)
+    {
+        if(r1==r || c1>=c || c2>=c || c1<0 || c2<0)
+            return INT_MIN;
+        
+        if(dp[r1][c1][c2]!=-1)
+            return dp[r1][c1][c2];
+        
+        int maxAns = 0;
+        maxAns += (c1==c2)?g[r1][c1]:g[r1][c1]+g[r1][c2];
+        int temp = 0;
+        for(int i=0;i<3;i++)
+            for(int j=0;j<3;j++)
+                temp = max(temp, helper(r1+1, c1 + directions[i], c2+directions[j]));
+        
+        maxAns += temp;
+        
+        
+        dp[r1][c1][c2] = maxAns;
+        return maxAns;
+    
+
+    }
+public:
+    int cherryPickup(vector<vector<int>>& grid) {
+        g = grid;
+        r = grid.size();
+        c = grid[0].size();
+        memset(dp,-1,sizeof(dp));
+        return max(0, helper(0,0,c-1));
+    }
+};

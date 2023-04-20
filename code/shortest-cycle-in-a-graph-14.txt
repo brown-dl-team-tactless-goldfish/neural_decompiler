@@ -1,0 +1,72 @@
+// BFS
+class Solution {
+    void bfs(int node, vector<int> adjList[], int &ans, int &n) {
+        vector<int> parent(n, -1);
+        vector<int> dist(n, -1);
+        queue<int> Queue;
+        Queue.push(node);
+        dist[node] = 0;
+        while(!Queue.empty()) {
+            int sz = Queue.size();
+            for(int i = 0; i < sz; i++) {
+                int curr = Queue.front();
+                Queue.pop();
+                for(int next: adjList[curr]) {
+                    if(dist[next] == -1) {
+                        Queue.push(next);
+                        dist[next] = dist[curr] + 1;
+                        parent[next] = curr;
+                    } else if(parent[curr] != next && parent[next] != curr) {
+                        ans = min(ans, dist[curr] + dist[next] + 1);
+                    }
+                }
+            }
+        }
+    }
+public:
+    int findShortestCycle(int n, vector<vector<int>>& edges) {
+        vector<int> adjList[n];
+        for(vector<int> edge: edges) {
+            adjList[edge[0]].push_back(edge[1]);
+            adjList[edge[1]].push_back(edge[0]);
+        }
+        int ans = INT_MAX;
+        for(int i = 0; i < n; i++) {
+            bfs(i, adjList, ans, n);
+        }
+        if(ans == INT_MAX) return -1;
+        return ans;
+    }
+};
+
+
+// DFS
+class Solution {
+    void dfs(int curr, int parent, vector<int> adjList[], vector<int> &dist, int &ans) {
+        for(int next: adjList[curr]) {
+            if(next == parent) continue;
+            if(dist[next] == -1) {
+                dist[next] = dist[curr] + 1;
+                dfs(next, curr, adjList, dist, ans);
+            } else {
+                ans = min(ans, abs(dist[curr] - dist[next]) + 1);
+            }
+        }
+    }
+public:
+    int findShortestCycle(int n, vector<vector<int>>& edges) {
+        vector<int> adjList[n];
+        for(vector<int> edge: edges) {
+            adjList[edge[0]].push_back(edge[1]);
+            adjList[edge[1]].push_back(edge[0]);
+        }
+        int ans = INT_MAX;
+        for(int i = 0; i < n; i++) {
+            vector<int> dist(n, -1);
+            dist[i] = 0;
+            dfs(i, -1, adjList, dist, ans);
+        }
+        if(ans == INT_MAX) return -1;
+        return ans;
+    }
+};

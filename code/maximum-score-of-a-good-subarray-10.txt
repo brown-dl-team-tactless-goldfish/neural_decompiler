@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int maximumScore(vector<int>& nums, int k) {
+        nums.push_back(0);
+        stack<int> idx;
+        int res = 0;
+        for (int i = 0; i < nums.size(); i++) {
+            while (!idx.empty() && nums[idx.top()] > nums[i]) {
+                int m = nums[idx.top()];
+                idx.pop();
+                int l = idx.empty() ? -1 : idx.top();
+                if(l < k && k < i) {
+                    res = max((i - l - 1) * m, res);
+                }
+            }
+            idx.push(i);
+        }
+        return res;
+    }
+};

@@ -1,0 +1,71 @@
+class Solution {
+    bool containTag = false ;
+    
+    bool isValidTagName(string tagName) {
+        if (tagName.empty() || tagName.length() > 9)
+          return false;
+
+        for (auto& c : tagName)
+          if (!isupper(c))
+            return false;
+          
+        return true;
+    }
+public:
+    bool isValid(string code) {
+        int n = code.size() ;
+        if(n <4)
+            return false ;
+        if(code[0] != '<' || code[n-1] != '>' || code.substr(0,2) == "<!" || code.substr(n-2,2) == "</")
+            return false ;
+        int i = 0; 
+        stack<string>stk ;
+        while(i < n){
+            if(i+8 < n && code.substr(i, 9) == "<![CDATA[")
+            {
+                i += 9 ;
+                while((i+2) < n && code.substr(i, 3) != "]]>")
+                    i++ ;
+                if(i == n)
+                    return false ;
+                i += 3 ;
+            }
+            else if(i+1 < n && code.substr(i, 2) == "</")
+            {
+                i += 2 ;
+                int j = i ;
+                while(i < n && code[i] != '>')
+                    i++ ;
+                if(i == n)
+                    return false ;
+                string tagName = code.substr(j, i - j) ;
+                if(stk.empty() || stk.top() != tagName)
+                    return false ;
+                stk.pop() ;
+                i++ ;
+                if(stk.empty() && i != n)
+                    return false ;
+            }
+            else if(code[i] == '<')
+            {
+                i++ ;
+                int j = i ;
+                while(i < n && code[i] != '>')
+                    i++ ;
+                if(i == n)
+                    return false ;
+                string tagName = code.substr(j, i - j) ;
+                if(isValidTagName(tagName) == false)
+                    return false ;
+                stk.push(tagName) ;
+                i++ ;
+                containTag = true ;
+            }
+            else 
+                i++ ;
+        }
+        if(!stk.empty() || containTag == false)
+            return false ;
+        return true ;
+    }
+};

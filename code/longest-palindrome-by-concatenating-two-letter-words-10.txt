@@ -1,0 +1,102 @@
+// Idea / logic explanation
+// There can be 2 types of strings - the ones with diff chars (ex : lc, xy), ones with same chars (ex: cc, gg)
+
+// Step 1 : deal with strings having diff chars
+// to form a palindrome, these strings should have their complement strings present in the input data
+// we check a string, if its complement is present
+// we take the min (no of times string is present in inp, no of times complement is present in i/p)
+// for ex:  i/p ["lc", "cl", "cl"]
+// even though "cl" is present 2 times, for palindrome, we need same cnt of both.
+
+//-----------------------------
+
+// Step 2 : deal with strings having same chars
+// these string can be straightway used in palindrome when they are present in even number of times in i/p 
+// for ex : i/p ["lc", "cl", "gg", "gg"] -> [lcggggcl]
+// if they are present odd number of times
+// then we for ex : ["gg"] present 3 times, then we can use only "gg" only 2 times for a valid palindrome. 
+// so we use the even cnt in the ans
+
+//-----------------------------
+
+// Special case : 
+//we can use an odd count of same char string in middle of a valid plaindrome
+// for ex : ["lc, "xx", "cl", "gg", "gg", "gg"] -> lcggggggcl
+// for adding in middle , we use the string which is present max time is i/p
+// like in the above example we chose to add gg in middle 3 times instead of 1 times xx
+
+
+class Solution {
+public:
+    string complement(string s)
+    {
+        string comp;
+        comp+=s[1];
+        comp+=s[0];
+        return comp;
+    }
+    
+    int longestPalindrome(vector<string>& words) {
+        
+        int ans=0, maxCnt=0;
+        
+        // maintain 2 diff maps for 2 types of strings
+        
+        map<string, int> mp_diff;
+        map<string, int> mp_same;
+        
+        for(int i=0; i<words.size(); i++)
+        {
+            if(words[i][0]!=words[i][1])
+                mp_diff[words[i]]+=1;
+            else
+                mp_same[words[i]]+=1;
+                
+        }
+        
+        
+        for(auto m : mp_diff)
+        {
+            string s = m.first;
+            string c = complement(s);
+            
+            // if complement string is present in inp
+            if(mp_diff.find(c)!=mp_diff.end())
+            {
+                int minCnt = min(mp_diff[s], mp_diff[c]);
+                // use the min cnt 
+                ans+=(4*minCnt);
+                
+                //subtract the used cnt from map values
+                mp_diff[s]-=minCnt;
+                mp_diff[c]-=minCnt;
+            }
+        }
+        
+        for(auto m : mp_same)
+        {
+            int cnt = m.second;
+            
+            // if present even. no of times, use them all in o/p string
+            if(cnt%2==0)
+                ans+=2*cnt;
+            else
+            {
+                // use the max possible even cnt , keep updating maxCnt for middle of palindrome
+                maxCnt = max(maxCnt, cnt);
+                cnt--;
+                ans+=(2*cnt);
+            }
+                
+        }
+        
+        if(maxCnt)
+        {
+             ans+=maxCnt*2;
+             ans-=(maxCnt-1)*2;
+        }
+       
+        
+        return ans;
+    }
+};

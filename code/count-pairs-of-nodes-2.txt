@@ -1,0 +1,89 @@
+class Solution {
+public:
+    int deg[20004];
+    vector <int> G[20004];
+    
+    struct BIT {
+        int n;
+        vector <int> bit;
+        BIT (int _n) {
+            n = _n + 1;
+            bit.resize(n + 1);
+        }
+        
+        void clear() {
+            bit.clear();
+            bit.resize(n + 1);
+        }
+        
+        int keep_in_range(int x) {
+            if (x < 0) return -1;
+            if (x > n) return n;
+            return x;
+        }
+        
+        void add(int x, int val) {
+            x = keep_in_range(x) + 1;
+            while (x <= n) {
+                bit[x] += val;
+                x += x & -x;
+            }
+        }
+        
+        int query(int x) {
+            x = keep_in_range(x) + 1;
+            int res = 0;
+            while (x) {
+                res += bit[x];
+                x -= x & -x;
+            }
+            
+            return res;
+        }
+    };
+    
+    
+    vector<int> countPairs(int n, vector<vector<int>>& edges, vector<int>& queries) {
+        int edge_count = edges.size();
+        for (vector <int> e: edges) {
+            int x = e[0];
+            int y = e[1];
+            deg[x]++; deg[y]++;
+            if (x > y) swap(x, y);
+            G[x].push_back(y);
+            // G[y].push_back(x);
+        } 
+        
+        for (int i = 1; i <= n; i++) {
+            sort(G[i].begin(), G[i].end());
+        }
+        
+        BIT bit_deg(edge_count);
+        vector <int> results;
+        for (int query: queries) {
+            int cur = 0, cur_edges = edge_count - 1;
+            for (int i = 1; i <= n; i++) bit_deg.add(deg[i], +1);
+            
+            for (int a = 1; a <= n; a++) {
+                bit_deg.add(deg[a], -1);
+                cur_edges--;
+                int remaining = query - deg[a];
+                cur += bit_deg.query(edge_count) - bit_deg.query(remaining);
+                for (int i = 0; i < G[a].size(); i++) {
+                    int ix = i;
+                    int b = G[a][i];
+                    while (ix < G[a].size() && G[a][ix] == G[a][i]) deg[b], ix++;
+                    int number_of_same_edge = (ix - i);
+                    if (deg[a] + deg[b] > query && deg[a] + deg[b] - number_of_same_edge <= query) cur--; 
+                    i = ix - 1;
+                }
+            }
+            
+            results.push_back(cur);
+            bit_deg.clear();
+        }
+        
+        return results;
+    }
+};
+

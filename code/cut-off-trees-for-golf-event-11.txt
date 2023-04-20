@@ -1,0 +1,73 @@
+public class Solution {
+    public int CutOffTree(IList<IList<int>> forest) {
+            int[] dx = new int[] { 1, -1, 0, 0 },
+                  dy = new int[] { 0, 0, 1, -1 };
+            int result = 0;
+            SortedList<int, Tuple<int, int>> list = new SortedList<int, Tuple<int, int>>();
+            Queue<int[]> queue = new Queue<int[]>();
+            bool[,] visited = new bool[forest.Count, forest[0].Count];
+
+            for (int i = 0; i < forest.Count; i++)
+                for (int j = 0; j < forest[i].Count; j++)
+                    if (forest[i][j] != 0)
+                        list.Add(forest[i][j], new Tuple<int, int>(i, j));
+
+            queue.Enqueue(new int[] { 0, 0 });
+            visited[0, 0] = true;
+
+            foreach (var item in list.Values)
+            {
+                bool found = false;
+                int distance = -1;
+
+                while (queue.Count > 0)
+                {
+                    int count = queue.Count;
+
+                    distance++;
+
+                    while (count > 0)
+                    {
+                        int[] cur = queue.Dequeue();
+
+                        if (cur[0] == item.Item1 && cur[1] == item.Item2)
+                        {
+                            found = true;
+                            result += distance;
+
+                            break;
+                        }
+                        else
+                            for (int i = 0; i < 4; i++)
+                            {
+                                int newX = cur[0] + dx[i],
+                                    newY = cur[1] + dy[i];
+
+                                if (newX > -1 && newX < forest.Count && newY > -1 && newY < forest[0].Count && forest[newX][newY] != 0 && !visited[newX, newY])
+                                {
+                                    visited[newX, newY] = true;
+                                    queue.Enqueue(new int[] { newX, newY });
+                                }
+                            }
+
+                        count--;
+                    }
+
+                    if (found)
+                    {
+                        queue.Clear();
+                        queue.Enqueue(new int[] { item.Item1, item.Item2 });
+                        visited = new bool[forest.Count, forest[0].Count];
+                        visited[item.Item1, item.Item2] = true;
+
+                        break;
+                    }
+                }
+
+                if (!found)
+                    return -1;
+            }
+
+            return result;
+    }
+}

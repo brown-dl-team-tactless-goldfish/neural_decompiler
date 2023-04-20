@@ -1,0 +1,56 @@
+    public class Solution
+    {
+        public bool CheckValidString(string s)
+        {
+            Stack<int> opened = new Stack<int>();
+            Stack<int> undefined = new Stack<int>();
+
+            for (int i = 0; i < s.Length; i++)
+            {
+                var c = s[i];
+
+                if (c == '(')
+                {
+                    opened.Push(i);
+                    continue;
+                }
+
+                if (c == '*')
+                {
+                    undefined.Push(i);
+                    continue;
+                }
+
+                if (c == ')')
+                {
+                    if (opened.Count > 0)
+                    {
+                        opened.Pop();
+                    }
+                    else
+                    {
+                        if (undefined.Count > 0)
+                        {
+                            undefined.Pop();
+                        }
+                        else
+                        {
+                            return false;
+                        }
+                    }
+                }
+            }
+
+
+            while (opened.Count > 0)
+            {
+                var opPop = opened.Pop();
+                if (undefined.Count == 0 || undefined.Pop() < opPop)
+                {
+                    return false;
+                }
+            }
+
+            return true;
+        }
+    }

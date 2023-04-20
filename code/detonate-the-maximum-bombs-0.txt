@@ -1,0 +1,64 @@
+int maximumDetonation(int** bombs, int bombsSize, int* bombsColSize){
+    bool* check = calloc(bombsSize, sizeof(bool));
+    bool** attach = malloc(bombsSize * sizeof(bool*));
+    for(int i = 0; i < bombsSize; i++){
+        attach[i] = calloc(bombsSize , sizeof(bool));
+    }
+
+    for(int i = 0; i < bombsSize; i++){
+        attach[i][i] = true;
+        for(int j = i+1; j < bombsSize; j++){
+            int x = abs(bombs[i][0] - bombs[j][0] ) ;
+            int y = abs(bombs[i][1] - bombs[j][1] ) ;
+            long long dis = (long long)x*x + (long long)y*y;
+            if(dis <= (long long)bombs[i][2]*bombs[i][2])
+                attach[i][j] = true;
+            if(dis <= (long long)bombs[j][2]*bombs[j][2])
+                attach[j][i] = true;
+        }
+    }
+    
+    int* stack1 = malloc(bombsSize * sizeof(int));
+    int* stack2 = malloc(bombsSize * sizeof(int));
+    int id1 = 0, id2 = 0;
+    int max = 1;
+    for(int i = 0; i < bombsSize; i++){
+        check = calloc(bombsSize, sizeof(bool));
+        int cur = 1;
+        check[i] = true;
+        stack1[id1] = i;
+        id1++;
+        while(id1 || id2){
+            if(id1){
+                for(int j = 0; j < id1; j++){
+                    int p = stack1[j];
+                    for(int k = 0; k < bombsSize; k++){
+                        if(attach[p][k] && check[k] == false){
+                            cur++;
+                            check[k] = true;
+                            stack2[id2] = k;
+                            id2++;
+                        }
+                    }
+                }
+                id1 = 0;
+            }
+            else{
+                for(int j = 0; j < id2; j++){
+                    int p = stack2[j];
+                    for(int k = 0; k < bombsSize; k++){
+                        if(attach[p][k] && check[k] == false){
+                            cur++;
+                            check[k] = true;
+                            stack1[id1] = k;
+                            id1++;
+                        }
+                    }
+                }
+                id2 = 0;
+            }
+        }
+        max = fmax(max, cur);
+    }
+    return max;
+}

@@ -1,0 +1,62 @@
+public class Solution 
+{
+    public int[] ConstructDistancedSequence(int n) 
+    {
+        int[] arr = new int[2*(n-1)+1];
+        bool[] taken = new bool[n];
+        Recur(arr,taken,0);
+        return arr;
+    }
+    
+    private bool Recur(int[] arr, bool[] taken, int st)
+    {
+        if(st >= arr.Length)
+        {
+            return true;
+        }
+        
+        bool isValid = false;
+        
+        for(int i=taken.Length-1; i>=0; i--)
+        {
+            if(!taken[i])
+            {
+                
+                taken[i] = true;
+                
+                int n = i+1;
+                
+                int en = st;
+                
+                if(n!=1)
+                    en += n;
+                
+                
+                if(en<arr.Length && arr[st]==0 && arr[en]==0)
+                {
+                    arr[st] = n;
+                    arr[en] = n;
+                    
+                    int temp = st+1;
+                    
+                    while(temp<arr.Length && arr[temp]!=0)
+                    {
+                        temp++;
+                    }
+                    
+                    isValid = Recur(arr,taken,temp);
+                    
+                    if(isValid)
+                        break;
+                    
+                    arr[st] = 0;
+                    arr[en] = 0;
+                }
+                
+                taken[i] = false;
+            }
+            
+        }
+        return isValid;
+    }
+}

@@ -1,0 +1,51 @@
+class fwk{
+public:
+   int arr[200005];
+   int fenwick[200005];
+   int N;
+   fwk(int n)
+   {
+      N = n;
+      memset(fenwick,0,sizeof fenwick);
+      memset(arr,0,sizeof arr);
+   }
+
+   void update(int index,int x)
+   {
+      for(int i=index;i<=N;i+=(i&-i))
+      {
+         fenwick[i]+=x;
+      }
+   }
+   int sum(int index)
+   {
+      int ans = 0;
+      for(int i=index;i>0;i-=(i&-i))
+      {
+         ans+=fenwick[i];
+      }
+      return ans;
+   }
+};
+class Solution {
+public:
+    int createSortedArray(vector<int>& instructions) {
+
+      long long ans = 0;
+      long long mod = 1e9 + 7;
+
+      fwk A(100000);
+
+      for(int x:instructions)
+      {
+         int less = A.sum(x-1);
+         int greater = A.sum(100000) - A.sum(x);
+
+         ans = (ans + min(less,greater))%mod;
+
+         A.update(x,1);
+
+      }
+      return ans;        
+    }
+};

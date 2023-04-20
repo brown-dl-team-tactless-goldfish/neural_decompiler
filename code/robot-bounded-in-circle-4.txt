@@ -1,0 +1,43 @@
+
+void change(int *face, int val){
+    if (val == 1){
+        *face += 90;
+        if (*face == 360)
+            *face = 0;
+    }
+    else{
+        *face -= 90;
+        if (*face == -90)
+            *face = 270;
+    }
+}
+
+bool isRobotBounded(char * ins){
+    int x = 0, y = 0, face = 90; // 1 up 2 left 3 down // right
+    
+    for (int i=0; i<strlen(ins); i++){
+        switch (ins[i]){
+            case 'G':
+                if (face == 90)
+                    y++;
+                else if (face == 270)
+                    y--;
+                else if (face == 0)
+                    x++;
+                else if (face == 180)
+                    x--;
+                break;
+            case 'L':
+                change(&face, 1);
+                break;
+            case 'R':
+                change(&face, 0);
+                break;
+        }
+    }
+    if (x == 0 && y == 0)
+        return true;
+    else if (face != 90)
+        return true;
+    return false;
+}

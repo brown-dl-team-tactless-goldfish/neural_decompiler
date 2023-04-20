@@ -1,0 +1,39 @@
+class Solution {
+    int n ;
+private:
+    int dfs(vector<int>& price, vector<vector<int>>& special, vector<int>& needs, unordered_map<int, int>&Map){
+        int val = 0 ;
+        for(int i = 0; i < n; i++){
+            val = val * 11 + needs[i] ;
+        }
+        if(Map.find(val) != Map.end() )
+            return Map[val] ;
+        int minSum = 0 ;
+        for(int i = 0; i < n; i++){
+            minSum += price[i]*needs[i] ;
+        }
+        
+        for(int i = 0; i < special.size(); i++){
+            int j = 0 ;
+            vector<int>curNeed = needs ;
+            for(j = 0; j < n; j++){
+                if(curNeed[j] < special[i][j])
+                    break ;
+                curNeed[j] -= special[i][j] ;
+            }
+            if(j != n)
+                continue ;
+            minSum = min(minSum, special[i][n] + dfs(price, special, curNeed, Map)) ;
+        } 
+        Map[val] = minSum ;
+        
+        return minSum ;
+    }
+public:
+    int shoppingOffers(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {
+        unordered_map<int , int>Map ;
+        this->n = price.size() ;
+        
+        return dfs(price, special, needs, Map) ;
+    }
+};

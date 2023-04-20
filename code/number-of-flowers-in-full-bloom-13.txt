@@ -1,0 +1,29 @@
+class Solution {
+public:
+    vector<int> fullBloomFlowers(vector<vector<int>>& flowers, vector<int>& persons) {
+        int n=flowers.size();
+        map<int, int> m;
+        m[0]=0;
+        for(int i=0;i<n;i++){
+            m[flowers[i][0]]++;
+            m[flowers[i][1]+1]--;
+        }
+        int sum=0;
+        vector<int> time, num;
+        for(auto &it: m){
+            time.push_back(it.first);
+            sum+=it.second;
+            num.push_back(sum);
+        }
+        int k=persons.size();
+        vector<int> ans;
+        for(int i=0;i<k;i++){
+            auto it=upper_bound(time.begin(), time.end(), persons[i]);
+            if(it==time.begin())
+                ans.push_back(0);
+            else
+                ans.push_back(num[it-time.begin()-1]);
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,25 @@
+struct TreeNode* crreateNode(int val){
+    struct TreeNode* n = (struct TreeNode*)calloc(1,sizeof(struct TreeNode));
+    n->val = val;
+    return n;
+}
+
+struct TreeNode* DFS(struct TreeNode* root, int val, int depth, int currDepth, int side){
+    if(currDepth == depth){
+        struct TreeNode* node = crreateNode(val);
+        if(side == -1)
+            node->left = root;
+        else
+            node->right = root;
+        return node;
+    }
+    if(!root) return root;
+    root->left = DFS(root->left, val, depth, currDepth+1, -1);
+    root->right = DFS(root->right, val, depth, currDepth+1, 1);
+    return root;
+}
+struct TreeNode* addOneRow(struct TreeNode* root, int val, int depth){
+    if(!root) return root;
+    root = DFS(root, val, depth, 1, -1);/* -1:left node, 1: right node */
+    return root;
+}

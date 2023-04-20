@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int minNumberOfSemesters(int n, vector<vector<int>>& relations, int k) {
+        //find dependency mask for each course
+        vector<int> deps(n, 0); 
+        for(auto& r: relations)
+            deps[r[1] - 1] |= 1 << (r[0] - 1);
+        
+        int S = 1 << n;
+        vector<bool> dp(S, false); //dp[s] == true means state "s" is reachable on the PREVIOUS semester
+        dp[0] = true;
+        for(int r = 1; r <= n; r++){ //at most n semesters
+            vector<bool> tmp(S, false); //tmp[s] == true means state "s" is reachable on the CURRENT semester
+            for(int s = 0; s < S; s++){
+                if(!dp[s]) continue;
+                //create a mask containing all possible courses I can take based on current state s
+                int mask = 0;
+                for(int i = 0; i < n; i++){
+                    if((s & (1<<i))) continue; //this course is already in state s
+                    if((s & deps[i]) != deps[i]) continue; //I haven't taken all the required courses yet
+                    mask |= (1 << i);
+                }
+                //always record the state with the maximal classes taken
+                if(__builtin_popcount(mask) <= k){ //__builtin_popcount return # of 1 bits in a number
+                    tmp[s | mask] = true;
+                }else{
+                    //choose k courses in this mask
+                    for(int c = mask; c; c = (c-1)&mask)
+                        if(__builtin_popcount(c) == k)
+                            tmp[s | c] = true;
+                }
+                if(tmp.back()) return r;
+            }
+            dp.swap(tmp);
+        }
+        return -1;
+    }
+};

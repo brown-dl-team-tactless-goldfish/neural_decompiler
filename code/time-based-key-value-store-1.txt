@@ -1,0 +1,117 @@
+// Timestamps, horizontal direction from above diagram
+struct timestampnode {
+    int time;
+    char* value;
+    struct timestampnode* next;
+};
+
+// Timemaps, vertical direction from above diagram
+struct timemapnode {
+    unsigned int key;
+    struct timemapnode* nextkey;
+    struct timestampnode* timestamp;
+};
+
+// typedefs to make things easier later
+typedef struct timemapnode TimeMap;
+typedef struct timestampnode TimeStamp;
+
+// hash function to convert char* to int
+unsigned int hashKey(char* key){
+    unsigned int val = 0;
+    int mod = pow(10,9) + 7; // largest prime number less than MAX_INT (i think) 
+    while(*key){
+	    // 313 because it's a prime number greater than 255
+        val = (val * 313 + (*key)) % mod;
+        key++;
+    }
+    return val;
+}
+
+// function to create timemap nodes
+TimeMap* timeMapCreate() {
+    TimeMap* head = malloc(sizeof(TimeMap));
+    head->nextkey = NULL;
+    head->timestamp = NULL;
+    
+    return head;
+}
+
+void timeMapSet(TimeMap* obj, char * key, char * value, int timestamp) {
+    int hashed = hashKey(key); // hash the key
+    TimeMap* iter = obj;
+
+	// find the first node where either key == hashed or key > hashed but next->key < hashed
+    while(iter && iter->nextkey && iter->nextkey->key >= hashed){
+        iter = iter->nextkey;
+    }
+    
+	// if we haven't seen this key before, we need to add a new node
+    if (!iter || (iter->key > hashed)){
+        TimeMap* newNode = timeMapCreate();
+        newNode->key = hashed;
+		
+		// insert the node if we have a linked list, or just set head = newNode if this is the first node
+        if (iter && iter->nextkey)
+            newNode->nextkey = iter->nextkey;
+        if (iter)
+            iter->nextkey = newNode;
+        
+        iter = newNode;
+    }
+    
+	// Now we're guaranteed to have iter pointing to the correct value, 
+	// we just need to add the timestamp
+    TimeStamp* newstamp = malloc(sizeof(TimeStamp));
+    newstamp->time = timestamp;
+    newstamp->value = value;
+	
+	// timestamp always inserted at the beginning because each timestamp is guaranteed to be
+	// larger than the last, so a front insert will always be sorted (descending)
+    newstamp->next = iter->timestamp;
+    iter->timestamp = newstamp;
+    
+    return;
+}
+
+char * timeMapGet(TimeMap* obj, char * key, int timestamp) {
+    int hashed = hashKey(key); // hash the key
+    TimeMap* iter = obj;
+	// iterate over our linked list until we find the key
+	// note the linked list is sorted by the hash values
+    while(iter && iter->key > hashed)
+        iter = iter->nextkey;
+    
+	// if we didn't find the key, return ""
+    if (!iter || iter->key != hashed)
+        return "";
+    
+	// next we do the same for the timestamps
+	// note again this is sorted by timestamp value
+    TimeStamp* titer = iter->timestamp;
+    while(titer && titer->time > timestamp){
+        titer = titer->next;
+    }
+    
+	// if we found it return, otherwise ""
+    return titer ? titer->value : "";
+}
+
+// to free we just have to make sure we free the timestamps LL before freeing each base node
+void timeMapFree(TimeMap* obj) {
+    TimeMap* tmi = obj;
+    TimeStamp* tsi1; 
+    TimeStamp* tsi2;
+    
+    while(obj){
+        tmi = obj;
+        obj = obj->nextkey;
+        tsi1 = tmi->timestamp;
+        while(tsi1){
+            tsi2 = tsi1;
+            tsi1 = tsi1->next;
+            free(tsi2);
+        }
+        free(tmi);
+    }
+}

@@ -1,0 +1,47 @@
+// max distance to a person;
+    // if there are multi seats, lowest num
+    //maintain a sorted set;
+    SortedSet<int> students = new SortedSet<int>();
+    int N;
+    public ExamRoom(int N) {
+        this.N = N;
+    }
+    
+    public int pickseat()
+    {
+        if (students.Count == 0)
+        {
+             students.Add(0);
+             return 0;
+        }   
+        int student = 0; //this is the location of the new student;
+        int prev = -1;
+        int dist = students.First();
+        foreach(int s in students)
+        {
+            if (prev!=-1)
+            {
+                int d = (s-prev)/2;
+                if (d>dist)
+                {
+                    dist = d;
+                    student = prev + d;
+                }
+            }
+            prev = s;
+        }
+        if (N-1 - students.Last() > dist)
+            student = N-1;
+        //add the student location to the sorted list;
+        students.Add(student);
+        return student;
+    }
+    
+    public int Seat() {
+        int p = pickseat();
+        return p;
+    }
+    
+    public void Leave(int p) {
+        students.Remove(p);
+    }

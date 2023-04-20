@@ -1,0 +1,32 @@
+int findUpperBound(vector<vector<int>>& events, int start, int end, int val)
+{
+    while(start<end)
+    {
+        int m = start+(end-start)/2;
+        if(events[m][1]>val)
+            end=m;
+		else
+            start=m+1;
+    }
+    return start;
+}
+
+int maxValue(vector<vector<int>>& events, int k) {
+    sort(events.begin(),events.end(),
+         [](vector<int>& A, vector<int>& B)
+         {
+             return A[1]<B[1];
+         }
+    );
+    
+    vector<vector<int>> dp(events.size()+1,vector<int>(k+1, 0));
+    
+    for(int i=0;i<events.size();i++)
+    {
+        int lastNonConf = findUpperBound(events,0,i,events[i][0]-1);
+        for(int n=1;n<=k;n++)
+            dp[i+1][n] = max(dp[i][n], dp[lastNonConf][n-1]+events[i][2]);
+    }
+    
+    return *max_element(dp.back().begin(),dp.back().end());
+}

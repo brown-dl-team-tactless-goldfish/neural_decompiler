@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int maximumWhiteTiles(vector<vector<int>>& tiles, int carpetLen) {
+        
+        sort(tiles.begin(), tiles.end());
+        tiles[0].push_back(tiles[0][1] - tiles[0][0]+1);
+        for(int i = 1; i < tiles.size(); i++)
+            tiles[i].push_back(tiles[i-1][2]+(tiles[i][1] - tiles[i][0]+1));
+        
+        map<int, vector<int>> t;
+        for(int i = 0 ; i < tiles.size(); i++)
+            t[tiles[i][0]] = {tiles[i][1], tiles[i][2]};
+        
+        int best = 0;
+        int prev_tiles = 0;
+        for(auto it = t.begin(); it != t.end(); ++it){
+            int last_covered_tile = it->first + carpetLen - 1;
+            auto last_range = prev(t.upper_bound(last_covered_tile));
+            
+            if(last_covered_tile >= last_range->second[0]) best = max(best, last_range->second[1] - prev_tiles);
+            else{
+                int last_rem = (last_range->second[0] - (it->first +  carpetLen - 1));
+                best = max(best, last_range->second[1] - (prev_tiles + last_rem));
+            }
+            prev_tiles = it->second[1];
+        }
+        return best;
+    }
+};

@@ -1,0 +1,25 @@
+void getResult(char ** out, char * s, int idx, int * size)
+{
+    if(idx == strlen(s))
+    {
+        out[*size] = calloc(strlen(s)+1, sizeof(char));
+        strcpy(out[(*size)++], s);
+        return;
+    }
+    if(s[idx] >= '0' && s[idx] <= '9')
+    {
+        getResult(out, s, idx+1, size);
+        return;
+    }
+    s[idx] = tolower(s[idx]);
+    getResult(out, s, idx+1, size);
+    s[idx] = toupper(s[idx]);
+    getResult(out, s, idx+1, size);
+}
+char ** letterCasePermutation(char * s, int* returnSize){
+    char ** result = (char **)malloc(10000*sizeof(char *));
+    int size = 0;
+    getResult(result, s, 0, &size);
+    *returnSize = size;
+    return result;
+}

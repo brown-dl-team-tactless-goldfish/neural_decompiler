@@ -1,0 +1,22 @@
+class RLEIterator {
+public:
+    RLEIterator(vector<int>& encoding): store_(encoding), pos_(0) {
+        
+    }
+    
+    int next(int n) {
+      while (pos_ < store_.size() && n > store_[pos_]) {
+        n -= store_[pos_];
+        store_[pos_] = 0;
+        pos_ += 2;
+      }
+      if (pos_ >= store_.size() - 1) {
+        return -1;
+      }
+      store_[pos_] -= n;
+      return store_[pos_ + 1];
+    }
+private:
+  vector<int> store_;
+  int pos_;
+};

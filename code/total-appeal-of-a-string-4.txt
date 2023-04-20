@@ -1,0 +1,23 @@
+class Solution {
+public:
+    long long appealSum(string s) {
+        long long n = s.size();
+        long long ans = n * (n + 1) / 2 * n;
+        vector<vector<long long> > idx(26);
+        for(long long i = 0; i < s.size(); i++) {
+            ans -= (i) * (i + 1);
+            long long c = s[i] - 'a';
+            if(idx[c].size() == 0) idx[c].push_back(-1);
+            idx[c].push_back(i);
+        }
+        for(auto &v: idx) {
+            v.push_back(n);
+            int m = v.size();
+            if(v.size() <= 3) continue;
+            for(int i = 1; i < m - 2; i++) {
+                ans -= (n - v[i + 1]) * (v[i] + 1);
+            }
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,12 @@
+int* prisonAfterNDays(int* cells, int cellsSize, int N, int* returnSize){
+    int* cellsNext = malloc(8*sizeof(int));
+    uint8_t old = 0;
+    for (int i = 0; i < 8; i++) old += cells[i] * (1<<i);
+    for (int z = 0; z < N; z++) { // Any individual test passes
+    // for (N = (N - 1) % 14 + 1; N > 0; --N) { // Had to to this to pass when submitting (I guess there's an overall runtime length for all tests that is more strict than running any one test)
+        old = ~((old << 1) ^ (old >> 1)) & 0b01111110;
+    }
+    for (int i = 0; i < 8; i++) cellsNext[i] = !!(old & (1 << i));
+    *returnSize = 8;
+    return cellsNext;
+}

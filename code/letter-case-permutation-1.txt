@@ -1,0 +1,30 @@
+void helper(char* S, int* returnSize, int ptr, char** ans, int size)
+{
+    if(ptr >= size) return;
+    if(isalpha(S[ptr]))
+    {
+        S[ptr] = tolower(S[ptr]);
+        helper(S, returnSize, ptr+1, ans, size);
+        
+        ans[*returnSize] = calloc(size+1, sizeof(char));
+        strcpy(ans[*returnSize], S);
+        *returnSize += 1;
+        
+        S[ptr] = toupper(S[ptr]);
+        helper(S, returnSize, ptr+1, ans, size);
+    }
+    else
+    {
+        helper(S, returnSize, ptr+1, ans, size);
+    }
+}
+
+char** letterCasePermutation(char* S, int* returnSize) {
+    char** ans = calloc(4096, sizeof(char*));
+    int size = strlen(S);
+    helper(S, returnSize, 0, ans, size);
+    ans[*returnSize] = calloc(size+1, sizeof(char));
+    strcpy(ans[*returnSize], S);
+    *returnSize += 1;
+    return ans;
+}

@@ -1,0 +1,19 @@
+int cmpfunc(int*a,int*b){
+    return *a-*b;
+}
+
+int combinationSum4(int* nums, int numsSize, int target){
+    unsigned long long int*record=(unsigned long long int*)calloc(target+1,sizeof(unsigned long long int));
+    int i,j;
+    qsort(nums,numsSize,sizeof(int),cmpfunc); //sort the array
+    record[0]=1;
+    
+    for (i=1;i<=target;i++) //bottom-up approach
+        for(j=0;j<numsSize;j++){//traverse all the numbers less than i
+            if(nums[j]>i)
+                break;
+            else
+                record[i]+=record[i-nums[j]];
+        }
+    return record[target];
+}

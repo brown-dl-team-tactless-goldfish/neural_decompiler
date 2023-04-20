@@ -1,0 +1,83 @@
+class Solution {
+public:
+    int shortestPathAllKeys(
+        vector<string>& grid
+    ) {
+        int m = grid.size();
+        int n = grid[0].size();
+        int di[] = {0,0,1,-1};
+        int dj[] = {1,-1,0,0};
+        auto isBound = [&](int i, int j)->bool {
+            return 0 <= i && i < m
+                && 0 <= j && j < n
+                && grid[i][j] != '#';
+        };
+        int k = 0, si, sj;
+        for (int i = 0; i < m; ++i) {
+            for (int j = 0; j < n; ++j) {
+                char& c = grid[i][j];
+                if ('a' <= c && k < c-'a')
+                    k = c-'a';
+                if (c == '@') {
+                    si = i;
+                    sj = j;
+                    c = '.';
+                }
+            }
+        }
+        
+        int ebm = ((2<<k)-1)<<10;
+        auto isEnd = [&](int bm)->bool {
+            return (ebm&bm) == ebm;
+        };
+        auto encode = [&](int i, int j, int kbm)->int {
+            return i|(j<<5)|(kbm<<10);
+        };
+        auto decode = [&](int bm)->array<int,3> {
+            return {bm&31, (bm>>5)&31, (bm>>10)&63};
+        };
+        
+        int q[100000], vis[100000] = {0};
+        int qf = 0, qb = 1;
+        auto push = [&](int bm)->void {
+            q[qb++] = bm;
+        };
+        auto pop = [&](void)->int {
+            return q[qf++];
+        };
+        q[0] = encode(si, sj, 0);
+        
+        int ans = 0;
+        for (; qf != qb; ++ans) {
+            for (int sz = qb-qf; sz; --sz) {
+                int bm = pop();
+                if (isEnd(bm))
+                    return ans;
+                auto [i, j, kbm] = decode(bm);
+                for (int z = 0; z < 4; ++z) {
+                    int ni = i + di[z];
+                    int nj = j + dj[z];
+                    if (isBound(ni, nj)) {
+                        int nkbm = kbm;
+                        char c = grid[ni][nj];
+                        if ('A' <= c && c <= 'F') {
+                            int kb = 1<<(c-'A');
+                            if ((kb&kbm) == 0)
+                                continue;
+                        }
+                        if ('a' <= c && c <= 'f') {
+                            int kb = 1<<(c-'a');
+                            nkbm |= kb;
+                        }
+                        int nbm = encode(ni, nj, nkbm);
+                        if (vis[nbm] == 0) {
+                            vis[nbm] = 1;
+                            push(nbm);
+                        }
+                    }
+                }
+            }   
+        }
+        return -1;
+    }
+};

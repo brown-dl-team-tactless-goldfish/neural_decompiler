@@ -1,0 +1,106 @@
+struct Node{
+    int val;
+    Node* next;
+    Node* prev;//previous level
+    Node(int vali)
+    {
+        val = vali;
+        next = prev = NULL;   
+    }
+};
+class Skiplist {
+    vector<Node*> head;    
+public:
+    Skiplist() {
+        head.push_back(new Node(-100000000));//safe guarder
+    }
+    
+    bool searchImpl(int target, vector<Node*>& pos, bool setpos = false) {
+        bool res = false;
+        int i=head.size()-1;
+        pos.resize(head.size());
+        Node* tmp = head[i], *prev = NULL;
+        while(i >= 0)
+        {
+            while(tmp !=NULL && tmp->val < target)
+            {
+                prev = tmp;
+                tmp=tmp->next;
+            }
+            if (tmp != NULL && tmp->val == target)
+            {
+                res = true;
+                if (!setpos)
+                    return true;
+            }
+            
+            if (setpos) pos[i] = prev;
+            tmp = prev->prev;
+            i--;
+        }
+        return res;
+    }
+    
+    bool search(int target) {
+        vector<Node*> pos;
+        return searchImpl(target, pos);
+    }
+    
+    void add(int num) {
+        vector<Node*> pos;
+        searchImpl(num, pos, true);
+        int i = 0;
+        Node* prevpos = NULL;
+        while(i<pos.size())
+        { 
+            auto add = new Node(num);
+            add->next = pos[i]->next;  
+            pos[i]->next = add;
+            add->prev = prevpos;
+            prevpos = add;
+            if (rand() < (RAND_MAX / 2))
+                break;
+            i++;
+        }
+        if (i==pos.size() && rand() < (RAND_MAX / 2))
+        {
+            head.push_back(new Node(head[0]->val));
+            if (head.size() >= 2)
+                head[head.size()-1]->prev = head[head.size()-2];
+        }
+    }
+    
+    bool erase(int num) {
+        vector<Node*> pos;
+        bool res = searchImpl(num, pos, true);   
+        if (!res) return false;
+        else
+        {
+            int i=0;
+            while(i<pos.size())
+            {
+                auto tmp = pos[i]->next;
+                if (pos[i]->next != NULL)
+                    pos[i]->next = pos[i]->next->next;   
+                else
+                    pos[i]->next = NULL;
+                delete tmp;
+                if (head[i]->next == NULL)
+                {
+                    delete head[i];
+                    head.pop_back();
+                }
+                i++;
+            }
+            return true;
+        }    
+    }
+};
+
+/**
+ * Your Skiplist object will be instantiated and called as such:
+ * Skiplist* obj = new Skiplist();
+ * bool param_1 = obj->search(target);
+ * obj->add(num);
+ * bool param_3 = obj->erase(num);
+ */

@@ -1,0 +1,88 @@
+    public class Solution
+    {
+        private class Pattern
+        {
+            public readonly int RepeatCount;
+            public string Suffix;
+            public ulong Length;
+
+            public Pattern(int repeatCount)
+            {
+                RepeatCount = repeatCount;
+                Suffix = String.Empty;
+            }
+        }
+
+        public string DecodeAtIndex(string s, int k)
+        {
+            checked
+            {
+                ulong ulK = (ulong)k - 1;
+                StringBuilder sb = new StringBuilder();
+                Stack<Pattern> patterns = new Stack<Pattern>();
+
+                foreach (var c in s)
+                {
+                    if (c >= '2' && c <= '9')
+                    {
+                        var suffix = sb.ToString();
+                        if (patterns.Count != 0)
+                        {
+                            patterns.Peek().Suffix = suffix;
+                            patterns.Peek().Length += (ulong)suffix.Length;
+                        }
+                        else
+                        {
+                            patterns.Push(new Pattern(0));
+                            patterns.Peek().Suffix = suffix;
+                            patterns.Peek().Length = (ulong)suffix.Length;
+                        }
+
+                        sb.Clear();
+                        var prevLength = patterns.Peek().Length;
+                        patterns.Push(new Pattern(c - '0'));
+                        patterns.Peek().Length = (ulong)patterns.Peek().RepeatCount * prevLength;
+                        continue;
+                    }
+
+                    sb.Append(c);
+                }
+
+                if (sb.Length > 0)
+                {
+                    var suffix = sb.ToString();
+                    if (patterns.Count != 0)
+                    {
+                        patterns.Peek().Suffix = suffix;
+                        patterns.Peek().Length += (ulong)suffix.Length;
+                    }
+                    else
+                    {
+                        patterns.Push(new Pattern(0));
+                        patterns.Peek().Suffix = suffix;
+                        patterns.Peek().Length = (ulong)suffix.Length;
+                    }
+                }
+
+                while (true)
+                {
+                    if (patterns.Count == 0)
+                    {
+                        return string.Empty;
+                    }
+
+                    var top = patterns.Pop();
+
+                    ulong repeatedLength = patterns.Count == 0 ? 0 : (ulong)top.RepeatCount * patterns.Peek().Length;
+
+                    if (ulK >= repeatedLength)
+                    {
+                        ulK -= repeatedLength;
+                        return top.Suffix.Substring((int)ulK, 1);
+                    }
+
+                    ulK = ulK % patterns.Peek().Length;
+                }
+            }
+        }
+    }

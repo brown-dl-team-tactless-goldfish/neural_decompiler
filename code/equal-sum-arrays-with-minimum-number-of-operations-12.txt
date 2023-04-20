@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int minOperations(vector<int>& nums1, vector<int>& nums2) {
+        std::vector<int> f1(7, 0), f2(7, 0);
+        int diff{0}, avail, res{0};
+        for(const auto &n: nums1) diff -= n, ++f1[n];
+        for(const auto &n: nums2) diff += n, ++f2[n];
+        
+        if(diff < 0) diff *= -1, std::swap(f1, f2);
+        
+        // s1 < s2
+        for(int i{1}; i < 6; ++i) {
+            avail = f1[i] + f2[7-i];
+            if(avail * (6-i) >= diff) return res + std::ceil((double)diff/(6-i));
+            else diff -= avail * (6-i), res += avail;
+        }
+        
+        return -1;
+    }
+};

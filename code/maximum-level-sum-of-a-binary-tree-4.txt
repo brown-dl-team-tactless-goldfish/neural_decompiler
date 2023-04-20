@@ -1,0 +1,53 @@
+int maxLevelSum(struct TreeNode* root){
+    
+    if (root ==  NULL)
+    {
+        return 0;
+    }
+    struct TreeNode *ar[100000]={0};
+    struct TreeNode *t;
+    
+    int i=1,p=0;
+    long tn=0;
+    int c; long level=0;
+    int max=INT_MIN;
+    int max_level;
+    long tne=0;
+    ar[0] = root;
+
+    while (p < i)
+    {
+        tn = (long)1 << level;
+        tne = 2 * tne;
+        tn =  tn - tne;
+        c=0;
+        while (tn)
+        {
+            t = ar[p];
+            if (t == NULL)
+            {
+                tne++;
+                p++;
+                tn--;
+                continue;
+            }
+            c = c + t->val;
+            tn--;
+            ar[i] = t->left;
+            i++;
+            ar[i] = t->right;
+            i++;
+            p++;
+            
+        }
+        if (c > max && p<i)
+        {
+            max = c;
+            max_level = level;
+        }
+        level++;
+    }
+
+    return max_level+1;
+
+}

@@ -1,0 +1,77 @@
+typedef struct node {
+    int value;
+    uint64_t idxSum;
+    int idxMax;
+    int idxCount;
+    int *idx;
+} Node;
+
+typedef struct hash {
+    int size;
+    Node *n;
+} Hash;
+
+static Node* hashFind(Hash *h, int v)
+{
+    const int idx = v % h->size;
+    
+    for (int i = 0; i < h->size; i++) {
+        const int curIdx = (idx + i) % h->size;
+        const Node *cur = &h->n[curIdx];
+
+        if (cur->idxCount == 0 || cur->value == v) {
+            return cur;
+        } 
+    }
+    
+    return NULL;
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+long long* getDistances(int* arr, int arrSize, int* returnSize){
+    long long* ret = calloc(arrSize, sizeof(long long));
+    Hash h = { 0, NULL};
+    
+    h.size = arrSize * 2;
+    h.n = calloc(h.size, sizeof(Node));
+    
+    for (int i = 0; i < arrSize; i++) {
+        Node* cur = hashFind(&h, arr[i]);
+
+        if (cur->idxCount == 0) {
+            cur->value = arr[i];
+            cur->idxMax = 10;
+            cur->idx = calloc(cur->idxMax, sizeof(int));
+        }
+        if (cur->idxCount == cur->idxMax) {
+            cur->idxMax *= 2;
+            cur->idx = realloc(cur->idx, cur->idxMax*sizeof(int));
+        }
+        cur->idx[cur->idxCount++] = i;
+        cur->idxSum += i;
+    }
+    
+    for (int i = 0; i < h.size; i++) {
+        Node *cur = &h.n[i];
+
+        if (cur->idxCount > 0) {
+            uint64_t preSum = 0;
+            uint64_t postSum = cur->idxSum;
+
+            for (int j = 0; j < cur->idxCount; j++) {
+                const uint64_t curIdx = cur->idx[j];
+
+                postSum -= curIdx;
+                ret[curIdx] = (j*curIdx - preSum) + (postSum - (cur->idxCount - j - 1)*curIdx);
+                preSum += curIdx;
+            }
+            free(cur->idx);
+        }
+    }
+    free(h.n);
+
+    *returnSize = arrSize;
+    return ret;
+}

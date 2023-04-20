@@ -1,0 +1,33 @@
+class Solution {
+public:
+    string reformatNumber(string number) {
+        string tmp;
+        for (char c: number) {
+            if (c != ' ' && c != '/' && c != '-')
+                tmp += c;
+        }
+        string res;
+        int cnt = 0, idx = 0;
+        int len = tmp.length();
+        for (char c: tmp) {
+            if (cnt == 0 && len <= 4) {
+                if (len == 3)
+                    res += tmp.substr(idx, 3);
+                else if (len == 2)
+                    res += tmp.substr(idx, 2);
+                else
+                    res += tmp.substr(idx, 2) + '-' + tmp.substr(idx+2, 2);
+                break;
+            }
+            cnt++;
+            res += c;
+            if (cnt % 3 == 0) {
+                res += '-';
+                len -= cnt;
+                cnt = 0;
+            }
+            idx++;
+        }
+        return res;
+    }
+};

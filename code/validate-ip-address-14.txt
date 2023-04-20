@@ -1,0 +1,48 @@
+class Solution {
+public:
+    string validIPAddress(string IP) {
+        if (IP.size() == 0 or IP.size() > 39) return "Neither";
+        int found = IP.find_first_of(".:");
+        if (found == IP.size()) return "Neither";
+        if (IP[found] == '.') return validV4(IP);
+        else return validV6(IP);
+    }
+    
+    string validV6(string IP){
+        stringstream ss(IP);
+        string segment;
+        int k = 0;
+        if (IP.back() == ':') return "Neither";
+        while (getline(ss, segment, ':')){
+            k++;
+            if (segment.length() > 4 or segment.length() == 0) 
+                return "Neither";
+            for (auto c: segment){
+                if (!(isdigit(c) or (c - 'a' >= 0 and c - 'a' <= 5) or 
+                        (c - 'A' >= 0 and c - 'A' <= 5))) 
+                    return "Neither";
+            }
+        }
+        return k == 8 ? "IPv6": "Neither";
+    }
+    
+    string validV4(string IP){
+        stringstream ss(IP);
+        string segment;
+        int k = 0;
+        if (IP.back() == '.') return "Neither";
+        while (getline(ss, segment, '.')){
+            k++;
+            if (segment.length() == 0) return "Neither";
+            for (auto c: segment){
+                if (!isdigit(c)) return "Neither";
+            }
+            int num = stoi(segment);
+            if (num != 0 and segment[0] == '0') return "Neither";
+            if (num == 0 and segment.length() > 1) return "Neither";
+            if (num > 255) return "Neither";
+        }
+        return k == 4 ? "IPv4": "Neither";
+    }
+    
+};

@@ -1,0 +1,29 @@
+int maxResult(int* nums, int numsSize, int k){
+    int i,j,begin;
+    int max=nums[0];
+    int maxIndex=0;
+    int*record=malloc(sizeof(int)*numsSize);
+    record[0]=nums[0];
+    for(i=1;i<numsSize;i++){
+        if(maxIndex<i-k){
+            max=record[i-k];
+            maxIndex=i-k;
+            if(i<=k)
+                begin=0;
+            else
+                begin=i-k;
+            for(j=begin;j<i;j++){
+                if(record[j]>=max){
+                    max=record[j];
+                    maxIndex=j;
+                }
+            }
+        }
+        record[i]=max+nums[i];
+        if(record[i]>=max){
+            max=record[i];
+            maxIndex=i;
+        }
+    }
+    return record[numsSize-1];
+}

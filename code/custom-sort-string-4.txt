@@ -1,0 +1,24 @@
+static inline int
+charcmp(const void *p, const void *q, void *a)
+{
+    unsigned char *__xmap = a;
+    return __xmap[*(unsigned char *)p] - __xmap[*(unsigned char *)q];
+}
+
+char *customSortString (char *S, char *T)
+{
+	unsigned char *sc;
+	unsigned char offset = 0;
+	unsigned char map[255] = {0};
+
+	if (!S) return NULL;
+	if (!T) return NULL;
+
+	for (sc = (unsigned char *)S, offset = 1; *sc != '�'; ++ offset, ++ sc)
+		/** letters in map. */
+		map [*sc] = offset;
+
+	qsort_r (T, strlen (T), sizeof(char), charcmp, (void *)&map[0]);
+	
+	return T;
+}

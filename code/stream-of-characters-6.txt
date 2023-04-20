@@ -1,0 +1,112 @@
+class StreamChecker {
+public:
+    struct Tries {
+        struct Node {
+            bool end = false;
+            bool suffixEnd = false;
+            int suffix = 0;
+            map<char, int> children;
+        };
+        vector<Node> nodes;
+        
+        Tries() {
+            nodes.resize(1);
+        }
+        
+        void add(const string& word) {
+            auto* current = &nodes[0];
+            for (auto c : word) {
+                auto it = current->children.find(c);
+                if (it == current->children.end()) {
+                    auto id = nodes.size();
+                    current->children[c] = id;
+                    nodes.emplace_back();
+                    current = &nodes[id];
+                } else {
+                    current = &nodes[it->second];
+                }
+            }
+            current->end = true;
+            current->suffixEnd = true;
+        }
+        
+        void buildLinks() {
+            deque<int> q = {0};
+            while (!q.empty()) {
+                auto id = q.front();
+                q.pop_front();
+                auto* current = &nodes[id];
+                for (auto& p : current->children) {
+                    if (id != 0) {
+                        // make suffix links
+                        auto suffix = current->suffix;
+                        while (true) {
+                            auto* suffixNode = &nodes[suffix];
+                            auto it = suffixNode->children.find(p.first);
+                            if (it != suffixNode->children.end()) {
+                                nodes[p.second].suffix = it->second;
+                                break;
+                            } else {
+                                if (suffix == 0) {
+                                    break;
+                                }
+                                suffix = suffixNode->suffix;
+                            }
+                        }
+                    }
+                    nodes[p.second].suffixEnd = nodes[p.second].suffixEnd || nodes[nodes[p.second].suffix].suffixEnd;
+                    q.push_back(p.second);
+                }
+            }
+        }
+        
+        bool query(const string& word) const {
+            auto* current = &nodes[0];
+            for (auto c : word) {
+                auto it = current->children.find(c);
+                if (it == current->children.end()) {
+                    return false;
+                }
+                current = &nodes[it->second];
+            }
+            return current->end;
+        }
+        
+        bool stepQuery(int& nodeId, char c) const {
+            while (true) {
+                auto* current = &nodes[nodeId];
+                auto it = current->children.find(c);
+                if (it != current->children.end()) {
+                    nodeId = it->second;
+                    return nodes[nodeId].suffixEnd;
+                }
+                if (nodeId == 0) {
+                    break;
+                }
+                nodeId = current->suffix;
+            }
+            return false;
+        }
+    };
+
+    StreamChecker(vector<string>& words) {
+        for (auto& word : words) {
+            tries.add(word);
+        }
+        tries.buildLinks();
+    }
+    
+    bool query(char letter) {
+        return tries.stepQuery(nodeId, letter);
+    }
+    
+private:
+    Tries tries;
+    int nodeId = 0;
+};
+
+/**
+ * Your StreamChecker object will be instantiated and called as such:
+ * StreamChecker* obj = new StreamChecker(words);
+ * bool param_1 = obj->query(letter);
+ */

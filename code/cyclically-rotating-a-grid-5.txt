@@ -1,0 +1,39 @@
+class Solution {
+public:
+    pair<int, int> get_2D(int index, int ch, int cw, int r, int c) {
+        if (index < cw) {
+            return {r, index + c};
+        } else if (index < cw + ch - 1) {
+            return {(index - (cw - 1)) + r, c + cw - 1};
+        } else if (index < 2 * cw + ch - 2) {
+            return {r + ch - 1, c + (cw - 1 - (index - (cw + ch - 2)))};   
+        } else {
+            return {r + ch - 1 - (index - (2 * cw + ch - 3)), c};
+        }
+    }
+    
+    vector<vector<int>> rotateGrid(vector<vector<int>>& grid, int k) {
+        int h = grid.size();
+        int w = grid[0].size();
+        vector<vector<int>> res(h, vector<int>(w, 0));
+        
+        int iterations = min(h, w) / 2;
+        
+        for (int iter = 0; iter < iterations; ++iter) {
+            int ch = h - 2 * iter;
+            int cw = w - 2 * iter;
+            int len = 2 * ch + 2 * cw - 4;
+            int ck = k % len;
+            
+            for (int idx = 0; idx < len; ++idx) {
+                auto [i, j] = get_2D(idx, ch, cw, iter, iter);
+                int pos = (idx - ck + len) % len;
+                
+                auto [pr, pc] = get_2D(pos, ch, cw, iter, iter);
+                res[pr][pc] = grid[i][j];
+            }
+        }
+        
+        return res;
+    }
+};

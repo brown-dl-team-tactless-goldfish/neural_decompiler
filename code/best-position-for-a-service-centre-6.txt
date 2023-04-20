@@ -1,0 +1,50 @@
+class point {
+    public:
+    double x, y;
+};
+class Solution {
+public:
+    double distSum(point p, vector<point> arr) {
+            double sum = 0;
+            for(int i = 0; i < arr.size(); i++) {
+                double dx = abs(arr[i].x - p.x);
+                double dy = abs(arr[i].y - p.y);
+                sum += sqrt(dx*dx + dy*dy);
+            }
+            return sum;
+    }
+    double getMinDistSum(vector<vector<int>>& A) {
+        int n = A.size();
+        const double lower_limit = 1e-6;
+        vector<point>arr;
+        for(auto a : A) {
+            point p;
+            p.x = a[0], p.y = a[1];
+            arr.push_back(p);
+        }
+        
+        point a;
+        a.x = 0, a.y = 0;
+        
+        double ans = DBL_MAX, step = 100;
+        const int d[5] = {0, -1, 0, 1, 0};
+        while(step > lower_limit) {
+            bool found = false;
+            point next;
+            for(int k = 0; k < 4; k++) {
+                next.x = current.x + step*d[k];
+                next.y = current.y + step*d[k+1];
+                double dist = distSum(next, arr);
+                if(dist < ans) {
+                    ans = dist;
+                    current.x = next.x, current.y = next.y;
+                    found = true;
+                    break;
+                }
+            }
+            if(!found) step /= 2;
+        }
+        
+        return ans;
+    }
+};

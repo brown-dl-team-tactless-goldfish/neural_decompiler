@@ -1,0 +1,86 @@
+struct Node
+{
+    bool visited;
+    int children;
+    int *adjList;
+};
+
+#define MAX(X, Y) (((X) > (Y)) ? (X) : (Y))
+
+void dfs(int curNode, int *dist, struct Node **root, int partentSize, char *s, int *result);
+
+int longestPath(int* parent, int parentSize, char * s)
+{
+    int i;
+    int result = 1;
+    int *count = malloc(sizeof(int) * parentSize);
+    int dist[parentSize]; 
+    struct Node **root = malloc(sizeof(struct Node *) * parentSize);
+    struct Node *curNode;
+
+    memset(count, 0, sizeof(int) * parentSize);
+    memset(dist, 0, sizeof(int) * parentSize);
+
+
+    for(i = 1; i < parentSize; i++)
+    {
+        count[parent[i]] += 1;
+        count[i] += 1;
+    }
+
+    for(i = 0; i < parentSize; i++)
+    {
+        root[i] = malloc(sizeof(struct Node));
+        root[i]->visited = false;
+        root[i]->children = 0;
+        root[i]->adjList = malloc(sizeof(int) * count[i]);
+    }
+
+    for(i = 1; i < parentSize; i++)
+    {
+        curNode = root[parent[i]];
+        curNode->adjList[curNode->children] = i;
+        curNode->children += 1;
+
+        curNode = root[i];
+        curNode->adjList[curNode->children] = parent[i];
+        curNode->children += 1;
+    }
+
+    dfs(0, dist, root, parentSize, s, &result);
+
+    free(count);
+
+    for(i = 0; i < parentSize; i++)
+    {
+        free(root[i]->adjList);
+        free(root[i]);
+    }
+
+    free(root);
+
+    return result;
+}
+
+void dfs(int curNode, int *dist, struct Node **root, int parentSize, char *s, int *result)
+{
+    int i;
+    int curChild;
+
+    dist[curNode] = 1;
+    root[curNode]->visited = true;
+
+    for(i = 0; i < root[curNode]->children; i++)
+    {
+        curChild = root[curNode]->adjList[i];
+        if(!root[curChild]->visited)
+        {
+            dfs(curChild, dist, root, parentSize, s, result);
+            if(s[curNode] != s[curChild])
+            {
+                *result = MAX(*result, dist[curNode] + dist[curChild]);
+                dist[curNode] = MAX(dist[curNode],dist[curChild]+1);
+            }
+        }
+    }
+}

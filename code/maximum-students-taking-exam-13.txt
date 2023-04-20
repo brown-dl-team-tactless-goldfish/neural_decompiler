@@ -1,0 +1,50 @@
+public int MaxStudents(char[][] seats)
+{
+	int rows = seats.Length;
+	int columns = seats[0].Length;
+	List<int> validity = new List<int>();
+	for (int i = 0; i < rows; i++)
+	{
+		int cur = 0;
+		for (int j = 0; j < columns; j++)
+		{
+			cur = cur * 2 + (seats[i][j] == '.' ? 1 : 0);
+		}
+		validity.Add(cur);
+	}
+
+	int maxStates = 1 << columns;
+	int[,] f = new int[rows + 1, maxStates];
+	f[0, 0] = 0;
+	int max = int.MinValue;
+	int[] bitCount = new int[maxStates];
+
+	for (int i = 1; i <= rows; i++)
+	{
+		int valid = validity[i - 1];
+
+		for (int j = 0; j < maxStates; j++)
+		{
+			f[i, j] = -1;
+			bitCount[j] = bitCount[j / 2] + j % 2;
+
+			// (j & valid) == j: check if j is a subset of valid
+			// (j & (j >> 1)): check if there is no adjancent students in the row
+
+			if ((j & valid) == j && (j & (j >> 1)) == 0)
+			{
+				for (int k = 0; k < maxStates; k++)
+				{
+					// upper left, upper right, valid f[i - 1, mask`]
+					if ((j & (k >> 1)) == 0 && (j & (k << 1)) == 0 && f[i - 1, k] != -1)
+					{
+						f[i, j] = Math.Max(f[i, j], f[i - 1, k] + bitCount[j]);
+						max = Math.Max(max, f[i, j]);
+					}
+				}
+			}
+		}
+	}
+	
+	return max;
+}

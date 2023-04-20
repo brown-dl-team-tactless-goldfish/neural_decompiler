@@ -1,0 +1,36 @@
+bool try_touch(int* nums, int touching, int direction, int size, int* next) {
+    int jmp = *(nums + touching);
+    if (jmp == 0) {
+        return true;
+    }
+    if (jmp % size == 0) {  // link to itself
+        if (touching == *next) ++*next;
+        return false;
+    }
+    if ((jmp < 0 && direction > 0) || (jmp > 0 && direction < 0)) {
+        return false;
+    }
+    if (touching == *next) {
+        ++*next;
+    }
+    *(nums + touching) = 0;  // mark it, has loop if touch again
+    int try_next = (jmp + touching) % size;
+    if (try_next < 0) {
+        try_next += size;
+    }
+    if (try_touch(nums, try_next, jmp, size, next)) {
+        return true;
+    }
+    *(nums + touching) = size;  // mark it has tried
+    return false;
+}
+
+bool circularArrayLoop(int* nums, int numsSize) {
+    int next = 0;
+    while (next < numsSize) {
+        if (try_touch(nums, next, 0, numsSize, &next)) {
+            return true;
+        }
+    }
+    return false;
+}

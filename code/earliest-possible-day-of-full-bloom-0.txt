@@ -1,0 +1,28 @@
+int cmp(const void* a, const void* b){
+    int* A = *(int**)a;
+    int* B = *(int**)b;
+    return B[1] - A[1];
+}
+int earliestFullBloom(int* plantTime, int plantTimeSize, int* growTime, int growTimeSize){
+    int n = plantTimeSize;
+    int total_plant = 0;
+    int** set = malloc(n * sizeof(int*));
+    for(int i = 0; i < n; i++){
+        total_plant += plantTime[i];
+        set[i] = malloc(2 * sizeof(int));
+        set[i][0] = plantTime[i];
+        set[i][1] = growTime[i];
+    }
+    qsort(set, n, sizeof(int*), cmp);
+    int max = set[0][0] + set[0][1];
+    int preSum = set[0][0];
+    for(int i = 1; i < n; i++){
+        preSum += set[i][0];
+        int cur = preSum + set[i][1];
+        max= fmax(max, cur);
+    }
+    for(int i = 0; i < n; i++)
+        free(set[i]);
+    free(set);
+    return  max;
+}

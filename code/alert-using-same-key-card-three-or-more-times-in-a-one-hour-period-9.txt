@@ -1,0 +1,30 @@
+class Solution {
+public:
+    bool diff(string &a,string &b){
+        int ind1=a.find(':'),ind2=b.find(':');
+        int hh1=stoi(a.substr(0,ind1));
+        int mm1=stoi(a.substr(ind1+1));
+        int hh2=stoi(b.substr(0,ind2));
+        int mm2=stoi(b.substr(ind2+1));
+        if(mm1<mm2)mm1+=60,hh1--;
+        return (hh1-hh2)*60+mm1-mm2<=60;
+        
+    }
+    vector<string> alertNames(vector<string>& kn, vector<string>& kt) {
+        vector<string> ans;
+        unordered_map<string,vector<string>> mp;
+        for(int i=0;i<kn.size();i++){
+            mp[kn[i]].push_back(kt[i]);
+        }
+        for(auto &it:mp){
+            vector<string> t=it.second;
+            if(t.size()<=2)continue;
+            sort(t.begin(),t.end());
+            for(int i=0;i<t.size()-2;i++){
+                if(diff(t[i+2],t[i])){ans.push_back(it.first);break;}
+            }
+        }
+        sort(ans.begin(),ans.end());
+        return ans;
+    }
+};

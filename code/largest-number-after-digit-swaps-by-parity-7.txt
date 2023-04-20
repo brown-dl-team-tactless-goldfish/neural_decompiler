@@ -1,0 +1,37 @@
+int cmp(void* u, void* v)
+{
+    return *(int*)u - *(int*)v;
+}
+
+int largestInteger(int num){
+
+    int* u = malloc(10*sizeof(int));
+    int* g = malloc(10*sizeof(int));
+    int* f = malloc(10*sizeof(int));
+ 
+    int i_g = 0, i_u = 0, i_f = 0;
+    while(num > 0)
+    {
+        int r = num % 10;
+        f[i_f++] = r % 2;
+        if(r % 2 == 0)
+            g[i_g++] = r;
+        else
+            u[i_u++] = r;
+        num = num -r;
+        num = num/10;
+    }
+    qsort(u, i_u, sizeof(int), cmp);
+    qsort(g, i_g, sizeof(int), cmp);
+    
+    int out = 0; int k_g = 0; int k_u = 0; long p = 1;
+    for(int i = 0; i < i_f; i++)
+    {
+        if(f[i] == 0)
+            out = out + g[k_g++]*p; 
+        else
+            out = out + u[k_u++]*p;
+        p *= 10;
+    }
+    return (int)out;
+}

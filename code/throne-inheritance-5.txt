@@ -1,0 +1,34 @@
+struct Successor {
+    Successor(): children{std::vector<string>()}, dead{false} {}
+    std::vector<string> children;
+    bool dead;
+};
+
+class ThroneInheritance {
+public:
+    ThroneInheritance(string kingName): i{0}, king{kingName} {}
+    
+    void birth(string parentName, string childName) {
+        people[parentName].children.emplace_back(childName);
+    }
+    
+    void death(string name) {
+        people[name].dead = true;
+    }
+    
+    vector<string> getInheritanceOrder() {
+        std::vector<string> res;
+        search(king, res);
+        return res;
+    }
+    
+    void search(const std::string& cur, std::vector<string>& res) {
+        auto &[children, dead]{people[cur]}; 
+        if(!dead) res.emplace_back(cur);
+        for(const auto &c: children) search(c, res);
+    }
+    
+    int i;
+    string king;
+    std::unordered_map<string, Successor> people;
+};

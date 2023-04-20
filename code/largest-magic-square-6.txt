@@ -1,0 +1,91 @@
+class Solution {
+public:
+    
+//  Each time called this function, we build the sum info by previous information and "k"th inforamtion
+//  eg. 1 2 3      -----                                    ------- 
+//      4 5 6  ->  | 1 | 2 3                            ->  | 1 2 | 3
+//      7 8 9      -----                                    | 4 5 | 6
+//                   4   5 6                                -------
+//                   7   8 9                                  7 8   9
+//     
+//                 base case (i = 0, j = 0, k = 1)
+// 
+//                 row_sum = {1}                             row_sum = {1 + 2, 4 + 5}
+//                 col_sum = {1}                             col_sum = {1 + 4, 2 + 5}
+//                 diag_sum = {1, 1}                         diag_sum = {1 + 5, 2 + 4}
+bool is_magic_square(vector<vector<int>> &grid, vector<int> &row_sum, vector<int> &col_sum, vector<int> &diag_sum, int i, int j, int k) {
+        int current_row_idx = i + k - 1;
+        int current_col_idx = j + k - 1;
+        
+        for (int r = 0; r < row_sum.size(); ++r) {
+            row_sum[r] += grid[i + r][current_col_idx];
+        }
+        
+        for (int c = 0; c < col_sum.size(); ++c) {
+            col_sum[c] += grid[current_row_idx][j + c];
+        }
+        
+        int additional_row_sum = 0;
+        for (int c = j; c < j + k; ++c) {
+            additional_row_sum += grid[current_row_idx][c];
+        }
+        row_sum.push_back(additional_row_sum);
+        
+        int additional_col_sum = 0;
+        for (int r = i; r < i + k; ++r) {
+            additional_col_sum += grid[r][current_col_idx];
+        }
+        col_sum.push_back(additional_col_sum);
+        
+        int diag_rev_sum = 0;
+        for (int p = 0; p < k; ++p) {
+            diag_rev_sum += grid[current_row_idx - p][j + p];
+        }
+        
+        diag_sum[0] += grid[current_row_idx][current_col_idx];
+        diag_sum[1] = diag_rev_sum;
+        
+        int current_value = diag_rev_sum;
+        for (int val : row_sum) {
+            if (val != current_value) {
+                return false;
+            }
+        }
+        for (int val : col_sum) {
+            if (val != current_value) {
+                return false;
+            }
+        }
+        for (int val : diag_sum) {
+            if (val != current_value) {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+    
+    int largestMagicSquare(vector<vector<int>>& grid) {
+        int h = grid.size();
+        int w = grid[0].size();
+        int ans = 1;
+        
+        for (int i = 0; i < h; ++i) {
+            for (int j = 0; j < w; ++j) {
+                
+                vector<int> row_sum = {grid[i][j]};
+                vector<int> col_sum = {grid[i][j]};
+                vector<int> diag_sum = {grid[i][j], grid[i][j]};
+                
+                // k represent the magic square size
+                for (int k = 2; k <= min(w - j, h - i); ++k) {
+                    if (is_magic_square(grid, row_sum, col_sum, diag_sum, i, j, k)) {
+                        ans = max(ans, k);
+                    }
+                }
+            }
+        }
+        
+        return ans;
+    }
+};

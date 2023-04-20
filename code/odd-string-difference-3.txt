@@ -1,0 +1,29 @@
+#define difference(x,y) ((x) - 'a') - ((y) - 'a');
+
+char * oddString(char ** words, int wordsSize){
+    int *checksum = (int*)calloc(wordsSize,sizeof(int));
+    int i = 0;
+
+    while(words[0][i + 1] != '\0')
+    {
+        uint8_t check = 0;
+        for(uint8_t j = 0; j < wordsSize ;j++)
+        {
+            checksum[j] = difference(words[j][i + 1], words[j][i]); 
+            if(j > 0)
+            {
+                if(checksum[j-1] != checksum[j])  check = 1;
+                if(check)
+                {
+                    if(j + 1 >= wordsSize) return &words[j][0];
+                    checksum[j + 1] = difference(words[j+1][i + 1],words[j+1][i]);
+                    if(checksum[j] == checksum[j+1]) return &words[j-1][0];
+                    return &words[j][0];
+                }
+            }
+        }
+        i++;
+    }
+    return &words[0][0];
+
+}

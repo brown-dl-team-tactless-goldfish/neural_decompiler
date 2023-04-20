@@ -1,0 +1,59 @@
+class Solution {
+public:
+    vector<int>v;
+    void find(TreeNode*root)
+    {
+        if(root==NULL)
+        {
+            return ;
+        }
+        find(root->left);
+        v.push_back(root->val);
+        find(root->right);
+    }
+    vector<vector<int>> closestNodes(TreeNode* root, vector<int>& q)
+    {
+        v.clear();
+        find(root);
+        int n=v.size();
+        vector<vector<int>>ans;
+        for(auto it:q)
+        {
+            int x=it;
+            auto index=lower_bound(v.begin(),v.end(),x)-v.begin();
+            if(index>=0&&index<n)
+            {
+                int first=-1;
+                int second=-1;
+                if(v[index]<=x)
+                {
+                    first=v[index];
+                }
+                else if(index-1>=0&&v[index-1]<=x)
+                {
+                    first=v[index-1];
+                }
+                if(v[index]>=x)
+                {
+                    second=v[index];
+                }
+                else if(index+1<n&&v[index+1]>=x)
+                {
+                    second=v[index+1];
+                }
+                ans.push_back({first,second});
+            }
+            else
+            {
+                int first=-1;
+                int second=-1;
+                if(index-1>=0&&v[index-1]<=x)
+                {
+                    first=v[index-1];
+                }
+                ans.push_back({first,second});
+            }
+        }
+        return ans;
+    }
+};

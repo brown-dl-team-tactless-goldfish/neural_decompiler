@@ -1,0 +1,83 @@
+int lengthLongestPath(char* input) {
+    char* sub;
+    int dep = 0;
+    int len =0;
+    int file = 0;
+    int maxdep = caldep(input);
+    int levels[maxdep+1];
+    sub = strtok(input, "\n");
+    long longest  =0 ;
+    
+    while(sub) {
+        dep = caldep(sub);
+        len = count(sub, 0, &file);
+        printf("dep %d c %d\n", dep, len);
+        levels[dep] = len;
+        if(file) {
+            //file, calculat the length;
+            len = caltotal(levels, dep);
+            //checking max value
+            longest = longest > len ? longest: len;
+        }
+        
+        sub = strtok( NULL, "\n");
+    }
+    return longest;
+    
+}
+
+int caltotal(int* levels, int last){
+    int t =0;
+    int index;
+    
+    for(index = 0; index <= last; index++){
+        t += levels[index];
+        if(index != last) {
+            t++;
+        }
+    }
+    return t;
+}
+
+int caldep(char*input) {
+    
+    int index = 0;
+    int max, dep=0;
+    
+    for(;input[index] !='\0'; index++) {
+        if(input[index] == '\n') {
+            max = max < dep ? dep: max;
+            dep = 0;
+        }else if(input[index] == '\t') {
+            dep++;
+        }
+    }
+    
+    if(!max) {
+        max = dep;
+    }
+    return max;
+}
+
+int count(char*input, int index, int* file) {
+    int i = index;
+    int len = 0;
+    int dirStarts = 0;
+    *file = 0;
+    
+    for(;input[i] !='\0'; i++) {
+        if(input[i] == '\n'|| input[i] =='\t') {
+            if(dirStarts) {
+               break;
+            }
+        }else{
+            len++;
+            dirStarts = 1;
+            if(input[i] == '.'){
+                *file =1;
+            }
+        }
+    }
+    
+    return len;
+}

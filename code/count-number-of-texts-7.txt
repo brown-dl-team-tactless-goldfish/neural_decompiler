@@ -1,0 +1,20 @@
+const string letterMap[] = { " ", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz" };
+
+class Solution {
+public:
+    int countTexts(const string& s) {
+		vector<int> count(s.size() + 1);
+		count[0] = 1;
+
+		int l = 1, mod = 1e9 + 7;
+		for (int i = 1; i <= s.size(); ++i) {
+			if (s[i - 1] != s[l - 1]) {
+				l = i;
+			}
+			for (int len = 1; len <= min(i - l + 1, (int)letterMap[s[l - 1] - '0'].size()); ++len) {
+				count[i] = (count[i] + count[i - len]) % mod;
+			}
+		}
+		return count[s.size()];
+	}
+};

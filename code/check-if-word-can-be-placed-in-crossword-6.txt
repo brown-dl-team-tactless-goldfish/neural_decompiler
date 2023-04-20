@@ -1,0 +1,173 @@
+template <typename C,
+          typename T = std::decay_t<decltype(*begin(std::declval<C>()))>,
+          typename std::enable_if<!std::is_same<C, std::string>::value>::type * = nullptr>
+std::ostream &operator<<(std::ostream &os, const C &container)
+{
+    bool first = true;
+    std::stringstream ss;
+    ss << '[';
+    for (const auto &x : container)
+    {
+        if (!first)
+        {
+            ss << ", ";
+        }
+        first = false;
+        ss << x;
+    }
+    ss << ']';
+    return os << ss.str();
+}
+template <class T1, class T2>
+std::ostream &operator<<(std::ostream &os, const std::pair<T1, T2> &p)
+{
+    os << '{' << p.first << ", " << p.second << '}';
+    return os;
+}
+
+//---- For beginners : Above is template to print vector (helpful while debugging) ---------
+
+class Solution {
+public:
+    bool placeWordInCrossword(vector<vector<char>>& board, string word) {
+        
+        int i,j, row=board.size(), col = board[0].size(), len=word.size(), cnt=0;
+        
+        
+        vector<string>hori,ver;
+        
+	    //-------------- Checking for vertical placement using 2-pointer approach ------------
+        //--- between 2 blocked cells take the string of size equal to length of word 
+        for(j=0;j<col;j++){
+            
+            i=0;
+            string  s="";
+            
+            while(i<row){
+                
+                if(board[i][j]!='#'){
+                    s=s+board[i][j];
+                }
+                else{
+                    
+                    if(s.size()==len){
+                        ver.push_back(s);
+                    }
+                    s="";
+                }
+                
+                i++;
+            }
+            
+            if(s.size()==len){
+                ver.push_back(s);
+            }
+        }
+       
+	   
+	   //----------- Checking for horizontal placement using 2-pointer approach ------------
+        //--- between 2 blocked cells take the string of size equal to length of word 
+		
+		
+        for(j=0;j<row;j++){
+            
+            i=0;
+            string  s="";
+            
+            while(i<col){
+                
+                if(board[j][i]!='#'){
+                    s=s+board[j][i];
+                }
+                else{
+                    
+                    if(s.size()==len){
+                        hori.push_back(s);
+                    }
+                    s="";
+                }
+                
+                i++;
+            }
+            
+            if(s.size()==len){
+                hori.push_back(s);
+            }
+        }
+   
+  // to print vectors storing possible horizontal and vertical placement string of same length as of given word
+//         cout<<hori<<endl;
+//         cout<<ver<<endl;
+        
+
+        
+        bool ok=false;
+        
+        string rev_word = word;
+        reverse(rev_word.begin(), rev_word.end());
+        
+        for(auto s:hori){
+            
+            cnt=0;
+            
+            for(i=0;i<s.size();i++){
+                
+                if(s[i]==' ' || (s[i]==word[i])){
+                    cnt++;
+                }
+            }
+            
+            if(cnt==len){
+                return true;
+            }
+            
+            cnt=0;
+            
+            for(i=0;i<s.size();i++){
+                
+                if(s[i]==' ' || (s[i]==rev_word[i])){
+                    cnt++;
+                }
+            }
+            
+            if(cnt==len){
+                return true;
+            }
+            
+            
+        }
+        
+        for(auto s:ver){
+            
+            cnt=0;
+            
+            for(i=0;i<s.size();i++){
+                
+                if(s[i]==' ' || (s[i]==word[i])){
+                    cnt++;
+                }
+            }
+            
+            if(cnt==len){
+                return true;
+            }
+            
+            cnt=0;
+            
+            for(i=0;i<s.size();i++){
+                
+                if(s[i]==' ' || (s[i]==rev_word[i])){
+                    cnt++;
+                }
+            }
+            
+            if(cnt==len){
+                return true;
+            }
+            
+            
+        }
+        
+        return false;
+    }
+};

@@ -1,0 +1,56 @@
+bool isMatch(int * arr1, int * arr2);
+
+bool checkInclusion(char * s1, char * s2){
+/*  the idea of this method is to use an array of size 26 to represent each letter
+    count each letter in s1 and s2
+    a window slide on the two counter arrays will be used to check for inclusion */
+
+int s1Len = strlen(s1);
+int s2Len = strlen(s2);
+
+/* if s1 is longer than s2 then there is no way s2 can contain s1; thus we return false right away */
+if (s1Len > s2Len) {
+    return false;
+}
+/* initiate variables here */
+int* s1Counter = (int*) calloc(26, sizeof(int));
+int* s2Counter = (int*) calloc(26, sizeof(int));
+bool check;
+/* fill in the counter */
+for (int i = 0; i < strlen(s1); i++) {
+    s1Counter[s1[i]-'a']++;
+    s2Counter[s2[i]-'a']++;
+} 
+/*  slide the window and compare if the two counters match or not
+    if not, add in the immediate right element and remove the left-most one */
+for (int i = 0; i < (s2Len - s1Len + 1); i++) {
+    check = isMatch(s1Counter, s2Counter);
+    if (check) {
+        /* if match, free memory and return */
+        free(s2Counter);
+        free(s1Counter);
+        return true;
+    }
+    if (i == s2Len - s1Len) {
+	/* break at the end of the string; otherwise the increment will cause heap overflow */
+        break;
+    }
+    s2Counter[s2[i]-'a']--;
+    s2Counter[s2[i+s1Len]-'a']++;
+}    
+/* if they don't match, free memory and return */
+free(s2Counter);
+free(s1Counter);
+return false;
+}
+
+bool isMatch(int * arr1, int * arr2) {
+/*  compare the composition of letters from the two array
+    the size should always be 26 as the strings only contains lower-case letters */
+for (int i = 0; i < 26; i++) {
+    if (arr1[i] != arr2[i]) {
+        return false;
+    }
+}
+return true;
+}

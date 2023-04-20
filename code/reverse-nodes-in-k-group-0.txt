@@ -1,0 +1,62 @@
+struct ListNode* reverseKGroup(struct ListNode* head, int k) {
+
+	if (k == 1) return head;
+
+	struct ListNode* dummy = (struct ListNode*)malloc(sizeof(struct ListNode));
+	dummy->val = -1;
+	dummy->next = head;
+
+	struct ListNode* returnHead = NULL;
+
+	struct ListNode* start = dummy->next;
+	struct ListNode* pp_prev = dummy;
+	int firstTime = 1;
+	while (start != NULL)
+	{
+		struct ListNode* end = start;
+
+		int temp = 1;
+		while (temp < k && end != NULL)
+		{
+			end = end->next;
+			temp++;
+			if (firstTime == 1)
+				returnHead = end;
+
+		}
+		firstTime = 0;
+
+		if (end == NULL) break;
+
+		struct ListNode* aa_after = end->next;
+
+		// REVERSE START
+
+		pp_prev->next = NULL;
+		end->next = NULL;
+		struct ListNode* lastAfterReverse = start;
+		struct ListNode* prev = NULL;
+		struct ListNode* nnext = NULL;
+
+		while (start != NULL)
+		{
+			nnext = start->next;
+
+			start->next = prev;
+
+			prev = start;
+			start = nnext;
+		}
+
+		pp_prev->next = prev;
+		lastAfterReverse->next = aa_after;
+
+		// REVERSE END
+
+		pp_prev = lastAfterReverse;
+		start = pp_prev->next;
+
+	}
+
+	return returnHead;
+}

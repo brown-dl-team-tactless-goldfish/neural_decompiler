@@ -1,0 +1,35 @@
+int orangesRotting(int** grid, int gridSize, int* gridColSize){
+    //flag to mark if a change is made(2 to 1), one to mark if we see one
+    bool flag = 1, one = 0; 
+    int i, j, cnt = 0;
+    int **dp = malloc(gridSize *sizeof(int *));
+    // copy grid to dp
+    for (i=0; i<gridSize; i++) {
+        dp[i] = calloc(*gridColSize, sizeof(int));
+        memcpy(dp[i], grid[i], (*gridColSize)*sizeof(int));
+    }
+    
+    while (flag) {
+        flag = 0, one = 0;
+        for (i=0; i<gridSize; i++) {
+            for (j=0; j<*gridColSize; j++) {
+                if (grid[i][j]==1) {
+                    one = 1; // Mark we found one
+                    if ((i>0 && grid[i-1][j]==2)||(i<gridSize-1 &&grid[i+1][j]==2)||
+					(j>0 && grid[i][j-1]==2)|| (j<(*gridColSize)-1 && grid[i][j+1]==2)) {
+                        flag = 1; // Mark one is rotten
+                        dp[i][j]=2;
+                    } 
+                }
+            }
+        }
+        if (flag) { // if change was made, we copy dp to grid
+            for (i=0; i<gridSize; i++)
+                memcpy(grid[i], dp[i], (*gridColSize) * sizeof(int));
+            cnt++;
+        } else if (!flag && one) //one is insulated, return -1
+                return -1;
+
+    }
+    return cnt;
+}

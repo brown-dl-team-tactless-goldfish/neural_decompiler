@@ -1,0 +1,51 @@
+int mod = 1e9+7;
+
+int kadane(vector<int>& arr)
+{
+    int  curr_sum = 0;
+    
+    int  sum_so_far = 0;
+    
+    for(int i=0; i<arr.size(); i++)
+    {
+        curr_sum += arr[i];
+        if(curr_sum < 0)
+            curr_sum = 0;
+        else if(curr_sum > sum_so_far)
+            sum_so_far = curr_sum;
+        
+    }
+    return sum_so_far%mod;
+    
+   
+    
+}
+
+int kConcatenationMaxSum(vector<int>& arr, int k) 
+{
+  
+    if(k==1)
+    {
+        return kadane(arr);
+    }
+    
+    long sum = accumulate(arr.begin(),arr.end(), 0);
+    
+    vector<int> v1;
+    
+    for(int i=0; i < 2*arr.size(); i++)
+    {
+        v1.push_back(arr[i % arr.size()]);
+    }
+    
+    if(sum < 0)
+    {
+        return kadane(v1);
+    }
+    
+    else
+    {
+        return kadane(v1) + sum *(k-2) % mod ;
+    }
+    
+}

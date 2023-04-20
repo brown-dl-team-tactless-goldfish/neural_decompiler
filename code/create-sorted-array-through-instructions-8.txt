@@ -1,0 +1,141 @@
+public class Solution
+{
+    const int mod = 1000000007;
+    
+    public int CreateSortedArray(int[] instructions)
+    {
+        int totalCost = 0;
+        Node root = null;
+        foreach (int instruction in instructions)
+        {
+            root = Find(root, 0, 0, instruction, ref totalCost);
+        }
+        return totalCost;
+    }
+    
+    Node Find(Node node, int leftWeight, int rightWeight, int instruction, ref int totalCost)
+    {
+        if (node == null)
+        {
+            node = new Node(instruction);
+            totalCost += Math.Min(leftWeight, rightWeight);
+            totalCost %= mod;
+        }
+        else if (node.Instruction == instruction)
+        {
+            node.Occurances++;
+            totalCost += Math.Min(leftWeight + node.LeftWeight, rightWeight + node.RightWeight);
+            totalCost %= mod;
+        }
+        else if (node.Instruction > instruction)
+        {
+            node.Left = Find(node.Left, leftWeight, rightWeight + node.RightWeight + node.Occurances, instruction, ref totalCost);
+            if (node.LeftHeight > node.RightHeight + 1)
+            {
+                var left = node.Left;
+                node.Left = left.Right;
+                left.Right = node;
+                node = left;
+            }
+        }
+        else
+        {
+            node.Right = Find(node.Right, leftWeight + node.LeftWeight + node.Occurances, rightWeight, instruction, ref totalCost);
+            if (node.LeftHeight + 1 < node.RightHeight)
+            {
+                var right = node.Right;
+                node.Right = right.Left;
+                right.Left = node;
+                node = right;
+            }
+        }
+        return node;
+    }
+    
+    class Node
+    {
+        Node left;
+        Node right;
+        int occurances;
+        
+        public Node Left
+        {
+            get => left;
+            set => Update(ref left, value);
+        }
+        public Node Right
+        {
+            get => right;
+            set => Update(ref right, value);
+        }
+        public int Occurances
+        {
+            get => occurances;
+            set => Update(ref occurances, value);
+        }
+        public int Instruction
+        {
+            get;
+            private set;
+        }
+        public int Weight
+        {
+            get;
+            private set;
+        }
+        public int LeftWeight
+        {
+            get;
+            private set;
+        }
+        public int RightWeight
+        {
+            get;
+            private set;
+        }
+        public int Height
+        {
+            get;
+            private set;
+        }
+        public int LeftHeight
+        {
+            get;
+            private set;
+        }
+        public int RightHeight
+        {
+            get;
+            private set;
+        }
+        
+        public Node(int instruction)
+        {
+            this.Instruction = instruction;
+            this.Occurances = 1;
+        }
+        
+        void Update<T>(ref T var, T val)
+        {
+            var = val;
+            Calculate();
+        }
+        
+        void Calculate()
+        {
+            LeftWeight = RightWeight = LeftHeight = RightHeight = 0;
+            if (Left != null)
+            {
+                LeftWeight = Left.Weight;
+                LeftHeight = Left.Height;
+            }
+            if (Right != null)
+            {
+                RightWeight = Right.Weight;
+                RightHeight = Right.Height;
+            }
+            Height = 1 + Math.Max(LeftHeight, RightHeight);
+            Weight = Occurances + LeftWeight + RightWeight;
+        }
+    }
+}

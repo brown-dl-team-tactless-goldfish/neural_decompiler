@@ -1,0 +1,35 @@
+class Solution {
+public:
+    long long maxScore(vector<int>& nums1, vector<int>& nums2, int k) {
+        int len = nums1.size();
+        vector<int> idx(len);
+        iota(idx.begin(), idx.end(), 0);
+        sort(idx.begin(), idx.end(), [&](const int& lhs, const int& rhs) {
+            return nums2[lhs] < nums2[rhs];
+        });
+        long long ma = 0;
+        long long sum = 0;
+        // top k - 1 largest
+        priority_queue<int, vector<int>, greater<>> que;
+        for (int i = len - 1; i >= len - k; --i) {
+            sum += nums1[idx[i]];
+            que.push(nums1[idx[i]]);
+        }
+        ma = max(ma, sum * nums2[idx[len - k]]);
+        for (int i = len - k - 1; i >= 0; --i) {
+            long long temp_sum = sum;
+            temp_sum -= que.top();
+            sum -= que.top();
+            que.pop();
+            sum += max(que.top(), nums1[idx[i]]);
+            que.push(max(que.top(), nums1[idx[i]]));
+            // must include i with current smallest nums2[i]
+            temp_sum += nums1[idx[i]];
+            ma = max(ma, temp_sum * nums2[idx[i]]);
+        }
+        return ma;
+    }
+};
+
+// 3 1 3 2
+// 1 2 3 4

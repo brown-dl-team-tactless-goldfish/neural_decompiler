@@ -1,0 +1,45 @@
+class Solution {
+public:
+    vector<long long> maximumSegmentSum(vector<int>& nums, vector<int>& Queries) {
+        set<pair<int,int>> range;
+        multiset<long long> ms;
+        ms.insert(0);
+        vector<long long> a(nums.size());
+        a[0] = nums[0];
+        for(int i=1; i<nums.size(); i++) a[i] = nums[i] + a[i-1];
+        vector<long long> ans;
+        ms.insert(a.back());  // sum of range [0,n-1]
+        range.insert({0,nums.size()-1});  // range [0..n-1]
+        for(int q : Queries) {
+            auto pos = range.upper_bound({q,2e9});
+            if(pos == range.begin()) {
+                ans.push_back(0);
+                continue;
+            }
+            pos--;
+            
+            long long Left = (q ? a[q - 1] : 0) - (pos->first ? a[pos->first - 1] : 0);
+            long long Right = a[pos->second] - a[q];
+            long long cur = a[pos->second] - (pos->first ? a[pos->first - 1] : 0);
+            
+            
+            // range [1...4] , erase q = 3 , split into => range[1..2] & range[4..4]     
+            
+            if(pos->first<=q-1) {
+                 range.insert({pos->first,q-1});   // left split
+                 ms.insert(Left);
+            }
+            if(pos->second>=q+1) {
+                 range.insert({q+1,pos->second});   // rightsplit
+                 ms.insert(Right);
+            }
+            
+            ms.erase(ms.find(cur));  // erase the sum of range 
+            
+            range.erase(pos);  // erase the range
+         
+            ans.push_back(*ms.rbegin());   // maximum range sum
+        }
+        return ans;
+    }
+};

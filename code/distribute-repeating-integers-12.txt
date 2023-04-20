@@ -1,0 +1,32 @@
+class Solution {
+public:
+    bool rec(vector<int>& freq, vector<int>& quantity, int index){
+        if(index==quantity.size()){
+            return true;
+        }
+        for(int i=0;i<freq.size();i++){
+            if(freq[i]>=quantity[index]){
+                freq[i]-=quantity[index];
+                if(rec(freq, quantity, index+1)) return true;
+                freq[i]+=quantity[index];
+            }
+        }
+        return false;
+    }
+    
+    bool canDistribute(vector<int>& nums, vector<int>& quantity) {
+        sort(quantity.begin(), quantity.end(), greater());
+        
+        map<int, int> countMap;
+        for(int i=0;i<nums.size();i++){
+            countMap[nums[i]]++;
+        }
+        vector<int> freq;
+        for(map<int, int>::iterator it= countMap.begin(); it!=countMap.end();it++){
+            freq.push_back(it->second);
+        }
+        sort(freq.begin(), freq.end());
+        return rec(freq, quantity, 0);
+        //return true;
+    }
+};

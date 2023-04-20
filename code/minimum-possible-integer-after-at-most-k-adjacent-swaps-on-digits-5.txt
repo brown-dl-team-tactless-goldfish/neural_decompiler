@@ -1,0 +1,32 @@
+class Solution {
+public:
+    void helper(char *array, int k, int start, int n){
+        if (k == 0 or start >= n) // no moves left, done modifying the string
+            return; 
+        int min_idx = start;       // position of the closest min digit within k
+        for(int i = start+1; i < min(n, start + k + 1); i++)
+            if (array[i] < array[min_idx])
+                min_idx = i;
+		// found a smaller digit within k steps
+        if (min_idx > start){                       
+            char temp = array[min_idx];      // memorize the min
+            for(int j = min_idx; j > start; j--) //shift all digits
+                array[j] = array[j-1];
+            array[start] = temp;   // update the first digit
+            k -= (min_idx - start); // reduce k
+        }
+        return helper(array, k, start+1, n); // go to the next digit
+    }
+    string minInteger(string num, int k) {
+        int n = num.length();
+		// worst case digits in number in reverse sorted order, need (n-1) steps to move last to front, then (n-2) mooving new last and so on
+		// so we need max (n-1) + (n-2)+... + 1 = (n-1)*n/2 to sort
+        if (k >= (n*(n-1)) / 2){ 
+            sort(num.begin(),num.end());
+            return num;
+        }
+        
+        helper(&num[0], k, 0, n); // strings in c++ already array of chars
+        return num;
+    }
+};

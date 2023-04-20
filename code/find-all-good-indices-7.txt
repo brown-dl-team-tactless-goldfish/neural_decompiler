@@ -1,0 +1,34 @@
+    public IList<int> GoodIndices(int[] nums, int k) 
+    {
+        int n = nums.Length;
+
+        int[] leftDecreasing = new int[n];
+        int[] rightIcreasing = new int[n];
+        leftDecreasing[0] = 1;
+        for (int i = 1; i < n; i++)
+        {
+            if (nums[i] <= nums[i - 1])
+                leftDecreasing[i] = leftDecreasing[i - 1] + 1;
+            else
+                leftDecreasing[i] = 1;
+        }
+
+        rightIcreasing[n - 1] = 1;
+        for (int i = n - 2; i >= 0; i--)
+        {
+            if (nums[i] <= nums[i + 1])
+                rightIcreasing[i] = rightIcreasing[i + 1] + 1;
+            else
+                rightIcreasing[i] = 1;
+        }
+
+        IList<int> result = new List<int>();
+        for (int i = 1; i < n - 1; i++)
+        {
+            if (leftDecreasing[i - 1] >= k && rightIcreasing[i + 1] >= k)
+            {
+                result.Add(i);
+            }
+        }
+        return result;
+    }

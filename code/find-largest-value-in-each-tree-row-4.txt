@@ -1,0 +1,27 @@
+void travel(struct TreeNode* root,int cnt,int* idx,int *ret)
+{
+    if(!root)
+        return;
+    if(ret[cnt]<=root->val)
+    {
+        ret[cnt]=root->val;
+        if(*idx<cnt)
+            *idx=cnt;
+    }
+    travel(root->left,cnt+1,idx,ret);
+    travel(root->right,cnt+1,idx,ret);
+}
+int* largestValues(struct TreeNode* root, int* returnSize){
+    if(!root)
+    {
+        *returnSize=0;
+        return NULL;
+    }
+    int *ret=malloc(sizeof(int)*1000);
+    for(int i=0;i<1000;i++)
+        ret[i]=INT_MIN;
+    int idx=0;
+    travel(root,0,&idx,ret);
+    *returnSize=idx+1;
+    return ret;
+}

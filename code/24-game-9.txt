@@ -1,0 +1,52 @@
+class Solution {
+public:
+	bool dfs(vector<double> cnt)
+	{
+		if(cnt.size()==1)
+		{
+			return abs(cnt[0]-24)<=1e-6;
+		}
+
+		for(int i=0;i<cnt.size();i++)
+		{
+			for(int j=0;j<cnt.size();j++)
+			{
+				if(i==j) continue;
+				double a=cnt[i];
+				double b=cnt[j];
+				vector<double> temp;
+				for(int k=0;k<cnt.size();k++)
+				{
+					if(k!=i && k!=j)
+					{
+						temp.push_back(cnt[k]);
+					}
+				}
+
+				temp.push_back(-1);
+				temp.back()=a+b;
+				if(dfs(temp)) return true;
+				temp.back()=a-b;
+				if(dfs(temp)) return true;
+				temp.back()=a*b;
+				if(dfs(temp)) return true;
+				if(b!=0)
+				{
+					temp.back()=a/b;
+					if(dfs(temp)) return true;
+				}
+
+			}
+		}
+		return false;
+	}
+	bool judgePoint24(vector<int>& nums) {
+		vector<double> cnt;
+		for(auto& x:nums)
+		{
+			cnt.push_back(x*1.0);
+		}
+		return dfs(cnt);
+
+	}
+};

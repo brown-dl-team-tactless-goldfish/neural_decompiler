@@ -1,0 +1,46 @@
+class Solution {
+public:
+    
+    string maximumBinaryString(string s) {
+        
+        int st = -1, en = -1;
+        int n = s.length();
+        
+        // find index of the first and the last '0' 
+        // '11000100101111'
+        //    *------*
+        // we are not bothered about the prefix and suffix '1's
+        for(int i=0; i<n; i++) {
+            if(s[i] == '0') {
+                if(st == -1) {
+                    st = i;
+                }
+                en = i;
+            }
+        }
+        
+        if(st == -1) {
+            // if 0 '0's
+            // s is of type '1111111...'
+            return s;
+        }
+        
+        // count '0's
+        int z = 0;
+        for(int i=st; i<=en; i++) {
+            z += (s[i] == '0');
+        }
+        
+        // 00010010
+        // 1) shift all '1's to right 
+        // 00000011
+        // 2) convert each '00' pair to '10',
+        //    only 1 '0' remains and and z-1 '0' change to '1'
+        // 11111011
+        
+        string ans = string(st, '1') + string(z-1, '1') + "0" + string(en-st+1-z, '1') + string(n-1-en, '1');
+        //            prefix of '1's  +  z-1 '1's +  remaining '0' + remaining 1's    + suffix of 1's'        
+          
+        return ans;
+    }
+};

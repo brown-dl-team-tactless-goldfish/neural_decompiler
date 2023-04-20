@@ -1,0 +1,37 @@
+class Graph {
+public:
+    vector<vector<vector<int>>> g;
+    int N;
+    Graph(int n, vector<vector<int>>& edges) {
+        g.resize(n);
+        N = n;
+        for(auto &x: edges) {
+            g[x[0]].push_back({x[1],x[2]});
+        }
+        
+    }
+    
+    void addEdge(vector<int> edge) {
+        g[edge[0]].push_back({edge[1],edge[2]});
+
+    }
+    
+    int shortestPath(int node1, int node2) {
+        priority_queue<pair<int,int>,vector<pair<int,int>>, greater<>> pq;
+        
+        pq.push({0,node1});
+        
+        while(pq.size()) {
+            int cst = pq.top().first, node = pq.top().second;
+            pq.pop();
+            for(auto &x: g[node]) {
+                if(cost[x[0]] > cst+x[1]) {
+                    cost[x[0]] = cst+x[1];
+                    pq.push({cost[x[0]],x[0]});
+                }
+            }
+        }
+        
+        return cost[node2] >= 1e9 ? -1 : cost[node2];
+    }
+};

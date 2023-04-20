@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int maxPalindromes(string s, int k) {
+        unordered_map<int, int> even;
+        unordered_map<int, int> odd;
+        int len = s.length();
+        for (int i = 0; i < len; ++i) {
+            int l = i, r = i + 1;
+            for (; l >= 0 && r < len; --l, ++r) {
+                if (s[l] != s[r]) {
+                    break;
+                }
+            }
+            l++, r--;
+            if (l < r) {
+                even[i] = l;
+            }
+            l = i; 
+            r = i;
+            for (; l >= 0 && r < len; --l, ++r) {
+                if (s[l] != s[r]) {
+                    break;
+                }
+            }
+            l++, r--;
+            if (l <= r) {
+                odd[i] = l;
+            }
+        }
+        vector<int> dp(len + 1, 0);
+        for (int i = 1; i <= len; ++i) {
+            dp[i] = dp[i - 1];
+            for (int j = 0; j < i; ++j) {
+                if (even.count(j) && j - even[j] >= i - 1 - j - 1) {
+                    int l = j - (i - 1 - j - 1);
+                    if (i - l >= k) {
+                        dp[i] = max(dp[i], 1 + dp[l]);
+                    }
+                }
+                if (odd.count(j) && j - odd[j] >= i - 1 - j) {
+                    int l = j - (i - 1 - j);
+                    if (i - l >= k) {
+                        dp[i] = max(dp[i], 1 + dp[l]);
+                    }
+                }
+            }
+        }
+        return dp[len];
+    }
+};

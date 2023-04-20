@@ -1,0 +1,170 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+// RS Hash Function
+unsigned int RSHash1(char *str)
+{
+    unsigned int b = 378551;
+    unsigned int a = 63689;
+    unsigned int hash = 0;
+
+    while (*str)
+    {
+        hash = hash * a + (*str++);
+        a *= b;
+    }
+
+    return (hash & 0x7FFFFFFF);
+}
+
+// RS Hash Function
+unsigned int RSHash2(char *str)
+{
+    unsigned int b = 378551;
+    unsigned int a = 63689;
+    unsigned int hash = 0;
+
+    while (*str)
+    {
+        char c = *str;
+        if(c >= 'A' && c <= 'Z'){
+            c = c- 'A' + 'a';
+        }
+        hash = hash * a + c;
+        *str++;
+        a *= b;
+    }
+
+    return (hash & 0x7FFFFFFF);
+}
+
+// RS Hash Function
+unsigned int RSHash3(char *str)
+{
+    unsigned int b = 378551;
+    unsigned int a = 63689;
+    unsigned int hash = 0;
+
+    while (*str)
+    {
+        char c = *str;
+        if( c == 'a'|| c == 'e' || c == 'i' || c == 'o' || c == 'u')
+            c = 'A' ;
+        else if( c == 'A'|| c == 'E' || c == 'I' || c == 'O' || c == 'U')
+            c = 'A';
+        else if(c >= 'A' && c <='Z')
+            c = c -'A' + 'a';
+        
+        hash = hash * a + c;
+        *str++;
+        a *= b;
+    }
+
+    return (hash & 0x7FFFFFFF);    
+}
+
+char ** spellchecker(char ** wordlist, int wordlistSize, char ** queries, int queriesSize, int* returnSize){
+    int N = 10 * wordlistSize;
+    unsigned int** hash1 = calloc(N , sizeof(unsigned int*)) ;  
+    unsigned int** hash2 = calloc(N , sizeof(unsigned int*)) ;
+    unsigned int** hash3 = calloc(N , sizeof(unsigned int*)) ;
+    for(int i = 0; i < wordlistSize; i++){
+        //hash1
+        unsigned val = RSHash1(wordlist[i]);
+        unsigned d = val;
+        while(1){
+            if(hash1[d % N] == NULL){
+                hash1[d % N] = malloc(2 * sizeof(unsigned int));
+                hash1[d % N][0] = val; 
+                hash1[d % N][1] = i;
+                break;
+            } 
+            else
+                d++;
+        }
+        //hash2 
+        val = RSHash2(wordlist[i]);
+        d = val;
+        while(1){
+            if(hash2[d % N] == NULL){
+                hash2[d % N] = malloc(2 * sizeof(unsigned int));
+                hash2[d % N][0] = val; 
+                hash2[d % N][1] = i;
+                break;
+            } 
+            else
+                d++;
+        }
+        //hash3 
+        val = RSHash3(wordlist[i]);
+        d = val;
+        while(1){
+            if(hash3[d % N] == NULL){
+                hash3[d % N] = malloc(2* sizeof(unsigned int));
+                hash3[d % N][0] = val; 
+                hash3[d % N][1] = i;
+                break;
+            } 
+            else
+                d++;
+        }
+    }
+    
+    char** ans = malloc(queriesSize * sizeof(char*));
+    unsigned int val, d;
+    for(int i = 0; i < queriesSize; i++){
+        ans[i] = malloc(8 * sizeof(char));  
+        //check hash2    
+        val = RSHash1(queries[i]);
+        d = val ;
+        while(1){
+            if(hash1[d % N] == NULL)
+                break;
+            else if(hash1[d % N][0] == val ){
+                int pos = hash1[d % N][1];
+                strcpy(ans[i], wordlist[pos]);
+                goto next;
+            }
+            else
+                d++;
+        }
+        //check hash2    
+         val = RSHash2(queries[i]);
+         d = val ;
+         while(1){
+            if(hash2[d % N] == NULL)
+                break;
+            else if(hash2[d % N][0] == val ){
+                int pos = hash2[d % N][1];
+                strcpy(ans[i], wordlist[pos]);
+                goto next;
+            }
+            else
+                d++;
+        }
+        //check hash3 
+        val = RSHash3(queries[i]);
+        d = val ;
+        while(1){
+            if(hash3[d % N] == NULL)
+                break;
+            else if(hash3[d % N][0] == val ){
+                int pos = hash3[d % N][1];
+                //printf("pos = %d,", pos);
+                strcpy(ans[i], wordlist[pos]);
+                goto next;
+            }
+            else
+                d++;
+        }
+        
+        ans[i] = "";
+        next:
+            continue;
+    }
+    *returnSize = queriesSize;
+    return ans;
+}

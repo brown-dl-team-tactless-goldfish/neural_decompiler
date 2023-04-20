@@ -1,0 +1,34 @@
+#define ll long long
+class Solution {
+public:
+    long long kSum(vector<int>& nums, int k) {
+        
+		ll sum=0,n=nums.size();
+        vector<ll> ans;  // vector to store first k maximum subsequence sum
+        for(ll i=0;i<nums.size();i++)
+        {
+            if(nums[i]>0)
+                sum+=nums[i]; // find the maximum possible sum
+            nums[i]=abs(nums[i]); // make all values of nums >=0
+			
+        }
+        ans.push_back(sum); // push the highest possible sum
+        priority_queue<pair<ll,ll>> pq;  // priority queue to store the pair of sum and index, which denotes maximum sum if the current index value is excluded.
+        sort(nums.begin(),nums.end()); // sort the nums so that we include and exclude minimum value first to get highest subsequence values 
+        pq.push({sum-nums[0],0}); // push sum-nums[0], 0 ....which denotes max subsequence sum when index 0 is excluded.
+		// while we don't get the kth highest subsequence sum do the operation
+        while(ans.size()<k)
+        {
+            auto [sum,ind]=pq.top();
+            pq.pop();
+            if(ind+1<n)
+            {
+			
+                pq.push({sum+nums[ind]-nums[ind+1],ind+1}); // if next index is possible, this case considers if we take the previous index and exclude the latest one i.e. ind+1
+                pq.push({sum-nums[ind+1],ind+1}); // if next is possible, this case considers, if we exclude both previous index as well as latest possible index i.e. ind+1
+            }
+            ans.push_back(sum);			//push the next highest subsequence sum
+        }
+        return ans.back();            
+    }
+};

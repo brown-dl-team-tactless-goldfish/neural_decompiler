@@ -1,0 +1,32 @@
+int gcd(int a, int b) {
+    while (a != b) {
+        if (a > b) a = a - b;
+        else b = b - a;
+    }
+    return a;
+}
+
+bool hasGroupsSizeX(int* deck, int deckSize) {
+    if (deckSize < 2)
+        return false;
+    
+    int hash_table[100001] = {0};
+    for (int i = 0; i < deckSize; i++) 
+        hash_table[deck[i]]++;
+    
+    int count = 0,GCD;
+    int tmp=10000;
+    for (int i = 0; i < deckSize-1; i++) {
+        GCD=gcd(hash_table[deck[i]], hash_table[deck[i+1]]);
+            if (GCD<2) 
+                return false;
+            if(GCD<tmp)
+                tmp=GCD;
+    }
+    for (int i = 0; i < deckSize; i++) {
+            if(hash_table[deck[i]]%tmp!=0)
+                return false;
+    }
+    
+    return true;
+}

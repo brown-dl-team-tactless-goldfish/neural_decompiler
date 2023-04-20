@@ -1,0 +1,23 @@
+    vector<int> secondGreaterElement(vector<int>& nums) {
+        int n=nums.size();
+        stack<int> s1;
+        priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>>s2;
+        unordered_map<int,int> m;
+        for(int i=0;i<n;i++){
+            while(s2.size() && s2.top().first<nums[i]){
+                m[s2.top().second]=nums[i];
+                s2.pop();
+            }
+            while(s1.size() && nums[s1.top()]<nums[i]){
+                s2.push({nums[s1.top()],s1.top()});
+                s1.pop();
+            }
+            s1.push(i);
+        }
+        vector<int> ans;
+        for(int i=0;i<n;i++){
+            ans.push_back(m.count(i)?m[i]:-1);
+        }
+        return ans;
+    }
+	```

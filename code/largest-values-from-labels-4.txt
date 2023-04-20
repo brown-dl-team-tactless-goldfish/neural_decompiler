@@ -1,0 +1,29 @@
+public class Solution 
+{
+    public int LargestValsFromLabels(int[] values, int[] labels, int num_wanted, int use_limit) 
+    {
+        var nums=new int[values.Length][];
+        for(int i=0;i<values.Length;i++) 
+            nums[i] = new int[] {values[i], labels[i]};
+        
+        Array.Sort(nums, (x, y) => -(x[0] - y[0]));
+        int result = 0;
+        var freq = new Dictionary<int, int>();
+        for(int i = 0; i < nums.Length && num_wanted > 0; i++) 
+        {
+            int value = nums[i][0], label = nums[i][1];
+            
+            if(!freq.ContainsKey(label)) 
+                freq[label] = 0;
+            
+            if(freq[label] < use_limit) 
+            {
+                freq[label]++;
+                num_wanted--;
+                result += value;
+            }
+        }
+        
+        return result;
+    }
+}

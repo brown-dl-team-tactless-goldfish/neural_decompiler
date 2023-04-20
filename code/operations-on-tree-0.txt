@@ -1,0 +1,49 @@
+class LockingTree {
+public:
+    LockingTree(vector<int>& p) : adj(p.size()), l(p.size(), -1), rev(p.size()){
+        for (int i = 1; i < p.size(); i++) {
+            adj[p[i]].push_back(i);
+            rev[i].push_back(p[i]);
+        }
+    }
+    
+    bool lock(int num, int user) {
+        if (l[num] == -1) {
+            l[num] = user;
+            return true;
+        }
+        return false;
+    }
+    
+    bool unlock(int num, int user) {
+        if (l[num] == user) {
+            l[num] = -1;
+            return true;
+        }
+        return false;
+    }
+    
+    bool upgrade(int num, int user) {
+        queue<int> q;
+        q.push(num);
+        for (; !q.empty();) {
+            int cur = q.front(); q.pop();
+            if (l[cur] != -1) return false;
+            for (auto p : rev[cur]) q.push(p);
+        }
+        bool has = false;
+        
+        for (auto a : adj[num]) q.push(a); 
+        for (; !q.empty();) {
+            int cur = q.front(); q.pop();
+            if (l[cur] != -1) {
+                has = true;
+                unlock(cur, l[cur]);
+            }
+            for (auto c : adj[cur]) q.push(c);
+        }
+        return has && lock(num, user);
+    }
+    vector<vector<int>> adj, rev;
+    vector<int> l;
+};

@@ -1,0 +1,32 @@
+public class Solution 
+{
+    int[] dx = new int[] {0, 1, 0, -1};
+    int[] dy = new int[] {1, 0, -1, 0};
+    public int ClosedIsland(int[][] grid) 
+    {
+        int count = 100, r = grid.Length, c = grid[0].Length;
+        for(int i = 0; i < r; i++)
+            for(int j = 0; j < c; j++)
+                if(grid[i][j] == 0)
+                    FloodFill(grid, i, j, 0, ++count);
+        
+        var hashSet = new HashSet<int>();
+        for(int i = 0; i < r; i++)
+            for(int j = 0; j < c; j++)
+                if(i == 0 || j == 0 || i == r - 1 || j == c-1)
+                    if(grid[i][j] > 100)
+                        hashSet.Add(grid[i][j]);
+        
+        return count - 100 - hashSet.Count;
+    }
+    
+    private void FloodFill(int[][] grid, int x, int y, int prevNum, int newNum)
+    {
+        int r = grid.Length, c = grid[0].Length;
+        if(x < 0 || x >= r || y < 0 || y >= c || grid[x][y] != prevNum || grid[x][y] == newNum)
+            return;
+        grid[x][y] = newNum;
+        for(int i = 0; i < dx.Length; i++)
+            FloodFill(grid, x + dx[i], y + dy[i], prevNum, newNum);
+    }
+}

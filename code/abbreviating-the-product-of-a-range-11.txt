@@ -1,0 +1,53 @@
+string abbreviateProduct(int left, int right) {
+        long long int prod = 1;
+        for(int i =left; i<=right;i++)
+        {
+            prod = prod*i;
+        }
+        
+        string word = std::to_string(prod);
+        
+        int n = word.length();
+        string prefix = word.substr(0,5);
+        int zero =0, k;
+        for(int i = n-1;i>=0;i--)
+        {
+            if(word[i] == '0')
+                zero++;
+            else
+            {
+                k = i;
+                break;
+            }
+        }
+        
+        string up = word.substr(0, k+1);
+        
+        string suffix;
+
+        int m = up.length();
+        queue<char> st;
+        for(int i = m-5;i<m;i++)
+        {
+            st.push(up[i]);
+        }
+        while(!st.empty())
+        {
+            suffix+=st.front();
+            st.pop();
+        }
+
+        up = up + "e" + std::to_string(zero);
+
+        if (up.length() > 10)
+        {
+            up.clear();
+            up+=prefix;
+            up.push_back('.');
+            up.push_back('.');
+            up.push_back('.');
+            up+=suffix;
+            up = up + "e" + std::to_string(zero);
+        }
+        return up;
+    }

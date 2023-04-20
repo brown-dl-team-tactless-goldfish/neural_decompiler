@@ -1,0 +1,27 @@
+int minimumAverageDifference(int* nums, int numsSize){
+    int ans = -1;
+    int minAvgDiff = INT_MAX;
+    long int currPrefixSum = 0;
+
+    long int totalSum = 0;
+    for (int i = 0; i < numsSize; i++)
+        totalSum += nums[i];
+
+    for (int i = 0; i < numsSize; i++) {
+        currPrefixSum += nums[i];
+
+        long int leftPartAverage = currPrefixSum;
+        leftPartAverage /= (i + 1);
+
+        long int rightPartAverage = totalSum - currPrefixSum;
+        if (i != numsSize - 1)
+            rightPartAverage /= (numsSize - i - 1);
+
+        int currDifference = (int) abs(leftPartAverage - rightPartAverage);
+        if (currDifference < minAvgDiff) {
+            minAvgDiff = currDifference;
+            ans = i;
+        }
+    }
+    return ans;
+}

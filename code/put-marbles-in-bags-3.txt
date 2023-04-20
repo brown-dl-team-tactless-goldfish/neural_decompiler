@@ -1,0 +1,57 @@
+class Solution {
+public:
+    long long putMarbles(vector<int>& weights, int k) {
+        int N = weights.size();
+
+        if(k==1 || k==N) return 0;
+
+        vector<int> vec;
+        
+        for(int i=0; i<N-1; i++){
+            vec.push_back(weights[i]+weights[i+1]);
+        }
+
+        sort(vec.begin(), vec.end());
+
+        long long maxScore, minScore;
+        maxScore = minScore = 0;
+
+        //for K bags parition we need to make k-1 cuts
+        int N2 = vec.size();
+        for(int i=0; i<k-1; i++){
+            minScore+=vec[i];
+            maxScore+=vec[N2-1-i];
+        }
+        return maxScore - minScore;
+    }
+};
+
+/*
+For K = 1 or N no ans 0 Bcoz k=1 no partition - no min or max
+k=N, then only 1 possiblity - so no max or min
+
+ARRARY IN GENERAL
+a b c d e f g h i
+partition into 3 means draw 2 lines
+a b c| d e f g |h i
+=> ANS : a+c + d+g + h+i
+OBSERVATION : 
+- Always the cut point elements are added
+Eg: c d both are there in sum, whereas its 1st cut pt
+- a and i, 2 ends of arrays will always be there
+
+
+so simply we can do one play in GREEDY
+Try all cuts and choose the top k minmost and maxmost
+How?
+a | b c d e f g h i => if this cut made a+b comes to SCORE
+a b c d |e f g h i => if this cut made then d+e comes to SCORE
+So try all cuts and store it into arr
+
+a+b b+c c+d d+e e+f f+g g+h h+i => N-1 almost cuts
+
+SORT and take the MAX guys and min guys
+This means:
+When u need max, u r cutting in places where u will get the max elements for score contribution
+
+*/

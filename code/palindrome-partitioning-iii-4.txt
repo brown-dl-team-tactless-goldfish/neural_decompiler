@@ -1,0 +1,44 @@
+class Solution {
+public:
+
+    map<pair<int,int>,int> dp; // ind , k cuts
+    int sol(string& s,int ind, int k,vector<vector<int>> &cost){
+        if(ind == s.length()) return 0;
+        if(dp.find({ind,k}) != dp.end()) return dp[{ind,k}];
+        if(k == 1){ return dp[{ind,k}] = cost[ind][s.length()-1]; }
+        int ans = 1e9 + 1;
+        for(int i = ind; i<s.length()-k+1;i++){
+            ans = min(cost[ind][i] + sol(s,i+1,k-1,cost), ans);
+        }
+        return dp[{ind,k}] = ans;
+    }
+
+    int palindromePartition(string s, int k) {
+        if(k == s.length()) return 0;
+        vector<vector<int>> cost(s.length(),vector<int>(s.length(),0));
+        vector<vector<bool>> pal(s.length(),vector<bool>(s.length(),0));
+        for(int i=0;i<s.length();i++){
+            int r = 0;
+            int c = i;
+            while(c<s.length()){
+                if(c == r || (s[r] == s[c] && (pal[r+1][c-1] || r+1 >= c-1))) pal[r][c] = 1;
+                r++, c++;
+            }
+        }
+        // Now we have palindromes 
+        for(int i=1;i<s.length();i++){
+            int r = 0;
+            int c = i;
+            while(c<s.length()){
+                if(pal[r][c]) cost[r][c] = 0;
+                else{
+                    if(s[r] == s[c] ) cost[r][c] = cost[r+1][c-1];
+                    else cost[r][c] = cost[r+1][c-1] + 1;
+                }
+                r++, c++;
+            }
+        }
+        // Now we have cost for every string to make it palindrome .
+        return sol(s,0,k,cost);
+    }
+};

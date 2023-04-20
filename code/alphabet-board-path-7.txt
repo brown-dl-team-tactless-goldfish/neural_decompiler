@@ -1,0 +1,42 @@
+    public class Solution
+    {
+        public string AlphabetBoardPath(string target)
+        {
+            Dictionary<char, Tuple<int, int>> char2Coord = new Dictionary<char, Tuple<int, int>>();
+            for (char c = 'a'; c <= 'z'; c++)
+            {
+                int idx = (c - 'a');
+                int row = idx / 5;
+                int col = idx % 5;
+                char2Coord[c] = new Tuple<int, int>(row, col);
+            }
+
+            StringBuilder sb = new StringBuilder();
+            var currentPos = new Tuple<int, int>(0,0);
+            for (int i = 0; i < target.Length; i++)
+            {
+                var curChar = target[i];
+                var posOfCurChar = char2Coord[curChar];
+
+                int diffRow = posOfCurChar.Item1 - currentPos.Item1;
+                int diffColumn = posOfCurChar.Item2 - currentPos.Item2;
+
+                char sbCharRow = diffRow > 0 ? 'D' : 'U';
+                char sbCharColumn = diffColumn > 0 ? 'R' : 'L';
+
+                while (!currentPos.Equals(posOfCurChar))
+                {
+                    int maxRow = currentPos.Item2 == 0 ? 5 : 4;
+                    int prevRow = currentPos.Item1;
+                    int prevCol = currentPos.Item2;
+                    currentPos = new Tuple<int, int>(Math.Min(maxRow, posOfCurChar.Item1), posOfCurChar.Item2);
+                    sb.Append(sbCharRow, Math.Abs(prevRow - currentPos.Item1));
+                    sb.Append(sbCharColumn, Math.Abs(prevCol - currentPos.Item2));
+                }
+
+                sb.Append('!');
+            }
+
+            return sb.ToString();
+        }
+    }

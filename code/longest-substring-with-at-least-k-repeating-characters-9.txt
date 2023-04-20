@@ -1,0 +1,37 @@
+#define CMAX_LEN 26
+typedef struct {
+    int count;
+    int len;
+}sub_str_t;
+
+int longestSubstring(char* s, int k) {
+    int max = 0, ret = 0, sub_len;
+    char *os = s;
+    sub_str_t chash[CMAX_LEN] = {0};
+    
+    if (strlen(s) < k) return 0;
+    
+    while(*s) chash[*(s++) - 'a'].count++;
+    
+    s = os;
+    
+    while(*s) {
+        if(chash[*s - 'a'].count < k) {
+            ret = 0;
+            *s = 0;
+            sub_len = longestSubstring(os, k);
+            max = max > sub_len ? max : sub_len;
+            os = ++s;
+            
+            for (int i = 0; i < CMAX_LEN ; i ++) {
+                chash[i].count -= chash[i].len;
+                chash[i].len = 0;
+            }
+        } else {
+            chash[*s - 'a'].len ++;
+            s++;
+            ret++;
+        }
+    }
+    return ret > max ? ret : max;
+}

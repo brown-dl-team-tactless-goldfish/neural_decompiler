@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int minDeletionSize(vector<string>& A) {
+        int res = 0, L = A[0].length(), N = A.size(); 
+        vector<int> dp(N,0);       
+        
+        for(int j = 0; j < L; j++) {
+            bool remove = false;
+            vector<int> v(N,0);
+            
+            for(int i = 1; i < N; i++) {
+                if(A[i-1][j] < A[i][j]) v[i] = 2;
+                else if (A[i-1][j] == A[i][j]) v[i] = 1;
+                
+                v[i] = max(dp[i], v[i]);
+                
+                if(v[i] == 0 || (v[i] == 1 && A[i-1][j] > A[i][j]))  remove = true;
+            }        
+            
+            if(remove) res++; 
+            else dp.swap(v);
+        }
+    
+        return res;
+    }
+};

@@ -1,0 +1,57 @@
+/* insertion sort based */
+void __shell_sort(int *array, int n, int step)
+{
+        int i, j;
+        int val;
+
+        /*
+         * i starts from step to avoid unnecessary loop compare because
+         * array[i - step] doesn't exist.
+         */
+        for (i = step; i < n; i++) {
+                val = array[i];
+                for (j = i - step; j >= 0; j -= step) {
+                        if (val >= array[j])
+                                break;
+                        array[j + step] = array[j];
+                }
+                array[j + step] = val;
+        }
+
+        return;
+}
+
+/*
+ * time complexity:
+ * avg case: O(nlog(n))
+ * best case: O(log(n))
+ * worst case: O(n^2)
+ *
+ * space complexity: O(1)
+ *
+ * stability: no, because this algorithm does not examine the
+ * elements lying in between the intervals
+ *
+ * The interval between the elements is reduced based on the sequence used:
+ * Shell's original sequence: N/2 , N/4 , …, 1
+ *
+ * In summary use this algorithm when the layout of array specific
+ * to some pattern: the val-close elements' distance fit step lenth.
+ *
+ * Insertion sort does not perform well when the close elements are
+ * far apart. Shell sort helps in reducing the distance between the
+ * close elements. Thus, there will be less number of swappings to
+ * be performed.
+ */
+void shell_sort(int *array, int n)
+{
+        int step = n / 2;
+
+        while (step)
+        {
+                __shell_sort(array, n, step);
+                step /= 2;
+        }
+
+        return;
+}

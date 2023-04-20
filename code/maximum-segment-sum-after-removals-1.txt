@@ -1,0 +1,49 @@
+class DSU {
+ public:
+  vector<long> p, rank;
+  long maxi = 0;
+  DSU(vector<int>& nums) {
+    int sz = nums.size();
+    for (auto& i : nums) rank.push_back(i);
+    p.resize(sz, 0);
+    iota(begin(p), end(p), 0);
+  }
+  int find(int node) {
+    if (p[node] == node) return node;
+    return p[node] = find(p[node]);
+  }
+  void join(int x, int y) {
+    if (x == y) {
+      maxi = max(maxi, rank[x]);
+      return;
+    }
+    int p1 = find(x), p2 = find(y);
+    if (rank[p2] > rank[p1]) swap(p2, p1);
+    p[p2] = p1;
+    rank[p1] += rank[p2];
+    maxi = max(maxi, rank[p1]);
+  }
+  long getMax() { return maxi; }
+};
+class Solution {
+ public:
+  vector<long long> maximumSegmentSum(vector<int>& nums, vector<int>& rem) {
+    int sz = nums.size();
+    vector<long long> ans(sz, 0);
+    DSU obj(nums);
+    vector<bool> seen(sz, false);
+    for (int i = sz - 2; i >= 0; i--) {
+      int idx = rem[i + 1];
+        // seen [idx] =true means we have added this element into DSU
+      seen[idx] = true;
+      obj.join(idx, idx);
+        // check left and right for unions
+      if (idx - 1 >= 0 && seen[idx - 1])
+          obj.join(idx, idx - 1);
+      if (idx + 1 < sz && seen[idx + 1])
+          obj.join(idx, idx + 1);
+      ans[i] = obj.getMax();
+    }
+    return ans;
+  }
+};

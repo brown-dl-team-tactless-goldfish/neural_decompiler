@@ -1,0 +1,66 @@
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+
+
+int* findRedundantConnection(int** edges, int edgesSize, int* edgesColSize, int* returnSize){
+    int ver_num = edgesSize + 1;
+    int *connected_id = calloc(ver_num + 1, sizeof(int)); // 1-index
+    *returnSize = 2;
+    int *ret = calloc(2, sizeof(int));
+    for (int i = 0; i < edgesSize;i++){
+        int node1 = edges[i][0];
+        int node2 = edges[i][1];
+        if (connected_id[node1] == connected_id[node2] && connected_id[node1] == 0){ // new discover two point
+            connected_id[node1] = node1;
+            connected_id[node2] = node1;
+        } else if (connected_id[node1] == 0 && connected_id[node2] != 0){
+            connected_id[node1] = connected_id[node2];
+        } else if (connected_id[node1] != 0 && connected_id[node2] == 0){
+            connected_id[node2] = connected_id[node1];
+        } else { // connected_id[node1] != connected_id[node2] && both are not 0
+            int h1 = 0, h2 = 0, head1, head2;
+            head1 = connected_id[node1];
+            head2 = connected_id[node2];
+            while(head1!=connected_id[head1]){
+                h1++;
+                head1 = connected_id[head1];
+
+            }
+            while(head2!=connected_id[head2]){
+                h2++;
+                head2 = connected_id[head2];
+            }
+
+            if (head1 == head2){ // cycle
+                ret[0] = node1;
+                ret[1] = node2;
+                return ret;
+            } else { // bridge
+                if (h1<h2){
+                    connected_id[head1] = head2;
+                    //Flatten the higher tree
+                    int temp_head = connected_id[node1];
+                    connected_id[node1] = head2;
+                    while(temp_head != head2){
+                        temp_head = connected_id[temp_head];
+                        connected_id[temp_head] = head2;
+                    }
+                } else {
+                    connected_id[head2] = head1;
+                    //Flatten the higher tree
+                    int temp_head = connected_id[node2];
+                    connected_id[node2] = head1;
+                    while(temp_head != head1){
+                        temp_head = connected_id[temp_head];
+                        connected_id[temp_head] = head1;
+                    }
+                }
+            }
+        }
+    }
+    //free(connected_id);
+    return ret;
+}

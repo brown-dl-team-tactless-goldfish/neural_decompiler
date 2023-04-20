@@ -1,0 +1,74 @@
+#define Pc(a) printf("%c, ",(a));
+#define Pd(a) printf("%d, ",(a));
+#define Ps(a) printf("%s, ",(a));
+#define nextline printf("\n");
+typedef struct
+{
+    char array[10000];
+    int top;
+}T;
+
+
+int copynumber(T *t)
+{
+    int k = t->top;
+    k--; // remove '[';
+    int copytime = 0;
+    uint16_t i = 1;
+
+    while(k >= 0)
+    {   
+        if(t->array[k] < '0' || t->array[k] > '9') break;
+        copytime += (t->array[k] - '0')*(i);
+        k--;
+        i *= 10;
+    }
+    t->top = k + 1;
+
+    return (copytime)?copytime:1;
+}
+
+
+char * decodeString(char * s){
+    T t; t.top = -1;
+    int l = strlen(s);
+   
+    char *output = (char *) malloc(10000 * sizeof(char));
+    output[0] = '\0';
+
+    char *str = (char *) malloc(10000 * sizeof(char));
+    str[0] = '\0';
+
+    uint16_t u16_cutlen = 0;
+    uint16_t u16_copy = 0;
+    for(uint16_t i = 0; i <= l;i++)
+    {
+        t.array[++t.top] = s[i];
+
+        if(s[i] == ']')
+        {
+            u16_cutlen = t.top;
+            while(t.array[--t.top] != '[');
+
+            u16_cutlen = u16_cutlen - t.top - 1;
+            strncpy(str,&t.array[t.top+1],u16_cutlen);
+            str[u16_cutlen] = '\0';
+            u16_copy = copynumber(&t);
+
+            for(uint16_t i = 1; i < u16_copy;i++)
+            {
+                strncat(str,str,u16_cutlen);
+            }
+
+            strncpy(&t.array[t.top],str,u16_cutlen*u16_copy);
+            t.top += u16_cutlen*u16_copy;
+            t.top--;
+
+        }
+
+    }
+    t.array[++t.top] = '\0';
+    strcpy(output,t.array);
+    return output;
+
+}

@@ -1,0 +1,32 @@
+void dfs(int** graph, int graphSize, int* graphColSize, int** result, 
+         int* returnSize, int** returnColumnSizes, int index, int* tmp, int tmp_idx){
+
+    if(index==graphSize-1){
+        result[*returnSize] = (int*)malloc(tmp_idx * sizeof(int));
+        (*returnColumnSizes)[*returnSize] = tmp_idx;
+        memcpy(result[*returnSize], tmp, tmp_idx * sizeof(int));
+        *returnSize += 1;
+        return;
+    }
+    for(int i=0; i<graphColSize[index]; i++){
+        int temp[16] = {0};
+        memcpy(&temp, tmp, sizeof(temp));
+        int temp_idx = tmp_idx;
+        temp[temp_idx] = graph[index][i];
+        temp_idx += 1;
+        dfs(graph, graphSize, graphColSize, result, returnSize, returnColumnSizes, graph[index][i], temp, temp_idx);
+    }
+}
+
+int** allPathsSourceTarget(int** graph, int graphSize, int* graphColSize, int* returnSize, int** returnColumnSizes){
+    int** result = (int**)malloc(10000 * sizeof(int*));
+    *returnSize = 0;
+    *returnColumnSizes = (int*)malloc(10000 * sizeof(int));
+    if(graphColSize[0]==0) return result;
+    int tmp[16] = {0};
+    int tmp_idx = 0;
+    tmp[tmp_idx] = 0;
+    tmp_idx += 1;
+    dfs(graph, graphSize, graphColSize, result, returnSize, returnColumnSizes, 0, tmp, tmp_idx);
+    return result;
+}

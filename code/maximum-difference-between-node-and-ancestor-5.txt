@@ -1,0 +1,31 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+void depth_first_search(struct TreeNode* root,int MA_INDEX, int* MAX_ARRAY, int * MAX_VAL){
+    if(!root){return;}
+    MAX_ARRAY[MA_INDEX++] = root->val;
+    //extarcting the maximum value from the MAX_ARRAY
+    for(int idx = 0; idx < MA_INDEX -1; idx++){
+        *MAX_VAL = *MAX_VAL > abs(MAX_ARRAY[idx] - MAX_ARRAY[MA_INDEX -1]) ? *MAX_VAL : abs(MAX_ARRAY[idx] - MAX_ARRAY[MA_INDEX -1]);
+    }
+
+    //DFS traversal
+    depth_first_search(root->left,MA_INDEX,MAX_ARRAY,MAX_VAL);
+    depth_first_search(root->right,MA_INDEX,MAX_ARRAY,MAX_VAL);
+}
+
+int maxAncestorDiff(struct TreeNode* root){
+    int MAX_RETURN_VAL = -1;
+    int MCA_idx = 0;
+    int MAX_CALC_ARRAY[5001] = {0};
+
+    //function used for DFS
+    depth_first_search(root,MCA_idx,MAX_CALC_ARRAY,&MAX_RETURN_VAL);
+
+    return MAX_RETURN_VAL;
+}

@@ -1,0 +1,35 @@
+char * minRemoveToMakeValid(char * s){
+    int len = strlen(s);
+    int *stack = calloc(1, sizeof(int [len]));
+    int stack_top = -1;
+    int i = 0;
+    char *ans = calloc(1, len + 1);
+    while (s[i]) {
+        if (s[i] == '(') {
+            stack[++stack_top] = i;
+        } else if (s[i] == ')') {
+            if (stack_top >= 0) {
+                stack_top--;
+            } else {
+                s[i] = '#'; // Mark mismatching close paren
+            }
+        }
+        i++;
+    }
+    // Mark extra open parens if any - whatever left on stack
+    while (stack_top >= 0) {
+        s[stack[stack_top--]] = '#';
+    }    
+    // Cleanup all extra paren while preparing answer
+    i = 0;
+    int j = 0;
+    while (s[i]) {
+        if (s[i] != '#') {
+            ans[j++] = s[i];
+        }
+        i++;
+    }    
+    return ans;
+}
+
+

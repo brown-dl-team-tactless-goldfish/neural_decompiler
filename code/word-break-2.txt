@@ -1,0 +1,47 @@
+
+// XXX: use a hash set
+bool in_dict(char *s, int wlen, char ** wordDict, int wordDictSize)
+{
+    int i;
+    for (i = 0; i < wordDictSize; i++) {
+        if (wlen == strlen(wordDict[i]) && strncmp(s, wordDict[i], wlen) == 0) {
+            return true;
+        }
+    }
+    return false;
+}
+
+bool word_break(int *dp, char * s, int slen, int i, char ** wordDict, int wordDictSize)
+{
+    int j;
+    
+    if (i == slen)
+        return true;
+    
+    if (dp[i] != -1)
+        return dp[i];
+    
+    for (j = i; j < slen; j++) {
+        if (in_dict(&s[i], j - i + 1, wordDict, wordDictSize)) {
+            if (word_break(dp, s, slen, j + 1, wordDict, wordDictSize)) {
+                dp[i] = true;
+                return dp[i];
+            }
+        }
+    }
+
+    dp[i] = false;
+    return dp[i];
+}
+
+bool wordBreak(char * s, char ** wordDict, int wordDictSize)
+{
+    int slen = strlen(s);
+    int *dp = malloc(sizeof(int) * slen);
+    int i;
+
+    for (i = 0; i < slen; i++)
+        dp[i] = -1; // unset
+
+    return word_break(dp, s, slen, 0, wordDict, wordDictSize);    
+}

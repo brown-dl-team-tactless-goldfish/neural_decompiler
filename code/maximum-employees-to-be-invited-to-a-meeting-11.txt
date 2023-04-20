@@ -1,0 +1,87 @@
+class Solution {
+public:
+    vector<vector<int>> G;
+    vector<bool> vis;
+    int maximumInvitations(vector<int>& favorite) {
+        int len=favorite.size();
+        this->vis=vector<bool>(len,false);
+        this->G.resize(len);
+        for(int i=0;i<len;++i) this->G[i]=vector<int>();
+        
+        vector<int> armLength(len,1), indegree(len,0);
+        
+        int i{};
+        
+        // Creating adjList and inDegree array
+        for(;i<len;++i){
+            G[i].emplace_back(favorite[i]);
+            indegree[favorite[i]]++;
+        }
+        
+        queue<int>q;
+        
+        i=0;
+        for(;i<len;++i)
+            if(!indegree[i]) 
+                q.push(i);
+        
+        
+        // Get the left and right arm length and store for couple cycle
+        // LeftArmlength --> (LeftNode) <--> (RightNode) <--- RightArmLength
+        while(!q.empty()){
+            int parent=q.front();
+            q.pop();
+            
+            vis[parent]=true;
+            
+            for(int &x: G[parent]){
+                armLength[x]=armLength[parent]+1;
+                indegree[x]--;
+                if(!indegree[x]) 
+                    q.push(x);
+            }
+        }
+        
+        int maxCycleLength=0, totalCoupleWithArmLength=0;
+        
+        
+        /*  1. Check for nodes that are not visited yet
+            2. only the nodes having cycle will remain unvisited
+            3. cycle length could be either 2 or greater than 2 .
+            4. Result will be MAX( cycle length greater than 2  OR  sum of All the cycles with length 2 and their arms)        
+        */
+        
+        i=0;
+        for(;i<len;++i){
+            if(!vis[i]){
+                if(i==favorite[favorite[i]]){
+                    int curArmLength = armLength[i] + armLength[favorite[i]];
+                    totalCoupleWithArmLength += curArmLength;
+                    vis[i]=true;
+                    vis[favorite[i]]=true;
+                }
+                else {
+                    int currCycleLength=getCycleLength(i);
+                    maxCycleLength = max(maxCycleLength, currCycleLength);
+                }
+            }
+        }
+        
+        return max(maxCycleLength, totalCoupleWithArmLength);
+    }
+    int getCycleLength(int node){
+        int count=0;
+        while(!vis[node]){
+            vis[node]=true;
+            for(int x: G[node])
+                count = 1 + getCycleLength(x);
+        }
+        return count;
+    }
+};
+static const auto io_syc_off =[](){
+    ios::sync_with_stdio(false);
+    cin.tie(NULL);
+    cout.tie(NULL);
+    return NULL;
+}();

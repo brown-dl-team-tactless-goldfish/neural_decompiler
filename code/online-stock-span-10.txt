@@ -1,0 +1,27 @@
+class StockSpanner {
+public:
+    int c;
+    stack<pair<int,int>>stak;   // store previous greater element and index tuple
+    StockSpanner() {        
+        c = 0;  // initialize index
+    }
+    
+    int next(int price) {
+        
+        c++;    // increment current index
+        
+        // if stack is empty then current index will be the span
+        int cnt = c;
+        
+        // pop all elements less or equal current price
+        while(!stak.empty() && stak.top().first<=price)stak.pop();
+        
+        // if stack is not empty then span = current index - top index
+        if(!stak.empty())cnt-=stak.top().second;
+        
+        // push current price in stack
+        stak.push(make_pair(price,c));
+        
+        return cnt;
+    }
+};

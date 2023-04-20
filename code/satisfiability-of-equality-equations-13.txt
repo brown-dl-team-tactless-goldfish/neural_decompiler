@@ -1,0 +1,54 @@
+class Solution {
+public:
+    map<char,int> color;
+    int cno=1;
+    void dfs(char node, map<char,vector<char>>& g, int& cno)
+    {
+        color[node]=cno;
+        for(char x : g[node])
+        {
+            if(!color[x])
+                dfs(x,g,cno);
+        }
+    }
+    bool equationsPossible(vector<string>& equations) 
+    {
+        map<char,vector<char>> g;
+        char start=equations[0][0];
+        for(string x : equations)
+        {
+            if(x[1]==x[2])
+            {
+                char a=x[0], b=x[3];
+                if(a!=b){
+                    g[a].push_back(b);
+                    g[b].push_back(a);
+                }
+            }
+        }
+        for(char c= 'a'; c<='z'; c++)
+        {
+            if(g[c].empty())
+                color[c]=cno++;
+            if(!color[c]){
+                dfs(c,g,cno);
+                cno++;
+            }
+                
+        }
+        for(string x : equations)
+        {
+            if(x[1]!=x[2])
+            {
+                char a=x[0], b=x[3];
+              
+                if(color[a]==color[b])
+                    return false;
+            }
+        }
+        return true;
+        
+        
+        
+    }
+};

@@ -1,0 +1,19 @@
+#define MAX(A,B) (A)^( ((B)^(A)) & -((A) < (B)) )
+
+int maxProduct(char** words, int wordsSize) {
+    int* bitSet = (int*)calloc(wordsSize, sizeof(int));
+    int* lengths = (int*)calloc(wordsSize, sizeof(int));
+    int max = 0;
+    
+    for(int i = 0; i < wordsSize; ++i){
+        for(char* word = words[i]; *word; ++word){
+            bitSet[i] |= 1 << (*word -'a');
+            ++lengths[i];
+        }
+            
+        for(int j = 0; j < i; ++j)
+            if( !(bitSet[i]&bitSet[j]) )
+                max = MAX(max, lengths[i]*lengths[j]);
+    }
+    return max;
+}

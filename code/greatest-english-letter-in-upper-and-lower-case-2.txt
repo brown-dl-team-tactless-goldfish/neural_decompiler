@@ -1,0 +1,36 @@
+char* greatestLetter(char* s) {
+    char* pRetVal = NULL;
+
+    pRetVal = (char*)malloc(2 * sizeof(char));
+    if (pRetVal == NULL) {
+        perror("malloc");
+        return pRetVal;
+    }
+    memset(pRetVal, 0, (2 * sizeof(char)));
+
+// s consists of lowercase and uppercase English letters.
+#define SHIFT_LOWERCASE (0)
+#define SHIFT_UPPERCASE (1)
+#define MAX_HASHTABLE (26)
+    int HashTable[MAX_HASHTABLE];
+    memset(HashTable, 0, sizeof(HashTable));
+
+    int len = strlen(s);
+    int i;
+    for (i = 0; i < len; ++i) {
+        if ((s[i] >= 'A') && (s[i] <= 'Z')) {
+            HashTable[s[i] - 'A'] |= (1 << SHIFT_UPPERCASE);
+        } else if ((s[i] >= 'a') && (s[i] <= 'z')) {
+            HashTable[s[i] - 'a'] |= (1 << SHIFT_LOWERCASE);
+        }
+    }
+
+    for (i = (MAX_HASHTABLE - 1); i >= 0; --i) {
+        if (HashTable[i] == ((1 << SHIFT_LOWERCASE) | (1 << SHIFT_UPPERCASE))) {
+            snprintf(pRetVal, (2 * sizeof(char)), "%c", i + 'A');
+            break;
+        }
+    }
+
+    return pRetVal;
+}

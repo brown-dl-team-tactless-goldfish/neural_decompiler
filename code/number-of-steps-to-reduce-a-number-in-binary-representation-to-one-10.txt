@@ -1,0 +1,44 @@
+class Solution {
+public:
+    int numSteps(string s) {
+        
+        // binary string length
+        int n = s.length();    
+        
+        // initial carry
+        int carry = 0;
+        
+        // step count
+        int c = 0;
+        
+        // current bit
+        int curr;
+        for(int i=n-1;i>0;i--)
+        {
+            // get current bit based on previous carry bit
+            curr = (s[i] - '0') ^ carry;
+            
+            // if current bit == 1 then number is odd and we add 1 
+            // to it and it becomes even in next step and so do it in this step by adding 1 to 
+            // current bit and the carry will be 1 as 1 & 1 => 1 and step coutn increase by 2
+            if(curr == 1)
+            {
+                c+=2;
+                carry = 1;
+            }
+            
+            // if current bit is 0 then number is even and so we divide it means move to next bit
+            // carry  bit updates based on s[i] & previous carry and step increment 1
+            else 
+            {
+                c++;
+                carry = (s[i] - '0') & carry;
+            }
+        }
+        
+        // as our loop ends before 0 index and so carry bit detemines if 0 index will become 0 or not
+        // if carry 1 then 0 index becomes 0 which makes it even and we divide it and increment step count        
+        if(carry)c++;
+        
+        return c;
+    }

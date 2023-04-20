@@ -1,0 +1,57 @@
+int* goodDaysToRobBank(int* security, int securitySize, int time, int* returnSize){
+    int* ret = calloc(securitySize, sizeof(int));
+    int numPreValid = 0;
+    int numPostValid = 0;
+
+    *returnSize = 0;    
+	// If not enough time for any robberies, exit early
+    if (securitySize <= time*2) {
+        return NULL;
+    }
+
+    // Initialize check for security[time]
+    for (int i = 1; i <= time; i++) {
+        if (security[i - 1] >= security[i]) {
+            numPreValid++;
+        }
+        if (security[time + i - 1] <= security[time + i]) {
+            numPostValid++;
+        }
+    }
+
+    for (int i = time; i < (securitySize - time - 1); i++) {
+        if (numPreValid == time && numPostValid == time) {
+            ret[*returnSize] = i;
+            *returnSize += 1;
+        }
+
+        // Remove the old pre-check going out of range
+        if (security[i - time] >= security[i - time + 1]) {
+            numPreValid--;
+        }
+		// Add the new pre-check coming into range
+        if (security[i] >= security[i + 1]) {
+            numPreValid++;
+        }
+
+        // Remove the old post-check going out of range
+        if (security[i] <= security[i + 1]) {
+            numPostValid--;
+        }
+		// Add the new post-check coming into range
+        if (security[i + time] <= security[i + 1 + time]) {
+            numPostValid++;
+        }
+    }
+    
+	// Check the last day we can commit a robbery on since
+	// we calculate if the next day is valid at the end of the
+	// previous day.
+    if (numPreValid == time && numPostValid == time) {
+        ret[*returnSize] = securitySize - time - 1;
+        *returnSize += 1;
+    }
+    
+    ret = realloc(ret, *returnSize * sizeof(int));
+    return ret;
+}

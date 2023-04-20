@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<int> g[100005];
+
+    vector<int> dfs(int u, int parent, string& labels, vector<int>& ans) {
+        vector<int> nodeCounts(26);
+        nodeCounts[labels[u] - 'a'] = 1;
+        for(auto v: g[u]) {
+            if(v == parent) continue;
+            vector<int> childCounts = dfs(v, u, labels, ans);
+            for (int i=0; i<26; i++) {
+                nodeCounts[i] += childCounts[i];
+            }
+        }
+        ans[u] = nodeCounts[labels[u] - 'a'];
+        return nodeCounts;
+    }
+
+    vector<int> countSubTrees(int n, vector<vector<int>>& edges, string labels) {
+        for(auto x: edges) {
+            g[x[0]].push_back(x[1]);
+            g[x[1]].push_back(x[0]);
+        }
+        vector<int> ans(n, 0);
+        dfs(0, -1, labels, ans);
+        return ans;
+    }
+};

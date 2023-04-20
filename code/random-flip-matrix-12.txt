@@ -1,0 +1,44 @@
+class Solution {
+private:
+    unordered_map<int, int> hashMap;
+    int total;
+    int m;
+    int n;
+    
+public:
+    Solution(int m, int n) {
+        this->m = m;
+        this->n = n;
+        total = m * n;
+    }
+    
+    vector<int> flip() {
+        vector<int> coords;
+        int randIndex = rand() % total;
+        if(hashMap.find(randIndex) == hashMap.end()){
+            coords.push_back(randIndex / n);
+            coords.push_back(randIndex % n);
+        }
+        else{
+            coords.push_back(hashMap[randIndex] / n);
+            coords.push_back(hashMap[randIndex] % n);
+        }
+        
+        if(randIndex != total - 1){
+            if(hashMap.find(total - 1) == hashMap.end()){
+                hashMap[randIndex] = total - 1;
+            }
+            else{
+                hashMap[randIndex] = hashMap[total - 1];
+            }
+        }
+        
+        total--;
+        return coords;
+    }
+    
+    void reset() {
+        total = m * n;
+        hashMap.clear();
+    }
+};

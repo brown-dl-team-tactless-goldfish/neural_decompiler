@@ -1,0 +1,52 @@
+public class Solution {
+    
+    private static (int r, int c) ToGrid(int index, int rowCount, int colCount) {
+        int r = rowCount - 1 - (index - 1) / rowCount;
+        int c = (rowCount - r) % 2 != 0 ? (index - 1) % rowCount : colCount - 1 - (index - 1) % rowCount;
+                        
+        return (r, c);
+    }
+    
+    public int SnakesAndLadders(int[][] board) {
+        int rowCount = board.Length;
+        int colCount = board[0].Length;
+        
+        int last = rowCount * colCount;
+        
+        Queue<int> agenda = new Queue<int>();
+        
+        agenda.Enqueue(1);
+        HashSet<int> visited = new() { 1 };
+        
+        int result = -1;
+        
+        while (agenda.Count > 0) {
+            result += 1;
+                        
+            for (int index = agenda.Count - 1; index >= 0; --index) {
+                var at = agenda.Dequeue();
+                
+                if (at == last)
+                    return result;
+                
+                for (int i = 1; i <= 6; ++i) { 
+                    int nextAt = at + i;
+                    
+                    if (nextAt > last)
+                        continue;
+                    
+                    (int r, int c) = ToGrid(nextAt, rowCount, colCount);
+                    
+                    if (board[r][c] != -1)
+                        nextAt = board[r][c];
+                    
+                    if (visited.Add(nextAt))
+                        agenda.Enqueue(nextAt);
+                }
+            }
+        }
+        
+        return -1;
+    }
+    
+}

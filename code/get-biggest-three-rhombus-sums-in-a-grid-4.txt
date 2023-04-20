@@ -1,0 +1,71 @@
+class Solution {
+public:
+    vector<int> getBiggestThree(vector<vector<int>>& grid) {
+        
+      int n=grid.size();
+      int m=grid[0].size();
+      int leftv[n][m];
+      int rightv[n][m];
+      
+      for(int i=0;i<n;i++){
+        for(int j=0;j<m;j++){
+          leftv[i][j]=grid[i][j];
+          rightv[i][j]=grid[i][j];
+          if(i>=1){
+            leftv[i][j] +=((j-1>=0)?leftv[i-1][j-1]:0);
+            rightv[i][j]+=((j+1<m)?rightv[i-1][j+1]:0); 
+          }
+        }
+      }
+      
+    int ans=0;
+    set<int>s;
+    for(int i=0;i<n;i++){
+      for(int j=0;j<m;j++){
+        s.insert(grid[i][j]);
+        for(int h=1;h<min(n,m);h++){
+          pair<int,int>top={i-h,j};
+          pair<int,int>left={i,j-h};
+          pair<int,int>right={i,j+h};
+          pair<int,int>bottom={i+h,j};
+          if(i-h>=0 &&j-h>=0 && j+h<m && i+h<n){
+            int ans=0;
+            //top left
+            int tx=top.first-1;
+            int ty=top.second+1;
+            ans+= rightv[left.first][left.second]-   ((tx>=0 && ty<m)?rightv[tx][ty]:0);
+            //bottom left
+            ans+= leftv[bottom.first][bottom.second]-leftv[left.first][left.second];
+            //top right
+            ans+= leftv[right.first][right.second]-leftv[top.first][top.second];
+            //bottom right
+            int bx=bottom.first-1;
+            int by=bottom.second+1;
+            ans+= rightv[bx][by]-rightv[right.first][right.second];
+            s.insert(ans);
+            
+          }
+          
+        }
+      }
+    }
+        
+   vector<int>v{begin(s),end(s)};
+   if(v.size()<=3){
+     reverse(begin(v),end(v));
+      return v;
+   }
+   vector<int>res;
+   int sz=v.size();
+   for(int i=sz-1;i>=sz-3;i--){
+     res.push_back(v[i]);
+   }
+    
+      
+    return res;
+      
+    }
+};
+
+
+

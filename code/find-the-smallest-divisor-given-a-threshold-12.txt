@@ -1,0 +1,34 @@
+public class Solution {
+    public int SmallestDivisor(int[] nums, int threshold) {
+        
+        int left = 1, right = 0;
+        foreach(var num in nums)
+            right = Math.Max(right, num);
+        
+        while(left < right)
+        {
+            int mid = left + (right - left) / 2;
+            if(isValid(nums, threshold, mid))
+                right = mid;
+            else
+                left = mid + 1;
+        }
+        
+        return left;
+    }
+    
+    private bool isValid(int[] nums, int threshold, int divisor)
+    {
+        int sum = 0;
+        foreach(var num in nums)
+        {
+            int division = (int)Math.Ceiling(num * 1.0/ divisor);
+            sum += division;
+            
+            if(sum > threshold)
+                return false;
+        }
+        
+        return sum <= threshold;
+    }
+}

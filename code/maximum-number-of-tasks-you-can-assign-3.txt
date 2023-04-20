@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int maxTaskAssign(vector<int>& tasks, vector<int>& ws, int ps, int st) {
+        sort(tasks.begin(), tasks.end());
+        sort(ws.begin(), ws.end(), greater<int>());
+        int m = tasks.size(), n = ws.size();
+        auto isvalid = [&] (int k) {
+            if (k > min(m, n)) return false;
+            int p = ps;
+            multiset<int> ms(ws.begin(), ws.begin() + k);
+            for (int j = k - 1; j >= 0; j--) {
+                auto it = prev(ms.end());
+                if (*it < tasks[j]) {
+                    it = ms.lower_bound(tasks[j] - st);
+                    if (it == ms.end() || !p--) return false;
+                }
+                ms.erase(it);
+            }
+            return true;
+        };
+        int l = 1 << 20, ans = 0;
+        for (; l; l >>= 1)
+            if (isvalid(l | ans)) ans |= l;
+        return ans;
+    }
+};

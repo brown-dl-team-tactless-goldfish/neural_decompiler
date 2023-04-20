@@ -1,0 +1,66 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* maxSumOfThreeSubarrays(int* nums, int numsSize, int k, int* returnSize){
+    int i;
+    int oneIdx;
+    int *twoIdx;
+    int *threeIdx;
+    int oneSum=0,oneMax=0,twoSum=0,twoMax=0,threeSum=0,threeMax=0;
+    
+    if((nums==NULL) || (numsSize==0))
+    {
+        *returnSize = 0;
+        return NULL;
+    }
+    
+    oneIdx = 0;
+    twoIdx = (int*)malloc(2*sizeof(int));
+    twoIdx[0] = 0;
+    twoIdx[1] = k;
+    threeIdx = (int*)malloc(3*sizeof(int));
+    threeIdx[0] = 0;
+    threeIdx[1] = k;
+    threeIdx[2] = k*2;
+    for(i=0;i<k;i++)
+    {
+        oneSum += nums[i];
+        twoSum += nums[i+k];
+        threeSum += nums[i+k*2];
+    }
+    oneMax = oneSum;
+    twoMax = oneMax+twoSum;
+    threeMax = twoMax+threeSum;
+    
+    for(i=0;i<numsSize-k*3;i++)
+    {
+        oneSum += nums[i+k] - nums[i];
+        if(oneSum > oneMax)
+        {
+            oneMax = oneSum;
+            oneIdx = i+1;
+        }
+        
+        twoSum += nums[i+k*2] - nums[i+k];
+        if((oneMax+twoSum) > twoMax)
+        {
+            twoMax = oneMax+twoSum;
+            twoIdx[0] = oneIdx;
+            twoIdx[1] = i+k+1;
+        }
+        
+        threeSum += nums[i+k*3] - nums[i+k*2];
+        if((twoMax+threeSum) > threeMax)
+        {
+            threeMax = twoMax+threeSum;
+            threeIdx[0] = twoIdx[0];
+            threeIdx[1] = twoIdx[1];
+            threeIdx[2] = i+k*2+1;
+        }
+    }
+    
+    free(twoIdx);
+    
+    *returnSize = 3;
+    return threeIdx;
+}

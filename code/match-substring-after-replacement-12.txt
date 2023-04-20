@@ -1,0 +1,35 @@
+class Solution {
+public:
+    bool isMatching(string& s, string& sub, unordered_map<char, unordered_set<char>>& hashMap, int index){
+        for(int i = index; i < index + sub.length(); i++){
+            if(s[i] == sub[i - index]){
+                continue;
+            }
+            if(hashMap.find(sub[i - index]) != hashMap.end() && hashMap[sub[i - index]].find(s[i]) != hashMap[sub[i - index]].end()){
+                continue;
+            }
+            return false;
+        }
+        return true;
+    }
+    
+    bool matchReplacement(string s, string sub, vector<vector<char>>& mappings) {
+        unordered_map<char, unordered_set<char>> hashMap;
+        int i, j;
+        
+        for(i = 0; i < mappings.size(); i++){
+            if(hashMap.find(mappings[i][0]) == hashMap.end()){
+                unordered_set<char> hashSet;
+                hashMap[mappings[i][0]] = hashSet;
+            }
+            hashMap[mappings[i][0]].insert(mappings[i][1]);
+        }
+        
+        for(i = 0; i < s.length() - sub.length() + 1; i++){
+            if(isMatching(s, sub, hashMap, i)){
+                return true;
+            }
+        }
+        return false;
+    }
+};

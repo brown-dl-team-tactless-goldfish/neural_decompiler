@@ -1,0 +1,38 @@
+class FoodRatings {
+public:
+    using VI = vector<int>;
+    using VS = vector<string>;
+    using Pair = pair<int, string>; // rating, food
+    struct Comp {
+        bool operator()(const Pair& a, const Pair& b) const {
+            return a.first == b.first ? a.second < b.second : b.first < a.first;
+        }
+    };
+    using Set = set<Pair, Comp>;
+    using CuisineFoods = unordered_map<string, Set>;   // cuisine -> foods
+    using FoodCuisine = unordered_map<string, string>; // food -> cuisine
+    using FoodRating = unordered_map<string, int>;     // food -> rating
+    CuisineFoods bucket;
+    FoodCuisine type;
+    FoodRating rating;
+    FoodRatings(VS& foods, VS& cuisines, VI& ratings) {
+        int N = foods.size();
+        for (auto i{ 0 }; i < N; ++i) {
+            bucket[cuisines[i]].emplace(ratings[i], foods[i]);
+            type[foods[i]] = cuisines[i];
+            rating[foods[i]] = ratings[i];
+        }
+    }
+    void changeRating(string food, int newRating) {
+        auto oldRating = rating[food];
+        rating[food] = newRating;
+        auto cuisine = type[food];
+        bucket[cuisine].erase({oldRating, food});
+        bucket[cuisine].emplace(newRating, food);
+    }
+    string highestRated(string cuisine) {
+        auto it = bucket[cuisine].begin();
+        auto [_, food] = make_pair(it->first, it->second);
+        return food;
+    }
+};

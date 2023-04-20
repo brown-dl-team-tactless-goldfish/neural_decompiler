@@ -1,0 +1,55 @@
+class Solution {
+public:
+    int res;
+    
+    int longestPath(vector<int>& parent, string s) 
+	{
+        res = 1;
+        vector<vector<int>> graph(s.size());
+        for (int i = 0, size = parent.size(); i < size; ++i)
+        {
+            if (parent[i] != -1)
+            {
+                graph[parent[i]].push_back(i);
+            }
+        }
+        dfs(graph, 0, s);
+        
+        return res;
+    }
+    
+    
+    int dfs(vector<vector<int>> &graph, int node, string &s)
+    {
+        auto &vec = graph[node];
+        
+        if (vec.size() == 0)
+            return 1;
+        
+        vector<int> lens;
+        for (int c : vec)
+        {
+            int len = dfs(graph, c, s);
+            
+            if (s[c] != s[node])
+                lens.push_back(len);
+            else
+                lens.push_back(0);
+        }
+        
+        int len1 = 0, len2 = 0;
+        
+        auto it = std::max_element(lens.begin(), lens.end());
+        len1 = *it;
+        lens.erase(it);
+        
+        if (lens.size() > 0)
+        {
+            len2 = *std::max_element(lens.begin(), lens.end());
+        }
+        
+        res = std::max(res, len1 + len2 + 1);
+        
+        return std::max(len1, len2) + 1;
+    }
+};

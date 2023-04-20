@@ -1,0 +1,46 @@
+class LFUCache {
+public:
+    map<int, vector<int>> s;
+    unordered_map<int, int> m;
+    unordered_map<int, int> k2v;
+    int c;
+    LFUCache(int capacity) {
+        c = capacity;
+    }
+    
+    int get(int key) {
+        if(c == 0 || m.count(key) == 0)return -1;
+        int cur = m[key];
+        s[cur].erase(find(s[cur].begin(), s[cur].end(), key));
+        if(s[cur].size() == 0)s.erase(cur);
+        s[cur+1].push_back(key);
+        m[key] = cur+1;
+        return k2v[key];
+    }
+    
+    void put(int key, int value) {
+        if(c == 0)return;
+        if(k2v.count(key) == 0){
+            if(k2v.size() == c){
+                int del = (s.begin()->second)[0];
+                (s.begin()->second).erase((s.begin()->second).begin());
+                if((s.begin()->second).size() == 0){
+                    s.erase(s.begin()->first);
+                }
+                m.erase(del);
+                k2v.erase(del);
+            }
+            k2v[key] = value;
+            m[key] = 0;
+            s[0].push_back(key);
+        }
+        else{
+            int cur = m[key];
+            s[cur].erase(find(s[cur].begin(), s[cur].end(), key));
+            if(s[cur].size() == 0)s.erase(cur);
+            s[cur+1].push_back(key);
+            m[key] = cur+1;
+            k2v[key] = value;
+        }
+    }
+};

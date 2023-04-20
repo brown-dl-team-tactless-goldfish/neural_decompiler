@@ -1,0 +1,90 @@
+class Solution {
+public:
+    bool isPresent(vector<vector<int>>& queens, vector<int>& temp, vector<vector<int>>& ans){
+        for(int j=0; j<queens.size(); j++){
+            if(temp == queens[j]){
+                ans.push_back(temp);
+                return true;
+            }
+        }
+        return false;
+    }
+    vector<vector<int>> queensAttacktheKing(vector<vector<int>>& queens, vector<int>& king) {
+        int r = king[0];
+        int c = king[1];
+        vector<vector<int>> ans;
+        
+        bool flag = 0;
+        for(int i=r-1; i>=0; i--){
+            vector<int> temp(2,c);
+            temp[0] = i;
+            flag = isPresent(queens, temp, ans);
+            if(flag) break;
+        }
+        
+        flag = 0;
+        for(int i=r+1; i<8; i++){
+            vector<int> temp(2,c);
+            temp[0] = i;
+            flag = isPresent(queens, temp, ans);
+            if(flag) break;
+        }
+        
+        flag = 0;
+        for(int i=c-1; i>=0; i--){
+            vector<int> temp(2,r);
+            temp[1] = i;
+            flag = isPresent(queens, temp, ans);
+            if(flag) break;
+        }
+        
+        flag = 0;
+        for(int i=c+1; i<8; i++){
+            vector<int> temp(2,r);
+            temp[1] = i;
+            flag = isPresent(queens, temp, ans);
+            if(flag) break;
+        }
+        
+        flag = 0;
+        int i = 1;
+        while(r-i >= 0 and c+i < 8){
+            vector<int> temp(2,r-i);
+            temp[1] = c+i;
+            flag = isPresent(queens, temp, ans);
+            if(flag) break;
+            i++;
+        }
+        
+        flag = 0;
+        i = 1;
+        while(r-i >= 0 and c-i >= 0){
+            vector<int> temp(2,r-i);
+            temp[1] = c-i;
+            flag = isPresent(queens, temp, ans);
+            if(flag) break;
+            i++;
+        }
+        
+        flag = 0;
+        i = 1;
+        while(r+i < 8 and c-i >= 0){
+            vector<int> temp(2,r+i);
+            temp[1] = c-i;
+            flag = isPresent(queens, temp, ans);
+            if(flag) break;
+            i++;
+        }
+        
+        flag = 0;
+        i = 1;
+        while(r+i < 8 and c+i < 8){
+            vector<int> temp(2,r+i);
+            temp[1] = c+i;
+            flag = isPresent(queens, temp, ans);
+            if(flag) break;
+            i++;
+        }
+        return ans;
+    }
+};

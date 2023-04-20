@@ -1,0 +1,73 @@
+public class CombinationIterator
+        {
+            private List<string> _combinations;
+            private int Count => _combinations.Count;
+
+            private int currentIterator;
+
+            public CombinationIterator(string characters, int combinationLength)
+            {
+                _combinations = new List<string>();
+
+                _combinations.AddRange(GetCombination(characters, combinationLength));
+            }
+
+            public string Next()
+            {
+                if (currentIterator < Count)
+                {
+                    return _combinations[currentIterator++];
+                }
+
+                return string.Empty;
+            }
+
+            public bool HasNext()
+            {
+                return currentIterator < Count;
+            }
+
+            public List<string> GetCombination(string chars, int length)
+            {
+                var combinations = new List<string>();
+
+                // base
+                if (length == 0 || chars.Length == 0)
+                {
+                    return new List<string>();
+                }
+
+                // base
+                if (chars.Length < length)
+                {
+                    return new List<string>();
+                }
+
+                // base
+                if (length == 1)
+                {
+                    foreach (var c in chars)
+                    {
+                        combinations.Add(c.ToString());
+                    }
+
+                    return combinations;
+                }
+
+                // Recurring
+                while(chars.Length > 0)
+                {
+                    var firstLetter = chars[0];
+                    var permutations = GetCombination(chars.Remove(0, 1), length - 1);
+
+                    foreach (var permutation in permutations)
+                    {
+                        combinations.Add(firstLetter + permutation);
+                    }
+
+                    chars = chars.Remove(0, 1);
+                }
+
+                return combinations;
+            }
+        }

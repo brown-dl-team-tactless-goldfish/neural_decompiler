@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int maximumRemovals(string s, string p, vector<int>& removable) {
+        int left=0,right=removable.size();
+        string copy=s;
+        while(left<=right){
+            int mid=(left+right)/2;
+            for(int i=0;i<mid;i++)
+                copy[removable[i]]='*';
+            if(isSubsequence(copy,p))
+                left=mid+1;
+            else{
+                for(int i=0;i<mid;i++){
+                    copy[removable[i]]=s[removable[i]];
+                    right=mid-1;
+                }
+            }
+            
+        }
+        return right;
+    }
+    
+    bool isSubsequence(string s,string t){
+        int sLen=s.length(),tLen=t.length(),tIdx=0;
+        for(int i=0;i<sLen && tIdx<tLen ;i++){
+            if(s[i]==t[tIdx])
+                tIdx++;
+        }
+        return tIdx==tLen;
+    }
+};

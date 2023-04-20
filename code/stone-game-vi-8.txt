@@ -1,0 +1,17 @@
+class Solution {
+public:
+    int stoneGameVI(vector<int>& aliceValues, vector<int>& bobValues) {
+        int n = aliceValues.size();
+        int index[n];
+        for (int i = 0; i < n; i++)
+            index[i] = i;
+        sort(index, index + n, [&] (int a, int b){
+            return aliceValues[a] + bobValues[a] > aliceValues[b] + bobValues[b];
+        });
+        int val = 0;
+        for (int i = 0, m = -1; i < n; i++, m = ~m)
+            val += (m & aliceValues[index[i]]) | 
+                    -(~m & bobValues[index[i]]);
+        return (val > 0) - (val < 0);
+    }
+};

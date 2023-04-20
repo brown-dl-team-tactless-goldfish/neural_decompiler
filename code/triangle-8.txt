@@ -1,0 +1,21 @@
+int min (int a, int b)
+{
+  return (a>b)?b:a;
+}
+
+int minimumTotal(int** tri, int nR)
+{
+  int dp[nR], i, j, molr;    /* min of last row */
+  memset(dp, 0, sizeof(int)*nR);
+  for(i =1, dp[0]=tri[0][0]; i<nR; i++)
+    for(j = i; j>=0; j--)
+    {
+      if(j==0)       dp[0] = dp[0]   + tri[i][0];
+      else if(j==i)  dp[j] = dp[j-1] + tri[i][j];
+      else           dp[j] = min(dp[j], dp[j-1]) + tri[i][j];        
+    }
+
+  for(i = 1, molr = dp[0]; i<nR; i++)    molr = min(molr, dp[i]);
+
+  return molr;
+}

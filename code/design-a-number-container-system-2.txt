@@ -1,0 +1,24 @@
+
+class NumberContainers {
+ public:
+  // numToIdx will store number as key and indices as value
+  // idxToNum will store index as key and number as value
+  unordered_map<int, set<int> > numToIdx;
+  unordered_map<int, int> idxToNum;
+  NumberContainers() {}
+  void change(int index, int number) {
+    // if we have number at this index then remove it from numToIdx and change in idxToNum
+    if (idxToNum.count(index)) {
+      int toDelete = idxToNum[index];
+      numToIdx[toDelete].erase(index);
+      if (numToIdx[toDelete].empty()) numToIdx.erase(toDelete);
+    }
+    idxToNum[index] = number;
+    numToIdx[number].insert(index);
+  }
+  int find(int number) {
+    // if we have this number then return otherwise return -1
+    return !numToIdx.count(number) ? -1 : *begin(numToIdx[number]);
+  }
+};
+

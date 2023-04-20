@@ -1,0 +1,40 @@
+struct TreeNode *new(int val){
+    struct TreeNode *n = (struct TreeNode *)malloc(sizeof(struct TreeNode));
+    n->val = val;
+    n->left = n->right = NULL;
+    return n;
+    }
+
+struct ListNode *findTheMiddle(struct ListNode *head){
+        struct ListNode *slow = head;
+        struct ListNode *fast = head;
+        struct ListNode *prev = head;
+
+        while(fast != NULL && fast->next != NULL){
+            prev = slow;
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+        if(prev != NULL){
+            prev->next = NULL;
+        }
+        return slow;
+    }
+
+struct TreeNode* sortedListToBST(struct ListNode* head) {
+
+    if(head == NULL){
+        return NULL;
+    }
+
+    struct ListNode *mid = findTheMiddle(head);
+    struct TreeNode *r = new(mid->val);
+
+    if(mid == head)
+        return r;
+
+        r->left = sortedListToBST(head);
+        r->right = sortedListToBST(mid->next);
+
+    return r;
+}

@@ -1,0 +1,28 @@
+int* platesBetweenCandles(char* s, int** queries, int queriesSize, int* queriesColSize, int* returnSize) {
+    int arrsize = strlen(s), cnt = 0, lidx = -1, ridx = -1;
+    int* arr = (int*) calloc(arrsize, sizeof(int));
+    int* lef = (int*) calloc(arrsize, sizeof(int));
+    int* rig = (int*) calloc(arrsize, sizeof(int));
+    for(int i = 0; i < arrsize; i++) {
+        if(s[i] == '*') {
+            cnt++;
+        } else {
+            lidx = i;
+        }
+        arr[i] = cnt;
+        lef[i] = lidx;
+    }
+    for(int i = arrsize-1; i >= 0; i--) {
+        if(s[i] == '|') ridx = i;
+        rig[i] = ridx;
+    }
+    
+    *returnSize = queriesSize; 
+    int* ans = (int*) malloc((*returnSize) * sizeof(int));
+    for(int i = 0; i < queriesSize; i++) {
+        int r = rig[queries[i][0]], l = lef[queries[i][1]];
+        ans[i] = (r == -1 || l == -1 || r >= l) ? 0 : arr[l]-arr[r];
+    }
+    free(arr); free(lef); free(rig);
+    return ans;
+}

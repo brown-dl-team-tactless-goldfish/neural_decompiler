@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int minimumVisitedCells(vector<vector<int>>& grid) {
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> dist(m, vector<int>(n, INT_MAX));
+        queue<pair<int, int>> q;
+        q.push({0, 0});
+        dist[0][0] = 0;
+        while (!q.empty()) {
+            auto curr = q.front();
+            q.pop();
+            int r = curr.first;
+            int c = curr.second;
+            int d = dist[r][c];
+            if (r == m - 1 && c == n - 1) {
+                return d+1;
+            }
+            for (int k = c + 1; k <= min(c + grid[r][c], n - 1); k++) {
+                if (d + 1 < dist[r][k]) {
+                    dist[r][k] = d + 1;
+                    q.push({r, k});
+                }
+            }
+            for (int k = r + 1; k <= min(r + grid[r][c], m - 1); k++) {
+                if (d + 1 < dist[k][c]) {
+                    dist[k][c] = d + 1;
+                    q.push({k, c});
+                }
+            }
+            if (dist[m-1][n-1] != INT_MAX && d + 1 >= dist[m-1][n-1]) {
+                return dist[m-1][n-1]+1;
+            }
+        }
+        return -1;
+    }
+};

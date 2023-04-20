@@ -1,0 +1,46 @@
+int* DFS(struct TreeNode* root, int distance, int* ansCnt, int* idx){
+    if(!root->left && !root->right){
+        /* leaf */
+        int* ret = (int*)calloc(1, sizeof(int));
+        ret[0] = 1;
+        (*idx) = 1;
+        return ret;
+    }
+    int lidx = 0, ridx = 0;
+    int* lbuf;
+    int* rbuf;
+    if(root->left)
+        lbuf = DFS(root->left, distance, ansCnt, &lidx);
+    if(root->right)
+        rbuf = DFS(root->right, distance, ansCnt, &ridx);
+
+    int* ret = (int*)calloc(lidx+ridx, sizeof(int));
+    if(lidx && ridx){
+        int cnt = 0;
+        for(int i = 0; i < lidx; i++){
+            for(int j = 0; j < ridx; j++){
+                int dis = lbuf[i]+rbuf[j];
+                (*ansCnt) += (dis<=distance)? 1 : 0;
+            }
+        }
+    }
+    /* prepare leaf distance for parent root's use */
+    if(lidx){
+        for(int i = 0; i < lidx; i++)
+            if(lbuf[i]+1<distance)
+                ret[(*idx)++] = lbuf[i]+1;        
+    }
+    if(ridx){
+        for(int i = 0; i < ridx; i++)
+            if(rbuf[i]+1<distance)
+                ret[(*idx)++] = rbuf[i]+1;        
+    }
+    return ret;    
+}
+
+int countPairs(struct TreeNode* root, int distance){
+    if(!root) return 0;
+    int ansCnt = 0, idx = 0;
+    DFS(root, distance, &ansCnt, &idx);
+    return ansCnt;
+}

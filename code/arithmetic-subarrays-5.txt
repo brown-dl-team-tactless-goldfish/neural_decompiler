@@ -1,0 +1,63 @@
+bool* checkArithmeticSubarrays(int* nums, int numsSize, int* l, int lSize, int* r, int rSize, int* returnSize){
+    bool* to_return = (bool*)malloc(sizeof(bool) * lSize);
+    for (int i = 0; i < lSize; i++) {
+        int lIndex = l[i];
+        int rIndex = r[i];
+        int currSize = rIndex-lIndex+1;
+        
+        if(currSize == 2) {
+            to_return[i] = true;
+            continue;
+        }
+        
+        int maxVal = INT_MIN;
+        int minVal = INT_MAX;
+        
+        while(lIndex <= rIndex) {
+            int curr = nums[lIndex];
+            if(curr > maxVal) maxVal = curr;
+            if(curr < minVal) minVal = curr;
+            lIndex++;
+        }
+        
+        int diff = maxVal - minVal;
+        
+        if(diff == 0) {
+            to_return[i] = true;
+            continue;
+        } else if(diff % (currSize-1) != 0) {
+            to_return[i] = false;
+            continue;
+        }
+        
+        diff /= currSize-1;
+        bool* currArr = (bool*)calloc(currSize, sizeof(bool));        
+        lIndex = rIndex - currSize + 1;
+        
+        while(lIndex <= rIndex) {
+            int curr = nums[lIndex];
+            curr -= minVal;
+            if (curr % diff != 0) {
+                diff = -1;
+                break;
+            }
+            curr /= diff;
+            if(currArr[curr] == true) {
+                diff = -1;
+                break;
+            }
+            currArr[curr] = true;
+            lIndex++;
+        }
+        
+        free(currArr);
+        
+        if(diff == -1) {
+            to_return[i] = false;
+        } else {
+            to_return[i] = true;
+        }
+    }
+    *returnSize = lSize;
+    return to_return;
+}

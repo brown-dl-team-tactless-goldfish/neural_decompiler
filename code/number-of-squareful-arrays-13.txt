@@ -1,0 +1,45 @@
+class Solution {
+public:
+    vector<int>v,temp;
+    int nsp(vector<int>&a)
+    {
+        if(temp.size()==a.size())
+            return 1;
+        int res=0;
+        unordered_set<int>s;
+        for(int j=0;j<a.size();j++)
+        {
+            if(s.find(a[j])==s.end() && v[j]==0)
+            {
+                v[j]=1;
+                s.insert(a[j]);
+                if(temp.size()==0)
+                {
+                    temp.push_back(a[j]);
+                    res+=nsp(a);
+                    temp.pop_back();
+                }
+                else
+                {
+                    int sum=temp.back()+a[j];
+                    int x=sqrt(sum);
+                    if(x*x==sum)
+                    {
+                        temp.push_back(a[j]);
+                        res+=nsp(a);
+                        temp.pop_back();
+                    }
+                }
+                v[j]=0;
+            }
+        }
+        return res;
+    }
+    int numSquarefulPerms(vector<int>& A) 
+    {
+        int n=A.size();
+        v.resize(n,0);
+        sort(A.begin(),A.end());
+        return nsp(A);
+    }
+};

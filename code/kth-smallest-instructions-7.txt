@@ -1,0 +1,31 @@
+class Solution {
+public:
+    string kthSmallestPath(vector<int>& destination, int k) {
+        int m = destination[0], n = destination[1];
+        
+        vector<vector<int>> dp(m+2, vector<int>(n+2, 0));
+        dp[m][n] = 1;
+        for(int i=m; i>=0; i--) {
+            for(int j=n; j>=0; j--) {
+                if(i == m && j == n) continue;
+                dp[i][j] = dp[i+1][j] + dp[i][j+1];
+            }
+        }
+        
+        string ans = "";
+        int r = 0, c = 0;
+        int step = 0, remain = k;
+        for(int step = 0; step < m+n; step++) {
+            if(dp[r][c+1] >= remain) {
+                c = c+1;
+                ans += 'H';
+            } else {
+                remain -= dp[r][c+1];
+                r = r+1;
+                ans += 'V';
+            }
+        }
+        
+        return ans;
+    }
+};

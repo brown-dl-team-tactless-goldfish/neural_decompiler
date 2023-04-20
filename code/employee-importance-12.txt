@@ -1,0 +1,32 @@
+/*
+// Definition for Employee.
+class Employee {
+public:
+    int id;
+    int importance;
+    vector<int> subordinates;
+};
+*/
+
+class Solution 
+{
+public:
+    int helper(unordered_map<int,Employee *>&m,int curr)
+    {
+        int count=m[curr]->importance;
+        for(auto it:m[curr]->subordinates)
+        {
+            count+=helper(m,it);
+        }
+        return count;
+    }
+    int getImportance(vector<Employee*> employees, int id) 
+    {
+        unordered_map<int,Employee *>m;
+        for(int i=0;i<employees.size();i++)
+        {
+            m[employees[i]->id]=employees[i];
+        }
+        return helper(m,id);
+    }
+};

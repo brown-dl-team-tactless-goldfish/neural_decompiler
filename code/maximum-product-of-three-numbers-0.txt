@@ -1,0 +1,41 @@
+int maximumProduct(int* nums, int numsSize){
+int high1=0;
+int high2=0;
+int high3=0;
+int low1=0;
+int low2=0;
+int low3=0;
+int i;
+for (i=0; i<numsSize; i++) {
+    // If it's a positive number, is it among the top 3 thus far?
+    if (nums[i]>0)
+        if (nums[i]>high3) {
+            high1=high2;
+            high2=high3;
+            high3=nums[i];
+        } else if (nums[i]>high2) {
+            high1=high2;
+            high2=nums[i];
+        } else if (nums[i]>high1) high1=nums[i];
+
+    // If it's a negative number, is it among the lowest 2 thus far?
+    if (nums[i]<0)
+        if (nums[i]<low3) {
+            low1=low2;
+            low2=low3;
+            low3=nums[i];
+        } else if (nums[i]<low2) {
+            low1=low2;
+            low2=nums[i];
+        } else if (nums[i]<low1) low1=nums[i];
+}
+    
+// Now high3, 2 and 1 have the highest, next highest, etc. and
+// low3, low2 and low3 have the three lowest.
+printf("Highs are %d %d %d and lows are %d %d %d\n",
+      high3, high2, high1, low1, low2, low3);
+if (high3==0) return low3 * low2 * low1;
+if ((high3 * low3 * low2) > (high3 * high2 * high1))
+    return high3 * low3 * low2;
+    else return high3 * high2 * high1;
+}

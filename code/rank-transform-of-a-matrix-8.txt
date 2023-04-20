@@ -1,0 +1,71 @@
+class UnionF{
+    public: vector<int> f,rank;
+    UnionF(int r,int c){ 
+        f = vector<int>(r*c,0);
+        for(int i = 0;i < r * c;i++)
+            f[i] = i;
+        rank = vector<int>(r*c,1);       
+    }
+    int find_f(int x){
+        if(f[x] != x){
+           f[x] = find_f(f[x]);
+        }
+        return f[x];
+    }
+    int find_rank(int x){
+        return rank[find_f(x)];
+    }
+    void make_u(int x,int y){
+        int x1 = find_f(x);
+        int y1 = find_f(y);
+        int r = max(rank[x1],rank[y1]);
+        f[x1] = y1;
+        rank[y1] = r;
+    }    
+    
+};
+class Solution {
+public:
+    vector<vector<int>> matrixRankTransform(vector<vector<int>>& matrix) {
+        vector<vector<int>> v;
+        int r = matrix.size(),c = matrix[0].size();
+        for(int i = 0;i < r;i++){
+            for(int j = 0;j < c;j++){
+                vector<int> t = {matrix[i][j],i,j};
+                v.push_back(t);
+            }
+        }
+        vector<int> row(r,-1),col(c,-1);
+        vector<vector<int>> res(r,vector<int>(c,0));
+        sort(v.begin(),v.end(),[](vector<int> &a,vector<int> &b){
+            return a < b;
+        });
+        UnionF ff(r,c);
+        int h = 0;
+        for(auto x:v){
+            int q = 1;
+            if(row[x[1]]!=-1){
+                if(matrix[x[1]][row[x[1]]] < x[0]){
+                    q = max(q,ff.find_rank(x[1] * c + row[x[1]]) + 1);
+                } else {
+                    ff.make_u(x[1] * c + x[2],x[1] *c + row[x[1]]);
+                }
+            }
+            if(col[x[2]]!=-1){
+                if(matrix[col[x[2]]][x[2]] < x[0]){
+                    q = max(q,ff.find_rank(col[x[2]] * c + x[2]) + 1);
+                } else {
+                    ff.make_u(x[1] * c + x[2],col[x[2]] * c + x[2]);
+                }
+            }
+            int w = ff.find_f(x[1] * c + x[2]);
+            ff.rank[w] = max(ff.rank[w],q);
+            col[x[2]] = x[1];
+            row[x[1]] = x[2];
+        }
+        for(int i = 0;i < r;i++)
+            for(int j = 0;j < c;j++)
+                res[i][j] = ff.find_rank(i * c + j);
+        return res;
+    }
+};

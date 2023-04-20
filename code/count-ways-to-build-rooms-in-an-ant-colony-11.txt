@@ -1,0 +1,52 @@
+class Solution {
+public:
+    int waysToBuildRooms(vector<int>& prevRoom) {
+        int mod = 1e9 + 7, n = prevRoom.size();
+        vector<int> inv(n + 1), f(n+1), invf(n+1);
+        inv[1]=1;
+        for(int i=2;i<=n;i++) inv[i]=(long long)inv[mod%i]*(mod-mod/i)%mod;
+        f[0] = 1;
+        for (int i=1;i<=n;i++) f[i] = (long long)f[i-1] * i % mod;
+        invf[0] = 1;
+        for (int i=1;i<=n;i++) invf[i] = (long long)invf[i-1] * inv[i] % mod;
+        vector<vector<int>> neigh_out(n,vector<int>()), neigh_in(n,vector<int>());
+        vector<int> outorder(n), vis(n), node_num(n);
+        for (int i = 1; i < prevRoom.size(); i++) {
+            neigh_out[prevRoom[i]].push_back(i);
+            neigh_in[i].push_back(prevRoom[i]);
+            outorder[prevRoom[i]]++;
+        }
+        
+        vector<int> next;
+        for (int i = 0; i < n; i++) {
+            if (outorder[i]==0 && vis[i] == 0) next.push_back(i);
+        }
+        while(true) {
+            vector<int> tmp;
+            for (int i : next) {
+                long long comb = 1;
+                node_num[i] = 1;
+                for (int j = 0; j < neigh_out[i].size(); j++) {
+                    node_num[i] += node_num[neigh_out[i][j]];
+                    comb *= vis[neigh_out[i][j]];
+                    comb %= mod;
+
+                    comb *= invf[node_num[neigh_out[i][j]]];
+                    comb %= mod;
+                }
+                comb *= f[node_num[i] - 1];
+                comb %= mod;
+                vis[i] = comb;
+                for (int prev : neigh_in[i]) {
+                    outorder[prev]--;
+                    if (outorder[prev] == 0) {
+                        tmp.push_back(prev);
+                    }
+                }
+                if (i == 0) return comb;
+            }
+            next = tmp;
+        }
+        return vis[0];
+    }
+};

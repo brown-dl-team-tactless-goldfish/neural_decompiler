@@ -1,0 +1,69 @@
+#define MAXLEN (26*26)
+
+inline unsigned int uint_min(unsigned int a, unsigned int b) {
+    return (a < b) ? a : b;
+}
+
+// convert key to index
+inline int ktoi(char c1, char c2) {
+    return (c1 -'a') * 26 + (c2 - 'a');
+}
+
+// convert index to key
+inline void itok(int idx, char *c1, char *c2) {
+    *c1 = (idx / 26) + 'a';
+    *c2 = idx % 26 + 'a';
+}
+
+int longestPalindrome(char ** words, int wordsSize){
+    unsigned int length = 0;
+
+    if (wordsSize == 1) {
+        // corner case
+        if (words[0][0] == words[0][1]) {
+            length = 2;
+        } else {
+            length = 0;
+        }
+    } else {
+        unsigned int table[MAXLEN] = {0};       // hashtable to account the words
+        char c1 = '\0';
+        char c2 = '\0';
+        int extra = 0;
+        
+        // go through all the words and assign their appearances in the hash table
+        for (int i = 0; i < wordsSize; i++) {
+            int idx = ktoi(words[i][0], words[i][1]);
+            table[idx] += 1;
+        }
+        /* two cases: 1. the word itself is a palindrome: check even or odd occurances of it
+         *            2. the word itself is not a palindrome, so just count the number of pairs
+         */
+        for (int i = 0; i < MAXLEN; i++) {
+            if (table[i] > 0) {
+                itok(i, &c1, &c2);
+                if (c1 == c2) {
+                    // case 1: itself is a palindrome, no peer needed
+                    if (table[i] % 2 == 0) {
+                        length += table[i] * 2;
+                    } else {
+                        /* need just one additional self palindrome */
+                        extra = 1;
+                        length += (table[i] - 1) * 2;
+                    }
+                    /* clear-up this item in the hashtable after calculation */
+                    // table[i] = 0;
+                } else {
+                    // case 2:
+                    int pi = ktoi(c2, c1);                  // index of the peer
+                    length += 4 * uint_min(table[i], table[pi]);
+                    /* clear-up both items in the hashtable after calculation */
+                    table[i] = 0;
+                    table[pi] = 0;
+                }
+            }
+        }
+        length += extra * 2;
+    }
+    return length;
+}

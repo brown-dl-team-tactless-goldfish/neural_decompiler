@@ -1,0 +1,30 @@
+void CalcRobNotRobValues(struct TreeNode *nd, int *r, int *nr){
+    /* no node , both values are zero */
+    if (!nd){ *r = 0; *nr= 0; return;}
+    
+    /* first calculate the childrens rob,not-rob values */
+    int lr=0, lnr=0, rr=0, rnr=0;
+    CalcRobNotRob(nd->left, &lr, &lnr);
+    CalcRobNotRob(nd->right, &rr, &rnr);
+    
+    /* if robbing node, children nodes cannot be robbed 
+     so add not-rob values of children */
+    *r = nd->val + lnr + rnr;
+    
+    /* if not robbing node, children nodes can be robbed 
+       so add rob values of children */
+    /* If not robbing this node, there is an option to rob children
+        or no robbing of children. Choose the max value   */
+    
+    if (lnr > lr)  *nr = lnr;
+    else  *nr = lr;
+    if (rnr > rr) *nr += rnr;
+    else  *nr += rr;
+    return;
+}
+
+int rob(struct TreeNode* root){
+    int rob=0, nr=0;
+    CalcRobNotRob(root, &rob, &nr);
+    return (rob > nr ? rob : nr);
+}

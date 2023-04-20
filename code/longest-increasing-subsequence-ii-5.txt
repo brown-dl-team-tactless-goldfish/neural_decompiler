@@ -1,0 +1,53 @@
+class Solution {
+public:
+    int tree[400100];
+
+    int range(int idx,int ss,int se,int qs,int qe){
+        
+        if(ss>se || qs>se || qe<ss)return INT_MIN;
+        
+        if(ss>=qs && se<=qe)return tree[idx];
+        
+        int mid=ss+(se-ss)/2;
+       
+        return max( range(2*idx,ss,mid,qs,qe),range(2*idx+1,mid+1,se,qs,qe));
+        
+    }
+    
+     void update(int idx,int ss,int se,int i,int val){
+        
+        if(i<ss || i>se)return ;
+        
+        if(ss==se){
+            tree[idx]=val;
+            return ;
+        }
+        
+        int mid=ss+(se-ss)/2;
+        
+        update(2*idx,ss,mid,i,val);
+        update(2*idx+1,mid+1,se,i,val);
+          
+        tree[idx]=max(tree[2*idx],tree[2*idx+1]);
+        return;
+    }
+    
+    int lengthOfLIS(vector<int>& nums, int k) {
+        
+        int n=nums.size();
+        
+        int mx=*max_element(begin(nums),end(nums));
+        int ans=1;
+		
+        for(int i=0;i<n;i++){
+           int x= range(1,0,mx,max(0,nums[i]-k),nums[i]-1);
+           update(1,0,mx,nums[i],x+1);
+           ans=max(ans,x+1);
+            
+        }
+        
+        return ans;
+        
+        
+    }
+};

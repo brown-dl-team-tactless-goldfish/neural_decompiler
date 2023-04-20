@@ -1,0 +1,87 @@
+class Solution {
+public:
+   int catMouseGame(vector<vector<int>>& rawGraph) {
+      initialize(rawGraph);
+      queue<int> q;
+      for (int i = 0; i < winState.size(); i++)
+         if (winState[i] != DRAW) q.push(i);
+
+      while (!q.empty()) {
+         auto id = q.front(); q.pop();
+         if (visited[id]) continue;
+         visited[id] = true;
+         for (auto pre : preGraph[id]) {
+            if (winState[pre] != DRAW) continue;
+            if (winState[id] == LOST) {
+               winState[pre] = WIN;
+               q.push(pre);
+            }
+            else if (winState[id] == WIN) {
+               postGraph[pre].erase(id);
+               if (postGraph[pre].empty()) {
+                  winState[pre] = LOST;
+                  q.push(pre);
+               }
+            }
+         }
+      }
+      return winState[startId];
+   }
+
+   void initialize(const vector<vector<int>>& rawGraph) {
+      const int n = rawGraph.size();
+      const int m = n * n * 2;
+      startId = 2 * (2 * n + 1) + MOUSE;
+      preGraph.resize(m);
+      postGraph.resize(m);
+      visited = vector<bool>(m, false);
+      winState = vector<WinState>(m, DRAW);
+
+      for (int catPos = 1; catPos < n; catPos++) { //cat pos cannot be 0
+         for (int mousePos = 0; mousePos < n; mousePos++) {
+            const int curStateID = 2 * (catPos * n + mousePos);
+            for (auto catNeighb : rawGraph[catPos]) {
+               if (catNeighb == 0) continue;
+               int neighborStateID = 2 * (catNeighb * n + mousePos);
+               preGraph[curStateID + MOUSE].insert(neighborStateID + CAT);
+               postGraph[neighborStateID + CAT].insert(curStateID + MOUSE);
+            }
+            for (auto mousePrePos : rawGraph[mousePos]) {
+               int neighborStateID = 2 * (catPos * n + mousePrePos);
+               preGraph[curStateID + CAT].insert(neighborStateID + MOUSE);
+               postGraph[neighborStateID + MOUSE].insert(curStateID + CAT);
+            }
+         }
+      }
+
+      for (int i = 1; i < n; i++) {
+         int curStateID = 2 * (i * n + i);
+         winState[curStateID + CAT] = WIN;
+         winState[curStateID + MOUSE] = LOST;
+      }
+
+      for (int catPos = 1; catPos < n; catPos++) {
+         int mousePos = 0;
+         int curStateID = 2 * (catPos * n + mousePos);
+         winState[curStateID + MOUSE] = WIN;
+         winState[curStateID + CAT] = LOST;
+      }
+   }
+
+   enum Player {
+      CAT,
+      MOUSE,
+   };
+
+   enum WinState {
+      LOST = 2,
+      WIN = 1,
+      DRAW = 0,
+   };
+
+   int startId;
+   vector<set<int>> preGraph;
+   vector<set<int>> postGraph;
+   vector<bool> visited;
+   vector<WinState> winState;
+};

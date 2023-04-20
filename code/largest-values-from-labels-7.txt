@@ -1,0 +1,28 @@
+class Solution:
+    def largestValsFromLabels(self, values: List[int], labels: List[int], numWanted: int, useLimit: int) -> int:
+        n = len(values)
+        value_label = [[values[i] , labels[i]] for i in range(0 , len(values))]
+        value_label = sorted(value_label , key = lambda x : x[0] , reverse = True)
+        print(value_label)
+        
+        i = 0
+        ans = 0
+        hash_table = {}
+        
+        while numWanted != 0 and i < n:
+            curr_label = value_label[i][1]
+            curr_value = value_label[i][0]
+            
+            if curr_label not in hash_table:
+                hash_table[curr_label] = 1
+                ans += curr_value
+                numWanted -= 1
+            else:
+                if hash_table[curr_label] < useLimit:
+                    ans += curr_value
+                    hash_table[curr_label] += 1
+                    numWanted -= 1
+            
+            i += 1
+
+        return ans

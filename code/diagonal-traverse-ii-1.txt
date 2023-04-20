@@ -1,0 +1,59 @@
+	// The sum of diagonal indices is same
+	//In hashmap to avoid collision add the indexes with same sum as a linked list
+	// for example (2,0)(1,1)(0,2) these are collisions - maintain a list for these entries
+
+typedef struct list_node{
+	int data;
+	struct list_node *next;
+}list_node;
+
+typedef struct hashmap{
+	int i;
+	int j;
+	list_node *head;
+}hash_map;
+
+int* findDiagonalOrder(int** nums, int numsSize, int* numsColSize, int* returnSize){
+	int n=numsSize;
+	int m=*numsColSize;
+	int i=0,j=0;
+	if(numsSize==0)
+		return NULL;
+	int* result=(int*)(calloc(sizeof(int), (n*m+100000)));
+	*returnSize=0;
+	hash_map *values=(hash_map*)(calloc(sizeof(hash_map), n*m+100000));
+	int max_key=0;
+
+	for(i=0;i<=n*m;i++)
+		values[i].head=NULL;
+
+	for(i=0;i<n;i++){
+		int curr_row_size=sizeof(nums[i])/sizeof(int);
+		for(j=0;j<numsColSize[i];j++){
+			if(values[i+j].head==NULL){
+				values[i+j].head=(list_node*)(calloc(sizeof(list_node),1));
+				values[i+j].head->data=nums[i][j];
+				values[i+j].head->next=NULL;
+				}
+			else{
+				list_node *temp=(list_node*)(calloc(sizeof(list_node),1));
+				temp->data=nums[i][j];
+				temp->next=values[i+j].head;
+				values[i+j].head=temp;
+			}
+			max_key=max_key>(i+j)?max_key:(i+j);
+		}
+	}
+
+	int k=0;
+	for(i=0;i<=max_key;i++){
+		while(values[i].head){
+			result[k++]=values[i].head->data;
+			values[i].head=values[i].head->next;
+		}
+	}
+
+	free(values);
+	*returnSize=k;
+	return result;
+}

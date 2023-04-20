@@ -1,0 +1,43 @@
+int top = 0;
+
+typedef struct {
+    char* key;
+    int val;
+} MapSum;
+
+MapSum* mapSumCreate() {
+    MapSum* obj = (MapSum*) malloc(51 * sizeof(MapSum));
+    for (int i = 0; i < 51; i++) {
+        obj[i].key = (char*) calloc(51, sizeof(char));
+        obj[i].val = 0;
+    }
+    return obj;
+}
+
+void mapSumInsert(MapSum* obj, char* key, int val) {
+    for (int i = 0; i < top; i++) {
+        if (!strcmp(obj[i].key, key)) {
+            obj[i].val = val;
+            return;
+        }
+    }
+    strcpy(obj[top].key, key);
+    obj[top].val = val;
+    top++;
+}
+
+int mapSumSum(MapSum* obj, char* prefix) {
+    int n = strlen(prefix), sum = 0;
+    for (int i = 0; i < top; i++) {
+        if (!strncmp(obj[i].key, prefix, n)) sum += obj[i].val;
+    }
+    return sum;
+}
+
+void mapSumFree(MapSum* obj) {
+    for (int i = 0; i < 51; i++) {
+        free(obj[i].key);
+    }
+    free(obj);
+    top = 0;
+}

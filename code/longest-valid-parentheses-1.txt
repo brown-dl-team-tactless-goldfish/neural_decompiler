@@ -1,0 +1,44 @@
+
+
+int lvp(int *dp, char *s, int slen, int i)
+{
+    if (i >= slen)
+        return 0;
+    
+    if (dp[i] == -1) { // uinitialized
+        if (s[i] == '(') {
+            int mtn_len = lvp(dp, s, slen, i + 1);
+            if ((i + mtn_len + 1) < slen && s[i + mtn_len + 1] == ')') {
+                dp[i] = 1 + mtn_len + 1;
+                // just in case there is another set of mountains
+                // after the first one
+                dp[i] += lvp(dp, s, slen, i + mtn_len + 2);
+            } else {
+                dp[i] = 0;
+            }
+        } else {
+            dp[i] = 0;
+        }
+    }
+    return dp[i];
+}
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+int longestValidParentheses(char * s)
+{
+    int slen = strlen(s);
+    int *dp = malloc(sizeof(int) * slen);
+    int i, best = 0;
+    
+    for (i = 0; i < slen; i++)
+        dp[i] = -1; // uninitialized
+    
+    for (i = 0; i < slen; i++)
+        lvp(dp, s, slen, i);
+    
+    for (i = 0; i < slen; i++)
+        best = MAX(best, dp[i]);
+    
+    return best;
+}

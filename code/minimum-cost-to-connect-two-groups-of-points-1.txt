@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int r , c , dp[12][(1 << 12)] ; 
+    vector<int> colMin ; 
+    
+    int solve(int row , int mask , vector<vector<int>> &cost){
+        if(row >= r){
+            int rem = 0 ;
+            for(int j = 0 ; j < c ; ++j ){
+                //take the remaining ones which were not in the mask 
+                if( !((1 << j) & mask)) rem += colMin[j] ;
+            }
+            return rem ;
+        }
+        if(dp[row][mask] != -1) return dp[row][mask] ;
+        int ans = INT_MAX ;
+        
+        for(int j = 0 ; j < c; ++j ) ans = min(ans,cost[row][j] + solve(row + 1 , mask|(1 << j) , cost )) ;
+        return dp[row][mask] = ans ;
+    }
+    
+    int connectTwoGroups(vector<vector<int>>& cost) {
+        r = cost.size() , c = cost[0].size() ;
+        memset(dp,-1,sizeof(dp)) ;
+        colMin.resize(c,INT_MAX) ;
+        
+        for(int i = 0 ; i < r ; ++i )
+            for(int j = 0 ; j < c ; ++j )
+                colMin[j] = min(colMin[j] ,cost[i][j]) ;
+        
+        return solve(0,0,cost) ;
+    }
+};

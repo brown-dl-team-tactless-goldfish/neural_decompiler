@@ -1,0 +1,55 @@
+class Solution 
+{
+    public:
+    int p[1001];
+    int s[1001];
+    int f(int x)
+    {
+		// find group id for x
+        if(x!=p[x]) p[x]=f(p[x]);
+        return p[x];
+    }
+    void u(int x,int y)
+    {
+		// unite x and y into the same group
+        x=f(x);
+        y=f(y);
+        if(s[x]<s[y]) s[y]+=s[x],p[x]=y;            
+        else s[x]+=s[y],p[y]=x;
+    }
+    vector<bool> friendRequests(int n, vector<vector<int>>& restrictions, vector<vector<int>>& requests) 
+    {
+        for(int i=0;i<n;i++) p[i]=i,s[i]=1;
+
+        int m=restrictions.size(),t=requests.size();
+        vector<bool> result;
+        for(int i=0;i<t;i++)
+        {
+            if(f(requests[i][0])==f(requests[i][1])) // already group together
+            {
+                result.push_back(true);
+                continue;
+            }
+            
+            int a1=f(requests[i][0]);
+            int a2=f(requests[i][1]);
+            bool flag=true;
+            for(int j=0;j<m;j++) // loop through the restrictions and detect restrictions conflict
+            {
+                int b1=f(restrictions[j][0]);
+                int b2=f(restrictions[j][1]);
+                if((a1==b1&&a2==b2)||(a1==b2&&a2==b1))
+                {
+                    result.push_back(false);
+                    flag=false;
+                    break;
+                }
+            }
+            if(!flag) continue;
+            
+            u(requests[i][0],requests[i][1]); // unite the friends into the same group
+            result.push_back(true);
+        }
+        return result;
+    }
+};

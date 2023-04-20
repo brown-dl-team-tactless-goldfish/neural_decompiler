@@ -1,0 +1,53 @@
+class AllOne {
+public:
+    set <pair<int,string>> s;
+    unordered_map <string,int> mp;
+    
+    AllOne() {
+        
+    }
+    
+    void inc(string key) {
+        pair <int,string> p=make_pair(mp[key],key);
+        if (mp[key]==0) {
+            s.insert(make_pair(1,key));
+            mp[key]++;
+        }
+        else{
+            s.erase(p);
+            s.insert(make_pair(p.first+1,key));
+            mp[key]++;
+        }
+    }
+    
+    void dec(string key) {
+        pair <int,string> p=make_pair(mp[key],key);
+        s.erase(p);
+        mp[key]--;
+        if (mp[key]>0) s.insert(make_pair(p.first-1,key));;
+        
+    }
+    
+    string getMaxKey() {
+        if (s.size()==0) return "";
+        auto it=s.end();
+        it--;
+        pair<int,string> pp=*it;
+        return pp.second;
+    }
+    
+    string getMinKey() {
+        if (s.size()==0) return "";
+        pair<int,string> pp=*s.begin();
+        return pp.second;
+    }
+};
+
+/**
+ * Your AllOne object will be instantiated and called as such:
+ * AllOne* obj = new AllOne();
+ * obj->inc(key);
+ * obj->dec(key);
+ * string param_3 = obj->getMaxKey();
+ * string param_4 = obj->getMinKey();
+ */

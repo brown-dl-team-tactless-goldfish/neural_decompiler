@@ -1,0 +1,16 @@
+class Solution {
+public:
+    int findMaxValueOfEquation(vector<vector<int>>& points, int k) {
+        deque<pair<int,int>> dq;
+        int res = INT_MIN;
+        for(const auto& p:points) {
+            while(dq.size() && dq.front().second < p[0] - k) dq.pop_front();
+            if(dq.size()) {
+                res = max( res, p[0] + p[1] + dq.front().first);
+            }
+            while(dq.size() && p[1] - p[0] > dq.back().first) dq.pop_back();
+            dq.emplace_back(p[1]-p[0],p[0]);
+        }
+        return res;
+    }
+};

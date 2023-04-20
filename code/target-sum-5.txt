@@ -1,0 +1,28 @@
+int findTotalSumWays(int* nums, int numsSize, int sum) {
+    int dp[sum+1];
+    memset(dp, 0, sizeof(dp));
+    dp[0] = 1;
+    for (int i = 0; i < numsSize; i++) {
+        for (int j = sum; j >= nums[i]; j--) {
+            dp[j] += dp[j-nums[i]];
+        }
+    }
+    return dp[sum];
+}
+
+int findTargetSumWays(int* nums, int numsSize, int S){
+    // sum(positive) - sum(negitive) = S
+    // sum(P) - sum(N) + sum(P) + sum(N) = S + sum(P) + sum(N)
+    // 2sum(P) = S + sum(nums)
+    // sum(P) = (S + sum(nums)) / 2
+    int sum = 0;
+    for (int i = 0; i < numsSize; i++) {
+        sum += nums[i];
+    }
+    // S > sum means no possibility to reach S.
+    // That S + sum is odd means it's impossible to find sum(P)
+    if (S > sum || (S + sum) % 2 == 1) return 0;
+    // Do dyanmic table
+    return findTotalSumWays(nums, numsSize, (S+sum)/2);
+
+}

@@ -1,0 +1,63 @@
+//this solution first calculates the lenght of the string, then sets two sliding indexes
+//idx_min and idx_max, at every iteration the function checks if the next character
+//is already present in the sliding windows; if it is not, then it updates the longest
+//lenght and goes to the next character, if it is, then it moves the window start not by //1 but to i + 1, with i representing the index (starting from idx_min) at which the 
+//collision occured
+//for ex. hxxf[abcdefc] supposing [] is the current window, since c is found the next
+//window will not be hxxfa[bcdefc] but hxxfab[cdefc]
+
+
+int str_len(char * s)
+{
+    if(s == NULL)
+    {
+        return 0;
+    }
+
+    int i = 0;
+    while(s[i] != 0)
+    {
+        i++;
+    }
+
+    return i;
+}
+
+int lengthOfLongestSubstring(char * s){
+    int len = str_len(s);
+
+    int idx_min = 0;
+    int idx_max = 0;
+    int curr_max_lenght = 0;
+    int collide = 0;
+
+    while(idx_max != len)
+    {
+        collide = 0;
+        
+        int i;
+        for(i = idx_min; i <= idx_max; i++)
+        {
+            if(i != idx_max && s[i] == s[idx_max])
+            {
+                collide = 1;
+                break;
+            }
+        }
+
+        if(collide)
+        {
+            idx_min = i + 1;
+        }
+        else
+        {
+            if(idx_max - idx_min + 1> curr_max_lenght)
+            {
+                curr_max_lenght = idx_max - idx_min + 1;
+            }
+
+            idx_max++;
+        }
+    }
+    return curr_max_lenght;
+}

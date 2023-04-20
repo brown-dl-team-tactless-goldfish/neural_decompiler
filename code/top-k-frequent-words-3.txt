@@ -1,0 +1,46 @@
+typedef struct {
+    char val[11];
+    int freq;
+    UT_hash_handle hh;
+} Item1;
+
+int cmp(const void *a, const void *b) {
+    Item1 *a1 = (Item1 *)a;
+    Item1 *b1 = (Item1 *)b;
+    
+    if (a1->freq != b1->freq) {
+        return b1->freq - a1->freq;
+    }
+    return strcmp(a1->val, b1->val);
+}
+
+char ** topKFrequent(char ** words, int wordsSize, int k, int* returnSize){
+    Item1 *ht = NULL, *tmp = NULL;
+    
+    for (int i=0; i<wordsSize; i++) {
+        HASH_FIND_STR(ht, words[i], tmp);
+        if (tmp) {
+            tmp->freq++;
+        } else {
+            tmp = (Item1 *)malloc(sizeof(Item1));
+            memset(tmp, 0, sizeof(Item1));
+            memcpy(tmp->val, words[i], strlen(words[i]));
+            HASH_ADD_STR(ht, val, tmp);
+        }
+    }
+    HASH_SORT(ht, cmp);
+    char **ans = (char **)malloc(sizeof(char *) * k);
+    int pos = 0;
+    Item1 *iter;
+    HASH_ITER(hh, ht, iter, tmp) {
+        ans[pos] = (char *)malloc(sizeof(char) * 11);
+        memset(ans[pos], 0, 11);
+        memcpy(ans[pos], iter->val, strlen(iter->val));
+        pos++;
+        if (pos == k) {
+            break;
+        }
+    }
+    *returnSize = k;
+    return ans;
+}

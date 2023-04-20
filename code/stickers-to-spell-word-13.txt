@@ -1,0 +1,38 @@
+class Solution {
+public:
+    const int IMPOSSIBLE = 1e9;    
+    int DP[50][1 << 15];
+    
+    int solve(const int idx, const int bm, vector<string>& stickers, string& target) {
+        if (__builtin_popcount(bm) == int(target.length()))
+            return 0;
+        if (idx == int(stickers.size()))
+            return IMPOSSIBLE;
+        if (DP[idx][bm] != -1)
+            return DP[idx][bm];
+        DP[idx][bm] = solve(idx + 1, bm, stickers, target);
+        
+        int temp = ~bm & ((1 << (int(target.size()))) - 1);
+        int chars[26] = {0};
+        for (auto& c : stickers[idx])
+            chars[c - 'a']++;
+        int nxtBm = bm;
+        while (temp) { //Efficiently iterate over enabled bits in the bitmask
+            int p = __builtin_ctz(temp);
+            if (chars[target[p] - 'a'] > 0) {
+                chars[target[p] - 'a']--;
+                nxtBm += (1 << p);                
+            }
+            temp -= (1 << p);
+        }
+        if (nxtBm != bm)
+            DP[idx][bm] = min(DP[idx][bm], 1 + solve(idx, nxtBm, stickers, target));        
+        return DP[idx][bm] = min(DP[idx][bm], 1 + solve(idx + 1, nxtBm, stickers, target));
+    }
+    
+    int minStickers(vector<string>& stickers, string target) {
+        memset(DP, -1, sizeof(DP));
+        int res = solve(0, 0, stickers, target);
+        return res == IMPOSSIBLE ? -1 : res;
+    }
+};

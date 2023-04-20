@@ -1,0 +1,22 @@
+int hIndex(int* citations, int citationsSize){
+    int* count = (int*)malloc((citationsSize + 1) * sizeof(int));
+    for (int i = 0; i <= citationsSize; i++) {
+        count[i] = 0;
+    }
+    for (int i = 0; i < citationsSize; i++) {
+        if (citations[i] > citationsSize) {
+            count[citationsSize]++;
+        } else {
+            count[citations[i]]++;
+        }
+    }
+    for (int i = citationsSize; i > 0; i--) {
+        if (count[i] >= i) {
+            free(count);
+            return i;
+        }
+        count[i - 1] += count[i];
+    }
+    free(count);
+    return 0;
+}

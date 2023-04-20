@@ -1,0 +1,96 @@
+void sort(int arr[][1024], int r, int col, int val, int y) {
+	
+	int i = 2, tmp, tmp_y;
+	
+    if (col == 2) {
+        arr[r][col] = val;
+	    arr[r][col + 1] = y;
+        return;
+    }
+    
+	for (i = 2; i < col; i += 2) {
+		if (y > arr[r][i + 1]) {
+			tmp = arr[r][i];
+			tmp_y = arr[r][i + 1];
+			arr[r][i] = val;
+			arr[r][i + 1] = y;
+			val = tmp;
+			y = tmp_y;
+		} else if ((y == arr[r][i + 1]) && (val < arr[r][i])) {
+            tmp = arr[r][i];
+			tmp_y = arr[r][i + 1];
+			arr[r][i] = val;
+			arr[r][i + 1] = y;
+			val = tmp;
+			y = tmp_y;
+        }
+	}
+	
+	arr[r][col] = val;
+	arr[r][col + 1] = y;
+	
+	return;
+}
+
+void btt(struct TreeNode* nd, int x, int y, int arr[][1024], int r, int* curr_indx) {
+    
+    if (nd == NULL) 
+        return;
+    
+    int i = 0;
+    
+    
+    btt(nd->left, (x - 1), (y - 1), arr, r, curr_indx);     
+        
+    while ( (i < r) && (x != arr[i][0])) {
+        i++;
+    }
+    
+    if (i == 11) { 
+        i = *curr_indx; 
+        *curr_indx = *curr_indx + 1; 
+        arr[i][0] = x; 
+    } 
+    
+    arr[i][1] += 1;
+    int nxt = (arr[i][1] * 2);
+	sort(arr, i, nxt, nd->val, y);
+    //arr[i][nxt] = nd->val;
+    
+    btt(nd->right, (x + 1), (y - 1), arr, r, curr_indx);
+}
+
+int** verticalTraversal(struct TreeNode* root, int* returnSize, int** returnColumnSizes) {
+    
+    if (root == NULL)
+        return NULL;
+    
+    int x = 0, y = 0, curr_indx = 0, i, j;
+    int arr[11][1024], **ans;
+    
+    for (i = 0; i < 11; i++) {
+        arr[i][0] = INT_MIN;
+        arr[i][1] = 0;
+    }
+    
+    btt(root, x, y, arr, 11, &curr_indx);
+    
+    *returnSize = curr_indx;
+    
+    ans = (int**)malloc(*returnSize * (sizeof(int *)));
+    returnColumnSizes[0] = (int*)malloc(*returnSize * (sizeof(int *)));
+    
+    for (i = 0; i < *returnSize; i++) {
+        ans[i] = (int *)malloc((arr[i][1]) * sizeof(int));
+        returnColumnSizes[0][i] = (arr[i][1]); 
+    }
+    
+    for (i = 0; i < curr_indx; i++) {
+        for (j = 0; j <= (arr[i][1] - 1); j++) {
+            ans[i][j] = arr[i][2 * j + 2]; 
+            //printf("Dbg %d %d %d %d \n", i, j, arr[i][2 + 2 * j], ans[i][j]);
+        }
+    }
+    
+    return ans;  
+}

@@ -1,0 +1,31 @@
+string smallestSubsequence(string s, int k, char letter, int repetition) 
+{
+	string result;
+	int n=s.length(),c=0,p=0; // c is the number of available letters, p is the number of letters already used
+	for(int i=0;i<n;i++)
+		if(s[i]==letter)
+			c++;
+
+	for(int i=0;i<n;i++)
+	{
+		while(!result.empty()&&s[i]<result.back())
+		{
+			if(result.back()==letter)
+			{
+				if(c>repetition-p) p--;
+				else break;
+			}
+			if(k-result.length()>=n-i) break;
+
+			result.pop_back();
+		}
+		if(result.length()<k)
+		{
+			if(s[i]!=letter&&k-result.length()==repetition-p) continue;
+			if(s[i]==letter) p++;
+			result+=s[i];            
+		}
+		if(s[i]==letter) c--;
+	}
+	return result;
+}

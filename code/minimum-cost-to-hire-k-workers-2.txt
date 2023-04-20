@@ -1,0 +1,132 @@
+typedef struct worker_s {
+    int quality;
+    int wage;
+} worker_t;
+
+typedef struct min_heap_s {
+    int *keys;
+    int count;
+    int size;
+} min_heap_t;
+
+void int_swap(int *a, int *b) {
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+min_heap_t* create_min_heap(int workersSize) {
+    min_heap_t *heap = malloc(sizeof(min_heap_t));
+    heap->keys = malloc((workersSize+1) * sizeof(int));
+    heap->count = 0;
+    heap->size = workersSize;
+    return heap;
+}
+
+void destroy_min_heap(min_heap_t *heap) {
+    if (heap->size) free(heap->keys);
+    if (heap) free(heap);
+}
+
+void heapify(min_heap_t *heap, int i) {
+    int largest, left, right;
+
+    if (heap->count == 1) {
+        return;
+    }
+    else {
+        largest = i;
+        left = 2*i;
+        right = 2*i + 1;
+        if (left < heap->count && heap->keys[left] < heap->keys[largest]) {
+            largest = left;
+        }
+        if (right < heap->count && heap->keys[right] < heap->keys[largest]) {
+            largest = right;
+        }
+        if (largest != i) {
+            int_swap(&heap->keys[i], &heap->keys[largest]);
+            heapify(heap, largest);
+        }
+    }
+}
+
+void min_heap_insert(min_heap_t* heap, int key) {
+    int i;
+
+    if (heap->count == heap->size) {
+        return;
+    }
+    else if (heap->count == 0) {
+        heap->keys[0] = key;
+        heap->count++;
+        return;
+    }
+    else {
+        heap->keys[heap->count] = key;
+        heap->count++;
+        for (i=heap->count/2-1;i>=0;i--) {
+            heapify(heap, i);
+        }
+    }
+}
+
+int min_heap_extract(min_heap_t* heap) {
+    int root;
+
+    if (heap->count <= 0) {
+        return INT_MAX;
+    }
+    else if (heap->count == 1) {
+        heap->count--;
+        return heap->keys[0];
+    }
+    else {
+        root = heap->keys[0];
+        heap->keys[0] = heap->keys[heap->count-1];
+        heap->count--;
+        heapify(heap, 0);
+        return root;
+    }
+}
+
+double worker_ratio(int wage, int quality) {
+    return (double) wage / quality;
+}
+
+int worker_comparer(const void *a, const void *b) {
+    worker_t _a = *(worker_t *) a;
+    worker_t _b = *(worker_t *) b;
+    return worker_ratio(_a.wage, _a.quality) > worker_ratio(_b.wage, _b.quality);
+}
+
+#define MIN(a, b) (((a)<(b))?(a):(b))
+
+double mincostToHireWorkers(int* quality, int qualitySize, int* wage, int wageSize, int k){
+    worker_t workers[qualitySize];
+    int i, sumq = 0, q;
+    double ans = 1e+9;
+    min_heap_t *heap = create_min_heap(qualitySize);
+
+    for (i=0;i<qualitySize;i++) {
+        workers[i].quality = quality[i];
+        workers[i].wage = wage[i];
+    }
+
+    qsort(workers, qualitySize, sizeof(worker_t), worker_comparer);
+
+    for (i=0;i<qualitySize;i++) {
+        min_heap_insert(heap, -workers[i].quality);
+        sumq += workers[i].quality;
+        if (heap->count > k) {
+            sumq += min_heap_extract(heap);
+        }
+        if (heap->count == k) {
+            ans = MIN(ans, (sumq * worker_ratio(workers[i].wage, workers[i].quality)));
+        }
+    }
+
+    destroy_min_heap(heap);
+
+    return ans;
+}

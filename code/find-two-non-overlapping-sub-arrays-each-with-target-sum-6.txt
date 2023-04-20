@@ -1,0 +1,69 @@
+class Solution {
+public:
+    int minSumOfLengths(vector<int>& arr, int target) {
+        int n = arr.size();
+        int left[n], right[n];
+        unordered_map<int, int> lft;
+        unordered_map<int, int> rht;
+        int mod = 1e8+1;
+        lft[0] = -1;
+        rht[0] = n;
+        int prfx = arr[0];
+        lft[prfx] = 0;
+        if(prfx == target)
+            left[0] = 1;
+        else
+            left[0] = mod;
+        for(int i = 1; i < n; i++)
+        {
+            prfx += arr[i];
+            if(lft.count(prfx-target))
+            {
+                left[i] = min(left[i-1],i-lft[prfx-target]);
+            }
+            else
+            {
+                left[i] = left[i-1];
+            }
+            lft[prfx] = i;
+        }
+        prfx = arr[n-1];
+        rht[prfx] = n-1;
+        if(prfx == target)
+            right[n-1] = 1;
+        else
+            right[n-1] = mod;
+        for(int i = n-2; i >= 0; i--)
+        {
+            prfx += arr[i];
+            if(rht.count(prfx-target))
+            {
+                right[i] = min(right[i+1],rht[prfx-target]-i);
+            }
+            else
+            {
+                right[i] = right[i+1];
+            }
+            rht[prfx] = i;
+        }
+        // for(int i = 0; i < n; i++)
+        // {
+        //     cout << left[i] << " ";
+        // }
+        int ans = mod;
+        for(int i = 1; i < n; i++)
+        {
+            int v;
+            if(left[i-1] == mod || right[i] == mod)
+                v = mod;
+            else
+            {
+                v = left[i-1]+right[i];
+            }
+            //cout << v << " ";
+            ans = min(v, ans);
+        }
+        if(ans == mod) return -1;
+        return ans;
+    }
+};

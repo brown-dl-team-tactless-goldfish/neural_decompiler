@@ -1,0 +1,33 @@
+class Solution {
+public:
+    double maxProbability(int n, vector<vector<int>>& edges, vector<double>& succProb, int start, int end) {
+ 
+        int m = edges.size();   
+        vector<vector<pair<int, double>>>graph(n);        
+        for (int i = 0; i < m; i++) {
+            graph[edges[i][0]].push_back({edges[i][1], succProb[i]});
+            graph[edges[i][1]].push_back({edges[i][0], succProb[i]});
+        }
+        
+        queue<int>q;
+        q.push(start);
+        
+        vector<double>probs(n, 0.0);
+        probs[start] = 1.0;
+        
+        while (!q.empty()) {        
+            int from = q.front();
+            q.pop();
+            for (auto j = 0; j < graph[from].size(); j++) {
+                pair<int, double>p = graph[from][j];
+                int next = p.first;
+                double prob = p.second;
+                if (prob*probs[from] <= probs[next]) continue;
+                probs[next] = prob*probs[from];
+                q.push(next);
+            }
+        }
+        
+        return probs[end];
+    }
+};

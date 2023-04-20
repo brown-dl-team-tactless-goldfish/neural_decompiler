@@ -1,0 +1,67 @@
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public string serialize(TreeNode root) {
+        if (root == null) return "";
+
+        var result = new List<string>();
+        var queue = new Queue<TreeNode>();
+        queue.Enqueue(root);
+
+        while (queue.Any()) {
+            var size = queue.Count;
+
+            for (int s = 0; s < size; s++) {
+                var cur = queue.Dequeue();
+
+                if (cur == null) {
+                    result.Add("n");
+                } else {
+                    result.Add($"{cur.val}");
+                    queue.Enqueue(cur.left);
+                    queue.Enqueue(cur.right);
+                }
+            }
+        }
+
+        return string.Join(',', result);
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(string data) {
+        if (data == "") return null;
+
+        var nums = data.Split(',');
+        var n = nums.Length;
+        var i = 0;
+
+        var root = new TreeNode(int.Parse(nums[0]));
+
+        var queue = new Queue<TreeNode>();
+        queue.Enqueue(root);
+        i++;
+
+        while (i < n) {
+            var size = queue.Count;
+
+            for (int s = 0; s < size; s++) {
+                var cur = queue.Dequeue();
+
+                if (nums[i] != "n") {
+                    cur.left = new TreeNode(int.Parse(nums[i]));
+                    queue.Enqueue(cur.left);
+                }
+
+                i++;
+
+                if (nums[i] != "n") {
+                    cur.right = new TreeNode(int.Parse(nums[i]));
+                    queue.Enqueue(cur.right);
+                }
+                i++;
+            }
+        }
+
+        return root;
+    }
+}

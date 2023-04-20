@@ -1,0 +1,41 @@
+public int MergeStones(int[] stones, int k)
+{        
+	if (stones == null || stones.Length <= 1)
+	{
+		return 0;
+	}
+
+	if (stones.Length < k || (stones.Length - 1)%(k - 1) != 0)
+	{
+		return -1;
+	}
+
+	int[] prefixSum = new int[stones.Length + 1];        
+	for (int i = 0; i < stones.Length; i++)
+	{
+		prefixSum[i + 1] = prefixSum[i] + stones[i];
+	}
+
+	int[,] d = new int[stones.Length, stones.Length];
+
+	for (int length = k; length <= stones.Length; length++)
+	{
+		for(int start = 0; start <= stones.Length - length; start++)
+		{
+			int end = start + length - 1;
+			d[start, end] = int.MaxValue;
+
+			for(int mid = start; mid < end; mid += (k - 1))
+			{
+				d[start, end] = Math.Min(d[start, end], d[start, mid] + d[mid + 1, end]);
+			}
+
+			if((end - start) % (k - 1) == 0)
+			{                    
+				d[start, end] += prefixSum[end + 1] - prefixSum[start];
+			}
+		}
+	}
+
+	return d[0, stones.Length - 1];
+}    

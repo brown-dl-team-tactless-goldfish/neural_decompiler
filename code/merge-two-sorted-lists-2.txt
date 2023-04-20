@@ -1,0 +1,80 @@
+struct ListNode* CreateNode()
+{
+	struct ListNode* node = (struct ListNode*)malloc(1 * sizeof(struct ListNode));
+	node->next = NULL;
+	node->val = -1;
+	return node;
+}
+
+struct ListNode* GetNewNode(int data)
+{
+	struct ListNode* node = CreateNode();
+	node->val = data;
+	return node;
+}
+
+void  InsertAtEnd(struct ListNode* list, int data)
+{
+	struct ListNode* travel = list;
+	while (travel->next != NULL)
+	{
+		travel = travel->next;
+	}
+	struct ListNode* nodeToAdd = GetNewNode(data);
+	nodeToAdd->next = travel->next;
+	travel->next = nodeToAdd;
+}
+
+struct ListNode* mergeTwoLists(struct ListNode* list1, struct ListNode* list2)
+{
+	if (list1 == NULL && list2 == NULL) return NULL;
+
+	if (list1 == NULL) return list2;
+	if (list2 == NULL) return list1;
+
+	struct ListNode* result = CreateNode();
+
+	struct ListNode* travelResult = result;
+	struct ListNode* travel1 = list1;
+	struct ListNode* travel2 = list2;
+
+	while (true)
+	{
+		if (travel1->val <= travel2->val)
+		{
+			InsertAtEnd(travelResult, travel1->val);
+			travelResult = travelResult->next;
+			travel1 = travel1->next;
+
+			if (travel1 == NULL)
+			{
+				while (travel2 != NULL)
+				{
+					InsertAtEnd(travelResult, travel2->val);
+					travelResult = travelResult->next;
+					travel2 = travel2->next;
+				}
+				break;
+			}
+		}
+		else
+		{
+			InsertAtEnd(travelResult, travel2->val);
+			travelResult = travelResult->next;
+			travel2 = travel2->next;
+
+			if (travel2 == NULL)
+			{
+				while (travel1 != NULL)
+				{
+					InsertAtEnd(travelResult, travel1->val);
+					travelResult = travelResult->next;
+					travel1 = travel1->next;
+				}
+				break;
+			}
+		}
+	}
+
+	return result->next;
+}

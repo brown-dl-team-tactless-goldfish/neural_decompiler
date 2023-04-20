@@ -1,0 +1,11 @@
+int kthLargestValue(vector<vector<int>>& m, int k) {
+    vector<int> vals;
+    for (auto i = 0; i < m.size(); ++i)
+        for (auto j = 0; j < m[i].size(); ++j) {
+            m[i][j] ^= (i > 0 ? m[i - 1][j] : 0) ^ (j > 0 ? m[i][j - 1] : 0)
+                ^ (i > 0 && j > 0 ? m[i - 1][j - 1] : 0);
+            vals.push_back(m[i][j]);
+        }
+    nth_element(begin(vals), begin(vals) + k - 1, end(vals), greater<int>()); 
+    return vals[k - 1];
+}

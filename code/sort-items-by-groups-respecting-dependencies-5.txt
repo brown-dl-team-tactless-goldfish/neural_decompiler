@@ -1,0 +1,104 @@
+class Solution {
+public:
+    int n;
+    map<int,vector<int>> fin;
+    vector<pair<int,int>> gtopo;
+    bool isdag=true;
+    void dfs(map<int,vector<int>> &adj,vector<int>& vis,int x,int &grp){
+        vis[x]=-1;
+        for(auto j=0;j<adj[x].size();j++){
+            if(vis[adj[x][j]]==0)
+                dfs(adj,vis,adj[x][j],grp);
+            else if(vis[adj[x][j]]==-1){
+                isdag=false;
+                return;
+            }
+        }
+        vis[x]=1;
+        fin[grp].push_back(x);
+    }
+    
+    void dfsgrp(map<pair<int,int>,vector<pair<int,int>>> &gg,map<pair<int,int>,int> &gvis,pair<int,int> x){ //This function topo sorts group
+        gvis[x]=-1;
+        for(auto j=0;j<gg[x].size();j++){
+            if(gvis[gg[x][j]]==0)
+                dfsgrp(gg,gvis,gg[x][j]);
+            else if(gvis[gg[x][j]]==-1){
+                isdag=false;
+                return;
+            }
+        }
+        gvis[x]=1;
+        gtopo.push_back(x);
+    }
+    
+    vector<int> sortItems(int n, int m, vector<int>& group, vector<vector<int>>& b4i) {
+        map<int,map<int,vector<int>>> all_graf;
+        map<pair<int,int>,vector<pair<int,int>>> grp_graf;
+        n=group.size();     
+        
+        for(int i=0;i<n;i++){
+            if(group[i]==-1){                
+                for(int j=0;j<b4i[i].size();j++){
+                    grp_graf[{group[b4i[i][j]],0}].push_back({-1,i});  
+                }
+                if(grp_graf.count({-1,i})==0){
+                    grp_graf[{-1,i}] = vector<pair<int,int>>();
+                }
+            }
+            else {
+                for(int j=0;j<b4i[i].size();j++){
+                    if(group[b4i[i][j]]==-1) 
+                        grp_graf[{-1,b4i[i][j]}].push_back({group[i],0});
+                   else if(group[i]==group[b4i[i][j]]){
+                       all_graf[group[i]][b4i[i][j]].push_back(i);
+                       
+                   }
+                    else{
+                        grp_graf[{group[b4i[i][j]],0}].push_back({group[i],0});
+                    }
+                }
+                if(all_graf[group[i]].count(i)==0){
+                    all_graf[group[i]][i] = vector<int>();
+                }
+                if(grp_graf.count({group[i],0})==0) grp_graf[{group[i],0}] = vector<pair<int,int>>();
+            }
+        }
+        
+        vector<int> vis(n,0);
+        for(auto i=all_graf.begin();i!=all_graf.end();i++){
+            map<int,vector<int>> adj = i->second;
+            int grp = i->first;
+            for(auto j=adj.begin();j!=adj.end();j++){
+                if(!vis[j->first])
+                    dfs(adj,vis,j->first,grp);
+                if(!isdag)
+                    return vector<int>();
+            }
+            
+        }
+        
+        map<pair<int,int>,int> gvis;
+        for(auto i=grp_graf.begin();i!=grp_graf.end();i++){            
+            if(!gvis[i->first]){
+                dfsgrp(grp_graf,gvis,i->first);
+            }
+            if(!isdag)
+                return vector<int>();
+        }
+        vector<int> finsol;
+        for(int i=gtopo.size()-1;i>=0;i--){
+            pair<int,int> p = gtopo[i];
+            if(p.first==-1){
+                finsol.push_back(p.second);
+            }
+            else{
+                vector<int> adei = fin[p.first];
+                for(int j=adei.size()-1;j>=0;j--){
+                    finsol.push_back(adei[j]);
+                }
+            }
+        }        
+        return finsol;
+    }
+};

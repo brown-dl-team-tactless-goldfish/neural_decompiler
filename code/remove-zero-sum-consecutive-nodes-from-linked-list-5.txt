@@ -1,0 +1,149 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+#define HASH_SIZE   1000
+
+typedef struct hashnode
+{
+    int index;
+    int sum;
+    struct hashnode * next;
+}hashnode;
+
+hashnode ** hashtable = NULL;
+bool * valid_table = NULL;
+
+int hashindex(int sum)
+{
+    if(sum < 0)
+        return (-1 * sum) % HASH_SIZE;
+    return (sum % HASH_SIZE);
+}
+
+void invalidate_table(int start_index, int end_index)
+{
+    int i = start_index;
+    for(i=start_index; i<=end_index; i++)
+    {
+        valid_table[i] = false;
+    }
+    return;
+}
+
+void insert_hashtable(int index, int sum)
+{
+    int h_index = hashindex(sum);
+    hashnode * prev = NULL;
+    hashnode * trav = hashtable[h_index];
+
+    if(!trav)   //Slot is empty
+    {
+        hashnode * new_node = (hashnode *)malloc(sizeof(hashnode));
+        new_node->index = index;
+        new_node->sum = sum;
+        new_node->next = NULL;
+        hashtable[h_index] = new_node;
+    }
+    else
+    {
+        while(trav)
+        {
+            if((trav->sum == sum) && valid_table[trav->index])    //Same sum is found
+            {
+                invalidate_table(trav->index+1, index);
+                return;
+            }
+            prev = trav;
+            trav = trav->next;
+        }
+
+        if(!trav)
+        {
+            hashnode * new_node = (hashnode *)malloc(sizeof(hashnode));
+            new_node->index = index;
+            new_node->sum = sum;
+            new_node->next = NULL;
+            prev->next = new_node;
+        }
+    }
+    return;
+}
+
+struct ListNode* removeZeroSumSublists(struct ListNode* head)
+{
+    struct ListNode * dummy_node = (struct ListNode *)malloc(sizeof(struct ListNode));
+    dummy_node->val = 0;
+    dummy_node->next = head;
+
+    head = dummy_node;
+    
+    struct ListNode * trav = head;
+    int num_nodes = 0;
+    while(trav)
+    {
+        num_nodes++;
+        trav = trav->next;
+    }
+
+    int * tmp_arr = (int *)malloc(sizeof(int) * num_nodes);
+    int tmp_arr_index = 0;
+    trav = head;
+    while(trav)
+    {
+        
+        tmp_arr[tmp_arr_index++] = trav->val;
+        trav = trav->next;
+    }
+
+    hashtable = (hashnode **)malloc(sizeof(hashnode *) * HASH_SIZE);
+    int i=0;
+    for(i=0; i<HASH_SIZE; i++)
+    {
+        
+        hashtable[i] = NULL;
+    }
+    
+    valid_table = (bool *)malloc(sizeof(bool) * num_nodes);
+    for(i=0; i<num_nodes; i++)
+    {
+        valid_table[i] = true;
+    }
+    
+    int sum = 0;
+    for(i=0; i<tmp_arr_index; i++)
+    {
+        sum += tmp_arr[i];
+        insert_hashtable(i, sum);
+    }
+    
+    struct ListNode * new_head = NULL;
+    struct ListNode * new_tail = NULL;
+
+    valid_table[0] = false;
+    for(i=0; i<tmp_arr_index; i++)
+    {
+        if(valid_table[i] == true)
+        {
+            struct ListNode * new_node = (struct ListNode *)malloc(sizeof(struct ListNode));
+            new_node->val = tmp_arr[i];
+            new_node->next = NULL;
+
+            if(new_head == NULL)
+            {
+                new_head = new_node;
+                new_tail = new_node;
+            }
+            else
+            {
+                new_tail->next = new_node;
+                new_tail = new_node;
+            }
+        }    
+    }
+    return new_head;
+
+}

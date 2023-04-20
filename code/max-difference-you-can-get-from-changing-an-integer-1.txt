@@ -1,0 +1,72 @@
+int maxDiff(int num){
+    int dig, lastNon9 = -1, lastNon1 = -1, num1, num2, tenMul, tmp = num, digs = 0;
+    bool *digsAsLastNon9Inds, *digsAsLastNon1Inds;
+    while(tmp > 0){
+        dig = tmp % 10;
+        if(dig < 9) lastNon9 = dig;
+        if(dig > 1) lastNon1 = dig;
+        tmp /= 10;
+        digs++;
+    }
+    if(lastNon9 == -1) num1 = num;
+    if(lastNon1 == -1) num2 = num;
+    if(lastNon1 != -1 || lastNon9 != -1){
+        if(lastNon9 != -1){
+            digsAsLastNon9Inds = (bool*) calloc(digs, sizeof(bool));
+            if(!digsAsLastNon9Inds) return -1;
+        }
+        if(lastNon1 != -1){
+            digsAsLastNon1Inds = (bool*) calloc(digs, sizeof(bool));
+            if(!digsAsLastNon1Inds) return -1;
+        }
+        if(lastNon9 != -1){
+            tmp = num;
+            digs = 0;
+            while(tmp > 0){
+                dig = tmp % 10;
+                tmp /= 10;
+                if(dig == lastNon9){
+                    digsAsLastNon9Inds[digs] = true;
+                }
+                digs++;
+            }
+        }
+        if(lastNon1 != -1){
+            tmp = num;
+            digs = 0;
+            while(tmp > 0){
+                dig = tmp % 10;
+                tmp /= 10;
+                if(dig == lastNon1){
+                    digsAsLastNon1Inds[digs] = true;
+                }
+                digs++;
+            }
+        }
+        num1 = num;
+        if(lastNon9 > -1){
+            tenMul = 1;
+            for(int i = 0; i < digs; i++){
+                if(digsAsLastNon9Inds[i]){
+                    num1 += (9 - lastNon9) * tenMul;
+                }
+                tenMul *= 10;
+            }
+        }
+        num2 = num;
+        if(lastNon1 > -1){
+            tenMul = 1;
+            for(int i = 0; i < digs; i++){
+                if(digsAsLastNon1Inds[i]){
+                    if(digsAsLastNon1Inds[digs - 1]){
+                        num2 -= (lastNon1 - 1) * tenMul;
+                    } else{
+                        num2 -= lastNon1 * tenMul;
+                    }
+                }
+                tenMul *= 10;
+            }
+        }
+    }
+    return num1 - num2;
+}

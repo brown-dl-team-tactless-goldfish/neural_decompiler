@@ -1,0 +1,30 @@
+class Solution {
+public:
+    double dp[101][26][26];
+    
+    double dfs(int N, int K, int r, int c, int depth) {
+        if (r < 0 || r >= N || c < 0 || c >= N)
+            return 0.0;
+        if (depth >= K)
+            return 1.0;
+        
+        if (dp[depth][r][c] > 0.0)
+            return dp[depth][r][c];
+        
+        static int offset[][2] = {
+            { 1, 2 }, { 1, -2 }, { -1, 2 }, { -1, -2 },
+            { 2, 1 }, { 2, -1 }, { -2, 1 }, { -2, -1 }
+        };
+        
+        double res = 0.0;
+        for (int i = 0; i < sizeof(offset) / sizeof(offset[0]); i++)
+            res += dfs(N, K, r + offset[i][0], c + offset[i][1], depth + 1);
+
+        return dp[depth][r][c] = res;
+    }
+    
+    double knightProbability(int N, int K, int r, int c) {
+        memset(dp, 0, sizeof(dp));
+        return dfs(N, K, r, c, 0) / pow(8.0, K);
+    }
+};

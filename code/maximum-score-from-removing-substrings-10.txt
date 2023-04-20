@@ -1,0 +1,79 @@
+/*
+    Logic:
+    we have to search "ab" and "ba" in the given string.
+    now for removing ab we get x points and for removing ba we get y points.
+    Step-1: we first remove ab or ba according to value of x and y.So if x is greater than y(we get more points from chosing x) we choose to find ab
+    and vice versa.
+    Step 2:After removing all greater value string we remove the smaller one and calculate the points we get in total.
+    
+
+Implementation:*/
+/*Please do upvote if you liked my solution...if you have doubts please comment and ask..and also comment about what can i improve in my solution.*/
+class Solution {
+public:
+    int get(string target,int p,string &a){
+        char b=a[0];
+        int i=0,ans=0;
+        stack<char>s;
+        while(i<a.size()){
+            if(b==target[0] && s.size()>=2 && s.top()==target[1]){
+                while(target[0]==b && s.size()>=2 && s.top()==target[1]){
+                    ans+=p;
+                    s.pop();
+                    s.pop();
+                    if(!s.empty())
+                        b=s.top();
+                    if(i<a.size())
+                        s.push(a[i]);
+                    i++;
+                }
+            }
+            else{
+                if(!s.empty())
+                    b=s.top();
+                s.push(a[i]);
+                i++;
+            }
+        }
+        if(s.empty()){
+            a="";
+            return ans;
+        }
+        while(target[0]==b && s.size()>=2 && s.top()==target[1]){
+            ans+=p;
+            s.pop();
+            s.pop();
+            if(!s.empty())
+                b=s.top();
+            if(i<a.size())
+                s.push(a[i]);
+            i++;
+        }
+        //below part is to assign the string after removing target string.
+        i=s.size()-1;
+        string z(i+1,' ');
+        while(i>=0){
+            z[i]=s.top();
+            s.pop();
+            i--;
+        }
+        a=z;
+        return ans;
+    }
+    int maximumGain(string s, int x, int y) {
+        int p=x,ans=0,c=y;
+        string target="ab",t2="ba";
+        if(x<y){
+            p=y;
+            c=x;
+            t2="ab";
+            target="ba";
+        }
+        //target represents the string we will remove first,t2 represents the other string.Similarly p is the greater value and c is smaller
+        ans+= get(target,p,s);//get function calculates the points we get after removing the required string
+        if(s.size()==0)
+            return ans;
+        ans+= get(t2,c,s);
+        return ans;
+    }
+};

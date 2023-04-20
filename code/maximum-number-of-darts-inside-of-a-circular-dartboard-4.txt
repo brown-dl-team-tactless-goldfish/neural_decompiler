@@ -1,0 +1,48 @@
+  public class Solution
+    {
+        private double distance(int[] a, int[] b)
+        {
+            return Math.Sqrt(Math.Pow(a[0] - b[0], 2) + Math.Pow(a[1] - b[1], 2));        
+        }
+        private double distance(double[] a, int[] b)
+        {
+            return Math.Sqrt(Math.Pow(a[0] - b[0], 2) + Math.Pow(a[1] - b[1], 2));
+        }
+
+        private double[] CenterXY(int[] a, int[] b, double radius)
+        {
+            double radsq = radius * radius;
+            double q = distance(a,b);
+            double y3 = (b[1] + a[1]) / 2.0;
+            var y = y3 + Math.Sqrt(radsq - ((q / 2.0) * (q / 2.0))) * ((b[0] - a[0]) / q);
+            double x3 = (a[0] + b[0]) / 2.0;
+            var x = x3 + Math.Sqrt(radsq - ((q / 2.0) * (q / 2.0))) * ((a[1] - b[1]) / q);
+            return new double[] { x, y };
+        }
+        public int NumPoints(int[][] points, int r)
+        {
+            int max = int.MinValue;
+            for (int i = 0; i < points.Length; i++)
+            {
+                for (int k = i+1; k < points.Length; k++)
+                {
+                    int counter = 2;
+                    if (distance(points[i],points[k])>2*r)
+                    {
+                        continue;
+                    }
+                    for (int p = 0; p < points.Length; p++)
+                    {
+                        if (p == i || p == k) continue;                       
+                        var c = CenterXY(points[i], points[k],r);
+                        if (distance(c,points[p])<=r)
+                        {
+                            counter++;
+                        }
+                    }
+                    max = Math.Max(counter, max);
+                }
+            }
+            return Math.Max(max,1);
+        }
+    }

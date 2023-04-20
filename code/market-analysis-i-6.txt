@@ -1,0 +1,15 @@
+WITH cte 
+AS (
+    SELECT 
+        o.buyer_id, 
+        COUNT(o.order_date) AS orders_in_2019
+    FROM Orders o
+    WHERE YEAR(o.order_date) = 2019
+    GROUP BY o.buyer_id)
+    
+SELECT 
+    u.user_id AS buyer_id,
+    u.join_date,
+    IFNULL(orders_in_2019, 0) AS orders_in_2019
+FROM Users u
+LEFT JOIN cte c ON u.user_id = c.buyer_id

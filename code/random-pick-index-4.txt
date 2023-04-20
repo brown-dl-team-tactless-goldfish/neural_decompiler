@@ -1,0 +1,46 @@
+
+
+
+typedef struct {
+    int *nums;
+    int *size;
+} Solution;
+
+
+Solution* solutionCreate(int* nums, int numsSize) {
+    Solution *sol = malloc(sizeof(Solution));
+    assert(sol);
+    sol->nums = nums;
+    sol->size = numsSize;
+    return sol;
+}
+
+/* rand number [0,n) */
+int maxrand(int n)
+{
+    int m;
+    /* not valid: rand() % n
+     * not every number has the same probability.
+     */
+    m = RAND_MAX;
+    while (m >= (RAND_MAX - (RAND_MAX % n))) {
+        m = rand();
+    }
+    return m % n;
+}
+
+int solutionPick(Solution* obj, int target) {
+    int cnt = 1;
+    int i;
+    int idx = -1;
+    for (i = 0; i < obj->size; i++) {
+        if (obj->nums[i] == target && maxrand(cnt++) == 0) {
+            idx = i;
+        }
+    }
+    return idx;
+}
+
+void solutionFree(Solution* obj) {
+    free(obj);
+}

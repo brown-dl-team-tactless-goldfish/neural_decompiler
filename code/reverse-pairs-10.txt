@@ -1,0 +1,71 @@
+class Solution {
+public:
+    
+    int merge(vector<int> &nums,int start, int mid, int end){
+        vector<int> result;
+        int s1 = start;
+        int e1 = mid;
+        int s2 = mid;
+        int e2 = end;
+        int count = 0;
+        int res = 0;
+        
+        while(s1 < e1 && s2 < e2){
+            if(nums[s1] <= ((long long)nums[s2])*2){
+                s1++;
+                res += count;
+            }
+            else{
+                count++;
+                s2++;
+            }
+        }
+        
+        while(s1 < e1){
+            s1++;
+            res += count;
+        }
+        
+        s1 = start;
+        s2 = mid;
+        
+        while(s1 < e1 && s2 < e2) {
+            if(nums[s1] <= nums[s2]){
+                result.push_back(nums[s1++]);
+            }
+            else{
+                result.push_back(nums[s2++]);
+            }
+        }
+        
+        while (s1 < e1){    
+            result.push_back(nums[s1++]);
+        }
+        
+        while(s2 < e2){
+            result.push_back(nums[s2++]);
+        }
+    
+        for(int i = start; i < end; ++i){
+            nums[i] = result[i - start];
+        }    
+        
+        return res;
+    }
+    
+    int mergeSort(vector<int> &nums,int start, int end){
+        if(start == end || start + 1== end){
+            return 0;
+        }
+                
+        int mid = (start + end)/2;
+        int m1 = mergeSort(nums,start,mid);
+        int m2 = mergeSort(nums,mid,end);
+        int res =  m1 + m2 + merge(nums,start,mid,end);
+        return res;
+    }
+    
+    int reversePairs(vector<int>& nums) {
+        return mergeSort(nums,0,nums.size());
+    }
+};

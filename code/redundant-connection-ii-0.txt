@@ -1,0 +1,76 @@
+void setup(int *p, int n)
+{
+    for(int i = 1; i <= n; i++)
+        p[i] = i;
+}
+
+int find(int *p, int x)
+{
+    if(p[x] != x)
+        p[x] = find(p, p[x]);
+    return p[x];
+}
+
+void Union(int *p, int x, int y)
+{
+    if(find(p, x) != find(p, y))
+        p[x] = find(p, y);
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* findRedundantDirectedConnection(int** edges, int edgesSize, int* edgesColSize, int* returnSize){
+    
+    int *parent;
+    int *ans;
+    int in[1001];
+    int first, second;
+    
+    parent = (int*)malloc(sizeof(int) * (edgesSize + 1));
+    setup(parent, edgesSize);
+    
+    ans = (int*)malloc(sizeof(int) * 2);
+    ans[0] = 0;
+    ans[1] = 0;
+    
+    memset(in, 0, 1001 * sizeof(int));
+    for(int i = 0; i < edgesSize; i++) {
+        if(!in[edges[i][1]])
+            in[edges[i][1]] = edges[i][0];
+        else {
+            first = in[edges[i][1]];    // record the FIRST edge for vertex edges[i][1]
+            second = edges[i][0];       // record the SECOND edge for vertex edges[i][1]
+
+            ans[0] = second;
+            ans[1] = edges[i][1];
+            edges[i][0] = 0;            // mark the SECOND edge for vertex edges[i][1] as deleted
+            
+            break;
+        }
+    }
+    
+    for(int i = 0; i < edgesSize; i++){
+        if(edges[i][0] == 0)            // marked has been deleted
+            continue;
+        
+        // still find a circle in grash after having deleted the SECOND edge,
+        // so the answer should be the FIRST edge.
+        if(find(parent, edges[i][0]) == find(parent, edges[i][1])) {
+            if(ans[1])                  // there is     [a,b], [c,b], and have circle.
+                ans[0] = first;
+            else {                      // there is not [a,b], [c,b], and have circle.
+                ans[0] = edges[i][0];
+                ans[1] = edges[i][1];
+            }
+            printf("here[%d:%d]\n", edges[i][0], edges[i][1]);
+            
+            break;
+        }
+        else
+            Union(parent, edges[i][0], edges[i][1]);
+    }
+    
+    *returnSize = 2;
+    return ans;
+}

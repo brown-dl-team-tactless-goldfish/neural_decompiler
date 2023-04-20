@@ -1,0 +1,47 @@
+void append(int *path,int pathl,int** re,int** columnSizes,int* returnSize){
+    (*columnSizes)[*returnSize]=pathl;
+    re[*returnSize]=(int *)malloc(pathl*sizeof(int));
+    int i=0;
+    while(i<pathl)
+        re[*returnSize][i]=path[i++];
+    (*returnSize)++;
+}
+
+void dfs(int* candidates, int candidatesSize, int target, int** columnSizes, int* returnSize,int** re,int start,int* path,int pathl){
+    if(target<0)
+        return;
+    if(target==0){
+        append(path,pathl,re,columnSizes,returnSize);
+        return;
+    }
+    for(;start<candidatesSize;start++){
+        path[pathl++]=candidates[start];
+        dfs(candidates,candidatesSize,target-candidates[start],columnSizes,returnSize,re,start,path,pathl);
+        pathl--;
+    }
+}
+int** combinationSum(int* candidates, int candidatesSize, int target, int** columnSizes, int* returnSize) {
+    int i,j,temp;
+    for(i=0;i<candidatesSize-1;i++){
+        for(j=candidatesSize-1;j>i;j--){
+            if(candidates[j]>candidates[j-1]){
+                temp=candidates[j];
+                candidates[j]=candidates[j-1];
+                candidates[j-1]=temp;
+            }
+        }
+    }
+    for(i=0;i<candidatesSize&&candidates[i]>target;i++);
+    int **re;
+    int *path,pathl;
+    *returnSize=0;
+    if(i==candidatesSize)
+        return re;
+    re=(int **)malloc(500*sizeof(int*));
+    *columnSizes=(int *)malloc(500*sizeof(int));
+    path=(int *)malloc(500*sizeof(int));
+    pathl=0;
+    dfs(candidates,candidatesSize,target,columnSizes,returnSize,re,0,path,pathl);
+    free(path);
+    return re;
+}

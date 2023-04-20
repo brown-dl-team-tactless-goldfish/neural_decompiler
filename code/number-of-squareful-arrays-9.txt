@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int numSquarefulPerms(vector<int>& vec) {
+        map<int, int> count{};
+        map<int, vector<int>> graph{};
+        for(const auto& elem:vec) ++count[elem];
+        for(const auto& elem1:count){
+            for(const auto& elem2:count){
+                int sum = elem1.first + elem2.first;
+                int sq = sqrt(sum);
+                if(sq*sq==sum) graph[elem1.first].push_back(elem2.first);
+            }
+        }
+        
+        function<int(int, int)> dfs;
+        dfs = [&graph, &count, &dfs](int elem, int todo)->int {
+            if(!todo) return 1;
+            --count[elem];
+            int result{};
+            for(const auto& next:graph[elem]){
+                if(count[next]) result += dfs(next, todo-1);
+            }
+            ++count[elem];
+            return result;
+        };
+        
+        int result{};
+        for(const auto& elem:count){
+            result += dfs(elem.first, vec.size()-1);
+        }
+        return result;
+    }
+};

@@ -1,0 +1,17 @@
+    def minDistance(self, A, k):
+        A.sort()
+        n = len(A)
+        B = [0]
+        for i, a in enumerate(A):
+            B.append(B[i] + a)
+
+        def cal(i, j):
+            m1, m2 = (i + j) / 2, (i + j + 1) / 2
+            return (B[j + 1] - B[m2]) - (B[m1 + 1] - B[i])
+
+        dp = [cal(0, j) for j in xrange(n)]
+        for k in xrange(2, k + 1):
+            for j in xrange(n - 1, k - 2, -1):
+                for i in xrange(k - 2, j):
+                    dp[j] = min(dp[j], dp[i] + cal(i + 1, j))
+        return int(dp[-1])

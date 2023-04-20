@@ -1,0 +1,59 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+struct Stack {
+    int val[200];
+    int size;
+};
+
+typedef struct TreeNode Node;
+typedef struct Stack Stack;
+
+void stack_push(Stack *s, int val) {
+    s->val[s->size++] = val;
+}
+
+int stack_pop(Stack *s) {
+    if (s->size == 0) return -1;
+    return s->val[--s->size];
+}
+
+int iterateTree(Node *node, Stack *s) {
+    if(!node->left && !node->right) {
+        stack_push(s, node->val);
+        return node->val;
+    }
+    if (node->left) iterateTree(node->left, s);
+    if (node->right) iterateTree(node->right, s);
+
+    return node->val;
+}
+
+
+bool leafSimilar(struct TreeNode* root1, struct TreeNode* root2){
+    Stack *leafs1 = calloc(1, sizeof(Stack));
+    Stack *leafs2 = calloc(1, sizeof(Stack));
+
+    iterateTree(root1, leafs1);
+    iterateTree(root2, leafs2);
+
+    if (leafs1->size != leafs2->size) return false;
+
+    int leaf1;
+    int leaf2;
+
+    while (1) {
+        leaf1 = stack_pop(leafs1);
+        if (leaf1 < 0) break;
+        leaf2 = stack_pop(leafs2);
+        if (leaf1 != leaf2) return false;
+    }
+
+    return true;
+}

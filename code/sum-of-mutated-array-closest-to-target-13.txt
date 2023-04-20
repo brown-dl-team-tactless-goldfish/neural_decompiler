@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int getSum(vector<int>& arr, int m) {
+        int sum = 0;
+        for (auto i : arr) sum += min(i, m);
+        return sum;
+    }
+    
+    int findBestValue(vector<int>& arr, int target) {
+        int n = arr.size();
+        int l = 0, r = 0, sum = 0, s1 = 0, s2 = 0;
+        for (auto i : arr) {
+            r = max(r, i);
+            sum += i;
+        }
+        if (sum == target) return r;
+        
+        while (l < r) {
+            int mid = (r - l) / 2 + l;
+            int tempSum = getSum(arr, mid);
+            if (tempSum < target) {
+                l = mid + 1;
+            }
+            else {
+                r = mid;
+            }
+        }
+        for (auto i : arr) {
+            s1 += min(i, l);
+            s2 += min(i, l-1);
+        }
+        
+        return abs(s2 - target) <= abs(s1 - target) ? l-1 : l;
+    }
+};

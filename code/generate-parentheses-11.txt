@@ -1,0 +1,28 @@
+void generate(char **result, char * temp, int n, int left, int right, int * count, int idx)
+{
+    if(left == 0 && right == 0)
+    {
+        result[*count] = (char *)calloc(2*n + 1, sizeof(char));
+        sprintf(result[(*count)++], "%s", temp); 
+        return;
+    }
+    if(left > 0)
+    {
+        temp[idx] = '(';
+        generate(result, temp, n, left - 1, right + 1, count, idx + 1);
+    }
+    if(right > 0)
+    {
+        temp[idx] = ')';
+        generate(result, temp, n, left, right - 1, count, idx + 1);
+    }
+}
+
+char ** generateParenthesis(int n, int* returnSize){
+    char ** result = (char **)malloc(2000*sizeof(char *));
+    char * temp = (char *)calloc(2*n + 1, sizeof(char));
+    int len = 0;
+    generate(result, temp, n, n, 0, &len, 0);
+    *returnSize = len;
+    return result;
+}

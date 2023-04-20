@@ -1,0 +1,44 @@
+int cmp(const void* a, const void* b){
+    int* A = *(int**)a;
+    int* B = *(int**)b;
+    return A[1] - B[1];  //sort new
+}
+char * decodeMessage(char * key, char * message){
+    int n = strlen(key);
+    int** decode = malloc(26 * sizeof(int*)) ;
+    for(int i = 0; i < 26; i++){
+        decode[i] = malloc(2 * sizeof(int)) ;
+        decode[i][0] = i ; 
+        decode[i][1] = i ;
+    }
+    
+    bool* exist = calloc(26, sizeof(bool) ) ;
+    int d_idx = 0 ;
+    
+    for(int i = 0; i < n; i++){
+        if( key[i] == ' ' || exist[ key[i] -'a' ] )
+            continue ;
+        decode[d_idx][1] = key[i] - 'a' ;  //new
+        exist[ key[i] -'a' ] = true;
+        d_idx++ ;
+        if(d_idx == 26)
+            break;
+    }
+    qsort(decode, 26, sizeof(int*), cmp) ;
+
+    int a_n = strlen(message) ;
+    char* ans = malloc((a_n + 1) * sizeof(char)) ;
+    ans[a_n] = '\0' ;
+    for(int i = 0; i < a_n ;i++){
+        if(message[i] == ' ')
+            ans[i] = ' ';
+        else{
+            ans[i] = decode[message[i] - 'a'][0] +'a' ;
+        }
+    }
+    for(int i = 0; i <26 ; i++){
+        free(decode[i]);
+    }
+    free(decode) ;
+    return ans;
+}

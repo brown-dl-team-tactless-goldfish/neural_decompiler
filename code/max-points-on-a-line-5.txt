@@ -1,0 +1,42 @@
+int maxPoints(int** points, int pointsSize, int* pointsColSize){
+    //for only a singular point
+    if(pointsSize==1){
+        return 1;
+    }
+    else{//for multiple points
+    int max = 1;
+    for(int i=0;i<pointsSize;i++){
+        float slopes[pointsSize - 1];
+        int k = 0;
+        //finding slopes
+        for(int j=0;j<pointsSize;j++){
+            if(i!=j){
+                if(points[i][0]==points[j][0]){//Case of infinite slope
+                    slopes[k] = 3000;
+                    k++;
+                }
+                else{//Non-infinite slope
+                float y_diff = points[i][1]-points[j][1];
+                float x_diff = points[i][0]-points[j][0];
+                float s = y_diff/x_diff;
+                slopes[k] = s;
+                k++;
+                }
+            }
+        }
+        //finding local number of maximum points in a line per distinct slope
+        for(int i=0;i<pointsSize-1;i++){
+            int local_max = 1;
+            for(int j=0;j<pointsSize-1;j++){
+                if(slopes[i]==slopes[j]){
+                    local_max++;
+                }
+            }
+            if(local_max>max){
+                max = local_max;
+            }
+        }
+    }
+    return max;
+    }
+}

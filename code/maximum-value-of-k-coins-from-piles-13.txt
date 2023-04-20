@@ -1,0 +1,28 @@
+class Solution {
+private:
+    vector<vector<int>>mem;
+    int solve(vector<vector<int>>&piles,int index,int k){
+        if(k<=0){
+            return 0;
+        } else if(index>=piles.size()){
+            return INT_MIN;
+        } else if(mem[index][k]!=-1){
+            return mem[index][k];
+        } else {
+            int ans1=solve(piles,index+1,k);
+            int value=0,ans2=INT_MIN;
+            for(int j=0;j<k and j<piles[index].size();j++){
+                value+=piles[index][j];
+                int rec=solve(piles,index+1,k-j-1);
+                ans2=max(ans2,rec+value);
+            }
+            return mem[index][k]=max(ans1,ans2);
+        }
+    }
+public:
+    int maxValueOfCoins(vector<vector<int>>& piles, int k) {
+        int n=piles.size();
+        mem=vector<vector<int>>(n,vector<int>(k+1,-1));
+        return solve(piles,0,k);
+    }
+};

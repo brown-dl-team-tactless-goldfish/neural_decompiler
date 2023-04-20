@@ -1,0 +1,25 @@
+class Solution {
+public:
+
+    int solve(vector<vector<int>>& graph, vector<bool>& hasApple, int cur, vector<int>& vis){
+        vis[cur]=true;
+        int ans=0;
+        for(auto &child : graph[cur]){
+            if(!vis[child]) ans += solve(graph,hasApple,child, vis); 
+        }
+        return (hasApple[cur] || ans>0) ? ans+1 : 0;
+    }
+    
+    int minTime(int n, vector<vector<int>>& edges, vector<bool>& hasApple) {
+        vector<vector<int>> graph(n);
+        vector<int> vis(n,false);
+        for(auto &x : edges){
+            int u = x[0];
+            int v = x[1];
+            graph[u].push_back(v);
+            graph[v].push_back(u);
+        }
+        int data = solve(graph,hasApple,0,vis);
+        return data==0 ? 0 : 2*(data-1);
+    }
+};

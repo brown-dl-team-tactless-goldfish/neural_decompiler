@@ -1,0 +1,59 @@
+class Solution {
+public:
+  
+  map<int,unordered_map<string,int>>m;
+  vector<int>fin;
+  int fans=INT_MAX/2;
+  int dp[1<<16+1][65];
+  int  solve(int mask,vector<string>& req, vector<vector<string>>& people,int n,int count,vector<int>&v,int idx){
+    
+    if(mask==0){
+      if(fans>count){
+        fin=v;
+      }
+       fans=min(fans,count);
+      return 0;
+       
+    }
+    if(dp[mask][count]!=-1) return dp[mask][count];
+  
+    int ans=INT_MAX/2;
+    for(int i=idx;i<people.size();i++){
+      if(people[i].size()==0) continue; //optimization 2
+      int nm=mask;
+      for(int j=0;j<n;j++){
+        if(nm&(1<<j) && m[i][req[j]]==1){
+           
+          nm= nm ^ (1<<j);
+        }
+      }
+      if(nm!=mask && count+1<fans){ //optimization 1
+      v.push_back(i);
+      
+      ans= min(ans,1+solve(nm,req,people,n,count+1,v,i+1));
+      v.pop_back();
+    }
+    
+    }
+       
+    return dp[mask][count]= ans ;
+    
+  }
+  
+   vector<int> smallestSufficientTeam(vector<string>& req_skills, vector<vector<string>>& people)     {
+       
+     int n =req_skills.size();
+     int mask = (1<<n) -1;
+     for(int i=0;i<people.size();i++){
+       for(int j=0;j<people[i].size();j++){
+         m[i][people[i][j]]=1;
+       }
+     }
+     vector<int>v;
+     memset(dp,-1,sizeof(dp));
+     solve(mask,req_skills,people,n,0,v,0);
+      return fin;
+    }
+};
+
+

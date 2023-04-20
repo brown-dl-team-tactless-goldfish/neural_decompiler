@@ -1,0 +1,72 @@
+bool compareIntArray(int *g1, int *g2, int *pos, int type) {
+    bool same = true;
+    for (int i = 0 ; i < type; i++) {
+        int p = pos[i];
+        if (g1[p] != g2[p]) {
+            same = false;
+        }
+    }
+    return same;
+}
+
+int* findAnagrams(char* s, char* p, int* returnSize) {
+    //Very slow. bad answer.
+    if (s == NULL) {
+        return NULL;
+    }
+    
+    int c[26] = {0};
+    char *t = p;
+    int lengthP = 0;
+    int pos[26] = {0};
+    int type = 0;
+    while (*t) {
+        c[*t-'a'] ++;
+        if (c[*t-'a']==1) {
+            pos[type] = *t-'a';
+            type ++;
+        }
+        lengthP ++;
+        t++;
+    }
+    t = s;
+    int lengthS = 0;
+    while (*t) {
+        lengthS ++;
+        t++;
+    }
+    if (lengthS < lengthP) {
+        return NULL;
+    }
+    
+    int c2[26] = {0};
+    int length = lengthP;
+    while (length) {
+        c2[s[length-1] - 'a'] ++;
+        length--;
+    }
+    
+    int *result = (int *)malloc(sizeof(int) * 20100);
+    int size = 0;
+    if (compareIntArray(c, c2, pos, type)) {
+        result[size] = 0;
+        size ++;
+    }
+    
+    char *lastS = s+lengthP;
+    char *startS = s;
+    int index = 0;
+    while (*lastS) {
+        index++;
+        c2[*lastS - 'a'] ++;
+        c2[*startS - 'a'] --;
+        if (compareIntArray(c, c2, pos, type)) {
+            result[size] = index;
+            size ++;
+        }
+        lastS++;
+        startS++;
+    }
+    *returnSize = size;
+    return result;
+}

@@ -1,0 +1,39 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* luckyNumbers (int** matrix, int matrixSize, int* matrixColSize, int* returnSize){
+    // lop each row find smallest one and its index
+    // and check if that index column we have it max
+    int n = *matrixColSize;
+    int *result = (int *)malloc(sizeof(int) * (matrixSize + n));
+    int num = 0;
+    
+    for (int i = 0; i < matrixSize; i++)
+    {
+        int *row = matrix[i];
+        int index = 0;
+        int smallest = row[0];
+        for (int j = 1; j < n; j++)
+        {
+            if (smallest > row[j])
+            {
+                smallest = row[j];
+                index = j;
+            }
+        }
+
+        int j = 0;
+        for (; j < matrixSize; j++)
+        {
+            if (smallest < matrix[j][index]) break;
+        }
+        
+        if (j == matrixSize)
+        {
+            result[num++] = smallest;
+        }
+    }
+    
+    *returnSize = num;
+    return result;
+}

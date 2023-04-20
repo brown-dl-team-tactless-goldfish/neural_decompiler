@@ -1,0 +1,46 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> treeQueries(TreeNode* root, vector<int>& queries) {
+        withDepth(root, 0);
+        withoutDepth(root->left, root, 0);
+        withoutDepth(root->right, root, 0);
+
+        vector<int> res;
+        for(auto q:queries) res.push_back(withoutDepths[q]);
+        return res;
+    }
+
+    int withDepth(TreeNode* p, int dep){
+        if(!p) return 0;
+        auto l = withDepth(p->left, 1+dep), r = withDepth(p->right, 1+dep);
+        int withDep = max({dep, l, r});
+        depths[p->val] = dep;
+        withDepths[p->val] = withDep;
+        return withDep;
+    }
+
+    void withoutDepth(TreeNode* p, TreeNode* par, int ParWithoutDepth){
+        if(!p) return;
+        int res = max(ParWithoutDepth, depths[par->val]);
+        TreeNode* q =  par->left == p ? par->right : par->left;
+        if(q) res = max(res, withDepths[q->val]);
+        withoutDepths[p->val] = res;
+        withoutDepth(p->left, p, res);
+        withoutDepth(p->right, p, res);
+    }
+
+    unordered_map<int, int> withoutDepths;
+    unordered_map<int, int> withDepths;
+    unordered_map<int, int> depths;
+};

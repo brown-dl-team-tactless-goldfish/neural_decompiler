@@ -1,0 +1,46 @@
+typedef struct {
+    // User defined data is declared here.
+    // using 'volatile' to prevent compiler from playing god and optimize out this critical variable
+    // this is mutex variable, duh 
+    volatile int turn;
+} Foo;
+
+void wait(Foo* obj, int my_turn) {
+    // blocking this thread till my turn
+    while(obj->turn != my_turn) pthread_yield(NULL); // Nope Gotta wait （◞‸◟）
+    
+    // Aha!! free at last guess I will return now
+}
+
+void signal(Foo* obj) {
+    ++obj->turn; // pass it to next in line (psst: for the future generations)
+}
+
+Foo* fooCreate() {
+    Foo* obj = (Foo*) malloc(sizeof(Foo));
+    // Initialize user defined data here.
+    obj->turn = 1; // first will be executed first, lol 
+    return obj;
+}
+
+void first(Foo* obj) {
+    printFirst();
+    signal(obj); // I am done please pass ownership of mutex to next in line ( ͡° ͜ʖ ͡°) 
+}
+
+void second(Foo* obj) {
+    wait(obj, 2); // Ok I will wait till my (2) turn (╥﹏╥)
+    printSecond();
+    signal(obj); // I am done please pass ownership of mutex to next in line ( ͡° ͜ʖ ͡°) 
+}
+
+void third(Foo* obj) {
+    wait(obj, 3); // Ok I will wait till my (3) turn (╥﹏╥)
+    printThird(); 
+    // Oh! no one else left to signal, I guess this ends with me now, *sigh* （◞‸◟）
+}
+
+void fooFree(Foo* obj) {
+    // I am a resposible citizen I clean up after me 
+    free(obj);
+}

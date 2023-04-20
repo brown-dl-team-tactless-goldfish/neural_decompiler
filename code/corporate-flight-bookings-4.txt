@@ -1,0 +1,15 @@
+class Solution {
+public:
+    using VI = vector< int >;
+    using VVI = vector< VI >;
+    using Map = unordered_map< int,int >;
+    VI corpFlightBookings( VVI& B, int N, Map M={}, VI ans={} ){
+        for( auto& b: B ){
+            auto[ i,j,k ] = tie( b[ 0 ],b[ 1 ],b[ 2 ] );
+            M[ i ] += k;
+            M[ j+1 ] -= k;
+        }
+        generate_n( back_inserter( ans ), N, [ &M, i=1, k=0 ]() mutable { return k += M[ i++ ]; });
+        return ans;
+    }
+};

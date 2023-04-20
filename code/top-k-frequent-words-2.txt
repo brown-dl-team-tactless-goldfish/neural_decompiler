@@ -1,0 +1,60 @@
+struct hash_entry
+{
+    char s[11];
+    int freq;
+    UT_hash_handle hh;
+};
+
+int sort_hash(struct hash_entry* h1, struct hash_entry* h2)
+{
+    // if freqs the same
+    if(h1->freq == h2->freq)
+    {
+        // sort by s
+        return strcmp(h1->s, h2->s);
+    }
+    // sort by freq
+    return (h2->freq - h1->freq);
+}
+
+char** topKFrequent(char** words, int wordsSize, int k, int* returnSize)
+{
+    struct hash_entry* map = NULL;  // hashmap
+    // iterate through words
+    for(int i = 0; i < wordsSize; i++)
+    {
+        char* s = *(words + i);  // current word
+        struct hash_entry* entry = NULL;  // current entry
+        // check to see if string in map, store in entry
+        HASH_FIND_STR(map, *(words + i), entry);
+        // if not found
+        if(entry == NULL)
+        {
+            // add to map
+            entry = (struct hash_entry*) malloc(sizeof(struct hash_entry));
+            entry->freq = 1;
+            // need to use strcpy to go from char* to char[]
+            strcpy(&entry->s, s);
+            HASH_ADD_STR(map, s, entry);
+        }
+        else
+        {
+            // update freq
+            entry->freq++;
+        }
+    }
+    // sort hashmap with custom sort function
+    HASH_SORT(map, sort_hash);
+    char** ans = (char**) malloc(k * sizeof(char*));
+    struct hash_entry* iter = map;  // iterator
+    // iterate through first k entries in sorted map
+    // update returnSize along the way
+    for(*returnSize = 0; *returnSize < k; (*returnSize)++)
+    {
+        // copy entry to ans
+        *(ans + *returnSize) = (char*) malloc(11 * sizeof(char));
+        strcpy(*(ans + *returnSize), iter->s);
+        iter = iter->hh.next;
+    }
+    return ans;
+}

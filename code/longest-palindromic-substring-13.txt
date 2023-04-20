@@ -1,0 +1,32 @@
+
+
+char * longestPalindrome(char * s){
+    int max_start = 0;
+	int max_end = 0;
+	bool** is_polindrom = (bool**)calloc(strlen(s),sizeof(bool*));
+	for (int i = 0; i < strlen(s); i++) {
+		is_polindrom[i]= (bool*)calloc(strlen(s), sizeof(bool));
+	}
+
+	for (int i = 0; i < strlen(s); i++) {
+		for (int j = 0; j <= i+1; j++) {
+			if (j == strlen(s)) break;
+			if (i == j || i+1==j) is_polindrom[i][j] = true;
+			else if (s[i] == s[j] && is_polindrom[i - 1][j + 1]) is_polindrom[i][j] = true;
+			if (is_polindrom[i][j] == true && i-j > max_end-max_start  ) {
+				max_end = i;
+				 max_start = j;
+			}
+		}
+	}
+
+	for (int i = 0; i < strlen(s); i++) {
+		free(is_polindrom[i]);
+	}
+	free(is_polindrom);
+	char* max_subs_polindrom = (char*)malloc(sizeof(char) * (max_end - max_start + 2));
+	char* new_sring = s + max_start;
+	memcpy(max_subs_polindrom, new_sring, max_end - max_start + 2);
+	max_subs_polindrom[max_end - max_start + 1] = '\0';
+	return max_subs_polindrom;
+}

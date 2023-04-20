@@ -1,0 +1,39 @@
+class Solution {
+public:
+    vector<int> maxScoreIndices(vector<int>& nums) {
+        
+        int len = nums.size();
+        vector<int> left(len+1, 0);
+        vector<int> right(len+1, 0);
+        
+        
+        // left
+        for(int i=1; i<=len; i++) {
+            left[i] = left[i-1] + (nums[i-1] == 0);
+        }
+        
+  
+        //right
+        right[len] = 0;
+        for(int i=len-1; i>=0; i--) {
+            right[i] = right[i+1] + (nums[i] == 1);
+        }
+        
+        
+        int maxSum = left[0] + right[0];
+        for(int i=0; i<=len; i++) {
+            maxSum = max(maxSum, left[i]+right[i]);
+        }
+      
+        vector<int> ans;
+        
+        for(int i=0; i<=len; i++) {
+           int sum = left[i] + right[i];
+           if (sum == maxSum) {
+                ans.push_back(i);
+           }
+        }
+        
+        return ans;
+    }
+};

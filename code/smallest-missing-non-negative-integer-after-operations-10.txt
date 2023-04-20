@@ -1,0 +1,19 @@
+public class Solution {
+    public int FindSmallestInteger(int[] nums, int value) {
+        var data = nums
+           .Select(item => (item % value + value) % value)
+           .GroupBy(item => item)
+           .SelectMany(group => group.Select((item, index) => item + index * value))
+           .OrderBy(item => item); 
+
+        int result = 0;
+
+        foreach (var item in data) 
+            if (item == result)
+                result += 1;
+            else
+                break;
+
+        return result;
+    }
+}

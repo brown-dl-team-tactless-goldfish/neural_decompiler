@@ -1,0 +1,62 @@
+class TrieNode {
+public:
+    bool word;
+    vector<TrieNode*> child;
+    
+    TrieNode() {
+        word = false;
+        child.assign(27, nullptr);  // last pos for '/'
+    }
+};
+
+class Solution {
+public:
+    vector<string> removeSubfolders(vector<string>& folder) {
+        root = TrieNode();
+        for (auto &s: folder) {
+            add(s);
+        }
+        
+        vector<string> res;
+        for (auto &s: folder) {
+            if (query(s))
+                res.push_back(s);
+        }
+        
+        return res;
+    }
+private:
+    TrieNode root;
+    
+    void add(string& s) {
+        TrieNode* tmp = &root;
+        for (auto c: s) {
+            int pos = c == '/' ? 26 : (c - 'a');
+            if (!tmp->child[pos])
+                tmp->child[pos] = new TrieNode();
+            tmp = tmp->child[pos];
+        }
+        
+		// use additional '/' to mark end of path
+		// used to identify parent folder
+        if (!tmp->child[26])
+            tmp->child[26] = new TrieNode();
+        
+        tmp = tmp->child[26];
+        tmp->word = true;
+    }
+    
+    bool query(string& s) {
+        TrieNode* tmp = &root;
+        for (auto c: s) {
+            int pos = c == '/' ? 26 : (c - 'a');
+            tmp = tmp->child[pos];
+			
+			// if this path appear before,
+			// current path is a subfolder
+            if (pos == 26 && tmp->word) return false;
+        }
+        
+        return true;
+    }
+};

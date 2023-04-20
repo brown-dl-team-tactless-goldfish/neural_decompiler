@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int maxValueAfterReverse(vector<int>& a) {
+        // precalc tot
+        int tot = 0, n = a.size();
+        for (int i = 0; i < n - 1; i++)
+            tot += abs(a[i] - a[i + 1]);
+        int ret = tot;
+        // edge cases, left and right boundary
+        for (int i = 1; i < n - 1; i++) {
+            ret = max(ret, tot - abs(a[i] - a[i + 1]) + abs(a[i + 1] - a[0]));
+            ret = max(ret, tot - abs(a[i] - a[i - 1]) + abs(a[i - 1] - a[n - 1]));
+        }
+        int l = INT_MAX, r = INT_MIN; // min max values
+        for (int i = 0; i < n - 1; i++) {
+            int ll = min(a[i], a[i + 1]); 
+            int rr = max(a[i], a[i + 1]); 
+            // range [ll ---- rr] 
+            if (l < ll)
+                ret = max(ret, tot + (ll - l) * 2);
+            if (rr < r)
+                ret = max(ret, tot + (r - rr) * 2);
+            l = min(l, rr);
+            r = max(r, ll);
+        }
+        return ret;
+    }
+};

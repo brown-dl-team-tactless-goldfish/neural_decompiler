@@ -1,0 +1,62 @@
+public class Solution {
+    public IList<IList<int>> KSmallestPairs(int[] nums1, int[] nums2, int k) {
+        
+        List<IList<int>> res = new List<IList<int>>();
+        if(nums1 == null || nums1.Length == 0 || nums2 == null || nums2.Length == 0 || k == 0)
+            return res;
+        
+        // use SortedDictionary mimic min-heap to maintain the first k min pairs 
+        // note: SortedDictionary.First() runs in O(logN) ranthr than O(1)
+        SortedDictionary<int,Queue<List<int>>> dic = new SortedDictionary<int,Queue<List<int>>>();
+        
+        // add all the possible min pairs to the SortedDictionary
+        // since the arrays are sorted, for a given nums1[i], the possible min pairs would be: nums1[i] + nums2[0]
+        int len = Math.Min(nums1.Length, k);
+        for(int i = 0; i < len; i++)
+        {
+            int sum = nums1[i] + nums2[0];
+            if(dic.ContainsKey(sum))
+                dic[sum].Enqueue(new List<int>(){nums1[i], nums2[0], 0});
+            else
+            {
+                Queue<List<int>> queue = new Queue<List<int>>();
+                queue.Enqueue(new List<int>(){nums1[i], nums2[0], 0});
+                dic.Add(sum, queue);
+            }
+        }
+        
+        while(dic.Count > 0)
+        {
+            // get the current min pair
+            var minPair = dic.First();
+            var min = dic[minPair.Key].Dequeue();
+            res.Add(new List<int>(){min[0], min[1]});
+            if(res.Count == k)
+                return res;
+            if(dic[minPair.Key].Count == 0)
+                dic.Remove(minPair.Key);
+            
+            // after getting the current min pair, the next min pair could be genereated in two ways:
+            // (1) nums1[current] + nums2[current + 1]
+            // (2) nums1[current + 1] + nums2[current]
+            // there are at most nums1.Length pairs will be added to the result
+            // so case (1) has been covered when initlizing the sorted dictionary
+            // so we only need to consider case (2)
+            int idx = min[2] + 1;
+            if(idx < nums2.Length)
+            {
+                int sum = min[0] + nums2[idx];
+                if(dic.ContainsKey(sum))
+                    dic[sum].Enqueue(new List<int>(){min[0], nums2[idx], idx});
+                else
+                {
+                    Queue<List<int>> queue = new Queue<List<int>>();
+                    queue.Enqueue(new List<int>(){min[0], nums2[idx], idx});
+                    dic.Add(sum,queue);
+                }
+            }
+        }
+        
+        return res;
+    }
+}

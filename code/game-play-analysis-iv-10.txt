@@ -1,0 +1,13 @@
+# Write your MySQL query statement below
+
+
+with cte as (
+ SELECT
+    A.player_id,
+    MIN(A.event_date) AS first_login
+  FROM
+    Activity A
+  GROUP BY
+    A.player_id)
+    select round(count(a.player_id)/ (select count(player_id) from cte), 2) as fraction from Activity a join cte c on a.player_id=c.player_id
+and a.event_date - c.first_login =1

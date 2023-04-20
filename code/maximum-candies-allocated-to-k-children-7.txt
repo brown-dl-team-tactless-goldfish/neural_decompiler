@@ -1,0 +1,24 @@
+// OJ: https://leetcode.com/contest/weekly-contest-287/problems/maximum-candies-allocated-to-k-children/
+// Author: github.com/lzl124631x
+// Time: O(Nlog(sum(A)))
+// Space: O(1)
+class Solution {
+public:
+    int maximumCandies(vector<int>& A, long long k) {
+        long L = 1, R = *max_element(begin(A), end(A)), N = A.size();
+        auto valid = [&](long m) {
+            long cnt = 0;
+            for (int n : A) {
+                cnt += n / m;
+                if (cnt >= k) return true;
+            }
+            return false;
+        };
+        while (L <= R) {
+            long M = L + (R - L) / 2;
+            if (valid(M)) L = M + 1;
+            else R = M - 1;
+        }
+        return R;
+    }
+};

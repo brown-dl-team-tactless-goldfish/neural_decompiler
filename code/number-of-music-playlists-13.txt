@@ -1,0 +1,15 @@
+class Solution {
+public:
+    int numMusicPlaylists(int n, int goal, int k) {
+        const int MOD = 1'000'000'007; 
+        vector<vector<long>> dp(goal+1, vector<long>(n+1, 0)); 
+        dp[goal][n] = 1l; 
+        for (int i = goal-1; i >= 0; --i) {
+            for (int j = n; j >= 0; --j) {
+                if (j < n) dp[i][j] = (dp[i][j] + (n-j) * dp[i+1][j+1]) % MOD; 
+                if (k < j) dp[i][j] = (dp[i][j] + (j-k) * dp[i+1][j]) % MOD; 
+            }
+        }
+        return dp[0][0]; 
+    }
+};

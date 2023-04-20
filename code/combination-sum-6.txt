@@ -1,0 +1,91 @@
+int compare(const void * a, const void * b) {
+   return (*(int*)a - *(int*)b);
+}
+
+void sortArray(int* nums, int numsSize) {
+    qsort(nums, numsSize, sizeof(int), compare);
+}
+
+void reallocate(
+    int*** res,
+    int*   res_sz,
+    int*   res_i,
+    int**  returnSizes
+){
+    if (*res_i > *res_sz - 8) {
+        (*res_sz) *= 2;
+        *res = realloc(*res, *res_sz * sizeof(int*));
+        *returnSizes = realloc(*returnSizes, *res_sz * sizeof(int));
+    }
+}
+
+bool _combinationSum(
+    int* candidates, int candidatesSize, int target, int curSum, int idx,
+    int*** res,
+    int*   res_sz,
+    int*   res_i,
+    int**  curNums,
+    int*   curNums_i,
+    int**  returnSizes
+){
+    if (curSum > target) return false;
+    if (idx >= candidatesSize) return false;
+    if (curSum == target) {
+        reallocate(res, res_sz, res_i, returnSizes);
+        // copy to res
+        int* newNums = calloc(*curNums_i, sizeof(int));
+        memcpy(newNums, *curNums, *curNums_i * sizeof(int));
+
+        (*res)[*res_i] = newNums;
+        (*returnSizes)[*res_i] = *curNums_i;
+        (*res_i)++;
+        return false;
+    }
+
+    // add cur number
+    (*curNums)[(*curNums_i)++] = candidates[idx];
+    bool r = _combinationSum(candidates, candidatesSize, target, curSum + candidates[idx], idx,
+        res, res_sz, res_i,
+        curNums, curNums_i,
+        returnSizes
+    );
+    (*curNums_i)--;
+
+    if (r) _combinationSum(candidates, candidatesSize, target, curSum, idx + 1,
+        res, res_sz, res_i,
+        curNums, curNums_i,
+        returnSizes
+    );
+
+    return true;
+}
+
+int** combinationSum(int* candidates, int candidatesSize, int target, int* returnSize, int** returnColumnSizes){
+    int** res;
+    int   res_sz = 1000;
+    int   res_i  = 0;
+    int*  curNums;
+    int   curNums_i  = 0;
+    int*  returnSizes;
+
+    sortArray(candidates, candidatesSize);
+
+    // allocate memory
+    int maxCand = target/candidates[0] + 1; // max number of candidates possible 
+    res         = calloc(res_sz,  sizeof(int*));
+    curNums     = calloc(maxCand, sizeof(int));
+    returnSizes = calloc(res_sz,  sizeof(int));
+
+    *returnColumnSizes = returnSizes;
+
+    _combinationSum(candidates, candidatesSize, target, 0, 0,
+        &res, &res_sz, &res_i,
+        &curNums, &curNums_i,
+        &returnSizes
+    );
+
+    // set return sizes
+    *returnSize = res_i;
+    free(curNums);
+    return res;
+}

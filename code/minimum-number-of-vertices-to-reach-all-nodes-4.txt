@@ -1,0 +1,41 @@
+
+
+int find_class(int* A, int a) {
+    return A[a] == a 
+        ? a
+        : (A[a] = find_class(A, A[a]));
+}
+
+int cmp(const void* a, const void* b) {
+    return *(int*)a-*(int*)b;
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* findSmallestSetOfVertices(int n, int** edges, int edgesSize, int* edgesColSize, int* returnSize){
+    int A[100005];
+    int i, j;
+    int* r;
+    for (i = 0; i < n; i++) {
+        A[i] = i;
+    }
+    for (i = 0; i < edgesSize; i++) {
+        int a = edges[i][0];
+        int b = edges[i][1];
+        A[b] = find_class(A, a);
+    }
+    for (i = 0; i < n; i++) {
+        A[i] = find_class(A, A[i]);
+    }
+    qsort(A, n, sizeof(int), cmp);
+    for (i = 0, j = 0; i < n; i++) {
+        if (j == 0 || A[j-1] != A[i]) {
+            A[j++] = A[i];
+        }
+    }
+    r = malloc(j*sizeof(int));
+    memcpy(r, A, j*sizeof(int));
+    *returnSize = j;
+    return r;
+}

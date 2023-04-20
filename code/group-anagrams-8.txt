@@ -1,0 +1,33 @@
+int i, j, k;
+int col[strsSize];
+k = 0;   
+char *tmp;
+for(i = 0; i < strsSize; i++){
+    col[k] = 1;
+    for(j = i + 1; j < strsSize; j++){
+        if(isAnagrams(strs[j], strs[i])){
+            col[k]++;
+            tmp = strs[++i];
+            strs[i] = strs[j];
+            strs[j] = tmp;
+        }
+    }
+    k++;
+}
+
+*returnSize = k;
+
+char *** output = (char ***) malloc(*returnSize * sizeof(char **));
+k = 0;
+
+
+for(i = 0; i < *returnSize; i++){
+    output[i] = (char **) malloc(col[i] * sizeof(char **));
+    returnColumnSizes[i] = (int *) malloc(sizeof(int));
+    *returnColumnSizes[i] = col[i];
+    for(j = 0; j < col[i]; j++){
+        output[i][j] = strs[k++];
+    }
+}
+
+return output;

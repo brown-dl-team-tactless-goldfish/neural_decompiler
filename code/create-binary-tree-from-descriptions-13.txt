@@ -1,0 +1,42 @@
+public class Solution {
+    public TreeNode CreateBinaryTree(int[][] descriptions) {
+        Dictionary<int, TreeNode> dict = new Dictionary<int, TreeNode>();
+        Dictionary<TreeNode, bool> parent = new Dictionary<TreeNode, bool>();
+        
+        foreach (var desc in descriptions)
+        {
+            if (!dict.ContainsKey(desc[0]))
+            {
+                dict.Add(desc[0], new TreeNode(desc[0]));
+            }
+            
+            if (!dict.ContainsKey(desc[1]))
+            {
+                dict.Add(desc[1], new TreeNode(desc[1]));
+            }
+            
+            if (!parent.ContainsKey(dict[desc[0]]))
+            {
+                parent.Add(dict[desc[0]], false);
+            }
+            
+            if (!parent.ContainsKey(dict[desc[1]]))
+            {
+                parent.Add(dict[desc[1]], false);
+            }
+            
+            parent[dict[desc[1]]] = true;
+            
+            if (desc[2] == 1)
+            {
+                dict[desc[0]].left = dict[desc[1]];
+            }
+            else
+            {
+                dict[desc[0]].right = dict[desc[1]];
+            }
+        }
+        
+        return parent.Where(x => x.Value == false).Select(x => x.Key).ToList()[0];
+    }
+}

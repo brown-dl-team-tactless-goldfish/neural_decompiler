@@ -1,0 +1,25 @@
+void inorder(struct TreeNode* root, int* arr, int* arrIdx){
+    if(!root) return;
+    inorder(root->left, arr, arrIdx);
+    arr[(*arrIdx)++] = root->val;
+    inorder(root->right, arr, arrIdx);
+}
+
+struct TreeNode* createTree(struct TreeNode* root, int* arr, int pos, int len){
+    if(!len) return NULL;
+    int idx = pos + (len >> 1);
+    root = (struct TreeNode*)calloc(1, sizeof(struct TreeNode));
+    root->val = arr[idx];
+    root->left = createTree(root, arr, pos, len >> 1);/* left */
+    root->right = createTree(root, arr, idx+1, len - 1 - (len >> 1));/* right */
+    return root;
+}
+
+struct TreeNode* balanceBST(struct TreeNode* root){
+    int* arr = (int*)calloc(1e4+1, sizeof(int));
+    int arrIdx = 0;
+    struct TreeNode* ans;
+    inorder(root, arr, &arrIdx);
+    ans = createTree(ans, arr, 0, arrIdx);/* preorder */
+    return ans;
+}

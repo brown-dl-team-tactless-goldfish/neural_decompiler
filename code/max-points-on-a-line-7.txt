@@ -1,0 +1,57 @@
+class Solution {
+    func maxPoints(_ points: [[Int]]) -> Int {
+        if points.count == 1 {
+            return 1
+        }
+
+        var slopes: [String: Set<Int>] = [:]
+        for i in 0..<points.count {
+            for j in (i + 1)..<points.count {
+                if let s = calculateSlope(points[i], points[j]) {
+                    var indices = slopes[s] ?? Set<Int>()
+                    indices.insert(i)
+                    indices.insert(j)
+                    slopes[s] = indices
+                }
+            }
+        }
+
+        var result = 0
+        for (_, indices) in slopes {
+            result = max(result, indices.count)
+        }
+        return result
+    }
+
+    private func calculateSlope(_ a: [Int], _ b: [Int]) -> String? {
+        let x1 = Double(a[0])
+        let y1 = Double(a[1])
+        let x2 = Double(b[0])
+        let y2 = Double(b[1])
+
+        // If x1 and x2 both are same, then vertical line
+        // - create unique key for this line
+        if x1 == x2 {
+            return "0-0-\(x1)"
+        }
+
+        // Slope formula
+        // (y2 - y1) / (x2 - x1)
+        let dx = (x2 - x1)
+        let dy = (y2 - y1)
+
+        // Nothing can be divisible by 0 so invalid slop
+        // - return nil
+        if dx == 0 {
+            return nil
+        }
+        
+        let m = dy / dx
+
+        // y = mx + c
+        // y - mx = c
+        let c = (m * x1) - y1
+
+        return "\(m)-\(c)"
+    }
+}

@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int widthOfBinaryTree(TreeNode* root) {
+        if(!root)
+            return 0;
+        
+        queue<pair<TreeNode*,size_t>>queue;
+        queue.push(make_pair(root,1));
+        size_t maxi{0};
+        while(!queue.empty())
+        {
+            size_t size=queue.size();
+            size_t left=queue.front().second;
+            size_t right=left;
+            for(int i=0;i<size;i++)
+            {
+                auto root=queue.front().first;
+                right=queue.front().second;
+                queue.pop();
+                if(root->left)
+                {
+                    queue.push(make_pair(root->left,right*2));
+                }
+                if(root->right)
+                {
+                    queue.push(make_pair(root->right,right*2+1));
+                }
+            }
+            maxi=max(maxi,right-left+1);
+        }
+        return maxi;
+    }
+};

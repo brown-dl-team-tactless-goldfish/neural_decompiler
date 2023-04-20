@@ -1,0 +1,26 @@
+#define MOD 1000000007
+
+class Solution {
+public:
+    int numSubseq(vector<int>& nums, int target) {
+        std::sort(nums.begin(), nums.end());
+        int count{0}, size{(int)nums.size()}, i{0}, j{(int)(std::upper_bound(nums.begin(), nums.end(), target-nums[0])-1-nums.begin())};
+        while(i <= j) {
+            if(nums[i] + nums[j] > target) {
+                --j;
+                continue;
+            }
+            count = (count + bigPow(2,j-i)) % MOD;
+            ++i;
+            
+        }
+        return count;
+    }
+    
+    int bigPow(int v, int p) {
+        if(p == 0) return 1;
+        if(p == 1) return v;
+        int h{bigPow(v, p>>1)}, f{(int)(((int64_t)h * h) % MOD)};
+        return p&1 ? (f * v) % MOD : f;
+    }
+};

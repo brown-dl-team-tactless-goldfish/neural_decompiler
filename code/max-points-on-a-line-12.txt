@@ -1,0 +1,57 @@
+class Solution {
+public:
+    int maxPoints(vector<vector<int>>& points) {
+        int n = points.size();
+        if (n <= 1) return n;
+        
+        map<double, int> pts;
+        
+        // error margin for double calculations.
+        // value within this range is considered equal.
+        const double errMargin = 0.00005;
+        int result = INT_MIN;
+        
+        for(int i = 0; i < n; i++)
+        {
+            for (int j = i + 1; j < n; j++)
+            {
+                // i and j for a line. 
+                // find m. c will found out after m.
+                // when i is same this will be a line parallel to y axis.
+                
+                double m;
+                
+                if (points[i][0] != points[j][0])
+                {
+                    m = ((double)points[i][1] - points[j][1]) / (points[i][0] - points[j][0]);
+                }
+                else
+                {
+                    m = INT_MAX;
+                }
+                
+                double c = points[i][1] - m * points[i][0];
+                // we have two points i and j already.
+                int tcount = 2;
+                // check other points if they are on same line.
+                for (int k = 0; k < n && k != i && k != j; k++)
+                {
+                    // using m and c try to get points[k][1]
+                    if (m != INT_MAX)
+                    {
+                        double t = m * points[k][0] + c;
+                        tcount += abs(t - points[k][1]) <= errMargin;
+                    }
+                    else
+                    {
+                        // we have a line parallel to y axis. 
+                        // x coordinate of k should be same as i j.
+                        tcount += points[k][0] == points[i][0];
+                    }                    
+                }
+                result = max(result, tcount);
+            }
+        }
+        return result;
+    }
+};

@@ -1,0 +1,45 @@
+class Solution {
+public:
+	// calculate value of "11...11"
+	static long long sum(long long base, int maxExponent)
+	{
+		long long power = 1;
+		long long value = 0;
+
+		// number of digits = maxExponent + 1
+		for (auto i = 0; i != maxExponent + 1; i++)
+		{
+			value += power;
+			power *= base;
+		}
+
+		return value;
+	}
+	
+	string smallestGoodBase(string n) const {
+		auto min = LLONG_MAX;
+		auto number = stoll(n);
+
+		for (auto maxExponent = 2; ; maxExponent++)
+		{
+			long long base = floor(pow(number, 1.0 / maxExponent));
+
+			if (base == 1)
+			{
+				break;
+			}
+			
+			if (base < min && sum(base, maxExponent) == number)
+			{
+				min = base;
+			}
+		}
+
+		if (min == LLONG_MAX)
+		{
+			return to_string(number - 1);
+		}
+
+		return to_string(min);
+	}
+};

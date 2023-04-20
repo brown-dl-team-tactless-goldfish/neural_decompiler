@@ -1,0 +1,55 @@
+class Solution:
+    def scoreOfParentheses(self, s: str) -> int:
+        # print("1 s = ", s)
+        s = s.replace("()", "+1")
+        # print("2 s = ", s)
+
+        def helper(curS):
+            # print("curS = ", curS)
+
+            idx_last_open = curS.rfind("(")
+            # print("idx_last_open = ", idx_last_open)
+
+            if (idx_last_open >= 0):
+                idx_first_close_after_open = curS.find(")", idx_last_open)
+                # print("idx_first_close_after_open = ",
+                #       idx_first_close_after_open)
+
+                tmpS = curS[idx_last_open+1:idx_first_close_after_open]
+                # print("tmpS = ", tmpS)
+
+                data = tmpS.split("+")
+                # print("data = ", data)
+
+                tmp_int = 0
+                for d in data:
+                    if (d.isdigit() == True):
+                        tmp_int += int(d)
+
+                # print("tmp_int = ", tmp_int)
+                # tmp_int = int(tmpS)
+                tmpS = "+" + str(2*tmp_int)
+
+                str_prev = curS[:idx_last_open]
+                # print("str_prev = ", str_prev)
+
+                str_after = curS[idx_first_close_after_open+1:]
+                # print("str_after = ", str_after)
+
+                newS = str_prev + tmpS + str_after
+                # print("newS = ", newS)
+
+                helper(newS)
+            else:
+                # print("no () found, curS = ", curS)
+                data = curS.split("+")
+                # print("data = ", data)
+
+                self.res = 0
+                for d in data:
+                    if (d.isdigit() == True):
+                        self.res += int(d)
+
+        helper(s)
+        print("after helper, self.res = ", self.res)
+        return self.res

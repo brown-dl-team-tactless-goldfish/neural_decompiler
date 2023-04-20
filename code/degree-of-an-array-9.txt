@@ -1,0 +1,28 @@
+public class Solution {
+    public int FindShortestSubArray(int[] nums) {
+        if (nums == null || nums.Length == 0)
+            return 0;
+        
+        int res = Int32.MaxValue,
+            degree = Int32.MinValue;
+        Dictionary<int, int[]> dict = new Dictionary<int, int[]>();
+        
+        for (int i = 0; i < nums.Length; i++)
+        {
+            if (!dict.ContainsKey(nums[i]))
+                dict.Add(nums[i], new int[] { 0, i, 0 });
+            
+            dict[nums[i]][0] += 1;
+            dict[nums[i]][2] = i;
+        }
+        
+        foreach (var item in dict.Values)
+            if (item[0] > degree || item[0] == degree && item[2] - item[1] < res)
+            {
+                degree = item[0];
+                res = item[2] - item[1] + 1;
+            }
+        
+        return res;
+    }
+}

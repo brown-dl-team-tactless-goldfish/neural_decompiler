@@ -1,0 +1,30 @@
+class Solution {
+public:
+    vector<int> constructDistancedSequence(int n) {
+        vector<int> v(n*2-1, 0);
+        visited = vector<bool>(n+1, false);
+        dfs(v, 0, n);
+        return v;
+    }
+    
+    bool dfs(vector<int>& v, int i, int n){
+        if(i == v.size()){
+            return true;    
+        }
+        if(v[i] > 0) return dfs(v, i+1, n);
+        for(int j=n;j>0;j--){
+            if(visited[j]) continue;
+            if(j>1) if(j+i >= v.size() || v[j+i] > 0) continue;
+            visited[j] = true;
+            v[i] = j;
+            if(j>1) v[j+i] = j;
+            if(dfs(v, i+1, n)) return true;
+            v[i] = 0;
+            if(j>1) v[j+i] = 0;
+            visited[j] = false;
+        }
+        return false;
+    }
+    
+    vector<bool> visited;
+};

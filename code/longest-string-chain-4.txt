@@ -1,0 +1,61 @@
+    int maxAll = 0;
+    public int LongestStrChain(string[] words) {
+        Dictionary<int, List<string>> map = new Dictionary<int, List<string>>();
+
+        foreach(var w in words)
+        {
+            if (!map.ContainsKey(w.Length))
+                map[w.Length] = new List<string>();
+
+            map[w.Length].Add(w);
+        }
+
+        for(int i = 0; i < words.Length; i++)
+        {
+            DFS(map, words[i], 1);
+        }
+
+        return maxAll; 
+    }
+    
+    public void DFS(Dictionary<int, List<string>> map, string word, int max)
+    {
+        maxAll = Math.Max(maxAll, max);
+
+        List<string> temp = FindWords(word, map);
+        if (temp.Count == 0)
+            return;
+
+        foreach (var t in temp)
+            DFS(map, t, max + 1);
+    }
+
+    public List<string> FindWords(string word, Dictionary<int, List<string>> map)
+    {
+        if (!map.ContainsKey(word.Length + 1))
+            return new List<string>();
+
+        List<string> output = new List<string>();
+        List<string> temp = map[word.Length + 1];
+        foreach(var t in temp)
+        {
+            int[] chars = new int[26];
+            foreach (var c in t)
+                chars[c - 'a']++;
+
+            int count = t.Length;
+            foreach (var c in word)
+            {
+                if (chars[c - 'a'] != 0)
+                {
+                    count--;
+                    chars[c - 'a']--;
+                }
+            }
+
+            if (count == 1)
+                output.Add(t);
+        }
+
+        return output;
+    }

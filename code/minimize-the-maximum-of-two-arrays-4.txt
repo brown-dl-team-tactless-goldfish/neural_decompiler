@@ -1,0 +1,22 @@
+class Solution {
+public:
+	long long lcm( long long a, long long b ){
+		return a*b / __gcd(a,b);
+	}
+	bool criteria(int num, int div1, int div2, int uc1, int uc2){
+		int cnt1 = num - num/div1;               // no of numbers not divisible by div1 or suitable for array1
+		int cnt2 = num - num/div2;               // no of numbers not divisible by div2 or suitable for array2
+		int cnt3 = num - num/ lcm(div1, div2);   // no of numbers not divisible by both div1 and div2 or suitable for both arrays
+		return cnt1 >= uc1 and cnt2 >= uc2 and cnt3 >= (uc1 + uc2);
+	}
+	int minimizeSet(int divisor1, int divisor2, int uniqueCnt1, int uniqueCnt2) {
+		long long left = 0;
+		long long right = INT_MAX;
+		while (left < right) {
+			long long mid = left + (right - left) / 2;
+			if (criteria(mid, divisor1, divisor2, uniqueCnt1, uniqueCnt2)) right = mid;
+			else left = mid + 1;
+		}
+		return left;
+	}
+};e

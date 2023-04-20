@@ -1,0 +1,105 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+typedef struct ListNode node;
+#define and &&
+#define not !
+#define null 0
+
+void reverse(node* head, node* prev, node** new_head)
+{
+    if(not head){
+        *new_head = prev;
+        return;
+    }
+    
+    reverse(head->next, head, new_head);
+    head->next = prev;
+
+}
+void print(node* head)
+{
+    node* tail = head;
+    while(tail){
+        printf("%d->", tail->val);
+        tail = tail->next;
+    }
+    printf("\n");
+}
+struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2) {
+
+    reverse(l1, null, &l1);
+    reverse(l2, null, &l2);   
+
+    node* l3 = null;
+    node* l4 = null;
+    int carry = 0;
+    
+    while(l1 and l2){
+        if(l4){
+            l4->next = (node*) malloc(sizeof(node));
+            l4 = l4->next;
+            l4->next = null;
+        } else {
+            l3 = l4 = (node*) malloc(sizeof(node));
+            l4->next = null;
+        }
+        
+        l4->val = (l1->val + l2->val + carry) % 10;
+        carry = (l1->val + l2->val + carry)/10;
+        l1 = l1->next;
+        l2 = l2->next;
+    }
+
+    while(l1){
+        if(l4){
+            l4->next = (node*) malloc(sizeof(node));
+            l4 = l4->next;
+            l4->next = null;
+        } else {
+            l3 = l4 = (node*) malloc(sizeof(node));
+            l4->next = null;
+        }
+        
+        l4->val = (l1->val + carry) % 10;
+        carry = (l1->val + carry)/10;
+        l1 = l1->next;
+    }
+
+    while(l2){
+        if(l4){
+            l4->next = (node*) malloc(sizeof(node));
+            l4 = l4->next;
+            l4->next = null;
+        } else {
+            l3 = l4 = (node*) malloc(sizeof(node));
+            l4->next = null;
+        }
+        
+        l4->val = (l2->val + carry) % 10;
+        carry = (l2->val + carry)/10;
+        l2 = l2->next;
+    }
+
+    while(carry){
+        if(l4){
+            l4->next = (node*) malloc(sizeof(node));
+            l4 = l4->next;
+            l4->next = null;
+        } else {
+            l3 = l4 = (node*) malloc(sizeof(node));
+            l4->next = null;
+        }
+        
+        l4->val = carry % 10;
+        carry = carry /10;
+    }
+    
+    reverse(l3, null, &l3);
+    return l3;
+}

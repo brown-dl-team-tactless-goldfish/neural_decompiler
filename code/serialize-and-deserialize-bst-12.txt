@@ -1,0 +1,47 @@
+class Codec {
+public:
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        if(!root) return "null";
+        return to_string(root->val) + " " + serialize(root->left) + " " + serialize(root->right);
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        stringstream ss(data);
+        string s;
+        ss >> s;
+        if(s == "null") return NULL;
+        auto root = new TreeNode(stoi(s));
+        stack<TreeNode*>stk;
+        stk.push(root);
+        
+        while(ss >> s)
+        {
+            if(s == "null") break;
+            auto node = new TreeNode(stoi(s));
+            stk.top()->left = node;
+            stk.push(node);
+        }
+
+        while(ss >> s)
+        {
+            auto node = stk.top();
+            stk.pop();
+            if( s == "null") continue;
+            
+            auto node1 = new TreeNode(stoi(s));
+            node->right = node1;
+            stk.push(node1);
+            while(ss >> s)
+            {
+                if(s == "null") break;
+                node1 = new TreeNode(stoi(s));
+                stk.top()->left = node1;
+                stk.push(node1);
+            }
+        }
+        return root;
+    }
+};

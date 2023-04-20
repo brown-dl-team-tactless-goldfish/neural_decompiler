@@ -1,0 +1,36 @@
+int maximumUniqueSubarray(int* nums, int numsSize){
+    int *hash; 
+    long long i =0, sum =0, maxSum =0;
+    int left, right, index,j;
+    hash = (int *)calloc(10001, sizeof(int));
+ 
+    left = 1;
+    hash[nums[0]] = 1;
+    sum = nums[0];
+    right = 2;
+    maxSum = sum;
+    
+    while (right <= numsSize && left <= right) {       
+        if (!hash[nums[right-1]]) {
+            hash[nums[right-1]] = right;
+            sum += nums[right-1];
+            right++;
+        } else {
+            maxSum = (sum > maxSum) ? sum : maxSum;
+            index = hash[nums[right-1]];
+            if (index >= left) {
+                j = left;
+                while (j <= index) {
+                   sum -= nums[j-1];
+                    j++;
+                }
+                left = index +1;
+            }
+            hash[nums[right-1]] = right;
+            sum += nums[right-1];
+            right++;                     
+        }
+    }
+    return (sum > maxSum) ? sum: maxSum;
+
+}

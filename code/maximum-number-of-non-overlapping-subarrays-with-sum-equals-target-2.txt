@@ -1,0 +1,25 @@
+// OJ: https://leetcode.com/contest/weekly-contest-201/problems/maximum-number-of-non-overlapping-subarrays-with-sum-equals-target/
+// Author: github.com/lzl124631x
+// Time: O(NlogN)
+// Space: O(N)
+class Solution {
+public:
+    int maxNonOverlapping(vector<int>& A, int target) {
+        vector<vector<int>> v;
+        unordered_map<int, int> m{{0, -1}};
+        int sum = 0;
+        for (int i = 0; i < A.size(); ++i) {
+            sum += A[i]; // prefix sum
+            if (m.count(sum - target)) v.push_back({i, m[sum - target] + 1}); // {m[sum - target + 1], i} is a valid range. Here we put the ending index first.
+            m[sum] = i; // Update the last-seen ending index corresponding to this prefix sum
+        }
+        sort(begin(v), end(v)); // sort in ascending order of the ending index
+        int ans = 0, last = -1;
+        for (auto &p : v) {
+            if (p[1] <= last) continue; // the start index is smaller or equal to the `last`, which means that this range overlaps with a previously selected range. Skip
+            ++ans;
+            last = p[0]; // select this range and update the `last` to be the ending index
+        }
+        return ans;
+    }
+};

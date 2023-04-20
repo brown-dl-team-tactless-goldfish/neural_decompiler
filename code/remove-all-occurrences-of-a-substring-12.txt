@@ -1,0 +1,33 @@
+public class Solution {
+    public string RemoveOccurrences(string s, string part)
+    {
+        // Stack will Store current character , String formation (in correct order) so far
+        Stack<(char, string)> stack = new Stack<(char, string)>();
+        int partLength = part.Length;
+        foreach (char c in s)
+        {
+            string current = string.Empty;
+
+            if (stack.Count > 0)
+            {
+                current = stack.Peek().Item2;
+            }
+
+            stack.Push((c, current + c));
+            
+            // Compare if current string formation ends with 'part'
+            if (stack.Count >= partLength && stack.Peek().Item2.EndsWith(part))
+            {
+                // If so, remove partLength # of values from Stack
+                int i = 0;
+                while (i < partLength)
+                {
+                    stack.Pop();
+                    i++;
+                }
+            }
+        }
+
+        return stack.Count == 0 ? string.Empty : stack.Peek().Item2;
+    }
+}

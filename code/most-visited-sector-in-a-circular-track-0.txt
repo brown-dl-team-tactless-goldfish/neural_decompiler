@@ -1,0 +1,24 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int cmp(const void* a, const void* b){
+    return *(int*)a - *(int*)b ;
+}
+int* mostVisited(int n, int* rounds, int roundsSize, int* returnSize){
+    int items =  rounds[roundsSize-1] - rounds[0] ;
+    if(items < 0) 
+        items += n ;
+    items += 1 ;
+    int* ans = malloc( items * sizeof(int)) ;
+    for(int i = 0 ; i < items ; i++){
+        if(rounds[0] + i <= n)
+            ans[i] = rounds[0] + i  ;
+        else
+            ans[i] = rounds[0] + i - n  ;
+    }
+    *returnSize = items ;
+    qsort(ans , items, sizeof(int), cmp) ;
+    return ans ;
+}

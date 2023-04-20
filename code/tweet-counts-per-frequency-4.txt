@@ -1,0 +1,21 @@
+    unordered_map<string, multiset<int>> tweet;
+    unordered_map<string, int> interval;
+public:
+    TweetCounts() {
+        interval["minute"] = 60;
+        interval["hour"] = 60*60;
+        interval["day"] = 60*60*60;
+    }
+    
+    void recordTweet(string tweetName, int time) {
+        tweet[tweetName].insert(time);
+    }
+    
+    vector<int> getTweetCountsPerFrequency(string freq, string tweetName, int startTime, int endTime) {
+        vector<int> res((endTime-startTime)/interval[freq] + 1, 0);
+        auto t = tweet.find(tweetName);
+        if(t == tweet.end()) return res;
+        for(auto it = t->second.lower_bound(startTime); it != t->second.end() && *it <= endTime; it++)
+            res[(*it-startTime)/interval[freq]]++;
+        return res;
+    }

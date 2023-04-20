@@ -1,0 +1,133 @@
+    public class Solution
+    {
+        private static readonly (int di, int dj)[] _directions = {(0,1), (0,-1), (1,0), (-1,0)};
+
+        private bool Helper(char[][] grid, int s, int t, int b)
+        {
+            int n = grid.Length;
+            int m = grid[0].Length;
+
+            bool[] visited = new bool[n * m];
+            visited[s] = true;
+            Queue<int> bfs = new Queue<int>();
+            bfs.Enqueue(s);
+
+            while (bfs.Count != 0)
+            {
+                var curr = bfs.Dequeue();
+                var i = curr / m;
+                var j = curr % m;
+                if (curr == t)
+                {
+                    return true;
+                }
+
+                foreach (var dir in _directions)
+                {
+                    var newI = i + dir.di;
+                    var newJ = j + dir.dj;
+                    var newLinear = newI * m + newJ;
+
+                    if (newI >= 0 && newJ >= 0 && newI < n && newJ < m && !visited[newLinear] && grid[newI][newJ] != '#' && newLinear != b)
+                    {
+                        bfs.Enqueue(newLinear);
+                        visited[newLinear] = true;
+                    }
+                }
+            }
+
+            return false;
+        }
+
+        public int MinPushBox(char[][] grid)
+        {
+            int n = grid.Length;
+            int m = grid[0].Length;
+
+            bool[,] visited = new bool[n*m, n*m];
+            Queue<(int b, int h)> bfs = new Queue<(int b, int h)>();
+            int startB = -1;
+            int startH = -1;
+
+            for (int i = 0; i < n; i++)
+            {
+                for (int j = 0; j < m; j++)
+                {
+                    if (grid[i][j] == 'B')
+                    {
+                        var idx = i * m + j;
+                        startB = idx;
+                        continue;
+                    }
+
+                    if (grid[i][j] == 'S')
+                    {
+                        var idx = i * m + j;
+                        startH = idx;
+                    }
+                }
+            }
+
+
+            int startBI = startB / m;
+            int startBJ = startB % m;
+            foreach (var dir in _directions)
+            {
+                var newI = startBI + dir.di;
+                var newJ = startBJ + dir.dj;
+                var newLinear = newI * m + newJ;
+
+                if (newI >= 0 && newJ >= 0 && newI < n && newJ < m && !visited[startB, newLinear] && Helper(grid, startH, newLinear, startB))
+                {
+                    bfs.Enqueue((startB, newLinear));
+                    visited[startB, newLinear] = true;
+                }
+            }
+
+            int res = 0;
+
+            while (bfs.Count != 0)
+            {
+                int count = bfs.Count;
+
+                for (int k = 0; k < count; k++)
+                {
+                    var curr = bfs.Dequeue();
+                    var i = curr.b / m;
+                    var j = curr.b % m;
+
+                    if (grid[i][j] == 'T')
+                    {
+                        return res;
+                    }
+
+                    foreach (var dir in _directions)
+                    {
+                        var newI = i + dir.di;
+                        var newJ = j + dir.dj;
+                        var newLinear = newI * m + newJ;
+
+                        if (newI >= 0 && newJ >= 0 && newI < n && newJ < m && grid[newI][newJ] != '#')
+                        {
+                            (int di, int dj) reverse = (-dir.di, -dir.dj);
+
+                            var prevI = i + reverse.di;
+                            var prevJ = j + reverse.dj;
+                            var prevLinear = prevI * m + prevJ;
+
+                            if (prevI >= 0 && prevJ >= 0 && prevI < n && prevJ < m && !visited[newLinear, curr.b] && Helper(grid, curr.h, prevLinear, curr.b))
+                            {
+                                bfs.Enqueue((newLinear, curr.b));
+                                visited[newLinear, curr.b] = true;
+                            }
+                        }
+                    }
+                }
+
+                res++;
+            }
+
+
+            return -1;
+        }
+    }

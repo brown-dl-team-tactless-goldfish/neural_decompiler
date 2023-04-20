@@ -1,0 +1,50 @@
+public class Solution 
+{
+    public bool IsPossible(int n, IList<IList<int>> edges)
+    {
+        HashSet<int>[] graph = new HashSet<int>[n + 1];
+        for (int i = 1; i < n + 1; i++)
+        {
+            graph[i] = new HashSet<int>();
+        }
+        foreach (List<int> edge in edges)
+        {
+            graph[edge[0]].Add(edge[1]);
+            graph[edge[1]].Add(edge[0]);
+        }
+        List<int> oddNodes = new List<int>();
+        for (int i = 1; i < n + 1; i++)
+        {
+            if (graph[i].Count % 2 != 0)
+                oddNodes.Add(i);
+        }
+        if (oddNodes.Count == 0)
+            return true;
+        if (oddNodes.Count > 4)
+            return false;
+        if (oddNodes.Count == 2)
+        {
+            if (!graph[oddNodes[0]].Contains(oddNodes[1]))
+                return true;
+            else
+            {
+                for (int i = 1; i < n + 1; i++)//the case that their is a node which can be connected to both odd nodes
+                {
+                    if (i != oddNodes[0] && i != oddNodes[1] && !graph[i].Contains(oddNodes[0]) && !graph[i].Contains(oddNodes[1]))
+                        return true;
+                }
+                return false;
+            }
+        }
+        if (oddNodes.Count == 4)
+        {
+            if ((!graph[oddNodes[0]].Contains(oddNodes[1]) && !graph[oddNodes[2]].Contains(oddNodes[3])) ||
+                (!graph[oddNodes[0]].Contains(oddNodes[2]) && !graph[oddNodes[1]].Contains(oddNodes[3])) ||
+                (!graph[oddNodes[0]].Contains(oddNodes[3]) && !graph[oddNodes[1]].Contains(oddNodes[2])))
+                return true;
+            else
+                return false;
+        }
+        return false;
+    }
+}

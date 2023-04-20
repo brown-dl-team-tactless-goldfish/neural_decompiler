@@ -1,0 +1,25 @@
+int cmp(void* a,void* b){
+    return ((int**)b)[0][0]-((int**)a)[0][0];
+}
+int carFleet(int target, int* position, int positionSize, int* speed, int speedSize) {
+    if(positionSize==0||speedSize==0){
+        return 0;
+    }
+    int** array=(int**)malloc(positionSize*sizeof(int*));
+    for(int i=0;i<positionSize;i++){
+        array[i]=(int*)calloc(2,sizeof(int));
+        array[i][0]=position[i];
+        array[i][1]=speed[i];
+    }
+    int ret=1;
+    qsort(array,positionSize,sizeof(array[0]),cmp);
+    float temp=((float)(target-array[0][0]))/((float)array[0][1]);
+    for(int i=1;i<positionSize;i++){
+        float temp2=((float)(target-array[i][0]))/((float)array[i][1]);
+        if(temp2>temp){
+            ret++;
+            temp=temp2;
+        }
+    }
+    return ret;
+}

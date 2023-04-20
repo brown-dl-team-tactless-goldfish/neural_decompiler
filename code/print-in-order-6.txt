@@ -1,0 +1,69 @@
+typedef struct 
+{
+    sem_t first_;
+    sem_t second_;
+    sem_t third_
+    
+} Foo;
+
+Foo* fooCreate() 
+{
+    Foo* obj = (Foo*) malloc(sizeof(Foo));
+    
+    //initialize semaphores
+    sem_init(&obj->first_, 0, 1);
+    sem_init(&obj->second_, 0, 0);
+    sem_init(&obj->third_, 0, 0);
+    
+    return obj;
+}
+
+void first(Foo* obj) 
+{
+    //lock
+    sem_wait(&obj->first_);
+    
+    // printFirst() outputs "first". Do not change or remove this line.
+    printFirst();
+    
+    //unlock
+    sem_post(&obj->second_);
+}
+
+void second(Foo* obj) {
+    
+    //lock
+    sem_wait(&obj->second_);
+    
+    // printSecond() outputs "second". Do not change or remove this line.
+    printSecond();
+    
+    //unlock
+    sem_post(&obj->third_);
+}
+
+void third(Foo* obj) 
+{
+    
+    //lock
+    sem_wait(&obj->third_);
+    
+    // printThird() outputs "third". Do not change or remove this line.
+    printThird();
+    
+    //unlock
+    sem_post(&obj->first_);
+}
+
+void fooFree(Foo* obj) 
+{
+    //destroy semaphores
+    sem_destroy(&obj->first_);
+    sem_destroy(&obj->second_);
+    sem_destroy(&obj->third_);
+    
+    //free allocated memory
+    free(obj);
+    obj = NULL;
+    
+}

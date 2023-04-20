@@ -1,0 +1,21 @@
+class Solution(object):
+	def abbreviateProduct(self, left, right):
+		suf, zeros, log_sum, prod, org_digits = 1, 0, 0, 1.0, 0
+		for n in range(left, right + 1):
+			log_sum += math.log10(n)
+			suf *= n
+			while suf % 10 == 0:  # count and remove the trailing zeros
+				zeros += 1
+				suf //= 10
+			if suf > 10 ** 8:
+				suf %= 10 ** 8
+			prod *= n
+			while prod > 1.0:
+				org_digits += 1
+				prod /= 10
+		if org_digits - zeros <= 10:
+			pre = 10 ** (log_sum - int(log_sum) + 9)
+			return str(pre)[:max(1, org_digits - zeros)] + 'e' + str(zeros)
+		else:
+			pre = 10 ** (log_sum - int(log_sum) + 4)
+			return str(pre)[:5] + '...' + str(suf)[-5:] + 'e' + str(zeros)

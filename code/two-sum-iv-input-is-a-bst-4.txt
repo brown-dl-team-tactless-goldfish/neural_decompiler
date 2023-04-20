@@ -1,0 +1,32 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+void inorder(struct TreeNode* root, int* nums, int* numsTop){
+    if(!root) return NULL;
+
+    inorder(root -> left, nums, numsTop);
+    nums[(*numsTop)++] = root -> val;
+    inorder(root -> right, nums, numsTop);
+}
+
+bool findTarget(struct TreeNode* root, int k){
+    int* nums = malloc(sizeof(int) * 10000);
+    int numsTop = 0;
+    inorder(root, nums, &numsTop);
+    for(int i = 0, j = numsTop - 1; i < j;){
+        if(nums[i] + nums[j] == k){
+            return true;
+        }else if(nums[i] + nums[j] > k){
+            j--;
+        }else{
+            i++;
+        }
+    }
+    return false;
+}

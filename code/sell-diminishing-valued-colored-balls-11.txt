@@ -1,0 +1,43 @@
+    int maxProfit(vector<int>& inventory, int orders) {
+        // it's a math problem
+        // sort the inventory in increasing order first
+        // if the inventory is [8, 8, 6, 6, 4, 4, 3, 3, 1] and orders is 10
+        // first for the first 2 number of 8, we can remove 2 from each of them
+        // the inventory becomes [6, 6, 6, 6, 4, 4, 3, 3, 1] and orders becomes 6
+        // then for the first 4 numbers of 6, we remove 1 from each of them first
+        // the inventory becomes [5, 5, 5, 5, 4, 4, 3, 3, 1] and orders becomes 2
+        // in the end remove 1 from each of the first 2 items in the inventory
+		
+		// we need use the math formula: a + (a+1) + (a+2) + ...+  (a+m) = (a+a+m) * (m+1)/2
+        
+        sort(inventory.begin(), inventory.end(), greater<int>());
+        long result = 0;
+        int startValue = inventory[0];
+        int endIndex = 1;
+        int size = inventory.size();
+        while (orders > 0) {
+            while (endIndex < size && inventory[endIndex] == startValue) {
+                endIndex++;
+            }
+            int endValue = 0;
+            if (endIndex < size) {
+                endValue = inventory[endIndex];
+            }
+            int difference = startValue - endValue;
+            int count = endIndex * difference;
+            long valuePerPile = (long)(startValue + endValue + 1) * difference / 2;
+            if (count <= orders) {
+                result += valuePerPile * endIndex;
+                orders -= count;
+                startValue = endValue;
+            } else {
+                int layers = orders / endIndex;
+                result += (long)(startValue + startValue - layers + 1) * layers / 2 * endIndex;
+                int remaining = orders % endIndex;
+                result += (long)(startValue - layers) * remaining;
+                orders = 0;
+            }
+        }
+        int mod = 1e9 + 7;
+        return result % mod;
+    }

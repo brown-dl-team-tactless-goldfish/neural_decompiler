@@ -1,0 +1,27 @@
+class Solution {
+public:
+vector<int> findFrequentTreeSum(TreeNode* root) {
+    if(root == nullptr) return {};
+    vector<int> res;
+    unordered_map<int,int> mp;
+    find(root, mp);
+    int curMax = INT_MIN;
+    for(auto num : mp){
+        if(num.second > curMax){
+            curMax = num.second;
+            res.clear();
+            res.push_back(num.first);
+        }else if(num.second == curMax){
+            res.push_back(num.first);
+        }
+    }
+    return res;
+}
+
+int find(TreeNode* root, unordered_map<int,int>& mp){
+    if(root == nullptr) return 0;
+    int sum = root->val + find(root->left, mp) + find(root->right, mp);
+    mp[sum]++;
+    return sum;
+}
+};

@@ -1,0 +1,55 @@
+int getLongestPathCount(
+    int** matrix,
+    int** matrixCount,
+    int row_p,
+    int col_p,
+    int matrixRowSize,
+    int matrixColSize
+) {
+    if (matrixCount[row_p][col_p] > 0) {
+        return matrixCount[row_p][col_p];
+    }
+    int left = 1, right = 1,up = 1,down = 1;
+
+    if (col_p > 0 && matrix[row_p][col_p - 1] > matrix[row_p][col_p]) {
+        left = 1 + getLongestPathCount(matrix, matrixCount, row_p, col_p-1 ,matrixRowSize, matrixColSize);
+    }
+    if (col_p < (matrixColSize-1) && matrix[row_p][col_p + 1] > matrix[row_p][col_p]) {
+        right = 1 + getLongestPathCount(matrix, matrixCount, row_p, col_p+1 ,matrixRowSize, matrixColSize);
+    }
+    if (row_p > 0 && matrix[row_p - 1][col_p] > matrix[row_p][col_p]) {
+        up = 1 + getLongestPathCount(matrix, matrixCount, row_p-1, col_p ,matrixRowSize, matrixColSize);
+    }
+    if (row_p < (matrixRowSize-1) && matrix[row_p + 1][col_p] > matrix[row_p][col_p]) {
+        down = 1 + getLongestPathCount(matrix, matrixCount, row_p+1, col_p ,matrixRowSize, matrixColSize);
+    }
+    if (left < right) left = right;
+    if (left < up) left = up;
+    if (left < down) left = down;
+    matrixCount[row_p][col_p] = left;
+    return left;
+}
+
+int longestIncreasingPath(int** matrix, int matrixRowSize, int matrixColSize) {
+    //init
+    int **matrixCount = (int**)malloc(sizeof(int *) * matrixRowSize);
+    for (int i = 0; i<matrixRowSize; i++) {
+        matrixCount[i] = (int*)malloc(sizeof(int) * matrixColSize);
+        memset(matrixCount[i], 0, matrixColSize*sizeof(int));
+    }
+    
+    int max = 0, tmp;
+    for (int i = 0;i<matrixRowSize;i++) {
+        for (int j = 0;j<matrixColSize;j++) {
+            tmp = getLongestPathCount(matrix, matrixCount, i, j, matrixRowSize, matrixColSize);
+            if (tmp > max) {
+                max = tmp;
+            }
+        }
+    }
+    for (int i = 0;i<matrixRowSize;i++) {
+        free(matrixCount[i]);
+    }
+    free(matrixCount);
+    return max;
+}

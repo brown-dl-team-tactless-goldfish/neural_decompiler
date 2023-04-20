@@ -1,0 +1,99 @@
+#define SWAP(x, y) do {char tmp; tmp = (x); (x) = (y); (y) = tmp;} while(0);
+
+void reverseWord(char* s, int start, int end)
+{
+    while (start < end) {
+        SWAP(s[start], s[end]);
+        start++;
+        end--;
+    }
+}
+
+void removeTrail(char* s)
+{
+    char* tmp = s;
+    int i;    
+    
+    if (!s || s[0] == '\0') return;
+
+    for (i = 0; s[i] != '\0'; i++) {
+        if (s[i] != ' ') {
+            tmp = &s[i];
+        }
+    }
+    
+    *(tmp+1) = '\0';
+}
+
+void removeLead(char* s)
+{
+    char* tmp;
+    int i;
+    int leadSpc = 0;
+
+    if (!s || s[0] == '\0') return;
+    
+    for (i = 0; s[i] == ' '; i++) {
+        ;
+    }
+    leadSpc = i;
+    
+    for (i = leadSpc; s[i] != '\0'; i++) {
+        s[i-leadSpc] = s[i];
+    }
+    s[i-leadSpc] = '\0';
+}
+
+void squeeze(char* s)
+{
+    int copyPos = 0;
+    int i;
+    int bWord = 0;
+
+    if (!s || s[0] == '\0') return;
+    
+    for (i = 0; s[i] != '\0'; i++) {
+        if (s[i] != ' ') {
+            bWord = 1;
+            s[copyPos++] = s[i];
+        }
+        else {
+            if (bWord) {
+                bWord = 0;
+                s[copyPos++] = s[i];
+            }
+        }
+    }
+    
+    s[copyPos] = '\0';
+}
+
+char * reverseWords(char * s){
+    int i;
+    int start, end;
+    int bWord = 0;
+    
+    reverseWord(s, 0, strlen(s)-1);
+    removeTrail(s);
+    removeLead(s);
+    squeeze(s);
+    
+    for (i = 0; s[i] != '\0'; i++) {
+        if (s[i] != ' ') {
+            if (bWord == 0) {
+                bWord = 1;
+                start = i;
+            }
+        }
+        else {
+            if (bWord) {
+                reverseWord(s, start, i-1);
+                bWord = 0;
+            }
+        }
+    }
+    
+    reverseWord(s, start, i-1);
+
+    return s;
+}

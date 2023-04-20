@@ -1,0 +1,35 @@
+public class Solution {
+    public string StoneGameIII(int[] stoneValue) {
+        int n = stoneValue.Length;
+        var memo = new int[n];
+        for (int i=0; i<n; i++) {
+            memo[i] = Int32.MaxValue;
+        }
+        int value = StoneGame(stoneValue, 0, memo); // difference
+        if (value == 0) return "Tie";
+        if (value > 0) {
+            return "Alice";
+        } else {
+            return "Bob";
+        }
+    }
+    
+    public int StoneGame(int[] stoneValue, int index, int[] memo) {
+        if (index >= stoneValue.Length) return 0;
+        if (memo[index] != Int32.MaxValue) {
+            return memo[index];
+        }
+        
+        int sum = stoneValue[index];
+        int value = sum - StoneGame(stoneValue, index+1, memo);
+        
+        for (int i=index+1; i< Math.Min(index+3, stoneValue.Length); i++) {
+            sum += stoneValue[i];
+            value = Math.Max(value, sum - StoneGame(stoneValue, i+1, memo));
+        }
+        
+        memo[index] = value;
+        return value;
+    }
+}
+	```

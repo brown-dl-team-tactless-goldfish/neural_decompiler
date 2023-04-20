@@ -1,0 +1,21 @@
+void travel(struct TreeNode* root,double* arr,int idx,int* size,int* cnt)
+{
+    if(!root)
+        return;
+    if(idx>*size)
+        *size=idx;
+    arr[idx]+=root->val;
+    cnt[idx]++;
+    travel(root->left,arr,idx+1,size,cnt);
+    travel(root->right,arr,idx+1,size,cnt);
+    
+}
+double* averageOfLevels(struct TreeNode* root, int* returnSize){
+    double *arr=calloc(1000,sizeof(double));
+    int *cnt=calloc(2000,sizeof(int)),size=0;
+    travel(root,arr,0,&size,cnt);
+    for(int i=0;i<=size;i++)
+        arr[i]=arr[i]/cnt[i];
+    *returnSize=size+1;
+    return arr;
+}

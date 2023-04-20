@@ -1,0 +1,14 @@
+ def canEat(self, candiesCount: List[int], queries: List[List[int]]) -> List[bool]:
+        result = [False] * len(queries)
+        presum = [0] + candiesCount[:]
+        for i in range(1, len(presum)):
+            presum[i] += presum[i - 1]
+            
+        for idx, val in enumerate(queries):
+            candType, favDate, cap = val
+            mx = presum[candType + 1] - 1
+            mn = presum[candType]//cap
+            if mn <= favDate <= mx:
+                result[idx] = True
+                
+        return result

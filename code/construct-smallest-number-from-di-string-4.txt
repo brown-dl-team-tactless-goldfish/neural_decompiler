@@ -1,0 +1,33 @@
+class Solution {
+ public:
+  long long res = 0;
+  vector<int> used = vector<int>(10);
+
+  bool dfs(string& pattern, long long curr, int last, int k) {
+    if (k == pattern.length()) {
+      res = curr;
+      return true;
+    }
+
+    char c = pattern[k];
+    for (int i = 1; i <= 9; i++) {
+      if (!used[i] && ((c == 'I' && i > last) || (c == 'D' && i < last))) {
+        used[i] = 1;
+        if (dfs(pattern, curr * 10 + i, i, k + 1)) return true;
+        used[i] = 0;
+      }
+    }
+
+    return false;
+  }
+
+  string smallestNumber(string pattern) {
+    for (int i = 1; i <= 9; i++) {
+      used[i] = 1;
+      if (dfs(pattern, i, i, 0)) break;
+      used[i] = 0;
+    }
+
+    return to_string(res);
+  }
+};

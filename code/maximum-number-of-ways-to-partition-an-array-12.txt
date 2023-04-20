@@ -1,0 +1,37 @@
+
+class Solution {
+public:
+    int waysToPartition(vector<int>& nums, int k) {
+        
+        int n = nums.size();
+        unordered_map<long long, int> m2,m1;
+        
+        long long pref = 0;
+        long long sum = 0;
+        for(int i=0;i<n;i++)
+            sum+=nums[i];
+        for(int i=0;i<n-1;i++){
+            pref+=nums[i];
+            long long left = pref;
+            long long right = sum - pref;
+            long long d = left - right;
+            m1[d]++;
+        }
+        long long suf = 0;
+        long long val = k - nums[n-1];
+        long long ans = m1[val];
+        ans=max(ans,(long long)m1[0]);
+        for(int i=n-1;i>0;i--){
+            suf+=nums[i];
+            long long right = suf;
+            long long left = sum - suf;
+            long long d = left - right;
+            long long val = k - nums[i-1];
+            m1[d]--;
+            m2[d]++;
+            ans = max(ans,(long long)m1[val]+(long long)m2[-val]);
+        }
+        return ans;
+        
+    }
+};

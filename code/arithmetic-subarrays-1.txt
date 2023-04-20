@@ -1,0 +1,25 @@
+int cmp (const void *a , const void *b){
+    return *(int *)a - *(int *)b;
+}
+
+bool* checkArithmeticSubarrays(int* nums, int numsSize, int* l, int lSize, int* r, int rSize, int* returnSize){  
+	int i,j=0,k,n=0;
+    bool* ans = malloc(sizeof(bool)*lSize);
+    while(j<lSize){
+        int * arr = malloc(sizeof(int)*(r[j]-l[j]+1));
+        ans[n++]=true;
+        for(k=0,i=l[j] ; i<= r[j] ; i++,k++){
+            arr[k] = nums[i];
+        }
+        qsort(arr,k,sizeof(int),cmp);
+        int diff = arr[0]-arr[1];
+        for(int m=0 ; m<k-1 ; m++){
+            if(arr[m]-arr[m+1] != diff){
+                ans[n-1] = false;
+            }
+        }   
+        j++;
+    }
+    *returnSize = lSize;
+    return ans;
+}

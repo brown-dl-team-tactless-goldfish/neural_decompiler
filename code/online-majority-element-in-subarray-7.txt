@@ -1,0 +1,41 @@
+class MajorityChecker {
+public:
+    
+    unordered_map<int, vector<int>> memo;
+    vector<pair<int, int>> vec;
+    
+    static bool comp(pair<int, int> a, pair<int, int> b) {
+        return (a.first > b.first);
+    }
+    
+    MajorityChecker(vector<int>& arr) {
+  
+        for (int i = 0; i < arr.size(); i++) {
+            memo[arr[i]].push_back(i);
+        }
+        for (unordered_map<int, vector<int>> :: iterator it = memo.begin(); it != memo.end(); it++) {
+            vec.push_back(make_pair(it->second.size(), it->first));
+        }
+        sort(vec.begin(), vec.end(), comp);
+    }
+    
+    int query(int left, int right, int threshold) {
+        
+        if (right - left + 1 < threshold)   return -1;
+        
+        for (int i = 0; i < vec.size(); i++) {
+            int sz = vec[i].first, num = vec[i].second; 
+            if (sz < threshold) return -1;
+            vector<int> v = memo[num];
+            vector<int> :: iterator itlow = lower_bound(v.begin(), v.end(), left);
+            if (itlow == v.end())   continue;
+            vector<int> :: iterator itup = lower_bound(v.begin(), v.end(), right);
+            if (itup != v.end() && *itup > right)   --itup;
+            int diff = (itup - itlow);
+            if (itup != v.end())    diff += 1;
+            if (diff >= threshold)  return num;
+        }
+        
+        return -1;
+    }
+};

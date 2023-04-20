@@ -1,0 +1,79 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     struct Node *next;
+ *     struct Node *random;
+ * };
+ */
+struct Node* copyRandomList(struct Node* head) {
+    if(head==NULL){
+        return NULL;
+    }
+    int count=0;
+    struct Node* ans = head;
+    while(ans!=NULL){
+        count++;
+        ans=ans->next;
+    }
+    if(head->next!=NULL && count==1){
+        struct Node* newhead = (struct Node*) malloc(sizeof(struct Node));
+        newhead->next =NULL;
+        newhead->random=NULL;
+        newhead->val = head->val;
+        return newhead;
+    }
+      if(count==1 && head->next==head){
+        struct Node* newhead = (struct Node*) malloc(sizeof(struct Node));
+        newhead->next=NULL;
+        newhead->random=NULL;
+        struct Node* temp = newhead;
+        newhead->next = temp;
+        newhead->random = temp;
+        newhead-> val = head->val;
+        return newhead;
+    }
+	struct Node* temp = head;
+    struct Node* newhead = (struct Node*) malloc(sizeof(struct Node));
+    newhead->next = NULL;
+    newhead->random=NULL;
+    newhead->val = temp->val;
+    temp=temp->next;
+    while(temp!=NULL){
+        struct Node* prime = newhead;
+        while(prime->next != NULL){
+            prime = prime->next;
+        }
+        struct Node* temp1 = (struct Node*) malloc(sizeof(struct Node));
+        temp1->val = temp->val;
+        prime->next = temp1;
+         temp1->next = NULL;
+         temp1->random = NULL;
+         temp=temp->next;
+    }
+    printf("test");
+   struct Node* flag1 = head;
+   struct Node* new = newhead;
+   while(flag1!=NULL){
+       if(flag1->random==NULL){
+           new->random = NULL;
+       }
+       else{
+        struct Node* flag2 = newhead;
+        struct Node* rand = flag1->random;
+        int count=0;
+        struct Node* dosomething = head;
+        while(dosomething!=rand){
+            count++;
+            dosomething=dosomething->next;
+        }
+        for(int i=0;i<count;i++){
+            flag2=flag2->next;
+        }
+         new->random  = flag2;
+       }
+      flag1 = flag1->next; 
+      new = new->next;    
+   }
+   return newhead;
+}

@@ -1,0 +1,50 @@
+public class Codec {
+
+    // Encodes a tree to a single string.
+    public string serialize(TreeNode root) {
+        if (root == null) return "";
+        StringBuilder sb = new StringBuilder();
+        serializeHelper(root, sb);
+        sb.Length--;
+        return sb.ToString();
+    }
+    
+    private void serializeHelper(TreeNode node, StringBuilder sb) {
+        if (node == null) {
+            return;
+        }
+        
+        sb.Append($"{node.val},");
+        serializeHelper(node.left, sb);
+        serializeHelper(node.right, sb);
+    }
+
+    // Decodes your encoded data to tree.
+    public TreeNode deserialize(string data) {
+        if (string.IsNullOrEmpty(data)) { return null; }
+        string[] strings = data.Split(new char[]{','});
+        int[] preorder = new int[strings.Length];
+        int[] inorder = new int[strings.Length];
+        for (int i = 0; i < preorder.Length; i ++) {
+            preorder[i] = Convert.ToInt32(strings[i]);
+            inorder[i] = preorder[i];
+        }
+        
+        Array.Sort(inorder); 
+        return deserializeHelper(preorder, 0, preorder.Length, inorder, 0, inorder.Length);
+    }
+    
+    private TreeNode deserializeHelper(int[] preorder, int pstart, int pend, int[] inorder, int istart, int iend) {
+        if (istart >= iend || pstart >= pend) {
+            return null;
+        }
+        
+        int num = preorder[pstart];
+        int i = istart;
+        for (; i < iend && inorder[i] != num; i ++) { }
+        TreeNode node = new TreeNode(num);
+        node.left = deserializeHelper(preorder, pstart + 1, pstart + i - istart + 1, inorder, istart, i);
+        node.right = deserializeHelper(preorder, pstart + i - istart + 1, pend, inorder, i + 1, iend);
+        return node;
+    }
+}

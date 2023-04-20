@@ -1,0 +1,26 @@
+class Solution {
+public:
+    vector<vector<string>> mostPopularCreator(vector<string>& creators, vector<string>& ids, vector<int>& views) {
+        map<string,long> mp;
+        int i=0;
+        for(auto it : creators){
+            mp[it] += views[i++];
+        }
+        map<long,vector<string>> mpp;
+        for(auto it : mp){
+            mpp[it.second].push_back(it.first);
+        }
+        vector<string> popular = mpp.rbegin()->second;
+        map<string,map<int,set<string>>> m;
+        for(int j=0;j<creators.size();j++){
+            m[creators[j]][views[j]].insert(ids[j]);
+        }
+        vector<vector<string>> ans;
+        for(int j=0;j<popular.size();j++){
+            auto it = m[popular[j]].rbegin()->second;
+            // cout<<*it.begin()<<"\n";
+            ans.push_back({popular[j],*it.begin()});
+        }
+        return ans;
+    }
+};

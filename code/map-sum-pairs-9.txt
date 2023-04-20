@@ -1,0 +1,44 @@
+struct TrieNode{
+    unordered_map<char, TrieNode*> children;
+    int score = 0;
+};
+
+class MapSum {
+public:
+    /** Initialize your data structure here. */
+    
+    TrieNode _root;
+    unordered_map<string, int> _vals;
+    
+    MapSum() {
+        
+    }
+    
+    void insert(string key, int val) {
+        
+        int oldval = _vals[key];
+        _vals[key] = val;
+        
+        auto node = &_root;
+        for(auto c : key){
+            
+            if(node->children.count(c)==0){
+                node->children[c] = new TrieNode();
+            }
+            node = node->children[c];
+            node->score += val-oldval;
+        }
+        
+    }
+    
+    int sum(string prefix) {
+        
+        auto node = &_root;
+        for(auto c : prefix){
+            if(node->children.count(c)==0)
+                return 0;
+            node = node->children[c];
+        }       
+        return node->score;
+    }
+};

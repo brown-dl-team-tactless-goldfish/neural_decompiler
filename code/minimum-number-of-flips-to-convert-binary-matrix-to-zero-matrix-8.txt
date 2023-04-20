@@ -1,0 +1,77 @@
+class Solution {
+private:
+    int dir[5] = {0, 1, 0, -1, 0};
+    int rSize, cSize;
+    
+    bool inBound(int r, int c) {
+        return (r >= 0 && c >= 0 && r < rSize && c < cSize);
+    }
+    
+    void flipSlot(uint16_t &boardState, int r, int c) {
+        boardState ^= (1 << (r * 3 + c));
+    }
+    
+    uint16_t getNextState(uint16_t boardState, int r, int c) {
+        flipSlot(boardState, r, c);
+        for (int i = 0; i < 4; i++) {
+            int nextR = r + dir[i];
+            int nextC = c + dir[i + 1];
+            if (inBound(nextR, nextC)) {
+                flipSlot(boardState, nextR, nextC);
+            }
+        }
+        return boardState;
+    }
+    
+    uint16_t getInitState(vector<vector<int>> &mat) {
+        uint16_t res = 0;
+        for (int r = 0; r < rSize; r++) {
+            for (int c = 0; c < cSize; c++) {
+                if (mat[r][c] == 1) {
+                    res |= (1 << (r * 3 + c));
+                }
+            }
+        }
+        return res;
+    }
+    
+public:
+    int minFlips(vector<vector<int>>& mat) {
+        
+        rSize = mat.size();
+        cSize = mat[0].size();
+        
+        unordered_set<uint16_t> memo;
+        queue<uint16_t> bfsQ;
+        
+        uint16_t initState = getInitState(mat);
+        
+        bfsQ.push(initState);
+        memo.insert(initState);
+        
+        int flips = 0;
+        while (!bfsQ.empty()) {
+            int currQSize = bfsQ.size();
+            while (currQSize-- > 0) {
+                int currState = bfsQ.front();
+                bfsQ.pop();
+                
+                if (currState == 0) {
+                    return flips;
+                }
+                
+                for (int r = 0; r < rSize; r++) {
+                    for (int c = 0; c < cSize; c++) {
+                        uint16_t nextState = getNextState(currState, r, c);
+                        if (!memo.count(nextState)) {
+                            memo.insert(nextState);
+                            bfsQ.push(nextState);
+                        }
+                    }
+                }
+            }
+            flips++;
+        }
+        return -1;
+    }
+};

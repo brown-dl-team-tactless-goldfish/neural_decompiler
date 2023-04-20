@@ -1,0 +1,33 @@
+bool check(int mid, int* position, int positionSize, int m){
+    int begin = position[0];
+    int cnt = 1;
+    for(int i = 1; i < positionSize; i++)
+    {
+        if((position[i] - begin) >= mid)
+        {
+            cnt++;
+            begin = position[i];
+        }
+    }
+    return cnt >= m;
+}
+int cmp(const void* a, const void* b){
+    return *(int *)a - *(int *)b;
+}
+int maxDistance(int* position, int positionSize, int m){
+    qsort(position, positionSize, sizeof(int), cmp);
+    int min = 1, max = position[positionSize - 1] - position[0];
+    int mid = 0, ans = -1;
+    while(min <= max)
+    {
+        mid = min + (max - min) / 2;
+        if(check(mid, position, positionSize, m))
+        {
+            ans = mid;
+            min = mid + 1;
+        }
+        else
+            max = mid - 1;
+    }
+    return ans;
+}

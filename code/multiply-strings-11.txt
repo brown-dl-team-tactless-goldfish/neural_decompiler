@@ -1,0 +1,50 @@
+char buf[200]={};
+void reverseStr(char* x)
+{
+    int len = strlen(x);
+    int digit;
+    for(int i = 0; i < len/2; i++)
+    {
+        digit = x[i];
+        x[i] = x[len-1-i];
+        x[len-1-i] = digit;
+    }
+}
+
+char * multiply(char * num1, char * num2){    
+    int lenNum1 = strlen(num1);
+    int lenNum2 = strlen(num2);
+    char *str = calloc((lenNum1 + lenNum2 +1), sizeof(char));
+    char *ptr = buf;
+    int i,j, digit;
+    
+    if(num1[0] == '0' || num2[0] == '0')
+        return "0";
+
+    reverseStr(num1);
+    reverseStr(num2);
+
+    for(i = 0; i < lenNum1; i++)
+    {
+        for(j = 0; j < lenNum2; j++)
+        {
+            digit = (num1[i] - '0') * (num2[j] - '0');
+            str[i+j] += digit;
+            str[i+j+1] += str[i+j] / 10;
+            str[i+j] = str[i+j] % 10;
+        }
+    }
+    for(i =0; i<lenNum1+lenNum2; i++)
+    {
+        str[i] = str[i] + '0';
+    }
+    reverseStr(str);
+    strcpy(buf,str);
+
+    while(*ptr == '0')
+    {
+        ptr++;
+    }    
+    free(str);
+    return ptr;
+}

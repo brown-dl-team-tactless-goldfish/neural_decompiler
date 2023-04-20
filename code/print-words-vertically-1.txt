@@ -1,0 +1,40 @@
+#define MAX(a,b) ((a>b)?a:b)
+char ** printVertically(char * s, int* returnSize){
+    int len = strlen(s);
+    int* wordLenCnt = (int*)calloc(100, sizeof(int));
+    int l = -1, r = 0, maxWordLen = 0, wordCnt = 0;
+    /* calcualte each word length for saving memory and filling space */
+    while(r<=len){
+        if(s[r]==' ' || r==len){
+            wordLenCnt[wordCnt++] = r - l - 1;
+            l = r;
+        }
+        r++;
+    }
+    /* modifed the wordLenCnt[] for filling space */
+    maxWordLen = wordLenCnt[wordCnt - 1];
+    for(int i = wordCnt - 1; i > 0; i--){
+        if(wordLenCnt[i]>wordLenCnt[i-1])
+            wordLenCnt[i-1] = wordLenCnt[i];        
+        maxWordLen = MAX(maxWordLen, wordLenCnt[i-1]);
+    }
+    /* allocate for answer */
+    int idx = 0, wordIdx = 0;
+    char** ans =(char**)calloc(maxWordLen, sizeof(char*));
+    for(int i = 0; i < maxWordLen; i++)
+        ans[i] = (char*)calloc(wordCnt+1, sizeof(char));
+    r = 0;
+    while(r < len){
+        while(r < len && s[r]!=' ')
+            ans[idx++][wordIdx] = s[r++];
+        r++; /* to next word beginning */
+        /* filling space */
+        while(idx<wordLenCnt[wordIdx])
+            ans[idx++][wordIdx] = ' ';
+        /* reset counter */
+        idx = 0;
+        wordIdx++;
+    }
+    *returnSize = maxWordLen;
+    return ans;
+}

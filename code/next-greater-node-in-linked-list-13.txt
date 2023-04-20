@@ -1,0 +1,59 @@
+int* nextLargerNodes(struct ListNode* head, int* returnSize)
+{
+	struct ListNode* p = head;
+	int cnt = 0;
+	while(p)
+	{
+		cnt++;
+		p = p->next;
+	}
+	int* answer = malloc(sizeof(int) * cnt);
+	int* val = malloc(sizeof(int) * cnt);
+	int* index = malloc(sizeof(int) * cnt);
+	*returnSize = cnt;
+
+	cnt = 0;
+	p = head;
+	while(p)
+	{
+		val[cnt++] = p->val;
+		p = p->next;
+	}
+
+	answer[cnt - 1] = 0;
+	index[cnt - 1] = -1;
+	for (int i=cnt - 2; i>=0; i--)
+	{
+		if (val[i] < val[i + 1])
+		{
+			answer[i] = val[i + 1];
+			index[i] = i + 1;
+		}
+		else
+		{
+			int idx = i + 1;
+			while (idx != -1)
+			{
+				if (val[i] < answer[idx])
+				{
+					answer[i] = answer[idx];
+					index[i] = idx;
+					break;
+				}
+				else
+				{
+					idx = index[idx];
+				}
+			}
+			if (idx == -1)
+			{
+				answer[i] = 0;
+				index[i] = -1;
+			}
+		}
+	}
+
+	free(val);
+	free(index);
+	return answer;
+}

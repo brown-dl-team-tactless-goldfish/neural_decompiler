@@ -1,0 +1,64 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+struct ListNode * merge(struct ListNode *left, struct ListNode *right) {
+
+    struct ListNode dummy;
+    struct ListNode *temp = &dummy;
+    
+    while(left != NULL && right != NULL) {
+        
+        if(left->val < right-> val) {
+            temp->next = left;
+            left = left->next;
+            
+        }
+        
+        else {
+            
+            temp->next = right;
+            right = right->next;
+        }
+        
+        temp = temp->next;
+        
+    }
+    
+        if(left == NULL)
+            temp->next = right;
+        else
+            temp->next = left;
+    
+        return dummy.next;
+
+
+
+
+}
+struct ListNode* sortList(struct ListNode* head){
+
+        if (head == NULL || head->next == NULL)
+            return head;
+
+        struct ListNode *mid, *slow, *fast;
+        struct ListNode *left, *right;
+        slow = head;
+        fast = head;
+
+        while (fast->next != NULL && fast->next->next != NULL) {
+
+            slow = slow->next;
+            fast = fast->next->next;
+        }
+
+        mid = slow->next;
+        slow->next = NULL;
+        left = sortList(head);
+        right = sortList(mid);
+        return merge(left,right);
+}

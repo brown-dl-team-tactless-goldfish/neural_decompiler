@@ -1,0 +1,130 @@
+
+#define SIZE 100000
+
+int hash(int key)
+{
+    int r = key % SIZE;
+    
+    return r < 0 ? r + SIZE : r;
+}
+
+void insert(int *keys, int *values, int key)
+{
+    int index = hash(key);
+
+    while(values[index] && keys[index] != key) {
+        index++;
+        index %= SIZE;
+    }
+
+    keys[index] = key;
+    values[index]++;
+}
+
+int search(int *keys, int *values, int key)
+{
+    int index = hash(key);
+    
+    while(values[index]) {
+
+        if(keys[index] == key)
+            return values[index];
+
+        index++;
+        index %= SIZE;
+    }
+    return 0;
+}
+
+void swap(int *a, int *b)
+{
+    int temp;
+
+    temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void quick_sort(int *nums, int left, int right)
+{
+    int i, j, pivot;
+
+    if(left >= right)
+        return;
+
+    pivot = nums[left];
+    i = left+1;
+    j = right;
+
+    while(1) {
+        
+        while(i <= right) {
+            if(nums[i] > pivot)
+                break;
+            i++;
+        }
+        
+        while(j > left) {
+            if(nums[j] < pivot)
+                break;
+            j--;
+        }
+
+        if(i > j)
+            break;
+
+        swap(&nums[i], &nums[j]);
+    }
+
+    swap(&nums[left], &nums[j]);
+    quick_sort(nums, left, j-1);
+    quick_sort(nums, j+1, right);
+}
+    
+int minSetSize(int* arr, int arrSize){
+
+    int i, num_size = 0;
+    int keys[SIZE];
+    int values[SIZE] = {0};
+    int num_table[arrSize][2];
+    int only_num_table[arrSize];
+    int answer, times;
+
+    /* Set up the table */
+    for(i=0; i<arrSize; i++) {
+        if(search(keys,values, arr[i]) == 0)
+            num_table[num_size++][0]  = arr[i];
+        insert(keys, values, arr[i]);
+    }
+
+    /* If all member are distinct, we just return the half of array size. */
+    if(num_size == arrSize)
+        return arrSize/2;
+
+    /* If all member are same, just return 1. */
+    if(num_size == 1)
+        return 1;
+
+    /* Retrive the record times for each distinct number */
+    for(i=0; i<num_size; i++)
+        num_table[i][1] = search(keys,values, num_table[i][0]);
+
+    /* Change to 1-d array. We only need the times */
+    for(i=0; i<num_size; i++)
+        only_num_table[i] = num_table[i][1];
+
+    /* Sort it */
+    quick_sort(only_num_table, 0, num_size-1);
+
+    /* Minus the times until under or equal the half of array size */
+    answer = arrSize;
+    times = 0;
+    for(i=num_size-1; i>=0; i--) {
+        if(answer <= arrSize/2)
+            return times;
+        answer -= only_num_table[i];
+        times++;
+    }
+
+    return times;
+}

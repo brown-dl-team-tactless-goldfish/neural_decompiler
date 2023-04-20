@@ -1,0 +1,63 @@
+public class Robot 
+{
+    int[,] _matrix;
+    int _totalMovement;
+    string[] _directions = {"East", "North", "West","South"};
+    int[,] _dirChange = {{1,0},{0,1},{-1,0},{0,-1}};
+    int _dir = 0;
+    int Dir 
+    { 
+        get
+        {
+            _dir = _dir % 4;
+            return _dir;
+        }
+        set
+        {
+            _dir = value;
+        }
+    }
+    
+    int[] _pos = {0,0};
+    
+    public Robot(int width, int height) 
+    {
+        _matrix = new int[width,height];
+        _totalMovement = 2*width + 2*(height-2);
+    }
+    
+    public void Step(int num) 
+    {
+        num = num%_totalMovement;
+        
+        if(num==0 && _pos[0]==0 && _pos[1]==0)
+            Dir = 3;
+        
+        for(int i=0;i<num;i++)
+        {
+            int x = _pos[0] + _dirChange[Dir,0];
+            int y = _pos[1] + _dirChange[Dir,1];
+            
+            while(IsInValidMove(x,y))
+            {
+                Dir++;
+                x = _pos[0] + _dirChange[Dir,0];
+                y = _pos[1] + _dirChange[Dir,1];
+            }
+            
+            _pos[0] = x;
+            _pos[1] = y;
+        }
+    }
+    
+    private bool IsInValidMove(int x, int y)=> x<0 || x>=_matrix.GetLength(0) || y<0 || y>=_matrix.GetLength(1);
+    
+    public int[] GetPos() {
+        return _pos;
+    }
+    
+    public string GetDir() 
+    {
+        return _directions[Dir];
+    }
+}

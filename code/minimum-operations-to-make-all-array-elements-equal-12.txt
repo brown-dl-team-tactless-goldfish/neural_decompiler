@@ -1,0 +1,26 @@
+class Solution {
+public:
+    vector<long long> minOperations(vector<int>& nums, vector<int>& queries) {
+        int n=nums.size();
+        sort(nums.begin(),nums.end());
+        vector<long long>pre(n);
+        pre[0]=nums[0];
+        for(int i=1;i<n;i++){
+            pre[i]=pre[i-1]+nums[i];
+        }
+
+        vector<long long>ans(queries.size());
+        for(int i=0;i<queries.size();i++){
+            long long x=queries[i];
+            int ind=lower_bound(nums.begin(),nums.end(),x)-nums.begin();
+            long long l=0,r=0;
+
+            if(ind>0) l=x*(ind)-pre[ind-1];
+            if(ind>0) r=(pre[n-1]-pre[ind-1])-x*(n-ind);
+            else r=pre[n-1]-x*(n-ind);
+            ans[i]=l+r;
+        }
+        return ans;
+        
+    }
+};

@@ -1,0 +1,29 @@
+int max(int a, int b){
+    return a>b?a:b;
+}
+
+int max3(int a, int b, int c){
+    if(a>b && a>c) return a;
+    return max(b,c);
+}
+
+int helper(struct TreeNode* root){
+    if(root==NULL) return 0;
+    if(root->left && root->right && root->val==root->left->val && root->val==root->right->val) return 1 + max(helper(root->left), helper(root->right));
+    if(root->left && root->val==root->left->val) return 1 + helper(root->left);
+    if(root->right && root->val==root->right->val) return 1 + helper(root->right);
+    return 1;
+}
+
+int helper2(struct TreeNode* root){
+    if(root==NULL) return 0;
+    if(root->left && root->right && root->val==root->left->val && root->val==root->right->val) return helper(root->left) + helper(root->right);
+    if(root->left && root->val==root->left->val) return helper(root->left);
+    if(root->right && root->val==root->right->val) return helper(root->right);
+    return 0;
+}
+
+int longestUnivaluePath(struct TreeNode* root){
+    if(root==NULL) return 0;
+    return max3(helper2(root), longestUnivaluePath(root->left), longestUnivaluePath(root->right));
+}

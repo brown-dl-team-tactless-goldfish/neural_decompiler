@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int visiblePoints(vector<vector<int>>& points, int angle, vector<int>& location) {
+        int zeros = 0;
+        double small = 1e-3;
+        vector<double> v;
+        for(auto p : points) {
+            if(p[0] == location[0] && p[1] == location[1]) {
+                zeros++;
+                continue;
+            }
+            
+            double dx = p[0] - location[0];
+            double dy = p[1] - location[1];
+            
+            double degree = (atan2(dy, dx) * 180) / acos(-1); 
+            v.push_back(degree);
+        }
+        
+        sort(v.begin(), v.end());
+        
+        int ans = 0;
+        for(int i=0; i<v.size(); i++) {
+            double start = v[i]; // start degree
+            double end = start + angle + small; // end degree. 
+
+            auto itEnd = lower_bound(v.begin(), v.end(), end);
+            auto itStart = lower_bound(v.begin(), v.end(), start);
+            int num = itEnd - itStart;
+            
+            // Rotate if end degree > 180, we need to count another range, which starts from -180.
+            if(end > 180.0 + small) {
+                double nEnd = -180.0 + (end - 180);
+                num += lower_bound(v.begin(), v.end(), nEnd) - v.begin();
+                
+            }
+            ans = max(ans, num);
+            
+        }
+        return ans + zeros;
+    }
+};

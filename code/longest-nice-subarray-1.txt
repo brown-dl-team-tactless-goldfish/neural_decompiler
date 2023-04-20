@@ -1,0 +1,39 @@
+int longestNiceSubarray(int* nums, int numsSize){
+    
+    if (numsSize == 1)
+        return 1;
+    
+    int i;
+    int res = 1;
+    int left=0; int right = 1;
+    int p;
+    int ones; bool bit;
+    while (right < numsSize)
+    {
+        for (i=0; i < 32; i++)
+        {
+            ones=0;
+            for (p=left; p <= right; p++)
+            {
+                bit = nums[p] & ((uint32_t)1 << i);
+                if (bit)
+                    ones++;
+            }
+            if (ones > 1)
+            {
+                left++;
+                if (left == right)
+                    right = left+1;
+                break;
+            }
+        }
+        if (i == 32)
+        {
+            if ((right-left) >= res)
+                res = right-left+1;
+            right++;
+        }
+        
+    }
+    return res;
+}

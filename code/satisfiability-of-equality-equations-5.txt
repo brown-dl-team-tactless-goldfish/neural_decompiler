@@ -1,0 +1,50 @@
+bool canAccess(int ** canReach, int start, int end, int * index, int * visited);
+
+bool equationsPossible(char ** equations, int equationsSize){
+    int ** canReach = malloc(sizeof(int *) * 26);
+    for (int i = 0; i < 26; i++){
+        canReach[i] = malloc(sizeof(int) * 26);
+        for (int j = 0; j < 26; j++)
+            canReach[i][j] = -1;
+    }
+    int * index = malloc(sizeof(int) * 26);
+    for (int i = 0; i < 26; i++){
+        index[i] = 0;
+    }
+    for (int i = 0; i < equationsSize; i++){
+        if (equations[i][1] == '='){
+            int cur1 = equations[i][0] - 'a';
+            int cur2 = equations[i][3] - 'a';
+            canReach[cur1][index[cur1]] = cur2;
+            index[cur1]++;
+            canReach[cur2][index[cur2]] = cur1;
+            index[cur2]++;
+        }
+    }
+    int * visited = malloc(sizeof(int) * 26);
+    for (int i = 0; i < equationsSize; i++){
+        for (int j = 0; j < 26; j++){
+            visited[j] = 0;
+        }
+        if (equations[i][1] == '!'){
+            int cur1 = equations[i][0] - 'a';
+            int cur2 = equations[i][3] - 'a';
+            if (canAccess(canReach, cur1, cur2, index, visited))
+                return false;
+        }
+    }
+    return true;
+}
+
+bool canAccess(int ** canReach, int start, int end, int * index, int * visited){
+    visited[start] = 1;
+    if (start == end)
+        return true;
+    for (int i = 0; i < index[start]; i++){
+        if (visited[canReach[start][i]] != 1){
+            if (canAccess(canReach, canReach[start][i], end, index, visited))
+                return true;
+        }
+    }
+    return false;
+}

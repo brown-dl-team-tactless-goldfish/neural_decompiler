@@ -1,0 +1,35 @@
+class Solution {
+public:
+    bool backtrack( vector<int>& ret, int i, int n, vector<bool>& available, set<int>& notdone) {
+        if (notdone.empty()) return true;
+        // this position is occupied, move to next one.
+        if (!available[i])return backtrack(ret, i + 1, n, available, notdone);
+        vector<int> candidates(notdone.rbegin(), notdone.rend());
+        for (auto k : candidates) {
+            auto m = (k == 1 ? i : i + k);
+            if (( m < 2*n - 1) &&available[m]) {
+                 notdone.erase(k);
+                 available[i] = false;
+                 available[m] = false;
+                 ret[i] = k;
+                 ret[m] = k;
+                 auto done = backtrack(ret, i + 1, n, available, notdone);
+                 if (done) return true;
+                 available[i] = true;
+                 available[m] = true;
+                 ret[i] = 0;
+                 ret[m] = 0;
+                 notdone.insert(k); 
+            }  
+        }
+        return false; 
+    }
+    vector<int> constructDistancedSequence(int n) {
+        vector<int> ret(2*n - 1, 0);
+        set<int> notdone;
+        vector<bool> available(2*n - 1, true);
+        for (int i = 1; i <=n; ++i)notdone.insert(i); 
+        backtrack(ret, 0, n, available, notdone);
+        return ret;
+    }
+};

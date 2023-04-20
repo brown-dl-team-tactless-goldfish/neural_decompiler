@@ -1,0 +1,56 @@
+class Solution {
+public:
+    int getDiff(string& s, int c){
+        int swaps = 0, len = s.length();   
+        
+        for(int i = 0; i < len; i++){
+            if(s[i] != c + '0'){
+                swaps++;
+            }
+
+            c = c == 0 ? 1 : 0;
+        }
+        
+        return swaps;
+    }
+    
+    int minSwaps(string s) {
+        int zeros = 0;
+        int len = s.length();
+        int i;
+        int c;
+        
+        for(auto& ch : s){
+            if(ch == '0'){
+                zeros++;
+            }
+        }
+        
+        if(len % 2 == 0){
+            if(zeros != len / 2){
+                return -1;
+            }
+            
+            c = 0;
+            int swaps1 = getDiff(s, c);
+            c = 1;
+            int swaps2 = getDiff(s, c);
+
+            return min(swaps1, swaps2) / 2;
+        }
+        else{            
+            if(zeros != len / 2 && zeros != len / 2 + 1){
+                return -1;
+            }
+            
+            if(zeros == len / 2){
+                c = 1;
+                return getDiff(s, c) / 2;
+            }
+            else{
+                c = 0;
+                return getDiff(s, c) / 2;
+            }
+        }
+    }
+};

@@ -1,0 +1,64 @@
+    public class Solution
+    {
+        public bool CanConstruct(string s, int k)
+        {
+            int[] count = new int[26];
+            foreach (var c in s)
+            {
+                count[c - 'a']++;
+            }
+
+            int odds = 0;
+            for (int i = 0; i < 26; i++)
+            {
+                if ((count[i] & 1) == 1)
+                {
+                    count[i]--;
+                    odds++;
+                }
+            }
+
+            int remainsOdds = k - odds;
+            if (remainsOdds < 0)
+            {
+                return false;
+            }
+
+            for (int i = 0; i < 26; i++)
+            {
+                if (count[i] <= remainsOdds)
+                {
+                    remainsOdds -= count[i];
+                    count[i] = 0;
+                    continue;
+                }
+
+                if (remainsOdds > 0)
+                {
+                    if ((count[i] - remainsOdds) % 2 == 0)
+                    {
+                        count[i] -= remainsOdds;
+                        remainsOdds = 0;
+                    }
+                    else
+                    {
+                        count[i] -= remainsOdds - 1;
+                        remainsOdds = 1;
+                    }
+                }
+            }
+
+
+            if (remainsOdds == 0)
+            {
+                return true;
+            }
+
+            for (int i = 0; i < 26; i++)
+            {
+                remainsOdds -= count[i] / 2;
+            }
+
+            return remainsOdds <= 0;
+        }
+    }

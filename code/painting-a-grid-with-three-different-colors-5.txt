@@ -1,0 +1,57 @@
+class Solution {
+public:
+    int mod=1000000007;
+    #define ll long long int
+    vector<string>v;
+    vector<vector<int>>adj;
+    void get(int m,char prev,string s)
+    {
+        if(m==0)
+        {
+            v.push_back(s);
+            return;
+        }
+        string t="RBG";
+        for(auto c:t)
+            if(prev!=c)
+                get(m-1,c,s+c);
+    }
+    ll dp[100][1001];
+    ll dfs(int i,int n)
+    {
+        if(n==0)
+            return 1LL;
+        if(dp[i][n]!=-1)
+            return dp[i][n];
+        ll res=0;
+        for(auto j:adj[i])
+            res=(res+dfs(j,n-1))%mod;
+        return dp[i][n]=res;
+    }
+    int colorTheGrid(int m, int n) 
+    {
+        get(m,'$',"");
+        int N=v.size();   //Total Nodes
+        adj.resize(N);
+        for(int i=0;i<N;i++)
+        {
+            for(int j=i+1;j<N;j++)
+            {
+                bool flag=true;
+                for(int k=0;k<m;k++)
+                    if(v[i][k]==v[j][k])
+                        flag=false;
+                if(flag)
+                {
+                    adj[i].push_back(j);
+                    adj[j].push_back(i);
+                }
+            }
+        }
+        ll res=0;
+        memset(dp,-1,sizeof(dp));
+        for(int i=0;i<N;i++)
+            res=(res+dfs(i,n-1))%mod;
+        return res;
+    }
+};

@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int last;
+    unordered_map<int, bool>hasStone;
+    map<pair<int, int>, int>dp;
+    bool helper(int current_position, int last_jump){
+        if(dp.find({current_position, last_jump})!=dp.end())return dp[{current_position, last_jump}];
+        
+        if(last_jump<0)return dp[{current_position, last_jump}] = false;
+        if(current_position == last)return dp[{current_position, last_jump}] = true;
+        if(current_position >last)return dp[{current_position, last_jump}] = false;
+        if(current_position<0)return dp[{current_position, last_jump}] = false;
+        if(hasStone[current_position] == 0){
+            return dp[{current_position, last_jump}] = false;
+        }
+        if(dp[{current_position, last_jump}]!=0)return dp[{current_position, last_jump}];
+        for(int j = last_jump-1; j<=last_jump+ 1; j++){
+            dp[{current_position, last_jump}] |= helper(current_position +j, j);
+        }
+        return dp[{current_position, last_jump}];
+    }
+    
+    
+    bool canCross(vector<int>& stones) {
+        ios_base::sync_with_stdio(0);cin.tie(0);
+        int n = (int)stones.size();
+        for(int i = 0; i<n; i++)hasStone[stones[i]] = true;
+        last = stones.back();
+       
+        return helper(0, 0);
+        
+    }
+};

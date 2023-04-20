@@ -1,0 +1,28 @@
+bool fill(char **grid, int row, int col, int rowMax, int colMax, int idx){
+    if(row < 0 || row >= rowMax || col < 0 || col >= colMax){
+        return false;
+    }
+    if(grid[row][col] == '1'){
+        grid[row][col] += idx;
+        fill(grid, row -1, col, rowMax, colMax, idx);
+        fill(grid, row +1, col, rowMax, colMax, idx);
+        fill(grid, row, col +1, rowMax, colMax, idx);
+        fill(grid, row, col -1, rowMax, colMax, idx);
+        return true;
+    }
+    return false;
+}
+
+int numIslands(char** grid, int gridSize, int* gridColSize){
+    int row, col, rowMax = gridSize, colMax = *gridColSize;
+    
+    int idx = 1;
+    for(row = 0; row < rowMax; row++) {
+        for(col = 0; col < colMax; col++){
+            if(fill(grid, row, col, rowMax, colMax, idx)){
+                idx++;
+            }
+        }
+    }
+    return idx - 1;
+}

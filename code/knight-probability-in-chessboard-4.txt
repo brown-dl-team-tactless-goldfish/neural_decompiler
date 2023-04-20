@@ -1,0 +1,69 @@
+// dp problem.
+// at step k, the possibility of "the knight is at (r)(c)" to be represented by f[r][c][k]
+// and this position can be jumped from those positions which are in the k-1 step:
+// r-1,c-2  r-2,c-1  r-2,c+1  r-1,c+2  r+1,c-2  r+2,c-1  r+2,c+1  r+1,c+2
+// which each has a 1/8 probability
+
+// now, according to the math theory,
+// if any of these position is NOT in the matrix, probability=0, it won't contribute to the probability of f[r][c][k]
+// if any of these position (r',c') IS in the matrix, then f[r][c][k] is the sum of (f[r'][c'][k-1] * 1/8)
+
+// we can see that each step k only relies on step k-1
+// so we can have 2 2D matrix, each time we calculate each position's probability of them, and swap to two matrix
+
+bool in_bound(int r, int c, int N) {
+    return 0 <= r && r < N && 0 <= c && c < N;
+}
+
+double knightProbability(int N, int K, int r, int c) {
+    double **ma = (double **)malloc(sizeof(double *) * N);
+    double **mb = (double **)malloc(sizeof(double *) * N);
+    for (int i = 0; i < N; i++) {
+        ma[i] = (double *)malloc(sizeof(double) * N);
+        mb[i] = (double *)malloc(sizeof(double) * N);
+        for (int j = 0; j < N; j++) {
+            ma[i][j] = 0;
+            mb[i][j] = 0;
+        }
+    }
+    
+    static int dr[8] = {-1, -2, -2, -1, 1, 2, 2, 1};
+    static int dc[8] = {-2, -1, 1, 2, -2, -1, 1, 2};
+    
+    // initially, the knight is as r,c so f[r][c][0] = 1, we start on 'ma'
+    ma[r][c] = 1;
+    int step = 1;
+    // then we calculate at step 1, which location the knight could be on and their probabilities
+    double **to = ma;
+    double **from = NULL;
+    for (; step <= K; step++) {
+        to = ((step % 2) != 0 ? mb : ma);
+        from = ((step % 2) != 0 ? ma : mb);
+        for (int i = 0; i < N; i++) {
+            for (int j = 0; j < N; j++) {
+                to[i][j] = 0;
+                for (int k = 0; k < 8; k++) {
+                    to[i][j] += in_bound(i + dr[k], j + dc[k], N) ? from[i + dr[k]][j + dc[k]] / 8 : 0;
+                }
+            }
+        }
+    }
+    
+    // when K step is over, our job is to sum-up the 'to' matrix
+    // note that if K==0, no step will be moved, so initially we assign 'to' = ma.
+    double ret = 0;
+    for (int i = 0; i < N; i++) {
+        for (int j = 0; j < N; j++) {
+            ret += to[i][j];
+        }
+    }
+
+    for (int i = 0; i < N; i++) {
+        free(ma[i]);
+        free(mb[i]);
+    }
+    free(ma);
+    free(mb);
+    
+    return ret;
+}

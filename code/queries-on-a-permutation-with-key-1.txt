@@ -1,0 +1,42 @@
+struct Node{
+    int val;
+    struct Node* next;
+};
+struct Node* createLink(int m){
+    struct Node* head = malloc(sizeof(struct Node));
+    head->val = 0;
+    head->next = NULL;
+    struct Node* p = head;
+    for (int i = 1; i <= m; i++) {
+        struct Node* node = malloc(sizeof(struct Node));
+        node->val = i;
+        node->next = NULL;
+        p->next = node;
+        p = p->next;
+    }
+    return head;
+}
+int* processQueries(int* queries, int queriesSize, int m, int* returnSize){
+    *returnSize = queriesSize;
+    int* result = (int *)malloc(sizeof(int) * (*returnSize));
+    struct Node* P = createLink(m);
+    for (int i = 0; i < queriesSize; i++) {
+        int query = queries[i];
+        struct Node* before = P;
+        int pos = 0;
+        for (struct Node* j = P->next; j !=  NULL; j = j->next) {
+            if (j->val == query) {
+                result[i] = pos;
+                if (P==before) {
+                    break;
+                }
+                before->next = j->next;
+                j->next = P->next;
+                P->next = j;
+            }
+            pos++;
+            before = j;
+        }
+    }
+    return result;
+}

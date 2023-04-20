@@ -1,0 +1,77 @@
+class Solution {
+public:
+    
+    vector<int> freq;
+    vector<vector<int>> adj;
+    vector<int> path;
+    vector<int> price;
+    
+    bool dfs(int curr, int par, int end) {
+        path.push_back(curr);
+        if(curr == end) return true;
+        
+        for(auto it: adj[curr]) {
+            if(it == par) continue;
+            if(dfs(it, curr, end)) {
+                return true;
+            }
+        }
+        
+        path.pop_back();
+        return false;
+    }
+    
+    #define vi vector<int>
+    #define vvi vector<vi>
+    
+    vvi dp;
+    
+    int helper(int curr, int par, bool canHalf) {
+        if(dp[curr][canHalf] != -1) 
+            return dp[curr][canHalf];
+        
+        int pick = INT_MAX;
+        
+        if(canHalf) {
+            pick = 0;
+            int p = price[curr] / 2;
+            pick += p * freq[curr];
+            for(auto it: adj[curr]) {
+                if(it == par) continue;
+                pick += helper(it, curr, false);
+            }
+        }
+        
+        int not_pick = price[curr] * freq[curr];
+        for(auto it: adj[curr]) {
+            if(it == par) continue;
+            not_pick += helper(it, curr, true);
+        }
+        
+        return dp[curr][canHalf] = min(pick, not_pick);
+    }
+    
+    int minimumTotalPrice(int n, vector<vector<int>>& edges, vector<int>& price, vector<vector<int>>& trips) {
+        this->price = price;
+        freq = vector<int>(n, 0);
+        adj = vector<vector<int>>(n);
+        for(auto &edge: edges) {
+            int u = edge[0], v = edge[1];
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+        
+        for(auto &trip: trips) {
+            int start = trip[0], end = trip[1];
+            dfs(start, -1, end);
+            
+            for(auto it: path)
+                freq[it]++;
+    
+            path.clear();
+        }
+        
+        dp = vvi(n, vi(2, -1));
+        return helper(0, -1, true);
+    }
+};

@@ -1,0 +1,50 @@
+class Solution {
+    int getUse(int ct, vector<int>& tire) {
+        int use = 1, r = tire[1];
+        long long start = tire[0];
+        while(true) {
+            if(start * r >= ct + start) return use;
+            start *= r;
+            use++;
+        }
+        return -1;
+    }
+    int knapsack(int& ct, vector<int>& t, int lab) {
+        vector<int> dp(lab + 1, 987654321);
+        dp[0] = -ct;
+        for(int i = 0; i < t.size(); i++) {
+            for(int j = i + 1; j < dp.size(); j++) {
+                dp[j] = min(dp[j], dp[j-i-1] + t[i] + ct);
+            }
+        }
+        return dp.back();
+    }
+public:
+    int minimumFinishTime(vector<vector<int>>& tires, int changeTime, int numLaps) {
+        sort(tires.begin(), tires.end());
+        
+        vector<vector<int>> newTire {tires[0]}; //useful tires
+        vector<int> use{min(numLaps, getUse(changeTime, newTire.back()))}; //how many times can use tire rather then replace other or self
+        
+        int maxUse = use.back();
+        for(int i = 0; i < tires.size(); i++) {
+            if(tires[i][0] == newTire.back()[0]) continue;
+            if(tires[i][1] >= newTire.back()[1]) continue;
+            newTire.push_back(tires[i]);
+            use.push_back(min(numLaps, getUse(changeTime, tires[i])));
+            maxUse = max(use.back(), maxUse);
+        }
+        int n = newTire.size();
+
+        vector<int> cost(maxUse, INT_MAX); //minimum cost to run each lab
+        for(int i = 0; i < n; i++) {
+            int useSum = 0;
+            for(int j = 0; j < use[i]; j++) {
+                useSum += newTire[i][0] * pow(newTire[i][1],j);
+                cost[j] = min(useSum, cost[j]);
+            }
+        }
+
+        return knapsack(changeTime, cost, numLaps);
+    }
+};

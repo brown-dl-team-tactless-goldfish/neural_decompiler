@@ -1,0 +1,57 @@
+typedef struct {
+    int size;
+    int *sum;    
+} NumMatrix;
+
+
+NumMatrix* numMatrixCreate(int** matrix, int matrixSize, int *matrixColSize) {
+    
+    if(matrixSize == 0){
+        NumMatrix *array = (NumMatrix *)malloc(1 * sizeof(NumMatrix));
+        array[0].size = 0;
+        return array;
+    }
+    
+    NumMatrix *array = (NumMatrix *)calloc(matrixSize, sizeof(NumMatrix));
+    
+    int i, j;
+    
+    for(i=0; i<matrixSize; i++){
+        array[i].sum = (int *)calloc(*matrixColSize+1, sizeof(int));
+        array[i].size = matrixSize;
+        array[i].sum[0] = 0;
+        
+        for(j=1; j<*matrixColSize+1; j++){
+            array[i].sum[j] = array[i].sum[j-1] + matrix[i][j-1];
+        }
+    }
+    
+    return array;
+}
+
+int numMatrixSumRegion(NumMatrix* obj, int row1, int col1, int row2, int col2) {
+    
+    if(obj[0].size == 0){
+        return 0;
+    }
+    
+    int ans = 0;
+    int i;
+    
+    for(i=row1; i<row2+1; i++){
+        ans += (obj[i].sum[col2+1] - obj[i].sum[col1]);
+    }
+    
+    return ans;
+}
+
+void numMatrixFree(NumMatrix* obj) {
+    
+    int i;
+    
+    for(i=0; i<obj[0].size; i++){
+        free(obj[i].sum); 
+    }
+    
+    free(obj);   
+}

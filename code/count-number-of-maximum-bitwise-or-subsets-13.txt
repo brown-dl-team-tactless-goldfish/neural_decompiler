@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int dp[17][1000005];
+    int solve(vector<int>& nums,int target, int pos, int curAns){
+        if(pos==nums.size()){
+            if(target==curAns) return 1;
+            else return 0;
+        }
+        if(dp[pos][curAns]!=-1) return dp[pos][curAns];
+        int inc = 0, exc = 0;
+        inc+=solve(nums,target,pos+1,curAns|nums[pos]);
+        exc+=solve(nums,target,pos+1,curAns);
+        return dp[pos][curAns] = inc+exc;
+    }
+    
+    int countMaxOrSubsets(vector<int>& nums) {
+        int maxP=0;
+        for(auto &n : nums) maxP=maxP|n;
+        memset(dp,-1,sizeof(dp));
+        return solve(nums,maxP,0,0);
+    }
+};

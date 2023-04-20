@@ -1,0 +1,31 @@
+class Solution {
+    vector<long long> store(int k) {
+        vector<long long>v(2);
+        
+        v[0] = 1; v[1] = 1;
+        int i = 2;
+        while (1) {
+            int next = v[i-1]+v[i-2];
+            if (next > k)
+                return v;
+            v.push_back(next);
+            i++;
+        }
+        
+        return v;
+    }
+public:
+    int findMinFibonacciNumbers(int k) {
+        vector<long long>fib = store(k);
+        int n = fib.size()-1;
+        
+        int count = 0;
+        while (k > 0) {
+            count += k/fib[n];
+            k %= fib[n];
+            n--;
+        }
+        
+        return count;
+    }
+};

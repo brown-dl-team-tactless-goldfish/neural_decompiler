@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int countPairs(TreeNode* root, int distance) {
+        int result = 0;
+        unordered_map<TreeNode*, int> nodesRight; // {node, distance to its parent}
+        unordered_map<TreeNode*, int> nodesLeft; // {node, distance to its parent}
+        queue<TreeNode*> nodesQ;
+        traverseTree(root, nodesQ);
+        while (!nodesQ.empty()) {
+            TreeNode* cur = nodesQ.front();
+            nodesQ.pop();
+            dfsGetLeavesDist(cur->right, 1, distance, nodesRight);
+            dfsGetLeavesDist(cur->left, 1, distance, nodesLeft);
+            for (auto r : nodesRight) {
+                for (auto l : nodesLeft) {
+                    if (r.second + l.second <= distance) {
+                        result++;
+                    }
+                }  
+            }  
+            nodesRight.clear();
+            nodesLeft.clear();
+        }
+        return result;   
+    }
+    
+    void dfsGetLeavesDist(TreeNode* cur, int steps, int &dist, unordered_map<TreeNode*, int> &nodeDistMap) {
+        if (cur == NULL || steps >= dist) {
+            return;
+        }
+        // Leaf node
+        if (cur->left == NULL && cur->right == NULL) {
+            nodeDistMap.insert({cur, steps});
+        }
+        dfsGetLeavesDist(cur->left, steps + 1, dist, nodeDistMap);
+        dfsGetLeavesDist(cur->right, steps + 1, dist, nodeDistMap);
+    }
+    
+    void traverseTree(TreeNode* cur, queue<TreeNode*> &todo) {
+        if (cur == NULL) {
+            return;
+        }
+        // not leaf node
+        if (cur->left || cur->right) {
+            todo.push(cur);
+        }
+        traverseTree(cur->left, todo);
+        traverseTree(cur->right, todo);
+    }
+};

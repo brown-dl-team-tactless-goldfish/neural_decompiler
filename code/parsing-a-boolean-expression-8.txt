@@ -1,0 +1,42 @@
+class Solution {
+public:
+    bool parseBoolExpr(string expression) {
+        stack<char> s;
+        int length = expression.length();
+        for(int i = 0;i < length; i++) {
+                if(expression[i] != ')') {
+                    s.push(expression[i]);
+                } else {
+                    
+                    bool andValue = true;
+                    bool orValue = false;
+                 
+                    
+                    while(!s.empty()) {
+                        char c = s.top();
+                        s.pop();
+                        if(c == 'f') {
+                            andValue &= false;
+                            orValue |= false;
+                        }
+                        else if(c == 't') {
+                            andValue &= true;
+                            orValue |= true;
+                        }
+                        else if(c == '&') {
+                            s.push(andValue ? 't' : 'f');
+                            
+                            break;
+                        } else if(c == '|') {
+                            s.push(orValue ? 't' : 'f');
+                            break;
+                        } else if(c == '!') {
+                             s.push(!orValue ? 't' : 'f');
+                            break;
+                        }
+                    }
+                }
+        }
+        return s.top() == 'f' ? false : true;
+    } 
+};

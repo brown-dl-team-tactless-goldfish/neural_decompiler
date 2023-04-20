@@ -1,0 +1,144 @@
+class Node{
+    public:
+    int data;
+    Node* next;
+    Node(int x)
+    {
+        data=x;
+        next=NULL;
+    }
+};
+class FrontMiddleBackQueue {
+public:
+    Node* root;
+    FrontMiddleBackQueue() {
+        root=NULL;
+    }
+    
+    void pushFront(int val) {
+        if(root==NULL)
+        {
+            root=new Node(val);
+        }
+        else
+        {
+            Node* temp=new Node(val);
+            temp->next=root;
+            root=temp;
+        }
+    }
+    
+    void pushMiddle(int val) {
+        if(root==NULL)
+        {
+            root=new Node(val);
+        }
+        else if(root->next==NULL)
+        {
+            Node* temp=new Node(val);
+            temp->next=root;
+            root=temp;
+        }
+        else
+        {
+            Node* fast=root;
+            Node* slow=root;
+            while(fast!=NULL and fast->next!=NULL)
+            {
+                fast=fast->next->next;
+                if(fast!=NULL and fast->next!=NULL)
+                {
+                    slow=slow->next;
+                }
+            }
+            Node* temp=slow->next;
+            Node* t=new Node(val);
+            slow->next=t;
+            t->next=temp;
+        }
+    }
+    
+    void pushBack(int val) {
+        Node* temp=root;
+        if(root==NULL)
+        {
+            root=new Node(val);
+        }
+        else
+        {
+            while(temp->next!=NULL)
+            {
+                temp=temp->next;
+            }
+            temp->next=new Node(val);
+        }
+    }
+    
+    int popFront() {
+        if(root==NULL)
+        {
+            return -1;
+        }
+        int ans=root->data;
+        root=root->next;
+        return ans;
+    }
+    
+    int popMiddle() {
+        if(root==NULL)
+        {
+            return -1;
+        }
+        if(root->next==NULL or root->next->next==NULL)
+        {
+            int ans=root->data;
+            root=root->next;
+            return ans;
+        }
+        Node* fast=root;
+        Node* slow=root;
+        while(fast!=NULL and fast->next!=NULL)
+        {
+            fast=fast->next->next;
+            if(fast!=NULL and fast->next!=NULL and fast->next->next!=NULL)
+            {
+                slow=slow->next;
+            }
+        }
+        int ans=slow->next->data;
+        slow->next=slow->next->next;
+        return ans;
+    }
+    
+    int popBack() {
+        Node* temp=root;
+        if(root==NULL)
+        {
+            return -1;
+        }
+        if(root->next==NULL)
+        {
+            int ans=root->data;
+            root=NULL;
+            return ans;
+        }
+        while(temp->next->next!=NULL)
+        {
+            temp=temp->next;
+        }
+        int ans=temp->next->data;
+        temp->next=NULL;
+        return ans;
+    }
+};
+
+/**
+ * Your FrontMiddleBackQueue object will be instantiated and called as such:
+ * FrontMiddleBackQueue* obj = new FrontMiddleBackQueue();
+ * obj->pushFront(val);
+ * obj->pushMiddle(val);
+ * obj->pushBack(val);
+ * int param_4 = obj->popFront();
+ * int param_5 = obj->popMiddle();
+ * int param_6 = obj->popBack();
+ */

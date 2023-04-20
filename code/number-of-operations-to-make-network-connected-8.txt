@@ -1,0 +1,75 @@
+typedef struct
+{
+    int *parent;
+    int *rank;
+}dsu_t;
+
+int find(dsu_t *dsu, int node)
+{
+    if (dsu->parent[node] == -1) return node;
+    
+    dsu->parent[node] = find(dsu, dsu->parent[node]);
+    return dsu->parent[node];
+}
+
+bool union_find(dsu_t *dsu, int src, int dst)
+{
+    int parent_src = find(dsu, src);
+    int parent_dst = find(dsu, dst);
+    if (parent_src != parent_dst)
+    {
+        //add to higher rank
+        if (dsu->rank[parent_src] > dsu->rank[parent_dst])
+        {
+            dsu->parent[parent_dst] = parent_src;
+            dsu->rank[parent_src]++;
+        }
+        else
+        {
+            dsu->parent[parent_src] = parent_dst;
+            dsu->rank[parent_dst]++;
+        }
+        
+        return true;
+    }
+    
+    return false;
+}
+
+int makeConnected(int n, int** connections, int connectionsSize, int* connectionsColSize){
+    
+    /* Idea is to form a MST */
+    //base case if there are less than V-1 edges, MST cannot be formed
+    
+    if (connectionsSize < n-1) return -1;
+    
+    dsu_t dsu = {0};
+    dsu.parent = calloc(n, sizeof(int));
+    dsu.rank = calloc(n, sizeof(int));
+    for (int i = 0; i < n; i++)
+    {
+        dsu.parent[i] = -1;
+    }
+    
+    int connected_edges = 0;
+    //form the tree
+    for (int i = 0; i < connectionsSize; i++)
+    {
+        if (union_find(&dsu, connections[i][0], connections[i][1])) connected_edges++;
+    }
+    
+    int rem_edges = connectionsSize - connected_edges;
+    //count connected components
+    int num_connected_comp = 0;
+    for (int i = 0; i < n; i++)
+    {
+        if (dsu.parent[i] == -1) num_connected_comp++;
+    }
+    
+    int req_edges = num_connected_comp-1;
+    //req_edges == 0 --> all computers have a route to each other
+    if (req_edges <= rem_edges) return req_edges;
+    
+    return -1;
+
+}

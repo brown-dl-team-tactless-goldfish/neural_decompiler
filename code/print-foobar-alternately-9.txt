@@ -1,0 +1,34 @@
+#include <semaphore.h>
+class FooBar {
+private:
+    int n;
+    sem_t semf;
+    sem_t semb;
+
+public:
+    FooBar(int n) {
+        this->n = n;
+        sem_init(&semf, 0, 1);
+        sem_init(&semb, 0, 0);
+    }
+
+    void foo(function<void()> printFoo) {
+        
+        for (int i = 0; i < n; i++) {
+            sem_wait(&semf);
+        	// printFoo() outputs "foo". Do not change or remove this line.
+        	printFoo();
+            sem_post(&semb);
+        }
+    }
+
+    void bar(function<void()> printBar) {
+        
+        for (int i = 0; i < n; i++) {
+            sem_wait(&semb);
+        	// printBar() outputs "bar". Do not change or remove this line.
+        	printBar();
+            sem_post(&semf);
+        }
+    }
+};

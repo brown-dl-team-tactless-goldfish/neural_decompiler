@@ -1,0 +1,32 @@
+#define MIN(a, b) (a)<=(b)?(a):(b)
+
+int minFallingPathSum(int** matrix, int rows, int* cols){
+    int result, minSum, **minSums, i, j;
+
+    minSums = malloc(rows*sizeof(int*));
+    for(i=0; i<rows; i++){ minSums[i] = malloc(cols[i]*sizeof(int)); }
+
+    for(j=0; j<cols[rows-1]; j++){ minSums[rows-1][j] = matrix[rows-1][j]; }
+    for(i=rows-2; i>0; i--){
+        for(j=0; j<cols[i]; j++){
+            minSum = minSums[i+1][j];
+            if(j>0){ minSum = MIN(minSum, minSums[i+1][j-1]); }
+            if(j<cols[i]-1){ minSum = MIN(minSum, minSums[i+1][j+1]); }
+            minSums[i][j] = matrix[i][j]+minSum;
+        }
+    }
+    for(j=0; j<cols[0]; j++){
+        if(rows>1){
+            minSum = minSums[1][j];
+            if(j>0){ minSum = MIN(minSum, minSums[1][j-1]); }
+            if(j<cols[i]-1){ minSum = MIN(minSum, minSums[1][j+1]); }
+            minSums[0][j] = matrix[0][j]+minSum;
+        }
+        result = j==0?minSums[0][j]:MIN(result, minSums[0][j]);
+    }
+
+    for(int i=0; i<rows; i++){ free(minSums[i]); }
+    free(minSums);
+
+    return result;
+}

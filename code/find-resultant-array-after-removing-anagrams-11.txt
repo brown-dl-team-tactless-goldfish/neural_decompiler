@@ -1,0 +1,62 @@
+class Solution 
+{
+public:
+    vector<string> removeAnagrams(vector<string>& words) 
+    {
+        std::vector<std::string> res;
+        
+        std::vector<bool> deleted(words.size(), false);
+        for (int i = 0; i < words.size(); i++)
+        {
+            if (deleted[i])
+                continue;
+            
+            int j = i + 1;
+            while (j < words.size())
+            {
+                if (deleted[j])
+                    continue;
+                
+                if (!deleted[j])
+                {
+                    if (isAnagram(words[i], words[j]))
+                    {
+                        deleted[j] = true;
+                    }
+                    else
+                    {
+                        break;
+                    }
+                }
+                j++;
+            }
+        }
+        
+        for (int i = 0; i < words.size(); i++)
+        {
+            if (!deleted[i])
+            {
+                res.push_back(words[i]);
+            }
+        }
+        
+        return res;
+    }
+private:
+    bool isAnagram(const std::string& a, const std::string& b)
+    {
+        std::vector<int> freq(26, 0);
+        for (const char& c : a)
+            freq[c - 'a']++;
+        for (const char& c : b)
+            freq[c - 'a']--;
+        
+        for (const int& n : freq)
+        {
+            if (n != 0)
+                return false;
+        }
+        
+        return true;
+    }
+};

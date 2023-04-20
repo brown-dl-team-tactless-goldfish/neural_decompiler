@@ -1,0 +1,155 @@
+int yearCode(int year){
+    if(year>=1600 && year<=1699){
+        return 6;
+    }
+    if(year>=1700 && year<=1799){
+        return 4;
+    }
+     if(year>=1800 && year<=1899){
+        return 2;
+    }
+     if(year>=1900 && year<=1999){
+        return 0;
+    }
+     if(year>=2000 && year<=2999){
+        return 6;
+    }
+    return -1;
+}
+
+int checkLeap(int year){
+    if(year%400==0){
+        return 1;
+    }
+    if(year%100==0){
+        return 0;
+    }
+    if(year%4==0){
+        return 1;
+    }
+    return 0;
+}
+
+int monthCode(int month,int year){
+    if(checkLeap(year)){
+       switch(month){
+          case 1: return 6;
+          case 2: return 2;
+          case 3: return 3;
+          case 4: return 6;
+          case 5: return 1;
+          case 6: return 4;
+          case 7: return 6;
+          case 8: return 2;
+          case 9: return 5;    
+          case 10: return 0;    
+          case 11: return 3;    
+          case 12: return 5;
+          default: return -1;    
+       } 
+    }
+    else{
+       switch(month){
+          case 1: return 0;
+          case 2: return 3;
+          case 3: return 3;
+          case 4: return 6;
+          case 5: return 1;
+          case 6: return 4;
+          case 7: return 6;
+          case 8: return 2;
+          case 9: return 5;    
+          case 10: return 0;    
+          case 11: return 3;    
+          case 12: return 5;
+          default: return -1;    
+       }
+    }    
+}
+
+char* dayCode(int sum,int year){
+    static char day[15];
+    switch(sum){
+        case 0: day[0]='S';
+                day[1]='u';
+                day[2]='n';
+                day[3]='d';
+                day[4]='a';
+                day[5]='y';
+                day[6]='\0';
+                return day;
+        case 1: day[0]='M';
+                day[1]='o';
+                day[2]='n';
+                day[3]='d';
+                day[4]='a';
+                day[5]='y';
+                day[6]='\0';
+                return day;
+        case 2: day[0]='T';
+                day[1]='u';
+                day[2]='e';
+                day[3]='s';
+                day[4]='d';
+                day[5]='a';
+                day[6]='y';
+                day[7]='\0';
+                return day; 
+        case 3: day[0]='W';
+                day[1]='e';
+                day[2]='d';
+                day[3]='n';
+                day[4]='e';
+                day[5]='s';
+                day[6]='d';
+                day[7]='a';
+                day[8]='y';
+                day[9]='\0';
+                return day;
+        case 4: day[0]='T';
+                day[1]='h';
+                day[2]='u';
+                day[3]='r';
+                day[4]='s';
+                day[5]='d';
+                day[6]='a';
+                day[7]='y';
+                day[8]='\0';
+                return day;
+        case 5: day[0]='F';
+                day[1]='r';
+                day[2]='i';
+                day[3]='d';
+                day[4]='a';
+                day[5]='y';
+                day[6]='\0';
+                return day;    
+        case 6: day[0]='S';
+                day[1]='a';
+                day[2]='t';
+                day[3]='u';
+                day[4]='r';
+                day[5]='d';
+                day[6]='a';
+                day[7]='y';
+                day[8]='\0';
+                return day;   
+    }
+    return day;
+}
+
+
+
+char* dayOfTheWeek(int day, int month, int year){
+    int tempYear=year;
+    int lastTwoDigitOfYear = tempYear%10;
+    tempYear=tempYear/10;
+    lastTwoDigitOfYear=lastTwoDigitOfYear+((tempYear%10)*10);
+    int divideByFour=lastTwoDigitOfYear/4;
+    int monthInCode=monthCode(month,year);
+    int yearInCode=yearCode(year);
+    int sum=(lastTwoDigitOfYear+divideByFour+day+monthInCode+yearInCode)%7;
+    
+    return dayCode(sum,year);
+    
+}

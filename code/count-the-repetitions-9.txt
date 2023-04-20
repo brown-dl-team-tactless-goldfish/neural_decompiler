@@ -1,0 +1,39 @@
+public class Solution {
+    public int GetMaxRepetitions(string s1, int n1, string s2, int n2) {
+        int len1 = s1.Length;
+        int len2 = s2.Length;
+        var dp = new string[len1,len2];
+        int i = 0;
+        int j = 0;
+        bool find = false; 
+        while(i/len1 < n1){
+            if(s1[i%len1] == s2[j%len2]){
+                if(!find){
+                    if(dp[i%len1,j%len2] == null){
+                        dp[i%len1,j%len2] = i+","+j;
+                    }else{
+                        find = true;
+                        var arr = dp[i%len1,j%len2].Split(new char[]{','});
+                        
+                        int ii = int.Parse(arr[0]);
+                        int jj = int.Parse(arr[1]);
+                        //Console.WriteLine(ii+","+jj+","+i+","+j);
+                        int max = len1*n1;
+                        int k = (max-i)/(i-ii);
+                        //Console.WriteLine(k);
+                        j = k*(j-jj)+j;
+                        i = k*(i-ii)+i;
+                    }
+                }
+                //Console.WriteLine(i+","+j);
+                i++;
+                j++;
+            }else{
+                i++;
+            }
+        }
+        
+        return j/(len2*n2) -(len2*n2 == 1 ? 1 : 0);
+        
+    }
+}

@@ -1,0 +1,41 @@
+typedef pair<int,int> pr;
+unordered_map<int,vector<pr>> mp;
+vector<int> dist;
+vector<int> dp;
+priority_queue<pr, vector<pr>, greater<pr>> pq;
+int mod = 1000000007;
+int dfs(int u, int n){
+    if(u == n)
+        return 1;
+    if(dp[u] != -1)
+        return dp[u];
+    int sum = 0;
+    for(auto& neighbors : mp[u]){
+        auto v = neighbors.first;
+        if(dist[v] < dist[u])
+            sum = (sum % mod + dfs(v,n) % mod) % mod;
+    }
+    return dp[u] = sum;
+}
+int countRestrictedPaths(int n, vector<vector<int>>& edges) {
+    for(auto& e : edges){
+        mp[e[0]].push_back({e[1],e[2]});
+        mp[e[1]].push_back({e[0],e[2]});
+    }
+    dist = vector<int> (n+1,INT_MAX);
+    pq.push({0,n});
+    dist[n] = 0;
+    while(!pq.empty()){
+        auto [d,u] = pq.top();
+        pq.pop();
+        for(auto& neighbors : mp[u]){
+            auto [v,w] = neighbors;
+            if(dist[v] > dist[u] + w){
+                dist[v] = dist[u] + w;
+                pq.push({dist[v],v});
+            }
+        }
+    }
+    dp = vector<int>(n+1,-1);
+    return dfs(1,n);
+}

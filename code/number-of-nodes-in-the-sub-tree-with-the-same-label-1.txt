@@ -1,0 +1,98 @@
+struct Node
+{
+    char id;
+    bool visited;
+    int children;
+    int *adjList;
+};
+
+int *dfs(int n, struct Node **root, int curNode, int *returnArray, int *returnSize);
+
+int* countSubTrees(int n, int** edges, int edgesSize, int* edgesColSize, char * labels, int* returnSize)
+{
+    int i;
+    *returnSize = n;
+    int *returnArray = malloc(sizeof(int) * n);
+    int *count = malloc(sizeof(int) * n);
+    struct Node **root = malloc(sizeof(struct Node *) * n);
+    struct Node *curNode;
+
+    memset(returnArray, 0, sizeof(int) * n);
+    memset(count, 0, sizeof(int) * n);
+
+    for(i = 0; i < edgesSize; i++)
+    {
+        count[edges[i][0]] += 1;
+        count[edges[i][1]] += 1;
+    }
+
+    for(i = 0; i < n; i++)
+    {
+        root[i] = malloc(sizeof(struct Node));
+        root[i]->id = labels[i];
+        root[i]->visited = false;
+        root[i]->children = 0;
+        root[i]->adjList = malloc(sizeof(int) * count[i]);
+    }
+
+    for(i = 0; i < edgesSize; i++)
+    {
+        curNode = root[edges[i][0]];
+        curNode->adjList[curNode->children] = edges[i][1];
+        curNode->children += 1;
+
+        curNode = root[edges[i][1]];
+        curNode->adjList[curNode->children] = edges[i][0];
+        curNode->children += 1;
+    }
+
+    dfs(n, root, 0, returnArray, returnSize);
+
+    free(count);
+
+    for(i = 0; i < n; i++)
+    {
+        free(root[i]->adjList);
+        free(root[i]);
+    }
+
+    free(root);
+
+    return returnArray;
+}
+
+int *dfs(int n, struct Node **root, int curNode, int *returnArray, int *returnSize)
+{
+    int i, j;
+    int curChild;
+    int *temp;
+
+    int *labelList = malloc(sizeof(int) * 26);
+
+    memset(labelList, 0, sizeof(int) * 26);
+
+    root[curNode]->visited = true;
+
+    for(i = 0; i < root[curNode]->children; i++)
+    {
+        curChild = root[curNode]->adjList[i];
+        if(!root[curChild]->visited)
+        {
+            temp = dfs(n, root, curChild, returnArray, returnSize);
+
+            for(j = 0; j < 26; j++)
+                labelList[j] += temp[j];
+
+            free(temp);
+        }
+    }
+
+    returnArray[curNode] = ++labelList[root[curNode]->id - 'a'];
+
+    if(curNode == 0)
+    {
+        free(labelList);
+        return NULL;
+    } else
+        return labelList;
+}

@@ -1,0 +1,66 @@
+typedef struct
+{
+    int id;
+    int freq;
+    UT_hash_handle hh;
+}hash_t;
+
+int cmp(void* a , void* b)
+{
+    return *(int*)a - *(int*)b;
+}
+
+bool isPossibleDivide(int* nums, int numsSize, int k){
+
+    if(numsSize % k != 0)
+        return false;
+    
+    hash_t* hash_table = NULL;
+    hash_t* el;
+    int key = 0;
+    qsort(nums,numsSize,sizeof(int),cmp);
+    
+    for(size_t i = 0 ; i < numsSize; i++)
+    {
+        key = nums[i];
+        HASH_FIND_INT(hash_table,&key,el);
+        if(el == NULL)
+        {
+            el = (hash_t*)malloc(sizeof(hash_t));
+            el->freq = 1;
+            el->id = nums[i];
+            HASH_ADD_INT(hash_table,id,el);
+        }else
+        {
+            el->freq++;
+        }
+        
+    }
+    
+    
+    for(size_t i = 0 ; i < numsSize; i++)
+    {
+        key = nums[i];
+        HASH_FIND_INT(hash_table,&key,el);
+        
+        if(el != NULL && el->freq > 0)
+        {
+            for(size_t j = 0; j < k ; j++)
+            {
+                key = nums[i] + j;
+                HASH_FIND_INT(hash_table,&key,el);
+                if(el == NULL || el->freq < 1)
+                    return false;
+                else
+                    el->freq--;
+                
+                if(el->freq < 1)
+                {
+                    HASH_DEL(hash_table,el);
+                    free(el);
+                }
+            }
+        }
+    }
+    return true;
+}

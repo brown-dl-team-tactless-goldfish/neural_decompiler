@@ -1,0 +1,55 @@
+class Solution {
+public:
+    bool sumGame(string nums) {
+        int pre_sum = 0;
+        int post_sum = 0;
+        int pre_mark = 0;
+        int post_mark = 0;
+        int n = nums.size();
+        
+        for (int i = 0; i < n; ++i) {
+            if (i < n / 2) {
+                if (nums[i] == '?') {
+                    ++pre_mark;
+                } else {
+                    pre_sum += (nums[i] - '0');
+                }
+            } else {
+                if (nums[i] == '?') {
+                    ++post_mark;
+                } else {
+                    post_sum += (nums[i] - '0');
+                }
+            }
+        }
+        
+        int diff = post_sum - pre_sum;
+        if (post_mark == 0 && pre_mark == 0) {
+            return !(diff == 0);
+        }
+        
+        if (diff != 0 && ((post_mark + pre_mark) % 2) != 0) {
+            return true;
+        }
+        
+        if (diff == 0) {
+            return ((post_mark + pre_mark) % 2) != 0;
+        } else if (diff > 0) {
+            if (post_mark > pre_mark) {
+                return true;
+            }
+            
+            int count = pre_mark - post_mark;
+            
+            return !(diff % 9 == 0 && diff / (count / 2) == 9);
+        } else {
+            diff = -diff;
+            if (pre_mark > post_mark) {
+                return true;
+            }
+            
+            int count = post_mark - pre_mark;
+            return !(diff % 9 == 0 && diff / (count / 2) == 9);
+        }
+    }
+};

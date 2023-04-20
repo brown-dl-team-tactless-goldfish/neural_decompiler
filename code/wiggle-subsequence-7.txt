@@ -1,0 +1,33 @@
+int wiggleMaxLength(int* nums, int numsSize) {
+    if(numsSize==0){return 0;}
+    if(numsSize==1){return 1;}
+    int* map=(int*)calloc(numsSize-1,sizeof(int));
+    int numsSize_map=0;
+    for(int i=1;i<numsSize;i++){
+        int tmp=nums[i]-nums[i-1];
+        if(tmp!=0){
+            map[numsSize_map++]=tmp;
+        }
+    }
+    if(numsSize_map==0){
+        return numsSize>0?1:0;
+    }
+    if(numsSize_map==1){return 1;}
+    int ret=2;
+    for(int i=1;i<numsSize_map;i++){
+        int temp=map[i]*map[i-1];
+        if(temp<0){
+            ret++;
+        }else{
+            if(i+1==numsSize_map){
+                break;
+            }
+            if(map[i+1]*map[i]>0){
+                i++;
+            }else{
+                continue;
+            }
+        }
+    }
+    return ret;
+}

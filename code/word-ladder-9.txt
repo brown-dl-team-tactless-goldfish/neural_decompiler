@@ -1,0 +1,51 @@
+typedef struct {
+    uint8_t key[11];
+    int endFlag;/* check end word or not */
+    int idx;/* record idx in wordList */
+    int cnt;/* record bfs step */
+    UT_hash_handle hh;
+} Map;
+
+void EnQueue(char* s, int len, int* q, int* wIdx, Map* h, int stepCnt){
+    Map *e = NULL;
+    for(int i = 0; i < len; i++){
+        char curr = s[i];
+        for(int j = 0; j < 26; j++){
+            if(curr != ('a' + j)){/* process all case in hash or not */
+                s[i] = 'a' + j;
+                HASH_FIND_STR(h, s, e);
+                if(e && !e->cnt){
+                    e->cnt = stepCnt;
+                    q[(*wIdx)++] = e->idx;
+                }
+            }
+        }
+        s[i] = curr;
+    }
+}
+
+int ladderLength(char * beginWord, char * endWord, char ** wordList, int wordListSize){
+    Map *h = NULL, *e = NULL;
+    /* put wordlist into hash */
+    for(int i = 0; i < wordListSize; i++){
+        e = (Map*)calloc(1, sizeof(Map));
+        memcpy(e->key, wordList[i], strlen(wordList[i])*sizeof(char));
+        e->idx = i + 1;
+        HASH_ADD_STR(h, key, e);
+    }
+    HASH_FIND_STR(h, endWord, e);
+    if(!e){ return 0; }/* end word not in the wordList */
+    e->endFlag = 1;
+    
+    int len = strlen(beginWord);
+    int* q = (int*)calloc(5000, sizeof(int));/* queue idx */
+    int rIdx = 0, wIdx = 0, stepCnt = 1;
+    EnQueue(beginWord, len, q, &wIdx, h, stepCnt);
+    while(rIdx != wIdx){
+        int idx = q[rIdx++];
+        HASH_FIND_STR(h, wordList[idx-1], e);
+        if(e->endFlag){ return e->cnt + 1; }/* to the end word */
+        EnQueue(wordList[idx-1], len, q, &wIdx, h, e->cnt + 1);
+    }
+    return 0;/* not found */
+}

@@ -1,0 +1,16 @@
+    int minimumCardPickup(vector<int>& cards) {        
+        int dist = INT_MAX;
+        int left = 0;
+        std::unordered_map<int, int> M;
+        while (left < cards.size()) {
+            const int card = cards[left];            
+            auto it = M.find(card);            
+            if (it != M.end()) {
+                const int prev = it->second;
+                dist = std::min(dist, left-prev+1);              
+            }           
+            M[card] = left;
+            ++left;
+        }
+        return dist == INT_MAX ? -1 : dist;
+    }

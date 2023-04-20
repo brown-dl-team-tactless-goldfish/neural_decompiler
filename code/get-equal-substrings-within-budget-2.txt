@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int equalSubstring(string s, string t, int maxCost) {
+        vector<int> cost;
+        int n = s.size();
+        if(maxCost == 0){
+            return 1;
+        }
+        for(int i = 0; i < n; i++){
+            cost.push_back(abs(s[i]-t[i]));
+        }
+        int mx = INT_MIN;
+        int start = 0;
+        int c = 0;
+        int end = 0;
+        for(int i = 0; i < n; i++){
+            if(cost[i] > maxCost){
+                start = i+1;
+                c = 0;
+                continue;
+            }
+            c += cost[i];
+            if(c <= maxCost){
+                mx = max(mx, i-start+1);
+            }else{
+                //Window has grown larger, find new start
+                while(c > maxCost){
+                    c = c - cost[start];
+                    start++;
+                }
+                mx = max(mx, i-start+1);
+            }
+        }
+        if(mx == INT_MIN) return 0;
+        return mx;
+    }
+};

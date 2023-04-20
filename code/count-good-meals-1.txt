@@ -1,0 +1,33 @@
+int pow2needadd(int x){
+    int ans = 1;
+    while(x>ans){
+        ans<<=1;
+    }
+    return ans-x;
+}
+int cmp(const void *a,const void *b){
+    return *(int*)a-*(int*)b;
+}
+int countPairs(int* deliciousness, int deliciousnessSize){
+    qsort(deliciousness,deliciousnessSize,sizeof(int),cmp);
+    int *hash = calloc(deliciousness[deliciousnessSize-1]+1,sizeof(int));
+    int ans = 0;
+    int i=0;
+    int det = 0;
+    for(i=0;i<deliciousnessSize;i++){
+        if(deliciousness[i]!=0){
+            det = pow2needadd(deliciousness[i]);
+            //printf("%d\n",det)
+            if(det!=0){
+                ans+=hash[det];
+            }
+            else{
+                ans+=hash[deliciousness[i]];
+                ans+=hash[0];
+            }
+            ans%=1000000007;
+        }
+        hash[deliciousness[i]]++;
+    }
+    return ans;
+}

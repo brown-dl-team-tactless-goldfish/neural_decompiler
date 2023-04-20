@@ -1,0 +1,51 @@
+long long find_cost(vector<int>& nums, vector<int>& cost, int val)
+{
+    long long ans = 0;
+    
+    for(int i=0; i<nums.size(); i++)
+    {
+        long long a =  abs(val - nums[i]);
+        
+        ans += a*(cost[i]);
+    }
+    
+    return ans;
+    
+}
+long long minCost(vector<int>& nums, vector<int>& cost) 
+{
+    
+    long long left = *min_element(nums.begin(), nums.end());
+    
+    long long right = *max_element(nums.begin(),nums.end());
+    
+    long long ans = LLONG_MAX;
+    
+    while(left <= right)
+    {
+        long long mid = left + (right-left)/2;
+        
+        long long temp = find_cost(nums,cost, mid);
+        
+        ans = min(ans,temp);
+        
+        long left_val = find_cost(nums,cost,mid-1);
+        
+        long right_val = find_cost(nums,cost,mid+1);
+        
+        if(left_val > temp && right_val > temp)
+        {
+            return ans;
+        }
+        else if(left_val > temp && temp > right_val)
+        {
+            left = mid+1;
+        }
+        else
+        {
+            right = mid-1;
+        }
+    }
+    
+    return ans;
+}

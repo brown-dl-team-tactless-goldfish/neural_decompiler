@@ -1,0 +1,94 @@
+char** func(char* s){
+    char** ret=(char**)malloc(8*sizeof(char*));
+    for(int i=0;i<8;i++){
+        ret[i]=(char*)malloc(4*sizeof(char));
+    }
+    ret[0][0]=s[0]+1>'9'?'0':s[0]+1;
+    ret[0][1]=s[1];
+    ret[0][2]=s[2];
+    ret[0][3]=s[3];
+    ret[1][0]=s[0];
+    ret[1][1]=s[1]+1>'9'?'0':s[1]+1;
+    ret[1][2]=s[2];
+    ret[1][3]=s[3];
+    ret[2][0]=s[0];
+    ret[2][1]=s[1];
+    ret[2][2]=s[2]+1>'9'?'0':s[2]+1;
+    ret[2][3]=s[3];
+    ret[3][0]=s[0];
+    ret[3][1]=s[1];
+    ret[3][2]=s[2];
+    ret[3][3]=s[3]+1>'9'?'0':s[3]+1;
+    
+    ret[4][0]=s[0]-1<'0'?'9':s[0]-1;
+    ret[4][1]=s[1];
+    ret[4][2]=s[2];
+    ret[4][3]=s[3];
+    ret[5][0]=s[0];
+    ret[5][1]=s[1]-1<'0'?'9':s[1]-1;
+    ret[5][2]=s[2];
+    ret[5][3]=s[3];
+    ret[6][0]=s[0];
+    ret[6][1]=s[1];
+    ret[6][2]=s[2]-1<'0'?'9':s[2]-1;
+    ret[6][3]=s[3];
+    ret[7][0]=s[0];
+    ret[7][1]=s[1];
+    ret[7][2]=s[2];
+    ret[7][3]=s[3]-1<'0'?'9':s[3]-1;
+    return ret;
+}
+char** extentFunc(int**** array,char** temp,int* strSize){
+    char** ret=(char**)malloc(*strSize*8*sizeof(char*));
+    int count=0;
+    for(int i=0;i<*strSize;i++){
+        char** s=func(temp[i]);
+        for(int j=0;j<8;j++){
+            if(array[s[j][3]-'0'][s[j][2]-'0'][s[j][1]-'0'][s[j][0]-'0']==0){
+                array[s[j][3]-'0'][s[j][2]-'0'][s[j][1]-'0'][s[j][0]-'0']=1;
+                ret[(count)++]=s[j];
+            }
+        }
+    }
+    free(temp);
+    *strSize=count;
+    return ret;
+}
+int openLock(char** deadends, int deadendsSize, char* target) {
+    int retCount=0;
+    int**** array=(int****)malloc(10*sizeof(int***));
+    for(int i=0;i<10;i++){
+        array[i]=(int***)malloc(10*sizeof(int**));
+        for(int j=0;j<10;j++){
+            array[i][j]=(int**)malloc(10*sizeof(int*));
+            for(int l=0;l<10;l++){
+                array[i][j][l]=(int*)malloc(10*sizeof(int));
+                 for(int m=0;m<10;m++){
+                    array[i][j][l][m]=0;
+                }
+            }
+        }
+    }
+    for(int i=0;i<deadendsSize;i++){
+        char* s=deadends[i];
+        array[s[3]-'0'][s[2]-'0'][s[1]-'0'][s[0]-'0']=-1;
+    }
+    char** temp=(char**)malloc(sizeof(char*));
+    temp[0]=(char*)malloc(4*sizeof(char));
+    temp[0]="0000";
+    int strSize=1;
+    if(array[0][0][0][0]==-1){
+        return -1;
+    }else if(target[3]=='0'&&target[2]=='0'&&target[1]=='0'&&target[0]=='0'){
+        return 0;
+    }
+    array[0][0][0][0]=1;
+    while(array[target[3]-'0'][target[2]-'0'][target[1]-'0'][target[0]-'0']!=1){
+        temp=extentFunc(array,temp,&strSize);
+        retCount++;
+        if(strSize==0){
+            return -1;
+        }
+    }
+    return retCount;
+}

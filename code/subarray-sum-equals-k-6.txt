@@ -1,0 +1,53 @@
+struct count
+{
+    int num, count;
+    UT_hash_handle hh;
+};
+
+int subarraySum(int *nums, int nums_len, int k)
+{
+    int result = 0, prefix_sum = 0;
+    struct count *prefix_sum_count = NULL; // the hash table
+
+    // the initial count for the prefix sum 0 is 1
+    struct count *count = malloc(sizeof(struct count));
+    count->num = 0;
+    count->count = 1;
+    HASH_ADD_INT(prefix_sum_count, num, count);
+
+    for (int i = 0; i < nums_len; ++i)
+    {
+        prefix_sum += nums[i];
+        int wanted_prefix_sum = prefix_sum - k;
+
+        // try to find the complementary prefix sum in the hash table
+        // and add that count to the result
+        HASH_FIND_INT(prefix_sum_count, &wanted_prefix_sum, count);
+        if (count != NULL)
+            result += count->count;
+
+        // increment the count of the current prefix sum
+        HASH_FIND_INT(prefix_sum_count, &prefix_sum, count);
+        if (count != NULL)
+        {
+            ++count->count;
+        }
+        else
+        {
+            count = malloc(sizeof(*count));
+            count->num = prefix_sum;
+            count->count = 1;
+            HASH_ADD_INT(prefix_sum_count, num, count);
+        }
+    }
+
+    // cleanup the hash table, free all dynamically allocated memory
+    struct count *tmp;
+    HASH_ITER(hh, prefix_sum_count, count, tmp)
+    {
+        HASH_DEL(prefix_sum_count, count);
+        free(count);
+    }
+
+    return result;
+}

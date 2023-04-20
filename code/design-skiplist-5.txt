@@ -1,0 +1,213 @@
+    public class GenericSkipList<T> where T : IComparable<T>
+    {
+        private const int LEVEL_COUNT = 32;
+
+        private class Node<T>
+        {
+            public readonly T Value;
+            public Node<T>[] NextNodeByLevel;
+            public Node<T>[] PrevNodeByLevel;
+
+            public Node(T value)
+            {
+                Value = value;
+                PrevNodeByLevel = new Node<T>[LEVEL_COUNT];
+                NextNodeByLevel = new Node<T>[LEVEL_COUNT];
+            }
+        }
+
+        private class Level
+        {
+            public Node<T> Head;
+        }
+
+        private readonly Level[] Levels;
+        private Node<T>[] _additionBuffer;
+        private Random _rnd;
+
+        public GenericSkipList()
+        {
+            Levels = new Level[LEVEL_COUNT];
+            for (int i = 0; i < LEVEL_COUNT; i++)
+            {
+                Levels[i] = new Level();
+            }
+            _additionBuffer = new Node<T>[LEVEL_COUNT];
+            _rnd = new Random(1117);
+        }
+
+        private bool Search(out int levelFound, out Node<T> targetNode, T item, int level, Node<T> fromNode = null)
+        {
+            if (level == -1) //not found at any level
+            {
+                levelFound = -1;
+                targetNode = null;
+                return false;
+            }
+
+            Node<T> node = fromNode ?? Levels[level].Head;
+
+            if (node == null) // empty current Level
+            {
+                return Search(out levelFound, out targetNode, item, level - 1);
+            }
+
+            Node<T> prevNode = null;
+            while (node != null && node.Value.CompareTo(item) < 0)
+            {
+                prevNode = node;
+                node = node.NextNodeByLevel[level];
+            }
+
+            if (node == null) //reach the end of current level
+            {
+                return Search(out levelFound, out targetNode, item, level - 1, prevNode);
+            }
+
+            if (node.Value.CompareTo(item) == 0) //item found
+            {
+                levelFound = level;
+                targetNode = node;
+                return true;
+            }
+
+            return Search(out levelFound, out targetNode, item, level - 1, prevNode);
+        }
+
+        public bool Search(T target)
+        {
+            return Search(out _, out _, target, LEVEL_COUNT - 1);
+        }
+
+        private void Add(out Node<T> output, T item, int level, Node<T> fromNode = null)
+        {
+            Node<T> node = fromNode ?? Levels[level].Head;
+            Node<T> prevNode = null;
+
+            if (level == 0)
+            {
+                _additionBuffer[level] = null;
+                var newNode = new GenericSkipList<T>.Node<T>(item);
+                prevNode = null;
+                while (node != null && node.Value.CompareTo(item) < 0)
+                {
+                    prevNode = node;
+                    node = node.NextNodeByLevel[level];
+                }
+
+                if (prevNode != null)
+                {
+                    prevNode.NextNodeByLevel[level] = newNode;
+                }
+
+                if (node != null)
+                {
+                    node.PrevNodeByLevel[level] = newNode;
+                }
+
+                newNode.PrevNodeByLevel[level] = prevNode;
+                newNode.NextNodeByLevel[level] = node;
+
+                if (Levels[level].Head == null || Levels[level].Head == node)
+                {
+                    Levels[level].Head = newNode;
+                }
+
+                output = newNode;
+                return;
+            }
+
+            if (node == null) //empty level
+            {
+                _additionBuffer[level] = null;
+                Add(out output, item, level - 1);
+                return;
+            }
+
+            prevNode = null;
+            while (node != null && node.Value.CompareTo(item) < 0)
+            {
+                prevNode = node;
+                node = node.NextNodeByLevel[level];
+            }
+
+            _additionBuffer[level] = prevNode;
+            Add(out output, item, level - 1, prevNode);
+        }
+
+        public void Add(T item)
+        {
+            Node<T> newNode;
+            Add(out newNode, item, LEVEL_COUNT - 1);
+            int maxLevel = GetLevelCountPropagation();
+
+            for (int i = 1; i <= maxLevel; i++)
+            {
+                Node<T> prev = _additionBuffer[i];
+                Node<T> next = prev?.NextNodeByLevel[i];
+
+                newNode.PrevNodeByLevel[i] = prev;
+                newNode.NextNodeByLevel[i] = next;
+
+                if (prev != null)
+                {
+                    prev.NextNodeByLevel[i] = newNode;
+                }
+
+                if(next != null)
+                {
+                    next.PrevNodeByLevel[i] = newNode;
+                }
+
+                if (Levels[i].Head == null || Levels[i].Head == next)
+                {
+                    Levels[i].Head = newNode;
+                }
+            }
+        }
+
+        private int GetLevelCountPropagation()
+        {
+            return _rnd.Next(0, LEVEL_COUNT);
+        }
+
+        public bool Erase(T item)
+        {
+            int levelFound;
+            Node<T> targetNode;
+            bool elementFound = Search(out levelFound, out targetNode, item, LEVEL_COUNT - 1);
+
+            if (!elementFound)
+            {
+                return false;
+            }
+
+            for (int i = levelFound; i >= 0; i--)
+            {
+                var prev = targetNode.PrevNodeByLevel[i];
+                var next = targetNode.NextNodeByLevel[i];
+
+                if (prev != null)
+                {
+                    prev.NextNodeByLevel[i] = next;
+                }
+
+                if(next != null)
+                {
+                    next.PrevNodeByLevel[i] = prev;
+                }
+
+                if (Levels[i].Head == targetNode)
+                {
+                    Levels[i].Head = next;
+                }
+            }
+
+            return true;
+        }
+    }
+
+
+    public class Skiplist : GenericSkipList<int>
+    {
+    }

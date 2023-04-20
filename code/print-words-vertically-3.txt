@@ -1,0 +1,93 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char ** printVertically(char * s, int* returnSize){
+
+    // Get the max num of words and max lenght of word
+    int max_word_len = 0; //  = num(spaces) + 1
+    int max_num_words = 0;
+    int num_words = 0;
+
+    for (int i=0;i<=strlen(s); i++)
+    {
+        if (s[i] == ' ' || s[i] == '\0')
+        {
+            if (s[i] == ' ')
+            {
+                max_word_len += 1;
+            }
+            max_num_words = num_words > max_num_words ? num_words : max_num_words;
+            num_words = 0;
+        }
+        else
+        {
+            num_words++;
+        }
+    }
+
+    max_word_len += 1;  // not including space for '\0'
+    //-----------------------------------------------------
+
+    //Allocate space for return variable ans
+    char** ans = (char**)malloc(sizeof(char*)*max_num_words);
+
+    for (int i=0; i<max_num_words; i++)
+    {
+        ans[i] = (char*)malloc(sizeof(char)*(max_word_len+1));
+    }
+    //-----------------------------------------------------
+
+    // Get vertical words
+    int letter_index = 0;
+    int word_index = 0;
+    int s_index = 0;
+
+    while (true)        // It loops over s sequentially and fills the ans array
+    {
+        if (s[s_index] == '\0') 
+        {
+            letter_index += 1;
+            
+            for (int i=0; i<max_num_words; i++)
+            {
+                ans[i][letter_index] = '\0';
+            }
+            break;
+        } 
+        
+        else if ((s[s_index] == ' ') && (word_index == max_num_words))
+        {
+            word_index = 0; // Reset word_index
+            letter_index += 1; // Increment to next position
+        } 
+        else if ((s[s_index] == ' ') && (word_index < max_num_words))
+        {
+            ans[word_index][letter_index] = ' ';
+            word_index++;
+            s_index -=1; // To prevent inc under this condition
+        } 
+        else
+        {
+            ans[word_index][letter_index] = s[s_index];
+            word_index++;
+        }
+        s_index++;
+    }
+    //-----------------------------------------------------
+
+    // Remove trailing spaces
+    for (int i=0; i<max_num_words; i++)
+    {
+        int l = strlen(ans[i]);
+
+        while (!(isalpha(ans[i][l-1])))
+        {
+            ans[i][l-1] = '\0';
+            l--;
+        }
+    }
+    //-----------------------------------------------------
+
+    *returnSize = max_num_words;
+    return ans;
+}

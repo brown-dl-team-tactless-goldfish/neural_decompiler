@@ -1,0 +1,31 @@
+class RandomizedCollection {
+public:
+    RandomizedCollection() {
+        
+    }
+    
+    bool insert(int val) {
+        um.emplace(val, v.size());
+        v.emplace_back(val);
+        return um.count(val) == 1;
+    }
+    
+    bool remove(int val) {
+        auto it = um.find(val);
+        if (it == um.end()) return false;
+        auto bit = um.find(v.back());
+        for (; bit->second != v.size() - 1; bit++);
+        bit->second = it->second;        
+        v[it->second] = v.back();        
+        v.pop_back();
+        um.erase(it);
+        return true;;
+    }
+    
+    int getRandom() {
+        return v[rand() % v.size()];
+    }
+private:
+    unordered_multimap<int, int> um;
+    vector<int> v;
+};

@@ -1,0 +1,40 @@
+public int MinCost(int[][] grid) {
+	var n = grid.Length;
+	var m = grid[0].Length;
+	var graph = new Dictionary<int, Dictionary<int, int>>();
+	void AddEdge(int i, int j, int r, int c, int sign) {
+		var node = i * m + j;
+		if (!graph.ContainsKey(node)) {
+			graph[node] = new Dictionary<int, int>();
+		}
+		if (r >= 0 && c >= 0 && r < n && c < m) {
+			var next = r * m + c;
+			graph[node][next] = grid[i][j] == sign ? 0 : 1;
+		}
+	}
+	for (var i = 0; i < n; i++) {
+		for (var j = 0; j < m; j++) {
+			AddEdge(i, j, i, j + 1, 1);
+			AddEdge(i, j, i, j - 1, 2);
+			AddEdge(i, j, i + 1, j, 3);
+			AddEdge(i, j, i - 1, j, 4);
+		}
+	}
+	var pq = new PriorityQueue<(int, int), int>();
+	pq.Enqueue((0, 0), 0);
+	var seen = new HashSet<int>();
+	while (pq.Count > 0) {
+		var (dist, node) = pq.Dequeue();
+		if (node == n * m - 1) {
+			return dist;
+		}
+		if (!seen.Contains(node)) {
+			seen.Add(node);
+			foreach (var next in graph[node].Keys) {
+				var newDist = dist + graph[node][next];
+				pq.Enqueue((newDist, next), newDist);
+			}
+		}
+	}
+	return -1;
+}

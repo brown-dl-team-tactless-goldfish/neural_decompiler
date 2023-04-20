@@ -1,0 +1,107 @@
+#include <stdbool.h>
+#include <assert.h>
+
+#define HASHSIZE 10001
+
+typedef struct node {
+    int key;
+    int idx;
+    int cnt;
+    struct node *next;
+} Node;
+
+Node* HashInit(void)
+{
+    Node *head = malloc(sizeof(Node) * HASHSIZE);
+    assert(head != NULL);
+    memset(head, 0, sizeof(Node) * HASHSIZE);
+    return head;
+}
+
+int GetHashCode(int val)
+{
+    while(val < 0) {
+        val += HASHSIZE;
+    }
+    return val % HASHSIZE;
+}
+
+void HashAdd(Node *head, int key, int idx)
+{
+    int hashcode = GetHashCode(key);
+    if (head[hashcode].cnt == 0) {
+        head[hashcode].key = key;
+        head[hashcode].idx = idx;
+        head[hashcode].cnt = 1;
+    } else {
+        Node *cur = &head[hashcode];
+        while (cur->key != key && cur->next != NULL) {
+            cur = cur->next;
+        }
+        if (cur->key == key) {
+            cur->cnt++;
+        } else {
+            Node *newNode = malloc(sizeof(Node));
+            newNode->key = key;
+            newNode->cnt = 1;
+            newNode->idx = idx;
+            newNode->next = NULL;
+            cur->next = newNode;
+        }
+    }
+}
+
+Node* HashContains(Node *head, int key)
+{
+    int hashcode = GetHashCode(key);
+    if (head[hashcode].cnt == 0) {
+        return NULL;
+    }
+    Node *cur = &head[hashcode];
+    while (cur != NULL && cur->key != key) {
+        cur = cur->next;
+    }
+    return cur;
+}
+
+void HashDestroy(Node *head)
+{
+    for (int i = 0; i < HASHSIZE; i++) {
+        if (head[i].cnt == 0) {
+            continue;
+        }
+        Node *cur = &head[i];
+        cur = cur->next;
+        while (cur != NULL) {
+            Node *tmp = cur;
+            cur = cur->next;
+            free(tmp);
+        }
+    }
+    free(head);
+    head = NULL;
+}
+
+bool checkSubarraySum(int* nums, int numsSize, int k){
+    if (numsSize <= 0 || k <= 0) return false;
+    int *prefix = malloc(sizeof(int) * numsSize);
+    Node *mods = HashInit();
+    
+    prefix[0] = nums[0];
+    HashAdd(mods, 0, -1);
+    
+    for (int i = 1; i < numsSize; i++) {
+        prefix[i] = prefix[i-1] + nums[i];
+    }
+    
+    for (int i = 0; i < numsSize; i++) {
+        int tmpMod = prefix[i] % k;
+        Node *node = HashContains(mods, tmpMod);
+        if (node && i - node->idx > 1) {
+            return true;
+        }
+        HashAdd(mods, tmpMod, i);
+    }
+    HashDestroy(mods);
+    return false;
+}

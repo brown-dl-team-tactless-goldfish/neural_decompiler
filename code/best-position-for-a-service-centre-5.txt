@@ -1,0 +1,47 @@
+inline double getMinDistSum_(vector<vector<double>>& newPos, double x, double y) {
+	double res = 0;
+	for (vector<double>& val : newPos) {
+		res += sqrt((val[0] - x) * (val[0] - x) + (val[1] - y) * (val[1] - y));
+	}
+	return res;
+}
+
+double getMinDistSum(vector<vector<int>>& positions) {
+
+	if (positions.size() <= 1) return 0;
+
+	vector<vector<double>> newPos(positions.size(), vector<double>(2));
+	for (int i = 0; i < positions.size(); ++i) {
+		newPos[i][0] = positions[i][0];
+		newPos[i][1] = positions[i][1];
+	}
+
+	double x = 0.1, y = 0.1;
+
+	double prev = -1;
+	double curr = getMinDistSum_(newPos, x, y);
+
+	while (abs(curr - prev) > 0.000000001) {
+
+		prev = curr;
+
+		double t = 0;
+		double new_x = 0, new_y = 0;
+		for (vector<double>& p : newPos) {
+
+			if (p[0] == x && p[1] == y) return 0;
+
+			double val = 1 / sqrt((p[0] - x) * (p[0] - x) + (p[1] - y) * (p[1] - y));
+			t += val;
+			new_x += p[0] * val;
+			new_y += p[1] * val;
+		}
+
+		x = new_x / t;
+		y = new_y / t;
+
+		curr = getMinDistSum_(newPos, x, y);
+	}
+
+	return curr;
+}

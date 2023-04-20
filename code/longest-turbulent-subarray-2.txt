@@ -1,0 +1,65 @@
+int maxTurbulenceSize(int* A, int ASize) {
+    
+    if(ASize<2)
+        return ASize;
+    if(ASize==2)
+    {
+        if(A[0]!=A[1])
+            return ASize;
+        else
+            return 1;
+    }
+    int premode = 0;
+    int currentmode = 0;
+    int ret = 0;
+    int tempret = 0;
+    for(int i=1;i<ASize;i++)//main loop
+    {
+        if(A[i]==A[i-1])
+        {
+            if(tempret>ret)
+                ret = tempret;
+            tempret = 0;
+            premode = 0;
+            continue;
+        }
+        if(A[i]>A[i-1])
+        {
+            currentmode = 1;
+            if(premode==-1)//seq continue
+            {
+                tempret++;
+            }
+            else//stop seq
+            {
+                if(tempret>ret)
+                    ret = tempret;
+                tempret = 2;
+                // if(tempret+(ASize-i)<ret)
+                //     return ret;
+            }
+            premode = currentmode;
+        }
+        else//if(A[i]<A[i-1])
+        {
+            currentmode = -1;
+            if(premode==1)
+            {
+                tempret++;
+            }
+            else
+            {
+                if(tempret>ret)
+                    ret = tempret;
+                tempret = 2;
+                // if(tempret+(ASize-i)<ret)
+                //     return ret;
+            }
+            premode = currentmode;
+        }
+    }
+    if(tempret>ret)
+        ret = tempret;
+    
+    return ret;
+}

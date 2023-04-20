@@ -1,0 +1,27 @@
+
+class Solution {
+public:    
+    int numMatchingSubseq(string S, vector<string>& words) {          
+        //vector<pair<int, int>> waiting[128]; //ok
+        vector<vector<pair<int, int>>> waiting(128); // ok
+        unordered_map<string, int> m;
+        for(string& w: words) ++m[w];
+        vector<string> uniqWords;
+        for(auto& e: m) uniqWords.push_back(e.first);
+        
+        for (int i = 0; i < uniqWords.size(); i++)
+            waiting[uniqWords[i][0]].emplace_back(i, 1);
+        for (char c : S) {
+            auto advance = waiting[c];        waiting[c].clear();
+            //vector<pair<int, int>> advance; swap(advance, waiting[c]);//  not good enough    
+            for (auto& it : advance){                
+                waiting[uniqWords[it.first][it.second++]].push_back(it);                
+            }
+        }
+        int ans = 0;        
+        for(auto& e: waiting[0]) {
+            ans +=m[uniqWords[e.first]];            
+        }            
+        return ans;
+    }
+};

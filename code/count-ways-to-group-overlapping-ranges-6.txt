@@ -1,0 +1,32 @@
+class Solution {
+public:
+
+    int power(long long x, int y, int p) {
+    int res = 1; 
+    x = x % p;
+    if (x == 0) return 0;
+    while (y > 0)
+    {
+        if (y & 1)
+            res = (res*x) % p;
+        y = y>>1;
+        x = (x*x) % p;
+    }
+    return res;
+}
+ 
+
+    int countWays(vector<vector<int>>& ranges) {
+        const int mod = 1e9 + 7;
+        sort(ranges.begin(), ranges.end());
+        long long total = 0, last = -1;
+        for(int i = 0; i < ranges.size(); i++){
+            if(ranges[i][0] > last){
+                last = ranges[i][1];
+                total++;
+            }
+            else last = max(last,(long long)ranges[i][1]);
+        }
+        return power(2, total, mod);
+    }
+};

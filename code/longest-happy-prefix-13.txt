@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int lps[100001];
+    void computeLPSArray(string pat){
+        int left = 0;
+        int P=(pat).length();
+        lps[0] = 0; /// lps[0] is always 0
+
+        int right = 1;
+        while (right < P) {
+            if (pat[right] == pat[left]) {
+                ++left;
+                lps[right] = left;/// take longest suffix length which is also prefix
+                ++right;
+            }else{
+                if (left != 0) {
+                    left = lps[left - 1];
+                }else{
+                    lps[right] = 0;
+                    ++right;
+                }
+            }
+        }
+    }
+
+    string longestPrefix(string s) {
+        computeLPSArray(s);
+        int match=lps[s.length()-1];
+        return s.substr(0,match);
+    }
+};

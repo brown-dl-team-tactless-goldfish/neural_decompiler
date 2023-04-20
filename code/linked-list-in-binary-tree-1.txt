@@ -1,0 +1,30 @@
+void checkPath(struct ListNode* head, struct TreeNode* root, bool* result){
+    if(!head->next) *result = true;
+    struct ListNode* head_tmp = head;
+    struct TreeNode* root_tmp = root;
+    if(head->next && root->left && head->next->val == root->left->val){
+        head = head->next;
+        root = root->left;
+        checkPath(head, root, result);
+    }
+    if(head_tmp->next && root_tmp->right && head_tmp->next->val == root_tmp->right->val){
+        head_tmp = head_tmp->next;
+        root_tmp = root_tmp->right;
+        checkPath(head_tmp, root_tmp, result);
+    }
+    return;
+}
+
+void checkHead(struct ListNode* head, struct TreeNode* root, bool* result){
+    if(head->val == root->val){
+        checkPath(head, root, result);
+    }
+    if(root->left) checkHead(head, root->left, result);
+    if(root->right) checkHead(head, root->right, result);
+}
+    
+bool isSubPath(struct ListNode* head, struct TreeNode* root){
+    bool result = false;
+    checkHead(head, root, &result);
+    return result;
+}

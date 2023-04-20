@@ -1,0 +1,53 @@
+typedef struct{
+    int key;
+    int count;
+    UT_hash_handle hh;
+    
+}Map;
+
+int fourSumCount(int* nums1, int nums1Size, int* nums2, int nums2Size, int* nums3, int nums3Size, int* nums4, int nums4Size){
+    Map *mapA=NULL, *mapB=NULL, *elem, *elem2, *tmp, *tmp2;
+    int sum=0;
+    int ans=0;
+    for(int i=0; i<nums1Size; i++){
+        for(int j=0; j<nums2Size; j++){
+            sum=nums1[i]+nums2[j];
+            HASH_FIND_INT(mapA, &sum, elem);
+            if(elem==NULL){
+                elem=malloc(sizeof(Map));
+                elem->key=sum;
+                elem->count=1;
+                HASH_ADD_INT(mapA, key, elem);
+            }else{
+                elem->count+=1;
+            }
+            //printf("%d\n",mapA->count);
+
+        }
+    }
+    
+    for(int i=0; i<nums3Size; i++){
+        for(int j=0; j<nums4Size; j++){
+            sum=nums3[i]+nums4[j];
+            HASH_FIND_INT(mapB, &sum, elem);
+            if(elem==NULL){
+                elem=malloc(sizeof(Map));
+                elem->key=sum;
+                elem->count=1;
+                HASH_ADD_INT(mapB, key, elem);
+            }else{
+                elem->count+=1;
+            }
+            
+        }
+    }
+    
+    HASH_ITER(hh, mapA, elem, tmp){
+        HASH_ITER(hh, mapB, elem2, tmp2){
+           if(elem->key+elem2->key==0){
+               ans+=elem->count*elem2->count;
+           }
+        }
+    }
+    return ans;
+}

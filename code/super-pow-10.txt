@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int M = 1337;
+    int superPow(int a, vector<int>& b) {
+        /**
+         * prime factors of 1337 are 7 and 191;
+         * Euler Totient Function Φ(1337) = etf (let);
+         * etf = 1337*(1-1/7)*(1-1/191);
+         * etf = 1337*6*190/(191*7);
+         * Euler's Theorem--> a^b % M == (a^(b%etf))%M
+        **/
+        int etf = 6*190;
+        int n = b.size(), k = 0;
+        /**calculate b%etf **/
+        for(int i=0;i<n;i++){
+            k = k*10 + b[i];
+            if(k>=etf) k%=etf;
+        }
+        int c = Pow(a,k);
+        return c;
+    }
+    int Pow(int a,int k){
+        int res = 1;
+        while(k){
+            if(k&1) res = (res*1LL*a)%M;
+            a = (a*1LL*a)%M;
+            k>>=1;
+        }
+        return res;
+    }
+};

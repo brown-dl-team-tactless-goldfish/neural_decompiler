@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int maximumScore(vector<int>& nums, int k) {
+        nums.push_back(0);
+        int n = nums.size(), ans = 0;
+        stack<int> s;
+        for(int i = 0; i < n; ++i){
+            while (s.size() and nums[s.top()] > nums[i])
+            {
+                int j = s.top();
+                s.pop();
+                int left = (s.size() ? s.top() + 1 : 0);
+                if (k >= left and k <= i - 1){
+                    int prod = nums[j] * (i - left);
+                    ans = max(ans, prod);
+                }
+            }
+            s.push(i);
+        }
+        return ans;
+    }
+};

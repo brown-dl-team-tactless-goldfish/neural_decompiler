@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int latestTimeCatchTheBus(vector<int>& buses, vector<int>& passengers, int capacity) {
+        int ret = 0;
+        sort(buses.begin(), buses.end());
+        sort(passengers.begin(), passengers.end());
+        
+        int last = 0;
+        for (int i = 0, p = 0; i < buses.size(); ++i) {
+            int cnt = capacity;
+            for (; cnt > 0 && p < passengers.size() && passengers[p] <= buses[i]; --cnt, ++p) {
+                if (passengers[p] > last + 1) {
+                    ret = passengers[p] - 1;
+                }
+                last = passengers[p];
+            }
+            if (cnt > 0 && buses[i] > last) {
+                ret = buses[i];
+            }
+        }
+        
+        return ret;
+    }
+};

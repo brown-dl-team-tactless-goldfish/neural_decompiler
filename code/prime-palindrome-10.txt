@@ -1,0 +1,94 @@
+    public class Solution
+    {
+        private bool IsPrime(int num)
+        {
+            if (num <= 1)
+            {
+                return false;
+            }
+
+            for (int i = 2; i * i <= num; i++)
+            {
+                if (num % i == 0)
+                {
+                    return false;
+                }
+            }
+            return true;
+        }
+
+        private int Helper(List<int> nDigits, int n, int idx)
+        {
+            checked
+            {
+                if (idx > (nDigits.Count - 1) / 2)
+                {
+                    int number = 0;
+                    foreach (var nDigit in nDigits)
+                    {
+                        number *= 10;
+                        number += nDigit;
+                    }
+
+                    if (number >= n && IsPrime(number))
+                    {
+                        return number;
+                    }
+
+                    return -1;
+                }
+
+
+                int start = nDigits[idx];
+                for (int i = start; i <= 9; i++)
+                {
+                    nDigits[idx] = i;
+                    nDigits[nDigits.Count - 1 - idx] = i;
+                    var res = Helper(nDigits, n, idx + 1);
+                    if (res > 0)
+                    {
+                        return res;
+                    }
+                }
+
+                nDigits[idx] = 0;
+                nDigits[nDigits.Count - 1 - idx] = 0;
+                return -1;
+            }
+        }
+
+        public int PrimePalindrome(int n)
+        {
+            List<int> nDigits = new List<int>((int)Math.Floor(Math.Log10(n))+1);
+            var num = n;
+            while (n != 0)
+            {
+                nDigits.Add(n % 10);
+                n /= 10;
+            }
+            nDigits.Reverse();
+
+            for (int i = 0; i <= (nDigits.Count - 1) / 2; i++)
+            {
+                nDigits[nDigits.Count - 1 - i] = nDigits[i];
+            }
+
+            do
+            {
+                var res = Helper(nDigits, num, 0);
+
+                if (res > 0)
+                {
+                    return res;
+                }
+
+                for (int i = 0; i < nDigits.Count; i++)
+                {
+                    nDigits[i] = 0;
+                }
+                nDigits[0] = 1;
+                nDigits.Add(1);
+
+            } while (true);
+        }
+    }

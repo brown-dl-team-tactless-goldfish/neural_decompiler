@@ -1,0 +1,32 @@
+class Solution {
+public:
+    bool is_prime(int x) {
+        if (x < 2) return false;
+        for (int i = 2; i * i <= x; ++i) {
+            if (x % i == 0) return false;
+        }
+
+        return true;
+    }
+
+    bool primeSubOperation(vector<int>& nums) {
+        int n = nums.size();
+
+        for (int i = 0, last = 0; i < n; ++i) {
+            int a = nums[i];
+            if (last >= a) return false;
+
+            int range = a - last - 1;
+            for (int j = range; j >= 2; --j) {
+                if (is_prime(j)) {
+                    nums[i] -= j;
+                    break;
+                }
+            }
+
+            last = nums[i];
+        }
+
+        return true;
+    }
+};

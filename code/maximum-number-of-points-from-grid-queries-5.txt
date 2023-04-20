@@ -1,0 +1,77 @@
+public class Solution {
+
+
+        public int[] MaxPoints(int[][] grid, int[] queries)
+        {
+            bool[][] dp = new bool[grid.Length][];
+            for (int i = 0; i < grid.Length; i++)
+            {
+                dp[i] = new bool[grid[i].Length];
+            }
+
+            int[] output = new int[queries.Length];
+
+            Dictionary<int, IList<int>> map = new Dictionary<int, IList<int>>();
+            for (int i = 0; i < queries.Length; i++)
+            {
+                if (!map.ContainsKey(queries[i]))
+                {
+                    map.Add(queries[i], new List<int>());
+                }
+                map[queries[i]].Add(i);
+            }
+
+
+            Array.Sort(queries);
+
+            Queue<(int, int)> queue = new Queue<(int, int)>();
+            HashSet<(int, int)> list = new HashSet<(int, int)>();
+
+            list.Add((0, 0));
+            int[] result = new int[queries.Length];
+            int counter = 0;
+            for (int k = 0; k < queries.Length; k++)
+            {
+                queue = new Queue<(int, int)>(list);
+
+                list = new HashSet<(int, int)>();
+                int num = queries[k];
+                while (queue.Count > 0)
+                {
+                    (int i, int j) = queue.Dequeue();
+                    if (i < 0 || j < 0 || i >= grid.Length || j >= grid[i].Length) continue;
+
+                    if (num > grid[i][j])
+                    {
+                        if (!dp[i][j])
+                        {
+                            counter++;
+                            dp[i][j] = true;
+                            //top i-1
+                            queue.Enqueue((i - 1, j));
+
+                            //bottom i+1
+                            queue.Enqueue((i + 1, j));
+
+                            //left j-1
+                            queue.Enqueue((i, j - 1));
+
+                            //right j+1
+                            queue.Enqueue((i, j + 1));
+                        }
+                    }
+                    else
+                    {
+                        list.Add((i, j));
+                    }
+                }
+
+                result[k] = counter;
+
+                output[map[queries[k]][0]] = counter;
+                map[queries[k]].RemoveAt(0);
+            }
+
+            return output;
+        }
+}

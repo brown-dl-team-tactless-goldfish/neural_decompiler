@@ -1,0 +1,52 @@
+public class Solution {
+    public int[][] HighestPeak(int[][] isWater) {
+        
+        if(isWater == null || isWater.Length == 0)
+            throw new ArgumentException("Invalid Input.");
+        
+        int m = isWater.Length, n = isWater[0].Length;
+        Queue<(int,int)> queue = new Queue<(int,int)>();
+        HashSet<(int,int)> visited = new HashSet<(int,int)>();
+        
+        for(int i = 0; i < m; i++)
+        {
+            for(int j = 0; j < n; j++)
+            {
+                if(isWater[i][j] == 1)
+                {
+                    queue.Enqueue((i,j));
+                    visited.Add((i,j));
+                }
+            }
+        }
+                
+        int[,] dirs = new int[,]{{-1,0},{0,1},{1,0},{0,-1}};
+        int height = 0;
+        
+        while(queue.Count > 0)
+        {
+            int size= queue.Count;
+            for(int i = 0; i < size; i++)
+            {
+                var curr = queue.Dequeue();                
+                isWater[curr.Item1][curr.Item2] = height;
+                
+                for(int d = 0; d < 4; d++)
+                {
+                    int nextRow = curr.Item1 + dirs[d,0];
+                    int nextCol = curr.Item2 + dirs[d,1];
+                    
+                    if(nextRow >= 0 && nextRow < m && nextCol >= 0 && nextCol < n && !visited.Contains((nextRow,nextCol)))
+                    {
+                        queue.Enqueue((nextRow,nextCol));
+                        visited.Add((nextRow,nextCol));
+                    }
+                }
+            }
+            
+            height++;
+        }
+            
+        return isWater;
+    }
+}

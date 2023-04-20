@@ -1,0 +1,44 @@
+class Solution {
+public:
+    vector<int> numMovesStonesII(vector<int>& A) {
+       int n = A.size();  //number of stones
+        
+       sort(A.begin(), A.end());
+       
+       //To find max_moves:
+       //move either starting endstone, or end endstone : this consumes one Move
+       //after this we calculate the number of free spaces now available, and we will now go through all these 
+       //spaces one by one. 
+       //Number of spaces available after moving first stone : A[n-1] - A[1] + 1,
+       //Number of spaces available after moving last stone : A[n-2] - A[0] + 1
+       // + 1, for the initial move we made 
+       int max_moves = max(A[n-1] - A[1] -n + 1, A[n-2] -  A[0] - n + 1) + 1;
+        
+       //To find min_moves we'll use Sliding Window approach:
+       //We will consider a sliding a window of size <=n, which has maximum number of stones init.
+       //minimum_moves will be then equal to n - number of stones already in max_sliding window
+       //Corner case : sliding window size : n-1 and number of stones : n-1,
+       //then minimum number of moves will be atleast 2,consider cases :  {1,2,3,4,10} --> 2 , {1,2,3,4,6} --> 1
+       //
+       //window_size = A[end] - A[start] + 1,  stone_count = start - end + 1
+       int start = 0, end = 0, min_moves = n; 
+       while(end < n) {
+           int window_size = A[end] - A[start] + 1;
+           int stone_count = end - start + 1;
+           
+           if(window_size > n) {
+               start++;
+               continue;
+           }
+           
+           if(window_size == n-1 and stone_count == n-1) {
+               min_moves = min(min_moves, 2);
+           }
+           else
+               min_moves = min(min_moves, n - stone_count);
+           
+           end++;
+       }
+        return {min_moves, max_moves};
+    }
+};

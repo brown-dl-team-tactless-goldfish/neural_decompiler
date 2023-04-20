@@ -1,0 +1,64 @@
+
+
+int waysToSplit(int* nums, int numsSize){
+    int i;
+    int* prefix = malloc(numsSize * sizeof(int));
+    int* surfix = malloc(numsSize * sizeof(int));
+    prefix[0] = nums[0];
+    surfix[numsSize-1] = nums[numsSize-1];
+    int mod = 1e9 + 7;
+    for(i = 1; i < numsSize; i++){
+        prefix[i] = nums[i] + prefix[i-1];
+        surfix[numsSize -1 - i] = nums[numsSize -1 - i] + surfix[numsSize - i];
+    }
+
+    int L, M, R;  //L: sum of left , M: sum of middle, R: sum of right 
+    int ans = 0;
+    int left, right, mid, Ls, Lm;  //Ls: most left cut of first cut;   Lm: most right cut of first cut 
+    for(i = (numsSize - 1); i >=2; i--){
+        R = surfix[i];
+        if(2* R < prefix[i-1])
+            continue;
+        //Find Ls,
+        left = 0; right = i - 2;
+        while(left < right){
+            mid = (left + right)/2;
+            M = prefix[i-1] - prefix[mid];
+            L = prefix[mid];
+            //if(M <= R && L <= M)
+            if(L >= (prefix[numsSize-1] - 2*R))
+                right = mid;
+            else
+                left = mid + 1;
+        }
+        M = prefix[i-1] - prefix[left];
+        L = prefix[left];
+
+        if(M <= R && L <= M)
+            Ls = left;
+        else
+            continue;
+        //Find Lm
+        left = Ls; right = i - 2;
+        while((left + 1) < right){
+            mid = (left + right)/2;
+            M = prefix[i-1] - prefix[mid];
+            L = prefix[mid];
+            if(L <= M)
+                left = mid;
+            else
+                right = mid -1;
+        } 
+        M = prefix[i-1] - prefix[right];
+        L = prefix[right];        
+        if(L <= M)
+            Lm = right;  
+        else 
+            Lm = left;
+
+        ans = (ans + (Lm - Ls) + 1)%mod;
+    }
+    free(prefix);
+    free(surfix);
+    return ans;
+}

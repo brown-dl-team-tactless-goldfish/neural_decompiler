@@ -1,0 +1,16 @@
+inline bool todel(struct TreeNode *r, int v){
+    return !r->left && !r->right && r->val == v;
+}
+
+void dnode(struct TreeNode *r, struct TreeNode *p, int v){
+    if (r){
+        dnode(r->left, r, v);       
+        dnode(r->right, r, v);
+        p && todel(r, v) ? p->left == r ? p->left = NULL : (p->right = NULL), free(r) : 0;
+    }
+}
+
+struct TreeNode* removeLeafNodes(struct TreeNode* root, int target){
+    dnode(root, NULL, target);
+    return todel(root, target) ? NULL : root;
+}

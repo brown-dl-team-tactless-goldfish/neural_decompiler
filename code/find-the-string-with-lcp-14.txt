@@ -1,0 +1,28 @@
+class Solution {
+    public String findTheString(int[][] lcp) {
+        char c = 'a';
+        int n = lcp.length;
+        for (int i = 0; i < n; i++) {
+            if (lcp[i][i] != n - i) return "";
+            for (int j = 1; j < n; j++) if (lcp[i][j] != lcp[j][i]) return "";
+        }
+        char[] output = new char[n];
+        Arrays.fill(output, '*');
+        for (int i = 0; i < n; i++) 
+            if (output[i] == '*') {
+                if (c > 'z') return "";
+                for (int j = i; j < n; j++) if (lcp[i][j] > 0) {
+                    if (output[j] != '*') return "";
+                    output[j] = c;
+                }
+                c++;
+            }
+            else for (int j = i + 1; j < n; j++) if (lcp[i][j] > 0 && output[i] != output[j]) return "";
+        for (int i = 0; i < n; i++) for (int j = i + 1; j < n; j++) if (lcp[i][j] > 0) {
+            int k = 0;
+            while (i + k < n && j + k < n && output[i + k] == output[j + k]) k++;
+            if (lcp[i][j] != k) return "";
+        }
+        return new String(output);
+    }
+}

@@ -1,0 +1,65 @@
+class node{
+  public:
+    int v,w;
+    node(int x, int y){
+        v=x; w=y;
+    }
+};
+class Solution {
+public:
+    void buildgraph(vector<vector<node>> &g,vector<vector<int>>& nums){
+        int r = nums.size(),c = nums[0].size();
+        for(int i = 0; i<nums.size();++i){
+            for(int j = 0; j<nums[0].size();++j){
+                int k = i*c+j;
+                if(i+1<r){
+                    int t = (i+1)*c+j;
+                    node temp(t,1);
+                    if(nums[i][j]==3) temp.w=0;
+                    g[k].push_back(temp);
+                }
+                if(i-1>=0){
+                    int t = (i-1)*c+j;
+                    node temp(t,1);
+                    if(nums[i][j]==4) temp.w=0;
+                    g[k].push_back(temp);
+                }
+                if(j+1<c){
+                    int t = (i)*c+j+1;
+                    node temp(t,1);
+                    if(nums[i][j]==1) temp.w=0;
+                    g[k].push_back(temp);
+                }
+                if(j-1>=0){
+                    int t = i*c+j-1;
+                    node temp(t,1);
+                    if(nums[i][j]==2) temp.w=0;
+                    g[k].push_back(temp);
+                }
+            }
+        }
+    }
+    int Dijkstra(vector<vector<node>> &nums){
+        vector<int> dp(nums.size(),INT_MAX);
+        priority_queue<pair<int,int>,vector<pair<int,int>>,greater<pair<int,int>>> q;
+        dp[0] = 0; q.push({0,0});
+        while(!q.empty()){
+            auto temp = q.top(); q.pop();
+            int i = temp.second, d = temp.first;
+            if(d>dp[i]) continue;
+            for(int j = 0; j<nums[i].size();++j){
+                if(d+nums[i][j].w<dp[nums[i][j].v]){
+                    dp[nums[i][j].v]=d+nums[i][j].w;
+                    q.push({dp[nums[i][j].v],nums[i][j].v});
+                }
+            }
+        }
+        return dp[dp.size()-1];
+    }
+    int minCost(vector<vector<int>>& arr) {
+        int n = arr.size(),m=arr[0].size();
+        vector<vector<node>> nums(n*m);
+        buildgraph(nums,arr);
+        return Dijkstra(nums);
+    }
+};

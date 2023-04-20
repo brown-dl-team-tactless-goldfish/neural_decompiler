@@ -1,0 +1,71 @@
+class Solution {
+public:
+    // a has some extra wildcards need to match, diff < 0 
+    // b has some extra wildcards need to match, diff > 0 
+    bool f(const string& a, const string& b, int i, int j, int diff, vector<vector<vector<int>>>& dp) {
+        if(i == a.size() && j == b.size()) {
+            if(diff == 0) {
+                return true; 
+            }
+            return false; 
+        }
+        if(dp[i][j][diff + 1000] != -1) {
+            return dp[i][j][diff+1000];
+        }
+        if(i<a.size() && isdigit(a[i])) {
+            int t = 0; 
+            for(int k = i;k<a.size()&&isdigit(a[k]);k++) {
+                t = t * 10 + a[k] - '0';
+                if(f(a,b,k+1,j,diff-t,dp)) {
+                    return dp[i][j][diff + 1000] = true; 
+                }
+            }
+        } else {
+            if(diff > 0) {
+                if(i == a.size()) {
+                    return dp[i][j][diff + 1000] = false; 
+                }
+                return f(a,b,i+1,j,diff-1,dp);
+            } else if(diff == 0) {
+                if(i == a.size()) {
+                    return dp[i][j][diff + 1000] = false; 
+                }
+                if(a[i] == b[j]) {
+                    return dp[i][j][diff + 1000] = f(a,b,i+1,j+1,0,dp);
+                }
+            }
+        }
+        if(j<b.size() && isdigit(b[j])) {
+            int t = 0; 
+            for(int k = j;k<b.size()&&isdigit(b[k]);k++) {
+                t = t * 10 + b[k] - '0';
+                if(f(a,b,i,k+1,diff+t,dp)) {
+                    return dp[i][j][diff + 1000] = true; 
+                }
+            }
+        } else {
+            if(diff < 0) {
+                if(j == b.size()) {
+                    return dp[i][j][diff + 1000] = false; 
+                }
+                return f(a,b,i,j+1,diff+1,dp);
+            } else if(diff == 0) {
+                if(j == b.size()) {
+                    return dp[i][j][diff + 1000] = false; 
+                }
+                if(a[i] == b[j]) {
+                    return dp[i][j][diff + 1000] = f(a,b,i+1,j+1,0,dp);
+                }
+            }
+        }
+        return dp[i][j][diff + 1000] = false; 
+    }
+    
+    bool possiblyEquals(string s1, string s2) {
+        if(s1 == s2) {
+            return true; 
+        }
+        vector<vector<vector<int>>> dp(s1.size()+1,vector<vector<int>>(s2.size()+1,vector<int>(2000,-1)));
+        return f(s1,s2,0,0,0,dp);
+    }
+};

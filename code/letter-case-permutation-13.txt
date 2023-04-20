@@ -1,0 +1,49 @@
+char arr[12];
+int index2[12];
+char result[12];
+
+void solve(char** ans, int temp, int count, int *temp2, int len){
+    
+    if(temp==count){
+        
+        *(ans+*temp2) = (char*)malloc(sizeof(char)*(len+1));
+        ans[*temp2][len] = NULL;
+        memcpy(*(ans + *temp2), result, sizeof(char)*len);
+        (*temp2)++;
+        return;
+    }
+    
+    for(int i=0;i<2;i++){
+        if(i==0) result[index2[temp]] = arr[temp];
+        else result[index2[temp]] = arr[temp] - 32;
+        
+        solve(ans, temp+1, count, temp2,len);
+    }
+}
+
+char ** letterCasePermutation(char * S, int* returnSize){
+    int len = (int)strlen(S);
+    int count = 0;
+    for(int i=0;i<len;i++){
+        if(S[i]>57){//알파벳
+            if(S[i]<=90){//대문자이면
+                arr[count] = S[i]+32;
+            } //대문자면 소문자로 change
+            else{
+                arr[count] = S[i];
+            }
+            index2[count] = i;
+            ++count;
+        }else{//숫자
+            result[i] = S[i];
+        }
+    }
+    
+    char **ans = (char**)malloc(sizeof(char*)*(pow(2,count)));
+    *returnSize = pow(2,count);
+    int temp2 = 0;
+    solve(ans,0, count,&temp2, len);
+    
+    return ans;
+    
+}

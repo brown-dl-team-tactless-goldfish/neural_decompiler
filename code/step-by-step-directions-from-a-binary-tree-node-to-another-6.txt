@@ -1,0 +1,112 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+    
+    bool dfs(TreeNode *root, int val, string &s) {
+        if(root == NULL) return false;
+        if(root->val == val) {
+            return true;
+        }
+        if(dfs(root->left, val, s)) {
+            s.push_back('L');
+            return true;
+        }
+        if(dfs(root->right, val, s)) {
+            s.push_back('R');
+            return true;
+        }
+        return false;
+    }
+    
+    string getDirections(TreeNode* root, int startValue, int destValue) {
+        string s1 = "", s2 = "";
+        dfs(root, startValue, s1);
+        dfs(root, destValue, s2);
+        reverse(s1.begin(), s1.end());
+        reverse(s2.begin(), s2.end());
+        int i = 0;
+        int n = s1.size(), m = s2.size();
+        while(i < min(n, m) && s1[i] == s2[i]) {
+            i++;
+        }
+        string ans = "";
+        for(int j = i; j < n; j++) {
+            ans += 'U';
+        }
+        for(int j = i; j < m; j++) {
+            ans += s2[j];
+        }
+
+        return ans;
+    }
+};
+
+
+----------------------------------------------------------------------
+
+// 2nd approach
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+public:
+
+    string rootToNode(TreeNode *root, int &node) {
+        if(root == NULL) {
+            return "";
+        }
+        if(root->val == node) {
+            return "*";
+        }
+        string left = rootToNode(root->left, node);
+        if(left != "") {
+            return 'L' + left;
+        }
+        string right = rootToNode(root->right, node);
+        if(right != "") {
+            return 'R' + right;
+        }
+        return "";
+    }
+
+    string getDirections(TreeNode* root, int startValue, int destValue) {
+        string startPath = rootToNode(root, startValue);
+        string destPath = rootToNode(root, destValue);
+        int idx = 0;
+        int n = startPath.size(), m = destPath.size();
+        while(idx < min(n, m) && startPath[idx] == destPath[idx]) {
+            idx++;
+        }
+        // cout << startPath << " - " << destPath << endl;
+        string ans = "";
+        for(int i = idx; i < n; i++) {
+            char c = startPath[i];
+            if(c == '*') break; 
+            ans += "U";
+        }
+        for(int i = idx; i < m; i++) {
+            char c = destPath[i];
+            if(c == '*') break;
+            ans += c;
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,57 @@
+typedef struct {
+	// User defined data may be declared here.
+	pthread_mutex_t mutex;
+	int first_done;
+	int second_done;
+	pthread_cond_t first_cond;
+	pthread_cond_t second_cond;
+} Foo;
+
+Foo* fooCreate() {
+	Foo* obj = (Foo*) malloc(sizeof(Foo));
+
+	// Initialize user defined data here.
+	pthread_mutex_init(&obj -> mutex, NULL);
+	pthread_cond_init(&obj -> first_cond, NULL);
+	pthread_cond_init(&obj -> second_cond, NULL);
+	obj -> first_done = 0;
+	obj -> second_done = 0;
+	return obj;
+}
+
+void first(Foo* obj) {
+	pthread_mutex_lock(&obj -> mutex);
+	// printFirst() outputs "first". Do not change or remove this line.
+	printFirst();
+	obj -> first_done = 1;
+	pthread_mutex_unlock(&obj -> mutex);
+	pthread_cond_signal(&obj -> first_cond);
+}
+
+void second(Foo* obj) {
+	pthread_mutex_lock(&obj -> mutex);
+	// printSecond() outputs "second". Do not change or remove this line.
+	while(!obj -> first_done)
+		pthread_cond_wait(&obj -> first_cond, &obj -> mutex);
+	printSecond();
+	obj -> second_done = 1;
+	pthread_mutex_unlock(&obj -> mutex);
+	pthread_cond_signal(&obj -> second_cond);
+}
+
+void third(Foo* obj) {
+	pthread_mutex_lock(&obj -> mutex);
+	// printThird() outputs "third". Do not change or remove this line.
+	while(!obj -> second_done)
+		pthread_cond_wait(&obj -> second_cond, &obj -> mutex);
+	printThird();
+	pthread_mutex_unlock(&obj -> mutex);
+}
+
+void fooFree(Foo* obj) {
+	// User defined data may be cleaned up here.
+	pthread_mutex_destroy(&obj -> mutex);
+	pthread_cond_destroy(&obj -> first_cond);
+	pthread_cond_destroy(&obj -> second_cond);
+	free(obj);
+}

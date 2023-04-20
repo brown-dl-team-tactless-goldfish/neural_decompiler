@@ -1,0 +1,71 @@
+class Solution {
+public:
+    int maxSumTwoNoOverlap(vector<int>& nums, int firstLen, int secondLen) {
+          
+        int sz=nums.size();
+        
+        int al[sz],ar[sz],bl[sz],br[sz];
+        
+        int suma=0,sumb=0;
+        
+        for(int i=0;i<sz;i++)
+        {
+            suma+=nums[i];
+            sumb+=nums[i];
+            if(i<firstLen-1)
+                al[i]=0;
+            else{
+                if(i-1>=0)
+                al[i]=max(suma,al[i-1]);
+                else
+                    al[i]=suma;
+                
+                suma-=nums[i-firstLen+1];
+            }
+            if(i<secondLen-1)
+                bl[i]=0;
+            else{
+                if(i-1>=0)
+                bl[i]=max(sumb,bl[i-1]);
+                else
+                    bl[i]=sumb;
+                sumb-=nums[i-secondLen+1];
+            }
+        }
+        suma=0;sumb=0;
+        for(int i=sz-1;i>=0;i--)
+        {
+            suma+=nums[i];
+            sumb+=nums[i];
+            if(i>sz-firstLen)
+                ar[i]=0;
+            else
+            {
+                if(i+1<sz)
+                ar[i]=max(ar[i+1],suma);
+                else
+                    ar[i]=suma;
+                suma-=nums[i+firstLen-1];
+            }
+            
+            if(i>sz-secondLen)
+                br[i]=0;
+            else
+            {
+                if(i+1<sz)
+                br[i]=max(br[i+1],sumb);
+                else
+                    br[i]=sumb;
+                sumb-=nums[i+secondLen-1];
+            }
+                
+        }
+        int ans=0;
+        for(int i=0;i<sz-1;i++)
+        {
+            ans=max(ans,al[i]+br[i+1]);
+            ans=max(ans,bl[i]+ar[i+1]);
+        }
+        return ans;
+    }
+};

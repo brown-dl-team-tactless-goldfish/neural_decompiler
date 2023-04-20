@@ -1,0 +1,47 @@
+
+void sort(int* arr,int* arr1,int len){
+   int i,j;
+   for(i=0;i<len-1;i++){
+     for(j=i+1;j<len;j++){
+	if(arr[i]<arr[j]){
+	  arr[i]=arr[i]^arr[j];
+	  arr[j]=arr[i]^arr[j];
+	  arr[i]=arr[i]^arr[j];
+	  arr1[i]=arr1[i]^arr1[j];
+	  arr1[j]=arr1[i]^arr1[j];
+	  arr1[i]=arr1[i]^arr1[j];		   
+	}		
+     }
+   }
+}
+
+char * frequencySort(char * s){
+    int freq[94] = {0};         //The size of array is 94 for ASCII values (32 - 126) 
+    int i,j,k,ch,len1,len;
+    len = strlen(s);
+    int occ[94];
+    int letter[94];
+    for(i=0;i<len;i++){       //Finding the frequency of all the characters in the String 
+        ch = (int)s[i];
+        freq[ch-32]++;
+    }
+    for(i=0,j=0;i<94;i++){    //Seperating the character and its occurences in Two different arrays
+        if(freq[i]!=0){
+            letter[j]=i;
+            occ[j]=freq[i];
+            j++;
+        }
+    }
+    len1=j;
+    sort(occ,letter,len1);             //Sorting both the arrays based on the highest number of occurences
+    for(i=0;i<len1;i++){               /*letter array consists only the index of freq array. Converting it to the ASCII value of corresponding character */
+         letter[i]+=32;               
+    }
+    k=0;
+    for(i=0;i<len1;i++){                   //Copying the characters to original string
+        for(j=0;j<occ[i];j++){
+            s[k++]=(char)letter[i];
+        }
+    }
+    return s;
+}

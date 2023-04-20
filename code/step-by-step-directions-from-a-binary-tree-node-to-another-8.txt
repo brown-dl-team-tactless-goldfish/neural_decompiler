@@ -1,0 +1,62 @@
+class Solution {
+public:
+    // This function helps to find the path to a node
+    // ans will store the path to the desired node
+    // curr stores the path from root to the current node
+    bool path(TreeNode *root,int node,string &curr,string &ans)
+    {
+        if(!root)
+        {
+            return false;
+        }
+        if(root->val==node)
+        {
+            ans=curr;
+            return true;
+        }
+        curr.push_back('L');
+        if(path(root->left,node,curr,ans))
+        {
+            return true;
+        }
+        curr.pop_back();
+        curr.push_back('R');
+        if(path(root->right,node,curr,ans))
+        {
+            return true;
+        }
+        curr.pop_back();
+        return false;
+    }
+    string getDirections(TreeNode* root, int startValue, int destValue) 
+    {
+        if(!root || startValue==destValue) 
+        {
+            return "";
+        }
+        // l stores the path from root to the startValue
+        // r stores the path from root to the destValue
+        string l="",r="",curr="";
+        path(root,startValue,curr,l);
+        curr="";
+        path(root,destValue,curr,r);
+        
+        // traverse the paths untill the lca is reached
+        int i=0,j=0;
+        while(i<l.length() && j<r.length() && l[i]==r[j])
+        {
+            i++;
+            j++;
+        }
+        
+        // at any cost we have to go upwards from startValue to the LCA
+        // so append only 'U's
+        l=l.substr(i);
+        for(int i=0;i<l.length();i++)
+        {
+            l[i]='U';
+        }
+        // finally join the left and right path and return
+        return l+r.substr(j);
+    }
+};

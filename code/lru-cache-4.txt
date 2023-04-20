@@ -1,0 +1,63 @@
+struct lnode *temp = root->hptr[key], *temp1 = NULL;
+
+if(temp == NULL){
+    
+    temp1 = (struct lnode *)calloc(1, sizeof(struct lnode));
+    temp1->value = value;
+    temp1->key   = key;
+    temp1->prev = NULL;
+    temp1->next = NULL;
+    //Update the hash
+    root->hptr[key] = temp1;
+    
+    //Update the double link list
+    //If this is first node 
+    if(root->count == 0){
+        root->start = root->rear = temp1;
+    }else{
+        //Add the node to rear end
+        root->rear->next = temp1;
+        temp1->prev = root->rear;
+        root->rear = root->rear->next; 
+        root->rear->next = NULL;
+    }
+    //Increament the number of node present in the cache 
+    root->count++;
+    
+    if( root->count > root->CacheCap){
+        temp1 = root->start;
+        root->hptr[temp1->key] = NULL;
+        root->start = root->start->next;
+        root->start->prev = NULL;
+        free(temp1);
+        root->count--;
+        
+    }
+    
+    return;
+}
+//IF required key is already exist in the cache
+ temp->value = value;
+//If existing node is rear node no chnage is required
+if(temp == root->rear)
+    return;
+//IF existing node is start node then move to rear node.
+if(temp == root->start){
+        temp1 = root->start;
+        root->start = root->start->next;
+        root->start->prev = NULL;
+        
+        root->rear->next = temp1;
+        temp1->prev = root->rear;
+        root->rear = root->rear->next;  
+        root->rear->next = NULL;
+        return;
+}
+temp->prev->next = temp->next;
+temp->next->prev = temp->prev;
+
+root->rear->next = temp;
+temp->prev = root->rear;
+root->rear = root->rear->next; 
+root->rear->next = NULL;
+return;

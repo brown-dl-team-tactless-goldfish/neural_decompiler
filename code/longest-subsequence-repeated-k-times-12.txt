@@ -1,0 +1,37 @@
+class Solution {
+    // does t repeat k times in s?
+    bool check(string &t, string &s, int k) {
+        int m = t.size(), limit = k * m, count = 0;
+        for (auto &c: s) {
+            if (c == t[count % m]) ++count;
+            if (count == limit) return true;
+        }
+        return false;
+    }
+    
+public:
+    string longestSubsequenceRepeatedK(string s, int k) {
+        map<char, int> mp;
+        for (auto &c: s) ++mp[c];
+        
+        // candidates, which also determine the max length 
+        string cand;
+        for (auto &it: mp) {
+            for (int i = 0; i < it.second / k; ++i) cand += it.first;
+        }
+        
+        string ret;
+        // for each length, find all valid candidate substrings
+        // return the max amont them if one is found
+        for (int len = cand.size(); len > 0; --len) {
+            string temp(cand);
+            do {
+                string t = temp.substr(0, len);
+                if (check(t, s, k) == true) ret = max(ret, t);
+            } while(next_permutation(temp.begin(), temp.end()));
+            
+            if (ret.size() > 0) return ret;
+        }
+        return ret;
+    }
+};

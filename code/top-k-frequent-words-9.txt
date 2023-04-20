@@ -1,0 +1,141 @@
+struct WordRecord
+{
+    char* pcWord;
+    short sCount;
+
+    struct WordRecord* pstParent;
+    struct WordRecord* pstLeft;
+    struct WordRecord* pstRight;
+};
+
+struct WordRecord* AddTree(struct WordRecord* pstRoot, struct WordRecord* pstMax, char* pcWord, short sCount)
+{
+    if(sCount > pstMax->sCount)
+    {
+        pstMax->pstRight = (struct WordRecord*) malloc(sizeof(struct WordRecord));
+        pstMax->pstRight->pcWord = pcWord;
+        pstMax->pstRight->sCount = sCount;
+        pstMax->pstRight->pstParent = pstMax;
+        pstMax->pstRight->pstLeft = NULL;
+        pstMax->pstRight->pstRight = NULL;
+        pstMax = pstMax->pstRight;
+    }
+    else if(sCount > pstRoot->sCount)
+    {
+        if(pstRoot->pstRight)
+        {
+            AddTree(pstRoot->pstRight, pstMax, pcWord, sCount);
+        }
+        else
+        {
+            pstRoot->pstRight = (struct WordRecord*) malloc(sizeof(struct WordRecord));
+            pstRoot->pstRight->pcWord = pcWord;
+            pstRoot->pstRight->sCount = sCount;
+            pstRoot->pstRight->pstParent = pstRoot;
+            pstRoot->pstRight->pstLeft = NULL;
+            pstRoot->pstRight->pstRight = NULL;
+        }
+    }
+    else
+    {
+        if(pstRoot->pstLeft)
+        {
+            AddTree(pstRoot->pstLeft, pstMax, pcWord, sCount);
+        }
+        else
+        {
+            pstRoot->pstLeft = (struct WordRecord*) malloc(sizeof(struct WordRecord));
+            pstRoot->pstLeft->pcWord = pcWord;
+            pstRoot->pstLeft->sCount = sCount;
+            pstRoot->pstLeft->pstParent = pstRoot;
+            pstRoot->pstLeft->pstLeft = NULL;
+            pstRoot->pstLeft->pstRight = NULL;
+        }        
+    }
+
+    return pstMax;
+}
+
+void DelTree(struct WordRecord* pstRoot)
+{
+    if(pstRoot->pstLeft) DelTree(pstRoot->pstLeft);
+    if(pstRoot->pstRight) DelTree(pstRoot->pstRight);
+
+    free(pstRoot);
+}
+
+int* CompareString(char** ppcFirst, char** ppcSecond)
+{
+    char* pcFirst = *ppcFirst;
+    char* pcSecond = *ppcSecond;
+    while(*pcFirst && *pcSecond)
+    {
+        if(*pcFirst != *pcSecond) return *pcFirst - *pcSecond;
+
+        pcFirst++;
+        pcSecond++;
+    }
+
+    return *pcFirst - *pcSecond;
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char ** topKFrequent(char ** words, int wordsSize, int k, int* returnSize){
+    if(wordsSize == 1)
+    {
+        *returnSize = 1;
+        return words;
+    }
+
+    short sWordsSize = wordsSize, sK = k;
+    qsort(words, sWordsSize, sizeof(char*), CompareString);
+
+    // add pstRoot
+    short sIndex = 1;
+    while(sIndex < sWordsSize && strcmp(words[sIndex-1], words[sIndex]) == 0) sIndex++;
+
+    struct WordRecord* pstRoot = (struct WordRecord*) malloc(sizeof(struct WordRecord));
+    pstRoot->pcWord = words[sIndex-1];
+    pstRoot->sCount = sIndex;
+    pstRoot->pstParent = NULL;
+    pstRoot->pstLeft = NULL;
+    pstRoot->pstRight = NULL;
+    struct WordRecord* pstMax = pstRoot;
+
+    // trace rest different words
+    while(sIndex < sWordsSize)
+    {
+        short sStart = sIndex++;
+        while(sIndex < sWordsSize && strcmp(words[sIndex-1], words[sIndex]) == 0) sIndex++;
+
+        pstMax = AddTree(pstRoot, pstMax, words[sIndex-1], sIndex-sStart);
+    }
+
+    // write data
+    *returnSize = 0;
+    char** ppnRet = (char**) malloc(sK*sizeof(char*));
+    while(*returnSize < sK)
+    {
+        while(pstMax->pcWord == NULL) pstMax = pstMax->pstParent;
+
+        ppnRet[(*returnSize)++] = pstMax->pcWord;
+        pstMax->pcWord = NULL;
+
+        if(pstMax->pstLeft)
+        {
+            pstMax = pstMax->pstLeft;
+            while(pstMax->pstRight) pstMax = pstMax->pstRight;
+        }
+        else
+        {
+            pstMax = pstMax->pstParent;
+        }
+    }
+
+    // free memory
+    DelTree(pstRoot);
+
+    return ppnRet;
+}

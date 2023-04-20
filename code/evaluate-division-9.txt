@@ -1,0 +1,59 @@
+public class Solution {
+    //treat the division as graph edges; a/b = a -> b weight 2.0
+    // [ ["a", "b"], ["b", "c"] ],
+    Dictionary<string,List<nodeinfo>> adjs;
+    HashSet<string> visited;
+    public double[] CalcEquation(IList<IList<string>> equations, double[] values, IList<IList<string>> queries)     {
+        int idx = 0;
+        visited = new HashSet<string>();
+        adjs = new Dictionary<string,List<nodeinfo>>();
+        double[] res = new double[queries.Count];
+        
+        foreach(List<string> eq in equations)
+        {
+            string c = eq[0];
+            string d = eq[1];
+            double val = values[idx++]; 
+            if (!adjs.ContainsKey(c)) adjs.Add(c,new List<nodeinfo>());
+            if (!adjs.ContainsKey(d)) adjs.Add(d,new List<nodeinfo>());
+            adjs[c].Add(new nodeinfo(d,val));
+            adjs[d].Add(new nodeinfo(c,1/val));
+        }
+        idx = 0;
+        foreach(List<string> que in queries)
+        {
+            visited.Clear();
+            double ratio = DFS(que[0],que[1],1);
+            res[idx++] = ratio;
+        }
+        return res;
+    }
+    public double DFS(string src, string dest, double result)
+    {
+        if (!adjs.ContainsKey(src)||!adjs.ContainsKey(dest) ) //if the expression is not in the equations.
+            return -1.0;
+        
+        if (src==dest)
+            return result;
+        foreach(nodeinfo c in adjs[src])
+        {
+            if (!visited.Contains(c.express))
+            {
+                visited.Add(c.express);
+                double res=DFS(c.express, dest, result * c.ratio);
+                if (res!=-1)
+                    return res;
+            }
+        }
+        return -1;
+    }
+    public class nodeinfo{
+        public string express;
+        public double ratio;
+        public nodeinfo(string c, double r)
+        {
+            express = c;
+            ratio = r;
+        }
+    }
+}

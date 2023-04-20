@@ -1,0 +1,41 @@
+#define ff first
+#define ss second
+typedef long long ll;
+
+class Solution {
+public:
+    vector<vector<int>> adj;
+	// <fuel, people>
+    pair<ll, ll> dfs(int i, int p, ll h, int seats) {
+        bool flag = true;
+        ll fuel = 0, people = 0;
+        for(auto ch : adj[i]) {
+            if(ch != p) {
+                flag = false;
+                pair<ll, ll> q = dfs(ch, i, h + 1, seats);
+                fuel += q.ff;
+                people += q.ss;
+            }
+        }
+        if(i == 0)                                                        // We don't need to go anywhere. Thus, return the total fuel.
+            return {fuel, people};
+        people++;                                                         // Include current representative 
+        ll x = people % seats == 0 ? people / seats : people / seats + 1; // n = seats require 1 unit fuel, thus x = minimum cars required for all people
+        fuel += x;
+        if(flag)                                                          // Representative at root node will need 1 unit fuel.
+            return {1, 1};
+        return {fuel, people};
+    }
+    long long minimumFuelCost(vector<vector<int>>& roads, int seats) {
+        if(roads.size() == 0)
+            return 0;
+        int n = 1 + roads.size();
+        adj.resize(n, vector<int> ());
+        for(auto it : roads) {
+            adj[it[0]].push_back(it[1]);
+            adj[it[1]].push_back(it[0]);
+        }
+        pair<ll, ll> p = dfs(0, 0, 0, seats);
+        return p.ff;
+    }
+};

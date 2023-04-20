@@ -1,0 +1,52 @@
+class Solution {
+public:
+    vector<int>v;
+    int binar(int a,int ch,vector<int>& nums){
+        int i=0;
+        int j=v.size()-1;
+        int id=-1;
+        while(i<=j){
+            int mid=(i+j)/2;
+            if(v[mid]<a){
+                if(ch==0){
+                    id=mid;
+                    i=mid+1;
+                }else{
+                    int diff=a-v[mid];
+                    if(diff>nums[ch-1]){
+                        id=mid;
+                        i=mid+1;
+                    }else j=mid-1;
+                }
+            }else j=mid-1;
+        }
+        return id;
+    }
+    bool primeSubOperation(vector<int>& nums) {
+        for(int i=2;i<=1000;i++){
+            bool flag=1;
+            for(int j=2;j<=sqrt(i);j++){
+                if(i%j==0){
+                    flag=0;
+                    break;
+                }
+            }
+            if(flag)v.push_back(i);
+        }
+        int n=v.size();
+        int f=1;
+        for(int i=0;i<nums.size();i++){
+            if(i!=0&&nums[i]<=nums[i-1]){
+                f=0;
+                break;
+            }
+            int id=binar(nums[i],i,nums);
+            if(id!=-1){
+                nums[i]=nums[i]-v[id];
+            }
+            // cout<<nums[i]<<' ';
+        }
+        if(f)return 1;
+        return 0;
+    }
+};

@@ -1,0 +1,24 @@
+class Solution {
+    int dir[8][2];
+    unordered_map<string, double> position_map;
+public:
+    Solution(): dir({{-1, 2}, {-2, 1}, {-2, -1}, {-1, -2}, {1, -2}, {2, -1}, {2, 1}, {1, 2}}) {
+    }
+    double knightProbability(int N, int K, int r, int c) {
+        if (r < 0 || r >= N || c < 0 || c >= N) return 0.0;
+        if (K == 0) return 1.0;
+        if (position_map.count(to_string(r) + "," + to_string(c) + "," + to_string(K)) == 1)
+            return position_map[to_string(r) + "," + to_string(c) + "," + to_string(K)];
+        double prob = 0.0;
+        for (int i = 0; i < 8; i++) {
+            int r_new = r + dir[i][0];
+            int c_new = c + dir[i][1];
+            double p_curr = 1.0 / 8.0;
+            double p_child = knightProbability(N, K - 1, r_new, c_new);
+            prob += p_curr * p_child;
+        }
+         
+        position_map[to_string(r) + "," + to_string(c) + "," + to_string(K)] = prob;
+        return prob;
+    }
+};

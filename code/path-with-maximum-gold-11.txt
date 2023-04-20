@@ -1,0 +1,33 @@
+int dfs(vector<vector<int>>& grid,int i,int j,vector<vector<bool>>& visited)
+ {
+    if(i<0 || j<0 || i>=grid.size() || j>= grid[0].size() || visited[i][j] || grid[i][j] == 0)
+    	return 0;
+    visited[i][j] = true;
+    int left = dfs(grid,i,j-1,visited);
+    int right = dfs(grid,i,j+1,visited);
+    int down = dfs(grid,i+1,j,visited);
+    int up = dfs(grid,i-1,j,visited);
+    visited[i][j] = false;
+    return max(left,max(right,max(up,down))) + grid[i][j];
+ }
+        
+ int getMaximumGold(vector<vector<int>>& grid) {
+ if(grid.size() == 0) return 0;
+ int r = grid.size();
+ int c = grid[0].size();
+ int maxGold = INT_MIN;
+ int curGold = 0;
+ vector<vector<bool>> visited(r,vector<bool>(c,false));
+ for(int i = 0;i<r;i++)
+     {
+     	for(int j = 0;j<c;j++)
+     	{
+     		if(grid[i][j] > 0 && !visited[i][j])
+     		{
+     			curGold = dfs(grid,i,j,visited);
+     			maxGold = max(maxGold,curGold);
+     		}
+     	}
+     }
+return maxGold;
+}

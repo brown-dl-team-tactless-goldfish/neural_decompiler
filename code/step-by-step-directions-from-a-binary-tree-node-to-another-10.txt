@@ -1,0 +1,79 @@
+class Solution {
+public:
+    
+     map<TreeNode*, vector<pair<TreeNode*, char>>> adj;
+     map<TreeNode*, int> v;
+     TreeNode* source;
+     TreeNode* target;
+    
+    void traverse(TreeNode* node, int s, int t)
+    {
+        if(node==nullptr)
+            return ;
+        if(node->val==s)
+            source = node;
+         if(node->val==t)
+            target = node;
+        
+        if(node->left)
+        {
+            adj[node->left].push_back({node, 'U'});
+            adj[node].push_back({node->left, 'L'});
+            
+        }
+         if(node->right)
+        {
+            adj[node->right].push_back({node, 'U'});
+            adj[node].push_back({node->right, 'R'});
+            
+        }
+        traverse(node->left, s, t);
+        traverse(node->right, s, t);
+    }
+    
+    string getDirections(TreeNode* root, int s, int d) {
+        traverse(root, s, d);
+      
+        string ans;
+        queue<pair<TreeNode*, string>> q;
+        
+        q.push({source, ""});
+        v[source]=1;
+        
+        while(!q.empty())
+        {
+            auto node = q.front();
+            int sz = q.size();
+            q.pop();
+            TreeNode* t = node.first;
+            string pathTillNow = node.second;
+            for(int i=0; i<sz; i++)
+            {
+                for(auto neigh : adj[t])
+                {
+                    if(v.find(neigh.first)==v.end())
+                    {
+                        string path = pathTillNow;
+                        auto next = neigh.first;
+                        char dir = neigh.second;
+                        
+                        path+=dir;
+                        if(next==target)
+                            return path;
+                        else
+                        {
+                            q.push({next, path});
+                            v[next]=1;
+                        }
+                            
+                      
+                    }
+                   
+                }
+            }
+            
+       }
+        return ans;
+    }
+    
+};

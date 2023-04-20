@@ -1,0 +1,36 @@
+public double[] MedianSlidingWindow(int[] nums, int k) 
+{
+	List<int> window = new List<int>();
+	List<double> result = new List<double>();
+
+	for(int i = 0 ; i < nums.Length; i++)
+	{
+		int index = window.BinarySearch(nums[i]);
+		if(index < 0)
+		{
+			index = ~index;
+		}
+
+		window.Insert(index, nums[i]);
+
+		if(i >= k - 1)
+		{
+			if(i >= k)
+			{
+				int removeIndex = window.BinarySearch(nums[i - k]);
+				window.RemoveAt(removeIndex);
+			}
+
+			if(k % 2 == 0)
+			{
+				result.Add(Math.Round((window[k/2 - 1] + window[k/2] * 1L)/ 2d, 1));
+			}
+			else
+			{
+				result.Add(window[k/2]);
+			}
+		}            
+	}
+
+	return result.ToArray();
+}

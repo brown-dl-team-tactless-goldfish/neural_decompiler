@@ -1,0 +1,17 @@
+    int minOperationsMaxProfit(vector<int>& customers, int boardingCost, int runningCost) {
+        int maxProfit = 0, curProfit = 0, bestRotate = 0, numRotate = 0, numWait = 0;
+        auto oneRotate = [&]() mutable{
+            int numIn = min(4, numWait);
+            numWait -= numIn;
+            numRotate++;
+            curProfit += numIn * boardingCost - runningCost;
+            if(curProfit > maxProfit) maxProfit = curProfit, bestRotate = numRotate;
+        };
+                
+        for(auto x:customers){
+            numWait += x;
+            oneRotate();
+        }
+        while(numWait > 0) oneRotate();
+        return maxProfit > 0 ? bestRotate : -1; 
+    }

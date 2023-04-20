@@ -1,0 +1,48 @@
+class DinnerPlates {
+public:
+    vector<stack<int>> plates;
+    int pushPtr = 0;
+    int popPtr = 0;
+    int capacity;
+    
+    DinnerPlates(int capacity) {
+        this->capacity = capacity;
+    }
+    
+    void push(int val) {
+        if(plates.size() == pushPtr) {
+            stack<int> temp;
+            plates.push_back(temp);
+        }
+        if(plates[pushPtr].size() == capacity) {
+            pushPtr++;
+            push(val);
+        }else {
+            popPtr = max(popPtr, pushPtr);
+            plates[pushPtr].push(val);
+        }
+    }
+    
+    int pop() {
+        if(plates.size() == 0) return -1;
+        if(plates[popPtr].size() == 0) {
+            if(popPtr == 0) {
+                return -1;
+            }
+            popPtr--;
+            return pop();
+        }
+        int ret  = plates[popPtr].top();
+        plates[popPtr].pop();
+        pushPtr = min(pushPtr, popPtr);
+        return ret;
+    }
+    
+    int popAtStack(int index) {
+        if(plates.size() <= index || plates[index].size() == 0) return -1;
+        int ret = plates[index].top();
+        plates[index].pop();
+        pushPtr = min(pushPtr, index);
+        return ret;
+    }
+};

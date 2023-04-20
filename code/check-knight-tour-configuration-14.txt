@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int n,m;
+    bool help(int rr,int cc,int r,int c){
+        if((rr+1==r && (cc-2==c || cc+2==c)) || 
+           (rr+2==r && (cc-1==c || cc+1==c)) || 
+           (rr-1==r && (cc-2==c || cc+2==c)) || 
+           (rr-2==r && (cc-1==c || cc+1==c))){
+            return true;
+        }
+        return false;
+    }
+    bool checkValidGrid(vector<vector<int>>& grid) {
+        map<int,pair<int,int>> mp;
+        for(int i=0;i<grid.size();i++){
+            for(int j=0;j<grid[0].size();j++){
+                mp[grid[i][j]] = {i,j};
+            }
+        }
+        n = grid.size();
+        m = grid[0].size();
+        vector<vector<int>> vis(n,vector<int>(m,0));
+        queue<pair<int,int>> q;
+        q.push({0,0});
+        vis[0][0] = 1;
+        while(q.size()){
+            auto x = q.front();
+            q.pop();
+            int r = x.first,c = x.second;
+            int val = grid[r][c];
+            if(mp.find(val+1)!=mp.end()){
+                auto cor = mp[val+1];
+                if(help(cor.first,cor.second,r,c) && vis[cor.first][cor.second]==0){
+                    q.push({cor.first,cor.second});
+                    vis[cor.first][cor.second] = 1;
+                }
+            }
+        }
+        for(int i=0;i<n;i++){
+            for(int j=0;j<m;j++){
+                if(!vis[i][j]) return false;
+            }
+        }
+        return true;
+    }
+};

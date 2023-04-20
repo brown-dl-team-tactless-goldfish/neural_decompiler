@@ -1,0 +1,37 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+// interleaved ordering: 1st, last, 2nd, last-1, ...
+#define IDX(i, n) (((i) % 2) ? (n) - ((i)/2) - 1 : ((i)/2))
+void reorderList(struct ListNode* head) {
+  // count nodes
+  int len = 0;
+  struct ListNode *node = head;
+  while (node) {
+    len++;
+    node = node->next; 
+  }
+  
+  // 0-, 1- and 2-length lists need no modification.
+  if (len < 3) return;
+  
+  // store nodes
+  struct ListNode **nodes = (struct ListNode*)malloc(len * sizeof(struct ListNode*));
+  int i = 0;
+  while (head) {
+    nodes[i++] = head;
+    head = head->next; 
+  }
+  
+  // Update each node's "next"
+  for (i = 0; i < len - 1; ++i)
+    nodes[IDX(i, len)]->next = nodes[IDX(i + 1, len)];
+  // Terminate the list at the last node.
+  nodes[IDX(i, len)]->next = NULL;
+  
+  free(nodes);
+}

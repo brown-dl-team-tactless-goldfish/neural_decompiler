@@ -1,0 +1,41 @@
+class Solution {
+public:
+    int scoreOfStudents(string s, vector<int>& a) {
+        int correct_ans = 0, N = s.size();
+        for(int i = 0; i < N; i += 2) {
+            int cur = s[i]-'0';
+            while(i+1 < N && s[i+1] == '*') {
+                cur *= s[i+2]-'0';
+                i += 2;
+            }
+            correct_ans += cur;
+        }
+        unordered_set<int> mem[32][32]{};
+
+        auto helper = [&](auto && self, int l, int h) {
+            if(mem[l][h].size() > 0) return;
+            if(l == h) {
+                mem[l][l].insert(s[l]-'0');
+                return;
+            }
+
+            for(int i = l; i <= h; i++) {
+                if(s[i] == '*' || s[i] == '+') {
+                    self(self, l, i-1);
+                    self(self, i+1, h);
+                    for(int x : mem[l][i-1]) {
+                        for(int y : mem[i+1][h]) {
+                            int res = s[i] == '*' ? (x*y) : (x+y);
+                            if(res <= 1000) mem[l][h].insert(res);
+                        }
+                    }
+                }
+            }
+        };
+
+        helper(helper, 0, N-1);
+
+        mem[0][N-1].erase(correct_ans);
+        return 5*count_if(begin(a), end(a), [&](auto e){return e == correct_ans;}) + 2*count_if(begin(a), end(a), [&](auto e){return mem[0][N-1].find(e) != mem[0][N-1].end();});
+    }
+};

@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<int> visited;
+    map<pair<int,vector<int>>,int> m;
+    
+    int dfsutil(vector<int>& x, vector<int>& y,int xp,int n){
+        if(xp>=n) return 0;
+        if(m.find({xp,visited}) != m.end()) return m[{xp,visited}];
+        int res = INT_MAX;
+        for(int i=0;i<n;i++){
+            if(!visited[i]){
+                visited[i] = 1;
+                int temp = x[xp] ^ y[i];
+                res = min(res,temp+dfsutil(x,y,xp+1,n));
+                visited[i] = 0; // Backtrack
+            }
+        }
+        return (m[{xp,visited}] = res);
+    }
+    
+    int minimumXORSum(vector<int>& nums1, vector<int>& nums2) {
+        int n = nums1.size();
+        visited.resize(20,0);
+        m.clear();
+        return dfsutil(nums1,nums2,0,n);
+    }
+};

@@ -1,0 +1,15 @@
+with cte as(
+
+select name, salary,departmentid,
+dense_rank() over(partition by departmentid order by salary desc) as salary1
+from employee)
+
+select d.name as department, 
+c.name as employee,
+c.salary as salary
+from 
+cte c join
+department d
+on
+c.departmentid = d.id
+where salary1 in (1,2,3)

@@ -1,0 +1,50 @@
+   int robotSim(vector<int>& commands, vector<vector<int>>& obstacles_) {
+        int x {0};
+        int y {0};
+        char dir = 0;
+        int max_d = 0;
+       set<pair<int,int>> obstacles;
+        for (const vector<int> coo: obstacles_)
+            obstacles.insert({coo[0], coo[1]});
+        for (auto c : commands) {
+            switch (c){
+                case -2:
+                    dir = (dir +3)%4;
+                    break;
+                case -1:
+                    dir = (dir + 1)%4;
+                    break;
+                default:
+                    while(c--) {
+                        switch(dir) {
+                            case 0:
+                                if (obstacles.count({x, y + 1}) == 0) {
+                                    ++y;
+                                }
+                                break;
+                            case 1:
+                                if (obstacles.count({x+1, y }) == 0) {
+                                    ++x;
+                                }
+                                break;
+                            case 2:
+                                if (obstacles.count({x, y -1}) == 0) {
+                                    --y;
+                                }
+                                break;
+                            case 3:
+                                if (obstacles.count({x-1, y}) == 0) {
+                                    --x;
+                                }
+                                break;
+                        }
+                        
+                    }
+                    break;
+            }
+            int d =  (pow(x , 2) + pow(y , 2) );
+         
+            max_d = max(max_d, d);
+        }
+        return max_d;
+    }

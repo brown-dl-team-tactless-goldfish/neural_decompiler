@@ -1,0 +1,40 @@
+class Solution 
+{
+    public:
+    int p[100001];
+    int s[100001];
+    int f(int x)
+    {
+        if(x!=p[x]) p[x]=f(p[x]);
+        return p[x];
+    }
+    void u(int x,int y)
+    {
+        x=f(x);
+        y=f(y);
+        if(s[x]<s[y])
+        {
+            s[y]+=s[x];
+            p[x]=y;
+        }
+        else
+        {
+            s[x]+=s[y];
+            p[y]=x;
+        }
+    }
+    vector<bool> areConnected(int n, int threshold, vector<vector<int>>& queries) 
+    {
+        vector<bool> result;
+        for(int i=0;i<100001;i++) p[i]=i,s[i]=1;
+
+        for(int i=threshold+1;i<=n;i++)
+            for(int j=i+i;j<=n;j+=i)
+                if(f(i)!=f(j))
+                    u(i,j);
+        
+        for(int i=0;i<queries.size();i++) result.push_back(f(queries[i][0])==f(queries[i][1]));
+
+        return result;
+    }
+};

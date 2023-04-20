@@ -1,0 +1,30 @@
+int startindex = -1;
+
+int totalcost(int *gas, int *cost, int n, int index, int total)
+{
+    int ret;
+    if (index >= n) index = 0;
+    if (index == startindex) return index;
+    total = total + gas[index] - cost[index];
+    if (total < 0) return -1;
+    ret = totalcost(gas, cost, n, index+1, total);
+    return ret;
+}
+
+int canCompleteCircuit(int* gas, int gasSize, int* cost, int costSize){
+    int i,n;
+    int ret = -1;
+    startindex = -1;
+    n = gasSize;
+    for (i = 0; i < n; i++) {
+        if (gas[i] - cost[i] < 0) continue;
+        else {
+            startindex = i;
+            ret = totalcost(gas, cost, n, startindex+1, gas[startindex] - cost[startindex]);
+            if (ret == startindex) {
+                return ret;
+            }
+        }
+    }
+    return -1;
+}

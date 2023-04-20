@@ -1,0 +1,32 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+ bool is_check(int *a, char *s, int len) {
+     int b[26] = {0};
+     for (int i=0; i<len; i++) {
+         b[s[i]-'a']++;
+     }
+     if (memcmp(a, b, sizeof(int)*26) == 0) {
+         return true;
+     }
+     return false;
+ }
+
+int* findAnagrams(char * s, char * p, int* returnSize){
+    int a[26] = {0};
+    int len = strlen(p);
+    for (int i=0; i<len; i++) {
+        a[p[i]-'a']++;
+    }
+    int l1 = strlen(s);
+    int *ans = (int *)malloc(sizeof(int) * l1);
+    int cnt = 0;
+
+    for (int i=0; i+len<=l1; i++) {
+        if (is_check(a, s+i, len)) {
+            ans[cnt++] = i;
+        }
+    }
+    *returnSize = cnt;
+    return ans;
+}

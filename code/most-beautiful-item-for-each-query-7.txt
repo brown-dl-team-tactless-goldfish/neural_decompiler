@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int BS(int x,vector<vector<int>>& items)
+    {
+        int l=0,h=items.size()-1,res=0;
+        while(l<=h)
+        {
+            int mid=(l+h)/2;
+            if(items[mid][0]<=x)
+            {
+                res=items[mid][1];
+                l=mid+1;
+            }
+            else
+                h=mid-1;
+        }
+        return res;
+    }
+    vector<int> maximumBeauty(vector<vector<int>>& items, vector<int>& queries) 
+    {
+        sort(items.begin(),items.end());
+        for(int i=1;i<items.size();i++)
+        {
+            items[i][1]=max(items[i][1],items[i-1][1]);
+        }
+        vector<int>res;
+        for(auto x:queries)
+        {
+            res.push_back(BS(x,items));
+        }
+        return res;
+    }
+};

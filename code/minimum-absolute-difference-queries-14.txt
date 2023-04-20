@@ -1,0 +1,39 @@
+class Solution {
+public:
+    vector<int> minDifference(vector<int>& nums, vector<vector<int>>& q) {
+        map<int,vector<int>> m;
+        int n = nums.size();
+        for(int i=0;i<n;i++)
+        {
+            m[nums[i]].push_back(i);
+        }
+        vector<int> ans(q.size());
+        for(int i=0;i<q.size();i++)
+        {
+            int l = q[i][0];
+            int r = q[i][1];
+            int prev = -1;
+            int diff = INT_MAX;
+            for(int j=1;j<=100;j++)
+            {
+                if(m[j].size()==0)
+                continue;
+                auto idx = lower_bound(m[j].begin(),m[j].end(),l);
+                if(idx!=m[j].end() && (*idx)>r)
+                continue;
+                if(idx==m[j].end())
+                continue;
+                if(prev!=-1)
+                {
+                    diff = min(diff,j-prev);
+                }
+                prev = j;
+            }
+            if(diff==INT_MAX)
+            ans[i] = -1;
+            else
+            ans[i] = diff;
+        }
+        return ans;
+    }
+};

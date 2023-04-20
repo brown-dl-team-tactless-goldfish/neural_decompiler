@@ -1,0 +1,34 @@
+class Solution {
+public:
+  int secondMinimum(int n, vector<vector<int>>& edges, int time, int change) {
+    int dch = change + change;
+    vector<vector<int>>g(n+1);
+    vector<int>ans, vis(n+1,0);
+    
+    for(auto &e:edges) g[e[0]].push_back(e[1]), g[e[1]].push_back(e[0]);
+    
+    auto comp = [](pair<int,int> &a, pair<int,int> &b) -> bool {return a.first > b.first;};
+    priority_queue<pair<int,int>, vector<pair<int,int>>, decltype(comp)> q(comp);
+    q.push({0,1});               //time, vertex
+    
+    while(!q.empty()){
+      auto[t, v] = q.top(); q.pop();
+      if(v == n){
+        if(ans.empty()) ans.push_back(t);
+        else if(t != ans[0]) return t;
+      }
+      
+      if(vis[v] > 10) continue;
+      vis[v]++;
+      
+      int dif = t % dch;
+      if(dif >= change) t += dch - dif;
+      
+      t += time;
+      for(auto &x: g[v]) if(vis[x] < 10) q.push({t , x});
+      
+    }
+    
+    return -1;
+  }
+};

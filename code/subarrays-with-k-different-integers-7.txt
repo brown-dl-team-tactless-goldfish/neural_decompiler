@@ -1,0 +1,65 @@
+class window
+{
+    map<int, int> m;
+public:
+    void add(int i)
+    {
+        m[i]++;
+    }
+    void remove(int i)
+    {
+        m[i]--;
+        if(m[i] == 0) m.erase(i);
+    }
+    int getSize()
+    {
+        return m.size();
+    }
+};
+
+class Solution {
+public:
+    int subarraysWithKDistinct(vector<int>& A, int K) {
+        int out = 0;
+        window w1;
+        window w2;
+        int l1 = 0;
+        int l2 = 0;
+        for(int i = 0; i < A.size(); i++)
+        {
+            w1.add(A[i]);
+            w2.add(A[i]);
+            
+            while(w1.getSize() > K) 
+            {
+                w1.remove(A[l1]);
+                l1++;           
+            }
+             while(w2.getSize() >= K) 
+            {
+                w2.remove(A[l2]);
+                l2++;           
+            }
+            cout<<i<<' '<<l2<<' '<<l1<<endl;
+            out += l2-l1;
+        }
+        
+        return out;
+
+        //brute force O(n^2)
+        /*
+        int out = 0;
+        for(int i = 0; i < A.size()-K+1; i++)
+        {
+            set<int> s;
+            for(int j = i; j < A.size(); j++)
+            {
+                s.insert(A[j]);
+                if(s.size() == K) out++;
+                if(s.size() > K) break;
+            }
+        }
+        return out;
+        */
+    }
+};

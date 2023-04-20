@@ -1,0 +1,41 @@
+class Solution {
+public:
+    int numOfSubarrays(vector<int>& arr, int k, int threshold) {
+        int i=0;
+        int j=0;
+        double avg=0;
+        double sum=0;
+        int result=0;
+        
+        // Fixed size window problem
+        while(j-i+1<k)
+        {
+           // Do pre-calculation
+            sum+=arr[j];
+            avg=sum/(j-i+1);
+            j++;
+        }
+        
+      // Slide the window over whole array
+        while(j<arr.size())
+        {
+            // Do pre calculation
+            sum+=arr[j];
+            avg=sum/(j-i+1);
+            
+            // Store result
+            if(avg>=threshold)
+                result+=1;
+            
+            // Slide window with maintaining the size
+             // remove calculation for i
+              sum-=arr[i];
+            i++;
+            j++;
+        }
+        return result;
+    }
+};
+
+Time Complexity: O(n)
+Space Complexity: O(1)

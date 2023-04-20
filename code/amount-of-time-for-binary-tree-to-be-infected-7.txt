@@ -1,0 +1,47 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+
+class Solution {
+public:
+    int ans=0;
+    pair<int,int> solve(TreeNode*root,int start){
+        
+        if(!root)return {0,-1};
+        
+        pair<int,int>l=solve(root->left,start);
+        pair<int,int>r=solve(root->right,start);
+        pair<int,int>curr;
+        curr.first=max(l.first,r.first)+1;
+        curr.second=-1;
+        if(root->val==start){
+            curr.second=0;
+            ans=max({ans,l.first,r.first});
+        }
+        if(l.second>=0){
+            curr.second=l.second+1;
+            ans=max(ans,curr.second+r.first);
+        }else if(r.second>=0){
+            curr.second=r.second+1;
+            ans=max(ans,curr.second+l.first);
+        }
+        
+        return curr;
+        
+        
+        
+        
+    }
+    int amountOfTime(TreeNode* root, int start) {
+        solve(root,start);
+        return ans;
+    }
+};

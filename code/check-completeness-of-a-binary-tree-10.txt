@@ -1,0 +1,84 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+// Queue structure and operations
+struct queueNode
+{
+  struct TreeNode *node;
+  struct queueNode *next;
+};
+
+struct queue
+{
+  int nums;
+  struct queueNode *front;
+  struct queueNode *back;
+};
+
+void enqueue(struct TreeNode *item, struct queue *queue)
+{
+  if(item == NULL || queue == NULL) return;
+  struct queueNode* new = calloc(1, sizeof(struct queueNode));
+  new->node = item;
+  if (queue->nums == 0)
+    queue->front = new;
+  else
+    queue->back->next = new;
+  queue->back = new;
+  queue->nums += 1;
+}
+
+struct TreeNode* dequeue(struct queue *ptr)
+{
+  if (ptr->nums < 1)
+  {
+    printf("error, dequeue empty queue\n");
+    exit(1);
+  }
+  struct TreeNode* res = ptr->front->node;
+  if (ptr->nums == 1)
+    ptr->back = NULL;
+  ptr->front = ptr->front->next;
+  ptr->nums -= 1;
+  return res;
+}
+
+// Required function
+bool isCompleteTree(struct TreeNode* root){
+  // level order traverse
+  // once find Nil, shouldn't find any node afterwards
+  struct queue * queue = calloc(1, sizeof(struct queue));
+  bool notYetNull = 1; // 1 if we haven't find NULL node
+  enqueue(root, queue);
+  while (queue->nums > 0)
+  {
+    struct TreeNode* now = dequeue(queue);
+
+    if (now->left != NULL)
+    {
+      if (notYetNull)
+        enqueue(now->left, queue);
+      else
+        return 0;
+    }
+    else
+      notYetNull = 0; // found a NULL node
+    
+    if (now->right != NULL)
+    {
+      if (notYetNull)
+        enqueue(now->right, queue);
+      else
+        return 0;
+    }
+    else
+      notYetNull = 0; // found a NULL node
+  }
+  return 1;
+}

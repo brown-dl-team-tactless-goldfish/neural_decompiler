@@ -1,0 +1,39 @@
+class Solution {
+public:
+    vector<int> maximumBobPoints(int numArrows, vector<int>& aliceArrows) {
+        vector<int> ans, cur(12, 0);
+        int maxs = 0;
+        dfs(numArrows, 11, aliceArrows, maxs, 0, ans, cur);
+        return ans;
+    }
+    
+private: 
+    void dfs(int numArrows, int section, vector<int>& aliceArrows, int& maxs, int curs, vector<int>& ans, vector<int>& cur)
+    {
+        if (section < 0)
+        {
+            if (curs > maxs)
+            {
+                maxs = curs;
+                ans = cur;
+            }
+            return;
+        }
+        else if (section == 0)
+        {
+            cur[section] = numArrows;
+            dfs(0, section - 1, aliceArrows, maxs, curs + section, ans, cur);
+            cur[section] = 0;
+            return;
+        }
+        if (numArrows > aliceArrows[section])
+        {
+            cur[section] = aliceArrows[section] + 1;
+            numArrows -= (aliceArrows[section] + 1);
+            dfs(numArrows, section - 1, aliceArrows, maxs, curs + section, ans, cur);
+            numArrows += (aliceArrows[section] + 1);
+            cur[section] = 0;
+        }
+        dfs(numArrows, section - 1, aliceArrows, maxs, curs, ans, cur);
+    }
+};

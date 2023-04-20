@@ -1,0 +1,36 @@
+class Solution:
+    def lemonadeChange(self, bills: List[int]) -> bool:
+        bills_i_have = {5:0, 10:0, 20:0}
+        n = len(bills)
+        
+        
+        for bill in bills:
+            # print ("bill = ", bill)
+            # print ("bills_i_have = ", bills_i_have)
+            if (bill == 5):
+                bills_i_have[5] += 1
+            elif(bill == 10):
+                if (bills_i_have[5] < 1):
+                    return False
+                else:
+                    bills_i_have[5] -= 1
+                    bills_i_have[10] += 1
+            elif(bill == 20):
+                if (bills_i_have[10] > 0):
+                    if (bills_i_have[5] < 1):
+                        return False
+                    else:
+                        bills_i_have[10] -= 1
+                        bills_i_have[5] -= 1
+                        bills_i_have[20] += 1
+                    #use 10 and 5
+                else:
+                    #use 5
+                    if (bills_i_have[5] < 3):
+                        return False
+                    else:
+                        bills_i_have[5] -= 3
+                        bills_i_have[20] += 1
+                        
+        # print ("end bills_i_have = ", bills_i_have)   
+        return True

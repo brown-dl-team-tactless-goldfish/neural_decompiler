@@ -1,0 +1,35 @@
+class Solution {
+    bool parse(const string &s) {
+        string token;
+        int lastnum = -1;
+        auto checkNum = [&lastnum](const string &token){
+            int num = atoi(token.c_str());
+            if(lastnum != -1) {
+                if(num <= lastnum)
+                    return false;    
+            }
+            lastnum = num;
+            return true;
+        };
+        for(char c : s) {
+            if(isspace(c)) {
+                if(token != "") {
+                    if(isdigit(token[0])) {
+                        if(!checkNum(token)) {
+                            return false;
+                        }
+                    }
+                    token = "";
+                }
+            } else
+                token += c;
+        }
+        if(token != "" && isdigit(token[0]))
+            return checkNum(token);
+        return true;
+    }
+public:
+    bool areNumbersAscending(string s) {
+        return parse(s);
+    }
+};

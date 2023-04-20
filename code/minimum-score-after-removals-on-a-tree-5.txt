@@ -1,0 +1,68 @@
+class Solution {
+public:
+    int n;
+    vector<int> dp;
+    vector<int> nums;
+    vector<vector<int>> es;
+    vector<bitset<1000>> child;
+    int dfs(int i, int p) {
+        auto& cur = dp[i];
+        cur = nums[i];
+        for (auto& c : es[i]) {
+            if (c == p) continue;
+            int v = dfs(c, i);
+            cur ^= v;
+        }
+        return cur;
+    }
+    bitset<1000>& dfs1(int i, int p) {
+        auto& cur = child[i];
+        for (auto& c : es[i]) {
+            if (c == p) continue;
+            cur[c] = 1;
+            auto& v = dfs1(c, i);
+            cur |= v;
+        }
+        return cur;
+    }
+    int get(int a, int b, int c) {
+       return max(a, max(b, c)) - min(a, min(b, c));
+    }
+    int minimumScore(vector<int>& ns, vector<vector<int>>& edges) {
+        nums = std::move(ns);
+        n = nums.size();
+        dp = vector<int>(n, -1);
+        es.resize(n);
+        child.resize(n);
+        for (auto& e : edges) { 
+            es[e[0]].push_back(e[1]);
+            es[e[1]].push_back(e[0]);
+        }
+        dfs(0, -1);
+        dfs1(0, -1);
+        
+        int sum = 0;
+        for (int i = 0; i < n; i++) sum = sum ^ nums[i];
+        
+        int ans = INT_MAX;
+        for (int i = 1; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int a = dp[i];
+                int b = dp[j];
+                int c;
+                if (child[i][j] == 1) {
+                    c = sum ^ a;
+                    a = a ^ b;
+                } else if (child[j][i] == 1) {
+                    c = sum ^ b;
+                    b = b ^ a;
+                } else {
+                    c = sum ^ a ^ b;
+                }
+                int d = get(a, b, c);
+                ans = min(ans, d);
+            }
+        }
+        return ans; 
+    }
+};

@@ -1,0 +1,34 @@
+int charToInd(char c){
+    return (c == 'c') ? 0 : (c == 'r') ? 1 : (c == 'o') ? 2 : (c == 'a') ? 3 : (c == 'k') ? 4 : -1;
+}
+
+bool addFrog(int* Free, int* Waiting, int* Croaking, int ind){
+    if(ind == 0){
+        if(*Free > 0){
+            *Free -= 1;
+        }
+        *Waiting += 1;
+        Croaking[0]++;
+    } else{
+        Croaking[ind - 1]--;
+        if(Croaking[ind - 1] == -1) return false;
+        if(ind == 4){
+            *Waiting -= 1;
+            *Free += 1;
+        }else{
+            Croaking[ind]++;
+        }
+    }
+    return true;
+}
+
+int minNumberOfFrogs(char * croakOfFrogs){
+    if(!croakOfFrogs) return 0;
+    int Free = 0, Waiting = 0, ind, Croaking[4] = {0};
+    for(int i = 0; croakOfFrogs[i] != '\0'; i++){
+        ind = charToInd(croakOfFrogs[i]);
+        if(ind == -1) return -1;
+        if(!addFrog(&Free, &Waiting, Croaking, ind)) return -1;
+    }
+    return Waiting > 0 ? -1 : Free;
+}

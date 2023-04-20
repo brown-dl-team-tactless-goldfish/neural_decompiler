@@ -1,0 +1,63 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int lessEqual_position(int* nums, int n, int i, double val){
+    int left = i + 1; 
+    int right = n -1 ;
+    int mid ;
+    if(val < (double)nums[i] / nums[n-1])
+        return n ;
+    while(left < right){
+        mid = left + (right - left) / 2 ;
+        double tmp = (double)nums[i] / nums[mid] ;
+        if( tmp == val)
+            return mid ;
+        if(tmp < val)
+            right = mid ;
+        else
+            left = mid + 1 ;
+    }
+    return left ;
+    
+}
+int* kthSmallestPrimeFraction(int* arr, int arrSize, int k, int* returnSize){
+    double left = 0.0 ;
+    double right = 1.0 ;
+    double mid ;
+    while(left < right){
+        mid = (left + right) / 2 ;
+        int count  = 0 ;
+        for(int i = 0; i < arrSize-1; i++){
+            int pos = lessEqual_position(arr, arrSize, i, mid) ;
+            count += (arrSize - pos) ;
+        }
+        if(count == k)
+            break ;
+        if(count > k)
+            right = mid ;
+        else
+            left = mid ;
+    }
+
+    double val = 0 ;
+    int x =  0, y = 0 ;
+    for(int i = 0; i < arrSize; i++){
+        for(int j  = i + 1; j < arrSize; j++){
+            double tmp = (double)arr[i] / arr[j] ;
+            if( tmp <= mid){
+                if( val < tmp ){
+                    val = tmp ;
+                    x = arr[i]; 
+                    y = arr[j] ;
+                }
+                break ;
+            }
+        }
+    }
+    int* ans = malloc(2 * sizeof(int)) ;
+    ans[0] = x; 
+    ans[1] = y ;
+    *returnSize = 2 ;
+    return ans ;
+    
+}

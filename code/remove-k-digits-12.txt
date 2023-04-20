@@ -1,0 +1,28 @@
+
+char * removeKdigits(char * num, int k){
+    int len = strlen(num);
+    char stack[len+1];
+    int top = -1;
+    char *res = (char*)calloc(sizeof(char), (len-k+1));
+    
+    for(int i=0;i<len;i++) {
+        while(top >=0 && stack[top] > num[i] &&k > 0) {
+            top--;
+            k--;
+        }  
+        stack[++top] = num[i];
+    }
+    
+    top = top - k;
+    
+    bool leadingZero = true;
+    int retSize = 0;
+    
+    for(int i =0; i<=top;i++) {
+        if(leadingZero && stack[i] == '0')
+            continue;
+        leadingZero = false;
+        res[retSize++] = stack[i];    
+    }
+    return retSize == 0 ? "0" : res;
+}

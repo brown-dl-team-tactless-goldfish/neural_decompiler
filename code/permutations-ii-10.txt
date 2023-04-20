@@ -1,0 +1,45 @@
+#define RANGE   22      // -10 to 10
+void backtrack(int *comb, int cI, int size, int **res, int *rI, int *cnt) {
+    // one complete permutation is found 
+    if(cI == size) {
+        memcpy(res[(*rI)++], comb, sizeof(int) * size);
+        return;
+    }
+    
+    for(int i = 0; i < RANGE; i++) {
+        if(cnt[i] > 0) {
+            comb[cI++] = i - 10;         // place candidate
+            cnt[i]--;
+            
+            backtrack(comb, cI, size, res, rI, cnt);
+            cI--;                   // remove candidate
+            cnt[i]++;
+        }
+    }
+}
+
+int** permuteUnique(int* nums, int numsSize, int* returnSize, int** returnColumnSizes){
+    int resSize = 1;
+    int count[RANGE] = {0};
+    *returnSize = 0;
+    
+    for(int i = 1; i <= numsSize; i++)
+        resSize *= i;
+    
+    for(int i = 0; i < numsSize; i++) 
+        count[nums[i] + 10]++;
+    
+    
+    // there will be factorial(numsSize) permutations of results
+    int **result = malloc(sizeof(int *) * resSize);
+    *returnColumnSizes = malloc(sizeof(int) * resSize);
+    for(int i = 0; i < resSize; i++) {
+        result[i] = malloc(sizeof(int) * numsSize);
+        (*returnColumnSizes)[i] = numsSize;
+    }
+    
+    int *comb = malloc(sizeof(int) * numsSize);
+    // backtrack 
+    backtrack(comb, 0, numsSize, result, returnSize,count);
+    return result;
+}

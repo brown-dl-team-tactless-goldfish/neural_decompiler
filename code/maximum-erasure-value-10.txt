@@ -1,0 +1,39 @@
+struct IndexHash {
+  int value;
+  int index;
+  UT_hash_handle hh;
+};
+
+int maximumUniqueSubarray(int* nums, int numsSize) {
+  struct IndexHash* table = NULL;
+  int ret = 0;
+  int start = 0;
+  int sum = 0;
+  struct IndexHash* entry;
+  for (int i = 0; i < numsSize; ++i) {
+    HASH_FIND_INT(table, &nums[i], entry);
+    if (!entry) /* First time this number has been seen */ {
+      entry = (struct IndexHash*) malloc(sizeof(struct IndexHash));
+      entry->value = nums[i];
+      HASH_ADD_INT(table, value, entry);
+    } else /* Number has repeated */ {
+      if (sum > ret) {
+        ret = sum;
+      }
+      while (start <= entry->index) {
+        sum -= nums[start++];
+      }
+    }
+    entry->index = i;
+    sum += nums[i];
+  }
+  
+  /* Clean up hashtable */
+  struct IndexHash* tmp;
+  HASH_ITER(hh, table, entry, tmp) {
+    HASH_DEL(table, entry);
+    free(entry);
+  }  
+  
+  return (sum > ret) ? sum : ret;
+}

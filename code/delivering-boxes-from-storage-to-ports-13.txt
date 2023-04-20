@@ -1,0 +1,43 @@
+int boxDelivering(vector<vector<int>>& boxes, int portsCount, int maxBoxes, int maxWeight) {
+
+	vector<int> nextNode(boxes.size());
+
+	for (int p1 = 0, p2 = -1; p1 < nextNode.size(); ++p1) {
+		if (p2 < p1) {
+			for (p2 = p1; p2 < nextNode.size() - 1 && boxes[p2 + 1][0] == boxes[p1][0]; ++p2);
+		}
+		nextNode[p1] = p2;
+	}
+
+	vector<int> preNode(boxes.size());
+	vector<int> trips(boxes.size());
+
+	int trip = 1;
+	int weight = 0, numBox = 0;
+
+	for (int p1 = 0, p2 = 0; p2 < boxes.size(); ++p2) {
+		weight += boxes[p2][1];
+		++numBox;
+		if (p2 == 0 || boxes[p2][0] != boxes[p2 - 1][0]) ++trip;
+
+		while (weight > maxWeight || numBox > maxBoxes) {
+			weight -= boxes[p1][1];
+			--numBox;
+			++p1;
+			if (boxes[p1][0] != boxes[p1 - 1][0]) --trip;
+		}
+
+		preNode[p2] = p1;
+		trips[p2] = trip;
+	}
+
+	vector<int> res(boxes.size(), 0);
+
+	for (int i = 0; i < boxes.size(); ++i) {
+		res[i] = trips[i] + (preNode[i] == 0 ? 0 : res[preNode[i] - 1]);
+		if (nextNode[preNode[i]] >= i) continue;
+		res[i] = min(res[i], res[nextNode[preNode[i]]] + trips[i] - 1);
+	}
+
+	return res.back();
+}

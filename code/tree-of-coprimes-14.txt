@@ -1,0 +1,54 @@
+class Solution {
+public:
+    vector<int> getCoprimes(vector<int>& nums, vector<vector<int>>& edges) {
+        int N = nums.size();
+        tree.resize(N);
+        for(const auto& edge : edges) {
+            tree[edge[0]].push_back(edge[1]);
+            tree[edge[1]].push_back(edge[0]);
+        }
+
+        gcds.resize(51);
+        for(int i = 1; i <= 50; ++i) {
+            for(int j = 1; j <= 50; ++j) {
+                if(gcd(i, j) == 1) {
+                    gcds[i].push_back(j);
+                }
+            }
+        }
+        
+        res.resize(N, -1);
+        ancestors.resize(51);
+        dfs(nums, 0, -1, 0);
+        return res;
+    }
+    
+    void dfs(vector<int>& nums, int cur, int parent, int level) {
+        auto& targets = gcds[nums[cur]];
+        int maxLevel = INT_MIN, maxTarget = 0;
+        for(auto target : targets) {
+            if(!ancestors[target].empty()) {
+                if(ancestors[target].back().first > maxLevel) {
+                    maxLevel = ancestors[target].back().first;
+                    maxTarget = target;
+                }
+            }
+        }
+        if(maxLevel != INT_MIN) {
+            res[cur] = ancestors[maxTarget].back().second;
+        }
+        
+        ancestors[nums[cur]].push_back({level+1, cur});
+        for(auto next : tree[cur]) {
+            if(next != parent) {
+                dfs(nums, next, cur, level+1);
+            }
+        }
+        ancestors[nums[cur]].pop_back();
+    }
+private:
+    vector<vector<int>> gcds;
+    vector<vector<int>> tree;
+    vector<vector<pair<int, int>>> ancestors; // pair<int,int> first : level, second : node
+    vector<int> res;
+};

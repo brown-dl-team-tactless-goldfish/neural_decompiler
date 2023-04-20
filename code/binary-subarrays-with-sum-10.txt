@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int numSubarraysWithSum(vector<int>& A, int S) {
+      vector<int> presum(A.size() + 1, 0);
+      for (int i = 0; i < A.size(); ++ i) {
+        presum[i + 1] = presum[i] + A[i];
+      }
+      int result = 0;
+      for (int i = 0; i <= A.size(); ++ i) {
+        for (int j = i + 1; j <= A.size(); ++ j) {
+          if (presum[j] - presum[i] == S) {
+            ++ result;
+          }
+        }
+      }
+      return result;
+    }
+};
+
+// optimize
+class Solution {
+public:
+    int numSubarraysWithSum(vector<int>& A, int S) {
+      unordered_map<int, int> counter;
+      vector<int> presums(A.size() + 1, 0);
+      for (int i = 0; i < A.size(); ++ i) {
+        presums[i + 1] = presums[i] + A[i];
+      }
+      int result = 0;
+      for (int presum : presums) {
+        result += counter[presum - S];
+        ++ counter[presum];
+      }
+      return result;
+    }
+};

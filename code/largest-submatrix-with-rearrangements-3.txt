@@ -1,0 +1,46 @@
+class Solution {
+    private:
+    int rows,cols;
+public:
+    int largestSubmatrix(vector<vector<int>>& matrix) {
+       rows=matrix.size();
+       cols=matrix[0].size();
+        vector<int>heights;
+        int area=0;
+       for(int i=0;i<rows;i++)
+       {
+           heights=getHeight(i,matrix);
+           pair<int,int>p=calculateArea(heights);
+           i=p.first+i;
+           area=max(area,p.second);
+       }
+        return area;
+    }
+    vector<int> getHeight(int r,vector<vector<int>>&matrix)
+    {  vector<int>heights;
+        for(int i=0;i<cols;i++)
+        {   int x=0;
+            for(int j=r;j<rows;j++)
+            {  if(matrix[j][i])
+                x++;
+             else 
+                 break;
+            }
+         heights.push_back(x);
+        }
+     return heights;
+    }
+    pair<int,int> calculateArea(vector<int>&heights)
+    {  int area=0;
+        sort(heights.begin(),heights.end());
+        for(int i=0;i<cols;i++)
+        {
+            int x=cols-i;
+            int y=heights[i];
+            int a=x*y;
+            area=max(area,max(a,y));
+            
+        }
+     return {heights[0],area};
+    }
+};

@@ -1,0 +1,52 @@
+using LL = long long ;
+using PII = pair<LL, LL> ; //{cost, node}
+class Graph {
+    int n ;
+    vector<vector<PII>>graph ;
+public:
+    Graph(int n, vector<vector<int>>& edges) {
+        this->n = n ;
+        graph.resize(n) ; 
+        for(auto e : edges){
+            int u = e[0] ;
+            int v = e[1] ;
+            int w = e[2] ;
+            graph[u].push_back({v, w}) ;
+        }
+    }
+    
+    void addEdge(vector<int> edge) {
+        int u = edge[0] ;
+        int v = edge[1] ;
+        int w = edge[2] ;
+        graph[u].push_back({v, w}) ;
+         
+    }
+    
+    int shortestPath(int node1, int node2) {
+        priority_queue<PII, vector<PII>, greater<PII>>pq ;
+        pq.push({0, node1}) ;
+        vector<bool>visited(n) ;
+        visited[node1] = true ;
+        while(!pq.empty()){
+            auto [cost, cur] = pq.top() ;
+            pq.pop() ;
+            if(cur == node2)
+                return cost ;
+            visited[cur] = true ;
+            for(auto [nxt, val] : graph[cur]){
+                if(visited[nxt] )
+                    continue ;
+                pq.push({cost+val, nxt}) ;
+            }
+        }
+        return -1 ;
+    }
+};
+
+/**
+ * Your Graph object will be instantiated and called as such:
+ * Graph* obj = new Graph(n, edges);
+ * obj->addEdge(edge);
+ * int param_2 = obj->shortestPath(node1,node2);
+ */

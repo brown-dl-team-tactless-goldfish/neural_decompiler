@@ -1,0 +1,56 @@
+bool isValidIPv4(const char *IP){
+    int n = strlen(IP);
+    if(n>15 || n<7)
+        return false;
+    char* element;
+    while ((element = strsep(&IP, ".")) != NULL)
+    {
+        int n = strlen(element);
+        if(n==0 || n>3)return false;
+        if(element[0]=='0' && n!=1)return false;
+        for(int i=0;i<n;i++)
+            if(!isdigit(element[i]))
+                return false;
+        if(atoi(element)>255)
+            return false;
+    }
+    return true;
+}
+
+bool isValidIPv6(char *IP){
+    int n = strlen(IP);
+    if(n>39 || n<7)
+        return false;
+    char* element;
+    while((element = strsep(&IP, ":")) != NULL){
+        int n = strlen(element);
+        if(n==0 || n>4)return false;
+        for(int i=0;i<n;i++)
+            if(!isxdigit(element[i]))
+                return false;
+    }
+    return true;
+}
+
+char * validIPAddress(char * IP){
+    int dotCount = 0;
+    int colonCount = 0;
+    int i=0;
+    while(IP[i]!='\0'){
+        if(IP[i]=='.')
+            dotCount++;
+        else if(IP[i]==':')
+            colonCount++;
+        i++;
+    }
+    if(dotCount==3){
+        if(isValidIPv4(IP))
+            return "IPv4";
+    }
+    else if(colonCount==7){
+        if(isValidIPv6(IP))
+            return "IPv6";        
+    }
+    
+    return "Neither";
+}

@@ -1,0 +1,44 @@
+public class Solution 
+{
+    public int NumSteps(string s) 
+    {
+        int steps = 0;
+        while (s != "1")
+        {
+            steps++;
+            if (s[s.Length - 1] == '0')
+            {
+                s = s.Remove(s.Length - 1);
+            }
+            else
+            {
+                s = AddBinary(s, "1");
+            }
+        }
+        return steps;
+    }
+    
+    public string AddBinary(string a, string b) 
+    {
+        StringBuilder sb = new StringBuilder();
+        int i = a.Length - 1;
+        int j = b.Length - 1;
+        int carry = 0;
+        while (i >= 0 || j >= 0)
+        {
+            int c = i >= 0 ? Convert.ToInt32(new String(new char[]{a[i]}), 2) : 0;
+            int d = j >= 0 ? Convert.ToInt32(new String(new char[]{b[j]}), 2) : 0;
+            int r = c + d + carry;
+            char curr = r % 2 == 0 ? '0': '1';
+            carry = r > 1 ? 1: 0;
+            sb.Insert(0, curr);
+            i--;
+            j--;
+        }
+        if (carry == 1)
+        {
+            sb.Insert(0, '1');
+        }
+        return sb.ToString();
+    }
+}

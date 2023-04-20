@@ -1,0 +1,42 @@
+class Solution {
+public:
+    using ll=unsigned long long;
+    vector<int> assignTasks(vector<int>& servers, vector<int>& tasks) {
+        int n=servers.size();
+        int m=tasks.size();
+        priority_queue<array<ll,2>, vector<array<ll,2>>, greater<array<ll,2>>> available;
+        priority_queue<array<ll,3>, vector<array<ll,3>>, greater<array<ll,3>>> inUse;
+        for(ll i=0; i<n; i++)
+        {
+            available.push({ll(servers[i]),i});
+        }
+        int j=0;
+        vector<int> ans;
+        int i=0;
+        for(; i<m; i++)
+        {
+            while(!inUse.empty()&&inUse.top()[0]<=i)
+            {
+                array<ll,3> v=inUse.top();
+                available.push({v[1],v[2]});
+                inUse.pop();
+            }
+            if(!available.empty())
+            {
+                array<ll,2> v=available.top();
+                ans.push_back(v[1]);
+                inUse.push({ll(i+tasks[i]),v[0],v[1]});
+                available.pop();
+            }
+            else
+            {
+                array<ll,3> v=inUse.top();
+                ans.push_back(v[2]);
+                inUse.pop();
+                v[0]+=tasks[i];
+                inUse.push(v);
+            }
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,57 @@
+typedef struct Date{
+    int y;
+    int m;
+    int d;
+} Date;
+
+int pow_10(int n)
+{
+    int r = 1;
+    for(int i = 0; i < n; i++)
+        r = r*10;
+    return r;
+}
+
+struct Date* map_date(char* s)
+{
+    struct Date* p = malloc(sizeof(struct Date));
+    p->y = 0, p-> m = 0, p->d = 0;
+    for(int i = 0; i <= 3; i++)
+        p->y = p->y + pow_10(3-i)*(int)(s[i] - '0');
+    for(int i = 5; i <= 6; i++)
+        p->m = p->m + pow_10(6-i)*(int)(s[i] - '0');
+    for(int i = 8; i <= 9; i++)
+        p->d = p->d + pow_10(9-i)*(int)(s[i] - '0');
+    return p;
+}
+
+int calc(struct Date* f, struct Date* g)
+{
+    if(f->m < 3)
+    {
+        f->m += 12;
+        (f->y)--;
+    }
+    if(g->m < 3)
+    {
+        g->m += 12;
+        (g->y)--;
+    }
+    int f_int = 365 * f->y + f->y / 4 + f->y / 400 - f->y / 100 + f->d + (153 * f->m + 8) / 5;
+    int g_int = 365 * g->y + g->y / 4 + g->y / 400 - g->y / 100 + g->d + (153 * g->m + 8) / 5;
+    return fabs(f_int - g_int);
+}
+
+int daysBetweenDates(char * date1, char * date2){
+
+    int daysBetweenDates(char * date1, char * date2){
+
+    
+    int x = calc(map_date(date1), map_date(date2));
+    free(map_date(date1));
+    free(map_date(date2));
+    return x;
+    
+}
+    
+}

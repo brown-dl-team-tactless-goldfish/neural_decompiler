@@ -1,0 +1,57 @@
+class Solution {
+    void max_self(int& a, int b) {
+        a = max(a, b);
+    }
+    
+    template<typename T>
+    T sq(T x) {
+        return x*x;
+    }
+    
+    struct P {
+        double x, y;  
+    };
+    
+    bool circ2ptsRad(P p1, P p2, double r, P& c) {
+        double d2 = sq(p1.x-p2.x) + sq(p1.y-p2.y);
+        double det = sq(r) / d2 - 0.25;
+        if(det < 0.0) {
+            return false;
+        }
+        double h = sqrt(det);
+        c.x = (p1.x+p2.x) * 0.5 + (p1.y - p2.y) * h;
+        c.y = (p1.y+p2.y) * 0.5 + (p2.x - p1.x) * h;
+        return true;
+    }
+    
+    double dist(P a, P b) {
+        return sqrt(sq(a.x-b.x) + sq(a.y-b.y));
+    }
+public:
+    int numPoints(vector<vector<int>>& points, int r) {
+        int ans = 0;
+        int n = points.size();
+        vector<P> arr;
+        for(int i = 0; i < n; i++) {
+            arr.push_back({(double)points[i][0],(double)points[i][1]});
+        }
+        double rad = r;
+        ans = 1;
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < n; j++) {
+                P c;
+                if(circ2ptsRad(arr[i], arr[j], rad, c)) {
+                    int cur = 0;
+                    for(int k = 0; k < n; k++) {
+                        if(dist(c, arr[k]) < rad + 1e-9) {
+                            cur++;
+                        }
+                    }
+                    max_self(ans, cur);
+                }
+            }
+        }
+        
+        return ans;
+    }
+};

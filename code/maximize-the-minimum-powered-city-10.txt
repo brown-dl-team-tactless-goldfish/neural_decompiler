@@ -1,0 +1,55 @@
+class Solution {
+public:
+    long long maxPower(vector<int>& stations, int range, int k) {
+        long long l = 0, r = LONG_LONG_MAX - 1;
+        int len = stations.size();
+        vector<long long> cnts(len);
+        long long pre = 0;
+        // forward
+        for (int i = 0; i < len; ++i) {
+            pre += stations[i];
+            cnts[i] += pre;
+            if (i >= range) {
+                pre -= stations[i - range];
+            }
+        }
+        // backward
+        pre = 0;
+        for (int i = len - 1; i >= 0; --i) {
+            cnts[i] += pre;
+            pre += stations[i];
+            if (i <= len - 1 - range) {
+                pre -= stations[i + range];
+            }
+        }
+        while (l < r) {
+            long long mid = (l + r + 1) >> 1;
+            auto check = [&]() -> bool {
+                long long pre = 0;
+                long long cum = 0;
+                vector<long long> adds(len);
+                for (int i = 0; i < len; ++i) {
+                    if (i - 2 * range - 1 >= 0) pre -= adds[i - 2 * range - 1];
+                    if (cnts[i] < mid) {
+                        long long diff = mid - cnts[i];
+                        if (diff > pre) {
+                            adds[i] = diff - pre;
+                            cum += adds[i];
+                            pre = diff;
+                        }
+                    }
+                    if (cum > k) {
+                        return false;
+                    }
+                }
+                return true;
+            };
+            if (check()) {
+                l = mid;
+            } else {
+                r = mid - 1;
+            }
+        }
+        return l;
+    }
+};

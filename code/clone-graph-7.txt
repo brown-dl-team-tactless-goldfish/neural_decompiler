@@ -1,0 +1,45 @@
+/////////////   DFS Implementation  /////////////
+#define SIZE  100
+
+typedef struct Node Node;
+
+Node *createNode(int val) {
+    Node *res = malloc(sizeof(Node));
+    res->val = val;
+    res->numNeighbors = 0;
+    res->neighbors = (Node **) malloc(sizeof(Node *) * SIZE);
+    return res;
+}
+
+typedef struct hElem {
+    void *oNode;        // original node used as key
+    Node *cNode;        // cloned node of original node used as value
+    UT_hash_handle hh;
+} hElem;
+
+Node *dfs(Node *s, hElem **map) {
+    if(!s) return s;
+    hElem *clNode;
+    HASH_FIND_PTR(*map, &s, clNode);
+    // if s is already cloned return cloned node
+    if(clNode) return clNode->cNode;
+    
+    hElem *clone = malloc(sizeof(hElem));
+    clone->oNode = (void *)s;
+    clone->cNode = createNode(s->val);
+    HASH_ADD_PTR(*map, oNode, clone);
+    
+    // check and clone all neighbor nodes of this node
+    for(int i = 0; i < s->numNeighbors; i++) {
+        // 
+        Node *ret = dfs(s->neighbors[i], map);
+        clone->cNode->neighbors[(clone->cNode->numNeighbors)++] = ret;
+    }
+    return clone->cNode;;
+}
+
+struct Node *cloneGraph(struct Node *s) {
+    hElem *map = NULL;
+    
+    return dfs(s, &map);
+}

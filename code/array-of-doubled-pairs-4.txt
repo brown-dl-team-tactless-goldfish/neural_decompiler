@@ -1,0 +1,13 @@
+bool canReorderDoubled(vector<int>& A) {
+    map<int, int> m;
+    for (auto a : A) ++m[a];
+    for (auto it = begin(m); it != end(m); ++it) {
+        if (it->second > 0) {
+            if (it->first < 0 && it->first % 2 == -1) return false;
+            auto it_d = m.find(it->first < 0 ? it->first / 2 : it->first * 2);
+            if (it_d == m.end() || it_d->second < it->second) return false;
+            it_d->second -= it->second;
+        }
+    }
+    return true;
+}

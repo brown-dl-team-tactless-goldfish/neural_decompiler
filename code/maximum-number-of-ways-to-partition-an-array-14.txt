@@ -1,0 +1,30 @@
+    int waysToPartition(vector<int>& nums, int k) {
+        int ret = 0, n = nums.size();
+        vector<long> diffs(n, 0);
+        unordered_map<long, int> ls, rs;
+        
+        // suffix sum
+        for (int i = n - 1; i >= 0; i--)
+            diffs[i] = (i == n - 1) ? nums[i] : nums[i] + diffs[i + 1];
+    
+        // prefix sum and diffs b/w two partitons divided by pivot i
+        for (long i = 1, ps = nums[0]; i < n; i++) {
+            diffs[i] = ps - diffs[i];
+            ps = ps + nums[i];
+            rs[diffs[i]]++; // keep track of numbers of these diffs
+        }
+        
+        ret = rs[0]; // doesn't change any number, we neee to search the number of 'diff = 0'.
+        
+        // change nums[i] to k
+        for (int i = 0; i < n; i++) {
+            int inc = k - nums[i];
+            ret = max(ret, (ls.count(inc) ? ls[inc] : 0) + (rs.count(-inc) ? rs[-inc] : 0));
+            if (i == n - 1)
+                break;
+            ls[diffs[i + 1]]++;
+            rs[diffs[i + 1]]--;
+        }
+        
+        return ret;
+    }

@@ -1,0 +1,14 @@
+SELECT
+  X.user_id,
+  ROUND(SUM(X.confirmed_message) / COUNT(X.user_id),2) AS confirmation_rate
+FROM
+  (
+    SELECT
+      S.user_id,
+      (CASE WHEN C.action = 'confirmed' THEN 1 ELSE 0 END) AS confirmed_message
+    FROM
+      Signups S
+      LEFT JOIN Confirmations C ON S.user_id = C.user_id
+  ) X
+GROUP BY
+  X.user_id;

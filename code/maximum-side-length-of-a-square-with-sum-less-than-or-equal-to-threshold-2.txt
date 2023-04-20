@@ -1,0 +1,64 @@
+int maxSideLength(int** mat, int matSize, int* matColSize, int threshold){
+
+    int w = matSize;
+    int h = matColSize[0];
+
+    // Construct prefix sum matrix.
+
+    int sums[w][h];
+
+    for (int x = 0; x < w; x++) {
+        for (int y = 0; y < h; y++) {
+
+            sums[x][y] = mat[x][y]
+                + (x > 0 ? sums[x - 1][y] : 0)
+                + (y > 0 ? sums[x][y - 1] : 0)
+                - (x > 0 && y > 0 ? sums[x - 1][y - 1] : 0);
+
+        }
+    }
+
+    // Iterate through prefix sum matrix, increasing square size.
+    // Stop when no more valid squares are found.
+
+    int maxSize = w > h ? w : h;
+    int bestSize = -1;
+
+    for (int s = 0; s < maxSize; s++) {
+
+        // Check all positions that square can be in.
+        // If a square is found, continue to the next size.
+
+        for (int x = 0; x < w - s; x++) {
+            for (int y = 0; y < h - s; y++) {
+
+                // Check if the sum is within threshold.
+
+                int sum = sums[x + s][y + s]
+                    - (x > 0 ? sums[x - 1][y + s] : 0)
+                    - (y > 0 ? sums[x + s][y - 1] : 0)
+                    + (x > 0 && y > 0 ? sums[x - 1][y - 1] : 0);
+
+                if (sum <= threshold) {
+                    bestSize = s;
+                    break;
+                }
+
+            }
+            if (bestSize == s) {
+                break;
+            }
+        }
+        
+        // A square of this size was not found.
+        // Exit early.
+        
+        if (bestSize != s) {
+            break;
+        }
+
+    }
+
+    return bestSize + 1;
+
+}

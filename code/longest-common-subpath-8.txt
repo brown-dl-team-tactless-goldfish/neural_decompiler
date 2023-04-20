@@ -1,0 +1,81 @@
+class Solution {
+public:
+    // check is there exists a common substring with length == len
+    bool valid(vector<vector<int>>& paths, int len, int min_len_idx) {
+        int sz = paths.size();
+        map<list<int>, unordered_set<int>> m;
+        
+        // insert all substring which length is equal to `len` for all paths except the shortest one
+        for (int i = 0; i < sz; ++i) {
+            if (i == min_len_idx) {
+                continue;
+            }
+            
+            vector<int> &path = paths[i];
+            list<int> window;
+            
+            int l = 0;
+            int r = 0;
+            
+            while (r < path.size()) {
+                window.push_back(path[r++]);
+                
+                if (r - l == len) {
+                    m[window].insert(i);
+                    ++l;
+                    window.pop_front();
+                }
+            }
+        }
+        
+        // iterate all substring (length == `len`) in the shortest path
+        // checking each substring's value in map, if it is equals to `sz - 1` then return true
+        vector<int> &path = paths[min_len_idx];
+        list<int> window;
+            
+        int l = 0;
+        int r = 0;
+
+        while (r < path.size()) {
+            window.push_back(path[r++]);
+
+            if (r - l == len) {
+                if (m[window].size() == sz - 1) {
+                    return true;
+                }
+                
+                ++l;
+                window.pop_front();
+            }
+        }
+        
+        return false;
+    }
+    
+    int longestCommonSubpath(int n, vector<vector<int>>& paths) {
+        int min_len_idx = 0;
+        
+        for (int i = 1; i < paths.size(); ++i) {
+            int curr_len = paths[i].size();
+            
+            if (paths[min_len_idx].size() > curr_len) {
+                min_len_idx = i;
+            }
+        }
+        
+        int l = 1;
+        int r = paths[min_len_idx].size();
+        
+        while (l <= r) {
+            int mid = l + (r - l) / 2;
+            
+            if (valid(paths, mid, min_len_idx)) {
+                l = mid + 1;
+            } else {
+                r = mid - 1;
+            }
+        }
+        
+        return r;
+    }
+};

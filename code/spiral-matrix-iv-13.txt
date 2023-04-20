@@ -1,0 +1,64 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     ListNode *next;
+ *     ListNode() : val(0), next(nullptr) {}
+ *     ListNode(int x) : val(x), next(nullptr) {}
+ *     ListNode(int x, ListNode *next) : val(x), next(next) {}
+ * };
+ */
+class Solution {
+    bool CheckMove(vector<vector<int>> &matrix, char &ch, int i, int j, int m, int n)
+    {
+        if(ch == 'R' && j+1 < n && matrix[i][j+1] == -1)
+            return true;
+        if(ch == 'D' && i+1 < m && matrix[i+1][j] == -1)
+            return true;
+        if(ch == 'L' && j-1 >= 0 && matrix[i][j-1] == -1)
+            return true;
+        if(ch == 'U' && i-1 >= 0 && matrix[i-1][j] == -1)
+            return true;
+        return false;
+    }
+    pair<char, pair<int, int>> NextMove(char &ch, int i, int j, int m, int n)
+    {
+        if(ch == 'R')
+            return {'D',{i+1,j}};
+        else if(ch == 'D')
+            return {'L',{i,j-1}};
+        else if(ch == 'U')
+            return {'R', {i, j+1}};
+        else
+            return {'U',{i-1, j}};
+    }
+    void dfs(vector<vector<int>> &matrix, int i, int j, int m, int n, ListNode* head, char &ch)
+    {
+        if(!head) return;
+        matrix[i][j] = head->val;
+        if(CheckMove(matrix, ch, i, j, m, n))
+        {
+            if(ch == 'R')
+                dfs(matrix, i, j+1, m, n, head->next, ch);
+            else if(ch == 'D')
+                dfs(matrix, i+1, j, m, n, head->next, ch);
+            else if(ch == 'U')
+                dfs(matrix, i-1, j, m, n, head->next, ch);
+            else if(ch == 'L')
+                dfs(matrix, i, j-1, m, n, head->next, ch);
+        }
+        else
+        {
+            pair<char,pair<int,int>> t = NextMove(ch, i, j, m, n);
+            dfs(matrix, t.second.first, t.second.second, m, n, head->next, t.first);
+        }
+        return;
+    }
+public:
+    vector<vector<int>> spiralMatrix(int m, int n, ListNode* head) {
+        vector<vector<int>> matrix(m, vector<int> (n, -1));
+        char ch = 'R';
+        dfs(matrix, 0, 0, m, n, head, ch);
+        return matrix;
+    }
+};

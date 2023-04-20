@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int numOfWays(vector<int>& nums) {        
+        function<int(int, int)> comb = [&comb, dp = vector<vector<int>>(1001, vector<int>(1001))] (int m, int k) mutable {
+            const int mod = 1e9 + 7;
+            if (dp[m][k]) return dp[m][k];
+            return dp[m][k] = (m == k || !k ? 1 : (comb(m - 1, k) + comb(m - 1, k - 1)) % mod);
+        };
+      
+        
+        function<int(int, int)> doit = [&doit, &comb, &nums] (int l, int r) -> long {
+            const int mod = 1e9 + 7;
+            if (r - l <= 2) return 1;
+            
+            auto it = stable_partition(nums.begin() + l, nums.begin() + r, [p = nums[l]] (int a) { return a < p; });
+            int m = it - nums.begin();
+            return ((long) comb(r - l - 1, m - l) * doit(l, m) % mod) * doit(m + 1, r) % mod;
+        };
+        return doit(0, nums.size()) - 1;
+    }
+};

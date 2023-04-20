@@ -1,0 +1,85 @@
+// Idea / Approach: DFS/Backtracking without memo; how to do a memo?
+// TODO: Implement a memo for the last k-elements in the supplies of numbers
+class Solution {
+public:
+    bool canDistribute(vector<int>& nums, vector<int>& quantity) {
+        // sort the demands descendingly
+        sort(quantity.begin(), quantity.end(), greater<>());
+        // do a frequency statistics over the numbers.
+        auto freqDesc = doFrequencyStatistics(nums);
+        // remove the useless entries from freqDesc
+        {
+            while (!freqDesc.empty() && freqDesc.back() < quantity.back()) {
+                freqDesc.pop_back();
+            }
+            if (freqDesc.empty()) {
+                return false;
+            }
+        }
+        multiset<int> supplies(freqDesc.begin(), freqDesc.end());
+        // greedy: find the exact matches, and remove them
+        vector<int> demands;
+        {
+            demands.reserve(quantity.size());
+            for (auto d : quantity) {
+                if (auto iter = supplies.find(d); iter != supplies.end()) {
+                    supplies.erase(iter);
+                } else {
+                    demands.emplace_back(d);
+                }
+            }
+        }
+        if (demands.empty()) {
+            return true;
+        }
+        // dfs ie backtracking
+        return dfs(supplies, demands, 0);
+    }
+
+    /// dfs from i-th distinct number and c-th customer
+    bool dfs(multiset<int>& supplies, const vector<int>& demands, int c) {
+        int currDemand = demands[c];
+        if (c == demands.size() - 1) { // the last customer
+            if (!supplies.empty() && *supplies.rbegin() >= currDemand) {
+                return true;
+            }
+            return false;
+        }
+        auto supp2 = supplies;
+        int prevSupply = -1;
+        for (auto iter = supplies.rbegin(); iter != supplies.rend() && *iter >= currDemand;
+             ++iter) {
+            if (*iter == prevSupply) {
+                continue; // skip duplicated counts
+            }
+            prevSupply = *iter;
+
+            supp2.erase(supp2.find(*iter));
+            if (*iter > currDemand) {
+                supp2.insert(*iter - currDemand);
+            }
+            if (dfs(supp2, demands, c + 1)) {
+                return true;
+            }
+            // restore supp2
+            supp2.insert(*iter);
+            if (*iter > currDemand) {
+                supp2.erase(supp2.find(*iter - currDemand));
+            }
+        }
+        return false;
+    }
+
+    static inline vector<int> doFrequencyStatistics(const vector<int>& nums) {
+        unordered_map<int, int> freqMap;
+        for (auto a : nums) {
+            ++freqMap[a];
+        }
+        vector<int> freqs;
+        for (auto [i, freq] : freqMap) {
+            freqs.emplace_back(freq);
+        }
+        sort(freqs.begin(), freqs.end(), greater<>());
+        return freqs;
+    }
+};

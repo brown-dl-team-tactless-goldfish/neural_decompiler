@@ -1,0 +1,44 @@
+public class Solution {
+    public bool CircularArrayLoop(int[] nums) {
+        var n = nums.Length;
+
+        for (int i = 0; i < n; i++) {
+            // each i as the start point
+            var cur = nums[i];
+            // isVisited, skip
+            if (cur == 0) continue;
+            var slow = i;
+            var fast = getNext(nums, i);
+
+            // find cycle
+            while (isSameSign(cur, nums[fast]) && isSameSign(cur, nums[getNext(nums, fast)])) {
+                if (slow == fast) {
+                    // [-1, 2] is not a cycle
+                    if (slow == getNext(nums, slow)) break;
+                    return true;
+                }
+                slow = getNext(nums, slow);
+                fast = getNext(nums, getNext(nums, fast));
+            }
+
+            slow = i;
+            while (isSameSign(cur, nums[slow])) {
+                var next = getNext(nums, slow);
+                // 0 = isVisited
+                nums[slow] = 0;
+                slow = next;
+            }
+        }
+
+        return false;
+    }
+
+    private int getNext(int[] nums, int i) {
+        var n = nums.Length;
+        return ((nums[i] + i) % n + n) % n;
+    }
+
+    private bool isSameSign(int num1, int num2) {
+        return (long)num1 * (long)num2 > 0;
+    }
+}

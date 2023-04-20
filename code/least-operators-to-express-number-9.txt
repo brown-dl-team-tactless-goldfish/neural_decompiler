@@ -1,0 +1,52 @@
+class Solution {
+public:
+    unordered_map <int, int> memo;
+    int leastOpsExpressTarget(int x, int target) {
+        //inspired from : https://leetcode.com/problems/least-operators-to-express-number/discuss/208428/Java-DFS-with-memoization
+        memo.clear();
+        return dfs(x, target);
+    }
+    
+    int dfs(int x, int target) {
+        if (target == 1) {
+            return x == 1 ? 0 : 1;
+        }
+        if (memo.find(target) != memo.end()) {
+            return memo[target];
+        }
+        double product = x;
+        int count = 0;
+        while (product < target) {
+            count++;
+            product *= x;
+        }
+        
+        // candidate1 : in the form : x*x*...*x - (......) = target
+        int cand1 = INT_MAX;
+        if (product == target) {
+            memo[target] = count;
+            cand1 = count;
+        } else if (product - target < target) {
+            cand1 = count + 1 + dfs(x, product - target);
+        } 
+
+        // product - target > target >>> product > 2*target
+        // candidate1: x*x*...*x + (.....)  = target
+        int cand2 = INT_MAX;
+        if (count == 0) {
+            //count == 0 means x is greater or equal to target, so we use x / x + (......) to continue the search, there are two more operators which are "/" and "+", so we add 2. If count != 0, count-1 represents the number of operators used in x * x * ... * x, we need one more operator "+" to connect it with (......), so we should add count - 1 + 1 = count.
+            product = product / x;
+            cand2 = 2 + dfs(x, target - product);
+        } else {
+            //bring product below target now, so now, we need to add something
+            product = product / x;
+            // because we decrease product by dividing to x, we need to decrease multiplication count by 1 too
+            count -= 1;
+            cand2 = count + 1 + dfs(x, target - product);
+        }
+
+        count = std::min(cand1, cand2);        
+        memo[target] = count;
+        return count;
+    }
+};

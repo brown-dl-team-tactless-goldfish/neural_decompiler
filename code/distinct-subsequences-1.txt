@@ -1,0 +1,47 @@
+#define MAX(a,b) (a>b? a:b)
+
+int numDistinct(char* s, char* t) {
+    
+    int i = 0;
+    int j = 0;
+    
+    int M = strlen(s);
+    int N = strlen(t);
+    
+    int **dp = malloc(sizeof(int *) * (M+1));
+   
+	  // Use M+1 and N+1 sizes to account for empty string
+    for(i=0; i<(M+1) ; i++)
+    {
+        dp[i] = malloc(sizeof(int) * (N+1));
+        dp[i][0] = 1; // This means string is empty..so only 1 subsequence
+    }
+    
+    for(i=0; i<(M+1); i++)
+    {
+        for(j=0; j<(N+1); j++)
+        {
+            if((i!=j) && (j!=0))
+            {
+                dp[i][j] = 0;                
+            }            
+        }
+    }
+    
+    for(i=1; i<(M+1); i++)
+    {
+        for(j=1; j<(N+1); j++)
+        {
+            if(s[i-1] == t[j-1])
+            {
+                dp[i][j] = dp[i-1][j] + dp[i-1][j-1]; // This means we are including solutions from inclusion of this element index..apart from prev solutions
+            }
+            else
+            {
+                dp[i][j] = dp[i-1][j]; //Don't use the current element..
+            }
+        }
+    }
+    
+    return dp[M][N];
+}

@@ -1,0 +1,39 @@
+/* two dq : dqincreasing and dq decreasing
+
+*/
+#define MAX(a,b) (a)>(b)?(a):(b);
+int longestSubarray(int* nums, int numsSize, int limit){
+    //int* dqin = malloc(numsSize*sizeof(int));
+    //int* dqde = malloc(numsSize * sizeof(int));
+    int dqin[numsSize], dqde[numsSize];
+    int intop, front1, detop,defront;
+    int i, left=0, ans=0;
+    intop=front1=detop=defront = 0;
+    dqin[intop] = dqde[detop]=0;
+    ans=1;
+
+    for(i=1; i<numsSize; i++) {
+        //dq with monotonical increasing num
+        while(intop>=front1 && nums[i] <= nums[dqin[intop]]) {
+            intop--;
+        }
+        dqin[++intop] = i;
+
+        //dq with monotonical decreasing num
+        while(detop>=defront && nums[i] >= nums[dqde[detop]]) {
+            detop--;           
+        }
+        dqde[++detop] = i;
+        while(abs(nums[dqin[front1]] - nums[dqde[defront]]) > limit) {
+            if(left == dqde[defront]) {
+                 defront++;
+            }
+            if(left == dqin[front1])
+                 front1++;
+            left+=1;
+        }
+        ans = MAX(ans, i-left+1);
+    }
+    
+    return ans;
+}

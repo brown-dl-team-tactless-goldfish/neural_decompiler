@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int maxProfit(vector<int>& p) {
+        int n = p.size();
+        vector<vector<int>> dp(2, vector<int> (3)), temp(2, vector<int> (3));
+
+        for(int i=n-1; i>=0; i--) {
+            for(int buy=0; buy<=1; buy++) {
+                for(int c=1; c<=2; c++) {
+                    if(buy) temp[buy][c] = max(-p[i] + dp[0][c], 0 + dp[1][c]);
+                    else temp[buy][c] = max(p[i] + dp[1][c - 1], 0 + dp[0][c]);
+                }
+            }
+            dp = temp;
+        }
+        return dp[1][2];
+    }
+}; 

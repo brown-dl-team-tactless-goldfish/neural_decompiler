@@ -1,0 +1,60 @@
+class Solution {
+private:
+    int Nr, Nc;
+    
+    char get_num(vector<vector<char>>& board, int r, int c) {
+        const vector<pair<int,int>> nbrs { 
+            { r-1, c-1 },
+            { r-1, c   },
+            { r-1, c+1 },
+            { r  , c-1 },
+            { r  , c+1 },
+            { r+1, c-1 },
+            { r+1, c   }, 
+            { r+1, c+1 }
+        };
+        // count mine number
+        int cnt = 0;
+        for (auto& p : nbrs) {
+            int r1 = p.first;
+            int c1 = p.second;
+            if (r1 >= 0 and r1 < Nr and c1 >= 0 and c1 < Nc) {
+                if (board[r1][c1] == 'M') {
+                    cnt += 1;
+                }   
+            }
+        }
+        return (cnt == 0 ? 'B' : '0' + cnt);
+    }
+    
+    void dfs(vector<vector<char>>& board, int r, int c) {
+        // get correct char for (r,c)
+        board[r][c] = get_num(board, r, c);
+        if (board[r][c] == 'B') {
+            if (r > 0    and board[r-1][c] == 'E') dfs(board, r-1, c);
+            if (r < Nr-1 and board[r+1][c] == 'E') dfs(board, r+1, c);
+            if (c > 0    and board[r][c-1] == 'E') dfs(board, r, c-1);
+            if (c < Nc-1 and board[r][c+1] == 'E') dfs(board, r, c+1);
+            if (r > 0    and c > 0    and board[r-1][c-1] == 'E') dfs(board, r-1, c-1);
+            if (r > 0    and c < Nc-1 and board[r-1][c+1] == 'E') dfs(board, r-1, c+1);
+            if (r < Nr-1 and c > 0    and board[r+1][c-1] == 'E') dfs(board, r+1, c-1);
+            if (r < Nr-1 and c < Nc-1 and board[r+1][c+1] == 'E') dfs(board, r+1, c+1);
+        }
+    } 
+public:
+    vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {
+        Nr = board.size();
+        Nc = board[0].size();
+        
+        int r = click[0];
+        int c = click[1];
+        // if click on mine
+        if (board[r][c] == 'M') {
+            board[r][c] = 'X';
+            return board;
+        }
+        // otherwise
+        dfs(board, r, c);
+        return board;
+    }
+};

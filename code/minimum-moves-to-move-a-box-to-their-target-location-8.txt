@@ -1,0 +1,85 @@
+class Solution {
+    struct State{
+        State() {}
+        State(int br, int bc, int pr, int pc) : box_r(br), box_c(bc), p_r(pr), p_c(pc) {}
+        int box_r, box_c;
+        int p_r, p_c;
+    };
+public:
+    int minPushBox(vector<vector<char>>& grid) {
+        const int m = grid.size();
+        const int n = grid[0].size();
+        const vector<vector<int>> dirs = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
+        State init_s;
+        int t_r, t_c;
+        for(int r = 0; r < m; ++r){
+            for(int c = 0; c < n; ++c){
+                if(grid[r][c] == 'S') init_s.p_r = r, init_s.p_c = c;
+                else if(grid[r][c] == 'B') init_s.box_r = r, init_s.box_c = c;
+                else if(grid[r][c] == 'T') t_r = r, t_c = c;
+            }
+        }
+        grid[init_s.box_r][init_s.box_c] = '.';
+        grid[init_s.p_r][init_s.p_c] = '.';
+        grid[t_r][t_c] = '.';
+
+        auto empty = [&](int r, int c, const State& s){
+            return r >= 0 && r < m &&
+                   c >= 0 && c < n && grid[r][c] == '.' &&
+                   (r != s.box_r || c != s.box_c);};
+        auto get_neighbors = [&](const State& s) -> vector<State>{
+            unordered_map<int, State> candidates;
+            for(const auto& dir : dirs){
+                const int br = s.box_r + dir[0], bc = s.box_c + dir[1];
+                const int pr = s.box_r - dir[0], pc = s.box_c - dir[1];
+                if(empty(pr, pc, s) && empty(br, bc, s)){
+                    candidates[pr * n + pc] = {br, bc, s.box_r, s.box_c};
+                }
+            }
+
+            vector<State> result;
+            queue<pair<int, int>> player_q;
+            player_q.push(make_pair(s.p_r, s.p_c));
+            unordered_set<int> visited;
+            visited.insert(s.p_r * n + s.p_c);
+            while(!player_q.empty()){
+                const auto p = player_q.front();
+                player_q.pop();
+                const int cell_idx = p.first * n + p.second;
+                if(candidates.count(cell_idx) > 0){
+                    result.push_back(candidates[cell_idx]);
+                    if(result.size() == candidates.size()) break;
+                }
+                for(const auto& dir : dirs){
+                    const int r = p.first + dir[0], c = p.second + dir[1];
+                    if(empty(r, c, s) && visited.count(r * n + c) == 0){
+                        player_q.push(make_pair(r, c));
+                        visited.insert(r * n + c);
+                    }
+                }
+            }
+            return result;
+        };
+        auto s2idx = [&](const State& s){
+            return  m * n *(s.box_r * n + s.box_c) + s.p_r * n + s.p_c;
+        };
+        queue<pair<State, int>> q;
+        q.push(make_pair(init_s, 0));
+        unordered_set<int> visited_s;
+        visited_s.insert(s2idx(init_s));
+        while(!q.empty()){
+            const State s = q.front().first;
+            const int pushes = q.front().second;
+            q.pop();
+            if(s.box_r == t_r && s.box_c == t_c) return pushes;
+            for(const auto n : get_neighbors(s)){
+                const int n_idx = s2idx(n);
+                if(visited_s.count(n_idx) == 0)
+                    q.push(make_pair(n, pushes + 1));
+                    visited_s.insert(n_idx);
+            }
+        }
+        return -1;
+    }
+};
+

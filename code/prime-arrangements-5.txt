@@ -1,0 +1,41 @@
+public class Solution
+{
+    private const long Modulo = 1000000007;
+
+    public int NumPrimeArrangements(int n)
+    {
+        // perm(n) = n * (n - 1) * (n - 2) * ... * 1
+        // We have the same number of prime indices and prime values.
+        // So npa(n) = perm(numPrimes) * perm(n - numPrimes)
+        int p = PrimeCount(n);
+        return (int)(PermCount(p) * PermCount(n - p) % Modulo);
+    }
+
+    private int PrimeCount(int n)
+    {
+        int c = 0;
+        for (int i = 2; i <= n; i++)
+        {
+            c++;
+            for (int j = 2; j < i; j++)
+            {
+                if (i % j == 0)
+                {
+                    c--;
+                    break;
+                }
+            }
+        }
+        return c;
+    }
+
+    private long PermCount(long n)
+    {
+        long c = 1;
+        for (long i = 2; i <= n; i++)
+        {
+            c = c * i % Modulo;
+        }
+        return c;
+    }
+}

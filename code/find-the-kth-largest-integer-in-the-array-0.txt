@@ -1,0 +1,86 @@
+int cmp(const void* a, const void* b){
+    char* A = *(char**)a ;
+    char* B = *(char**)b ;
+    int lenA = strlen(A) ;
+    int lenB = strlen(B) ;
+    if(lenA == lenB){
+        for(int i = 0; i < lenA; i++){
+            if(A[i] != B[i])
+                return A[i] - B[i] ;
+        }    
+        return  0 ;
+    }
+    return lenA - lenB ;
+}
+bool isLessEqual(char* s, char* t){
+    int n1 = strlen(s) ;
+    int n2 = strlen(t) ;
+    if(n1 < n2)
+        return true ;
+    if(n1 > n2)
+        return false ;
+    for(int i = 0; i < n1; i++){
+        if(s[i] < t[i])
+            return true ;
+        if(s[i] > t[i])
+            return false ;
+    }
+    return true ;
+}
+void insert(char** heap, int k, char* s){
+    if( isLessEqual(s, heap[0]) )
+        return  ;
+    heap[0] = s ;
+    int f = 0;
+    while(1){
+        int son1 = 2*f + 1 ;
+        int son2 = 2*f + 2 ;
+        if(son2 < k){
+            if(isLessEqual(heap[son1] , heap[son2]) ){
+                if(isLessEqual(heap[son1], heap[f])){
+                    char* tmp = heap[f] ;
+                    heap[f] = heap[son1] ;
+                    heap[son1] = tmp ;
+                    f = son1 ;
+                }
+                else
+                    break ;
+            }
+            else{
+                if(isLessEqual(heap[son2], heap[f])){
+                    char* tmp = heap[f] ;
+                    heap[f] = heap[son2] ;
+                    heap[son2] = tmp ;
+                    f = son2 ;
+                }
+                else
+                    break ;
+            }
+        }
+        else if(son1 < k){
+            if(isLessEqual(heap[son1], heap[f])){
+                char* tmp = heap[f] ;
+                heap[f] = heap[son1] ;
+                heap[son1] = tmp ;
+                f = son1 ;
+            }
+            else
+                break ;            
+        }
+        else
+            break ;
+    }    
+}
+//min heap
+char* kthLargestNumber(char ** nums, int numsSize, int k){
+    char** heap = malloc( (k + 1) * sizeof(char*) ) ;
+    for(int i = 0; i < k; i++){
+        heap[i] = nums[i] ;
+    }
+    qsort(heap, k, sizeof(char*), cmp) ;
+    for(int i = k; i < numsSize; i++){
+        insert(heap, k, nums[i]) ;
+    }
+
+    return heap[0] ;
+}

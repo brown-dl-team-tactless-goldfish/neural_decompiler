@@ -1,0 +1,20 @@
+class Solution {
+public:
+	int minHeightShelves(vector<vector<int>>& books, int shelf_width) {
+		int n=books.size();
+		vector<int> dp(n,INT_MAX/2);
+		for(int i=0;i<books.size();i++){
+			int h=books[i][1];
+			int w=0;
+			for(int j=i;j>=0;j--){
+				w+=books[j][0];
+				if(w>shelf_width) break;
+				h=max(h,books[j][1]);
+				dp[i]=min(dp[i],(j-1<0 ? 0:dp[j-1])+h);
+			}
+		}
+
+		return dp.back();
+
+	}
+};

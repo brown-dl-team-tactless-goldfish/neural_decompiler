@@ -1,0 +1,72 @@
+#define pi pair<int,int>
+struct comp
+{
+  bool operator()(pi &p1, pi &p2)
+  {
+      if(p1.first==p2.first)
+        return p1.second>p2.second;
+      return p1.first<p2.first;
+  }    
+};
+
+class Solution {
+public:
+    vector<int> topStudents(vector<string>& positive_feedback, vector<string>& negative_feedback, vector<string>& report, vector<int>& student_id, int k) {
+        // to store the feedback words according to nature for efficient search
+            unordered_set<string>positive; // SC: O(n1)
+            unordered_set<string>negative; // SC: O(n2)
+
+        for(auto it: positive_feedback) // TC: O(n1)
+          positive.insert(it);
+        
+        for(auto it: negative_feedback) // TC: O(n2)
+        negative.insert(it);
+
+       // number of students
+       int n=student_id.size(); // TC: O(n)
+       // for storing each student total points after considering feedback
+       priority_queue<pi,vector<pi>,comp>pq; // SC: O(n)
+
+       for(int i=0;i<n;i++) // O(n*|word|*log(max(n1,n2)))
+       {   int point=0;
+           int space_pos=-1;
+           for(int j=0;j<report[i].size();j++)
+           {
+               if(report[i][j]==' ')
+              {   
+            string find=report[i].substr(space_pos+1,j-space_pos-1);
+            // if this word find in positive feedback
+            if(positive.find(find)!=positive.end()) 
+              point+=3;
+            // if this word find in negative feedback
+            if(negative.find(find)!=negative.end())   
+             point-=1;  
+             space_pos=j;
+              }
+           }
+
+            string find=report[i].substr(space_pos+1);
+            // if this word find in positive feedback
+            if(positive.find(find)!=positive.end()) 
+              point+=3;
+            // if this word find in negative feedback
+            if(negative.find(find)!=negative.end())   
+             point-=1;
+
+             pq.push({point,student_id[i]});
+       }
+
+       // to store ans
+       vector<int>ans;
+        // TC: O(k)
+       while(k--)
+       {  pi  it=pq.top();
+           pq.pop();
+        //    cout<<it.second<<"   "<<it.first<<endl;
+           ans.push_back(it.second);
+       }
+
+       // return ans
+       return ans;
+    }
+};

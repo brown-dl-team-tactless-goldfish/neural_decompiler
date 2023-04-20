@@ -1,0 +1,66 @@
+void freexlist (int*** xlist, int a, int b, int matrixSize, int matrixColSize){
+    for (int i = 0 ; i < a ; i++){
+        for (int j = 0 ; j < matrixColSize ; j++){
+            free(xlist[i][j]);
+        }
+        free(xlist[i]);
+    }
+    for (int j = 0 ; j <= b ; j++){
+        free(xlist[a][j]);
+    }
+    
+    for (int i = a+1 ; i < matrixSize ; i++){
+        free(xlist[a]);
+    }
+    free(xlist);
+}
+int maxSumSubmatrix(int** matrix, int matrixSize, int* matrixColSize, int k){
+    int*** xlist = malloc(sizeof(int**)*matrixSize);
+    int ans = INT_MIN;
+    for (int i = 0 ; i < matrixSize ; i++){
+        xlist[i] = malloc(sizeof(int*)*(*matrixColSize));
+        for (int j = 0 ; j < (*matrixColSize) ; j++){
+            xlist[i][j] = malloc(sizeof(int)*(*matrixColSize - j));
+            xlist[i][j][0] = matrix[i][j];
+            if (xlist[i][j][0] == k){
+                freexlist(xlist, i, j, -1, *matrixColSize);
+                return k;
+            } else if (matrix[i][j] < k && ans < matrix[i][j]){
+                ans = matrix[i][j];
+            }
+        }
+    }
+    for (int i = 0 ; i < matrixSize ; i++){
+        for (int j = 0 ; j < (*matrixColSize) ; j++){
+            for (int p = 1 ; p+j < (*matrixColSize) ; p++){
+                xlist[i][j][p] = xlist[i][j][p-1] + matrix[i][j+p];
+                if (xlist[i][j][p] == k){
+                    freexlist(xlist, matrixSize, -1, matrixSize, *matrixColSize);
+                    return k;
+                } else if (xlist[i][j][p] < k && ans < xlist[i][j][p]){
+                    ans = xlist[i][j][p];
+                }
+            }
+        }
+    }
+    for (int i = 0 ; i < matrixSize-1 ; i++){
+        for (int j = 0 ; j < (*matrixColSize) ; j++){
+            for (int p = 0 ; p+j < (*matrixColSize) ; p++){
+                int total = xlist[i][j][p];
+                int now = i+1;
+                while (now < matrixSize){
+                    total += xlist[now][j][p];
+                    if (total == k){
+                        freexlist(xlist, matrixSize, -1, matrixSize, *matrixColSize);
+                        return k;
+                    } else if (total < k && ans < total){
+                        ans = total;
+                    }
+                    now++;
+                }
+            }
+        }
+    }
+    freexlist(xlist, matrixSize, -1, matrixSize, *matrixColSize);
+    return ans;
+}

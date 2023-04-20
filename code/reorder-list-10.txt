@@ -1,0 +1,45 @@
+typedef struct ListNode Node;
+void reverseList(Node* head);
+void merge(Node *head1, Node* head2);
+
+void reorderList(Node* head){
+    if(!head || !head->next || !head->next->next)
+        return;
+    Node *mid = head, *tail = head;
+    while(tail->next && tail->next->next) {
+        mid = mid->next;
+        tail = tail->next->next;
+    }
+    while(tail->next)
+        tail = tail->next;
+    Node *temp = mid->next;
+    mid->next = NULL;
+    reverseList(temp); // head: 1->2->3, tail: 3<-4<-5
+    merge(head, tail);
+}
+
+void reverseList(Node* head) {
+    if(!head || !head->next)
+        return;
+    Node *curr = head;
+    Node *pre = NULL, *next = NULL;
+    while(curr) {
+        next = curr->next;
+        curr->next = pre;
+        pre = curr;
+        curr = next;
+    } 
+}
+
+void merge(Node* head1, Node* head2){
+    Node* head = head1;
+    
+    while(head2!=NULL){
+        Node* next = head2->next;
+        head2->next = head->next;
+        head->next = head2;
+        
+        head = head->next->next;
+        head2 = next;
+    }
+}

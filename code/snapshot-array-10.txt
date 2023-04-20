@@ -1,0 +1,26 @@
+class SnapshotArray {
+public:
+    SnapshotArray(int length) {
+        snaps.resize(length);
+    }
+    
+    void set(int index, int val) {
+        cur[index] = val;
+    }
+    
+    int snap() {
+        for (auto [i, val] : cur) snaps[i][snap_id] = val;
+        cur.clear();
+        return snap_id++;
+    }
+    
+    int get(int index, int snap_id) {
+        auto it = snaps[index].upper_bound(snap_id);
+        if (it == snaps[index].begin()) return 0;
+        return prev(it)->second;
+    }
+    
+    vector<map<int,int>> snaps;
+    map<int,int> cur;
+    int snap_id = 0;
+};

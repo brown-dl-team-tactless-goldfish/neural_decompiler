@@ -1,0 +1,43 @@
+class Solution {
+public:
+    bool validTicTacToe(vector<string>& board) {
+        int xnum = 0, onum = 0;
+        for(string b : board){
+            for(char c : b){
+                if(c == 'X')
+                    xnum++;
+                else if(c == 'O')
+                    onum++;
+            }
+        }
+        if(xnum < onum || xnum - onum > 1)
+            return false;
+        if((isWin(board, 'O') && xnum > onum) ||(isWin(board, 'X') && xnum == onum))
+            return false;
+        return true;
+    }
+    bool isWin(vector<string> board, char cur){
+        int row = board.size();
+        int col = board[0].size();
+        vector<vector<vector<int>>> dp(row, vector<vector<int>>(col, vector<int>(4, 0)));
+        vector<pair<int, int>> directions = {{0, -1}, {-1, 0}, {-1, -1}, {-1, 1}};
+        for(int i = 0; i < row; i++){
+            for(int j = 0; j < col; j++){
+                if(board[i][j] == cur){
+                    dp[i][j] = {1, 1, 1, 1};
+                    for(int d = 0; d < directions.size(); d++){
+                        int ni = i + directions[d].first;
+                        int nj = j + directions[d].second;
+                        if(ni >= 0 && nj >= 0 && nj < col && board[ni][nj] == cur){
+                            dp[i][j][d] += dp[ni][nj][d];
+                            if(dp[i][j][d] == row)
+                                return true;
+                        }  
+                    }
+                }
+                
+            }
+        }
+        return false;
+    }
+};

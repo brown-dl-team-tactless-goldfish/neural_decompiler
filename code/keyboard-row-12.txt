@@ -1,0 +1,49 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char** findWords(char** words, int wordsSize, int* returnSize) {
+        const char KBSIZE = 3;
+        const char ALPHSIZE = 26;
+    
+        char kb[KBSIZE][11];
+        strcpy(kb[0], "qwertyuiop");
+        strcpy(kb[1], "asdfghjkl");
+        strcpy(kb[2], "zxcvbnm");
+    
+        char ch[ALPHSIZE];
+        char **ans = (char **)malloc(wordsSize * sizeof(char*));
+    
+        int i, j;
+        for(i = 0; i < KBSIZE; i++)
+        {
+            j = 0;
+            char c;
+            while((c = kb[i][j++]) != '\0')
+            {
+                ch[c-'a'] = i;
+            }
+        }
+        
+        char index = 0;
+        for(i = 0; i < wordsSize; i++)
+        {
+            int row = ch[tolower(words[i][0]) - 'a'];
+            char flag = 1;
+            char c;
+            j = 0;
+            while((c = words[i][j++]) != '\0')
+            {
+                char pos = tolower(c) - 'a';
+                if(ch[pos] != row) {flag = 0; break;}
+            }
+            
+            if(flag)
+            {
+                ans[index++] = &words[i][0];
+                *returnSize = index;
+            }
+        }
+        
+        return ans;
+}

@@ -1,0 +1,43 @@
+int cmp(const void * a, const void * b){
+	char * str1 = *(char**)a;
+	char * str2 = *(char**)b;
+	static buffer1[24] = { 0 };
+	static buffer2[24] = { 0 };
+
+	buffer1[0] = buffer2[0] = 0;
+
+	strcat(buffer1, str1);
+	strcat(buffer1, str2);
+	strcat(buffer2, str2);
+	strcat(buffer2, str1);
+	return strcmp(buffer1, buffer2);
+}
+void printStrArr(char ** as, int num){
+	for (int i = 0; i < num; ++i)
+		printf("%s\n", as[i]);
+}
+char* largestNumber(int* nums, int numsSize) {
+	if (numsSize<1) return NULL;
+	char ** numstring = malloc(sizeof(char*)* numsSize);
+	for (int i = 0; i < numsSize; ++i){
+		char * s = malloc(sizeof(char)* 12);
+		sprintf(s, "%d", nums[i]);
+		numstring[i] = s;
+	}
+	//cmp(numstring[0], numstring[1]);
+//	printStrArr(numstring, numsSize);
+	qsort(numstring, numsSize, sizeof(char*), cmp);
+//	printStrArr(numstring, numsSize);
+	// cat all string
+	char * buffer = malloc(sizeof(char) * 1280);
+	buffer[0] = 0;
+
+	for (int i = (numsSize - 1); i >= 0; --i){
+		strcat(buffer, numstring[i]);
+		free(numstring[i]);
+	}
+    // all zeros
+    if(buffer[0] == '0')
+        buffer[1] = 0;
+	return buffer;
+}

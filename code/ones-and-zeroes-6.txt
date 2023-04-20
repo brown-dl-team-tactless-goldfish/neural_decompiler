@@ -1,0 +1,37 @@
+public class Solution {
+    public int FindMaxForm(string[] strs, int m, int n) {
+        var len = strs.Length;
+
+        var zeroOneCounts = new (int zeroCount, int oneCount)[len];
+
+        for (int i = 0; i < len; i++) {
+            var str = strs[i];
+            var zeroCount = 0;
+            var oneCount = 0;
+            foreach (var c in str) {
+                if (c == '0') {
+                    zeroCount++;
+                } else {
+                    oneCount++;
+                }
+            }
+
+            zeroOneCounts[i] = (zeroCount, oneCount);
+        }
+
+        var dp = new int[m + 1, n + 1];
+
+        foreach (var zeroOneCount in zeroOneCounts) {
+            for (int i = m; i >= 0; i--) {
+                // i: zero count
+                for (int j = n; j >= 0; j--) {
+                    // j: one count
+                    if (i - zeroOneCount.zeroCount >= 0 && j - zeroOneCount.oneCount >= 0) {
+                        dp[i, j] = Math.Max(dp[i, j], dp[i - zeroOneCount.zeroCount, j - zeroOneCount.oneCount] + 1);
+                    }
+                }
+            }
+        }
+        return dp[m, n];
+    }
+}

@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int maxValueOfCoins(vector<vector<int>>& piles, int k) {
+        int n = piles.size() ;
+        //dp[i][j] :i item, the maximum total value of coins you can have
+        vector<vector<int>>dp(n, vector<int>(k+1)) ;
+        for(int i = 1; i <= min(k, (int)piles[0].size()); i++){
+            dp[0][i] = dp[0][i-1] + piles[0][i-1] ;
+        }
+        for(int i = 1; i < n; i++){    
+            for(int j = 0; j <= k; j++){
+                int sum = 0 ;
+                dp[i][j] = dp[i-1][j] ;
+                for(int t = 1; t <= min(j, (int)piles[i].size()); t++){
+                    sum += piles[i][t-1] ;
+                    dp[i][j] = max(dp[i][j], dp[i-1][j-t]+ sum) ;
+                }
+            }
+        }
+        return dp[n-1][k] ;
+    }
+};

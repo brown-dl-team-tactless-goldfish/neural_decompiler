@@ -1,0 +1,27 @@
+#define ll long long
+class Solution {
+public:
+    // Logic: This is a simple math ques. (PnC), for any n, we have two type of indices:
+    // 1. odd 2. even, for odd, we have 4 choices (primes): 2, 3, 5, 7 and for even indices,
+    // we have 5 choices, 0, 2, 4, 6, 8. So, for any n >= 1, no. of odd indices: (int) n/2
+    // and no. of even indices = no. of odd indices (if n is even) o.w (int) (n + 1) / 2 = (int) n/2 + 1
+     // let no. of odd indices be r (= (int) n/2), then, ans is: (4^r) * (5^(n & 1 ? r + 1 : r))
+    // IMP: (a * b) % c = ((a % c) * (b % c)) % c -> same goes for + and -
+    // but for /,  (a / b) % c = (a * multiplicative inverse of b) % c
+    int m = 1e9 + 7;
+	// utility to calculate power with modulo to avoid overflow
+    ll power(ll x, ll n) {
+        if (!n) return 1;
+        ll pow = power(x, n / 2);
+        // pow = ((pow % m) * (pow % m)) % m;
+        pow = (pow * pow) % m;
+        if (n & 1) return ((x % m) * pow) % m;
+        return pow;
+    }
+    int countGoodNumbers(long long n) {
+		// IMP: Take long long not int in below (num odd and even indices)
+        ll num_odd_indices = n / 2;
+        ll num_even_indices = n / 2 + (n & 1);
+        return (power(4, num_odd_indices) * power(5, num_even_indices)) % m;
+    }
+};

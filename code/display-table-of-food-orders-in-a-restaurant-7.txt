@@ -1,0 +1,47 @@
+        public class Solution
+        {
+            public IList<IList<string>> DisplayTable(IList<IList<string>> orders)
+            {
+                var foodNameHash = new HashSet<string>();
+                var tableMap = new SortedDictionary<int, IDictionary<string, int>>();
+                foreach (var order in orders)
+                {
+                    int tableId = Convert.ToInt32(order[1]);
+                    string foodName = order[2];
+                    foodNameHash.Add(foodName);
+                    if (!tableMap.ContainsKey(tableId))
+                        tableMap.Add(tableId, new Dictionary<string, int>());
+                    if (!tableMap[tableId].ContainsKey(foodName))
+                        tableMap[tableId].Add(foodName, 1);
+                    else
+                        tableMap[tableId][foodName]++;
+                }
+
+                var res = new List<IList<string>>();
+                var foodNames = foodNameHash.OrderBy(x => x, StringComparer.Ordinal).ToList();
+                var len = foodNames.Count();
+                var row = new List<string>();
+                row.Add("Table");
+                foreach (string name in foodNames)
+                    row.Add(name);
+                res.Add(row);
+
+                foreach (var kp in tableMap)
+                {
+                    var tableId = kp.Key;
+                    var foodMap = tableMap[tableId];
+                    row = new List<string>();
+                    row.Add(tableId.ToString());
+                    for (int i = 0; i < len; i++)
+                    {
+                        if (foodMap.ContainsKey(foodNames[i]))
+                            row.Add(foodMap[foodNames[i]].ToString());
+                        else
+                            row.Add("0");
+                    }
+                    res.Add(row);
+                }
+
+                return res;
+            }
+        }

@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int knightDialer(int n) {
+        int res = 0, mod = 1000000007;
+        vector<int> endCount(10, 0);
+        vector<vector<int>> jump{{4, 6}, {6, 8}, {7, 9}, {4, 8}, {0, 3, 9}, 
+                                 {}, {0, 1, 7}, {2, 6}, {1, 3}, {2, 4}};
+        knightDialer(n, mod, endCount, jump);
+        
+        for (int n : endCount)
+        {
+            res = (res + n) % mod;
+        }
+        
+        return res;
+    }
+    
+private:
+    void knightDialer(int n, int mod, vector<int>& endCount, const vector<vector<int>>& jump)
+    {
+        if (n == 1)
+        {
+            endCount = {1, 1, 1, 1, 1, 1, 1, 1, 1, 1};
+            return;
+        }
+        
+        vector<int> newEndCount(10, 0);
+        knightDialer(n - 1, mod, endCount, jump);
+        for (int i = 0; i < 10; ++i)
+        {
+            for (int n : jump[i])
+            {
+                newEndCount[n] = (newEndCount[n] + endCount[i]) % mod;
+            }
+        }
+        
+        endCount = newEndCount;
+    }
+};

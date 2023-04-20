@@ -1,0 +1,13 @@
+class Solution {
+public:
+    int eatenApples(const vector<int>& apples, const vector<int>& days) {
+        int n = apples.size(), res = 0;
+        multimap<int, int> q;
+        for (int i = 0; i < n || q.size(); ++i) {
+            if (i < n) q.emplace(i + days[i], apples[i]);
+            for (auto f = q.begin(); q.size() && (f->first <= i || f->second <= 0); f = q.begin()) q.erase(f);
+            if (auto f = q.begin(); q.size()) res++, f->second--;
+        }
+        return res;
+    }
+};

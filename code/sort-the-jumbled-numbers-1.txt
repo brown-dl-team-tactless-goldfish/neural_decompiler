@@ -1,0 +1,35 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+struct map{
+    int index;
+    int val;
+    int after;
+};
+int cmp(const void *a,const void *b){
+    struct map a1=*(struct map*)a;
+    struct map b1=*(struct map*)b;
+
+    if(a1.after==b1.after) return a1.index>b1.index;
+    else return a1.after>b1.after;
+}
+int* sortJumbled(int* mapping, int mappingSize, int* nums, int numsSize, int* returnSize){
+    struct map t[numsSize];
+    *returnSize=numsSize;
+    for(int i=0;i<numsSize;i++){
+        t[i].val=nums[i];
+        t[i].index=i;
+        t[i].after=0;
+        int temp=1;
+        if(nums[i]==0) t[i].after=t[i].after+temp*mapping[nums[i]%10]; 
+        while(nums[i]!=0){
+            t[i].after=t[i].after+temp*mapping[nums[i]%10];
+            nums[i]/=10;
+            temp*=10;
+        }
+    }
+    qsort(t,numsSize,sizeof(struct map),cmp);
+    for(int i=0;i<numsSize;i++) nums[i]=t[i].val;
+
+    return nums;
+}

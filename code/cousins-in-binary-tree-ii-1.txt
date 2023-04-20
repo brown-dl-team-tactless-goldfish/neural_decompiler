@@ -1,0 +1,36 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int depth(struct TreeNode* root,int d){
+    if(root==NULL){
+        return d;
+    }
+    return fmax(depth(root->right,d+1),depth(root->left,d+1));
+}
+void levelsum(int *sum,struct TreeNode *root,int d){
+    if(!root) return;
+    sum[d]+=root->val;
+    levelsum(sum,root->left,d+1);
+    levelsum(sum,root->right,d+1);
+    
+}
+void updatesum(int *sum,struct TreeNode *root,int prev_val,int d){
+    if(!root) return;
+    root->val = sum[d]-prev_val;
+    prev_val = (root->left==NULL?0:root->left->val) + (root->right==NULL?0:root->right->val);
+    updatesum(sum,root->left,prev_val,d+1);
+    updatesum(sum,root->right,prev_val,d+1);
+}
+struct TreeNode* replaceValueInTree(struct TreeNode* root){
+    int d=depth(root,0);
+    printf("depth : %d\n",d);
+    int *sum=calloc(d,sizeof(int));
+    levelsum(sum,root,0);
+    updatesum(sum,root,root->val,0);
+    return root;
+}

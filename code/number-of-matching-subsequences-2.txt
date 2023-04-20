@@ -1,0 +1,45 @@
+public class Solution {
+    public int NumMatchingSubseq(string S, string[] words) 
+    {
+        if (!string.IsNullOrEmpty(S))
+        {
+            HashSet<string> negative = new HashSet<string>();
+            HashSet<string> positive = new HashSet<string>();
+            int count = 0;
+            foreach (var word in words)
+            {
+                if (!negative.Contains(word))
+                {
+                    if (positive.Contains(word))
+                        count++;
+                    else
+                    {
+                        int wordIndex = 0;
+                        int Sindex = 0;
+
+                        while (Sindex < S.Length && wordIndex < word.Length)
+                        {
+                            if (S[Sindex] == word[wordIndex])
+                            {
+                                wordIndex++;
+                            }
+                            Sindex++;
+                        }
+
+                        if (wordIndex == word.Length)
+                        {
+                            positive.Add(word);
+                            count++;
+                        }
+                        else 
+                            negative.Add(word);
+                    }
+                }
+            }
+            
+            return count;
+        }
+        
+        return 0;
+    }
+}

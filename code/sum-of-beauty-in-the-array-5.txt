@@ -1,0 +1,17 @@
+class Solution {
+public:
+    int sumOfBeauties(vector<int>& nums) {
+        int n = nums.size(), ans = 0;
+        vector<int> l(n), r(n);
+        r.back() = INT_MAX;
+        for (int i = 1; i < n; i++)
+            l[i] = max(l[i - 1], nums[i - 1]);
+        for (int i = n - 2; i >= 0; i--)
+            r[i] = min(r[i + 1], nums[i + 1]);
+        for (int i = 1; i < n - 1; i++) {
+            if (nums[i] > l[i] && r[i] > nums[i]) ans += 2;
+            else if (nums[i] > nums[i - 1] && nums[i + 1] > nums[i]) ans++;
+        }
+        return ans;
+    }
+};

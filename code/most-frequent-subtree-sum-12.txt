@@ -1,0 +1,42 @@
+public class Solution {
+    
+    private Dictionary<int,int> dic = new Dictionary<int,int>();
+    private int maxFreq = 0;
+    private List<int> res = new List<int>();
+    
+    public int[] FindFrequentTreeSum(TreeNode root) {
+    
+        if(root == null)
+            return new int[0];
+        
+        dfs(root);
+        
+        return res.ToArray();
+    }
+    
+    private int dfs(TreeNode root)
+    {
+        if(root == null)
+            return 0;
+        
+        int left = dfs(root.left);
+        int right = dfs(root.right);
+        int sum = left + right + root.val;
+        
+        if(dic.ContainsKey(sum))
+            dic[sum]++;
+        else
+            dic.Add(sum, 1);
+        
+        if(dic[sum] > maxFreq)
+        {
+            res.Clear();
+            maxFreq = dic[sum];
+            res.Add(sum);
+        }
+        else if(dic[sum] == maxFreq)
+            res.Add(sum);
+        
+        return sum;
+    }
+}

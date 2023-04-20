@@ -1,0 +1,60 @@
+class Solution {
+public:
+    vector<int> helper(int len, int skills, unordered_map<int, vector<int>>& skill_mp, const vector<int>& people, unordered_map<int, vector<int>>& visited) {
+        if(skills == 0) {
+            return {};
+        }
+        
+        if(visited.count(skills)) {
+            return visited[skills];
+        }
+        
+        vector<int> ans(100, 0);
+        for(int i=0; i<len; ++i) {
+            if(((1 << i) & skills) == 0) {
+                continue;
+            }
+            
+            for(int p : skill_mp[i]) {
+                int new_skills = skills;
+                for(int j=0; j<len; ++j) {
+                    if((people[p] & 1 << j) && (new_skills & 1 << j)) {
+                        new_skills -= 1 << j;
+                    }
+                }
+
+                auto nxt = helper(len, new_skills, skill_mp, people, visited);
+                if(nxt.size() + 1 < ans.size()) {
+                    nxt.insert(nxt.begin(), p);
+                    ans = nxt;
+                }
+            }
+            
+        }
+        
+        visited[skills] = ans;
+        return ans;
+    }
+    
+    vector<int> smallestSufficientTeam(vector<string>& req_skills, vector<vector<string>>& people) {
+        unordered_map<string, int> idx;
+        int len = req_skills.size();
+        int skills = (1 << len) - 1;
+        for(int i=0; i<len; ++i) {
+            idx[req_skills[i]] = i;
+        }
+        
+        unordered_map<int, vector<int>> skill_mp;
+        vector<int> peoples(people.size(), 0);
+        for(int pid = 0; pid<people.size(); ++pid) {
+            for(auto s : people[pid]) {
+                int sid = idx[s];
+                skill_mp[sid].push_back(pid);
+                peoples[pid] += (1 << sid);
+            }
+        }
+        
+        unordered_map<int, vector<int> > visited;
+        return helper(len, skills, skill_mp, peoples, visited);
+    }
+};

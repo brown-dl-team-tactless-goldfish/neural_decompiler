@@ -1,0 +1,37 @@
+long long countPiles(int* candies, int candiesSize, int cand){
+    long long cn = 0;
+    for(int i = 0; i < candiesSize; i++){
+        cn += candies[i]/cand;
+    }
+    return cn;
+}
+
+int maximumCandies(int* candies, int candiesSize, long long k){
+    long long sum = 0;
+    int max = 0;
+    for(int i = 0; i < candiesSize; i++){
+        sum += candies[i];
+        if(candies[i] > max)
+            max = candies[i];
+    }
+    
+    if(sum < k)
+        return 0;
+    if(sum == k)
+        return 1;
+    
+    int left = 1 , right  = max;
+    int mid;
+    while(left + 1 < right){
+        mid = (left + right)/2;
+        if(countPiles(candies, candiesSize, mid) >= k)
+            left = mid ;            
+        else
+            right = mid - 1;
+    }
+
+    if(countPiles(candies, candiesSize, right) >=k)
+         return right;
+    else
+        return left;
+}

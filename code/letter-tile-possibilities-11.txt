@@ -1,0 +1,33 @@
+class Solution {
+public:
+  /// compute C(n, r)
+  static int combo(int n , int r) {
+    int a = 1, b = 1; 
+    for(int i = 0; i < r; ++i) {
+      a *= (n - i); 
+      b *= (i + 1);
+    }
+    return a / b;
+  }
+  
+    int numTilePossibilities(string tiles) {
+      unordered_map<char, int> cnts;
+      for(char c : tiles)
+        ++ cnts[c];
+      int n = tiles.size();
+      vector<int> rets(n+1, 0);
+	  
+      rets[0] = 1; // empty string has 1 possibility.
+   
+      for(auto& kv : cnts)  {
+        // for each letter with j repetitions, combine it with previous results of length (i - j), 
+        // such that the resulting string is length of i; 
+        auto prev = rets;
+          for(int j = 1, m = kv.second; j <= m; ++j) 
+            for(int i = j; i <= n; ++i)
+              rets[i] += prev[i - j] * combo(i, j);        // For each previous results, the new character has C(i, j) possibilities.
+      }
+      return accumulate(rets.begin(), rets.end(), -1);   // substruct empty string
+    }
+};
+

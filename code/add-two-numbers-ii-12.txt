@@ -1,0 +1,67 @@
+struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2){
+    int count1 = 0, count2 = 0;
+    int index1 = 0, index2 = 0;
+    struct ListNode * temp1 = l1;
+    struct ListNode * temp2 = l2;
+    while (temp1 != NULL){
+        count1 += 1;
+        temp1  = temp1->next;
+    }
+    while (temp2 != NULL){
+        count2 += 1;
+        temp2 = temp2->next;
+    }
+    int num1[count1];
+    int num2[count2];
+    temp1 = l1;
+    temp2 = l2;
+    while (temp1 != NULL){
+        num1[index1] = temp1->val;
+        index1++;
+        temp1 = temp1->next;
+    }
+    while (temp2 != NULL){
+        num2[index2] = temp2->val;
+        index2++;
+        temp2 = temp2->next;
+    }
+    struct ListNode * cur;
+    struct ListNode * former = NULL;
+    int carry = 0, sum;
+    int val1, val2;
+    while(1){
+        index1--;
+        index2--;
+        if (index1 < 0 && index2 < 0)
+            break;
+        cur = malloc(sizeof(struct ListNode));
+        if (index1 < 0){
+            val1 = 0;
+            val2 = num2[index2];
+        }
+        else if (index2 < 0){
+            val1 = num1[index1];
+            val2 = 0;
+        }
+        else{
+            val1 = num1[index1];
+            val2 = num2[index2];
+        }
+        sum = val1 + val2 + carry;
+        if (sum >= 10){
+            sum = sum % 10;
+            carry = 1;
+        }
+        else
+            carry = 0;
+        cur->val = sum;
+        cur->next = former;
+        former = cur;
+    }
+    if (carry == 1){
+        cur = malloc(sizeof(struct ListNode));
+        cur->val = 1;
+        cur->next = former;
+    }
+    return cur;
+}

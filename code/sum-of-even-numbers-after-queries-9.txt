@@ -1,0 +1,46 @@
+int isEven(int num) {
+    return !(num % 2);
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* sumEvenAfterQueries(int* A, int ASize, int** queries, int queriesSize, int* queriesColSize, int* returnSize){
+    // define return array and specify size
+    int* ret = malloc(queriesSize * sizeof(int));
+    *returnSize = queriesSize;
+    // get current sum of even numbers
+    int curr_sum = 0;
+    for (int i = 0; i < ASize; i++) {
+        if (isEven(A[i])) {
+            // A[i] is even
+            curr_sum += A[i];
+        }
+    }
+    
+    int A_num, Q_num, sum, Case;
+    // go through each query
+    for (int i = 0; i < queriesSize; i++) {
+        A_num = A[queries[i][1]];
+        Q_num = queries[i][0];
+        sum = A_num + Q_num;
+        A[queries[i][1]] = sum;
+        Case = ((isEven(A_num) << 1) | isEven(Q_num));
+        // printf("%d\n", Case);
+        switch(Case) {
+            case 0: // A odd, Q odd, sum even, extra = sum
+                curr_sum += sum;
+                break;
+            case 1: // A odd, Q even, sum odd, extra = 0
+                break;
+            case 2: // A even, Q odd, sum odd, extra = -A_num
+                curr_sum -= A_num;
+                break;
+            case 3: // A even, Q even, sum even, extra = Q_num
+                curr_sum += Q_num;
+                break;
+        }
+        ret[i] = curr_sum;
+    }
+    return ret;
+}

@@ -1,0 +1,81 @@
+#define alphabetSIZE 26  //a~z 26 letters
+#define hashtableSIZE 3533  //randomly choose a large prime number
+struct Node{
+	int count;
+	char *str;
+	struct Node *next;
+};
+void initialize_hashtable(struct Node *hashtable)
+{
+	int i;
+	for(i=0;i<hashtableSIZE;i++)
+	{
+		hashtable[i].count = 0;
+		hashtable[i].next = NULL;
+	}
+}
+
+long hash (char *str)
+{
+	int c;
+	unsigned long hash = 0;
+	while(c = *str++)
+		hash = (hash<<5) + hash + c;
+	return hash%hashtableSIZE;
+}
+
+void hashtable_free(struct Node *hashtable)
+{
+	int i;
+	for(i=0;i<hashtableSIZE;i++)
+	{
+		struct Node *tail = hashtable[i].next;
+		while(tail)
+		{
+			struct Node *temp = tail;
+			tail = tail->next;
+			free(temp);
+		}
+	}
+	free(hashtable);
+}
+
+int wordPattern(char* pattern, char* str) {
+	int alphabet[alphabetSIZE]={0},i,patternSize = strlen(pattern);
+	struct Node *hashtable = (struct Node *)malloc(sizeof(struct Node)*hashtableSIZE);
+	initialize_hashtable(hashtable);
+	struct Node *node;
+	char *word = strtok(str," ");
+	for(i=0;word;i++)
+	{
+		if(i>=patternSize)	return 0;    // the number of word in str is more than the length of pattern
+		node = &hashtable[hash(word)];
+		if(!node->str)	//if cell is empty
+		{
+			node->str = (char *)malloc(sizeof(char)*strlen(word));
+			strcpy(node->str,word);
+		}
+		else	//cell is not empty
+		{
+			while(node->next && strcmp(node->str,word))  //go to the appropriate node
+				node = node->next;
+				
+			if(strcmp(node->str,word))	//need allocate new node
+			{
+				struct Node *newNode;
+				newNode->count = 0;
+				newNode->str = (char *)malloc(sizeof(char)*strlen(word));
+				strcpy(newNode->str,word);
+				newNode->next = NULL;
+				node->next = newNode;
+				node = node->next;
+			}
+		}
+		if(alphabet[pattern[i]-'a'] != node->count)
+			return 0;
+		alphabet[pattern[i]-'a'] = node->count = i+1;
+		word = strtok(NULL," ");
+	}
+	hashtable_free(hashtable);
+	return i==patternSize?1:0;
+}

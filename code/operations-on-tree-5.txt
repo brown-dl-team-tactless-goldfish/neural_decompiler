@@ -1,0 +1,55 @@
+class LockingTree {
+    vector<int>p;
+    unordered_map<int,int>mp;
+     unordered_map<int,vector<int>>child;
+public:
+    LockingTree(vector<int>& parent) {
+        p=parent;
+        for(int i=0;i<p.size();i++){
+            child[p[i]].push_back(i);
+        }
+    }
+    
+    bool lock(int num, int user) {
+        if(mp.count(num)) return 0;
+        mp[num]=user;
+        return 1;
+    }
+    
+    bool unlock(int num, int user) {
+        if(mp.count(num)==0||mp[num]!=user) return 0;
+        mp.erase(num);
+        return 1;
+        
+    }
+    
+    void dfs(int curr , vector<int>&v){
+       
+        for(auto x:child[curr]){
+            dfs(x,v);
+        }
+        if(mp.count(curr)==1) v.push_back(curr);
+    }
+    
+    bool upgrade(int num, int user) {
+        // check 1
+        if(mp.count(num)==1) return 0;
+        
+        // check 3
+        int node=num;
+        while(node!=-1){
+            if(mp.count(node)) return 0;
+           
+            node=p[node];
+        }
+        
+        // check 2 
+        vector<int>v;
+        dfs(num,v);
+        if(v.size()==0) return 0;
+        if(v.size()==1&& v[0]==num) return 0;
+        for(auto x:v) mp.erase(x);
+        mp[num]=user;
+        return 1;
+    }
+};

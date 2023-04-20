@@ -1,0 +1,64 @@
+/*
+1320. Minimum Distance to Type a Word Using Two Fingers
+Memoization based on current character and previous finger positions.
+*/
+class Solution {
+public:
+    unordered_map<string, int> cache;
+    unordered_map<char, pair<int, int>> char_pos;
+    
+    int minimumDistance(string word) {
+        // for each character, decide to use finger 1 or finger 2
+        // if using finger 1 add to total distance the distance between old and new position of finger one
+        
+        // let i be the current character in word
+        // let p1 = (r1, c1) be the last position of finger 1
+        // let p2 = (r2, c2) be the last position of finger 2
+        // T(i, p1, p2) = the min cost of using finger 1 or finger 2 to press character i
+        // the first placement of each finger costs nothing
+        
+        
+        // need table of characters
+        int NUM_COLS = 6;
+        
+        for (int c = 'A'; c <= 'Z'; ++c) {
+            int i = c - 'A';
+            int row = i / NUM_COLS;
+            int col = i % NUM_COLS;
+            char_pos[c] = { row, col };
+        }
+        
+        return helper(word, 0, -1, -1);
+    }
+    
+    int helper(string& word, int i, char f1, char f2) {
+        // base case
+        if (i == word.size()) {
+            return 0;
+        }
+        
+        // construct cache key from chars
+        string key = to_string(i) + to_string(f1) + to_string(f2);
+        // cache case
+        if (cache.find(key) != cache.end()) {
+            return cache[key];
+        }
+        // recursive case
+        // try both fingers
+        char c = word[i];
+        int cost1 = helper(word, i + 1, c, f2);
+        cost1 += f1 == -1 ? 0 : distance(f1, c);
+        int cost2 = helper(word, i + 1, f1, c);
+        cost2 += f2 == -1 ? 0 : distance(f2, c);
+        
+        return cache[key] = min(cost1, cost2);
+    }
+    
+    int distance(char a, char b) {
+        pair<int, int> pos1 = char_pos[a];
+        pair<int, int> pos2 = char_pos[b];
+        return abs(pos1.first - pos2.first) + abs(pos1.second - pos2.second);
+    }
+   
+};
+

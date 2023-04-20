@@ -1,0 +1,38 @@
+class Solution {
+public:
+  vector<bitset<100>>t;
+  
+  void fill_table(vector<string>& strs){
+    for(auto &w: strs){
+      vector<vector<int>>v(26, vector<int>());
+      v[w.back() - 'a'].push_back(w.size()-1);
+      for(int j = w.size()-2; j >= 0; j--){
+        bitset<100>b;
+        int id = w[j] - 'a';
+        
+        for(int k = id; k != 26; k++)
+          for(auto id: v[k]) b[id] = 1;
+        
+        v[id].push_back(j);
+        
+        t[j] &= b;
+      }
+    }
+  }
+  
+  int minDeletionSize(vector<string>& strs){
+    int n = strs[0].size();
+    t.resize(n-1);
+    for(auto &b : t) b.set();
+    fill_table(strs);
+    
+    vector<int>dp(n, 0); 
+    queue<pair<int, int>>;
+    
+    for(int i = 0; i != t.size(); i++)
+      for(int j = 0; t[i].any(); j++)
+        if(t[i][j]) dp[j] = max(dp[j], dp[i] + 1), t[i][j] = 0;
+             
+    return n - ( *max_element(dp.begin(), dp.end()) + 1);
+  }
+};

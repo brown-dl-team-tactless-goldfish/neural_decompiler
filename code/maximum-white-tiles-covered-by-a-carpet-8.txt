@@ -1,0 +1,21 @@
+    public int MaximumWhiteTiles(int[][] tiles, int carpetLen)
+    {
+        Array.Sort(tiles, (a, b) => a[0].CompareTo(b[0]));
+        int result = 0, leftTile = 0, cover = 0;
+        for (int rightTile = 0; rightTile < tiles.Length && result < carpetLen;)
+		    //The carpet covers the right tile completely
+            if (leftTile == rightTile || tiles[leftTile][0] + carpetLen > tiles[rightTile][1]) 
+            {
+                cover += Math.Min(carpetLen, tiles[rightTile][1] - tiles[rightTile][0] + 1);
+                result = Math.Max(result, cover);
+                rightTile++; //Add another Tile to the right of the the sliding window
+            }
+            else //The carpet does not cover the right tile completely, so we only consider part of that which is covered
+            {
+                int partial = Math.Max(0, tiles[leftTile][0] + carpetLen - tiles[rightTile][0]);
+                result = Math.Max(result, cover + partial);
+                cover -= (tiles[leftTile][1] - tiles[leftTile][0] + 1); //Remove the left tile size from the sliding window
+                leftTile++; //Remove the left tile from the sliding window
+            }
+        return result;
+    }

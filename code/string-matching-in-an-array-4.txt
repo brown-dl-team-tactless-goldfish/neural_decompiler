@@ -1,0 +1,36 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+//char ret[20][10];
+char ** stringMatching(char ** words, int wordsSize, int* returnSize){
+
+	char **ret = calloc(1, sizeof(char *[wordsSize]));
+	for (int x = 0; x < wordsSize; ++x) 
+		ret[x] = (char *) calloc (1, sizeof (char *[100]));
+
+	int count = 0, m = 0, key = 0; // to check if the string is already in the return array
+
+	for(int i = 0; i < wordsSize; i++){
+		for(int j = 0; j < wordsSize; j++){
+			key = 0;
+			char* s = strstr(words[i], words[j]);
+			if(s != NULL && i != j){
+
+				for(m = 0; m < count; m++){
+					if(!strcmp(ret[m], words[j]))
+						key = 1;                        
+				}
+
+				if(!key){
+					strcpy(ret[count], words[j]);
+					printf("Ret: %s, %s\n", words[j], ret[count]);
+					count++;
+				}
+
+			}
+		}
+	}
+
+	*returnSize = count;
+	return ret;
+}

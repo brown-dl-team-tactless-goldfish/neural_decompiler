@@ -1,0 +1,35 @@
+public class Solution {
+    public int[][] MatrixBlockSum(int[][] mat, int k) {
+        
+        if(mat == null || mat.Length == 0)
+            return new int[0][];
+        
+        int m = mat.Length, n = mat[0].Length;
+        
+        // rangeSum[i,j]: sum of elements between mat[0][0] ~ mat[i-1][j-1]
+        int[,] rangeSum = new int[m + 1, n + 1];
+        for(int i = 1; i <= m; i++)
+        {
+            for(int j = 1; j <= n; j++)
+            {
+                rangeSum[i,j] = rangeSum[i-1,j] + rangeSum[i,j-1] - rangeSum[i-1,j-1] + mat[i-1][j-1];
+            }
+        }
+        
+        int[][] res = new int[m][];
+        for(int i = 0; i < m; i++)
+            res[i] = new int[n];
+        
+        for(int r = 0; r < m; r++)
+        {
+            for(int c = 0; c < n; c++)
+            {
+                int r1 = Math.Max(r-k,0), c1 = Math.Max(c-k,0);
+                int r2 = Math.Min(r+k+1,m), c2 = Math.Min(c+k+1,n);
+                res[r][c] = rangeSum[r2,c2] - rangeSum[r1,c2] - rangeSum[r2,c1] + rangeSum[r1,c1];                   
+            }
+        }
+        
+        return res;
+    }
+}

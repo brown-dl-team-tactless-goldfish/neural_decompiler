@@ -1,0 +1,28 @@
+bool canPartition(int* nums, int numsSize) {
+    int *dp, i, j;
+    long target;
+    
+    for (target = 0, i = 0; i < numsSize; i++)
+        target += nums[i];
+    if (target & 0x1)
+        return false;
+    target >>= 1;
+    
+    if ((dp = malloc(sizeof(int[target + 1]))) == NULL)
+        return false;
+    memset(dp, 0, sizeof(int[target + 1]));
+    dp[0] = 1;
+    
+    for (i = 0; i < numsSize; i++) {
+        for (j = 0; j <= target - nums[i]; j++)
+            if (dp[j])
+                dp[j + nums[i]] = 1;
+        if (dp[target]) {
+            free(dp);
+            return true;
+        }
+    }
+    
+    free(dp);
+    return false;
+}

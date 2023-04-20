@@ -1,0 +1,40 @@
+void initLeftAndRight (int* nums, int numsSize, int* left, int* right) {
+    int maximum = 0, sum = 0;
+    for (int i = 0; i < numsSize; i++) {
+        sum += nums[i];
+        if (nums[i] > maximum) {
+            maximum = nums[i];
+        }
+    }
+    *left = maximum;
+    *right = sum;
+}
+
+bool canBeSplit (int* nums, int numsSize, int maximumSum, int k) {
+    int currSum = 0, parts = 1;
+    for (int i = 0; i < numsSize; i++) {
+        currSum += nums[i];
+        if (currSum > maximumSum) {
+            currSum = nums[i];
+            parts++;
+        }
+        if (parts > k){
+            return false;
+        }
+    }
+    return true;
+}
+
+int splitArray(int* nums, int numsSize, int k){
+    int left, right;
+    initLeftAndRight(nums, numsSize, &left, &right);
+    while (left <= right) {
+        int mid = left + (right - left) / 2;
+        if (canBeSplit(nums, numsSize, mid, k)) {
+            right = mid - 1;
+        } else {
+            left = mid + 1;
+        }
+    }
+    return left;
+}

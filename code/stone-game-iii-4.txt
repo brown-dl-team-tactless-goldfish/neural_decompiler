@@ -1,0 +1,23 @@
+class Solution {
+public:
+    /*Concept :- At one state(index) we have 3 choices ie . choose 1 , 2 or 3 stones
+     We find out the most optimal choice by finding the max of 3 choices , for each choice we add the stone values of number of      stones we choose and we subtract the most optimal choice at the next index .
+     We subtract thiis bbecause , the most optimal choice at the next index is opponent's choice , we want to reduce it 
+    */
+    int helper(vector<int>& stone,int i,int dp[])
+    {
+        if(i>=stone.size()) return 0 ;
+        if(dp[i] != -1) return dp[i] ;
+        int a = INT_MIN , b = INT_MIN , c = INT_MIN ;
+        a = stone[i] - helper(stone,i+1,dp) ;
+        if(i+1<stone.size()) b = stone[i] + stone[i+1] - helper(stone,i+2,dp) ;
+        if(i+2<stone.size()) c = stone[i] + stone[i+1] + stone[i+2] - helper(stone,i+3,dp) ;
+        return dp[i] = max(a,max(b,c)) ;
+    }
+    string stoneGameIII(vector<int>& stoneValue) {
+      int dp[stoneValue.size()] ;
+      memset(dp,-1,sizeof(dp)) ;
+      int res = helper(stoneValue,0,dp) ;
+     return res==0?"Tie":(res>0?"Alice":"Bob") ;
+    }
+};

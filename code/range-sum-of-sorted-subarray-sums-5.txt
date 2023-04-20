@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int rangeSum(vector<int>& nums, int n, int left, int right) {
+        vector <int> cur, cur2;
+        int mod = 1e9 + 7;
+        priority_queue<int, vector<int>, greater<int>> pq;
+        for (auto i : nums) {
+            cur2 = {i};
+            for (auto j : cur) cur2.push_back(i+j);
+            cur = cur2;
+            for(auto j : cur) pq.push(j);
+        }
+        right -= left;
+        while(--left) {
+            if (!pq.empty()) pq.pop();
+        }
+        long long ret = 0;
+        for(int i=0; i<=right && !pq.empty(); i++) {
+            ret = (ret + pq.top()) % mod;
+            pq.pop();
+        }
+        return (int)ret;
+    }
+};

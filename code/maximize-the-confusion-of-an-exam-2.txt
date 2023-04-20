@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int TorF(char & c) {
+        if( c == 'T') 
+            return 0; 
+        else 
+            return 1; 
+    }
+    int maxConsecutiveAnswers(string answerKey, int k) {
+        int i = 0; 
+        int j = 0;  
+        int mostOcurring = 0;  
+        int max_len = 0;  
+        
+        int dp[2] = {0}; 
+        
+        while(j < answerKey.length()) {  
+            
+            dp[TorF(answerKey[j])]++; 
+            mostOcurring = max(mostOcurring, dp[TorF(answerKey[j])]); 
+            int window = j - i + 1; 
+            
+            if(window - mostOcurring <= k) {
+                max_len = max(max_len, j - i + 1);
+            }else {
+                --dp[TorF(answerKey[i])]; 
+                i++; 
+            }
+            j++; 
+        }
+        return max_len;
+    }
+};

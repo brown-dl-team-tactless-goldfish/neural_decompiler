@@ -1,0 +1,32 @@
+
+int get_total(int **tri, int tri_size, int x, int y, int **memo)
+{
+        if (x >= tri_size)
+                return 0;
+        if (memo[x][y] != 0x10000000)
+                return memo[x][y];
+        
+        int a = get_total(tri, tri_size, x + 1, y, memo);
+        int b = get_total(tri, tri_size, x + 1, y + 1, memo);
+        memo[x][y] = a <= b ? a : b;
+        memo[x][y] += tri[x][y];
+
+        return memo[x][y];
+}
+
+int minimumTotal(int** triangle, int triangleSize, int* triangleColSize)
+{
+        int **memo = malloc(triangleSize * sizeof(int *));
+        int i, j;
+        for (i = 0; i < triangleSize; i++) {
+                memo[i] = malloc(sizeof(int) * (i + 1));
+                for (j = 0; j < i + 1; j++)
+                        /*
+                         * in worst situation, min would be -10000 * 200 which would be bigger than  
+                         * 0x10000000, so make 0x10000000 as an unitialized mark for memo is ok.
+                         */
+                        memo[i][j] = 0x10000000; 
+        }
+        
+        return get_total(triangle, triangleSize, 0, 0, memo);
+}

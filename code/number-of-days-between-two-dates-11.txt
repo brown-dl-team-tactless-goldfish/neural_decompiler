@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int daysBetweenDates(string date1, string date2) {
+        return abs(getNumberOfDays(date1) - getNumberOfDays(date2));
+    }
+private:
+    int getNumberOfDays(string date) {
+        int year = stoi(date.substr(0, 4));
+        int month = stoi(date.substr(5, 2));
+        int day = stoi(date.substr(8, 2));
+        
+        int ret = day;
+        for (int y = 1971; y < year; y++)
+            ret += isLeapYear(y) ? 366 : 365;
+        for (int m = 1; m < month; m++)
+            ret += daysInMonth(m, year);
+        return ret;
+    }
+private:
+    bool isLeapYear(int y) {
+        return y % 400 == 0 || y % 4 == 0 && y % 100 != 0;
+    }
+    
+    int daysInMonth(int m, int y) {
+        if (m == 4 || m == 6 || m == 9 || m == 11)
+            return 30;
+        else if (m == 2)
+            return isLeapYear(y) ? 29 : 28;
+        else
+            return 31;
+    }
+};

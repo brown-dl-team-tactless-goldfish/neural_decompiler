@@ -1,0 +1,45 @@
+public class Solution {
+    private int ans;
+    private Dictionary<int, HashSet<string>> map;
+    private HashSet<string> seen;
+    public int LongestStrChain(string[] words) {
+        this.map = new Dictionary<int, HashSet<string>>();
+        this.seen = new HashSet<string>();
+        int maxlen = 0;
+        foreach (string word in words) {
+            int len = word.Length;
+            maxlen = Math.Max(maxlen, len);
+            if (!map.ContainsKey(len))
+                map.Add(len, new HashSet<string>());
+            map[len].Add(word);
+        }
+        
+        int currlen = maxlen;
+        while (currlen > 0 && map.ContainsKey(currlen)) {
+            foreach (string word in map[currlen])
+                backtrack(word, 1);
+            currlen--;
+        }
+        return ans;
+    }
+    
+    void backtrack(string word, int seqlen) {
+        if (seen.Contains(word))
+            return;
+        seen.Add(word);
+        int nextlen = word.Length - 1;
+        ans = Math.Max(ans, seqlen);
+        if (!map.ContainsKey(nextlen))
+            return;
+        seqlen++;
+        var sb = new StringBuilder(word);
+        for (int i = 0; i < word.Length; i++) {
+            char c = word[i];
+            sb.Remove(i, 1);
+            string sub = sb.ToString();
+            if (map[nextlen].Contains(sub))
+                backtrack(sub, seqlen);
+            sb.Insert(i, c);
+        }
+    }
+}

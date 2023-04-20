@@ -1,0 +1,33 @@
+class StockPrice {
+public:
+    unordered_map<int, int> prices;
+    multiset<int> ordered;
+    int latestTime = -1;
+    
+    void update(int timestamp, int price) {
+	    // this is the shorthand for `if (prices.find(timestamp) != prices.end())`
+        if (prices.count(timestamp)) {
+			// this makes sure that only one of the values equal to `prices[timestamp]` in the multiset is deleted, not all of them
+            ordered.erase(ordered.lower_bound(prices[timestamp]));
+        }
+        prices[timestamp] = price;
+        ordered.insert(price);
+        latestTime = max(latestTime, timestamp);
+    }
+    
+    int current() {
+        return prices[latestTime];
+    }
+    
+    int maximum() {
+		// so since this is a multi set, the rbegin() operation returns an iterator that points to the last element 
+		// (which is the first element in reverse order)
+		// so in order to actually grab the value that this iterator is pointing to, we need to use the * notation
+        return *rbegin(ordered);
+    }
+    
+    int minimum() {
+		// same logic, but the iterator for begin() points to the first element
+        return *begin(ordered);
+    }
+};

@@ -1,0 +1,64 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char** funtion(char** array,int *count,int up,char* position,int n,int geshu,int layer);
+char** generateParenthesis(int n, int* returnSize) 
+{
+    char** array=NULL;
+    int count=0;
+    char position[n];
+    array=funtion(array,&count,0,position,n,0,1);
+    *returnSize=count;
+    return array;
+}
+
+char** funtion(char** array,int *count,int up,char* position,int n,int geshu,int layer)
+{
+	int i,j,z;
+	int copygeshu=geshu;
+	for(i=up;i<2*n;i++)
+	{
+		copygeshu=geshu;
+		for(z=i;z<2*n;z++)
+			position[z]=0;
+		for(j=up;j<=i;j++)
+		{
+			if(j==i)
+				copygeshu++;
+			else
+				copygeshu--;
+			if(copygeshu<0)
+				return array;
+		}
+		if(n==layer)
+			copygeshu=copygeshu-(2*n-1-i);
+		if(geshu>=0)
+		{
+			if(i>up)
+				position[i-1]=0;
+			position[i]=1;
+			if(n!=layer)
+			{
+				array=funtion(array,count,i+1,position,n,copygeshu,layer+1);
+			}
+			else
+			{
+				(*count)++;
+				array=(char **)realloc(array,sizeof(char *)*(*count));
+				array[*count-1]=(char *)malloc(sizeof(char )*2*n);
+                array[*count-1][2*n]='\0';
+				for(z=0;z<2*n;z++)
+				{
+					if(position[z]==1)
+						array[*count-1][z]='(';
+					else
+						array[*count-1][z]=')';
+				}
+			}
+		}
+		else
+			return array;
+	}
+    return array;
+}

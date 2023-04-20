@@ -1,0 +1,111 @@
+instead of using DFS and backtracking we can use BFS to approach this problem.
+for a sequence A B C D  we can simply group 2 of them together and performs
+add, minus, product and division(make sure no division by zero occurs) and then push the
+resulted 3 elements(2 original and 1 new) in to the queue.
+importantly, we use a set to maintain the visited vectors to save searching space.
+class Solution {
+public:
+    bool judgePoint24(vector<int>& nums) {
+        set<vector<double>, cmp> visited = set<vector<double>, cmp>();
+        vector<double> curr = vector<double>();
+        int i, j, k;
+        queue<vector<double>> q = queue<vector<double>>();
+        for (auto num : nums) {
+            curr.push_back(num * 1.0);
+        }
+        
+        sort(curr.begin(), curr.end());
+        q.push(curr);
+        visited.insert(curr);
+        while (!q.empty()) {
+            vector<double> next = q.front();
+            q.pop();
+            if (next.size() == 1) {
+                    if ((next[0] - 24.0 <= 0.000001) && (24.0 - next[0] <= 0.000001)) {
+                           return true;
+                }
+                continue;
+            }
+            
+            for (i = 0 ; i < next.size(); i++) {
+                for (j = i + 1; j < next.size(); j++) {
+                    vector<double> plus = vector<double>();
+                    vector<double> minus1 = vector<double>();
+                    vector<double> minus2 = vector<double>();
+                    vector<double> product = vector<double>();
+                    vector<double> division1 = vector<double>();
+                    vector<double> division2 = vector<double>();
+                    for (k = 0 ; k < next.size(); k++) {
+                        if (k != i && k != j) {
+                            plus.push_back(next[k]);
+                            minus1.push_back(next[k]);
+                            minus2.push_back(next[k]);
+                            product.push_back(next[k]);
+                            division1.push_back(next[k]);
+                            division2.push_back(next[k]);
+                        }
+                    } 
+                    
+                    plus.push_back(next[i] + next[j]);
+                    sort(plus.begin(), plus.end());
+                    if (visited.find(plus) == visited.end()) {
+                        q.push(plus);
+                        visited.insert(plus);
+                    }
+                    minus1.push_back(next[i] - next[j]);
+                    sort(minus1.begin(), minus1.end());
+                    if (visited.find(minus1) == visited.end()) {
+                        q.push(minus1);
+                        visited.insert(minus1);
+                    }
+                    minus2.push_back(-next[i] + next[j]);
+                    sort(minus2.begin(), minus2.end());
+                    if (visited.find(minus2) == visited.end()) {
+                        q.push(minus2);
+                        visited.insert(minus2);
+                    }
+                    product.push_back(next[i] * next[j]);
+                    sort(product.begin(), product.end());
+                    if (visited.find(product) == visited.end()) {
+                        q.push(product);
+                        visited.insert(product);
+                    }
+                    if (next[j] != 0) {
+                        division1.push_back(next[i] / next[j]);
+                        sort(division1.begin(), division1.end());
+                        if (visited.find(division1) == visited.end()) {
+                            q.push(division1);
+                            visited.insert(division1);
+                        }
+                    }
+                    
+                    if (next[i] != 0) {
+                        division2.push_back(next[j] / next[i]);
+                        sort(division2.begin(), division2.end());
+                        if (visited.find(division2) == visited.end()) {
+                            q.push(division2);
+                            visited.insert(division2);
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+
+private:
+    struct cmp{
+        bool operator()(const vector<double> &a, const vector<double> &b) const {
+            int i;
+            if (a.size() != b.size()) {
+                return  a.size() > b.size();
+            }
+            for (i = 0 ; i < a.size() && i < b.size(); i++) {
+                if (a[i] != b[i]) {
+                    return a[i] < b[i];
+                }
+            }
+            return false;
+        }  
+    };
+};

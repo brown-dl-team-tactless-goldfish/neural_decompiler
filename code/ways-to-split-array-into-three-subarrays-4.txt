@@ -1,0 +1,47 @@
+class Solution {
+    int binarysearch(int i, int j, vector<int> &prfsm, int w1)
+    {
+        int r = -1, n = prfsm.size();
+        while(i <= j)
+        {
+            int mid = i + (j-i)/2;
+            if(mid == n-1)
+                break;
+            if(prfsm[n-1]-prfsm[mid] >= prfsm[mid] - prfsm[w1])
+            {
+                r = mid;
+                i = mid+1;
+            }
+            else
+            {
+                j = mid-1;
+            }
+        }
+        return r;
+    }
+public:
+    int waysToSplit(vector<int>& nums) {
+        vector<int> prefixsm;
+        int sum = 0, mod = 1e9 + 7, ans = 0, n = nums.size();
+        for(int &num : nums)
+        {
+            sum += num;
+            prefixsm.push_back(sum);
+        }
+        for(int i = 0; i < n-2; i++)
+        {
+            int fst = prefixsm[i];
+            auto snditr = lower_bound(prefixsm.begin(), prefixsm.end(), 2*fst);
+            if(snditr == prefixsm.end())
+                return ans;
+            int snd = snditr-prefixsm.begin();
+            if(snd <= i)
+                snd = i + 1;
+            int trd = binarysearch(snd, n-1, prefixsm, i);
+            if(trd == -1)
+                continue;
+            ans = (ans % mod + (trd-snd+1)%mod)%mod;
+        }
+        return ans;
+    }
+};

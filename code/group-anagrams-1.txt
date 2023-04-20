@@ -1,0 +1,103 @@
+#define OPTIMIZE 1
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+char *** groupAnagrams(char ** strs, int strsSize, int* returnSize, int** returnColumnSizes) {
+    int i, j;
+    int listLen = 0;
+    int subListLen = 0;
+    char*** list = NULL;
+    char** subList = NULL;
+    int* colSizes = NULL;
+    char* p;
+
+#ifdef OPTIMIZE
+    int* c = (int*)calloc(strsSize, sizeof(int)*26);
+    for(i=0; i<strsSize; i++) {
+        p = strs[i];
+        while(*p) {
+            c[i*26 + (*p) - 'a'] += 1;
+            p++;
+        }
+    }
+#endif
+
+    for (i=0; i<strsSize; i++) {
+        subListLen = 0;
+        subList = NULL;
+        if (strs[i] != NULL) {
+            subListLen += 1;
+            subList = (char**)realloc(subList, sizeof(char*) * subListLen);
+            subList[subListLen-1] = strs[i];
+            for (j=i+1; j<strsSize; j++) {
+                if (strs[j] != NULL) {
+#ifdef OPTIMIZE
+                    if (isAnagram(c, j, i)) {
+#else
+                    if (isAnagram(strs[j], strs[i])) {
+#endif                        
+                        subListLen += 1;
+                        subList = (char**)realloc(subList, sizeof(char*) * subListLen);
+                        subList[subListLen-1] = strs[j];
+                        strs[j] = NULL;
+                    }
+                }
+            }
+            listLen += 1;
+            list = (char***)realloc(list, sizeof(char**) * listLen);
+            list[listLen - 1] = subList;
+            colSizes = (int*)realloc(colSizes, sizeof(int) * listLen);
+            colSizes[listLen - 1] = subListLen;
+        }
+    }
+
+    *returnSize = listLen;
+    *returnColumnSizes = colSizes;
+
+    free(c);
+
+    return list;
+}
+
+#ifdef OPTIMIZE
+inline int isAnagram(int* c, int i, int j) {
+    int k;
+    for(k=0; k<26; k++) {
+        if (c[i*26 + k] != c[j*26 + k]) {
+            return 0;
+        }
+    }
+    return 1;
+}
+
+#else
+int isAnagram(const char* str1, const char* str2) {
+    int len1 = strlen(str1);
+    int len2 = strlen(str2);
+    if(len1 != len2) {
+        return 0;
+    }
+
+    int i;
+    int chars1[26] = {0};
+    int chars2[26] = {0};
+    
+    while(*str1) {
+        chars1[*str1++ - 'a'] += 1;
+    }
+
+    while(*str2) {
+        chars2[*str2++ - 'a'] += 1;
+    }
+
+    for(i=0; i<26; i++) {
+        if(chars1[i] != chars2[i]) {
+            return 0;
+        }
+    }
+
+    return 1;
+}
+#endif

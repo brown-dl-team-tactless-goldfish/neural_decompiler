@@ -1,0 +1,23 @@
+Graph->G[V].P = probability;
+if (V == target) {
+	if (current_time < t) {
+		for (W = Graph->G[V].FirstEdge; W; W = W->Next) /* 对V的每个邻接点W->AdjV */
+			if (!Visited[W->AdjV]) {
+				Graph->G[V].P = 0;
+			}
+	}
+	else if (current_time > t) {
+		Graph->G[V].P = 0;
+	}
+}
+Visited[V] = true; /* 标记V已访问 */
+
+for (W = Graph->G[V].FirstEdge; W; W = W->Next) /* 对V的每个邻接点W->AdjV */
+	if (!Visited[W->AdjV]) {
+		if(V==1)
+		DFS(Graph, W->AdjV, Visited, current_time + 1, Graph->G[V].P / Graph->G[V].NumberOfNext, t, target);    /* 则递归访问之 */
+		else {
+			DFS(Graph, W->AdjV, Visited, current_time + 1, Graph->G[V].P / (Graph->G[V].NumberOfNext - 1), t, target);
+		}
+	}   /* 若W->AdjV未被访问 */
+		

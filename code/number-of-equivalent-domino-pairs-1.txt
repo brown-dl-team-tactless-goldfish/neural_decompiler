@@ -1,0 +1,28 @@
+int cmpfunc (const void * a, const void * b)
+{
+   return ( *(int*)a - *(int*)b );
+}
+int numEquivDominoPairs(int** dominoes, int dominoesSize, int* dominoesColSize){
+    int cnt=1,total=0;
+    int *arr=malloc(sizeof(int)*dominoesSize);
+    for(int i=0;i<dominoesSize;i++)
+    {
+        if(dominoes[i][0]<dominoes[i][1])
+            arr[i]=dominoes[i][0]*10+dominoes[i][1];
+        else
+            arr[i]=dominoes[i][1]*10+dominoes[i][0];
+    }
+    qsort(arr, dominoesSize, sizeof(int), cmpfunc);
+    for(int i=0;i<dominoesSize-1;i++)
+    {
+        while(i+1<dominoesSize&&arr[i]==arr[i+1])
+        {
+            //printf("%d ",arr[i]);
+            cnt++;
+            i++;
+        }
+        total+=cnt*(cnt-1)/2;
+        cnt=1;
+    }
+    return total;
+}

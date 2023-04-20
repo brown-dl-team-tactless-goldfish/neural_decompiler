@@ -1,0 +1,55 @@
+class Solution {
+public:
+    vector<int> g[10005];
+
+    vector<vector<int>> getAncestors(int n, vector<vector<int>>& edges) {
+
+        int ind[1001];
+        memset(ind,0,sizeof ind);
+
+        for(auto it:edges)
+        {
+            int s = it[0];
+            int d = it[1];
+            g[s].push_back(d);
+            ind[d]++;
+
+        }
+
+        set<int> s[n];
+
+        vector<vector<int>> ans(n);
+
+        queue<int> q;
+        for(int i=0;i<n;i++)
+        {
+            if(ind[i] == 0)q.push(i);
+        }
+
+        while(!q.empty())
+        {
+            int now = q.front();
+            q.pop();
+
+            for(auto v:g[now])
+            {
+                s[v].insert(now);
+                for(int x: s[now])s[v].insert(x);
+                ind[v]--;
+                if(ind[v] == 0){
+                    q.push(v);
+                }
+            }
+        }
+
+        for(int i=0;i<n;i++)
+        {
+            for(int x:s[i])
+            {
+                ans[i].push_back(x);
+            }
+        }
+
+        return ans;
+    }
+};

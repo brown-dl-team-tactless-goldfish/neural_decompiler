@@ -1,0 +1,34 @@
+class Solution {
+    int height(TreeNode *node) {
+        if(!node)
+            return 0;        
+        return 1 + max(height(node->left), height(node->right));
+    }
+    void fillTree(vector<vector<string>> &ret, int r, int c, int h, TreeNode *node) {
+        int shift = (h - r - 1);
+        int off = (shift >= 0) ? (1 << shift) : c;
+        ret[r][c] = to_string(node->val);        
+        
+        if(node->left) {
+            int nc = c - off;
+            fillTree(ret, r + 1, nc, h, node->left);
+        }
+        
+        if(node->right) {
+            int nc = c + off;
+            fillTree(ret, r + 1, nc, h, node->right);
+        }
+        
+    }
+public:
+    vector<vector<string>> printTree(TreeNode* root) {
+        const int h = height(root) - 1;
+        const int rows = h + 1;
+        const int cols = (1 << (h + 1)) - 1;
+        vector<vector<string>> ret(rows, vector<string>(cols, ""));
+        int r = 0;
+        int c = (cols - 1) / 2;
+        fillTree(ret, r, c, h, root);
+        return ret;
+    }
+};

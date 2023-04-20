@@ -1,0 +1,26 @@
+class Solution {
+public:
+    vector<double> getCollisionTimes(vector<vector<int>>& cars) {
+        vector<double> ret(cars.size(),-1);
+        vector<int> c(cars.size(),-1);
+        for(int i = cars.size()-2;i>=0;i--) {
+            int j = i + 1;
+            int v = cars[i][1];
+            int p = cars[i][0];
+            while(j!=-1&&v<=cars[j][1]) {
+                j = c[j];
+            }
+            if(j == -1) {
+                continue;
+            }
+            double t = static_cast<double>(cars[j][0] - p) / (v - cars[j][1]); 
+            while(ret[j]!=-1&&t > ret[j]) {
+                j = c[j];
+                t = static_cast<double>(cars[j][0] - p) / (v - cars[j][1]); 
+            }
+            ret[i] = t; 
+            c[i] = j;
+        }
+        return ret; 
+    }
+};

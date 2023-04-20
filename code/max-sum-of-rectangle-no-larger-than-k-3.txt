@@ -1,0 +1,60 @@
+
+int inf = 233333333;
+int *A, *B, _k;
+int recur(int l, int r) {
+    int dist = r-l+1;
+    int ret;
+    if (dist == 1) return -inf;
+    if (dist == 2) {
+        ret = A[r] - A[l] <= _k ? A[r] - A[l] : -inf;
+        if (A[l] > A[r]) {
+            int t = A[l];
+            A[l] = A[r];
+            A[r] = t;
+        }
+        return ret;
+    }
+    int mid = (l+r)/2;
+    int leftret = recur(l, mid), rightret = recur(mid+1, r);
+    ret = leftret > rightret ? leftret : rightret;
+    for (int j = mid+1, i = l; j <= r; j++) {
+        while (i <= mid && A[i] < A[j] - _k) i += 1;
+        if (i <= mid) if (A[j] - A[i] > ret) ret = A[j] - A[i];
+    }
+    int i = l, j = mid+1, t = 0;
+    while (i <= mid || j <= r) {
+        if (i > mid || (j <= r && A[j] < A[i])) {
+            B[l+t] = A[j];
+            t++, j++;
+        } else {
+            B[l+t] = A[i];
+            t++, i++;
+        }
+    }
+    for (t = 0; t < dist; t++) {
+        A[l+t] = B[l+t];
+    }
+    return ret;
+}
+
+int maxSumSubmatrix(int** matrix, int n, int* matrixColSize, int k){
+    _k = k;
+    int m = matrixColSize[0];
+    int hpre[n][m];
+    for (int i = 0; i < n; i++)
+        for (int j = 0; j < m; j++)
+            hpre[i][j] = (j-1 >= 0 ? hpre[i][j-1] : 0) + matrix[i][j];
+    A = (int*)calloc(sizeof(int), n+1);
+    B = (int*)calloc(sizeof(int), n+1);
+    int ans = -inf;
+    for (int j2 = 0; j2 < m; j2++)
+        for (int j1 = -1; j1 < j2; j1++) {
+            A[0] = 0;
+            for (int i = 0; i < n; i++)
+                A[i+1] = A[i] + hpre[i][j2] - (j1 >= 0 ? hpre[i][j1] : 0);
+            int y = recur(0, n);
+            if (y > ans) ans = y;
+        }
+    free(A), free(B);
+    return ans;
+}

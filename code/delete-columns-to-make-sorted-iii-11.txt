@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int minDeletionSize(vector<string>& A) {
+        int size = A.size(), len = A[0].size(), max_ = 1;
+        vector<int> dp(len, 0);
+
+        auto cmp = [&](int i, int j) {
+            for(int r = 0; r < size; ++r) if(A[r][j] > A[r][i]) return false;
+            return true;
+        };
+        
+        for(int i = 0; i < len; ++i) {
+            for(int j = 0; j < i; ++j) if(cmp(i, j)) dp[i] = max(dp[i], dp[j]);
+            max_ = max(max_, ++dp[i]);
+        }
+
+        return len - max_;
+
+    }
+};

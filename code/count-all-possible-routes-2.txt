@@ -1,0 +1,26 @@
+typedef long long ll;
+ll MOD = 1000000007;
+
+class Solution {
+public:
+    int solve(vector<int>& l, int s, int f, int fuel, vector<vector<vector<int>>>& dp) {
+        if (fuel < 0) return 0;
+        if (dp[s][f][fuel] != -1) return dp[s][f][fuel];
+        else if (abs(l[s] - l[f]) > fuel) dp[s][f][fuel] = 0;
+        else {
+            ll res = (s == f) ? 1 : 0;
+            for (int i = 0; i < l.size(); ++i) {
+                if (i != s) {
+                    res += solve(l, i, f, fuel - (int)abs(l[i] - l[s]), dp);
+                }
+            }
+            dp[s][f][fuel] = res % MOD;
+        }
+        return dp[s][f][fuel];
+    }
+    
+    int countRoutes(vector<int>& locations, int start, int finish, int fuel) {
+        vector<vector<vector<int>>> dp(locations.size(), vector<vector<int>>(locations.size(), vector<int>(fuel+1, -1)));
+        return solve(locations, start, finish, fuel, dp);
+    }
+};

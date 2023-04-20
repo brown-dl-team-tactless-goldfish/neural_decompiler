@@ -1,0 +1,35 @@
+typedef struct {
+    int val;
+    int count;
+    UT_hash_handle hh;
+} Item;
+
+int* singleNumber(int* nums, int numsSize, int* returnSize){
+    Item *ht = NULL;
+    for (int i=0; i<numsSize; i++) {
+        Item *tmp = NULL;
+        HASH_FIND_INT(ht, &nums[i], tmp);
+        if (tmp == NULL) {
+            tmp = (Item *)malloc(sizeof(Item));
+            tmp->val = nums[i];
+            tmp->count = 1;
+            HASH_ADD_INT(ht, val, tmp);
+        } else {
+            tmp->count++;
+        }
+    }
+    int *ans = (int *)malloc(sizeof(int) * 2);
+    int pos = 0;
+    Item *tmp, *iter;
+    HASH_ITER(hh, ht, iter, tmp) {
+        if (iter->count == 1) {
+            ans[pos] = iter->val;
+            pos++;
+        }
+        HASH_DEL(ht, iter);
+        free(iter);
+    }
+    
+    *returnSize = 2;
+    return ans;
+}

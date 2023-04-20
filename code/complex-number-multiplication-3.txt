@@ -1,0 +1,30 @@
+int*  pickupCoefficient(char* a){
+    int* ret=(int*)malloc(sizeof(int)*2);
+    int i=0;
+    char* Areal=(char*)malloc(sizeof(char)*10);
+    for(i=0;a[i]!='+';i++){
+        Areal[i]=a[i];
+    }
+    Areal[++i]='\0';
+    ret[0]=atoi(Areal);
+    char* Aimag=(char*)malloc(sizeof(char)*10);
+    int j=0;
+    for(;a[i]!='i';i++){
+        Aimag[j++]=a[i];
+    }
+    Aimag[j++]='\0';
+    ret[1]=atoi(Aimag);
+    return ret;
+}
+char* complexNumberMultiply(char* a, char* b) {
+    int alen=strlen(a);
+    int blen=strlen(b);
+    int* aCoefficient=pickupCoefficient(a);
+    int* bCoefficient=pickupCoefficient(b);
+    int* retCoefficient=(int*)malloc(sizeof(int)*2);
+    retCoefficient[0]=aCoefficient[0]*bCoefficient[0]-aCoefficient[1]*bCoefficient[1];
+    retCoefficient[1]=aCoefficient[0]*bCoefficient[1]+aCoefficient[1]*bCoefficient[0];
+    char* ret=(char*)malloc(sizeof(char)*20);
+    sprintf(ret,"%d+%di",retCoefficient[0],retCoefficient[1]);
+    return ret;
+}

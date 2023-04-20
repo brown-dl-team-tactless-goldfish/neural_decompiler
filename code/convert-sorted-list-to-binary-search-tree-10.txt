@@ -1,0 +1,36 @@
+#include <stdlib.h>
+#include <alloca.h>
+
+struct TreeNode* sortedArrayToBST(int* nums, int numsSize) {
+    struct TreeNode * node;
+    int i;
+    
+    if (numsSize == 0) {
+        return NULL;
+    }
+    i = numsSize >> 1;
+    node = malloc(sizeof(struct TreeNode));
+    node->val = nums[i];
+    node->left = sortedArrayToBST(nums, i++);
+    node->right = sortedArrayToBST(nums + i, numsSize - i);
+    return node;
+}
+
+struct TreeNode* sortedListToBST(struct ListNode* head) {
+    int pos = 0, len = 4, i, * arr, * tmp;
+    
+    arr = alloca(len * sizeof(int));
+    while (head != NULL) {
+        if (pos == len) {
+            len <<= 1;
+            tmp = alloca(len * sizeof(int));
+            for (i = 0; i < pos; ++i) {
+                tmp[i] = arr[i];
+            }
+            arr = tmp;
+        }
+        arr[pos++] = head->val;
+        head = head->next;
+    }
+    return sortedArrayToBST(arr, pos);
+}

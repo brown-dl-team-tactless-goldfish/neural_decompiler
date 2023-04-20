@@ -1,0 +1,24 @@
+void traverse(struct Node* root, int level, struct Node** heads) {
+    if (root == NULL) {
+        return;
+    }
+    
+    if (heads[level] != NULL) {
+        heads[level]->next = root;
+    }
+    
+    heads[level] = root;
+    root->next = NULL;
+    
+    traverse(root->left, level + 1, heads);
+    traverse(root->right, level + 1, heads);
+}
+
+struct Node* connect(struct Node* root) {
+	struct Node* heads[100];
+    memset(heads, 0, 100 * sizeof(struct Node*));
+    
+    traverse(root, 0, &heads);
+    
+    return root;
+}

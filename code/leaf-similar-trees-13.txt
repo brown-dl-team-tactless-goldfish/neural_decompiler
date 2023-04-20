@@ -1,0 +1,32 @@
+void findval(struct TreeNode* root, int* r, int* index) {
+    if (!root) return;
+    if (!root->left && !root->right) {
+        r[*index] = root->val;
+         ++(*index);
+        return;
+    }
+    findval(root->left, r, index);
+    findval(root->right, r, index);
+}
+
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+bool leafSimilar(struct TreeNode* root1, struct TreeNode* root2) {
+    int r1[5000] = { 0 }, r2[5000] = { 0 };
+    int i = 0;
+    findval(root1, r1, &i);
+    int j = 0;
+    findval(root2, r2, &j);
+    if (i != j) return false;
+    for (int k = 0; k < j; ++k) {
+        if (r1[k] != r2[k])
+            return false;
+    }
+    return true;
+}

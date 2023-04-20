@@ -1,0 +1,39 @@
+bool equationsPossible(char ** equations, int equationsSize){
+    int letter[123] = {0};
+    int group = 1;
+    int unequal[501];
+    int count = 0;
+    for (int i = 0 ; i < equationsSize ; i++){
+        if (equations[i][1] == '='){
+            if (letter[equations[i][0]] == 0 && letter[equations[i][3]] == 0){  //兩個都還沒被定義過
+                letter[equations[i][0]] = group;
+                letter[equations[i][3]] = group;
+                group++;
+            } else if (letter[equations[i][0]] == 0){ 
+                letter[equations[i][0]] = letter[equations[i][3]];
+            } else if (letter[equations[i][3]] == 0){
+                letter[equations[i][3]] = letter[equations[i][0]];
+            } else {
+                int k = letter[equations[i][3]];
+                for (int j = 95 ; j < 123 ; j++){
+                    if (letter[j] == k){
+                        letter[j] = letter[equations[i][0]];
+                    }
+                }
+            }
+        } else {
+            if (equations[i][0] == equations[i][3]){
+                return false;
+            }
+            unequal[count] = i;
+            count++;
+        }
+    }
+    for (int i = 0 ; i < count ; i++){
+        if (letter[equations[unequal[i]][0]] != 0 && letter[equations[unequal[i]][3]] != 0 && 
+             letter[equations[unequal[i]][0]] == letter[equations[unequal[i]][3]]){
+            return false;
+        }
+    }
+    return true;
+}

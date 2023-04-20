@@ -1,0 +1,47 @@
+struct Point {
+    Point(int x_, int y_): x(x_), y(y_) {}
+    int x;
+    int y;
+};
+
+class Solution {
+public:
+    int minCost(vector<vector<int>>& grid) {
+        queue<Point> q, other;
+        size_t R = grid.size(), C = grid[0].size();
+        vector<vector<bool>> visited(R, vector<bool>(C, false));
+        q.emplace(0, 0);
+        int dist = 0;
+        while(!q.empty()) {
+            Point p = q.front(); q.pop();
+            if(p.x == R-1 && p.y == C-1) return dist;
+            int v = grid[p.x][p.y];
+            if(!visited[p.x][p.y]) {
+                visited[p.x][p.y] = true;
+                if(p.x > 0 && !visited[p.x-1][p.y]) {
+                    if(v == 4) q.emplace(p.x-1, p.y);
+                    else other.emplace(p.x-1, p.y);
+                }
+                if(p.x < R-1 && !visited[p.x+1][p.y]) {
+                    if(v == 3) q.emplace(p.x+1, p.y);
+                    else other.emplace(p.x+1, p.y);
+                }
+                if(p.y > 0 && !visited[p.x][p.y-1]) {
+                    if(v == 2) q.emplace(p.x, p.y-1);
+                    else other.emplace(p.x, p.y-1);
+                }
+                if(p.y < C-1 && !visited[p.x][p.y+1]) {
+                    if(v == 1) q.emplace(p.x, p.y+1);
+                    else other.emplace(p.x, p.y+1);
+                }
+            }
+            if(q.empty()) {
+                swap(q, other);
+                ++dist;
+            }
+        }
+        return dist;
+    }
+};
+
+auto gucciGang = []() {std::ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);return 0;}();

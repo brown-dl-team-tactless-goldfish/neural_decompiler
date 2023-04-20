@@ -1,0 +1,53 @@
+public class Solution 
+{
+    Dictionary<int, List<int>> dict = new Dictionary<int, List<int>>();
+    public int MinimumOperations(TreeNode root)
+    {
+        Bfs(root, 0);
+        var count = 0;
+        foreach (var item in dict)
+        {
+            count += MinSwaps(item.Value.ToArray());
+        }
+        return count;
+    }
+    public int MinSwaps(int[] arr)
+    {
+        int n = arr.Length;
+        List<KeyValuePair<int, int>> arrPos = new List<KeyValuePair<int, int>>();
+
+        for (int i = 0; i < n; i++)
+            arrPos.Add(new KeyValuePair<int,int>(arr[i], i));
+
+        arrPos.Sort((a, b) => a.Key - b.Key);
+
+        bool[] vis = new bool[n];
+
+        int ans = 0;
+
+        for (int i = 0; i < n; i++)
+        {
+            if (vis[i] || arrPos[i].Value == i) continue;
+
+            int cycleSize = 0;
+            int j = i;
+            while (!vis[j])
+            {
+                vis[j] = true;
+                j = arrPos[j].Value;
+                cycleSize++;
+            }
+            if (cycleSize > 0) ans += cycleSize - 1; 
+        }
+        return ans;
+    }
+
+    public void Bfs(TreeNode root, int l)
+    {
+        if (root == null) return;
+        if (!dict.ContainsKey(l)) dict[l] = new List<int>(); 
+        dict[l].Add(root.val);
+        Bfs(root.left, l + 1);
+        Bfs(root.right, l + 1);
+    }
+}

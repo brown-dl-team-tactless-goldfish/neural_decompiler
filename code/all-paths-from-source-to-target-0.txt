@@ -1,0 +1,31 @@
+void dfs(int** graph, int graphSize, int* graphColSize, int pivot , int** ans, int* idx, int* path, int pathPos, int* colnum){
+    for(int i = 0; i < graphColSize[pivot]; i++){
+        if( graph[pivot][i] == (graphSize-1) ){
+            path[pathPos] = graph[pivot][i] ;
+            ans[*idx] = malloc((pathPos+1) * sizeof(int));
+            memcpy(ans[*idx], path, (pathPos+1)*sizeof(int));
+            colnum[*idx] = pathPos+1;     
+            *idx = *idx + 1;
+        }
+        else{
+            path[pathPos] = graph[pivot][i];
+            dfs(graph, graphSize, graphColSize, path[pathPos], ans, idx, path, pathPos+1, colnum);              
+        }        
+    }
+}
+
+int** allPathsSourceTarget(int** graph, int graphSize, int* graphColSize, int* returnSize, int** returnColumnSizes){
+    int** ans = malloc( 10000 * sizeof(int*) );
+    returnColumnSizes[0] = malloc(10000 * sizeof(int));
+    int*path = malloc(graphSize * sizeof(int));
+    
+    int idx = 0;
+    path[0] = 0;
+    
+    dfs(graph, graphSize, graphColSize, 0 ,ans, &idx, path, 1, returnColumnSizes[0]);
+    
+    *returnSize = idx;
+    returnColumnSizes[0] = realloc(returnColumnSizes[0] , idx*sizeof(int) );
+    ans = realloc(ans, idx *sizeof(int*));
+    return ans;
+}

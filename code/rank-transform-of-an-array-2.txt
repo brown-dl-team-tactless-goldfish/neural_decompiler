@@ -1,0 +1,66 @@
+typedef struct Entry
+{
+    int number;
+    int rank;
+} Entry;
+
+int cmp(void* u, void* v)
+{
+    return *(int*)u - *(int*)v;
+}
+
+int* arrayRankTransform(int* arr, int arrSize, int* returnSize){
+    *returnSize = arrSize;
+    if(arrSize == 0)
+        return NULL;
+    if(arrSize == 1)
+        { arr[0] = 1; return arr; }
+    int SHIFT = 2000001;
+    int min_val = arr[0], max_val = arr[0];
+    for(int i = 0; i < arrSize; i++) min_val = fmin(min_val, arr[i]);
+    for(int i = 0; i < arrSize; i++) max_val = fmax(max_val, arr[i]);
+    int* q = malloc(arrSize*sizeof(int));
+    for(int i = 0; i < arrSize; i++) q[i] = arr[i];
+    qsort(q,arrSize,sizeof(int),cmp);
+    
+    if(min_val < -SHIFT/2 || max_val > SHIFT/2)
+    {
+        struct Entry d[arrSize];
+        d[0].number = q[0]; d[0].rank = 1;
+        int r = 2, j = 1;
+        for(int i = 1; i < arrSize; i++)
+        {
+            if(q[i] > q[i-1])
+            {
+                d[j].number = q[i]; d[j].rank = r; r++; j++;
+            }
+        }
+        int* t = malloc(arrSize*sizeof(int));
+        for(int i = 0; i < arrSize; i++)
+        {
+            for(int k = 0; k < j; k++)
+            {
+                if(d[k].number == arr[i])
+                {
+                    t[i] = d[k].rank;
+                    break;
+                }    
+            }
+        }
+        return t;
+    }
+    
+    int* pos = malloc(SHIFT*sizeof(int));
+    memset(pos,  0, SHIFT*sizeof(int));
+    pos[q[0] + SHIFT/2] = 1;
+    int r=2;
+    for(int i = 1; i < arrSize; i++)
+        if(q[i] > q[i-1])
+        {
+            pos[q[i] + SHIFT/2] = r; r++;
+        }
+    int* t = malloc(arrSize*sizeof(int));
+    for(int i = 0; i < arrSize; i++)
+        t[i] = pos[arr[i] + + SHIFT/2];
+    return t;
+}

@@ -1,0 +1,48 @@
+typedef struct {
+    int length;
+    int* data_arr;
+    int snap_id;
+    int** snap_arr;
+} SnapshotArray;
+
+
+SnapshotArray* snapshotArrayCreate(int length) {
+    SnapshotArray* ssA;
+    ssA=calloc(1, sizeof(SnapshotArray));
+    ssA->length=length;
+    ssA->data_arr = calloc(length, sizeof(int));
+    ssA->snap_id=INT_MIN;
+    return ssA;
+}
+
+void snapshotArraySet(SnapshotArray* obj, int index, int val) {
+    obj->data_arr[index] = val;
+}
+
+int snapshotArraySnap(SnapshotArray* obj) {
+    int** ptr;
+    if(obj->snap_id==INT_MIN)
+    {
+        obj->snap_id=0;
+        obj->snap_arr=(int**)malloc(sizeof(int*));
+        obj->snap_arr[0]=(int*)malloc(obj->length*sizeof(int));
+        memcpy(obj->snap_arr[0], obj->data_arr, obj->length*sizeof(int));
+    }
+    else
+    {
+        obj->snap_id++;
+        ptr=(int**)realloc(obj->snap_arr, (obj->snap_id+1)*sizeof(int*));
+        obj->snap_arr=ptr;
+        obj->snap_arr[obj->snap_id]=(int*)malloc(obj->length*sizeof(int));
+        memcpy(&obj->snap_arr[obj->snap_id][0], &obj->data_arr[0], obj->length*sizeof(int));
+    }
+    return obj->snap_id;
+}
+
+int snapshotArrayGet(SnapshotArray* obj, int index, int snap_id) {
+    return obj->snap_arr[snap_id][index];
+}
+
+void snapshotArrayFree(SnapshotArray* obj) {
+    free(obj);
+}

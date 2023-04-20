@@ -1,0 +1,37 @@
+class Solution {
+public:
+    using ll = long long;
+    long long kthSmallestProduct(vector<int>& A, vector<int>& B, long long k) {
+        ll l = -1e10, r = 1e10;
+        auto count_le = [&](ll x){
+            ll total = 0;
+            for(auto a : A) {
+                if(a > 0) {
+                    int l = 0, r = B.size()-1;
+                    while(l < r) {
+                        int m = l + (r-l+1)/2;
+                        if((ll)a*B[m] > x) r = m-1;
+                        else l = m;
+                    }
+                    total += (ll)a*B[l] <= x ? l+1 : 0;
+                } else {
+                    int l = 0, r = B.size()-1;
+                    while(l < r) {
+                        int m = l + (r-l)/2;
+                        if((ll)a*B[m] > x) l = m+1;
+                        else r = m;
+                    }
+                    total += (ll)a*B[l] <= x ? B.size() -l : 0;
+                }
+            }
+            return total;
+        };
+
+        while(l < r) {
+            ll x = l + (r-l)/2;
+            if(count_le(x) < k) l = x+1;
+            else r = x;
+        }
+        return l;
+    }
+};

@@ -1,0 +1,18 @@
+int cal(int i, int j, vector<vector<int>>& grid, vector<vector<int>>& moveCost, int m, int n, vector<vector<int>>& dp) {
+	if(i == m - 1)
+		return grid[i][j];
+	if(dp[i][j] != -1)
+		return dp[i][j];
+	int ans = INT_MAX;
+	for(int col = 0; col < n; col++)
+		ans = min(ans, cal(i + 1, col, grid, moveCost, m, n, dp) + moveCost[grid[i][j]][col]);
+	return dp[i][j] = ans + grid[i][j];
+}
+int minPathCost(vector<vector<int>>& grid, vector<vector<int>>& moveCost) {
+	int m = grid.size(), n = grid[0].size();
+	int ans = INT_MAX;
+	vector<vector<int>> dp(m, vector<int> (n, -1));
+	for(int j = 0; j < n; j++)
+		ans = min(ans, cal(0, j, grid, moveCost, m, n, dp));
+	return ans;
+}

@@ -1,0 +1,44 @@
+int myLongestSubstring(char *s, int begin, int end, int k) {
+    if (end > strlen(s) || 
+        begin >= end || 
+        end - begin < k) 
+        return 0;
+
+    int i;
+    int map[26];
+    int lmap = 0;
+    int result = 0;
+    int tb = begin;
+    int tr = 0;
+    int count = 0;
+    
+    memset(map, 0, 26 * sizeof(int));
+    for (i = begin; i < end; ++i) {
+        ++map[s[i] - 'a'];
+        if (map[s[i] - 'a'] == k)
+            lmap |= 1<<(s[i] - 'a');
+    }
+    
+    for (i = begin; i < end; ++i) {
+        if (!(lmap&(1<<(s[i] - 'a')))) {
+            tr = myLongestSubstring(s, tb, i, k);
+            result = tr > result ? tr : result;
+            tb = i + 1;
+        } else {
+            ++count;
+        }
+    }
+    
+    if (tb != begin) {
+        tr = myLongestSubstring(s, tb, end, k);
+        result = tr > result ? tr : result;
+    } else {
+        result = count;
+    }
+    
+    return result;
+}
+
+int longestSubstring(char* s, int k) {
+    return myLongestSubstring(s, 0, strlen(s), k);
+}

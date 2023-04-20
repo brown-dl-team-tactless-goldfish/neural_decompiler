@@ -1,0 +1,39 @@
+int helper(struct TreeNode *root, int *depth);
+
+int deepestLeavesSum(struct TreeNode *root)
+{
+    int i = 0;
+    return helper(root, &i);
+}
+
+int helper(struct TreeNode *root, int *depth)
+{
+    if (!root)
+        return 0;
+
+    if (!root->left && !root->right)
+        return root->val;
+
+    int leftDepth = *depth + 1;
+    int rightDepth = *depth + 1;
+
+    int leftSum = helper(root->left, &leftDepth);
+    int rightSum = helper(root->right, &rightDepth);
+
+    if (leftDepth == rightDepth)
+    {
+        // can be set to rightSum, no difference since these values are equal
+        *depth = leftDepth;
+        return leftSum + rightSum;
+    }
+    else if (leftDepth > rightDepth)
+    {
+        *depth = leftDepth;
+        return leftSum;
+    }
+    else
+    {
+        *depth = rightDepth;
+        return rightSum;
+    }
+}

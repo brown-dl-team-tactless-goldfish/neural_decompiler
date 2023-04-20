@@ -1,0 +1,32 @@
+class Solution {
+public:
+    bool isPossibleToCutPath(vector<vector<int>>& grid) {
+    
+        int m = grid.size(), n = grid[0].size();
+        unordered_set<int> from;
+        
+        from.insert(0);
+        while(!from.empty()) {
+            unordered_set<int> next;
+            for(int pos : from) {
+                int i = pos/1001, j = pos%1001;
+                
+                if(i==m-1 && j==n-1) return false;
+                
+                if(i+1 < m && grid[i+1][j]==1) {
+                    next.insert((i+1)*1001+j);
+                }
+                if(j+1 < n && grid[i][j+1]==1) {
+                    next.insert(i*1001+j+1);
+                }
+            }
+            swap(from, next);
+            
+            if(from.size()==1 && *from.begin() != (m-1)*1001+n-1)
+                return true;
+        }
+        
+        return true;
+        
+    }
+};

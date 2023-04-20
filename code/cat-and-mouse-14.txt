@@ -1,0 +1,52 @@
+class Solution {
+    int node_count;
+    vector <vector<vector<int >>> dp;
+        // -1: unvisited,
+        //  0 draw
+        // 1: mouse winds, 2: cat wins,
+    int play (vector<vector<int>>& graph, int step, int mouse_pos, int cat_pos)
+    {
+        //3 stop conditions:
+        if (step==2*node_count) return 0;
+
+        if (mouse_pos==0) return dp[step][mouse_pos][cat_pos]=1;
+
+        if (mouse_pos == cat_pos)  return dp[step][mouse_pos][cat_pos]=2;
+
+        if (dp[step][mouse_pos][cat_pos]!=-1)  return dp [step][mouse_pos][cat_pos];
+
+        // now play optimally for each side    // mouse vs. cat: different values
+        int playerid=step%2; // 0-mouse or 1-cat
+        int player_pos= (playerid==0?mouse_pos: cat_pos);
+        bool hasDraw=false; // default no draw:
+
+            for (auto next: graph[player_pos])
+            {
+                // mistake: a special case: cat cannot go into 0
+                if (playerid==1 && next==0) continue;
+                int next_res;
+                if (playerid==0) // mouse's turn
+                {
+                    next_res = play (graph, step+1, next, cat_pos);
+                }
+                else
+                    next_res = play (graph, step+1, mouse_pos, next);
+
+                if (next_res==playerid+1) // at least one choice will lead to mouse win
+                    return dp[step][mouse_pos][cat_pos]=playerid+1;
+                else if (next_res==0) // at least one draw
+                    hasDraw=true;
+            }
+
+            if(!hasDraw)
+               return dp[step][mouse_pos][cat_pos]=(3- (playerid+1));   // 1 vs. 2  : each is id+1
+            else
+              return dp[step][mouse_pos][cat_pos]=0;        
+    }
+public:
+    int catMouseGame(vector<vector<int>>& graph) {
+        node_count = graph.size();
+        dp.resize (node_count*2, vector<vector<int>> (node_count, vector<int>(node_count, -1)  ));
+        return play(graph, 0, 1, 2);
+    }
+};

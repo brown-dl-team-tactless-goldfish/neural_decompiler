@@ -1,0 +1,44 @@
+    set<int> st;
+    int sz;
+    int i = 0;
+    
+    ExamRoom(int n) {
+        sz = n;
+    }
+    
+    int seat() {
+                
+        if(i == 0 || st.size() == 0) {
+            st.insert(0); i++;
+            return 0;
+        }
+        
+        if(i == 1) {
+            st.insert(sz - 1); i++;
+            return sz - 1;
+        }
+        
+        vector<int> v(st.begin(), st.end());
+        unordered_map<int, int> mp;
+        mp[*st.begin()] = 0; 
+        
+        for(int i = 1 ; i < v.size() ; i++) {
+            
+            int idx = v[i - 1] + (v[i] - v[i - 1]) / 2;
+            int diff = (v[i] - v[i - 1]) / 2;
+            if(mp.count(diff) == 0) mp[diff] = idx;
+        }
+        
+        if(mp.count(sz - *st.rbegin() - 1) == 0) mp[sz - *st.rbegin() - 1] = sz - 1; 
+                
+        int ret; int mdiff = 0;
+        for(auto e : mp) 
+            if(e.first > mdiff) mdiff = e.first, ret = e.second;
+        
+        st.insert(ret); i++;
+        return ret;
+    }
+    
+    void leave(int p) {
+        st.erase(p);
+    }

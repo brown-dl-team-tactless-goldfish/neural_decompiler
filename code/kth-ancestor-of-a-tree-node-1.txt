@@ -1,0 +1,45 @@
+	public class TreeAncestor {
+            private int[,] sparseTable;
+
+            public TreeAncestor(int n, int[] parent)
+            {
+                sparseTable = new int[GetClosestPowerOfTwo(n) + 1, n];
+
+                for (int i = 0; i < n; i++)
+                    sparseTable[0, i] = parent[i];
+
+                for (int p = 1; p < sparseTable.GetLength(0); p++)
+                    for (int i = 0; i < n; i++)
+                        sparseTable[p, i] = sparseTable[p - 1, i] == -1 ? -1 : sparseTable[p - 1, sparseTable[p - 1, i]];
+            }
+
+            public int GetKthAncestor(int node, int k)
+            {
+                int skip = sparseTable.GetLength(0);
+
+                while (k > 0 && node > -1)
+                    if (k >= 1 << skip)
+                    {
+                        node = sparseTable[skip, node];
+                        k -= 1 << skip;
+                    }
+                    else
+                        skip -= 1;
+
+                return node;
+            }
+
+            private int GetClosestPowerOfTwo(int n)
+            {
+                int m = n,
+                    cnt = 0;
+
+                while (m > 0)
+                {
+                    m >>= 1;
+                    cnt++;
+                }
+
+                return cnt;
+            }
+	}

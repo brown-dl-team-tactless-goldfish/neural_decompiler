@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int reversePairs(vector<int>& nums) {
+        vector<long long> m(nums.begin(), nums.end());
+        return helper(m.begin(), m.end());
+    }
+
+    int helper(vector<long long>::iterator b, vector<long long>::iterator e) {
+        if (e - b < 2) return 0;
+        auto m = b + distance(b, e) / 2;
+        int res = helper(b, m) + helper(m, e);
+        sort(b, m);
+        for (auto s = m; s != e; ++s) {
+            res += m - upper_bound(b, m, 2 * *s);
+        }
+        return res;
+    }
+};

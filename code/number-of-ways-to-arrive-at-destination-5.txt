@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int count = 0, MOD = 1e9 + 7;
+    int countPaths(int n, vector<vector<int>>& r) {
+        vector<pair<long long, long long>> A[n];
+        vector<long long> dist(n, LONG_MAX), ways(n);
+        ways[0] = 1;
+        priority_queue<pair<long long, long long>, vector<pair<long long, long long>>, greater<pair<long long, long long>>> pq;
+        for(auto& a: r){
+            A[a[0]].push_back({a[1], a[2]});
+            A[a[1]].push_back({a[0], a[2]});
+        }
+        pq.push({0, 0});
+        dist[0] = 0;
+        while(!pq.empty()){
+            auto [cost, node] = pq.top();
+            pq.pop();
+            if(cost > dist[node]) continue;
+            for(auto& [to, time]: A[node]){
+                if(dist[to] > time + dist[node]){
+                    dist[to] = time + dist[node];
+                    ways[to] = ways[node];
+                    pq.push({dist[to], to});
+                }
+                else if(dist[to] == time + dist[node])
+                    ways[to] += ways[node], ways[to] %= MOD;
+            }
+        }
+        return max(1, (int)ways[n - 1]);
+    }
+};

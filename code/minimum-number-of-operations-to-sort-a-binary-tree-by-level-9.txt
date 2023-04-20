@@ -1,0 +1,64 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+private:
+    int minSwaps(vector<int> &arr, int n){
+        pair<int, int> arrPos[n];
+        for (int i = 0; i < n; i++){
+            arrPos[i].first = arr[i];
+            arrPos[i].second = i;
+        }
+        sort(arrPos, arrPos + n);
+        vector<bool> vis(n, false);
+        int ans = 0;
+        for(int i = 0; i < n; i++){
+            if(vis[i] || arrPos[i].second == i)continue;
+            int cycle_size = 0,j = i;
+            while(!vis[j]){
+                vis[j] = 1;
+                j = arrPos[j].second;
+                cycle_size++;
+            }
+            if (cycle_size > 0)
+                ans += (cycle_size - 1);
+        }
+        return ans;
+    }
+public:
+    int minimumOperations(TreeNode* root) {
+        int ct=0;
+        vector<vector<int>> lvl;
+        vector<int> out;
+        queue<TreeNode*> q;
+        q.push(root);
+        q.push(NULL);
+        while(!q.empty()){
+            auto node = q.front();
+            q.pop();
+            if(node == NULL){
+                lvl.push_back(out);
+                out.clear();
+                if(!q.empty()) q.push(NULL);
+            }
+            else{
+                out.push_back(node->val);
+                if(node->left) q.push(node->left);
+                if(node->right) q.push(node->right);
+            }
+        }
+        for(auto _v: lvl){
+            if(_v.empty()) continue;
+            ct += minSwaps(_v,_v.size());
+        }
+        return ct;
+    }
+};

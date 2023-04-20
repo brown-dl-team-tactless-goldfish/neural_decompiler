@@ -1,0 +1,40 @@
+class Solution {
+public:
+    /*
+        Question can be converted into find the minimum length of substring that can be deleted such that rest becomes a subsequence of s
+    */
+    
+    int minimumScore(string s, string t) {
+        vector<int>prefix, suffix;
+        int i = 0, j = 0, n = s.size(), m = t.size(), count = 0;
+        while(i < n && j < m){
+            if(s[i] == t[j]){
+                i++; j++; count++;
+            }else i++;
+            prefix.push_back(count);
+        }
+        i = n - 1, j = m - 1, count = 0;
+        while(i >= 0 && j >= 0){
+            if(s[i] == t[j]){
+                i--; j--; count++;
+            }else i--;
+            suffix.push_back(count);
+        }
+        reverse(suffix.begin(), suffix.end());
+        
+        // Without taking any element
+        int maxi = suffix[0];
+        for(int i = 1 ; i < prefix.size() && i < suffix.size() ; i++){
+            // Building the biggest possible subsequence
+            maxi = max(maxi, prefix[i - 1] + suffix[i]);
+            
+            // Edge case : If we dont have to delete anything
+            if(maxi >= m)return 0;
+        }
+        
+        // Checking without taking any suffix part
+        maxi = max(prefix[prefix.size() - 1], maxi);
+        return m - maxi;
+        
+    }
+};

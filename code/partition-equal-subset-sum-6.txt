@@ -1,0 +1,36 @@
+int sum=0;
+for (int i=0;i<numsSize;i++){
+    sum += nums[i];
+}
+if (sum % 2 ==1 ) return 0; //If sum is odd, we can never partition to EQUALS. for e.g [1,2,3,5] ==11
+
+sum = sum/2; // this is sum of one knapsack.
+
+
+//creating table;
+int table[numsSize+1][sum+1];
+
+for (int i=0; i<= numsSize;i++){
+    
+    for (int j=0; j<=sum; j++){
+        if (i==0||j==0){
+            table[i][j]=0;
+        }else if (j>=nums[i-1]){
+            table[i][j] = max(table[i-1][j],nums[i-1]+table[i-1][j-nums[i-1]]);
+            if (j == sum){
+                if (table[i][j] == sum) return 1;
+            }
+        }else{
+            table[i][j] = table[i-1][j];
+            
+        }
+            
+        
+    }
+    
+}
+
+int flag =0; 
+
+
+return flag;

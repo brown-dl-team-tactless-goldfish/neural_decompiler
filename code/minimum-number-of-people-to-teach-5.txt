@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int minimumTeachings(int n, vector<vector<int>>& lng, vector<vector<int>>& frnd) {
+        unordered_set<int> unc;
+        int lsz=lng.size();
+        int fsz=frnd.size();
+        vector<unordered_set<int>> v(lsz+1);
+        for(int i=0;i<lsz;i++){
+            unordered_set<int> temp;
+            for(auto n:lng[i])
+                temp.insert(n);
+            v[i+1]=temp;
+        }
+        
+        for(int i=0;i<fsz;i++){
+            unordered_set<int>& a=v[frnd[i][0]],b=v[frnd[i][1]];
+            bool yes=0;
+            for(auto n:a){
+                if(b.count(n)) {yes=1;break;}
+            }
+            if(!yes){
+                unc.insert(frnd[i][0]);
+                unc.insert(frnd[i][1]);
+            }
+        }
+        unordered_map<int,int> mp;
+        int ans=0;
+        for(auto n:unc){
+            unordered_set<int> a=v[n];
+            
+            for(auto n:a)
+            {
+                mp[n]++;
+                ans=max(ans,mp[n]);
+            }
+        }
+        return unc.size()-ans;
+    }
+};

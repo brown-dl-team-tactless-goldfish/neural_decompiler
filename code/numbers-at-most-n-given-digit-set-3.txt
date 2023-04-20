@@ -1,0 +1,55 @@
+class Solution {
+public:
+    int atMostNGivenDigitSet(vector<string>& digits, int n) {
+        set<int> st;
+        for(auto d : digits) {
+            st.insert(atoi(d.c_str()));
+        }
+        bool valid = true;
+        string num = to_string(n);
+        // check if n is valid or not
+        for(auto c : num) {
+            if(st.find(c-'0') == st.end()) {
+                valid = false;
+                break;
+            }
+        }
+        int cnt = 0;
+        if(valid)
+            cnt++;  // n itself
+        int len = num.length();
+        int star = digits.size();
+        for(int i = len-1; i >= 0; i--) {
+            /* check if first i digit is valid or not */
+            bool valid = true;
+            for(int j = 0; j < i; j++) {
+                if(st.find(num[j]-'0') == st.end()) {
+                    valid = false;
+                    break;
+                }
+            }
+            if(!valid)  // e.g. "10?" is not valid, since "0" is not a given digit
+                continue;
+            /* compute */
+            int rand = len-i-1;
+            int question = 0;
+            for(auto d : digits) {
+                if(atoi(d.c_str()) < num[i]-'0') {
+                    question++;
+                }
+            }
+            int tmp = 1;
+            tmp *= question;
+            for(int j = 0; j < rand; j++)
+                tmp *= star;
+            cnt += tmp;
+        }
+        for(int i = 1; i <= len-1; i++) {
+            int tmp = 1;
+            for(int j = 0; j < i; j++)
+                tmp *= star;
+            cnt += tmp;
+        }
+        return cnt;
+    }
+};

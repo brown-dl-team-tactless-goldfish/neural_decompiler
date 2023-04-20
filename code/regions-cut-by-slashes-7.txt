@@ -1,0 +1,53 @@
+class Solution {
+public:
+    int regionsBySlashes(vector<string>& grid) {
+        int n = grid.size();
+        vector<int> myRoot(4*n*n);
+        for (int i=0; i<4*n*n; i++){
+            myRoot[i]=i;
+        }
+        for(int i=0; i<n; i++){
+            for (int j=0; j<n; j++){
+                int root = 4*(i*n+j);
+                char c = grid[i][j];
+                if(c==' '){
+                    myRoot[find(root,myRoot)] = find(root+2,myRoot);
+                    myRoot[find(root+1,myRoot)] = find(root+3,myRoot);  
+                    myRoot[find(root,myRoot)] = find(root+1,myRoot);
+                    myRoot[find(root+2,myRoot)] = find(root+3, myRoot);
+                }
+                else if(c=='/'){
+                    myRoot[find(root, myRoot)] = find(root+1, myRoot);
+                    myRoot[find(root+2, myRoot)] = find(root+3, myRoot);                    
+                } 
+                else if(c=='\\'){
+                    myRoot[find(root, myRoot)] = find(root+2, myRoot);
+                    myRoot[find(root+1, myRoot)] = find(root+3, myRoot);  
+                }
+                if(i<n-1){
+                    myRoot[find(root+3,myRoot)] = find(root+4*n,myRoot);
+                }
+                if(i>0){
+                    myRoot[find(root,myRoot)] = find(root+3-4*n,myRoot);
+                }
+                if(j<n-1){
+                    myRoot[find(root+2,myRoot)] = find(root+5,myRoot);
+                }
+                if(j>0){
+                    myRoot[find(root+1,myRoot)] = find(root-2,myRoot);
+                }
+            }
+        }
+        int res=0;
+        for (int i=0; i<4*n*n; i++){
+            if(find(i,myRoot) == i){
+                res++;
+            }
+        }
+        return res;
+    }
+    int find(int x, vector<int>& myRoot){
+        if(myRoot[x] != x) myRoot[x] = find(myRoot[x],myRoot);
+        return myRoot[x];
+    }
+};

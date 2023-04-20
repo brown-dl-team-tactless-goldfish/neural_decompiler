@@ -1,0 +1,20 @@
+// OJ: https://leetcode.com/problems/subarrays-with-k-different-integers/
+// Author: github.com/lzl124631x
+// Time: O(N)
+// Space: O(U) where U is the number of unique numbers in `A`
+class Solution {
+    int atMost(vector<int> &A, int k) {
+        int distinct = 0, i = 0, j = 0, N = A.size(), ans = 0;
+        unordered_map<int, int> cnt;
+        for (; j < N; ++j) {
+            distinct += ++cnt[A[j]] == 1;
+            while (distinct > k) distinct -= --cnt[A[i++]] == 0;
+            ans += j - i;
+        }
+        return ans;
+    }
+public:
+    int subarraysWithKDistinct(vector<int>& A, int k) {
+        return atMost(A, k) - atMost(A, k - 1);
+    }
+};

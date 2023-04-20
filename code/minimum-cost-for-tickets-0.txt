@@ -1,0 +1,36 @@
+#define min(a,b,c) ((a)<(b)?((a)<(c)?(a):(c)):((b)<(c)?(b):(c)))
+
+bool findItems(int* days, int daysSize, int target){
+    int left = 0; 
+    int right = daysSize-1;
+    int mid;
+    while(left<= right){
+        mid = (left + right)/2;
+        if(days[mid] == target)
+            return true;
+        
+        if(days[mid] > target)
+            right = mid -1; 
+        else
+            left = mid +1;
+    }
+    
+    return false;
+}
+
+int mincostTickets(int* days, int daysSize, int* costs, int costsSize){
+    int arrSize = days[daysSize-1] + 30;
+    int* dp = calloc(arrSize , sizeof(int));
+    for(int i = 30; i < arrSize; i++){
+        if(findItems(days, daysSize, i-29) == false){
+            dp[i] = dp[i-1];
+        }    
+        else{
+            dp[i] = min(dp[i-1] + costs[0], dp[i-7] + costs[1], dp[i-30] + costs[2]);    
+        }
+    }
+    
+    int ans = dp[arrSize-1];
+    free(dp);
+    return ans;
+}

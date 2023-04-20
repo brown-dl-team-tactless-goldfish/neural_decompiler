@@ -1,0 +1,25 @@
+int maximumScore(vector<int>& nums, int k) {
+
+	for (int i = k - 1; i >= 0; --i) nums[i] = min(nums[i], nums[i + 1]);
+	for (int i = k + 1; i < nums.size(); ++i) nums[i] = min(nums[i], nums[i - 1]);
+
+	int res = nums[k];
+
+	int i = 0, j = nums.size() - 1;
+
+	while (j > i) {
+
+		res = max(res, min(nums[i], nums[j]) * (j - i + 1));
+
+		int val1 = nums[j], val2 = nums[i];
+
+		if (val1 >= val2)
+			for (++i; i <= k && nums[i] == nums[i - 1]; ++i);
+
+		if (val2 >= val1)
+			for (--j; j >= k && nums[j] == nums[j + 1]; --j);
+
+	}
+
+	return res;
+}

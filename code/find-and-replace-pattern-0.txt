@@ -1,0 +1,55 @@
+char ** findAndReplacePattern(char ** words, int wordsSize, char * pattern, int* returnSize){
+    
+    int record[26] ;
+    for(int i = 0; i < 26; i++){
+        record[i] = -1;
+    }
+    
+    int len = strlen(pattern);
+    //
+    //build up pattern string type, ex: "aaab" =>0003,  "caed" =>0123
+    int* patt = malloc(len * sizeof(int));
+    for(int i = 0; i < len; i++){
+        if(record[ pattern[i] - 'a' ] == -1){
+            patt[i] = i;
+            record[ pattern[i] - 'a' ] = i;
+        }
+        else{
+            patt[i] = record[ pattern[i] - 'a' ];
+        }
+    }
+    
+    char** ans = malloc(wordsSize * sizeof(char*));
+    int idx = 0;
+    for(int i = 0; i < wordsSize; i++){
+        //init record[] for build each words type
+        for(int k = 0; k < 26; k++){
+            record[k] = -1;
+        }
+        
+        //check each word type, if not match to patt[i] then go to next words
+        for(int j = 0; j < len; j++){
+            int temp;
+            if(record[ words[i][j] - 'a' ] == -1){
+                temp = j;
+                record[ words[i][j] - 'a' ] = j;
+            }
+            else{
+                temp = record[ words[i][j] - 'a' ];
+            }
+            if(temp != patt[j])
+                break;  //next words
+            
+            //words[i] match to pattern, add to solution
+            if(j == (len -1)){
+                ans[idx] = malloc((len+1) * sizeof(char));
+                memcpy(ans[idx], words[i], (len+1)*sizeof(char));
+                idx++;
+            }
+        }
+    }
+    free(patt);
+    ans = realloc(ans, idx*sizeof(char*));
+    *returnSize = idx;
+    return ans;
+}

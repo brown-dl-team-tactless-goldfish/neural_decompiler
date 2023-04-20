@@ -1,0 +1,37 @@
+class Solution:
+    def minTimeToType(self, word: str) -> int:
+        
+        self.res = 0
+        n = len(word)
+        data = "abcdefghijklmnopqrstuvwxyz"
+        
+        def helper(curIdx, curCharacter):
+            print ("curIdx = ", curIdx, " curCharacter = ", curCharacter, " self.res = ", self.res)
+            if (curIdx == n):
+                return
+            
+            tmpC = word[curIdx]
+            tmpC_idx = data.index(tmpC)
+            pointer_Idx = data.index(curCharacter)
+
+            print ("tmpC = ", tmpC, " tmpC_idx = ", tmpC_idx, " pointer_Idx = ", pointer_Idx)
+            
+            if (tmpC == curCharacter):
+                self.res += 1
+                helper(curIdx+1, curCharacter)
+            else:
+                diff1 = abs(tmpC_idx - pointer_Idx)
+                diff2 = 26 - abs(pointer_Idx - tmpC_idx)
+                
+                if (diff1 < diff2):
+                    self.res += diff1
+                    self.res += 1
+                    helper(curIdx+1, tmpC)
+                else:
+                    self.res += diff2
+                    self.res += 1
+                    helper(curIdx+1, tmpC)
+                    
+        helper(0, "a")
+        
+        return self.res

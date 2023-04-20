@@ -1,0 +1,102 @@
+/*
+思路
+每個地方的數字一但被x取代之後只會越來越大
+應該要先把target的每個數字從小排到大 因為小的數字一但完成後就不能再變動
+
+如果照順序後 最後一個數字就是1 (target[end] == 1) 代表前面也都是 1 返回 true
+
+
+先知道除了最後一個(最大的數字)的加總是多少 才知道在上一階段的最大的數字原本是多少
+oldsum(所有的加總) -= target[end];  (原本所有的加總 減掉最後一個數字)
+
+target[end] - oldsum = new 上次總和之前的數字原本是多少 我們把他取名為 new
+
+只要 new >= oldsum 就可以重複操作 執行 new -= oldsum
+
+得知  new = target[end] % oldsum;
+
+oldsum += new   除了最後一個的加總 加上 剛剛算出來的 new 就是新的target的所有數字加總
+
+這時候要判斷 
+if (new == 0) 這樣會出現 0 但條件之下不可能有 0 返回 false
+if (new == 1) 直接檢查下一個數字 所以end--
+剩下的情況 將最後一個數字替換成新的數字 並且重新整理順序 讓此數列從小排到大 再重複上述步驟
+
+但裡面有一個特例情況 就是 oldsum == 1 如果遇到這樣的情況一定是 true 但只會在 targetSize == 2 的情況下才可能遇到 因此將  targetSize == 2 分開來討論
+*/
+
+
+int comp(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+
+bool isPossible(int* target, int targetSize){
+    qsort(target, targetSize, sizeof(int), comp);
+    
+    int end = targetSize-1;
+    long long oldsum = 0;
+    
+    if (target[end] == 1){
+        return true;
+    }
+    if (targetSize == 1){
+        return target[0] == 1 ? true : false;
+    }
+    if (targetSize == 2){
+        int new;
+        while (target[1] != 1){
+            if (target[0] == 1){
+                return true;
+            }
+            if (target[1] == target[0]){
+                return false;
+            }
+            new = target[1] % target[0];
+
+            if (new == 0){
+                return false;
+            } else if (new < target[0]){
+                target[1] = target[0];
+                target[0] = new;
+            }
+        }
+        return true;
+    }
+
+    for (int i = 0 ; i <= end ; i++){
+        oldsum += target[i];
+    }
+    
+    int new;
+    while (target[end] != 1){
+        oldsum -= target[end];
+        
+        if (target[end] <= oldsum){
+            return false;
+        }
+        new = target[end] % oldsum;
+        oldsum += new; 
+        if (new == 0){
+            return false;
+        } else if (new == 1){
+            end--;
+            if (end < 0){
+                return true;
+            }
+        } else {
+            int i;
+            for (i = end ; i > 0 ; i--){
+                if (new < target[i-1]){
+                    target[i] = target[i-1];
+                } else {
+                    target[i] = new;
+                    break;
+                }
+            }
+            if (i == 0){
+                target[i] = new;
+            }
+        }
+    }
+    return true;
+}

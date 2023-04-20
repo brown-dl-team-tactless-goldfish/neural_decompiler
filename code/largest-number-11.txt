@@ -1,0 +1,86 @@
+#include <string.h>
+
+int helper(char * a, char * b, int position) {
+    int n = strlen(a);
+    int m = strlen(b);
+    if (m == n) {
+        return strcmp(b, a);
+    }
+    int minlength = n > m ? m : n;
+    for (int i = 0; i < minlength; i++) {
+        if (a[i] - b[i] != 0) {
+            return strcmp(b, a);
+        }
+    }
+    if (n > m) {
+        return helper(a+minlength, b, 1);
+    } else {
+        return helper(a, b+minlength, 0);
+    }
+    return strcmp(b, a);
+}
+
+int cmpfunc (const void *a, const void *b) {
+    const char **ia = (const char **)a;
+    const char **ib = (const char **)b;
+    int m = strlen(*ib);
+    int n = strlen(*ia);
+    if (m == n) {
+        return strcmp(*ib, *ia);
+    }
+    int minlength = n > m ? m : n;
+    for (int i = 0; i < minlength; i++) {
+        if ((*ia)[i] - (*ib)[i] != 0) {
+            return strcmp(*ib, *ia);
+        }
+    }
+    if (n > m) {
+        return helper(*ia+minlength, *ib, 1);
+    } else {
+        return helper(*ia, *ib+minlength, 0);
+    }
+    return strcmp(*ib, *ia);
+}
+
+char * largestNumber(int* nums, int numsSize){
+    char ** numsChar = malloc(sizeof(char *) * numsSize);
+    int total = 0, Val = 0, ncount = 0, zeronum = 0;
+    for (int i = 0; i < numsSize; i++) {
+        ncount = 0;
+        Val = nums[i];
+        while (Val) {
+            ncount++;
+            Val /= 10;
+        }
+        if (nums[i] == 0){
+            ncount++;
+            zeronum++;
+        }
+        numsChar[i] = malloc(sizeof(char) * (ncount + 1));
+        Val = nums[i];
+        total += ncount;
+        numsChar[i][ncount] = '\0';
+        while (Val) {
+            numsChar[i][--ncount] = '0' + (Val % 10);
+            Val /= 10;
+        }
+        if (nums[i] == 0)
+            numsChar[i][--ncount] = '0';
+    }
+    if (zeronum == numsSize) {
+        char * res = malloc(sizeof(char) * 2);
+        res[0] = '0';
+        res[1] = '\0';
+        return res;
+    }
+    char * res = malloc(sizeof(char) * (total+1));
+    qsort(numsChar, numsSize, sizeof(char *), cmpfunc);
+    ncount = 0;
+    for (int i = 0; i < numsSize; i++) {
+        while (*numsChar[i] != '\0') {
+            res[ncount++] = *(numsChar[i]++);
+        }
+    }
+    res[ncount] = '\0';
+    return res;
+}

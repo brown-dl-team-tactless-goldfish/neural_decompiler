@@ -1,0 +1,22 @@
+int InRange(int val, int low, int high)
+{
+    return val >= low && val<= high;
+}
+
+struct TreeNode* trimBST(struct TreeNode* root, int low, int high){
+    while(root && !InRange(root->val, low, high))  
+    {
+        struct TreeNode* del = root;
+        if (root->val < low)
+            root = root->right;
+        else
+            root = root->left;
+        free(del);
+    }
+    if (root)
+    {
+        root->left = trimBST(root->left, low, high);
+        root->right = trimBST(root->right, low, high);
+    }
+    return root; 
+}

@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int closestToTarget(vector<int>& arr, int target) {
+        const int n = arr.size();
+        int r = abs(arr.back() - target);
+        vector<int> p(20, n);
+        for (int i = n - 1; i >= 0; --i) {
+            vector<int> v;
+            for (int j = 0; j < 20; ++j) {
+                if (arr[i] & (1 << j)) {
+                    if (p[j] < n) {
+                        v.push_back(j);
+                    }
+                } else {
+                    p[j] = i;
+                }
+            }
+            if (target == arr[i]) return 0;
+            if (target > arr[i]) {
+                r = min(r, target - arr[i]);
+                continue;
+            }
+            sort(v.begin(), v.end(), [&](const int &x, const int &y) {
+                return p[x] < p[y];
+            });
+            int now = arr[i];
+            for (int j = 0; now > target && j < v.size();) {
+                r = min(r, now - target);
+                for (int k = j; j < v.size() &&  p[v[j]] == p[v[k]]; now ^= 1 << v[j++])
+                ;
+            }
+            r = min(r, abs(now - target));
+        }
+        return r;
+        
+    }
+};

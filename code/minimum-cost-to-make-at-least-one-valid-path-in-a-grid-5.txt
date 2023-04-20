@@ -1,0 +1,41 @@
+class Solution {
+public:
+    int minCost(vector<vector<int>>& grid) {
+        deque<pair<pair<int, int>, int>> q;
+        q.push_back(make_pair(make_pair(0, 0), 0));
+        while (!q.empty()) {
+            int r = q.front().first.first, c = q.front().first.second, cost = q.front().second;
+            if (r == grid.size() - 1 && c == grid[r].size() - 1)
+                return cost;
+            q.pop_front();
+            if (!grid[r][c])
+                continue;
+            auto&& nextPos = getNextPos(grid, r, c);
+            grid[r][c] = 0;
+            for (auto&& pos : getNeighbors(r, c)) {
+                if (pos.first >= 0 && pos.first < grid.size() && pos.second >= 0 && pos.second < grid[r].size()) {
+                    if (pos.first == nextPos.first && pos.second == nextPos.second)
+                        q.push_front(make_pair(pos, cost));
+                    else
+                        q.push_back(make_pair(pos, cost + 1));
+                }
+            }
+        }
+        return -1;
+    }
+
+private:
+    inline pair<int, int> getNextPos(const vector<vector<int>>& grid, int r, int c) {
+        switch (grid[r][c]) {
+            case 1: return make_pair(r, c + 1);
+            case 2: return make_pair(r, c - 1);
+            case 3: return make_pair(r + 1, c);
+            case 4: return make_pair(r - 1, c);
+            default: return make_pair(r, c);
+        }
+    }
+
+    inline vector<pair<int, int>> getNeighbors(int r, int c) {
+        return {{r - 1, c}, {r + 1, c}, {r, c - 1}, {r, c + 1}};
+    }
+};

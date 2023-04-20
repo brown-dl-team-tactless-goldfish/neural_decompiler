@@ -1,0 +1,40 @@
+#define mod 1000000007;
+class Solution {
+public:
+    vector<int> vis;
+    int dp[201][202];
+    int sol(string &s, int ind, int prev){
+        if(ind==s.length()+1){return 1;}
+        if(dp[ind][prev+1]!=-1)return dp[ind][prev+1];
+        long ans=0;
+        for(int i=0;i<=s.length();i++){
+            if(vis[i]!=0)continue;
+            if(prev!=-1){
+                if(s[ind-1]=='D'){
+                    if(i>prev)break;
+                    vis[i]=1;
+                    ans+=sol(s,ind+1,i);
+                    vis[i]=0;
+                }
+                else{
+                    if(i<prev)continue;
+                    vis[i]=1;
+                    ans+=sol(s, ind+1,i);
+                    vis[i]=0;
+                }
+            }
+            else {
+                vis[i]=1;
+                ans+=sol(s, ind+1, i);
+                vis[i]=0;
+            }
+            
+        }
+        return dp[ind][prev+1]=ans%mod;
+    }
+    int numPermsDISequence(string s) {
+        memset(dp,-1,sizeof dp);
+        vis.resize(s.length()+1,0);
+        return sol(s,0,-1);
+    }
+};

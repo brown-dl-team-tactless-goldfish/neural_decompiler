@@ -1,0 +1,45 @@
+int DepthOfTree(struct TreeNode* root){
+    if(root == NULL)
+        return 0;
+    else 
+        return 1 + fmax(DepthOfTree(root->left), DepthOfTree(root->right)); 
+}
+
+void process(int** ans, int* idx, int* data, int pos ,struct TreeNode* root, int targetSum, int* ansCol){    
+    data[pos] = root->val;
+    pos++;
+    if(root->left == NULL && root->right== NULL){
+        if(root->val == targetSum){
+            ans[*idx] = malloc(pos * sizeof(int));
+            memcpy(ans[*idx], data, pos*sizeof(int));
+            ansCol[*idx] = pos;
+            *idx = *idx + 1;
+        }
+        return;
+    }
+    
+    if(root->left)
+        process(ans, idx, data, pos, root->left, targetSum-root->val, ansCol); 
+    if(root->right)
+        process(ans, idx, data, pos, root->right, targetSum-root->val, ansCol); 
+}
+
+int** pathSum(struct TreeNode* root, int targetSum, int* returnSize, int** returnColumnSizes){
+    int depth = DepthOfTree(root);
+    if(depth == 0){
+        *returnSize = 0;
+        return NULL;
+    }
+    int** ans = malloc( 2501 * sizeof(int*));
+    int* idx = calloc(1, sizeof(int));
+
+    returnColumnSizes[0] = malloc(2501 * sizeof(int));
+    int* data = malloc(depth * sizeof(int));
+    
+    process(ans, idx, data, 0, root, targetSum, returnColumnSizes[0]); 
+    
+    *returnSize = *idx;
+    ans = realloc(ans, (*idx) * sizeof(int*));
+    returnColumnSizes[0] = realloc(returnColumnSizes[0], (*idx)*sizeof(int));
+    return ans;
+}

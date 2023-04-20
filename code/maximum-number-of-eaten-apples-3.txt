@@ -1,0 +1,34 @@
+class Solution {
+public:
+int eatenApples(vector<int>& apples, vector<int>& days)
+{
+	map<int, int> rotten;
+	int curr = 0, res = 0;
+	for (int i = 0; i < apples.size() || rotten.size(); i++)
+	{
+		auto rotten_apple = rotten.begin();
+		if (rotten_apple != rotten.end() && rotten_apple->first == i)
+		{
+			curr = max(0, curr - rotten_apple->second);
+			rotten.erase(rotten_apple);
+			rotten_apple = rotten.begin();
+		}
+
+		if (i < apples.size() && apples[i])
+		{
+			curr += apples[i];
+			rotten[i + days[i]] += apples[i];
+		}
+
+		if (curr > 0)
+		{
+			curr--;
+			res++;
+			rotten_apple = rotten.begin();
+			if (--rotten_apple->second == 0)
+				rotten.erase(rotten_apple);
+		}
+	}
+	return res;
+}
+}

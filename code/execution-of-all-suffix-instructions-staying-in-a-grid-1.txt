@@ -1,0 +1,30 @@
+int* executeInstructions(int n, int* startPos, int startPosSize, char* s, int* returnSize) {
+    int y = startPos[0], x = startPos[1];
+    int idx = 0, len = strlen(s);
+    bool IsOver = true;
+    int* ans = (int*) calloc(len, sizeof(int));
+    while (idx < len) {
+        int cnt = 0;
+        for (int i = idx; i < len; i++) {
+            cnt++;
+            if (s[i] == 'R') x++;
+            if (s[i] == 'D') y++;
+            if (s[i] == 'L') x--;
+            if (s[i] == 'U') y--;
+            if (x >= n || x < 0 || y >= n || y < 0) {
+                y = startPos[0]; x = startPos[1];
+                cnt--;
+                ans[idx++] = cnt;
+                IsOver = false;
+                break;
+            }
+        }
+        if (IsOver) {
+            y = startPos[0]; x = startPos[1];
+            ans[idx++] = cnt;
+        }
+        IsOver = true;
+    }
+    *returnSize = len;
+    return ans;
+}

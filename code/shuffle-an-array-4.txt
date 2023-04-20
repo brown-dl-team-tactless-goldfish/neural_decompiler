@@ -1,0 +1,40 @@
+typedef struct {
+    int * original;
+    int * nums;
+    int size;
+} Solution;
+
+
+Solution* solutionCreate(int* nums, int numsSize) {
+    Solution * result = (Solution *)malloc(sizeof(Solution));
+    result->original = (int *)malloc(numsSize*sizeof(int));
+    result->nums = (int *)malloc(numsSize*sizeof(int));
+    result->size = numsSize;
+    memcpy(result->original, nums, numsSize*sizeof(int));
+    memcpy(result->nums, nums, numsSize*sizeof(int));
+    return result;
+}
+
+int* solutionReset(Solution* obj, int* retSize) {
+    *retSize = obj->size;
+    memcpy(obj->nums, obj->original, obj->size*sizeof(int));
+    return obj->original;
+}
+
+int* solutionShuffle(Solution* obj, int* retSize) {
+    *retSize = obj->size;
+    for(int i = 0; i < obj->size; i++)
+    {
+        int temp = obj->nums[i];
+        int pos = rand() % obj->size;
+        obj->nums[i] = obj->nums[pos];
+        obj->nums[pos] = temp;
+    }
+    return obj->nums;
+}
+
+void solutionFree(Solution* obj) {
+    free(obj->nums);
+    free(obj->original);
+    free(obj);
+}

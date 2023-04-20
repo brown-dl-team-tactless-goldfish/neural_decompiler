@@ -1,0 +1,52 @@
+#define ff first
+#define ss second
+class Solution {
+public:
+	bool diff(string h, string l)
+	{
+		//hh : hrs of higher timestamp
+		//hl  : hrs of lower timestamp
+		//mh : mins of higher timestamp
+		//ml : mins of lower timestamp
+		int hh = stoi(h.substr(0,2)), hl = stoi(l.substr(0,2)), mh = stoi(h.substr(3,2)), ml = stoi(l.substr(3,2));
+		
+		//Not required as in set they are already away by 23 hrs
+		// if((hh==23 and hl==0) or (hh==0 and hl==23))    return 0;
+    
+		if(hh-hl==1)
+		{
+			if(mh<=ml)    return 1;
+			else          return 0;
+		}
+		else if(hh == hl)   return 1;
+		return 0;
+	}
+
+	vector<string> alertNames(vector<string>& n, vector<string>& t) 
+	{
+		map<string, set<string>> MAP;
+    
+		int sz = n.size();
+		for(int i=0 ; i<sz ; i++)
+			MAP[n[i]].insert(t[i]);
+    
+		vector<string> ans;
+		for(auto x : MAP)
+		{
+			if(x.ss.size() <= 2)    continue;
+			vector<string> tmp(x.ss.begin(), x.ss.end());
+        
+			sz = tmp.size();
+			// l & r ptr are always two units apart so as to check the condition of lying within 1 hr
+			for(int l=0, r = 2 ; r<sz ; l++, r++)
+				if(diff(tmp[r], tmp[l]))
+				{
+					//We can direct push it as MAP already keeps it sorted
+					ans.emplace_back(x.ff);
+					break;
+				}
+		}
+    
+		return ans;
+	}
+};

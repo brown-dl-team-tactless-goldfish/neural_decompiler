@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int leastOpsExpressTarget(int x, int target) {
+        static auto branch = {0, 1};
+        set<pair<int, int>> q;
+        unordered_set<int> vi;
+        q.emplace(0, target);
+        while (q.size()) {
+            pair<int, int> cur = *q.begin();
+            q.erase(q.begin());
+            if (vi.count(cur.second)) continue;
+            vi.emplace(cur.second);
+            if (cur.second == 0) return cur.first - 1;
+            int v = log(cur.second) / log(x);
+            for (int i : branch) {
+                int n = abs(pow(x, v + i) - cur.second);
+                if (vi.count(n)) continue;
+                q.emplace(cur.first + (v + i == 0 ? 2 : v + i), n);
+            }
+        }
+        __builtin_unreachable();
+    }
+};

@@ -1,0 +1,68 @@
+class Solution {
+public:
+    int dp[5][5][7][7][1 << 5][1 << 5] = {}; // i, j, in, ex, msk_in, msk_ex
+    int getcost(int j, int type, int mask_in, int mask_ex, const int m, const int n) {
+        int res = 0;
+        int selfdiff = (type == 0 ? -30 : 20);
+        // deal with up
+        if ((mask_in >> j) & 1) {
+            res -= 30;
+            res += selfdiff;
+        }
+        if ((mask_ex >> j) & 1) {
+            res += 20;
+            res += selfdiff;
+        }
+        // deal with left
+        if (j > 0 && ((mask_in >> (j - 1)) & 1)) {
+            res -= 30;
+            res += selfdiff;
+        }
+        if (j > 0 && ((mask_ex >> (j - 1)) & 1)) {
+            res += 20;
+            res += selfdiff;
+        }
+        return res;
+    }
+    
+    // value for remain
+    int dfs(int i, int j, int n_in, int n_ex, int mask_in, int mask_ex, const int m, const int n) {
+        if (j == n) { // adjust index
+            j = 0;
+            i++;
+        }
+        if (i == m) {
+            return 0;
+        }
+        
+        if (dp[i][j][n_in][n_ex][mask_in][mask_ex] > 0) {
+            return dp[i][j][n_in][n_ex][mask_in][mask_ex];
+        }
+        int res = 0; // max cost for the remaining spaces
+        // three condition
+        // (1) empty -> dont need to use all ppl
+        res = dfs(i, j + 1, n_in, n_ex, (mask_in ^ (((mask_in >> j) & 1) << j)), 
+                  (mask_ex ^ (((mask_ex >> j) & 1) << j)), m, n);
+        // do nothing... but set j bit to null
+        
+        // (2) use in
+        if (n_in) { // with introvertsCount
+            int cost = getcost(j, 0, mask_in, mask_ex, m, n);
+            res = max(res, 120 + cost + dfs(i, j + 1, n_in - 1, n_ex, (mask_in | (1 << j)), 
+                                            (mask_ex ^ (((mask_ex >> j) & 1) << j)), m, n));
+        }
+        
+        // (3) use ex
+        if (n_ex) { // with extrovertsCount
+            int cost = getcost(j, 1, mask_in, mask_ex, m, n);
+            res = max(res, 40 + cost + dfs(i, j + 1, n_in, n_ex - 1, (mask_in ^ (((mask_in >> j) & 1) << j)), 
+                                           (mask_ex | (1 << j)), m, n));
+        }
+        dp[i][j][n_in][n_ex][mask_in][mask_ex] = res;
+        return res;
+    }
+    
+    int getMaxGridHappiness(int m, int n, int introvertsCount, int extrovertsCount) {
+        return dfs(0, 0, introvertsCount, extrovertsCount, 0, 0, m, n);
+    }
+};

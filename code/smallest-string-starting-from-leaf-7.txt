@@ -1,0 +1,56 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left;
+ *     public TreeNode right;
+ *     public TreeNode(int x) { val = x; }
+ * }
+ */
+public class Solution {
+    public static string smallestString = "";
+        public static bool foundOne = false;
+
+        public string SmallestFromLeaf(TreeNode root)
+        {            
+            var suffix = "";
+            foundOne = false;
+            smallestString = "";
+            preorderTraversal(root, suffix);
+
+            return smallestString;
+        }
+
+        private static void preorderTraversal(TreeNode root, string suffix)
+        {
+            var c =(char) (root.val + 'a');
+            var current = c.ToString() + suffix;
+            
+            if(root.left == null && root.right == null)
+            {                
+                if (!foundOne)
+                {
+                    foundOne = true;
+                    smallestString = current;
+                }
+                else
+                {
+                    if (current.CompareTo(smallestString) < 0)
+                    {
+                        smallestString = current;
+                    }
+                }
+                return; 
+            }
+
+            if(root.left != null)
+            {              
+                preorderTraversal(root.left, current);
+            }
+
+            if (root.right != null)
+            {
+                preorderTraversal(root.right, current);
+            }
+        }
+}

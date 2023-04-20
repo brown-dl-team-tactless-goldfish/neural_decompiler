@@ -1,0 +1,110 @@
+class Solution {
+public:
+    int b;
+    double picaro;
+    multiset<long long > halfmin,halfmax;
+    vector<double> ans;
+    void huy(int v)
+    {
+        b=0;
+        if(halfmin.size()==halfmax.size())
+        {
+            b=1;
+            if(v>*halfmax.begin())   halfmax.insert(v);
+            else halfmin.insert(v);
+        }
+        if(halfmin.size()>halfmax.size()&&b==0)
+        {
+            if(v>=*halfmin.rbegin()) halfmax.insert(v);
+            if(v<*halfmin.rbegin())
+            {
+                int huy=*halfmin.rbegin();
+                halfmin.erase(halfmin.find(huy));
+                halfmax.insert(huy);
+                halfmin.insert(v);
+            }
+        }
+        if(halfmin.size()<halfmax.size()&&b==0)
+        {
+            if(v<=*halfmax.begin()) halfmin.insert(v);
+            if(v>*halfmax.begin())
+            {
+                int huy=*halfmax.begin();
+                halfmax.erase(halfmax.find(huy));
+                halfmin.insert(huy);
+                halfmax.insert(v);
+            }
+        }
+    }
+    vector<double> medianSlidingWindow(vector<int>& nums, int k) {
+        if(nums.size()==1){ ans.push_back(nums[0]); return ans; }
+        if(k==1)
+        {
+            for(int i=0;i<=nums.size()-1;i++) ans.push_back(nums[i]);
+            return ans;
+        }
+        if(k==2)
+        {
+            for(int i=1;i<=nums.size()-1;i++) 
+            {
+                long long g=long(nums[i])+long(nums[i-1]);
+                ans.push_back(double(g)/2);
+            }
+            return ans;
+        }
+        for(int i=0;i<=nums.size()-1;i++)
+        {
+            if(i<=k-1)
+            {
+                if(i==0) halfmin.insert(nums[i]);
+                if(i==1) 
+                {
+                    halfmax.insert(nums[i]);
+                    if(*halfmax.begin()<*halfmin.rbegin())
+                        halfmax.swap(halfmin);
+                }
+                if(i>1)
+                {
+                    huy(nums[i]);
+                }
+                if(i==k-1)
+                {
+                    if(k%2==0)
+                    {
+                      picaro=double(double(*halfmin.rbegin())+double(*halfmax.begin()))/2;
+                      ans.push_back(picaro);  
+                    }
+                    if(k%2==1)
+                    {
+                        if(halfmin.size()>halfmax.size())
+                            ans.push_back(*halfmin.rbegin());
+                        if(halfmin.size()<halfmax.size())
+                            ans.push_back(*halfmax.begin());
+                    }
+                }
+            }
+            else
+            {
+                if(halfmin.count(nums[i-k])==0&&halfmax.count(nums[i-k])!=0)
+                    halfmax.erase(halfmax.find(nums[i-k]));
+                if(halfmin.count(nums[i-k])!=0)
+                    halfmin.erase(halfmin.find(nums[i-k]));
+                huy(nums[i]);
+                if(k%2==0)
+                    {
+                      picaro=double(double(*halfmin.rbegin())+double(*halfmax.begin()))/2;
+                      ans.push_back(picaro);  
+                    }
+                if(k%2==1)
+                {
+                    if(halfmin.size()>halfmax.size())
+                        ans.push_back(*halfmin.rbegin());
+                    if(halfmin.size()<halfmax.size())
+                        ans.push_back(*halfmax.begin());
+                }
+            }
+   
+        }
+            return ans;
+        }
+    };

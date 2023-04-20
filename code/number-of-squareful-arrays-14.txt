@@ -1,0 +1,37 @@
+class Solution {
+    int perm;
+    inline bool isSq(int num){
+        return int(sqrt(num))*int(sqrt(num))==num;
+    }
+    void solve(unordered_map<int, int> &cache, int &n, int prev, int index){
+        if(index==n){
+            perm++;
+            return;
+        }
+        auto temp=cache;
+        for(auto [i, freq]: temp) {
+            if(index==0){
+                if(--cache[i]==0)
+                    cache.erase(i);
+                solve(cache, n, i, index+1);
+                cache[i]++;
+            }else if(isSq(prev+i)){
+                if(--cache[i]==0)
+                    cache.erase(i);
+                solve(cache, n, i, index+1);
+                cache[i]++;
+            }
+        }
+    }
+public:
+    int numSquarefulPerms(vector<int>& nums) {
+        if(nums.size()==1)
+            return 1;
+        unordered_map<int, int> cache;
+        int n=nums.size();
+        for(auto &i : nums)
+            cache[i]++;
+        solve(cache, n, -1, 0);
+        return perm;
+    }
+};

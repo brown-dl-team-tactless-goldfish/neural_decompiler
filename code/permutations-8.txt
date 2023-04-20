@@ -1,0 +1,57 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+
+int factorial(int n) {
+    int result = 1;
+    while (n > 0) {
+        result *= n;
+        --n;
+    }
+    return result;
+}
+
+void makeFactorialArray(int *factorialArray, int size, int n) {
+    int i;
+    for (i = 1; n > 0; ++i) {
+        factorialArray[size-i] = n % i;
+        n /= i;
+    }
+    while (i <= size) {
+        factorialArray[size-i] = 0;
+        ++i;
+    }
+}
+
+int *generatePermutation(int *array, int *factorialArray, int arrayLength) {
+    int i, j, *returnArray = malloc(arrayLength * sizeof(int));
+    for (i = 0; i < arrayLength; ++i) {
+        returnArray[i] = array[factorialArray[i]];
+        for (j = factorialArray[i]; j < arrayLength-1; ++j) {
+            array[j] = array[j+1];
+        }
+    }
+    return returnArray;
+}
+
+int** permute(int* nums, int numsSize, int* returnSize, int** returnColumnSizes){
+    int i, j, rows = factorial(numsSize), cols = numsSize;
+    int *columns = malloc(rows * sizeof(int));
+    int **returnArray = malloc(rows * sizeof(int*));
+    int factorialArray[cols], temp[cols];
+    for (i = 0; i < rows; ++i) {
+        for (j = 0; j < cols; ++j) {
+            temp[j] = nums[j];
+        }
+        makeFactorialArray(factorialArray, cols, i);
+        returnArray[i] = generatePermutation(temp, 
+                                             factorialArray, 
+                                             cols);
+        columns[i] = cols;
+    }
+    *returnSize = rows;
+    *returnColumnSizes = columns;
+    return returnArray;
+}

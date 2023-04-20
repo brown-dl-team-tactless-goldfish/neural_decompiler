@@ -1,0 +1,47 @@
+class Solution {
+private:
+    int rSize, cSize;
+    const int dir[5] = {0, 1, 0, -1, 0};
+    
+    bool inBound(int r, int c) {
+        return r >= 0 && c >= 0 && r < rSize && c < cSize;
+    }
+    
+    bool matchStr(int r, int c, vector<vector<char>> &board, string &word, int i) {
+        for (char &eachC : word) {
+            if (!inBound(r, c) || board[r][c] == '#' || (board[r][c] != ' ' && board[r][c] != eachC)) {
+                return false;
+            }
+            r += dir[i];
+            c += dir[i + 1];
+        }
+        return !inBound(r, c) || board[r][c] == '#';
+    }
+    
+    bool searchStart(int r, int c, vector<vector<char>> &board, string &word) {
+        for (int i = 0; i < 4; i++) {
+            int nextR = r + dir[i];
+            int nextC = c + dir[i + 1];
+            if (!inBound(nextR, nextC) || board[nextR][nextC] == '#') {
+                if (matchStr(r, c, board, word, (i + 2) % 4)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+public:
+    bool placeWordInCrossword(vector<vector<char>>& board, string word) {
+        rSize = board.size();
+        cSize = board[0].size();
+        
+        for (int r = 0; r < rSize; r++) {
+            for (int c = 0; c < cSize; c++) {
+                if (board[r][c] != '#' && searchStart(r, c, board, word)) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+};

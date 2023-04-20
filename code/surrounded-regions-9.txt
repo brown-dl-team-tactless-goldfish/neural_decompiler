@@ -1,0 +1,45 @@
+#define SPEC_CHAR '!'
+#define SPREAD_O(X,Y) \
+  do \
+  { \
+    if(b[X][Y] == 'O') \
+      dfs(b, X, Y, rowS, colS); \
+  } while(0)
+
+void dfs(char** b, int x, int y, int rowS, int colS)
+{
+  b[x][y] = SPEC_CHAR;
+  if(x>1)      SPREAD_O(x-1, y);
+  if(x<rowS-1) SPREAD_O(x+1, y);
+  if(y>1)      SPREAD_O(x, y-1);
+  if(y<colS-1) SPREAD_O(x, y+1);
+}
+
+void solve(char** b, int rowS, int colS)
+{
+  if(rowS <=2 || colS <=2)  return;     /* nothing to change */
+
+  /* first search all 4 edges and find if any 'O',
+     for each 'O', do DFS and spread it by SPRED_O() as SPEC_CHAR */
+  for(int j = 0; j< colS; j++)
+  {
+    SPREAD_O(0, j);
+    SPREAD_O(rowS-1, j);
+  }
+
+  for(int i = 0; i< rowS; i++)
+  {
+    SPREAD_O(i, 0);
+    SPREAD_O(i, colS-1);
+  }
+
+  /* then loop over the entire board,
+     flip all remaining 'O' to 'X',
+     but SPEC_CHAR to 'O' */
+  for(int i = 0; i < rowS; i++)
+    for(int j = 0; j < colS; j++)
+      if(b[i][j] == 'O')
+        b[i][j] = 'X';
+      else if(b[i][j] == SPEC_CHAR)
+        b[i][j] = 'O';
+}

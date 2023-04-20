@@ -1,0 +1,45 @@
+struct Node{
+    std::array<Node*, 26> links{};
+    bool isKey = false;
+    int val = 0;
+    int sum = 0;
+};
+class MapSum {
+private:
+    Node root;
+public:
+    /** Initialize your data structure here. */
+    MapSum() {
+        
+    }
+    
+    void insert(string key, int val) {
+        std::vector<Node*> nodes;
+        auto p = &root;
+        for (auto c: key){
+            int index = c - 'a';
+            if (p->links[index] == nullptr)
+                p->links[index] = new Node;
+            p = p->links[index];
+            p->sum += val; // p will be a prefix of the key
+            nodes.push_back(p);
+        }
+        // if already exists, the old one is replaced, i.e., subtracted
+        if (p->isKey){ 
+            for (auto q: nodes)
+                q->sum -= p->val;
+        }
+        p->val = val;
+        p->isKey = true;
+    }
+    
+    int sum(string prefix) {
+        auto p = &root;
+        for (auto c : prefix){
+            if (p->links[c - 'a'] == nullptr) // no such prefix
+                return 0;
+            p = p->links[c - 'a'];
+        }
+        return p->sum;
+    }
+};

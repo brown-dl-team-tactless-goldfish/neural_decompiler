@@ -1,0 +1,25 @@
+char * getHint(char * secret, char * guess){
+    int bulls = 0;
+    int cows = 0;    
+    int seenGuessDigits[10] = {0};
+    int seenSecretDigits[10] = {0};
+    
+    for(; *secret && *guess; secret++, guess++) {
+        if(*secret == *guess) {
+            bulls++;
+        } else {
+            seenGuessDigits[*guess - '0']++;
+            seenSecretDigits[*secret - '0']++;
+        }
+    }
+    
+    for(int iDigit = 0; iDigit < 10; iDigit++) {
+        if(seenSecretDigits[iDigit] && seenGuessDigits[iDigit]) {
+            cows += seenSecretDigits[iDigit] < seenGuessDigits[iDigit] ? seenSecretDigits[iDigit] : seenGuessDigits[iDigit];
+        }
+    }
+    
+    char * hint = calloc(16, sizeof(char));
+    sprintf(hint, "%dA%dB", bulls, cows);
+    return hint;
+}

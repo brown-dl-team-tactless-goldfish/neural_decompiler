@@ -1,0 +1,73 @@
+int dp[41][(1<<10) + 9];
+
+map<int,vector<int>> v;
+
+int mod = 1e9+7;
+
+int n;
+
+int help(int idx, int mask)
+{
+    if(mask == (1 << n) -1)
+    {
+        return 1;
+    }
+    
+    if(idx == 40)
+    {
+        return  0;
+    }
+    
+    if(dp[idx][mask] != -1)
+    {
+        return dp[idx][mask];
+    }
+    
+    int ans = 0;
+    
+    ans = help(idx+1,mask);
+    
+    int new_mask;
+    
+    for(int i=0; i<v[idx].size(); i++)
+    {
+        int j = v[idx][i];
+        
+        if(mask & (1<<j))
+        {
+            continue;
+        }
+        
+        new_mask = mask;
+        
+        new_mask |= 1<<j;
+        
+        ans += help(idx+1,new_mask);
+        
+        ans = ans % mod;
+    }
+    
+    return dp[idx][mask] = ans;
+}
+
+
+int numberWays(vector<vector<int>>& hats)
+{
+    int idx = 0;
+    
+    n = hats.size();
+    
+    for(auto &x: hats)
+    {
+        for(auto &y: x)
+        {
+            v[y-1].push_back(idx);
+        }
+        
+        idx++;
+    }
+    
+    memset(dp,-1, sizeof(dp));
+    
+    return help(0,0);
+}

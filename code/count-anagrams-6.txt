@@ -1,0 +1,74 @@
+#define ll long long
+#define mod 1000000007
+class Solution {
+public:
+    vector<vector<ll>> fetch(string &s){
+        ll n = s.size();
+        vector<vector<ll>> arr;
+        ll i=0;
+        while(i<n){
+            vector<ll> v(26, 0);
+            while(i<n){
+                if(s[i] == ' ') break;
+                else v[s[i]-'a']++;
+                ++i;
+            }
+            arr.push_back(v);
+            ++i;
+        }
+        return arr;
+    }
+    
+    vector<ll> get_fect(string &s){
+        int n = s.size();
+        vector<ll> fact(n+10, 0);
+        fact[1] = 1;
+        
+        for(int i=2; i<n+10; ++i){ 
+            fact[i] = (fact[i-1]%mod*i%mod)%mod;
+        }
+        
+        return fact;
+    }
+    
+    ll binaryExpo(ll x, ll n){
+        if(n==0) return 1ll;
+        if(n==1) return x;
+        ll cur = binaryExpo(x, n/2ll);
+        cur = (cur%mod * cur%mod)%mod;
+        if(n&1) cur = (cur%mod * x%mod) %mod;
+        return cur;
+    }
+    
+    ll factINV(ll x, vector<ll>& fact){
+        return binaryExpo(fact[x], mod-2)%mod;
+    }
+    
+    
+    int countAnagrams(string s) {
+        vector<vector<ll>> arr = fetch(s);
+        vector<ll> fact = get_fect(s);
+        
+        
+        ll res = 1;
+        for(auto &v : arr){
+            ll cnt = 0;
+            for(auto &e : v){
+                cnt += e;
+            }
+            
+            cnt = fact[cnt];
+            
+            for(auto &e : v){
+                if(e>1){
+                    ll d = factINV(e, fact);
+                    cnt = (cnt%mod * d%mod) % mod;
+                }
+            }
+            
+            res = (res%mod * cnt%mod) % mod;
+        }
+        
+        return res;
+    }
+};

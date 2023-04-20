@@ -1,0 +1,29 @@
+class Solution {
+public:
+    static bool g(int x, int y) { return x > y; }
+    static bool l(int x, int y) { return x < y; }
+    int maxTurbulenceSize(vector<int>& arr) {
+        if (arr.size()==1) return 1;
+        bool (*sign)(int,int) = (arr[0]>arr[1]) ? g : l;
+        int m = 0, c = 1;
+        for (int i = 0; i < arr.size()-1; i++) {
+            if (sign(arr[i],arr[i+1])) {
+                c++;
+                sign = (sign == l) ? g : l;
+            } else {
+                if (arr[i] == arr[i+1]) {
+                    c = 1;
+                    if (i+2!=arr.size()) 
+                        sign = (arr[i+1]>arr[i+2]) ? g : l;
+                }
+                else {
+                    c = 1;
+                    sign = (arr[i] > arr[i+1]) ? g : l;
+                    i--;
+                }
+            }
+            m = max(c,m);
+        }
+        return m;
+    }
+};

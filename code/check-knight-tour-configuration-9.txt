@@ -1,0 +1,32 @@
+public class Solution {
+    public bool CheckValidGrid(int[][] grid) {
+        return dfs(grid, 0, 0, 0);
+    }
+    
+    private bool dfs(int[][] grid, int r, int c, int pos)
+    {
+        // finished all the moves
+        if (pos > grid.Length * grid.Length - 1)
+        {
+            return true;
+        }
+        
+        // false if index is out of bound or grid value is not expected
+        if (r < 0 || r >= grid.Length || c < 0 || c >= grid.Length || grid[r][c] != pos)
+        {
+            return false;
+        }
+        
+        // find any next position containing pos+1
+        var navs = new (int,int)[8] { (-1,-2), (-2,-1), (-1,2), (-2,1), (1,2), (2,1), (1,-2), (2,-1) };
+        foreach (var nav in navs)
+        {
+            if (dfs(grid, r + nav.Item1, c + nav.Item2, pos+1))
+            {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+}

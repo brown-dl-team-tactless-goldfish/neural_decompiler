@@ -1,0 +1,51 @@
+    int n = passingFees.size();
+    
+    vector<vector<pair<int,int>>> graph(n);
+    
+    for(auto &x: edges)
+    {
+        graph[x[0]].push_back({x[1],x[2]});
+        graph[x[1]].push_back({x[0],x[2]});
+    }
+    
+    vector<int> times(n,-1);
+    
+   priority_queue<vector<int>,vector<vector<int>>,greater<vector<int>>>pq;
+    
+   
+    
+    pq.push({passingFees[0],0,0});
+    
+    while(!pq.empty())
+    {
+        auto cur = pq.top();
+        pq.pop();
+        
+        int cost = cur[0],time = cur[1], node = cur[2];
+        
+        if(time > maxTime)
+        {
+            continue;
+        }
+         if(node == n-1)
+        {
+            return cost;
+        }
+        
+        if(times[node] != -1 && times[node] <= time)
+        {
+            continue;
+        }
+        times[node] = time;
+        
+        for(auto &x: graph[node])
+        {
+            int new_time = time + x.second;
+            
+            pq.push({cost+passingFees[x.first],new_time,x.first});
+        }
+    }
+    
+    return -1;
+    
+}

@@ -1,0 +1,29 @@
+int hash[10] = {0};
+
+void dfs(struct TreeNode* root, int* cnt) {
+    bool pulse = true;
+    if (!hash[root->val]) {
+        hash[root->val]++;
+    } else {
+        hash[root->val]--;
+        pulse = false;
+    }
+    if (!(root->left) && !(root->right)) {
+        int sum = 0;
+        for (int i = 0; i < 10; i++) {
+            sum += hash[i];
+        }
+        hash[root->val] = pulse ? hash[root->val] - 1 : hash[root->val] + 1;
+        if (sum <= 1) (*cnt)++;
+        return;
+    }
+    if (root->left) dfs(root->left, cnt);
+    if (root->right) dfs(root->right, cnt);
+    hash[root->val] = pulse ? hash[root->val] - 1 : hash[root->val] + 1;
+}
+
+int pseudoPalindromicPaths (struct TreeNode* root) {
+    int cnt = 0;
+    dfs(root, &cnt);
+    return cnt;
+}

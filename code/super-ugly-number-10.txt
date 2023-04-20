@@ -1,0 +1,44 @@
+    int k = primes.size( ), i;
+    
+    vector<int> indices(k, 0);
+    
+    vector<long int> numbers(n, 0);
+    
+    map<long int, int> m;
+    
+    for(i =0; i < k; i++){
+        
+        m[primes[i]] = i;
+    }
+    
+    numbers[0] = 1;
+    
+     i = 1;
+    
+    while( i < n){
+        
+        
+        auto cur = *(m.begin());
+        
+        m.erase(m.begin());
+        
+        if(cur.first != numbers[i-1]){
+            
+            numbers[i++] = cur.first;
+        
+        }
+        indices[cur.second]++;
+        
+        while(m.count(primes[cur.second] * numbers[indices[cur.second]])){
+            
+            indices[cur.second]++;
+        }
+        
+       m[primes[cur.second] * numbers[indices[cur.second]]] = cur.second;
+        
+        
+    }
+    
+    return numbers[n-1];
+}
+    

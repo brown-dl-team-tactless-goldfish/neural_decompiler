@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int shortestSubarray(vector<int>& A, int K) {
+        vector<int> ps;
+        ps.push_back(0);
+        partial_sum(begin(A),end(A),back_inserter(ps));
+        
+        deque<int> monoqueue;
+        
+        int result = INT_MAX;
+        
+        for(int i = 0; i < ps.size(); ++i){
+            auto a = ps[i];
+            
+            while(!monoqueue.empty() && a < ps[monoqueue.back()]){
+                monoqueue.pop_back();
+            }
+            
+            while(!monoqueue.empty() && a - ps[monoqueue.front()] >= K) {
+                result = min(result,i - monoqueue.front());
+                monoqueue.pop_front();
+            }
+            
+            monoqueue.push_back(i);
+        }
+        
+        return result == INT_MAX ? -1 : result;
+    }
+};

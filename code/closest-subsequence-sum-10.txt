@@ -1,0 +1,46 @@
+class Solution {
+public:
+    vector<long long> get_array(vector<int>&a)
+    {
+        int n = a.size();
+        int m = 1<<n;
+        vector<long long>dp(m);
+        for(int i = 0;i<m;i++)
+        {
+            long long ans = 0;
+            for(int j = 0;j<=20;j++)
+                if(i & (1<<j))
+                    ans+=a[j];
+            dp[i] = ans;
+        }
+        return dp;
+    }
+    int minAbsDifference(vector<int>& nums, int goal) {
+        int n = nums.size(),ans = INT_MAX;
+        vector<int>a,b;
+        for(int i = 0;i<n/2;i++)
+            a.push_back(nums[i]);
+        for(int i = n/2;i<n;i++)
+            b.push_back(nums[i]);
+        vector<long long>res1 = get_array(a);
+        vector<long long>res2 = get_array(b);
+        sort(res2.begin(),res2.end());
+        for(int i = 0;i<res1.size();i++)
+        {
+            auto it = std::lower_bound(res2.begin(),res2.end(),goal - res1[i]);
+            if(it!=res2.end())
+            {
+                ans = min(ans,int(abs(goal - (res1[i] + (*it)))));
+            }
+            if(it!=res2.begin())
+          {
+              it--;
+              ans = min(ans,int(abs(goal - (res1[i] + (*it)))));
+
+          }
+        }
+        return ans;
+        
+        
+    }
+};

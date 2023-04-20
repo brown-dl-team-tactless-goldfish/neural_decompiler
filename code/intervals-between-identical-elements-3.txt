@@ -1,0 +1,36 @@
+using LL = long long ;
+class Solution {
+public:
+    vector<long long> getDistances(vector<int>& arr) {
+        unordered_map<int, vector<int>>Map ; //{val, idxs}
+        for(int i = 0 ; i < arr.size(); i++){
+            Map[arr[i]].push_back(i) ;
+        }        
+        unordered_map<int, vector<LL>>rets ; //{val, ans}
+        unordered_map<int, int>ret_idx ;
+        for(auto&x : Map){
+            int val = x.first ;
+            ret_idx[val] = 0 ;
+            auto& pos = x.second ;
+            int n = pos.size() ;
+            long long sum = 0 ;
+            for(int i = 0; i < pos.size(); i++)
+                sum += pos[i] - pos[0] ;
+            rets[val].push_back(sum) ;
+            for(int i = 1 ; i < pos.size(); i++){
+                //sum -= (n-i)* (pos[i] - pos[i-1]) ;
+                //sum += i * (pos[i] - pos[i-1]) ;
+                sum += (2*i - n) * (pos[i] - pos[i-1]) ;
+                rets[val].push_back(sum) ;
+            }
+        }
+        vector<LL>ans ;
+        for(int i = 0; i < arr.size(); i++){
+            int val = arr[i] ;
+            int k = ret_idx[val] ;
+            ret_idx[val]++ ;
+            ans.push_back(rets[val][k]) ;
+        }
+        return ans ;
+    }
+};

@@ -1,0 +1,56 @@
+int dp[501][501];
+
+int help(vector<int>& v, int start, int end)
+{
+    if(start > end)     
+    {
+        return 0;
+    }
+    
+    int sum = 0, left_sum = 0, right_sum =0,ans = 0;
+    
+    if(dp[start][end] != -1)
+    {
+        return dp[start][end];
+    }
+    
+    for(int i=start; i<=end; i++)
+    {
+        sum += v[i];
+    }
+    
+    for(int j=start; j<=end; j++)
+    {
+        left_sum += v[j];
+        
+        right_sum = sum - left_sum;
+        
+        if(left_sum < right_sum)
+        {
+            ans = max(ans,left_sum + help(v,start,j));
+        }
+        else if(left_sum > right_sum)
+        {
+            ans = max(ans, right_sum + help(v,j+1,end));
+        }
+        else
+        {
+            ans = max(ans,left_sum + help(v,start,j));
+            ans = max(ans, right_sum + help(v,j+1,end));
+              
+        }
+        
+    }
+    
+    return dp[start][end] = ans;
+}
+
+int stoneGameV(vector<int>& stoneValue) 
+{
+    
+  memset(dp,-1,sizeof(dp));
+    
+  return  help(stoneValue, 0, stoneValue.size()-1);
+    
+    
+}

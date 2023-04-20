@@ -1,0 +1,52 @@
+int DFS(int** map, bool* visited, bool* forbidden, int node){
+    if(forbidden[node] || visited[node])
+        return 0;
+    int ans = 1;  //node
+    visited[node] = true;
+     
+    for(int i = 1; i <= map[node][0]; i++){
+        ans += DFS(map, visited, forbidden, map[node][i]);
+    }
+    return ans;
+}
+int reachableNodes(int n, int** edges, int edgesSize, int* edgesColSize, int* restricted, int restrictedSize){
+    int* cn = calloc(n, sizeof(int));
+    for(int i = 0; i < edgesSize; i++){
+        cn[ edges[i][0] ]++;
+        cn[ edges[i][1] ]++;
+    }
+    int** map = malloc(n * sizeof(int*));
+    for(int i = 0; i < n; i++){
+        int tmp = cn[i];
+        map[i] = malloc((tmp + 1) * sizeof(int));
+        map[i][0] = 0 ;
+    }
+    int p, val, cur ;
+    for(int i = 0; i < edgesSize; i++){
+        p = edges[i][0];
+        val = edges[i][1];
+        map[p][0]++;
+        cur = map[p][0];
+        map[p][cur] = val;
+        
+        p = edges[i][1];
+        val = edges[i][0];
+        map[p][0]++;
+        cur = map[p][0];
+        map[p][cur] = val;
+    }
+    bool* forbidden = calloc(n , sizeof(bool));
+    for(int i = 0; i < restrictedSize; i++){
+        forbidden[restricted[i]] = true;
+    }
+    bool* visited = calloc(n , sizeof(bool));
+    int ans = DFS(map, visited, forbidden, 0);
+    free(cn);
+    free(forbidden);
+    free(visited);
+    for(int i = 0; i < n; i++){
+        free(map[i]);
+    }
+    free(map);
+    return ans;
+}

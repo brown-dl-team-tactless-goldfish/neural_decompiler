@@ -1,0 +1,87 @@
+class DSU {
+public:
+    vector<int> parent, rank;
+    int size;
+    DSU (int _n) {
+        parent.resize(_n, -1);
+        rank.resize(_n, 1);
+        size = _n;
+        for (int i = 0; i < _n; ++i) {
+            parent[i] = i;
+        }
+    }
+    
+    int getParent(int u) {
+        if (parent[u] != u) parent[u] = getParent(parent[u]);
+        return parent[u];
+    }
+    
+    void merge(int u, int v) {
+        int x = getParent(u);
+        int y = getParent(v);
+        //since both the nodes belong in the 
+        //same group
+        //there is no point merging their group
+        if (x == y) return ;
+        
+        //make sure that the rank of x is always smaller than y
+        if (rank[x] > rank[y]) swap(x, y);
+        
+        //y will always be the parent
+        rank[y] += rank[x];
+        parent[x] = y;
+    }
+};
+
+class Solution {
+public:
+    static const int nax = 3e4 + 9;
+    vector<int> g[nax];
+    int numberOfGoodPaths(vector<int>& vals, vector<vector<int>>& edges) {
+        int n = vals.size();
+        for (auto &x: g) x.clear();
+        
+        for (const auto &e: edges) {
+            int x = e[0];
+            int y = e[1];
+            g[x].push_back(y);
+            g[y].push_back(x);
+        }
+        
+        DSU dsu(n + 1);
+        //value, list of nodes 
+        map<int, vector<int>> valueNodeMap;
+        for (int i = 0; i < n; ++i) {
+            valueNodeMap[vals[i]].push_back(i);
+        }
+        unordered_set<int> isNodeActive;
+        long long paths = 0;
+        //process the values in the increasing order
+        //of the value in the map
+        for (auto [value, nodes]: valueNodeMap) {
+            int components = 0;
+            //all these nodes become active
+            for (int node: nodes) isNodeActive.insert(node);
+            
+            for (int node: nodes) {
+                for (int &v: g[node]) {
+                    //this means that the current edge can be added
+                    //since the destination node is also active
+                    if (isNodeActive.count(v) > 0) {
+                        dsu.merge(v, node);
+                    }
+                }
+            }
+            
+            unordered_map<int, int> parentCountMap;
+            for (int node: nodes) {
+                ++parentCountMap[dsu.getParent(node)];
+            }
+            for (auto [a, b]: parentCountMap) {
+                components += (b * (b - 1) / 2);
+            }
+            paths += components;
+        } 
+        return paths + n;
+    }
+};

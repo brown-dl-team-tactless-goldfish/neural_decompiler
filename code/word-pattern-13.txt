@@ -1,0 +1,69 @@
+
+/*Function to provide hash value for the given string input*/
+unsigned int RSHASH_FUNC(char* STRING_IN){
+    unsigned int POLY_NOM_CON = 1751411;          //this can be anything
+    unsigned int POLY_NUM = 12647;                //this can be anything but samller than POLY_NUM_COM
+    unsigned int RSHASH_RETURN = 0;
+    //loop till it reaches end of the string \n
+    while(*STRING_IN){
+        //RSHASH_RETURN is product of previous RSHASH_RETURN + String character value 
+        RSHASH_RETURN = (RSHASH_RETURN * POLY_NUM) + (*STRING_IN++);
+        //POLY_NUM multiples itself with the POLY_NO_CON
+        POLY_NUM *= POLY_NOM_CON;
+    }
+    return (RSHASH_RETURN & 0x7FFFFFFF);
+}
+//helper function to sort the values in asscending order
+int sort_asccend(const void* nums1, const void* nums2){
+  return *(unsigned int*)nums1 - *(unsigned int*)nums2; 
+}
+
+bool wordPattern(char * pattern, char * s){
+int* HASH_CHAR_ARRAY = (int*)calloc(26,sizeof(int));
+int pattern_len = strlen(pattern);
+int s_string_len = strlen(s);
+int start_index = 0;
+int pattern_index = 0;
+for(int index_s =0; index_s < s_string_len; index_s++){
+    //condition to allocate hash value for each character with respective word 
+    //from the senstence s this means indentifying word by the end of the word
+    //using space ' ' as termination character  
+    if(s[index_s] == ' '){
+         //modify the current ' ' charcter to null character
+         s[index_s] = '\0';
+         //condtion to check hash alocation for respective character is not allocated till now
+         if (HASH_CHAR_ARRAY[pattern[pattern_index] - 'a'] == 0){
+             HASH_CHAR_ARRAY[pattern[pattern_index] - 'a'] = RSHASH_FUNC(&s[start_index]);
+         }
+         //condtion to check if the hash allocation for respective character is allocated and not matching with current word
+         else if(HASH_CHAR_ARRAY[pattern[pattern_index] - 'a'] != RSHASH_FUNC(&s[start_index])){return false;}
+
+         //modify the index of the string s once the hash is completed 
+         start_index = index_s + 1;
+         pattern_index++;
+         //monitor thr pattern_index not exceeding the patter_len
+         if(pattern_index >= pattern_len){return false;}
+    }
+    //condion to monitor the end of len for the string s 
+    else if(index_s == s_string_len - 1){
+         //condtion to check hash alocation for respective character is not allocated till now
+         if (HASH_CHAR_ARRAY[pattern[pattern_index] - 'a'] == 0){
+             HASH_CHAR_ARRAY[pattern[pattern_index] - 'a'] = RSHASH_FUNC(&s[start_index]);
+         }
+         //condtion to check if the hash allocation for respective character is allocated and not matching with current word
+         else if(HASH_CHAR_ARRAY[pattern[pattern_index] - 'a'] != RSHASH_FUNC(&s[start_index])){return false;}
+         pattern_index++;
+         //on this condtion the pattern_index must be equal to pattern_len
+         if(pattern_index < pattern_len){return false;}
+    }
+}
+//once hash is calculated for the ididual character of the pattern we will sort them to find duplicates
+qsort(HASH_CHAR_ARRAY,26,sizeof(unsigned int),sort_asccend);
+for(int index_hash = 0; index_hash < 26; index_hash++){
+    if(HASH_CHAR_ARRAY[index_hash] != 0){
+        if(HASH_CHAR_ARRAY[index_hash] == HASH_CHAR_ARRAY[index_hash - 1]){return false;}
+    }
+}
+free(HASH_CHAR_ARRAY);
+return true;
+}

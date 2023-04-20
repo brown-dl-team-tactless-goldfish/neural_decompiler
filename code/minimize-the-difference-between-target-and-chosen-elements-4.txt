@@ -1,0 +1,32 @@
+class Solution {
+    int ans = INT_MAX;
+    void dfs(int x, int s, vector<vector<int>> &dp, vector<vector<int>>& mat, int target, int n, int m)
+    {
+        if(s-ans >= target) return;
+        if(dp[x][s] != -1) return;
+        if(x == n)
+        {
+            //cout << s << " ";
+            ans = min(ans, abs(target-s));
+            
+            dp[x][s] = 1;
+            return;
+        }
+        else
+        {
+            for(int j = 0; j < m; j++)
+            {
+                dfs(x+1, s + mat[x][j], dp, mat, target, n, m);
+            }
+            dp[x][s] = 1;
+        }
+        return;
+    }
+public:
+    int minimizeTheDifference(vector<vector<int>>& mat, int target) {
+        int n = mat.size(), m = mat[0].size();
+        vector<vector<int>> dp(n+1, vector<int> (4000, -1));
+        dfs(0, 0, dp, mat, target, n, m);
+        return ans;
+    }
+};

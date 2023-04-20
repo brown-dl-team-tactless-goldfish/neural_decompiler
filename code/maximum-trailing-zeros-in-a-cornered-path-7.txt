@@ -1,0 +1,83 @@
+
+class Solution {
+public:
+    vector<int> t2;
+    vector<int> t5;
+    vector<vector<int>> dp2[4];
+    vector<vector<int>> dp5[4];
+    int n;
+    int m;
+    int maxTrailingZeros(vector<vector<int>>& grid) {
+        n = grid.size();
+        m = grid[0].size();
+        cout << n << "," << m << endl;
+        t2 = vector<int>(1001, 0);
+        t5 = vector<int>(1001, 0);
+        for (int k = 0; k < 4; k++) {
+            dp2[k] = vector<vector<int>>(n, vector<int>(m, 0));
+            dp5[k] = vector<vector<int>>(n, vector<int>(m, 0));
+        }
+        for (int i = 1; i < 1001; i++) {
+            if ((i % 2) == 0) t2[i] = t2[i/2] + 1;
+            if ((i % 5) == 0) t5[i] = t5[i/5] + 1;
+        }
+		// left and right
+        for (int i = 0; i < n; i++) {
+            int sum2 = 0;
+            int sum5 = 0;
+            for (int j = 0; j < m; j++) {
+                
+                dp2[0][i][j] = sum2;
+                dp5[0][i][j] = sum5;
+                sum2 += t2[grid[i][j]]; 
+                sum5 += t5[grid[i][j]];
+            }
+            sum2 = 0;
+            sum5 = 0;
+            for (int j = m -1; j >= 0; j--) {
+                dp2[1][i][j] = sum2;
+                dp5[1][i][j] = sum5;
+                sum2 += t2[grid[i][j]]; 
+                sum5 += t5[grid[i][j]];
+            }
+        }
+		// up and down
+        for (int j = 0; j < m; j++) {
+            int sum2 = 0;
+            int sum5 = 0;
+            for (int i = 0; i < n; i++) {
+
+                dp2[2][i][j] = sum2;
+                dp5[2][i][j] = sum5;
+                sum2 += t2[grid[i][j]]; 
+                sum5 += t5[grid[i][j]];
+            }
+            sum2 = 0;
+            sum5 = 0;
+            for (int i = n -1; i >= 0; i--) {
+                dp2[3][i][j] = sum2;
+                dp5[3][i][j] = sum5;
+                sum2 += t2[grid[i][j]]; 
+                sum5 += t5[grid[i][j]];
+            }
+        }
+ 
+        int ans = 0;
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                int tmp = 0;
+                int s2 = t2[grid[i][j]]; 
+                int s5 = t5[grid[i][j]];
+                for (int x = 0; x <= 1; x++) {
+                    for (int y = 2; y <= 3; y++) {
+                        int c2 = dp2[x][i][j] + s2 + dp2[y][i][j];
+                        int c5 = dp5[x][i][j] + s5 + dp5[y][i][j];
+                        ans = max(ans, min(c2, c5));
+                    }
+                }
+            }
+        }
+        return ans;
+        
+    }
+};

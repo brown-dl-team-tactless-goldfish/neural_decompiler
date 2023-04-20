@@ -1,0 +1,27 @@
+int cmp(const void* a, const void* b){
+
+    return *(int*)a - *(int*)b;
+}
+int timeToMinutes(char* a){
+    int hour = (a[0] - '0') * 10 + a[1] -'0' ;
+    int min = (a[3] - '0') * 10 + a[4] -'0' ;
+    return hour * 60 + min;
+}
+int findMinDifference(char ** timePoints, int timePointsSize){
+    int n = timePointsSize;
+    int* time = malloc(n * sizeof(int));
+    for(int i = 0; i < n; i++){
+        time[i] = timeToMinutes(timePoints[i]); 
+    }
+    qsort(time, n, sizeof(int), cmp);
+
+    int ans = INT_MAX;
+    for(int i = 0; i < n-1; i++){
+        ans = fmin(ans, time[i+1] - time[i] );
+        if(ans == 0)
+            break;
+    }
+    ans = fmin( ans, time[0] - time[n-1] + 24*60);
+    free(time);
+    return ans;
+}

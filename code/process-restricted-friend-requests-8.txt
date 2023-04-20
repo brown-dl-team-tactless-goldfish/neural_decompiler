@@ -1,0 +1,68 @@
+class dsu {
+public:
+	vector<int> parent;
+	unordered_map<int, int> size;
+	dsu(int n) {
+		parent.resize(n);
+		for (int i = 0; i < n; i++) {
+			parent[i] = i;
+			size[i]++;
+		}
+	}
+
+
+	int findParent(int u) {
+		if (parent[u] == u) return u;
+		return parent[u] = findParent(parent[u]);
+	}
+
+	void _union(int u, int v) {
+		u = findParent(u);
+		v = findParent(v);
+		if (u != v) {
+			if (size[u] < size[v]) swap(u, v);
+			parent[v] = u;
+			size[u] += size[v];
+		}
+	}
+
+	bool areConnected(int u, int v) {
+		return findParent(u) == findParent(v);
+	}
+};
+
+
+class Solution {
+public:
+	vector<bool> friendRequests(int n, vector<vector<int>>& restrictions, vector<vector<int>>& requests) {
+
+		vector<bool> ans;
+		dsu uf(n);
+
+		for (auto &request : requests)  {
+			int ui = request[0]; int vi = request[1];
+			bool curAns = true;
+			for (auto &restriction : restrictions) {
+				
+
+				if (uf.areConnected(ui, restriction[0]) && uf.areConnected(vi, restriction[1])) {
+					curAns = false;
+					break;
+				}
+
+				else if (uf.areConnected(ui, restriction[1]) && uf.areConnected(vi, restriction[0])) {
+					curAns = false;
+					break;
+				}
+			}
+
+			ans.push_back(curAns);
+			if (curAns) {
+				uf._union(ui, vi);
+			}
+
+		}
+
+		return ans;
+	}
+};

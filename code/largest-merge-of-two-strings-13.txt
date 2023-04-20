@@ -1,0 +1,26 @@
+class Solution {
+public:
+    bool priority(string& w1, string& w2, int i, int y){
+        if (i == w1.size() && y == w2.size()) return true;
+        else if (i == w1.size()) return false;
+        else if (y == w2.size()) return true;
+        else if (w1[i] != w2[y]) return w1[i] > w2[y];   
+        return priority(w1, w2, i + 1, y + 1);
+    }
+    string largestMerge(string& w1, string& w2,
+                       int i = 0, int y = 0) {
+        string ans = "";
+        if (i == w1.size() && y == w2.size()) return "";
+        else if (i == w1.size())
+            return ans + w2[y++] + largestMerge(w1, w2, i, y);
+        else if (y == w2.size())
+            return ans + w1[i++] + largestMerge(w1, w2, i, y);
+        if (w1[i] > w2[y])
+            return ans + w1[i++] + largestMerge(w1, w2, i, y);
+        else if (w2[y] > w1[i])
+            return ans + w2[y++] + largestMerge(w1, w2, i, y);
+        if (priority(w1, w2, i, y))
+            return ans + w1[i++] + largestMerge(w1, w2, i, y);
+        return ans + w2[y++] + largestMerge(w1, w2, i, y);
+    }
+};

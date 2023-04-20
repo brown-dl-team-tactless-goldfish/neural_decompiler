@@ -1,0 +1,42 @@
+public int MinMoves(int[] nums, int k)
+{
+	List<int> p = new List<int>() { 0 }; //extra zero for presum array
+	for (int i = 0; i < nums.Length; i++)
+	{
+		if (nums[i] == 1)
+		{
+			p.Add(i);
+		}
+	}
+	int n = p.Count;
+	int[] presum = new int[n];
+	for (int i = 1; i < n; i++)
+	{
+		presum[i] = p[i] + presum[i - 1];
+	}
+	int result = Int32.MaxValue;
+   
+   	for (int l = 1, r = k; r < n; l++, r++)
+	{
+		int mid = (l + r) / 2;
+		int radius = mid - l;
+		
+		// presum[r] contains sum of values upto r and presum[mid] contains the sum of values upto mid
+		// if we want to get the sum of mid+1 to r -> presum[r] - presum[mid]
+		// for sum of l to mid-1 use presum[mid-1] - presum[l-1] as l in included
+		int right = presum[r] - presum[mid]; 
+		int left = presum[mid - 1] - presum[l - 1];
+		
+		// [1+2+.. +radius] both the sides = (radius*(radius+1)/2)*2 = radius*(1+radius)
+		int substract = (1 + radius) * radius; 
+		if (k % 2 == 0)
+		{
+	       // in case of even k, one extra element on the right will be at (radius+1)th position from mid
+		   // also one extra p[mid] needs to be deleted
+			substract += p[mid];
+			substract += (1 + radius);
+		}
+		result = Math.Min(result, right - left - substract);
+	}
+	return result;
+}

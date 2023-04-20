@@ -1,0 +1,44 @@
+int sum(int** A, int ARowSize, int *AColSizes){
+    int sum=0;
+    for(int i=0;i<ARowSize;i++){
+        int tamp=0;
+        int count=1;
+        for(int j=AColSizes[0]-1;j>-1;j--){
+            tamp=tamp+A[i][j]*count;
+            count=count*2;
+        }
+        sum=sum+tamp;
+    }
+    return sum;
+}
+void togglle(int** A,int row,int column,int i,int j){ // i is index of row, j is index of column
+    if(i!=-1){
+        for(int k=0;k<column;k++){
+            A[i][k]=A[i][k]^1;
+        }
+    }
+    if(j!=-1){
+        for(int k=0;k<row;k++){
+            A[k][j]=A[k][j]^1;
+        }
+    }
+}
+int matrixScore(int** A, int ARowSize, int *AColSizes) {
+    for(int i=0;i<ARowSize;i++){
+        if(A[i][0]==0){
+            togglle(A,ARowSize,AColSizes[0],i,-1);
+        }
+    }
+    for(int i=0;i<AColSizes[0];i++){
+        int count=0;
+        for(int j=0;j<ARowSize;j++){
+            if(A[j][i]==0){
+                count++;
+            }
+        }
+        if(ARowSize-count<count){
+            togglle(A,ARowSize,AColSizes[0],-1,i);
+        }
+    }
+    return sum(A,ARowSize,AColSizes);
+}

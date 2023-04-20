@@ -1,0 +1,76 @@
+
+
+
+typedef struct 
+{
+    int top;
+    int size;
+    int * stack;
+} CustomStack;
+
+
+CustomStack* customStackCreate(int maxSize) 
+{
+    CustomStack * obj = (CustomStack *)malloc(sizeof(CustomStack));
+    obj->top = -1;
+    obj->size = maxSize;
+    obj->stack = (int *)malloc(sizeof(int) * (obj->size));
+    return obj;
+}
+
+bool isStackFull(CustomStack * obj)
+{
+    return (obj->top == obj->size-1) ? 1 : 0;
+}
+
+bool isStackEmpty(CustomStack * obj)
+{
+    return (obj->top == -1) ? 1 : 0;
+}
+
+void customStackPush(CustomStack* obj, int x) 
+{
+    if(isStackFull(obj))
+        return;
+    obj->stack[++(obj->top)] = x;
+    return;
+}
+
+int customStackPop(CustomStack* obj) 
+{
+    if(isStackEmpty(obj))
+        return -1;
+    return obj->stack[(obj->top)--];
+}
+
+void customStackIncrement(CustomStack* obj, int k, int val) 
+{
+    int i;
+    for(i=obj->top; i>=0; i--)
+    {
+        obj->stack[obj->top-i] += val;
+        k--;
+        
+        if(k == 0)
+            break;
+    }
+    return;
+}
+
+void customStackFree(CustomStack* obj)
+{
+    free(obj->stack);
+    free(obj);
+}
+
+/**
+ * Your CustomStack struct will be instantiated and called as such:
+ * CustomStack* obj = customStackCreate(maxSize);
+ * customStackPush(obj, x);
+ 
+ * int param_2 = customStackPop(obj);
+ 
+ * customStackIncrement(obj, k, val);
+ 
+ * customStackFree(obj);
+*/

@@ -1,0 +1,68 @@
+
+int cmp(int *a, int *b)
+{
+        return *a - *b;
+}
+
+int *new_permutation(int *arr, int len)
+{
+        int *new = malloc(sizeof(int) * len);
+        memcpy(new, arr, sizeof(int) * len);
+        return new;
+}
+
+void __permute_unique(int *nums, int numsSize, int **ret, int *idx, int *arr, int len)
+{
+        if (len == numsSize) {
+                ret[*idx] = new_permutation(arr, len);
+                (*idx)++;
+                return;
+        }
+        
+        int i;
+        int bak;
+        int prev = -11;  //arbitary val other than [-10, 10]
+        for (i = 0; i < numsSize; i++) {
+                if (nums[i] < -10)
+                        continue;
+                if (nums[i] == prev) //filter out the duplicate 
+                        continue;
+                
+                arr[len] = nums[i];
+                bak = nums[i];
+                nums[i] = -11; //mark nums[i] as taken and can't be selected in following recursion
+                __permute_unique(nums, numsSize, ret, idx, arr, len + 1);
+                
+                nums[i] = bak; //restore nums[i] so it can be taken in following recursion
+                prev = bak;
+        }
+}
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** permuteUnique(int* nums, int numsSize, int* returnSize, int** returnColumnSizes)
+{
+        int total = 1;  // total return size including duplicated
+        int i;
+        
+        qsort(nums, numsSize, sizeof(int), cmp);
+        
+        for (i = numsSize; i >= 1; i--)
+                total *= i;
+        
+        int **ret = malloc(total * sizeof(int *));
+        int *rcs = malloc(total * sizeof(int)); // return column sizes
+        for (i = 0; i < total; i++)
+                rcs[i] = numsSize;
+        
+        int idx = 0;
+        int arr[8];
+        __permute_unique(nums, numsSize, ret, &idx, arr, 0);
+
+        *returnSize = idx;
+        *returnColumnSizes = rcs;
+        return ret;
+}

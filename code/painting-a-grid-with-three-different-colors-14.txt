@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int colorTheGrid(int m, int n) {
+        long memo[m][n][1<<2*m]; 
+        memset(memo, 0, sizeof(memo));
+        
+        function<long(int, int, int)> fn = [&](int i, int j, int mask) {
+            if (j == n) return 1l; 
+            if (i == m) return fn(0, j+1, mask); 
+            if (!memo[i][j][mask]) 
+                for (const int& x : {1<<(2*i), 1<<(2*i+1), 3<<(2*i)}) {
+                    int mask0 = mask ^ x; 
+                    if ((mask0 & 3<<2*i) != 0 && (i == 0 || (mask0>>2*i & 3) != (mask0>>2*i-2 & 3))) {
+                        memo[i][j][mask] = (memo[i][j][mask] + fn(i+1, j, mask0)) % 1'000'000'007; 
+                    }
+                }
+            return memo[i][j][mask]; 
+        };
+        
+        return fn(0, 0, 0); 
+    }
+};

@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int n, K, INF = 1<<29;
+    vector<int>nums;
+    vector<pair<int, int>>validMask;
+    int memo[17][(1<<16) + 10];
+    bool isValid(int mask) {
+        unordered_map<int, bool> seen;
+        for (int i =0 ; i < n; i++) {
+            if (mask&(1<<i) ) {
+                if (seen.count(nums[i])) return false;
+                seen[nums[i]] = true;
+            }
+        }
+        return true;
+    }
+    int solve(int idx, int mask) {
+        if (idx == K) return 0;
+        if (memo[idx][mask] != -1) return memo[idx][mask];
+        int ret = INF;
+        for (auto m : validMask) if ((m.first&mask) == 0){
+            ret = min(ret, solve(idx + 1, mask|m.first) + m.second);
+        }
+        return memo[idx][mask] = ret;
+    }
+    int getMin(int mask) {
+        int mini = n + 1;
+        for (int i =0 ; i < n; i++) if (mask&(1<<i) ) mini = min(mini, nums[i]);
+        return mini;
+    }
+    int getMax(int mask) {
+        int maxi = 0;
+        for (int i =0 ; i < n; i++) if (mask&(1<<i) ) maxi = max(maxi, nums[i]);
+        return maxi;
+    }
+    int minimumIncompatibility(vector<int>& N, int k) {
+        nums = N, K = k;
+        n = nums.size();
+        int G = n /k;
+        for (int i = 0; i < (1<<n); i++) {
+            int c =0;
+            for (int j =0 ; j < n; j++) if (i&(1<<j)) c++;
+            if (c == G && isValid(i)) validMask.push_back({i, getMax(i)- getMin(i)});
+        }
+        int m = validMask.size();
+        memset(memo, -1, sizeof(memo));
+        int ans = solve(0, 0);
+        return ans >= INF ? -1 : ans;
+    }
+};

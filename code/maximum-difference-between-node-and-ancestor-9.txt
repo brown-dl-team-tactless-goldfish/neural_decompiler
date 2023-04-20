@@ -1,0 +1,19 @@
+int rec(struct TreeNode* root, int max, int min, int res) {
+    if (!root)
+        return res;
+    
+    int temp = abs(root->val - max) > abs(root->val - min) ?
+        abs(root->val - max) : abs(root->val - min);
+    res = res > temp ? res : temp;
+    max = max > root->val ? max : root->val;
+    min = min < root->val ? min : root->val;
+    
+    int res1 = rec(root->left, max, min, res);
+    int res2 = rec(root->right, max, min, res);
+    return res1 > res2 ? res1 : res2;
+}
+
+int maxAncestorDiff(struct TreeNode* root){
+    if (!root) return 0;
+    return rec(root, root->val, root->val, 0);
+}

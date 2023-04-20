@@ -1,0 +1,65 @@
+
+class Solution {
+    
+ int search(int nums[],boolean visit[] ,int low,int high,int target){
+     int index  = -1;
+     
+      while(low <= high){
+          int mid =  (low + high)/2;
+            if(nums[mid]==target){
+                if(visit[mid]){
+                   low = mid +1;
+                 }
+                 else{
+                      index = mid;    
+                      high = mid-1; 
+                    }
+                   continue;
+                }
+
+                if(nums[mid] > target)
+                   high = mid-1;
+                else
+                   low = mid +1;
+     }
+      return index;
+}
+    
+    public int[] recoverArray(int[]nums) {
+        
+       int n  = nums.length;
+       Arrays.sort(nums);
+       
+       int smallest = nums[0];
+       
+         for(int i =1;i<n;i++){
+               
+              int k = (nums[i] - smallest)/2; 
+               
+               if(k<=0 || smallest + 2*k != nums[i]) 
+                     continue;
+             
+                       boolean visit[] = new boolean[n];
+                       int ans[] = new int[n/2];        
+                       int cnt = 0;
+                       for(int j=0;j<n;j++){
+                       
+                           if(visit[j]) 
+                              continue;
+                       
+                           int target = nums[j] + 2*k; 
+                           int index = search(nums,visit,j+1,n-1, target);                  
+                           if(index==-1)
+                               break;
+                        
+                           visit[index] = true; 
+                           ans[cnt++] = nums[j] + k; 
+            
+                       }
+                         if(cnt==n/2) 
+                             return ans;
+         }
+       
+       return new int[0];
+     }
+}

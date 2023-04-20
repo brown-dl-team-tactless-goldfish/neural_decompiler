@@ -1,0 +1,47 @@
+class Solution {
+    double make(int x, int y) {
+        double v = 1.;
+        for (; y; --y) {
+            v *= (x + y);
+            v /= y;
+        }
+        return v;
+        
+    }
+public:
+    double getProbability(vector<int>& balls) {
+        int n = 0;
+        for (int x : balls) {
+            n += x;
+        }
+        int m = n / 2;
+        const int c = balls.size();
+        vector<vector<vector<double>>> dp(c + 1, vector<vector<double>>(m + 1, vector<double>(c * 2 + 1)));
+        dp[0][0][c] = 1;
+        int sum = 0;
+        double d = 1.;
+        for (int t = 1; t <= c; ++t) {
+            const int x = balls[t - 1];
+            for (int i = min(sum + x, m); i >= 0; --i) {
+                for (int j = max(i - sum, 0); j <= x && j <= i; ++j) {
+                    const auto& p = dp[t - 1][i - j];
+                    for (int k = 0; k < p.size(); ++k) {
+                        int kk = k;
+                        if (j) {
+                            ++kk;
+                        }
+                        if (x - j) {
+                            --kk;
+                        }
+                        if (kk < 0 || kk >= p.size()) continue;
+                        dp[t][i][kk] += p[k] * make(sum - (i - j), x - j) * make(i - j, j);
+                    }
+                }
+            }
+            d *= make(sum, x);
+            sum += x;
+        }
+        return dp[c][m][c] / d;
+        
+    }
+};

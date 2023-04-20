@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int minCost(vector<int>& A, int k) {
+        int dp[1001]{};
+        function<int(int)> dfs = [&](int p) {
+            if(p == A.size()) return 0;
+            if(dp[p]) return dp[p];
+            int cnt[1001]{}, res = INT_MAX;
+            for(int i = p, sum = 0; i < A.size(); i++) {
+                cnt[A[i]]++;
+                sum += cnt[A[i]] == 2 ? 2 : cnt[A[i]] > 2 ? 1 : 0;
+                res = min(res, sum+k+dfs(i+1));
+            }
+            return dp[p] = res;
+        };
+        return dfs(0);
+    }
+};

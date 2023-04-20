@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int catMouseGame(vector<vector<int>>& graph) {
+        const int n = graph.size(); 
+        vector<vector<int>> v_rat(n, vector<int>(n, 0)), v_cat(n, vector<int>(n, 0)); 
+        
+        for (int r = 0; r < n; ++r) v_rat[r][r] = -1, v_cat[r][r] = 1; 
+        for (int c = 0; c < n; ++c) v_rat[0][c] = 1, v_cat[0][c] = -1; 
+        
+        for (int t = 0; t < n; ++t) {
+            for (int r = 1; r < n; ++r) {
+                for (int c = 1; c < n; ++c) {
+                    if (c == r) continue; 
+                    int max_val = -2; 
+                    for (int i : graph[r]) {
+                        max_val = max(max_val, -v_cat[i][c]); 
+                        if (-v_cat[i][c] == 1) break; 
+                    }
+                    v_rat[r][c] = max_val; 
+                }
+            }
+            for (int c = 1; c < n; ++c) {
+                for (int r = 1; r < n; ++r) {
+                    if (c == r ) continue; 
+                    int max_val = -2;
+                    for (int j : graph[c]) {
+                        if (j == 0) continue;  
+                        max_val = max(max_val, -v_rat[r][j]); 
+                        if (max_val == 2) break; 
+                    }
+                    v_cat[r][c] = max_val; 
+                }
+            }
+        }
+        if (v_rat[1][2] == -1) return 2; 
+        else if (v_rat[1][2] == 1) return 1;
+        else return 0; 
+    }
+};

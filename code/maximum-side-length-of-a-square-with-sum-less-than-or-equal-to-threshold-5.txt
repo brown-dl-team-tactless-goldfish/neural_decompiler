@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int maxSideLength(vector<vector<int>>& mat, int threshold) {
+        // DP: define rows = mat.size() and cols = mat[0].size(). Also define dp[rows][cols] where
+        // dp[i][j] is the sum from (0, 0) (top left) to (i, j) (bottom right).
+        //
+        // Then going through all elements mat[i, j] and count the sum of each square with (i, j) as 
+        // top left. If the sum <= threshold, update the maximum side length if needed.
+        int rows = mat.size(), cols = mat[0].size(), res = 0;
+        vector<vector<int>> dp(rows, vector<int>(cols));
+        for (int i = 0; i < rows; ++i)
+        {
+            for (int j = 0; j < cols; ++j)
+            {
+                int s1 = i > 0 ? dp[i - 1][j] : 0;
+                int s2 = j > 0 ? dp[i][j - 1] : 0;
+                int s3 = i > 0 && j > 0 ? dp[i - 1][j - 1] : 0;
+                dp[i][j] = s1 + s2 - s3 + mat[i][j];
+            }
+        }
+        
+        for (int i = 0; i < rows; ++i)
+        {
+            for (int j = 0; j < cols; ++j)
+            {
+                for (int k = 0; i + k < rows && j + k < cols; ++k)
+                {
+                    int s1 = i > 0 ? dp[i - 1][j + k] : 0;
+                    int s2 = j > 0 ? dp[i + k][j - 1] : 0;
+                    int s3 = i > 0 && j > 0 ? dp[i - 1][j - 1] : 0;
+                    int sum = dp[i + k][j + k] - (s1 + s2 - s3);
+					
+                    if (sum <= threshold && k + 1 > res)
+                    {
+                        res = k + 1;
+                    }
+                }
+            }
+        }
+        
+        return res;
+    }
+};

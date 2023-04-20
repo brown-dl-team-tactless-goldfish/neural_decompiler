@@ -1,0 +1,42 @@
+public class Solution {
+    public IList<int> GetAllElements(TreeNode root1, TreeNode root2) {
+        if (root1 == null && root2 == null)
+            return new List<int>();
+        
+        IList<int> res = new List<int>();
+        Queue<int> q1 = new Queue<int>(),
+                   q2 = new Queue<int>();
+        
+        DFS(root1, q1);
+        DFS(root2, q2);
+        
+        while (q1.Count > 0 && q2.Count > 0)
+            if (q1.Peek() < q2.Peek())
+                res.Add(q1.Dequeue());
+            else if (q1.Peek() > q2.Peek())
+                res.Add(q2.Dequeue());
+            else
+            {
+                res.Add(q1.Dequeue());
+                res.Add(q2.Dequeue());
+            }
+        
+        while (q1.Count > 0)
+            res.Add(q1.Dequeue());
+        
+        while (q2.Count > 0)
+            res.Add(q2.Dequeue());
+        
+        return res;
+    }
+    
+    private void DFS(TreeNode node, Queue<int> q)
+    {
+        if (node == null)
+            return;
+        
+        DFS(node.left, q);
+        q.Enqueue(node.val);
+        DFS(node.right, q);
+    }
+}

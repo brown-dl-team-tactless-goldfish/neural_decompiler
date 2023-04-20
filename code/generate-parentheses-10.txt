@@ -1,0 +1,88 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+typedef	struct	s_meta
+{
+	int	open;
+	int	close;
+	int	pos;
+	int	n;
+}				t_meta;
+
+t_meta	*create_meta(int n)
+{
+	t_meta	*tmp;
+
+	if(!(tmp = (t_meta *)malloc(sizeof(t_meta))))
+	{
+		fprintf(stderr, "Insufficient memory for malloc.\n");
+		exit(1);
+	}
+	tmp->n = n;
+	tmp->pos = 0;
+	tmp->open = 0;
+	tmp->close = 0;
+	return (tmp);
+}
+
+void	generate(t_meta *meta, int *returnSize, char ***sol_arr, char *cur_perm)
+{
+	static int i = 0;
+    
+	if (meta->close == meta->n)
+	{
+		if (i == *returnSize)
+		{
+			*returnSize = *returnSize + 1;
+			*sol_arr = (char **)realloc(*sol_arr, sizeof(char *) * *returnSize);
+		}
+		(*sol_arr)[i++] = strdup(cur_perm);
+	}
+	else
+	{	
+		if (meta->open < meta->n)
+		{
+			cur_perm[meta->pos++] = '(';
+			meta->open = meta->open + 1;
+			generate(meta, returnSize, sol_arr, cur_perm);
+			meta->open = meta->open - 1;
+			meta->pos = meta->pos - 1;
+		}
+		if (meta->open > meta->close)
+		{
+			cur_perm[meta->pos++] = ')';
+			meta->close = meta->close + 1;
+			generate(meta, returnSize, sol_arr, cur_perm);
+			meta->close = meta->close - 1;
+			meta->pos = meta->pos - 1;
+		}
+		
+	}
+}
+
+char	**generateParenthesis(int n, int *returnSize)
+{
+	char	**sol_arr;
+	t_meta	*meta;
+	char	*cur_perm;
+
+	*returnSize = n;
+	if (!(sol_arr = (char **)malloc(sizeof(char *) * *returnSize)))
+	{
+		fprintf(stderr, "Insufficient memory for malloc.\n");
+		exit(1);
+	}
+	if (!(cur_perm = (char *)malloc(sizeof(char *) * (n * 2 + 1))))
+	{
+		fprintf(stderr, "Insufficient memory for malloc.\n");
+		exit(1);
+	}
+	meta = create_meta(n);
+	generate(meta, returnSize, &sol_arr, cur_perm);
+	return (sol_arr);
+}

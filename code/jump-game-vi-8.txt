@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int maxResult(vector<int>& nums, int k) {
+        const int n = nums.size();
+        deque<int> queue;
+        queue.push_back(nums[0]);
+        for (int i = 1; i < n; ++i) {
+            int c = nums[i] + queue.front();
+            while (queue.size() && queue.back() < c) {
+                queue.pop_back();
+            }
+            queue.push_back(c);
+            nums[i] = c;
+            if (i-k >= 0 && nums[i-k] == queue.front()) {
+                queue.pop_front();
+            }
+        }
+        return queue.back();
+    }
+};

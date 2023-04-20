@@ -1,0 +1,33 @@
+void input(struct TreeNode** root, int val, int depth, bool left){
+    if (depth == 1){
+        struct TreeNode* newroot = malloc(sizeof(struct TreeNode)*1);
+        newroot->val = val;
+        if (left){
+            newroot->left = *root;
+            newroot->right = NULL;
+        } else {
+            newroot->right = *root;
+            newroot->left = NULL;
+        }
+        *root = newroot;
+        return;
+    }
+    if (*root == NULL){
+        return;
+    }
+    input(&(*root)->left, val, depth-1, true);
+    input(&(*root)->right, val, depth-1, false);
+}
+
+struct TreeNode* addOneRow(struct TreeNode* root, int val, int depth){
+    if (depth == 1){
+        struct TreeNode* newroot = malloc(sizeof(struct TreeNode)*1);
+        newroot->val = val;
+        newroot->left = root;
+        newroot->right = NULL;
+        return newroot;
+    }
+    input(&(root->left), val, depth-1, true);
+    input(&(root->right), val, depth-1, false);
+    return root;
+}

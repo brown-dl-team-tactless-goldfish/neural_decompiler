@@ -1,0 +1,36 @@
+class FindSumPairs {
+public:
+    FindSumPairs(vector<int>& nums1, vector<int>& nums2):A1{nums1}, A2{nums2} {
+        for (int i:nums2) {
+            ++M[i];
+        }
+    }
+    
+    void add(int index, int val) {
+        int old_num = A2[index];
+        A2[index] += val;
+        auto it = M.find(old_num);
+        --M[old_num];
+        if (M[old_num]==0) {
+            M.erase(it);
+        }
+        ++M[A2[index]];
+    }
+    
+    int count(int tot) {
+        int n = 0;
+        for (int i=0;i<A1.size();++i) {
+            int e = tot-A1[i];
+            auto it = M.find(e);
+            if (it!=M.end()) {
+                n += it->second;
+            }
+        }
+        return n;
+    }
+    
+private:
+    std::vector<int>& A1;
+    std::vector<int>& A2;
+    std::unordered_map<int, int> M;
+};

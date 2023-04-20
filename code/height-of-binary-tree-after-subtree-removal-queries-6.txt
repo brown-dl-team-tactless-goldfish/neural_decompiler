@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int dfs(TreeNode* root,map<int,vector<int>> &mp,int h,int &n){
+        if(!root) return 0;
+        int no = n++;
+        int sum = dfs(root->left,mp,h+1,n)+dfs(root->right,mp,h+1,n);
+        mp[root->val] = {no,h,sum}; // {time of discovery, height of node, no. of children}
+        return sum+1;
+    }
+    vector<int> treeQueries(TreeNode* root, vector<int>& q) {
+        map<int,vector<int>> mp;
+        int x = 0;
+        dfs(root,mp,0,x);
+        int n = mp.size();
+        vector<int> left(n+1,0),right(n+1,0);
+        
+        for(auto it = mp.begin(); it!=mp.end();++it){
+            left[it->second[0]] = it->second[1];
+            right[it->second[0]] = it->second[1];
+        }
+        
+        for(int i = 1; i<n;++i) left[i] = max(left[i-1],left[i]);
+        for(int i = n-1;i>=0;--i) right[i] = max(right[i],right[i+1]);
+        
+        vector<int> re(q.size(),0);
+        for(int i = 0; i<q.size();++i){
+            int l = mp[q[i]][0]-1, h = mp[q[i]][0]+mp[q[i]][2]+1;
+            if(l>=0) re[i] = left[l];
+            if(h<n) re[i] = max(re[i],right[h]);
+        }
+        return re;
+    }
+};

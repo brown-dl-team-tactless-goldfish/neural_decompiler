@@ -1,0 +1,60 @@
+class Solution {
+    public int minimumOperations(int[] nums, int start, int goal) {
+        if (nums == null || nums.length == 0) {
+            return -1;
+        }
+        
+        Set<Integer> seen = new HashSet<>();
+        
+        Queue<Integer> q = new LinkedList<>();
+        q.offer(start);
+        int steps = 0;
+        
+        while(!q.isEmpty()) {
+            int size = q.size();
+            steps++;
+            for (int k = 0; k < size; k++) {
+                int val = q.poll();
+                
+                if (val == goal) {
+                    return steps;
+                }
+                
+                if (seen.contains(val)) {
+                    continue;
+                }
+                
+                seen.add(val);
+                
+                for (int i = 0; i < nums.length; i++) {
+                    int add = val + nums[i];
+                    int subtract = val - nums[i];
+                    int xor = val ^ nums[i];
+                    
+                    // If the goal is found in this step, no need to add to the queue and return the steps taken
+                    if (add == goal || subtract == goal || xor == goal) {
+                        return steps;
+                    }
+                    
+                    // Add the next step to the queue only if x satifies the condition 0 <= x <= 1000
+                    // This plus the seen Set ensures that the queue gets drained at some point
+                    if (add >= 0 && add <= 1000 && !seen.contains(add)) {
+                        q.offer(add);
+                    }
+                    
+                    if (subtract >= 0 && subtract <= 1000 && !seen.contains(subtract)) {
+                        q.offer(subtract);
+                    }
+                    
+                    if (xor >= 0 && xor <= 1000 && !seen.contains(xor)) {
+                        q.offer(xor);
+                    }
+                }
+            }
+            
+            
+        }
+        
+        return -1;
+    }
+}

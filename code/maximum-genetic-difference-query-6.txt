@@ -1,0 +1,122 @@
+class Solution {
+public:
+    
+    struct Node
+    {
+        Node * child[2];
+        int c;  // extra counter to check if bit is valid
+    };
+    
+    Node * BTroot;
+    
+    Node * createNode()
+    {
+        Node * node = new Node();
+        node->child[0] = NULL;
+        node->child[1] = NULL;
+        node->c = 0;
+        return node;
+    }
+    
+    // update bits of num value in to Binary Trie from MSB to LSB
+    // +1 with node->c to make bit valid and -1 to make it invalid but not until becomes 0
+    void update(int num, int d)
+    {
+        Node * node = BTroot;
+        int digit;
+        
+        for(int i=31;i>=0;i--)
+        {
+            digit = (num>>i) & 1;
+            
+            if(node->child[digit]==NULL)
+                node->child[digit] = createNode();
+            
+            node = node->child[digit];
+            node->c+=d;
+        }
+    }
+    
+    // search the largest possible reverse bit value of given value
+    // node->c > 0  makes bit valid, otherwise bit invalid    
+    int getMaxValue(int num)
+    {
+        Node * node = BTroot;
+        int digit;
+        int val = 0;
+        
+        // loop through value bits MSB to LSB
+        for(int i=31;i>=0;i--)
+        {
+            digit = (num>>i) & 1;
+            
+            // for current bit 1, move to 0 bit if possible
+            if(digit && node->child[digit-1] && node->child[digit-1]->c >0)
+            {
+                node = node->child[digit-1];   
+                val += pow(2,i);    // XOR bit 1, so add value
+            }
+            else if(digit && node->child[digit] && node->child[digit]->c >0)node = node->child[digit];
+            
+            // for current bit 0, move to 1 bit if possible
+            else if(!digit && node->child[digit+1] && node->child[digit+1]->c >0)
+            {
+                node = node->child[digit+1];
+                val += pow(2,i);    // XOR bit 1, so add value
+            }
+            else if(!digit && node->child[digit] && node->child[digit]->c >0)node = node->child[digit];
+        }
+        
+        return val;        
+    }
+    
+    // traverse tree in preorder way and check any query exists for current node
+    void preorderTraverse(int node, vector<vector<int>>&tree, unordered_map<int,vector<pair<int,int>>>&query, vector<int>&res)
+    {
+        update(node,1); // add node value to BT 
+        
+        // process all query related to current node
+        if(query.find(node)!=query.end())
+        {
+            for(int k=0;k<query[node].size();k++)
+                res[query[node][k].second] = getMaxValue(query[node][k].first);            
+        }
+
+        // move forward to child nodes 
+        for(int i=0;i<tree[node].size();i++)
+            preorderTraverse(tree[node][i],tree,query,res);
+        
+        update(node,-1);    // delete node value from BT
+    }
+    
+    vector<int> maxGeneticDifference(vector<int>& parents, vector<vector<int>>& queries) {
+        
+        int n = parents.size();
+        vector<vector<int>>tree(n);
+        int root;
+        
+        // Binary Trie root
+        BTroot = createNode();
+        
+        // create tree from parents list and get the root node
+        for(int i=0;i<parents.size();i++)
+        {
+            if(parents[i]==-1)root = i;
+            else tree[parents[i]].push_back(i);
+        }
+        
+        // store query value and index in map
+        unordered_map<int,vector<pair<int,int>>>query;
+        
+        for(int i=0;i<queries.size();i++)
+            query[queries[i][0]].push_back({queries[i][1],i});
+        
+        
+        vector<int>res(queries.size());
+        
+        // preorder traverse from root to all child and calculate query result
+        preorderTraverse(root,tree,query,res);
+        
+        return res;
+    }
+};

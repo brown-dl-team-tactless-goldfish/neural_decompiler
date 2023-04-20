@@ -1,0 +1,41 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* replaceElements(int* arr, int arrSize, int* returnSize){
+#if 1   // return original arr taht is replaced
+    *returnSize = arrSize;
+
+    int greatest = -1;
+    int tmp;
+    int i;
+    for (i=(arrSize-1); i>=0; --i)
+    {
+        tmp = arr[i];
+        arr[i] = greatest;
+        greatest = (greatest>tmp)?greatest:tmp;
+    }
+
+    return arr;
+#else   // return new malloc array
+    int* pRetVal;
+
+    *returnSize = arrSize;
+    pRetVal = (int*)malloc((*returnSize)*sizeof(int));
+    if (pRetVal == NULL)
+    {
+        perror("malloc");
+        return pRetVal;
+    }
+    memset(pRetVal, 0, (*returnSize)*sizeof(int));
+
+    int greatest = -1;
+    int i;
+    for (i=(arrSize-1); i>=0; --i)
+    {
+        pRetVal[i] = greatest;
+        greatest = (greatest>arr[i])?greatest:arr[i];
+    }
+
+    return pRetVal;
+#endif
+}

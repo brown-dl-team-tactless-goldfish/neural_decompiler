@@ -1,0 +1,57 @@
+	public int ShortestBridge(int[][] grid)
+    {
+		//store islands points for islands1 and 2 
+        List<int[]> list1 = new List<int[]>();
+        List<int[]> list2 = new List<int[]>();
+		//for dfs search
+        int[][] dxy = new int[4][] { new int[] { -1, 0 }, new int[] { 1, 0 }, new int[] { 0, 1 }, new int[] { 0, -1 } };
+        for (int i = 0; i < grid.Length; i++)
+        {
+            for (int j = 0; j < grid[i].Length; j++)
+            {
+                if (grid[i][j] == 0) continue;
+                List<int[]> curr = new List<int[]>();
+				//store the points to visit
+                List<int[]> visits = new List<int[]>() { new int[] {i,j } };
+                grid[i][j] = 0;//set to 0, will avoid duplicate visit
+                while (visits.Count > 0)
+                {
+                    curr.AddRange(visits);//add points to current island
+                    List<int[]> nexts = new List<int[]>();
+                    foreach(var v in visits)
+                    {
+                        foreach (var d in dxy)
+                        {
+                            int r = v[0] + d[0];
+                            int c = v[1] + d[1];
+                            if(r>=0&&r<grid.Length && c>=0&&c<grid[i].Length && grid[r][c] == 1)
+                            {
+                                grid[r][c] = 0;//always remember set to 0 to avoid duplicate search
+                                nexts.Add(new int[] { r, c });
+                            }
+                        }
+                    }
+                    visits = nexts;//next time visit points
+                }
+				//island1 or 2
+                if (list1.Count == 0) { list1 = curr; }
+                else { list2 = curr; }
+            }
+            if (list2.Count > 0) break;
+        }
+        int min = int.MaxValue;
+		//compare all points of island1 and island2, so time complex is O(m*n), m is island1 length ,n is island2 length
+        foreach (var i in list1)
+        {
+            foreach (var j in list2)
+            {
+                int len=int.MaxValue;
+                if (i[0] == j[0]) len = Math.Abs(i[1] - j[1])-1; //if on same row 
+                else if(i[1] == j[1]) len = Math.Abs(i[0] - j[0])-1;//if on same col 
+                else len = Math.Abs(i[1] - j[1]) - 1 + Math.Abs(i[0] - j[0]);//if different row and col
+                min = Math.Min(min, len);
+                if (min == 1) return min;//the minimal anwser is 1
+            }
+        }
+        return min;
+    }

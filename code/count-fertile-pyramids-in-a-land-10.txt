@@ -1,0 +1,75 @@
+class Solution {
+public:
+    int res(vector<vector<int>>& grid){
+        int n=grid.size();
+        int m=grid[0].size();
+        
+        vector<vector<int>> l(n,vector<int>(m,0)), r(n,vector<int>(m,0)),w(n,vector<int>(m,0)),lis(n,vector<int>(m,0)) ;
+        
+        for(int i=0;i<n;i++){
+            l[i][0]=grid[i][0];
+            
+            for(int j=1;j<m;j++){
+               if(grid[i][j]) l[i][j]=l[i][j-1]+1;
+                
+            }
+        }
+        
+        for(int i=0;i<n;i++){
+            r[i][m-1]=grid[i][m-1];
+            
+            for(int j=m-2;j>=0;j--){
+               if(grid[i][j]) r[i][j]=r[i][j+1]+1;
+                
+            }
+        }
+        for(int i=0;i<n;i++){ 
+            for(int j=0;j<m;j++){
+               if(grid[i][j]) {
+                   int wide=min(l[i][j],r[i][j])-1;
+                   w[i][j]=1+2*wide;
+                }
+             }
+         }
+        for(int j=0;j<m;j++){
+            lis[0][j]=grid[0][j]; 
+          
+            for(int i=1;i<n;i++){
+               if(!grid[i][j]) continue;
+               if(lis[i-1][j]==0) {lis[i][j]=grid[i][j]; continue;}
+                
+               if(w[i][j]>=lis[i-1][j]+2) lis[i][j]=2+lis[i-1][j];
+               else  lis[i][j]=w[i][j];
+                
+            }
+            
+        }
+        
+        int ans=0;
+        
+        for(int i=0;i<n;i++){ 
+            for(int j=0;j<m;j++){
+               if(lis[i][j]>1){
+                    ans=ans+lis[i][j]/2;
+               }   
+                
+            }
+        }
+        return ans;
+    }
+    
+    
+    
+    int countPyramids(vector<vector<int>>& grid) {
+        
+        int up=res(grid);
+       
+        for(auto& v:grid){
+            reverse(v.begin(),v.end());
+        }
+        reverse(grid.begin(),grid.end());
+        int down=res(grid);
+         
+        return up+down;
+    }
+};

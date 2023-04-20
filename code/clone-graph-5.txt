@@ -1,0 +1,84 @@
+typedef struct UndirectedGraphNode gn;
+
+/* #include "uthash.h"*/
+struct hash_map{
+  gn* key;                   /* key is the pointer in the old graph */
+  gn* val;                   /* val is the pointer in the new Graph */
+  UT_hash_handle hh;         /* makes this structure hashable */
+};
+typedef struct hash_map map;
+map* ht = NULL;
+void htAdd(gn* key, gn* value);
+map* htFind(gn* key);
+void htCleanup();
+void htPrint();
+
+
+void helper(gn* graph, gn** newG)
+{
+  map* s = htFind(graph);
+  if(s == NULL)
+  {
+    /* the node is not yet visited */
+    /* add it to the map */
+    *newG = (gn*)malloc(sizeof(gn));
+    htAdd(graph, *newG);
+ 
+    (*newG)->neighborsCount = graph->neighborsCount;
+    (*newG)->label = graph->label;
+    
+    for(int i =0; i<graph->neighborsCount; i++)
+      helper(graph->neighbors[i], &((*newG)->neighbors[i]));
+  }
+  else
+  {
+    /* already visited */
+    *newG = s->val;
+  }
+}
+
+gn* cloneGraph(gn* graph)
+{
+  ht = NULL;                    /* init hash table */
+  gn* newG = NULL;
+
+  if(graph)  helper(graph, &newG);
+
+  htCleanup();
+  return newG;
+}
+
+/* ---------UTHASH below--------------- */
+
+void htAdd(gn* key, gn* value) {
+  map* s;
+  HASH_FIND_INT(ht, &key, s);  /* id already in the hash? */
+  if (s==NULL) {
+    s = (map*)malloc(sizeof(map));
+    s->key = key;
+    HASH_ADD_INT(ht, key, s);  /* id: name of key field */
+  }
+  s->val = value;
+}
+
+map* htFind(gn* key) {
+  map* s;
+  HASH_FIND_INT(ht, &key, s);  /* s: output pointer */
+  return s;
+}
+
+void htCleanup() {
+  map* cur, *tmp;
+  HASH_ITER(hh, ht, cur, tmp)
+  {
+    HASH_DEL(ht, cur);  /* delete it (users advances to next) */
+    free(cur);            /* free it */
+  }
+}
+
+void htPrint() {
+  map* s;
+
+  for(s=ht; s != NULL; s=(map*)(s->hh.next))
+    printf("key-label %d:  new-label %d\n", s->key->label, s->val->label);
+}

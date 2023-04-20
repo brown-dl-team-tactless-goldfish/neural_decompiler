@@ -1,0 +1,57 @@
+#define STACKSIZE 100000          // Allocating stack as per the constraint
+#define push(sp, n) (*(sp) = (n), (sp)++ )
+#define pop(sp) (* --(sp))
+
+typedef struct {
+    struct TreeNode* stack[STACKSIZE];
+    struct TreeNode** sp;
+    int stackSize;
+} BSTIterator;
+
+BSTIterator* bSTIteratorCreate(struct TreeNode* root) {
+    BSTIterator *ret = malloc(sizeof(BSTIterator));
+    ret->sp = ret->stack;       ret->stackSize = 0;
+    // initialize stack by pushing all left most nodes of tree
+    // so that bSTIteratorNext() return smallest number
+    while(root) {
+        push(ret->sp, root);
+        ret->stackSize ++;
+        root = root->left;
+    }
+    return ret;
+}
+
+/** @return the next smallest number */
+int bSTIteratorNext(BSTIterator* obj) {
+    // given: we can assume that next() calls will always be valid
+    // there will be at least a next number in the iterator class object's stack
+    struct TreeNode *node = pop(obj->sp);
+    obj->stackSize--;
+    int ret = node->val;
+    node = node->right;
+    while(node) {
+        push(obj->sp, node);
+        obj->stackSize ++;
+        node = node->left;
+    }
+    return ret;
+}
+
+/** @return whether we have a next smallest number */
+bool bSTIteratorHasNext(BSTIterator* obj) {
+    return (obj->stackSize != 0);
+}
+
+void bSTIteratorFree(BSTIterator* obj) {
+    free(obj);
+}
+
+/**
+ * Your BSTIterator struct will be instantiated and called as such:
+ * BSTIterator* obj = bSTIteratorCreate(root);
+ * int param_1 = bSTIteratorNext(obj);
+ 
+ * bool param_2 = bSTIteratorHasNext(obj);
+ 
+ * bSTIteratorFree(obj);
+*/

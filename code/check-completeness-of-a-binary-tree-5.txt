@@ -1,0 +1,70 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+typedef struct {
+    void **data;
+    int head;
+    int tail;
+    int size;
+} Queue;
+
+Queue *newQueue(int size) {
+    Queue *q = malloc(sizeof(Queue));
+    q->data = malloc(size * sizeof(void*));
+    q->head = 0;
+    q->tail = 0;
+    q->size = size;
+    return q;
+}
+
+void enqueue(Queue *queue, void *entry) {
+    queue->data[queue->tail++] = entry;
+    queue->tail %= queue->size;
+}
+
+void *dequeue(Queue *queue) {
+	void *p;
+    p = queue->data[queue->head++];
+    queue->head %= queue->size;
+    return p;
+}
+
+int isEmpty(Queue *queue) {
+    return queue->head == queue->tail;
+}
+
+void freeQueue(Queue *queue) {
+    free(queue->data);
+    free(queue);
+}
+
+bool isCompleteTree(struct TreeNode* root){
+    struct TreeNode *t;
+    if (root == NULL) {
+        return true;
+    }
+    Queue *traversalQueue = newQueue(100);
+    enqueue(traversalQueue, (void*) root);
+    while (1) {
+        t = (struct TreeNode *) dequeue(traversalQueue);
+        if (t == NULL) {
+            while (!isEmpty(traversalQueue)) {
+                if (dequeue(traversalQueue) != NULL) {
+                    freeQueue(traversalQueue);
+                    return false;
+                }
+            } 
+            freeQueue(traversalQueue);
+            return true;
+        } else {
+            enqueue(traversalQueue, (void*) t->left);
+            enqueue(traversalQueue, (void*) t->right);
+        }
+    }
+}

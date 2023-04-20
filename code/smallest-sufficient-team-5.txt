@@ -1,0 +1,73 @@
+ unordered_map<string,int> skillMap;
+    vector<int> peopleMask;
+    int skillMask=0;
+    vector<int> ans;
+    unordered_map<string,int> dp;
+    
+    void solve(int i,int n,vector<int> &curr,int mask)
+    {
+        if(i==n)  //array khtm update answer 
+        {
+            //BASE CASE --> saari skills jo mujhe chiye thi(skillmask) milgyi and jo curr.size() hai vo mere phle jo ans ara tha usse chota hai to update krdo
+            if(curr.size()<ans.size() and mask==skillMask) 
+                ans=curr;
+            
+            return;
+        }
+        string s=to_string(i)+to_string(mask);
+        
+        //dp[s] hmne phle hi kbhi krliya hai
+        if(dp.find(s)!=dp.end() and dp[s]<=curr.size())  
+            return;
+        
+        //IMPORTANT --> jab ans.size()<=curr.size() se to niche ab jaunga to element add hi krunga to ye curr kbhi ans bna hi ni skta
+        if(ans.size()<=curr.size())  
+            return;
+        
+        solve(i+1,n,curr,mask);  //exclude case
+    
+        if( (mask|peopleMask[i])!=mask)  //include case
+        {
+            curr.push_back(i);
+            solve(i+1,n,curr,(mask | peopleMask[i]) );
+            curr.pop_back();
+            
+//MOST IMPORTANT--> s string {i+mask} is visited now so make its value as curr.size()
+            dp[s] =(curr.size() != 0 )?curr.size():-1;  //most important line
+        }
+    }
+    
+vector<int> smallestSufficientTeam(vector<string>& reqSkills,vector<vector<string>>& people) 
+{
+        int n=0;
+    
+    //step 1 --> //store req skills in skillMap and also make Skillmask
+        for(auto i:reqSkills) 
+        {
+            skillMask |= (1<<n);
+            skillMap[i]=n++; 
+        }
+        
+//Step 2 har people ke pas jo jo skill hai uska ek mask bnao 
+    // peopleMask[i]=mask of all skills which ith person have
+    
+        peopleMask.resize(people.size(),0); //global variable declared
+        for(int i=0;i<people.size();i++)   //bitmask of each person knowing skills
+        {
+            int meraMask=0;
+            for(auto j:people[i])
+            {
+                int pos=skillMap[j];  //number of that particular skill
+                meraMask |=(1<<pos);  //do OR with (1<<pos)
+            }
+            peopleMask[i]=meraMask;  //store people[i] ka mask 
+        }
+        
+        vector<int> curr;
+        ans.resize(10000,0);
+        int mask=0;  //starting me we have got 0 skills 
+    
+        //choice -> take not take (take ith person so OR the mask with peopleMask[i])
+        solve(0,people.size(),curr,mask);  //solve func
+        return ans;        
+    }

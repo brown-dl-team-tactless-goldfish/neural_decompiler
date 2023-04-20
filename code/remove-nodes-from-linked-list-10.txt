@@ -1,0 +1,54 @@
+
+
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode *reverseList(struct ListNode* headref)
+{
+	struct ListNode* current = headref;
+	struct ListNode* prev = NULL;
+	struct ListNode* next;
+	while (current != NULL) {
+		next = current->next;
+		current->next = prev;
+		prev = current;
+		current = next;
+	}
+	headref = prev;
+    return headref;
+}
+struct ListNode *removeNodes(struct ListNode *head)
+{
+
+    head=reverseList(head);
+    struct ListNode *current = head;
+
+    /* Initialize max */
+    struct ListNode *maxnode = head;
+    struct ListNode *temp;
+
+    while (current != NULL && current->next != NULL)
+    {
+        /* If current is smaller than max, then delete current */
+        if (current->next->val < maxnode->val)
+        {
+            temp = current->next;
+            current->next = temp->next;
+            free(temp);
+        }
+
+        /* If current is greater than max, then update max and
+            move current */
+        else
+        {
+            current = current->next;
+            maxnode = current;
+        }
+    }
+    head=reverseList(head);
+    return head;
+}

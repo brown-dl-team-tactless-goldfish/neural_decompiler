@@ -1,0 +1,39 @@
+/**
+ *  Utility function to find max in subarray
+ */
+int find_max(int *arr, int len){
+   int max = -1;
+   for(int i = 0; i < len; i++) {
+      if(arr[i] > max)
+         max = arr[i];
+   }
+   return max;
+}
+int* replaceElements(int* arr, int arrSize, int* returnSize){
+   if(arrSize < 1){
+      *returnSize = 0;
+      return NULL;
+   }
+   
+   /* create rarr which is same as arr */
+   int *rarr = malloc(sizeof(int) * arrSize);
+   memcpy(rarr, arr, sizeof(int) * arrSize);
+   *returnSize = arrSize;
+   
+   /* Initial condition, max is assumed to be -1 
+      and first element is set to max */
+   int max = -1;
+   rarr[0] = max;
+   
+   for(int i = 0; i < arrSize; i++) {
+      if(rarr[i] == max) {
+	     /* If element is max then search new max in subarray and update it*/
+         max = find_max(arr + i + 1, arrSize - 1 - i);
+         rarr[i] = max;
+      }else {
+	     /* Otherwise we already know the max */
+         rarr[i] = max;         
+      }
+   }
+   return rarr;
+}

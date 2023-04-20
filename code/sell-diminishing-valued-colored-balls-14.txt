@@ -1,0 +1,43 @@
+class Solution {
+public:
+    int maxProfit(vector<int>& is, int order) {
+        sort(is.begin(),is.end());
+        long long o = order; 
+        long long ret = 0; 
+        int i = is.size()-1;
+        const int mod = 1e9 + 7;
+        while(i>0) {
+            while(i>0&&is[i-1] == is[i]) {
+                i--;
+            }
+            if(i == 0) {
+                break;
+            }
+            int l = is[i-1];
+            int r = is[i];
+            int len = is.size() - i; 
+            long long size = ((long long)r - l) * len; 
+            if(size < o) {
+                ret += ((long long)(l+1+r))*(r-l)*len/2;
+                ret %= mod; 
+                o -= size; 
+                i--;
+            } else {
+                int x = o / len; 
+                ret += ((long long)(r-x+1+r))*x*len/2;
+                int y = o % len; 
+                ret += (long long)y * (r-x);
+                ret %= mod; 
+                return ret; 
+            }
+        }
+        int len = is.size();
+        long long r = is[0];
+        int x = o / len; 
+        ret += ((long long)(r-x+1+r))*x*len/2;
+        int y = o % len; 
+        ret += (long long)y * (r-x);
+        ret %= mod; 
+        return ret; 
+    }
+};

@@ -1,0 +1,36 @@
+class Solution {
+public:
+    static bool myComp(pair<int, int> p1, pair<int, int> p2){
+        if(p1.first == p2.first){
+            return p1.second < p2.second;
+        }
+        return p1.first < p2.first;
+    }
+    long long findScore(vector<int>& nums) {
+        if(nums.size() == 1) return nums[0];
+        vector<pair<int, int>> vecc;
+        for(int i=0; i<nums.size(); i++){
+            vecc.push_back({nums[i], i});
+        }
+        sort(vecc.begin(), vecc.end(), myComp);
+        long long ans = 0;
+        for(auto it : vecc){
+            if(nums[it.second] != 0){
+                ans += it.first;
+                if(it.second == 0 || it.second == nums.size()-1){
+                    if(it.second == 0){
+                        nums[it.second+1] = 0;
+                    }
+                    else{
+                        nums[it.second-1] = 0;
+                    }
+                }
+                else{
+                    nums[it.second+1] = 0;
+                    nums[it.second-1] = 0;
+                }
+            }
+        }
+        return ans;
+    }
+};

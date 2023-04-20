@@ -1,0 +1,54 @@
+
+class Solution {
+public:
+    vector<int> eulerianPath;
+
+    void dfs(unordered_map<int, unordered_multiset<int>> &graph, int u) {
+
+
+        while (!graph[u].empty()) {
+            int v = *graph[u].begin();
+            graph[u].erase(graph[u].begin());
+            dfs(graph, v);
+        }
+
+        eulerianPath.push_back(u);
+    }
+    vector<vector<int>> validArrangement(vector<vector<int>>& pairs) {
+
+        unordered_map<int, unordered_multiset<int>> graph;
+        unordered_map<int, int> indegree;
+        unordered_map<int, int> outdegree;
+
+        for (auto e : pairs) {
+            graph[e[0]].insert(e[1]);
+            // graph[e[1]].insert(e[0]);
+            outdegree[e[0]]++;
+            indegree[e[1]]++;
+
+
+        }
+        int source = pairs[0][0];
+
+
+        // property of source in a eulerian path: outdegree = indegree + 1
+
+        for (auto [u, list] : graph)  {
+            if (outdegree[u] == indegree[u] + 1) {
+                source = u;
+                break;
+            }
+        }
+        // cout <<" SRC : " << source << '\n';
+        dfs(graph, source);
+        reverse(eulerianPath.begin(), eulerianPath.end());
+        // for(int i = 0; i < eulerianPath.size(); i++) cout << eulerianPath[i] << " ";
+        vector<vector<int>> ans;
+        for (int i = 0; i < eulerianPath.size() - 1; i++) {
+            ans.push_back({eulerianPath[i], eulerianPath[i + 1]});
+        }
+
+        return ans;
+
+    }
+};

@@ -1,0 +1,22 @@
+#define MOD 1000000007
+
+class Solution {
+public:
+    int dieSimulator(int n, vector<int>& rollMax) {
+        int size = rollMax.size();
+        vector<vector<int>> dp(n, vector<int>(size, 1));
+        vector<int> sum(n, 6);
+        for(int i = 1; i < n; ++i) {
+            sum[i-1] = accumulate(dp[i-1].begin(), dp[i-1].end(), 0, [](int acc, int v){return (acc + v) % MOD;});
+            for(int j = 0; j < size; ++j) {
+                dp[i][j] = sum[i-1];
+                if(i == rollMax[j]) --dp[i][j];
+                else if(i >= rollMax[j]+1)
+                    dp[i][j] = ((dp[i][j] + dp[i-rollMax[j]-1][j]) % MOD - sum[i-rollMax[j]-1] + MOD) % MOD;
+            }
+        }
+        return accumulate(dp[n-1].begin(), dp[n-1].end(), 0, [](int acc, int v){return (acc + v) % MOD;});
+    }
+};
+
+auto gucciGang = []() {std::ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);return 0;}();

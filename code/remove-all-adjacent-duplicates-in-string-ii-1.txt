@@ -1,0 +1,24 @@
+char * removeDuplicates(char * s, int k){
+  size_t len = strlen(s);
+  char * const ret = (char*) malloc(len + 1);;
+  size_t * const counts = (size_t*) malloc(sizeof(size_t) * len);
+  int idx = -1;
+  char * out_pos = ret - 1;
+  
+  for (char* pos = s; *pos; ++pos) {
+    if (0 <= idx && *out_pos == *pos) /* Duplicate character */ {
+      if (k == (++counts[idx])) {
+        --idx;
+        out_pos -= (k - 1);
+        continue;
+      } 
+    } else /* New character */ {
+      counts[++idx] = 1;
+    }
+    *++out_pos = *pos;
+  }
+  *++out_pos = '\0'; 
+ 
+  free(counts);
+  return (char*) realloc(ret, out_pos - ret + 1);
+}

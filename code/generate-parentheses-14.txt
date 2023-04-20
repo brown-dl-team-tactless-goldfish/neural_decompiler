@@ -1,0 +1,61 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+void GenerateParenthesisCore(const int n,int leftParenthesisNums,char *stack,int top,const int bottom,char *vector,int vectorSize,char ***ans,int *returnSize)
+{
+    if(top==bottom)
+    {
+        if(leftParenthesisNums==n)
+        {
+            (*ans)=(char**)realloc((*ans),(*returnSize+1)*sizeof(char*));
+            (*ans)[*returnSize]=(char*)calloc((2*n+1),sizeof(char));
+            strncpy((*ans)[*returnSize],vector,vectorSize);
+            ++(*returnSize);
+        }
+        else
+        {
+            vector[vectorSize]=stack[top]='(';
+            GenerateParenthesisCore(n,leftParenthesisNums+1,
+                                    stack,top+1,bottom,vector,vectorSize+1,ans,returnSize);
+        }
+    }
+    else
+    {
+        if(leftParenthesisNums==n)
+        {
+            vector[vectorSize]=')';
+            GenerateParenthesisCore(n,leftParenthesisNums,
+                                    stack,top-1,bottom,vector,vectorSize+1,ans,returnSize);
+        }
+        else
+        {
+            stack[top]='(';
+            vector[vectorSize]='(';
+            GenerateParenthesisCore(n,leftParenthesisNums+1,
+                                    stack,top+1,bottom,vector,vectorSize+1,ans,returnSize);
+            vector[vectorSize]=')';
+            GenerateParenthesisCore(n,leftParenthesisNums,
+                                    stack,top-1,bottom,vector,vectorSize+1,ans,returnSize);
+        }
+    }
+}
+char** generateParenthesis(int n, int* returnSize) {
+    if(n<=0)return NULL;
+    char **ret=NULL;
+    *returnSize=0;
+    //Store left parenthesis in stack;
+    char *stack=(char*)malloc(n*sizeof(char));
+    int bottom=0,top=0;
+    stack[top++]='(';
+    //Number of parenthesis in stack 
+    int leftParenthesisNums=1;
+    //Store in-stack elements
+    char *vector=(char*)calloc(2*n+1,sizeof(char));
+    int vectorSize=0;
+    vector[vectorSize++]='(';
+    GenerateParenthesisCore(n,leftParenthesisNums,
+                                    stack,top,bottom,vector,vectorSize,&ret,returnSize);
+    
+    return ret;
+}

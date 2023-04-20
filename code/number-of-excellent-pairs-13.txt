@@ -1,0 +1,19 @@
+class Solution {
+public:
+    long long countExcellentPairs(vector<int>& nums, int k) {
+        int n = nums.size();
+        vector<int> bits;
+        sort(nums.begin(), nums.end());
+        for (int i = 0; i < n; i++)
+        {
+            if (i > 0 && nums[i] == nums[i - 1])
+                continue;
+            bits.push_back(__builtin_popcount(nums[i]));
+        }
+        sort(bits.begin(), bits.end());
+        long long ans = 0, m = bits.size();
+        for (auto& b : bits)
+            ans += (m - (lower_bound(bits.begin(), bits.end(), k - b) - bits.begin()));
+        return ans;
+    }
+};

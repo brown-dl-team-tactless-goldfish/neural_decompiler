@@ -1,0 +1,72 @@
+class Trie {
+private:
+    struct Node {
+    public:
+        string word;
+        bool isEnd;
+        unordered_map<string, Node*> children;
+        
+        Node(string _word) {
+            this->word = _word;
+            this->isEnd = false;
+        }
+    }; 
+    
+    Node* createNode(string word) {
+        return new Node(word);
+    }
+    
+    Node *root = createNode("*");
+    
+public:
+    void insertNodes(vector<string> sequence) {
+        Node *cur = root;
+        for (string s : sequence) {
+            if (!cur->children[s])
+                cur->children[s] = createNode(s);
+            cur = cur->children[s];
+        }
+        cur->isEnd = true;
+    }
+    
+    bool canBeDeletedNodes(vector<string> sequence) {
+        int count = 0;
+        Node *cur = root;
+        for (string s : sequence) {
+            if (cur->isEnd)
+                count++;
+            cur = cur->children[s];
+        }
+        return (count > 0);
+    }
+};
+
+class Solution {
+private:
+    vector<string> makeSequence(string curFolder) {
+        vector<string> sequence;
+        for (int j = 1; j < curFolder.size(); j++) {
+            string curSubfolder = "";
+            while (j < curFolder.size() && curFolder[j] != '/') {
+                curSubfolder += curFolder[j];
+                j++;
+            }
+            sequence.push_back(curSubfolder);
+        }
+        return sequence;
+    }
+    
+public:    
+    vector<string> removeSubfolders(vector<string>& folder) {
+        Trie t;
+        
+        for (int i = 0; i < folder.size(); i++) 
+            t.insertNodes(makeSequence(folder[i]));
+        
+        vector<string> res;
+        for (int i = 0; i < folder.size(); i++) 
+            if (!t.canBeDeletedNodes(makeSequence(folder[i])))
+                res.push_back(folder[i]);
+        return res;
+    }
+};

@@ -1,0 +1,24 @@
+class Solution {
+public:
+    void calculate(vector<int> &top,int target,int curr,int &ans,int index){
+        if(abs(curr-target)<abs(ans-target)){
+            ans=curr;
+        }
+        if(abs(curr-target)==abs(ans-target)){
+            ans=min(ans,curr);
+        }
+        //Adding curr>target+abs(ans-target) for optimization
+        if(index>=top.size() || curr>target+abs(ans-target))     
+            return;
+        calculate(top,target,curr,ans,index+1);
+        calculate(top,target,curr+top[index],ans,index+1);
+        calculate(top,target,curr+2*top[index],ans,index+1);
+    }
+    int closestCost(vector<int>& baseCosts, vector<int>& toppingCosts, int target) {
+        int ans=INT_MAX;
+        for(auto x:baseCosts){
+            calculate(toppingCosts,target,x,ans,0);
+        }
+        return ans;
+    }
+};

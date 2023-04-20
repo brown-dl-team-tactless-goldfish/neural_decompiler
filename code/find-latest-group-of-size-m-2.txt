@@ -1,0 +1,46 @@
+int findLatestStep (int *arr, int arrSize, int m) {
+	int  i, lo, hi, cnt = 0, step = -1;
+	int *bound = NULL;
+
+	if (arrSize == m) {
+		return arrSize;
+	}
+
+	bound = calloc(arrSize + 2, sizeof(int));
+
+	for (i = 0; i < arrSize; i++) {
+		// step i+1 initial boundary
+		lo = hi = arr[i];
+
+		// try to merge left group
+		if (bound[arr[i]-1] > 0 && bound[arr[i]-1] <= arr[i]-1) {
+			lo = bound[arr[i]-1];
+			if (arr[i] - bound[arr[i]-1] == m) {
+				cnt--;
+			}
+		}
+
+		// try to merge right group
+		if (bound[arr[i]+1] >= arr[i]+1) {
+			hi = bound[arr[i]+1];
+			if (bound[arr[i]+1] - arr[i] == m) {
+				cnt--;
+			}
+		}
+
+		// update merged group
+		bound[hi] = lo;
+		bound[lo] = hi;
+		if (hi - lo + 1 == m) {
+			cnt++;
+		}
+
+		// if there's still group 'm', mark the step
+		if (cnt) {
+			step = i + 1;
+		}
+	}
+
+	free(bound);
+	return step;
+}

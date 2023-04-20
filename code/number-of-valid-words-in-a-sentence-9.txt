@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int countValidWords(string sentence) {
+        int res = 0;
+        stringstream ss(sentence);
+        string t;
+        while(ss >> t)
+            if(checkNumber(t) && checkPunc(t) && checkHyphen(t)) res++;
+        return res;
+    }
+    
+    bool checkNumber(const string& s){
+        return none_of(s.begin(), s.end(), [](char c){return isdigit(c);});
+    }
+    
+    bool checkHyphen(const string& s){
+        int n = count(s.begin(), s.end(), '-');
+        if(n == 0) return true;
+        if(n>1) return false;
+        return s.front() != '-' && s.back() != '-';
+    }
+    
+    bool checkPunc(string& s){
+        static const set<char> puncs= {'!', ',', '.'};
+        if(puncs.count(s.back())) s.pop_back();
+        return none_of(s.begin(), s.end(), [](char c){return puncs.count(c);});
+    }
+};

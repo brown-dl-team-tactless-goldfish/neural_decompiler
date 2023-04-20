@@ -1,0 +1,49 @@
+int candy(int* ratings, int ratingsSize) {
+	if (ratingsSize == 0)
+		return 0;
+	int *a = (int*)malloc(sizeof(int)*ratingsSize);
+	a[0] = 1;
+	for (int i = 1; i < ratingsSize; i++)
+	{
+		if (ratings[i - 1] < ratings[i])
+			a[i] = a[i - 1] + 1; 
+		else if (ratings[i - 1] == ratings[i])
+			a[i] = 1;
+		else
+		{
+			int j = i - 1, k = 1, n;
+			while (j < ratingsSize - 1 && ratings[j] > ratings[j + 1]  )
+			{
+				k++;
+				j++;
+			}
+			if (a[i - 1] >= k)
+			{
+				n = k - 1;
+				j = i;
+				while (j < i + k - 1)
+				{
+					a[j] = n;
+					n--;
+					j++;
+				}
+			}
+			else
+			{
+				n = k;
+				j = i - 1;
+				while (j < i + k - 1)
+				{
+					a[j] = n;
+					n--;
+					j++;
+				}
+			}
+			i = j - 1;
+		}
+	}
+	int ans = 0;
+	for (int i = 0; i < ratingsSize; i++)
+		ans = ans + a[i];
+	return ans;
+}

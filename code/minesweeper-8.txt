@@ -1,0 +1,58 @@
+class Solution {
+public:
+    int R, C;
+    vector<pair<int,int>> neighbors{{-1, -1}, {-1, 0}, {-1, 1},
+                                    { 0, -1},          { 0, 1},
+                                    { 1, -1}, { 1, 0}, { 1, 1}};
+    
+    bool isValid(int r, int c) {
+        return (r >= 0 && r < R && c >= 0 && c < C);
+    }
+    
+    int neighborMines(int r, int c, vector<vector<char>>& board) {
+        int mines = 0;
+        for (auto n : neighbors) {
+            int nr = r + n.first;
+            int nc = c + n.second;
+            
+            if (isValid(nr, nc) && board[nr][nc] == 'M')
+                mines++;
+        }
+        return mines;
+    }
+    
+    void reveal(int r, int c, vector<vector<char>>& board) {
+        char ch = board[r][c];
+        
+        if (ch == 'M') {
+            board[r][c] = 'X';
+        }
+        
+        if (ch == 'E') {
+            int mines = neighborMines(r, c, board);
+                
+            if (mines) {
+                board[r][c] = '0' + mines;
+            } else {
+                board[r][c] = 'B';
+                for (auto n : neighbors) {
+                    int nr = r + n.first;
+                    int nc = c + n.second;
+                    if (isValid(nr, nc) && board[nr][nc] != 'B')
+                        reveal(nr, nc, board);
+                }
+            }
+        }
+    }
+    vector<vector<char>> updateBoard(vector<vector<char>>& board, vector<int>& click) {
+        this->R = board.size();
+        if (!R) 
+            return board;
+        
+        this->C = board[0].size();
+        
+        reveal(click[0], click[1], board);
+        
+        return board;
+    }
+};

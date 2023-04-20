@@ -1,0 +1,22 @@
+public int LargestValsFromLabels(int[] values, int[] labels, int num_wanted, int use_limit) {
+    Array.Sort(values, labels);
+    
+    int count = 0;
+    int sum = 0;
+    
+    var labelsUsed = new Dictionary<int, int>();
+    
+    for(int i = values.Length - 1; i >=0; i--){
+        int labelCount;
+        labelsUsed.TryGetValue(labels[i], out labelCount);
+        if( labelCount >= use_limit) continue;
+        
+        count++;
+        sum += values[i];
+        if( !labelsUsed.TryAdd(labels[i], 1)) labelsUsed[labels[i]]++;
+        if( count == num_wanted) break;
+        
+    }
+    
+    return sum;
+}

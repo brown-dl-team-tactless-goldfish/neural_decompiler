@@ -1,0 +1,53 @@
+class Solution {
+public:
+    vector<int> numSmallerByFrequency(vector<string>& queries, vector<string>& words) {
+        
+        vector<int> wordsRecord;
+        
+        for (const auto & w : words)
+        {
+            int tmpCount = 0;
+            string tmpWord = w;
+            
+            sort(tmpWord.begin(), tmpWord.end());
+            
+            for (const auto & c : w)
+            {
+                if (c == tmpWord[0])
+                    tmpCount++;
+            }
+            
+            wordsRecord.push_back(tmpCount);
+        }
+        
+        sort(wordsRecord.begin(), wordsRecord.end());
+        
+        vector<int> ans;
+        
+        for (const auto & q : queries)
+        {
+            int count = 0;
+            
+            string tmpQuery = q;
+            
+            sort(tmpQuery.begin(), tmpQuery.end());
+            
+            for (const auto & c : q)
+            {
+                if (c == tmpQuery[0])
+                    count++;
+            }
+            
+            //cout << "count: " << count << endl;
+            
+            auto ret = upper_bound (wordsRecord.begin(), wordsRecord.end(), count);
+            
+            //cout << ret - wordsRecord.begin() << endl;
+            //cout << wordsRecord.end() - ret << endl;
+            
+            ans.push_back(wordsRecord.end() - ret);
+        }
+        
+        return ans;
+    }
+};

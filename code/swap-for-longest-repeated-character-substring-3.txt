@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int maxRepOpt1(string text) {
+        int res = 0, n = text.size(), l = 0, r = 0;
+        map<char, int> m;
+        vector<int> cnt(128, 0);
+        for (auto c : text) cnt[c]++;
+        while (r != n) {
+            m[text[r++]]++;
+            while (!isValidSequence(m, cnt))
+                if (char c = text[l++]; --m[c] == 0) m.erase(c);
+            res = max(res, r - l);
+        }
+        return res;
+    }
+
+    bool isValidSequence(const map<char, int> & m, const vector<int> & cnt) {
+        if (m.size() < 2) return true;
+        if (m.size() > 2) return false;
+        auto [c1, cnt1] = *m.begin();
+        auto [c2, cnt2] = *m.rbegin();
+        return (cnt1 == 1 && cnt2 < cnt[c2]) || (cnt2 == 1 && cnt1 < cnt[c1]);
+    }
+};

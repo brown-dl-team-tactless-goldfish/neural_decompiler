@@ -1,0 +1,61 @@
+class Solution {
+public:
+    vector<int> bestCoordinate(vector<vector<int>>& towers, int radius) {
+        
+        // tower counts
+        int n = towers.size();
+        
+        // network quality of towers
+        vector<int>Nquality(n,0);
+        
+        double range = radius;
+
+        // compare between all towers and calculate network quality of all towers
+        for(int i=0;i<n;i++)
+        {
+            double x = towers[i][0];
+            double y = towers[i][1];
+            
+            for(int j=0;j<n;j++)
+            {
+                double nx = towers[j][0];
+                double ny = towers[j][1];
+                double q = towers[j][2];
+                
+                double d = sqrt((x-nx)*(x-nx)+(y-ny)*(y-ny));
+             
+                // if distance in range then add the signal quality 
+                if(d<=range)
+                {
+                    Nquality[i]+= (int)floor(q/(1+d));
+                }
+            }
+        }
+        
+        int mx = INT_MAX;
+        int my = INT_MAX;
+        int mq = INT_MIN;
+        
+        // get the tower which has max network quality with lexical small cord
+        for(int i=0;i<n;i++)
+        {
+            if(mq<Nquality[i])
+            {
+                mx = towers[i][0];
+                my = towers[i][1];
+                mq = Nquality[i];
+            }
+            else if(mq==Nquality[i])
+            {
+                if(towers[i][0]<mx || (towers[i][0]==mx && towers[i][1]<my))
+                {
+                    mx = towers[i][0];
+                    my = towers[i][1];                    
+                }
+            }
+        }
+        
+        return vector<int>({mx,my});
+
+    }
+};

@@ -1,0 +1,38 @@
+bool cmp(vector<int> x,vector<int> y){
+    if(x[0]==y[0] && x[1]==y[1]) return x[2]<=y[2];
+    if(x[0]==y[0]) return x[1]<=y[1];
+    return x[0]<=y[0];
+}
+class Solution {
+public:
+int dp[101];
+int help(vector<vector<int>> &ar, int pos)
+{
+    int n = ar.size();
+    if (pos == n) return 0;
+    if(dp[pos]!=-1) return dp[pos];
+    // ar[pos] can be taken as it is greater than previously taken box
+    // int ans = help(ar,pos+1);   //  if ar[pos] can be taken then ofc ar[pos+1] can be taken ... but ITS WRONG
+    // [[13,80,86],[15,88,96],[20,52,85],[45,69,88]]
+    // [0,1] can be taken but [1,2] can't be taken
+    int ans=ar[pos][2];
+    for(int i=pos+1;i<n;i++){
+        if((ar[i][0]>=ar[pos][0] && ar[i][1]>=ar[pos][1] && ar[i][2]>=ar[pos][2])) ans=max(ans,ar[pos][2]+help(ar,i));
+    }
+    dp[pos]=ans;
+    return ans;
+}
+
+int maxHeight(vector<vector<int>> &ar)
+{
+    for(auto &it:ar) sort(it.begin(),it.end());
+    sort(ar.begin(),ar.end(),cmp);
+    memset(dp,-1,sizeof(dp));
+    int ans=0;
+    for(int i=0;i<ar.size();i++){
+        ans=max(ans,help(ar,i));
+    }
+    return ans;
+}
+
+};

@@ -1,0 +1,69 @@
+typedef struct TreeNode TreeNode;
+
+inline int max(int a, int b) { return a > b ? a : b; }
+
+int dfs(TreeNode* node, int* pSz, int** ppBuf, int* pCnt) {
+    if (node == NULL) return 0;
+    
+    int l   = dfs(node->left, pSz, ppBuf, pCnt);
+    int r   = dfs(node->right, pSz, ppBuf, pCnt);
+    int sum = l + r + node->val;
+    
+    if (*pCnt == *pSz) {
+        *pSz   = *pSz << 1;
+        *ppBuf = realloc(*ppBuf, *pSz * sizeof(int));
+    }
+    
+    (*ppBuf)[*pCnt] = sum;
+    *pCnt           = *pCnt + 1;
+    
+    return sum;
+}
+
+int cmp(int* a, int* b) {
+    return *a - *b;
+}
+
+int* findFrequentTreeSum(struct TreeNode* root, int* returnSize){
+    int  sz   = 128;
+    int* pBuf = malloc(sz * sizeof(int));
+    int  cnt  = 0;
+    
+    // Create the array of subtree sums
+    dfs(root, &sz, &pBuf, &cnt);
+    
+    // Sort the array
+    qsort(pBuf, cnt, sizeof(int), cmp);
+    
+    // Find the max freq
+    int freqMx = (cnt > 0);
+    int freq   = freqMx;
+    for (int i = 1; i < cnt; ++i) {
+        if (pBuf[i] == pBuf[i - 1]) ++freq;
+        else {
+            freqMx = max(freqMx, freq);
+            freq   = 1;
+        }
+    }
+    
+    freqMx = max(freqMx, freq);
+    
+    // Select max freq entries
+    int pos = (freqMx == 1);
+    for (int i = 1, freq = 1; i < cnt; ++i) {
+        if (pBuf[i] == pBuf[i - 1]) freq = freq + 1;
+        else                        freq = 1;
+        
+        if (freq == freqMx) {
+            int t = pBuf[i];
+            
+            pBuf[i]       = pBuf[pos];
+            pBuf[pos] = t;
+            
+            pos += 1;
+        }
+    }
+    
+    *returnSize = pos;
+    return pBuf;
+}

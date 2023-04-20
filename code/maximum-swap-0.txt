@@ -1,0 +1,52 @@
+typedef unsigned char  uint8 ;
+
+int cmp(const void* a, const void* b){
+    uint8* A = *( uint8**)a;
+    uint8* B = *( uint8**)b;
+    return B[1] - A[1] ; 
+}
+
+int maximumSwap(int num){
+    //idx, value
+     uint8** digit = malloc(10 * sizeof( uint8*));
+     uint8* data = malloc(10 * sizeof( uint8));
+    int val = num;
+    int idx = 0;
+    while(val){
+        digit[idx] = malloc( 2 * sizeof( uint8));        
+        digit[idx][0] = idx;
+        digit[idx][1] = (uint8)(val % 10);
+        val /= 10;
+        idx++;
+    }
+
+    for(int i = idx - 1; i >= 0; i--){
+        data[idx- 1 - i] = digit[i][1];
+    }
+
+    qsort(digit, idx, sizeof( uint8*), cmp);
+
+    for(int i = 0; i < idx; i++){
+        if(data[i] == digit[i][1])
+            continue;
+        //from end to find the value
+        for(int j = idx-1; j > i ; j--){
+            if(data[j] == digit[i][1]){
+                uint8 tmp = data[j];
+                data[j] = data[i];
+                data[i] = tmp;
+            }
+        }
+        break;
+    }
+    int ans = 0;
+    for(int i = 0; i < idx; i++){
+        ans = ans * 10 + (int)data[i];
+    }
+    free(data);
+    for(int i = 0; i < idx; i++){
+        free(digit[i]) ;
+    }
+    free(digit);
+    return ans;
+}

@@ -1,0 +1,46 @@
+int i=0;
+int j=0;
+int len;
+int bitmask;
+int char_pos;
+int len1,len2;
+//array to store the bitmask of each words
+int *mask = (int*)malloc(sizeof(int) *wordsSize);
+
+int max=0;
+int mindex=0;
+int prod;
+//calculate the masking of each words
+for(i=0;i<wordsSize;i++)
+{
+   // printf("words i %s\n",words[i]);
+    len = strlen(words[i]);
+    bitmask = 0; 
+    for(j=0;j<len;j++)
+    {
+        char_pos = words[i][j] - 'a';
+        bitmask |= 1 << char_pos;
+    }
+    mask[mindex++] = bitmask;
+    //printf("Bitmask is %d\n",bitmask);
+}
+
+for(i=0;i<wordsSize;i++)
+{
+    bitmask = mask[i];    
+    len1 = strlen(words[i]);
+    
+    for(j=i+1;j<wordsSize;j++)
+    {
+        if(bitmask & mask[j])
+            continue;
+        else
+        {
+            len2 = strlen(words[j]);
+            prod = len1 * len2;
+            if(max <prod)
+                max = prod;
+        }
+    }
+}
+return max;   

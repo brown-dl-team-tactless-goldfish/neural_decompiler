@@ -1,0 +1,148 @@
+void adjust(int *a, int i, int lastNodeIndex)
+{
+  if(lastNodeIndex == 0) return;
+  // 以 a[] 的值做調整，b[] 跟著動
+  // max heap, index = 1 為樹根
+  // adjust sub_tree root at heap[i]
+  // move heap[i] to the correct place downward
+  int k = a[i];
+  int j = 2 * i;
+  while (j <= lastNodeIndex) // 有兒子
+  {
+    if (j < lastNodeIndex) // 有右兒子
+    {
+      if (a[j] < a[j + 1]) // j = max{左子, 右子}
+      {
+        j++;
+      }
+    }
+    if (k >= a[j])
+    {
+      break;
+    }
+    else
+    {
+      a[j / 2] = a[j];
+      j = j * 2;
+    }
+  } // end of while
+  a[j / 2] = k;
+}
+
+void insert(int *heap, int item, int *lastNodeIndex){
+  // insert item into max heap, 請 input 原本的 lastNodeIndex
+  // index = 1 為樹根
+  (*lastNodeIndex) += 1;
+  heap[*lastNodeIndex] = item;
+  int i = (*lastNodeIndex);
+  int aTemp = item;
+  while (i/2 >= 1)
+  {
+    if (heap[i] > heap[i/2])
+    {
+      heap[i] = heap[i/2];
+      heap[i/2] = item;
+    }
+    i /= 2;
+  }
+}
+
+int deleteMax(int *a, int *lastNodeIndex){
+  // 以 a[] 值建立的 heap
+  if(*lastNodeIndex == 0) return;
+  int res = a[1];
+  a[1] = a[*lastNodeIndex];
+  *lastNodeIndex -= 1;
+  if(*lastNodeIndex > 1) adjust(a, 1, *lastNodeIndex);
+  return res;
+}
+
+void swap(int *a0, int *a1, int *b0, int *b1)
+{
+  int t = *a0;
+  *a0 = *a1;
+  *a1 = t;
+  t = *b0;
+  *b0 = *b1;
+  *b1 = t;
+  return;
+}
+
+void quickSort(int *a, int *b, int x, int y)
+{
+  // array, Quick Sort a[x] ~ a[y]
+  if (x < y) // has at least 2 data to sort
+  {
+    int i = x, j = y + 1, pk = a[x];
+    do // while (i < j)
+    {
+      do
+      {
+        i++;
+      } while (a[i] < pk && i != y);
+      do
+      {
+        j--;
+      } while (a[j] > pk && j != x);
+      if (i < j)
+      {
+        swap(&a[i], &a[j], &b[i], &b[j]);
+      }
+    } while (i < j);
+    swap(&a[j], &a[x], &b[j], &b[x]);
+    quickSort(a, b, x, j - 1);
+    quickSort(a, b, j + 1, y);
+  }
+  return;
+}
+
+int findMaximizedCapital(int k, int w, int* profits, int profitsSize, int* capital, int capitalSize){
+  // quick sort value of capital, profits 的要跟著動
+  quickSort(capital, profits, 0, profitsSize - 1);
+  int lastNodeIndex = 0;
+  int benefits = w; // current money
+  int canDoTill = -1;
+  while (canDoTill + 1 < capitalSize && capital[canDoTill + 1] <= benefits)
+  {
+    canDoTill += 1;
+  }
+  if (canDoTill < 0) // no project can to
+    return w;
+  // build max heap by value of profits
+  // capital index 0 ~ canDoTill
+  // heap index 1 ~ canDoTill + 1
+  int * heap = malloc(sizeof(int) * (profitsSize + 1));
+  lastNodeIndex = canDoTill + 1;
+  heap[0] = 0;
+  for (size_t i = 0; i <= canDoTill; i++)
+  {
+    heap[i+1] = profits[i];
+  }
+  for (size_t i = lastNodeIndex / 2; i > 0; i--)
+  {
+    adjust(heap, i, lastNodeIndex);
+  }
+  // 開始做 project
+  int profitToGet = -1;
+  for (size_t i = 0; i < k; i++)
+  {
+    // 更新 heap
+    int lastCanDoTill = canDoTill;
+    while (canDoTill < profitsSize - 1 && capital[canDoTill + 1] <= benefits)
+    {
+      canDoTill += 1;
+    }
+    if (canDoTill != lastCanDoTill)
+    {
+      for (size_t i = lastCanDoTill + 1; i <= canDoTill; i++)
+      {
+        insert(heap, profits[i], &lastNodeIndex);
+      }
+    }
+    if (lastNodeIndex == 0)
+      break;
+    
+    benefits += deleteMax(heap, &lastNodeIndex);
+  }
+  return benefits;
+}

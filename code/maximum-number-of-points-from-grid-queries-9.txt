@@ -1,0 +1,61 @@
+class Solution {
+public:
+    vector<int> maxPoints(vector<vector<int>>& grid, vector<int>& queries) {
+        int m = grid.size(), n = grid[0].size(), k = queries.size();
+        vector<int> vec(k);
+        for (int i = 0; i < k; i++) vec[i] = i;
+        sort(vec.begin(), vec.end(), [&](int left, int right) -> bool { return queries[left] < queries[right]; });
+        sort(queries.begin(), queries.end());
+        vector<int> ans(k, 0);
+        queue<pair<int, int>> q;
+        bool visit[m][n];
+        memset(visit, 0, sizeof(visit));
+        bool in_border[m][n];
+        memset(in_border, 0, sizeof(in_border));
+        auto cmp = [&](const pair<int, int>& left, const pair<int, int>& right) -> bool {
+            return grid[left.first][left.second] > grid[right.first][right.second];
+        };
+        priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(cmp)> border(cmp);
+        border.push(make_pair(0, 0));
+        int cnt = 0;
+        vector<pair<int, int>> moves{{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+        for (int i = 0; i < k; i++) {
+            int val = queries[i];
+            int j = vec[i];
+            
+            while (!border.empty()) {
+                auto [x, y] = border.top();
+                if (grid[x][y] < val) {
+                    border.pop();
+                    q.push(make_pair(x, y));
+                    visit[x][y] = true;
+                    cnt += 1;
+                } else {
+                    break;
+                }
+            }
+        
+            while (!q.empty()) {
+                auto [x, y] = q.front();
+                q.pop();
+                for (const auto& [dx, dy] : moves) {
+                    int r = x + dx;
+                    int c = y + dy;
+                    if (r >= 0 && r < m && c >= 0 && c < n && !visit[r][c]) {
+                        if (grid[r][c] < val) {
+                            q.push(make_pair(r, c));
+                            visit[r][c] = true;
+                            cnt += 1;
+                        } else if (!in_border[r][c]) {
+                            border.push(make_pair(r, c));
+                            in_border[r][c] = true;
+                        }
+                    }
+                }
+            }
+            
+            ans[j] = cnt;
+        }
+        return ans;
+    }
+};

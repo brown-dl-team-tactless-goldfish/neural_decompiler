@@ -1,0 +1,122 @@
+// Naive greedy solution, whenever we see a 0, flip the numbers [i, i+k-1]
+// So that all numbers to the left of i are all 1.
+// O(n*k)
+// **Optimized**
+// Intuition: If we flip 0 or 1 even number of times, the number will remain the same
+// the value will only change if we flip them odd number of times
+// So if the index where the original value was 0 has been flipped odd number of times (bcaus it was within the K range from an index), we have a value of 1 and we dont need to do anything
+// if even, then we need to flip it
+// Same for 1, if the index has been flipped even number of times, we are all good else we need to flip
+// So instead of flipping each 0 and the next K digits, we just need to track if an index has been flipped even or odd number of times
+// and if the number at index i, is 0 and count is even, we increase the step, and if the number is 1 and count is odd, we increase the steps else continue
+// We need a data structure which will tell us the current flip count of the current index
+// i.e. when ever we flip a index, we need to increment the flip count of the indexes from [i.. i+k-1]
+// We can use queue to store the last index which was flipped as part of current continues K flip effort
+// e.g. If we flipped index i, then queue will store i-k+1
+// The count of elements in the queue will tell how many times the current index has been flipped
+// when the top element of the queue is less than i i.e the last index flipped as part of K lenght is before i, pop out 
+// as that flip will not effect any indexes from i and forward
+// so we are using queue essentially as dual purpose
+// 1. The flip count for current index
+// 2. Last index range that was flipped  
+// O(n), Space: O(K)
+public class Solution {
+    public int MinKBitFlips(int[] A, int K)
+        {
+            var len = A.Length;
+            if (len == 0 || K <= 0)
+                return -1;
+
+        //return Greedy(A, K);
+        // return GreedyWithQueue(A, K);
+        
+        // We dont really need queue, 
+        // we need to track total number of flips so far
+        // and we need to track the index within K range, so that when we cross that range, we reduce the total flipped count
+        var steps = 0;
+        var flippedCount = 0;
+        for(var i = 0; i < len; i++)
+        {
+            if(A[i] == 0 &&  flippedCount % 2 == 0)
+            {
+                if(i + K > len) return -1;
+                
+                steps++;
+                flippedCount++;
+                A[i] += -2; // Record the flip
+            }
+            
+            if(A[i] == 1 &&  flippedCount % 2 == 1)
+            {
+                if(i + K > len) return -1;
+                
+                steps++;
+                flippedCount++;                
+                A[i] += -2; // Record the flip
+            }
+            
+            if(i >= (K - 1) && A[i - K + 1] < 0)
+            {
+                flippedCount--;
+                A[i-K + 1] += 2; // Restore the value
+            } 
+        }
+        
+        return steps;
+       
+    }
+    
+    private static int GreedyWithQueue(int[] A, int K)
+    {   var len = A.Length;
+     
+        // For details read **Optimized** Section above
+        var q = new Queue<int>();
+        var steps = 0;
+        for(var i = 0; i < len; i++)
+        {
+            if(A[i] == 0 &&  q.Count % 2 == 0)
+            {
+                steps++;
+                q.Enqueue(i + K - 1);
+            }
+            
+            if(A[i] == 1 &&  q.Count % 2 == 1)
+            {
+                steps++;
+                q.Enqueue(i + K - 1);
+            }
+            
+            if(q.Count > 0 && i >= q.Peek()) q.Dequeue();
+        }
+        
+        return q.Count > 0 ? -1 : steps;
+    }
+    
+    private static int Greedy(int[] A, int K)
+    {
+        var len = A.Length;
+        // Greedy approach
+        // find the first 0, flip and continue.
+        // All elements left of i will be 1 now
+        // Repeat
+        var steps = 0;
+        for(var i = 0; i < len; i++)
+        {
+            if(A[i] == 1)
+                continue;
+            
+            if(i + K > len)
+                return -1;
+            
+            for(var j = i; j < i + K; j++)
+            {
+                A[j] = A[j] ^ 1;
+            }
+            
+            steps++;
+        }
+            
+        return steps;
+        
+    }
+}

@@ -1,0 +1,41 @@
+int candy(int* ratings, int ratingsSize) {
+
+// Forward
+int left[ratingsSize];
+left[0] = 1;
+int leftBuf = 1;
+// If the current number is larger than the previous -> increment and store the rank
+for (int i = 1; i<ratingsSize; i++) {
+	// Left
+	if (ratings[i] > ratings[i-1]) {
+		leftBuf++;
+	} else {
+		leftBuf = 1;
+	}
+	left[i] = leftBuf;
+}
+
+// Backward
+int right[ratingsSize];
+right[ratingsSize-1] = 1;
+int rightBuf = 1;
+// Similar principle as the forward operation
+for (int i = ratingsSize-2; i>=0; i--) {
+	// Right
+	if (ratings[i] > ratings[i+1]) {
+		rightBuf++;
+	} else {
+		rightBuf = 1;
+	}
+	right[i] = rightBuf;
+}
+
+// Calculate the sum of rank
+int sum = 0;
+for (int i = 0; i<ratingsSize; i++) {
+	sum += ( left[i]>=right[i] ? left[i] : right[i] );
+}
+
+return sum;
+
+}

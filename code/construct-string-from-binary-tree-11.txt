@@ -1,0 +1,168 @@
+char* int_to_str_reversed(int a, int* string_size){
+
+    int str_size = 5;
+    char* string_rep = (char*)malloc(str_size * sizeof(char));
+    int string_ptr = -1;
+
+    if(a == 0){
+        string_rep[0] = '0';
+        *string_size = 1;
+        return string_rep;
+    }
+
+    bool is_negative = false;
+
+    if(a < 0){
+        is_negative = true;
+        a = -1 * a;
+    }
+
+    while(a != 0){
+        string_ptr++;
+        if(string_ptr > str_size-1){
+            str_size *= 2;
+            string_rep = (char*)realloc(string_rep, str_size * sizeof(char));
+        }
+        string_rep[string_ptr] = (char)(a%10 + '0');
+        a /= 10;
+    }
+
+    if(is_negative){
+        string_ptr++;
+        if(string_ptr > str_size-1){
+            str_size += 1;
+            string_rep = (char*)realloc(string_rep, str_size * sizeof(char));
+        }
+        string_rep[string_ptr] = '-';
+    }
+
+    *string_size = string_ptr+1;
+    string_rep = (char*)realloc(string_rep, *string_size * sizeof(char));
+    return string_rep;
+}
+
+void addToResult(char** result, int* result_size, int* result_pointer, char character_to_add){
+    *result_pointer += 1;
+    if(*result_pointer > *result_size - 1){
+        *result_size *= 2;
+        *result = (char*)realloc(*result, *result_size * sizeof(char));
+    }
+    (*result)[*result_pointer] = character_to_add;
+}
+
+void addToStack(struct TreeNode*** stack, int** depth_stack, int* stack_pointer, int* stack_size, struct TreeNode* node, int depth){
+    *stack_pointer += 1;
+    if(*stack_pointer > *stack_size - 1){
+        *stack_size *= 2;
+        *stack = (struct TreeNode**)realloc(*stack, *stack_size * sizeof(struct TreeNode*));
+        *depth_stack = (int*)realloc(*depth_stack, *stack_size * sizeof(int));
+    }
+    (*stack)[*stack_pointer] = node;
+    (*depth_stack)[*stack_pointer] = depth;
+}
+
+char * tree2str(struct TreeNode* root){
+    int result_size = 10;
+    char* result = (char*)malloc(result_size * sizeof(char));
+    int result_pointer = -1;
+
+    int stack_size = 10;
+    struct TreeNode** stack = (struct TreeNode**)malloc(stack_size * sizeof(struct TreeNode*));
+    int* depth_stack = (int*)malloc(stack_size * sizeof(int));
+    int stack_pointer = -1;
+
+    int current_depth = 0;
+
+    struct TreeNode* current = root;
+    while(current){
+        int num_chars;
+        char* string_current_val_reversed = int_to_str_reversed(current->val, &num_chars);
+        for(int i=num_chars-1; i>=0; i--){
+            addToResult(&result, &result_size, &result_pointer, string_current_val_reversed[i]);
+        }
+
+        struct TreeNode* left = current->left;
+        struct TreeNode* right = current->right;
+        if(left && right){
+            // add the right node and its depth to their stacks
+            addToStack(&stack, &depth_stack, &stack_pointer, &stack_size, right, current_depth+1);
+
+            // add an opening brace to the result
+            addToResult(&result, &result_size, &result_pointer, '(');
+
+            // set current to left and increment current depth by 1
+            current_depth += 1;
+            current = left;
+        }
+        else if(left){
+            // add an opening brace to the result
+            addToResult(&result, &result_size, &result_pointer, '(');
+
+            // set current to left and increment current depth by 1
+            current_depth += 1;
+            current = left;
+        }
+        else if(right){
+            // add an opening and closing brace to the result
+            addToResult(&result, &result_size, &result_pointer, '(');
+            addToResult(&result, &result_size, &result_pointer, ')');
+
+            // add an opening brace to the result
+            addToResult(&result, &result_size, &result_pointer, '(');
+
+            // set current to right and increment current depth by 1
+            current_depth += 1;
+            current = right;
+        }
+        else{
+            // add a closing brace to the result if the current depth is greater than 0
+            if(current_depth > 0){
+                addToResult(&result, &result_size, &result_pointer, ')');
+            }
+
+            // pop an element from the stack if possible
+            if(stack_pointer > -1){
+                // get the node to go to and its depth from the stack
+                struct TreeNode* node_to_switch_to = stack[stack_pointer];
+                int switching_node_depth = depth_stack[stack_pointer];
+
+                // decrement stack pointer
+                stack_pointer--;
+
+                // get the difference between the current depth and the depth to switch to
+                int depth_difference = current_depth - switching_node_depth;
+
+                // add as many closing braces as the depth difference
+                for(int i=0; i<depth_difference; ++i){
+                    addToResult(&result, &result_size, &result_pointer, ')');
+                }
+
+                // add an opening brace for the new level
+                addToResult(&result, &result_size, &result_pointer, '(');
+
+                // set current depth to the popped depth
+                current_depth = switching_node_depth;
+
+                // set current to the newly popped node
+                current = node_to_switch_to;
+            }
+            else{
+                // close as many braces as the current depth - 1
+                for(int i=0; i<current_depth-1; ++i){
+                    addToResult(&result, &result_size, &result_pointer, ')');
+                }
+
+                // set current to NULL
+                current = NULL;
+            }
+        }
+    }
+    // add a null terminator to the result
+    addToResult(&result, &result_size, &result_pointer, '\0');
+
+    // realloc result to result pointer + 1
+    result = (char*)realloc(result, (result_pointer + 1) * sizeof(char));
+
+    // return the result
+    return result;
+}

@@ -1,0 +1,85 @@
+#define NODE_SIZE 100
+
+typedef struct
+{
+    int key; // sum
+    int val; // pos
+    struct node* next;
+} node;
+
+int lookupPos(node** myNode, int sum)
+{
+    int pos = abs(sum)%NODE_SIZE;
+    node *temp = myNode[pos];
+    while(temp)
+    {
+        if(temp->key == sum)
+            return temp->val;
+        temp = temp->next;
+    }
+    
+    return -2;
+}
+
+void addPos(node** myNode, int sum, int i)
+{
+    int pos = abs(sum)%NODE_SIZE;
+    node* temp = NULL;
+    node* newNode = (node*)malloc(sizeof(node));
+    
+    newNode->key = sum;
+    newNode->val = i;
+    newNode->next = NULL;
+    
+    if(myNode[pos] == NULL)
+        myNode[pos] = newNode;
+    else
+    {
+        temp = myNode[pos];
+        while(temp->next)
+        {
+            temp = temp->next;
+        }
+        temp->next = newNode;
+    }
+}
+
+bool checkSubarraySum(int* nums, int numsSize, int k){
+    int sum = 0, i, pos, key;
+    node** myNode = (node**)calloc(NODE_SIZE,sizeof(node*));
+    bool result = false;
+    node* temp = NULL, *prev = NULL;
+    
+    k = abs(k);
+    // add 0 to -1 position
+    addPos(myNode,0,-1);
+    for(i=0;i<numsSize;i++)
+    {
+        sum += nums[i];
+        if(k)
+            sum = sum%k;
+        pos = lookupPos(myNode,sum);
+        // position has to be bigger than -2
+        if((pos>-2) && ((i-pos)>1))
+        {
+            result = true;
+            break;
+        }
+        else
+        {
+            addPos(myNode,sum,i);
+        }
+    }
+    
+    for(i=0;i<NODE_SIZE;i++)
+    {
+        temp = myNode[i];
+        while(temp)
+        {
+            prev = temp;
+            temp = temp->next;
+            free(prev);
+        }
+    }
+    return result;
+}

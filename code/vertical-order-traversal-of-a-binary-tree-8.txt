@@ -1,0 +1,138 @@
+#define NUM_NODES   150
+typedef struct {
+    int val;
+    int row;
+} cData;
+
+typedef struct {
+    int col;                    // column is the key
+    cData array[NUM_NODES];
+    int count;
+    UT_hash_handle hh;
+} colNode;
+
+///////////// Queue implementation  ////////////////
+#define QCAPACITY       256
+
+typedef struct {
+    struct TreeNode *node;
+    int row;
+    int col;
+} nodeData;
+
+nodeData *newNode(struct TreeNode *node, int row, int col){
+    nodeData* res = malloc(sizeof(nodeData));
+    res->node = node;   res->row = row, res->col = col;
+    return res;
+}
+
+typedef struct Queue{
+    int front, rear, size;
+    unsigned capacity;
+    nodeData** array;
+} Queue;
+
+Queue* createQueue(unsigned capacity){
+    Queue* queue = (Queue*) malloc(sizeof(Queue));
+    queue->capacity = capacity;
+    queue->front = queue->size = 0;
+    queue->rear = capacity - 1;
+    queue->array = (nodeData **) malloc(queue->capacity * sizeof(nodeData *));
+    return queue;
+}
+
+int isFull(Queue* queue){   return (queue->size == queue->capacity); }
+int isEmpty(Queue* queue){   return (queue->size == 0); }
+int  size(Queue* queue) {   return queue->size; }
+
+void enqueue(Queue* queue, nodeData* item) {
+    if (isFull(queue))
+        return;
+    queue->rear = (queue->rear + 1) % queue->capacity;
+    queue->array[queue->rear] = item;
+    queue->size = queue->size + 1;
+}
+
+nodeData* dequeue(Queue* queue){
+    if (isEmpty(queue))
+        return NULL;
+    nodeData* item = queue->array[queue->front];
+    queue->front = (queue->front + 1) % queue->capacity;
+    queue->size = queue->size - 1;
+    return item;
+}
+
+int comp(const void *pa, const void *pb) {
+    cData *a = (cData *)pa;
+    cData *b = (cData *)pb;
+    
+    if(a->row == b->row) return a->val - b->val;
+    return a->row - b->row;
+}
+
+int** verticalTraversal(struct TreeNode* root, int* returnSize, int** returnColumnSizes){
+    colNode *map = NULL, *s, *temp;
+    Queue *queue = createQueue(QCAPACITY);
+    
+    int row = 0, column = 0, minCol = 0, maxCol = 0;
+    
+    // add root node data to queue
+    enqueue(queue, newNode(root, row, column));
+    
+    while(!isEmpty(queue)) {
+        nodeData *curNode = dequeue(queue);
+        struct TreeNode *node = curNode->node;
+        int row = curNode->row, col = curNode->col;
+        
+        // add column and node to map
+        HASH_FIND_INT(map, &(curNode->col), temp);
+        if(!temp) {
+            temp = malloc(sizeof(colNode));
+            temp->col = col;
+            temp->count = 0;
+            cData data;
+            data.row = row; data.val = node->val;
+            temp->array[temp->count++] = data;
+            HASH_ADD_INT(map, col, temp);
+        } else {
+            cData data;
+            data.row = row; data.val = node->val;
+            temp->array[temp->count++] = data;
+            // temp->array[temp->count++] = curNode->node;
+        }
+            
+        // update the range variables
+        if(curNode->col < minCol) minCol = curNode->col;
+        if(curNode->col > maxCol) maxCol = curNode->col;
+            
+        // add left and right children to queue
+        if(curNode->node->left)
+            enqueue(queue, newNode(curNode->node->left, row + 1, col - 1));
+            
+        if(curNode->node->right)
+            enqueue(queue, newNode(curNode->node->right, row + 1, col + 1));
+        
+    }
+    
+    // sort the array for structures based on values breaking tie on rows in a loop for every column in hash map.
+    HASH_ITER(hh, map, s, temp) {
+        // sort array of structures based on row 
+        qsort(s->array, s->count, sizeof(cData), comp);
+    }  
+    
+    // form the result
+    *returnSize = HASH_COUNT(map);
+    int **result = malloc(sizeof(int *) * HASH_COUNT(map));
+    *returnColumnSizes = malloc(sizeof(int) *HASH_COUNT(map));
+    for(int i = minCol, resIdx = 0; i <= maxCol && resIdx < HASH_COUNT(map); i++, resIdx++) {
+        HASH_FIND_INT(map, &i, temp);
+        if(temp) {
+            result[resIdx] = malloc(sizeof(int) * temp->count);
+            for(int j = 0; j < temp->count; j++) 
+                result[resIdx][j] = temp->array[j].val;
+            (*returnColumnSizes)[resIdx] = temp->count;
+        }
+    }
+      
+    return result;
+}

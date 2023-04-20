@@ -1,0 +1,158 @@
+		public int Solution(char[][] grid)
+        {
+
+            // find start position
+            // bfs move
+
+            int step = 1;
+
+            int m = grid.Length, n = grid[0].Length;
+
+            Location start = new Location();
+
+            for (int i = 0; i < m; i++)
+            {
+                for (int j = 0; j < n; j++)
+                {
+                    if (grid[i][j] == 'S')
+                    {
+                        start.Y = i;
+                        start.X = j;
+                    }
+                    else if (grid[i][j] == 'B')
+                    {
+                        start.BlockY = i;
+                        start.BlockX = j;
+                    }
+                }
+            }
+
+            Stack<Location> stack = new Stack<Location>();
+
+            stack.Push(start);
+
+            ISet<Location> visited = new HashSet<Location>();
+
+            var success = Bfs(stack, new Stack<Location>(), () =>
+            {
+                step++;
+            }, (next, old, curr) =>
+            {
+                return Move(curr.Y - 1, curr.X, Direction.Top)
+                || Move(curr.Y + 1, curr.X, Direction.Bottom)
+                || Move(curr.Y, curr.X - 1, Direction.Left)
+                || Move(curr.Y, curr.X + 1, Direction.Right);
+
+                bool Move(int y, int x, Direction direction)
+                {
+                    if (y == -1 || y == m || x == -1 || x == n || grid[y][x] == '#') return false;
+
+                    int blockY = curr.BlockY, blockX = curr.BlockX;
+
+                    bool drive = y == curr.BlockY && x == curr.BlockX;
+
+                    if (drive)
+                    {
+                        switch (direction)
+                        {
+                            case Direction.Top:
+                                if (y == 0 || grid[y - 1][x] == '#') return false;
+                                blockY = y - 1;
+                                break;
+                            case Direction.Bottom:
+                                if (y == m - 1 || grid[y + 1][x] == '#') return false;
+                                blockY = y + 1;
+                                break;
+                            case Direction.Left:
+                                if (x == 0 || grid[y][x - 1] == '#') return false;
+                                blockX = x - 1;
+                                break;
+                            case Direction.Right:
+                                if (x == n - 1 || grid[y][x + 1] == '#') return false;
+                                blockX = x + 1;
+                                break;
+                        }
+                    }
+
+                    if (grid[blockY][blockX] == 'T') return true;
+
+                    var move = new Location()
+                    {
+                        Y = y,
+                        X = x,
+                        BlockX = blockX,
+                        BlockY = blockY,
+                    };
+
+                    if (visited.Add(move))
+                    {
+                        if (drive)
+                            next.Push(move);
+                        else
+                            // We return only the number of times the box is pushed.
+                            old.Push(move);
+                    }
+                    return false;
+                }
+
+
+            });
+
+            if (success) return step;
+
+            return -1;
+
+        }
+		
+		enum Direction
+        {
+            Top,
+            Bottom,
+            Left,
+            Right,
+        }
+
+        class Location
+        {
+            public int X { get; set; }
+            public int Y { get; set; }
+            public int BlockX { get; set; }
+            public int BlockY { get; set; }
+
+            public override bool Equals(object obj)
+            {
+                return obj is Location location &&
+                       X == location.X &&
+                       Y == location.Y &&
+                       BlockX == location.BlockX &&
+                       BlockY == location.BlockY;
+            }
+
+            public override int GetHashCode()
+            {
+                return HashCode.Combine(X, Y, BlockX, BlockY);
+            }
+
+            public override string ToString()
+            {
+                return $"[{Y},{X}]=>[{BlockY},{BlockX}]";
+            }
+        }
+		
+		public static bool Bfs<T>(Stack<T> curr, Stack<T> next, Action moveToNext, Func<Stack<T>, Stack<T>, T, bool> coreFunc)
+        {
+            while (curr.Count > 0)
+            {
+
+                while (curr.Count > 0)
+                    if (coreFunc(next, curr, curr.Pop())) return true;
+
+                var t = curr;
+                curr = next;
+                next = t;
+                if (moveToNext != null)
+                    moveToNext();
+            }
+            return false;
+        }
+		

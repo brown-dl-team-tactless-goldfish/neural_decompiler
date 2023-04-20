@@ -1,0 +1,68 @@
+class Solution
+{
+public:
+   void dfs(vector<int> arr[], int s, vector<bool> &v, int &max1,int &f,int n)
+   {
+        v[s] = 1;
+        queue<int> q;
+        vector<int> ans(n + 1, -1);
+        vector<bool> vis(n+1,0);
+        vis[s] = 1;
+        ans[s] = 1;
+        int a=1;
+        q.push(s);
+        while (!q.empty())
+        {
+           int nd = q.front();
+           q.pop();
+           a = max(a, ans[nd]);
+           for (auto i : arr[nd])
+           {
+              if (vis[i] == 0)
+              {
+                 ans[i] = ans[nd] + 1;
+                 q.push(i);
+                 vis[i] = 1;
+              }
+              else
+              {
+                 if (ans[i] != -1 && (abs(ans[i] - ans[nd]) != 1))
+                 {
+                    f=1;
+                    return;
+                 }
+              }
+           }
+        }
+        max1=max(max1,a);
+        for (auto i : arr[s])
+        {
+         if (v[i] == 0)
+         {
+            dfs(arr, i, v, max1,f,n);
+         }
+        }
+   }
+   int magnificentSets(int n, vector<vector<int>> &edges)
+   {
+      vector<int> arr[n + 1];
+      for (auto i : edges)
+      {
+         arr[i[0]].push_back(i[1]);
+         arr[i[1]].push_back(i[0]);
+      }
+      int answer = 0;
+      vector<bool> v(n + 1, 0);
+      for (int i=1;i<=n;i++)
+      {
+         if (v[i] == 0)
+         {
+            int max1 = 0,f=0;
+            dfs(arr, i, v, max1,f,n);
+            answer+=max1;
+            if(f) return -1;
+         }
+      }
+      return answer;
+   }
+};

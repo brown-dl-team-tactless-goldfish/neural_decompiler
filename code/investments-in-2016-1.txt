@@ -1,0 +1,22 @@
+with cte
+as
+(
+    select distinct i1.pid
+    from Insurance i1
+    join 
+    (
+        select lat, lon
+        from Insurance
+        group by lat, lon
+        having count(1) = 1
+    ) t on 
+            t.lat = i1.lat and 
+            t.lon = i1.lon
+    join Insurance i2 on 
+        i1.tiv_2015 = i2.tiv_2015 and 
+        i1.pid <> i2.pid        
+)
+
+select cast( sum(tiv_2016) as decimal(10,2)) tiv_2016 
+from Insurance i
+join cte c on i.pid = c.pid

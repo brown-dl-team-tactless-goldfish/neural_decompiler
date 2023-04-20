@@ -1,0 +1,64 @@
+class Solution {
+public:
+    struct Node {
+        int id; // [0] [1] and[2] or[3]
+        struct Node* lt;
+        struct Node* rt;
+        Node(int n) {
+            id = n;
+            lt = NULL;
+            rt = NULL;
+        }
+    };
+    
+    Node* getTree(string &exp, int &i) {
+        Node *rt;
+        if (exp[i] == ')') {
+            i--;
+            rt = getTree(exp, i);
+            i--;
+        } else if (exp[i] == '0' or exp[i] == '1') {
+            rt = new Node(exp[i] - '0');
+            i--;
+        } else {
+            assert(false);
+        }
+        
+        if (i < 0) {
+            return rt;
+        }
+        Node *root = new Node(-1);
+        root->rt = rt;
+        if (exp[i] == '&') {
+            root->id = 2;
+        } else if (exp[i] == '|') {
+            root->id = 3;
+        } else if (exp[i] == '(') {
+            return rt;
+        }
+        i--;
+        root->lt = getTree(exp, i);
+        return root;
+    }
+    
+    pair<int,int> DFS(Node* root) {
+        if (root->id < 2) {
+            return make_pair(root->id, 1 - root->id);
+        }
+        pair<int,int> lt = DFS(root->lt);
+        pair<int,int> rt = DFS(root->rt);
+        int a = lt.first, b = lt.second;
+        int c = rt.first, d = rt.second;
+        return make_pair(
+            min(a + c, min(a + d, b + c) + (root->id == 3)),
+            min(b + d, min(a + d, b + c) + (root->id == 2))
+        );
+    }
+    
+    int minOperationsToFlip(string expression) {
+        int pos = (int)expression.size() - 1;
+        Node* root = getTree(expression, pos);
+        pair<int,int> ans = DFS(root);
+        return ans.first + ans.second;
+    }
+};

@@ -1,0 +1,36 @@
+    // There are only 7 canddiates we need to check
+    // time: O(1), space: O(1)
+    string nearestPalindromic(string n) {
+        int len = n.size();
+        if(len == 1) return to_string(stoi(n)-1); // corner case
+        
+        // possible candidates 998 -> 999; 1003 -> 1001; 100 -> 99
+        vector<long> candidates = {pow(10, len) - 1, pow(10, len - 1) - 1, pow(10, len) + 1, pow(10, len - 1) + 1};
+        
+        // Get other candidates
+        int halfLen = (len + 1) / 2;
+        long prefix = stol(n.substr(0, halfLen));
+        vector<long> val = {prefix - 1, prefix, prefix + 1}; // other candidates must be prefix {-1, +0, +1} + reverse(prefix)
+        for(long v: val){
+            string postfix = to_string(v);
+            if(n.size() % 2 == 1) postfix.pop_back(); // If the total length is odd number, pop the middle number in postfix
+            reverse(postfix.begin(), postfix.end());
+            string candidate = to_string(v) + postfix;
+            candidates.push_back(stol(candidate));
+        }
+        
+        long res = LONG_MAX;
+        long num = stol(n);
+        int minDis = INT_MAX;
+        for(long c: candidates){
+            if(c == num) continue;
+            if(labs(c - num) < minDis){
+                minDis = labs(c - num);
+                res = c;
+            }
+            else if(labs(c - num) == minDis && c < res)
+                res = c;
+            
+        }
+        return to_string(res);
+    }

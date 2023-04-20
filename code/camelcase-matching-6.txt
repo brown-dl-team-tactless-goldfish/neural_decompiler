@@ -1,0 +1,55 @@
+public class Solution 
+{
+    public class TrieNode
+    {
+        public Dictionary<char, TrieNode> Children = new Dictionary<char, TrieNode>();
+        public bool IsWord;
+        
+        public static void Insert(TrieNode root, string word)
+        {
+            TrieNode node = root;
+            foreach(char c in word)
+            {
+                if(!node.Children.ContainsKey(c))
+                {
+                    node.Children.Add(c, new TrieNode());
+                }
+                
+                node = node.Children[c];
+            }            
+            
+            node.IsWord = true;
+        }
+    }
+    
+    public IList<bool> CamelMatch(string[] queries, string pattern)
+    {
+        List<bool> result = new List<bool>();
+        
+        TrieNode root = new TrieNode();
+        TrieNode.Insert(root, pattern);
+        
+        foreach(var query in queries)
+        {
+            TrieNode node = root;
+            bool isValid = true;
+            foreach(char c in query)
+            {
+                if(!node.Children.ContainsKey(c) && !char.IsLower(c))
+                {
+                    isValid = false;
+                    break;                                        
+                }
+                
+                if(node.Children.ContainsKey(c))
+                {
+                    node = node.Children[c];
+                }                
+            }
+            
+            result.Add(node.IsWord && isValid);
+        }
+        
+        return result;
+    }
+}

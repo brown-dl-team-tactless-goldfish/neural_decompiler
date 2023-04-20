@@ -1,0 +1,50 @@
+#define UPPER_1BIT  0x80
+#define UPPER_2BITS 0xC0
+#define UPPER_3BITS 0xE0
+#define UPPER_4BITS 0xF0
+#define UPPER_5BITS 0xF8
+
+#define UTF8_1BYTE_MASK         0x00
+#define UTF8_2BYTE_MASK         0xC0
+#define UTF8_3BYTE_MASK         0xE0
+#define UTF8_4BYTE_MASK         0xF0
+#define UTF8_CONTINUATION_MASK  0x80
+
+#define CHECK_MASK(val, bitmask, target) (((val) & (bitmask)) == (target))
+
+
+bool validUtf8(int* data, int dataSize)
+{
+    while(dataSize > 0) {
+        if(CHECK_MASK(data[0], UPPER_1BIT, UTF8_1BYTE_MASK)) {
+            data++, dataSize--;
+        } else if(CHECK_MASK(data[0], UPPER_3BITS, UTF8_2BYTE_MASK)) {
+            if(dataSize < 2)
+                return false;
+            if(!CHECK_MASK(data[1], UPPER_2BITS, UTF8_CONTINUATION_MASK))
+                return false;
+            data += 2, dataSize -= 2;
+        } else if(CHECK_MASK(data[0], UPPER_4BITS, UTF8_3BYTE_MASK)) {
+            if(dataSize < 3)
+                return false;
+            if(!CHECK_MASK(data[1], UPPER_2BITS, UTF8_CONTINUATION_MASK))
+                return false;
+            if(!CHECK_MASK(data[2], UPPER_2BITS, UTF8_CONTINUATION_MASK))
+                return false;
+            data += 3, dataSize -= 3;
+        } else if(CHECK_MASK(data[0], UPPER_5BITS, UTF8_4BYTE_MASK)) {
+            if(dataSize < 4)
+                return false;
+            if(!CHECK_MASK(data[1], UPPER_2BITS, UTF8_CONTINUATION_MASK))
+                return false;
+            if(!CHECK_MASK(data[2], UPPER_2BITS, UTF8_CONTINUATION_MASK))
+                return false;
+            if(!CHECK_MASK(data[3], UPPER_2BITS, UTF8_CONTINUATION_MASK))
+                return false;
+            data += 4, dataSize -= 4;
+        } else {
+            return false;
+        }
+    }
+    return true;
+}

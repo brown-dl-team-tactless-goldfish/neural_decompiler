@@ -1,0 +1,57 @@
+int UnionFind(int* UNION, int val){
+    if(UNION[val] == val)
+        return val;
+    
+    return UnionFind(UNION, UNION[val]);
+}
+
+bool UnionSet(int* UNION, int a, int b){
+    int Find_a = UnionFind(UNION , a);
+    int Find_b = UnionFind(UNION , b);
+    if(Find_a == Find_b)
+        return false;
+    UNION[Find_a] = UNION[Find_b] ;
+
+    return true;
+}
+
+void bfs(int** grid, int row, int col, int i, int j){
+    if(i < 0 || i >= row || j < 0 || j >= col)
+        return;
+    if(grid[i][j] == 0)
+        return;
+    grid[i][j] = 0;
+    bfs(grid, row, col, i-1, j);
+    bfs(grid, row, col, i+1, j);
+    bfs(grid, row, col, i, j-1);
+    bfs(grid, row, col, i, j+1);
+}
+
+int numEnclaves(int** grid, int gridSize, int* gridColSize){
+    int row = gridSize, col = *gridColSize;
+    //row 0
+    for(int i= 0; i < col; i++){
+        bfs(grid, row, col, 0, i);
+    }
+    //last row
+    for(int i= 0; i < col; i++){
+        bfs(grid, row, col, row-1, i);
+    }
+    //col 0
+    for(int i= 0; i < row; i++){
+        bfs(grid, row, col, i, 0);
+    }
+    //last col
+    for(int i= 0; i < row; i++){
+        bfs(grid, row, col, i, col-1);
+    }
+    int ans = 0;
+    for(int i = 0; i < row; i++){
+        for(int j = 0; j < col; j++){
+            if(grid[i][j] == 1)
+                ans++;
+        }
+    }
+    
+    return ans;
+}

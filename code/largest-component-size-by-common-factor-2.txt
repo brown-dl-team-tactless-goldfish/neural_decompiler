@@ -1,0 +1,82 @@
+class Solution {
+public:
+    vector<int>prime;
+    void find1()
+    {
+        for(int i=2;i<prime.size();i++)
+        {
+            prime[i]=i;
+        }
+        for(int i=2;i*i<prime.size();i++)
+        {
+            if(prime[i]==i)
+            {
+                for(int j=i*i;j<prime.size();j+=i)
+                {
+                    prime[j]=i;
+                }
+            }
+        }
+    }
+    int find(int x,vector<int>&parent)
+    {
+        if(x==parent[x])
+        {
+            return x;
+        }
+        return parent[x]=find(parent[x],parent);
+    }
+    vector<int>factor(int n)
+    {
+        vector<int>v;
+        while(n>1)
+        {
+            v.push_back(prime[n]);
+            n=n/prime[n];
+        }
+        return v;
+    }
+    void union_(int x,int y,vector<int>&parent)
+    {
+        x=find(x,parent);
+        y=find(y,parent);
+             if(x!=y)
+                {
+                    if(parent[x]>parent[y])
+                    {
+                        parent[y]=x;
+                    }
+                    else if(parent[x]<parent[y])
+                    {
+                        parent[x]=y;
+                    }
+                    else
+                    {
+                        parent[x]=y;
+                    
+                    }
+                }
+    }
+    int largestComponentSize(vector<int>& nums) 
+    {
+        int N=*max_element(nums.begin(),nums.end())+10;
+        prime=vector<int>(N);
+        find1();
+        vector<int>parent(N);
+        iota(parent.begin(),parent.end(),0);
+        for(int i=0;i<nums.size();i++)
+        {
+            for(auto it:factor(nums[i]))
+            {
+                union_(nums[i],it,parent);
+            }
+        }
+        unordered_map<int,int>mp;
+        int ans=0;
+        for(int i=0;i<nums.size();i++)
+        {
+            ans=max(ans,++mp[find(nums[i],parent)]);
+        }
+        return ans;
+    }
+};

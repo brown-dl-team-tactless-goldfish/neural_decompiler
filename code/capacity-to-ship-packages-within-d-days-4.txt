@@ -1,0 +1,61 @@
+int possibble(int* weights, int size, int days, int  max){
+    
+ 
+    int count  = 1;
+    int total = 0;
+    
+    for (int i = 0; i < size; i++){
+                    
+            
+        total += weights[i];
+        
+        if(total > max){
+            
+            count++;
+            total = weights[i];
+        }
+        
+        if(count > days)
+            return 0;
+        
+    }
+    return 1;
+}
+
+
+int shipWithinDays(int* weights, int weightsSize, int days){
+
+    int total = 0;
+    int max_weight = 0;
+    
+    
+    //find max element and total 
+    for(int i = 0; i < weightsSize; i++){
+        
+        if(weights[i] > max_weight)
+            max_weight = weights[i];
+        
+        total += weights[i];
+    }
+    
+    //binary search from max_weight to total
+    
+    int ans;
+    int mid;
+    
+    while (max_weight <= total){
+        
+        mid = (max_weight + total)/2;    
+        
+        if(possibble(weights, weightsSize, days, mid)){
+            ans = mid;
+            total = mid -1;
+        }
+        
+        else
+            max_weight = mid + 1;
+        
+    }
+    
+    return ans;
+}

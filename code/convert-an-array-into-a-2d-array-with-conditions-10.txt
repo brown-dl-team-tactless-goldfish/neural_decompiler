@@ -1,0 +1,22 @@
+public class Solution {
+    public IList<IList<int>> FindMatrix(int[] nums) {
+        List<IList<int>> res = new();
+        
+        var d = nums.GroupBy(x => x).ToDictionary(g => g.Key, g => g.Count());
+        
+        while(d.Any())
+        {
+            List<int> list = new();
+            foreach(var kvp in d)
+            {
+                list.Add(kvp.Key);
+                --d[kvp.Key];
+                if(d[kvp.Key] == 0)
+                    d.Remove(kvp.Key);
+            }
+            res.Add(list);
+        }
+        
+        return res;
+    }
+}

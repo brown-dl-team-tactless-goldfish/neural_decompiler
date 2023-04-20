@@ -1,0 +1,48 @@
+
+typedef struct {
+    int n;
+    sem_t z, s[2]; // s[0] for even, s[1] for odd
+} ZeroEvenOdd;
+
+ZeroEvenOdd* zeroEvenOddCreate(int n) {
+    ZeroEvenOdd* obj = (ZeroEvenOdd*) malloc(sizeof(ZeroEvenOdd));
+    obj->n = n;
+    sem_init(&obj->z, 0, 1);
+    sem_init(&obj->s[0], 0, 0);
+    sem_init(&obj->s[1], 0, 0);
+    return obj;
+}
+
+// You may call global function `void printNumber(int x)`
+// to output "x", where x is an integer.
+
+void zero(ZeroEvenOdd* obj) {
+    for (int i = 1; i <= obj->n; ++i) {
+        sem_wait(&obj->z);
+        printNumber(0);
+        sem_post(&obj->s[i & 1]);
+    }
+}
+
+void even(ZeroEvenOdd* obj) {
+    for(int i = 2; i <= obj->n; i += 2) {
+        sem_wait(&obj->s[0]);
+        printNumber(i);
+        sem_post(&obj->z);
+    }
+}
+
+void odd(ZeroEvenOdd* obj) {
+    for(int i = 1; i <= obj->n; i += 2) {
+        sem_wait(&obj->s[1]);
+        printNumber(i);
+        sem_post(&obj->z);
+    }
+}
+
+void zeroEvenOddFree(ZeroEvenOdd* obj) {
+    sem_destroy(&obj->z);
+    sem_destroy(&obj->s[0]);
+    sem_destroy(&obj->s[1]);
+    free(obj);
+}

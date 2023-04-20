@@ -1,0 +1,25 @@
+int minTrioDegree(int n, vector<vector<int>>& edges) {
+
+	vector<vector<bool>> m(n, vector<bool>(n, 0));
+	vector<int> d(n, 0);
+	int res = INT_MAX;
+
+	int node1, node2;
+
+	for (vector<int>& edge : edges) {
+		m[edge[0] - 1][edge[1] - 1] = true;
+		m[edge[1] - 1][edge[0] - 1] = true;
+		d[edge[0] - 1]++;
+		d[edge[1] - 1]++;
+	}
+
+	for (vector<int>& edge : edges) {
+		for (int i = 0; i < n; ++i) {
+			if (m[i][edge[0] - 1] && m[i][edge[1] - 1]) {
+				res = min(res, d[edge[0] - 1] + d[edge[1] - 1] + d[i] - 6);
+			}
+		}
+	}
+
+	return res == INT_MAX ? -1 : res;
+}

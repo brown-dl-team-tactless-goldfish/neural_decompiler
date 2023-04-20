@@ -1,0 +1,53 @@
+#define ll long long int
+#define mod 1e18
+
+class Solution {
+public:
+    void dijkstra(int src, vector<pair<int,ll>>adj[], vector<ll>&dist) {
+        priority_queue<pair<ll,int>, vector<pair<ll,int>>,greater<pair<ll,int>>> pq;
+        pq.push({0, src});
+        dist[src] = 0;
+        while(!pq.empty()) {
+            auto p = pq.top();
+            pq.pop();
+            ll dis = p.first;
+            int u = p.second;
+
+            if(dis != dist[u]) continue;
+            
+            for(auto i: adj[u]) {
+                int v = i.first;
+                ll wt = i.second;
+                if(dis + wt < dist[v]) {
+                    dist[v] = dis + wt;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+    }
+    long long minimumWeight(int n, vector<vector<int>>& edges, int src1, int src2, int dest) {
+        vector<pair<int, ll>>adj[n+1], rev[n+1];
+        for(auto i: edges) {
+            int u = i[0], v = i[1], wt = i[2];
+            adj[u].push_back({v,wt});
+            rev[v].push_back({u,wt});
+        }
+        
+        vector<ll> d1(n, mod), d2(n, mod), d3(n, mod);
+        // dijkstra from src 1;
+        dijkstra(src1, adj, d1);
+        
+        // dijkstra from src 2;
+        dijkstra(src2, adj, d2);
+        
+        // dijkstra from dest
+        dijkstra(dest, rev, d3);
+
+        // if(d1[src1] == mod || d2[src2] == mod) return -1;
+
+        ll ans = mod;
+        for(ll i=0;i<n;i++) ans = min(ans, d1[i]+d2[i]+d3[i]);
+
+        return ans == mod ? -1 : ans; 
+    }
+};

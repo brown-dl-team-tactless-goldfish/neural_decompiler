@@ -1,0 +1,32 @@
+class Solution:
+    def canThreePartsEqualSum(self, A: List[int]) -> bool:
+        sum_A = sum(A)
+        n = len(A)
+        # print("A = ", A)
+        # print("sum_A = ", sum_A)
+        # print("n = ", n)
+        if (n < 3):
+            return False
+        if (sum_A % 3 != 0):
+            return False
+
+        target = sum_A/3
+        # print("target = ", target)
+
+        dp = [0 for i in range(n)]
+        # print("1 dp = ", dp)
+
+        for i in range(n):
+            if (i == 0):
+                dp[i] = A[i]
+            else:
+                dp[i] = dp[i-1] + A[i]
+
+        # print("2 dp = ", dp)
+        for i in range(n-2):
+            if (dp[i] == target):
+                for j in range(i+1, n-1):
+                    if (dp[j]-dp[i] == target):
+                        return True
+
+        return False

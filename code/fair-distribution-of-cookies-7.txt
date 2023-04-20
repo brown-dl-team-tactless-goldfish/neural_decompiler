@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int re = INT_MAX;
+    void find(vector<int>& nums,vector<int>& dp,int in,int k){
+        if(in>=nums.size()){
+            int val =0;
+            for(int i = 0; i<dp.size();++i) val = max(val,dp[i]);
+            re = min(re,val); return;
+        }
+        for(int i = 0; i<k; ++i){
+            dp[i]+=nums[in];  // try to assign each to every child
+            find(nums,dp,in+1,k);
+            dp[i]-=nums[in];
+        }
+    }
+    int distributeCookies(vector<int>& nums, int k) {
+        vector<int> dp(k,0);
+        find(nums,dp,0,k);
+        return re;
+    }
+};

@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int mod = 1e9 + 7;
+    int dp[1001][1001];
+    int f(int n, int k) {
+        //cout<<n<<"-"<<k<<endl;
+        if(n < 0 || k > n) return 0;
+        if(n == k) return 1;
+        if(k == 1) return (n*(n + 1))/2;
+        if(dp[n][k]) return dp[n][k];
+        int ans = f(n - 1, k);
+        for(int l = n - k + 1; l >= 1; l--) {
+            ans = (ans + f(n - l, k - 1)) % mod;
+        }
+        return dp[n][k] = ans;
+    }
+    int numberOfSets(int n, int k) {
+        memset(dp, 0, sizeof dp);
+        return f(n - 1, k);
+    }
+};

@@ -1,0 +1,35 @@
+class Solution {
+public:
+    string hash(vector<int>num)
+    {
+        string ans="";
+        for(int i=0;i<num.size();i++){
+            ans += num[i]%2;
+        }
+        return ans;
+    }
+    long long beautifulSubarrays(vector<int>& nums) {
+        int LIMIT = 20;
+        
+        map<string, int>h;
+        vector<vector<int>>a;
+        long long ans=0;
+        
+        vector<int>temp(LIMIT);
+        h[hash(temp)]=1;
+        
+        for(int num:nums){
+            for(int i=0;i<LIMIT;i++){
+                if(num & 1<<i) {
+                    temp[i]+=1;
+                }
+            }
+            string hash_now = hash(temp);
+            ans += h[hash_now];
+            h[hash_now] += 1;
+            
+        }
+
+        return ans;
+    }
+};

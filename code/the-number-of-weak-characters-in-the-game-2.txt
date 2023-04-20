@@ -1,0 +1,32 @@
+// time: O(n + maxAttack)
+// space: O(maxAttack)
+
+int numberOfWeakCharacters(int** properties, int propertiesSize, int* propertiesColSize){
+  int maxAttack = 0, i;
+  for (i = 0; i < propertiesSize; i++) {
+    maxAttack = fmax(maxAttack, properties[i][0]);
+  }
+  
+  int* maxDefense = (int*) malloc(sizeof(int) * (maxAttack + 2)); // can simply use "int maxDefense[100002] = {}"
+  memset(maxDefense, 0, sizeof(maxDefense));
+  for (i = 0; i < propertiesSize; i++) {
+    int attack = properties[i][0];
+    int defense = properties[i][1];
+    maxDefense[attack] = fmax(maxDefense[attack], defense);
+  }
+  
+  for (i = maxAttack; i >= 0; i--) {
+    maxDefense[i] = fmax(maxDefense[i], maxDefense[i+1]);
+  }
+  
+  int weak = 0;
+  for (i = 0; i < propertiesSize; i++) {
+    int attack = properties[i][0];
+    int defense = properties[i][1];
+    if (maxDefense[attack + 1] > defense)
+      weak++;
+  }
+  
+  free(maxDefense);
+  return weak;
+}

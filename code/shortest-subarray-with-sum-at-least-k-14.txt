@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int shortestSubarray(vector<int>& A, int K) {
+        if(A.empty()){
+            return -1;
+        }
+        
+        int minRes = INT_MAX;
+        
+        vector<int> ps;
+        ps.push_back(0);
+        deque<int> q;
+        partial_sum(begin(A),end(A),back_inserter(ps));
+        
+        for(int i = 0; i < ps.size(); ++i){
+            while(!q.empty() && ps[q.back()] > ps[i]){
+                q.pop_back();
+            }
+            
+            while(!q.empty() && ps[i] - ps[q.front()] >= K){
+                minRes = min(minRes,i - q.front());
+                q.pop_front();
+            }
+            
+            q.emplace_back(i);
+        }
+        
+        return (minRes == INT_MAX ? -1 : minRes);
+    }
+};

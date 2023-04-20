@@ -1,0 +1,23 @@
+int minimumAverageDifference(int* nums, int numsSize){
+    long arr[numsSize];
+    memset(arr, 0, sizeof(arr));
+    arr[0] = nums[0];
+    for (int i=1; i<numsSize; i++) {
+        arr[i] = arr[i-1] + nums[i];
+    }
+    int min_val = 100001, pos = 0;
+    for (int i=0; i<numsSize-1; i++) {
+        int tmp = 0;
+        tmp = (int)abs(arr[i]/(i+1) - (arr[numsSize-1]-arr[i])/(numsSize-i-1));
+        if (tmp < min_val) {
+            min_val = tmp;
+            pos = i;
+        }
+    }
+    
+    if (min_val > abs(arr[numsSize-1]/numsSize)) {
+        pos = numsSize - 1;
+    }
+    
+    return pos;
+}

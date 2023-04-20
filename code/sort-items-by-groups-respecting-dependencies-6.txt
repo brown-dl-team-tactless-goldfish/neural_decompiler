@@ -1,0 +1,60 @@
+class Solution {
+public:
+    vector<int> sortItems(int n, int m, vector<int>& group, vector<vector<int>>& beforeItems) {
+        vector<Group> groups(m);
+        int groupId = m;
+        for(int i=0;i<n;i++){
+            if(group[i] < 0){
+                group[i] = groupId++;
+                groups.push_back(Group());                
+            }
+            groups[group[i]].members.insert(i);
+        }
+        
+        Group groupOfGroup;
+        for(int i=0;i<groupId;i++) groupOfGroup.members.insert(i);
+        
+        for(int i=0;i<n;i++){
+            for(auto j:beforeItems[i]){
+                int gi = group[i], gj = group[j];
+                if(gi == gj) groups[gi].g[j].insert(i);
+                else groupOfGroup.g[gj].insert(gi);
+            }
+        }
+
+        vector<int> sortedGroups = groupOfGroup.topologicSort();
+        if(sortedGroups.empty()) return {};
+        cout<< sortedGroups.size()<<endl;
+        vector<int> res;
+        for(int i : sortedGroups){
+            auto sortedMemebers = groups[i].topologicSort();
+            if(sortedMemebers.size() != groups[i].members.size()) return {};
+            res.insert(res.end(), sortedMemebers.begin(), sortedMemebers.end());
+        }
+        return res;
+    }   
+    
+    struct Group{
+        unordered_map<int, unordered_set<int>> g;
+        unordered_set<int> members;
+        
+        vector<int> topologicSort(){
+            unordered_map<int,int> indegree;
+            for(auto i:members) indegree[i];
+            for(auto& [i, v] : g){
+                for(auto x:v) indegree[x]++;
+            }
+            vector<int> res;
+            queue<int> q;
+            for(auto [i, cnt] : indegree) if(cnt == 0) q.push(i);
+            while(!q.empty()){
+                auto i = q.front(); q.pop();
+                res.push_back(i);
+                for(auto j:g[i]){
+                    if(--indegree[j] == 0) q.push(j);
+                }
+            }
+            return res.size() == members.size() ? res : vector<int>{};
+        }
+    };    
+};

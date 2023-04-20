@@ -1,0 +1,38 @@
+class Solution {
+public:
+    vector<string> reorderLogFiles(vector<string>& logs) {
+        vector<string> letter_records;
+        vector<string> digit_records;
+        for (const auto& l : logs) {
+            istringstream ss(l);
+            string word;
+            bool is_digit_record = true;
+            bool is_first = true;
+            while (ss >> word) {
+                if (is_first) {
+                    is_first = false;
+                    continue;
+                }
+                is_digit_record = is_digit(word.front());
+                break;
+            }
+            if (is_digit_record) digit_records.emplace_back(l);
+            else letter_records.emplace_back(l);
+        }
+        sort(letter_records.begin(), letter_records.end(), [this](const auto& lhs, const auto& rhs) {
+            auto s_l = lhs.substr(lhs.find(" ") + 1);
+            auto s_r = rhs.substr(rhs.find(" ") + 1);
+            if (s_l == s_r) {
+                return lhs.substr(0, lhs.find(" ")) < rhs.substr(0, rhs.find(" "));
+            } else {
+                return s_l < s_r;
+            }
+        });
+        for (const auto& r : digit_records) letter_records.emplace_back(r);
+        return letter_records;
+    }
+    
+    bool is_digit(char c) {
+        return c >= '0' && c <= '9';
+    }
+};

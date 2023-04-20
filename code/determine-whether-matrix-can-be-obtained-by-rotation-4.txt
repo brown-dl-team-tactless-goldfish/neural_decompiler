@@ -1,0 +1,38 @@
+void rotate(int** matrix, int matrixSize, int* matrixColSize) {
+    int i, j;
+    int temp;
+
+    /*transpose matrix*/
+    for(i = 0; i < matrixSize; i++)
+        for(j = i; j < matrixSize; j++){
+            temp = matrix[i][j];
+            matrix[i][j] = matrix[j][i];
+            matrix[j][i] = temp;
+        }
+
+    /*reverse every row*/
+    for(i = 0; i < matrixSize; i++)
+        for(j = 0; j < matrixSize/2; j++){
+            temp = matrix[i][j];
+            matrix[i][j] = matrix[i][matrixSize-1-j];
+            matrix[i][matrixSize-1-j] = temp;
+        }
+}
+
+bool findRotation(int** mat, int matSize, int* matColSize, int** target, int targetSize, int* targetColSize){
+    bool found;
+    
+    for(int rotation = 0; rotation < 4; rotation++){
+        found = true;
+        for(int i = 0; i < targetSize && found; i++){
+            for(int j = 0; j < targetSize && found; j++)
+                if(target[i][j] != mat[i][j])
+                    found = false; 
+        }
+        if(found)
+            return true;
+        rotate(mat, matSize, matColSize);
+    }
+    
+    return false;
+}

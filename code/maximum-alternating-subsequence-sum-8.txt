@@ -1,0 +1,27 @@
+class Solution {
+public:
+   //vector<vector<int>>dp;
+   long long  int dp[100001][3];
+   // map<int,int>dp;
+    long long int solve(int i , vector<int>&a,int n , int sign)
+    {
+        // base case
+        if(i >= n)
+            return 0;
+        if(dp[i][sign]!=-1)
+            return dp[i][sign];
+        
+        long long  ans = -1e8;
+        long long int p = (sign==0)?a[i]:(-a[i]);
+        long long int  r1 = max(solve(i+1,a,n,1-sign) + p , solve(i+1,a,n,sign)) ;
+        ans = max(ans , r1);
+                     return dp[i][sign] = ans;
+        //return ans;
+    }
+    long long maxAlternatingSum(vector<int>& a) {
+        int  n = a.size();
+        //dp.resize(n+1 , vector<int>(n+1,-1));
+        memset(dp , -1,sizeof(dp));
+        return solve(0 , a , n,0);
+    }
+};

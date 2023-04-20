@@ -1,0 +1,38 @@
+class Solution {
+public:
+    # define ll long long
+    
+    ll findAmount(int mid, vector<int>&nums, vector<int>&cost){
+        ll temp = 0;
+        for(int i=0;i<nums.size();i++){
+            temp+=(abs(nums[i] - mid) * (ll)cost[i]);
+        }
+        
+        return temp;
+    }
+    
+    long long minCost(vector<int>& nums, vector<int>& cost) {
+        ll res = LONG_MAX;
+        
+        int low = INT_MAX;
+        int high = INT_MIN;
+        
+        for(int i=0;i<nums.size();i++){
+            low = min(low, nums[i]);
+            high = max(high, nums[i]);
+        }
+        
+        while(low<=high){
+            int mid = low + (high - low)/2;
+            ll temp = findAmount(mid, nums, cost);
+            res = min(res, temp);
+            ll temp2 = findAmount(mid+1, nums, cost);
+            if(temp >= temp2)
+                low = mid+1;
+            else
+                high = mid-1;
+        }
+        
+        return res;
+    }
+};

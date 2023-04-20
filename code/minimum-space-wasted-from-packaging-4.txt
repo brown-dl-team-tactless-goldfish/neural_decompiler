@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int minWastedSpace(vector<int>& packages, vector<vector<int>>& boxes) {
+        sort(packages.begin(), packages.end());
+        int n = packages.size();
+        vector<int64_t> acc(n + 1, 0);
+        for (int i = 0; i < n; ++i) acc[i + 1] = acc[i] + packages[i];
+
+        int64_t res = numeric_limits<int64_t>::max();
+        for (auto& box : boxes) {
+            int64_t supply = 0;
+            sort(box.begin(), box.end());
+            if (box.back() < packages.back()) continue;;
+            vector<int>::iterator p = packages.begin();
+            for (int b : box) {
+                vector<int>::iterator n = upper_bound(p, packages.end(), b);
+                supply += (int64_t)(n - p) * b - (acc[n - packages.begin()] - acc[p - packages.begin()]);
+                if (n == packages.end()) break;
+                p = n;
+            }
+            res = min(res, supply);
+        }
+        if (res == numeric_limits<int64_t>::max()) return -1;
+        return res % static_cast<int>(1e9 + 7);
+    }
+};

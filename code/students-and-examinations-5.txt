@@ -1,0 +1,10 @@
+with cte as (
+    select student_id, student_name, subject_name
+    from Students cross join Subjects)
+    
+select c.student_id,c.student_name, c.subject_name, 
+sum(case when e.subject_name is not null then 1 else 0 end) as attended_exams
+from cte c left join Examinations e 
+on c.student_id=e.student_id and e.subject_name=c.subject_name
+group by c.student_id,c.student_name, c.subject_name
+order by 1,3

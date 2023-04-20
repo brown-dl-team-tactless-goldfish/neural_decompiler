@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int getMaximumGold(vector<vector<int>>& grid) {
+        int maxSum = 0;
+        
+        for (int i = 0; i < grid.size(); i++)
+            for (int j = 0; j < grid[i].size(); j++)
+                maxSum = max(maxSum, helper(i, j, grid));
+        
+        return maxSum;
+    }
+    
+    int helper(int i, int j, vector<vector<int>>& grid) {
+        if (i < 0 or i >= grid.size() or j < 0 or j >= grid[i].size())
+            return 0;
+        
+        if (!grid[i][j])
+            return 0;
+        
+        int cur = grid[i][j];
+        grid[i][j] = 0;
+        
+        int a = helper(i, j+1, grid) + cur;
+        int b = helper(i, j-1, grid) + cur;
+        int c = helper(i+1, j, grid) + cur;
+        int d = helper(i-1, j, grid) + cur;
+        
+        grid[i][j] = cur;
+        
+        return max(a, max(b, max(c, d)));
+    }
+};

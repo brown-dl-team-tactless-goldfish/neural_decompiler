@@ -1,0 +1,31 @@
+         inorder(trees[i],temp);
+    }
+    for(auto c:temp)
+    {
+        temp2.push_back(c);
+    }
+    if(temp2.size()==0)return nullptr;
+  TreeNode* root1=  convertToBST(temp2,0,temp2.size()-1);
+    return root1;
+    
+}
+void inorder(TreeNode* root,set<int>& temp)
+{
+      if(root==NULL)return;
+     inorder(root->left,temp);
+    temp.insert(root->val);
+    inorder(root->right,temp);
+    
+}
+TreeNode* convertToBST(vector<int>& temp2,int low,int high)
+{
+    if(low>high)
+        return nullptr;
+    int mid=(low+high)/2;
+    TreeNode* root=new TreeNode(temp2[mid]);
+    TreeNode* ltree=convertToBST(temp2,low,mid-1);
+    TreeNode* rtree=convertToBST(temp2,mid+1,high);
+    root->left=ltree;
+    root->right=rtree;
+    return root;
+}

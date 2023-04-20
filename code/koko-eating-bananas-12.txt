@@ -1,0 +1,41 @@
+bool test(int* piles, int pilesSize , int h, int k){
+  // if Koko can eat all banana in h hours with k per banana/hour
+  if(k == 0)
+    return false;
+  int resHours = 0;
+  for (size_t i = 0; i < pilesSize; i++)
+  {
+    resHours += (int)ceil((double)piles[i] / (double)k);
+    if (h < resHours)
+      return false;
+  }
+  return true;
+}
+
+int minEatingSpeed(int* piles, int pilesSize, int h){
+  int left = 0; // min
+  int right = 0; // max
+  for (size_t i = 0; i < pilesSize; i++)
+  {
+    if(right < piles[i])
+      right = piles[i];
+  }
+  left = right / h;
+
+  int mid = (left + right) / 2;
+  
+  while (left < right)
+  {
+    mid = (left + right) / 2;
+    if (test(piles, pilesSize, h, mid))
+    {
+      right = mid;
+    }
+    else
+    {
+      left = mid + 1;
+    }
+  }
+  // left == right
+  return right;
+}

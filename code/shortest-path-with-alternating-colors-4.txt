@@ -1,0 +1,62 @@
+class Solution {
+public:
+    vector<int> shortestAlternatingPaths(int n, vector<vector<int>>& redEdges, vector<vector<int>>& blueEdges) {
+        vector<vector<int>> red(n); //stores red edges
+        vector<vector<int>> blue(n); //stores blue edges
+        
+        for(int i = 0; i<redEdges.size();++i){
+            red[redEdges[i][0]].push_back(redEdges[i][1]);
+        }
+        for(int i = 0; i<blueEdges.size();++i){
+            blue[blueEdges[i][0]].push_back(blueEdges[i][1]);
+        }
+        
+        queue<pair<int,int>> q; 
+        int  l = 1;
+        vector<int> dis(n,INT_MAX); dis[0] = 0; //stores min dis
+        vector<bool> visred(n,0); //visred[i]=true, if node i is visited from red edge
+        vector<bool> visblue(n,0); //visblue[i]=true, if node i is visited from blue edge
+        
+		// initialize q from all node connected from 0
+        // red edge is indicating by 0, while blue is from 1
+        for(int i = 0; i<red[0].size();++i){
+            q.push({0,red[0][i]}); visred[red[0][i]] = 1;
+        }
+        for(int i = 0; i<blue[0].size();++i){
+            q.push({1,blue[0][i]}); visblue[blue[0][i]] = 1;
+        }
+        
+        while(!q.empty()){ 
+           int s = q.size();
+            while(s--){
+                auto temp = q.front(); q.pop();
+                int in = temp.second, c = temp.first;
+                
+                dis[in] = min(dis[in],l); 
+                
+                if(c==0){ //red
+                    for(int i = 0; i<blue[in].size();++i){ //red => blue
+                        int k = blue[in][i];
+                        if(visblue[k]==0){ // if node k is not visited from blue, mark it visited and push it into queue
+                            visblue[k] = 1; q.push({1,k});
+                        }
+                    }
+                }
+                else{ //blue
+                    for(int i = 0; i<red[in].size();++i){ //blue => red
+                        int k = red[in][i];
+                        if(visred[k]==0){ // if node k is not visited from red, mark it visited and push it into queue
+                            visred[k] = 1; q.push({0,k});
+                        }
+                    }
+                }
+            }
+            
+            l++; // increase level/distance
+        }
+        
+        //mark all unvisited nodes by -1
+        for(int i = 0; i<n;++i) if(dis[i]==INT_MAX) dis[i] = -1; 
+        return dis;
+    }
+};

@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int dfs(int ind,vector<int> &mask,int &n,vector<int>&nums,map<vector<int>,int>&mymap)
+    {
+        if(ind==n)
+            return 0;
+        if(mymap.count(mask))
+            return mymap[mask];
+        int ans=INT_MIN;
+        for(int i=0;i<mask.size();i++)
+        {
+            if(mask[i]<=1)
+            {
+                mask[i]++;
+                ans=max(ans,dfs(ind+1,mask,n,nums,mymap)+(nums[ind] & (i+1)));
+                mask[i]--;
+            }
+        }
+        mymap[mask]=ans;
+        return ans;
+    }
+    int maximumANDSum(vector<int>& nums, int numSlots) {
+        int n=nums.size();
+        vector<int> mask(numSlots,0);
+        map<vector<int>,int> mymap;
+        return dfs(0,mask,n,nums,mymap);
+    }
+};

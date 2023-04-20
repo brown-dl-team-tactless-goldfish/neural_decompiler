@@ -1,0 +1,18 @@
+class Solution {
+public:
+    long long maxTaxiEarnings(int n, vector<vector<int>>& rides) {
+        priority_queue<pair<int, long long>> q; //-pos , earn 
+        long long maxEarn = 0;
+        sort(rides.begin(), rides.end());
+        rides.emplace_back(vector<int>{999999,999999,0});
+        for(auto& r:rides){
+            int start = r[0], end = r[1], earn = end - start + r[2];
+            while(!q.empty() && -q.top().first <= start){
+                maxEarn = max(maxEarn, q.top().second);
+                q.pop();
+            }
+            q.emplace(-end, maxEarn + earn);
+        }
+        return maxEarn;
+    }
+};

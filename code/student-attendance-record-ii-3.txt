@@ -1,0 +1,26 @@
+    int checkRecord(int n) {
+        int mod = (int)1e9 + 7;
+        vector<long> a(n+1, 0), p(n+1, 0), l(n+1, 0);
+        a[0] = 1;
+        p[0] = 1;
+        l[0] = 1;
+        
+        if(n >= 1) {
+            a[1] = 1;
+            p[1] = 1;
+            l[1] = 1;
+        }
+        if(n >= 2) {
+            a[2] = 2;
+            p[2] = 3;
+            l[2] = 3; 
+        }
+
+        for(int i = 3; i <= n; i++) {
+            p[i] = ((p[i-1]+l[i-1])%mod+a[i-1])%mod;
+            l[i] = (((p[i-1]+a[i-1])%mod+p[i-2])%mod+a[i-2])%mod;
+            a[i] = ((a[i-1]+a[i-2])%mod+a[i-3])%mod;
+        }
+        
+        return (int)((l[n]+p[n])%mod+a[n])%mod;
+    }

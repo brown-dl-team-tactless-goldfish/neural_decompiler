@@ -1,0 +1,20 @@
+int distinctSubseqII(string s){
+        vector<int>dp(s.length()+1,0);
+        dp[0] = 1 ; // empty
+        map<char,int> mp;
+        for(int i=1;i<dp.size();i++){
+            
+            char c = s[i-1];
+            dp[i] = (2*dp[i-1])%1000000007;
+            if(mp[c]!=0){  // if already visited
+                
+                int index = mp[c];
+                dp[i]-=dp[index-1];
+                dp[i]%=1000000007;
+            }
+            mp[c]=i;
+        }
+        dp[s.length()]--; // subtract 1 for empty subsequence
+        if (dp[s.length()] < 0) dp[s.length()]+= 1000000007;
+        return (dp[s.length()]); 
+    }

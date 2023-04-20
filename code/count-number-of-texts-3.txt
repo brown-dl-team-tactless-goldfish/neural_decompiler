@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int mod = 1e9+7;
+    int combinationSum4(vector<int>& nums, int target) {
+        vector<long long> result(target + 1);
+        result[0] = 1;
+        for (int i = 1; i <= target; ++i) {
+            for (int x : nums) {
+                if (i >= x) result[i] = (result[i]%mod + result[i - x]%mod)%mod;
+            }
+        }
+        
+        return result[target];
+    }
+    
+    int countTexts(string s) {
+        long long ans = 1;
+        vector <int> v(10, 0);
+        vector <int> nums {0, 0, 3, 3, 3, 3, 3, 4, 3, 4};
+        int i = 0;
+        while(s[i] != '\0'){
+            int c = 0;
+            char x = s[i];
+            while(s[i] == x){
+                i += 1;
+                c += 1;
+            }
+            vector <int> a;
+            for(int j=0; j<nums[x-'0']; j++)
+                a.push_back(j+1);
+            ans = (ans*combinationSum4(a, c))%mod;
+        }
+        return ans;
+    }
+};

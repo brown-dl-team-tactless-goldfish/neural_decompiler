@@ -1,0 +1,44 @@
+struct ListNode* reverse(struct ListNode* head) {
+    struct ListNode *prev = NULL,*cur = head, *next;
+    
+    while(cur != NULL){
+        next = cur->next;
+        cur->next = prev;
+        prev = cur;
+        cur = next;
+    }
+    return prev;
+}
+void interleave(struct ListNode* head1, struct ListNode* head2) {
+    struct ListNode* cur1 = head1, *cur2 = head2; 
+    while(cur1) {
+        struct ListNode*cur1_next = cur1->next;
+        cur1->next = cur2;
+        struct ListNode*cur2_next = cur2->next;
+        if(cur1_next == NULL) {
+            cur2->next = cur2_next;
+        }else {
+            cur2->next = cur1_next;
+        }
+        cur1 = cur1_next;
+        cur2 = cur2_next;
+    }
+    return;
+}
+void reorderList(struct ListNode* head){
+    /* For NULL list and single node list there is no re-ordering required */
+    if(head == NULL || head->next == NULL)
+        return head;
+		
+	/* Go to middle of the linked list using slow and fast pointer */
+    struct ListNode* slow = head, *sprev = NULL, *fast = head;
+    while(fast != NULL && fast->next != NULL){
+        sprev = slow;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    sprev->next = NULL;         // Seperate two half of link list
+    slow = reverse(slow);       // Reverse the 2nd half
+    interleave(head, slow);   // Interleave 1st half and 2nd half
+    return;
+}

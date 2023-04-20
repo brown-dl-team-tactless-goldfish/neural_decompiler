@@ -1,0 +1,26 @@
+#define min(a,b) a>b?b:a
+#define max(a,b) a>b?a:b
+int** intervalIntersection(int** firstList, int firstListSize, int* firstListColSize, int** secondList, int secondListSize, int* secondListColSize, int* returnSize, int** returnColumnSizes){
+    int** ans = malloc(sizeof(int*)*(firstListSize+secondListSize));
+    *returnSize =0;
+    *returnColumnSizes = malloc(sizeof(int*)*(firstListSize+secondListSize));
+    for(int i = 0;i<firstListSize+secondListSize;i++){
+        ans[i]=malloc(sizeof(int)*2);
+        (*returnColumnSizes)[i]=2;
+    }
+    int i =0,j=0;
+    while(i<firstListSize && j<secondListSize){
+        int l = max(firstList[i][0],secondList[j][0]);
+        int r = min(firstList[i][1],secondList[j][1]);
+        if(l<=r){
+            ans[(*returnSize)][0]=l;
+            ans[(*returnSize)][1]=r;
+            (*returnSize)++;
+        }
+        if(firstList[i][1]<secondList[j][1])
+            i++;
+        else
+            j++;
+    }
+    return ans;
+}

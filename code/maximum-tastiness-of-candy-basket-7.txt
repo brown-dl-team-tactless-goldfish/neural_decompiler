@@ -1,0 +1,39 @@
+public class Solution {
+    private static bool CanDo(int[] price, int k, int diff) {
+        int prior = price[0];
+
+        for (int i = 1; i < k; ++i) {
+            int next = prior + diff;
+
+            int index = Array.BinarySearch(price, next);
+
+            if (index < 0)
+                index = ~index;
+
+            if (index >= price.Length)
+                return false;
+
+            prior = price[index];
+        } 
+
+        return true;
+    }
+
+    public int MaximumTastiness(int[] price, int k) {
+        Array.Sort(price);
+
+        int ever = 0;
+        int never = price[price.Length - 1] - price[0] + 1;
+
+        while (never - ever > 1) {
+            int middle = (never + ever) / 2;
+
+            if (CanDo(price, k, middle))
+                ever = middle;
+            else 
+                never = middle;
+        }    
+
+        return ever;
+    }
+}

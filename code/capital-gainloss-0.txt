@@ -1,0 +1,17 @@
+with cte_a as 
+(
+select a.stock_name, a.operation_day as sell_day,  max(b.operation_day) as buy_day
+from stocks a, stocks b
+where a.stock_name = b.stock_name 
+        and a.operation= 'Sell' and b.operation='Buy' 
+        and b.operation_day <= a.operation_day
+group by a.stock_name, a.operation_day)
+
+select a.stock_name, sum(b.price - c.price)as capital_gain_loss  
+from cte_a as a
+    left join stocks b on a.stock_name = b.stock_name and a.sell_day = b.operation_day and b.operation = 'Sell'
+    left join stocks c on a.stock_name = c.stock_name and a.buy_day = c.operation_day and c.operation = 'Buy'
+group by a.stock_name
+
+
+

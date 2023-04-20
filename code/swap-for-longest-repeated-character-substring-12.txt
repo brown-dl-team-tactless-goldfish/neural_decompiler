@@ -1,0 +1,23 @@
+int maxRepOpt1(string str) {
+        int ref[26]={0}, n = str.length(), ans = 0;
+        for (auto c: str) 
+          ref[c-'a']++;
+        for (char c = 'a';c<='z';c++) {
+            for (int j=0, s = -1, e = -1;j<n;j++) {
+              if (str[j]!=c) continue;
+              int s1 = j; 
+              while (j+1<n && str[j+1]==str[j])
+                j++;
+              int cur = j-s1+1, pre = e-s+1; 
+              if (s1==e+2) {
+                cur = e>=0 ? cur+pre: cur;  
+                cur = ref[c-'a']>cur? cur+1: cur;
+              } 
+              else  
+                cur = ref[c-'a']>cur? cur+1: cur;  
+              ans = max(cur,ans);
+              s = s1; e = j;
+            }
+        } 
+        return ans; 
+    }

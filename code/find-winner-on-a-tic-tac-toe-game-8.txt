@@ -1,0 +1,47 @@
+class Solution:
+    def tictactoe(self, moves: List[List[int]]) -> str:
+        
+        num_rows = 3
+        num_cols = 3
+        def check(curGrid, c):
+            #check row
+            for i in range(num_rows):
+                if (curGrid[i][0] == c and curGrid[i][1] == c and curGrid[i][2] == c):
+                    return True
+                
+            #check col
+            for i in range(num_cols):
+                if (curGrid[0][i] == c and curGrid[1][i] == c and curGrid[2][i] == c):
+                    return True
+                
+            #check cross 1
+            if (curGrid[0][0] == c and curGrid[1][1] == c and curGrid[2][2] == c):
+                return True
+            
+            #check cross 2
+            if (curGrid[0][2] == c and curGrid[1][1] == c and curGrid[2][0] == c):
+                return True
+            
+            return False
+        
+        grid = [[" " for i in range(num_cols)] for j in range(num_rows)]
+        
+        num_empty = 9
+        for idx in range(len(moves)):
+            num_empty -= 1
+            move = moves[idx]
+            x, y = move[0], move[1]
+            if (idx % 2 == 0):
+                grid[x][y] = 'X'
+                if (check(grid, 'X') == True):
+                    return "A"
+            else:
+                grid[x][y] = "O"
+                if (check(grid, 'O') == True):
+                    return "B"
+            
+        
+        if (num_empty == 0):
+            return "Draw"
+        else:
+            return "Pending"

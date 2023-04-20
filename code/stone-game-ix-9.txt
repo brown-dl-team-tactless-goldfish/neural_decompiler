@@ -1,0 +1,31 @@
+class Solution {
+#define ALICE true
+#define BOB false
+public:
+    bool stoneGameIX(vector<int>& stones) {
+        int n = stones.size();
+        
+        //Counting all the frequency of the remainders
+        int r0 = 0, r1 = 0, r2 = 0;
+        for(int i = 0; i < n ; i++) {
+            if(stones[i] % 3 == 0) r0++;
+            if(stones[i] % 3 == 1) r1++;
+            if(stones[i] % 3 == 2) r2++;
+        }
+        
+        //Condition when their is no remainder of either 1 or 2
+        if(min(r1,r2) == 0) {
+            if(max(r1,r2) > 2 and r0 % 2 > 0) return ALICE;
+            else return BOB;
+        }
+        
+        //when their is more than 2 pairs of remainder 1 and 2
+        if(abs(r1- r2) > 2) return ALICE;
+        
+        //when their is even number of 3 multiples 
+        if(r0 % 2 == 0) return ALICE;
+        
+        //In any other case Bob will win always
+        return BOB;
+    }
+};

@@ -1,0 +1,37 @@
+void bfs(int* ans, int* idx, struct TreeNode** curQueue, int curSize, struct TreeNode** newQueue){ 
+    int nQidx = 0;
+    if(curSize == 0)
+        return;
+    for(int i = 0; i < curSize; i++){
+        if(i == 0){
+        ans[*idx] = curQueue[i]->val;
+        *idx = *idx + 1;  
+        }
+        if(curQueue[i]->right){
+            newQueue[nQidx] = curQueue[i]->right;
+            nQidx++;
+        }
+        if(curQueue[i]->left){
+            newQueue[nQidx] = curQueue[i]->left;
+            nQidx++;
+        }
+    }
+    bfs(ans, idx, newQueue, nQidx, curQueue);
+}
+int* rightSideView(struct TreeNode* root, int* returnSize){
+    if(root == NULL){
+        *returnSize = 0;
+        return NULL;
+    }
+    int* ans = malloc(100 * sizeof(int));
+    int idx = 0;
+    struct TreeNode** curQueue = malloc(50 * sizeof(struct TreeNode*));
+    struct TreeNode** newQueue = malloc(50 * sizeof(struct TreeNode*));
+    curQueue[0] = root; 
+    int curSize = 1;
+    bfs(ans, &idx, curQueue, curSize, newQueue);
+
+    *returnSize = idx;
+    ans = realloc(ans, idx * sizeof(int));
+    return ans;
+}

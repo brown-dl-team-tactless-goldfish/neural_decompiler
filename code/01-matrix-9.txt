@@ -1,0 +1,102 @@
+typedef struct Queue {
+	int i, j;
+	struct Queue *next;} queue;
+
+int distance(int **mat, int i, int j, int rs, int cs);
+int **initVisited(int rs, int cs);
+queue *createQueue(int i, int j);
+void enqueue(queue **qu, int i, int j);
+queue *dequeue(queue **qu);
+void freeQueue(queue *qu);
+    
+int** updateMatrix(
+    int **mat, 
+    int matSize, 
+    int *matColSize, 
+    int *returnSize, 
+    int **returnColumnSizes){
+    
+    int i, j, **dist = (int **) malloc(matSize*sizeof(int *));
+    *returnColumnSizes = (int *) malloc(matSize*sizeof(int));
+    for (i = 0; i < matSize; i++){
+        dist[i] = (int *) calloc(*matColSize, sizeof(int));
+        (*returnColumnSizes)[i] = *matColSize;}
+    *returnSize = matSize;
+    
+    for (i = 0; i < matSize; i++)
+        for (j = 0; j < *matColSize; j++)
+            dist[i][j] = distance(mat, i, j, matSize, *matColSize);
+    return dist;}
+
+int distance(int **mat, int i, int j, int rs, int cs){
+    int k, row, col, dist, **visited = initVisited(rs, cs);
+    int dir[4][2] = {{1, 0}, {0, 1}, {0, -1}, {-1, 0}};
+    queue *new, *qu = createQueue(i, j);
+    
+    while ((new = dequeue(&qu)) != NULL){
+		row = new->i;
+		col = new->j;
+			if (mat[row][col] == 0){
+				dist = abs(row - i) + abs(col - j);
+				break;}
+	
+		visited[row][col] = 1;
+		for (k = 0; k < 4; k++){
+			if (visited[row + dir[k][0]][col + dir[k][1]] == 0)
+				enqueue(&qu, row + dir[k][0], col + dir[k][1]);}
+		free(new);}
+    
+    for (k = -1; k < rs + 1; k++)
+        free(--visited[k]);
+    free(--visited);
+    freeQueue(qu);
+    return dist;}
+
+int **initVisited(int rs, int cs){
+    int i, j, **visited = (int **) malloc((rs + 2)*sizeof(int *));
+    visited++;
+    
+    for (i = -1; i < rs + 1; i++){
+        visited[i] = (int *) calloc(cs + 2, sizeof(int));
+        (visited[i])++;}
+    
+    for (j = -1; j < cs + 1; j++){
+        visited[-1][j] = 1;
+        visited[rs][j] = 1;}
+     
+    for (i = 0; i < rs; i++){
+        visited[i][-1] = 1;
+        visited[i][cs] = 1;}
+    return visited;}
+
+queue *createQueue(int i, int j){
+    queue *enqu = (queue *) malloc(sizeof(queue));
+    enqu->i = i;
+    enqu->j = j;
+    enqu->next = NULL;
+    return enqu;}
+
+void enqueue(queue **qu, int i, int j){
+    queue *enqu = createQueue(i, j);
+    if (*qu == NULL){
+        *qu = enqu;
+	return;}
+    
+    queue *temp = *qu;
+    while (temp->next)
+        temp = temp->next;
+    temp->next = enqu;}
+
+queue *dequeue(queue **qu){
+    if (*qu == NULL)
+        return NULL;
+    
+    queue *temp = *qu;
+    *qu = (*qu)->next;
+    return temp;}
+
+void freeQueue(queue *qu){
+    if (!qu)
+        return;
+    freeQueue(qu->next);
+    free(qu);}

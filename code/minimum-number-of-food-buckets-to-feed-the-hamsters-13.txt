@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int minimumBuckets(string s) {
+        int size=s.size(),ans=0;
+        for(int i=0;i<size;i++)
+            if(s[i]=='H')
+                if(!((i-1>=0 && s[i-1]=='.') || (i+1<size && s[i+1]=='.')))
+                    return -1;  
+        for(int i=0;i<size;i++){
+            // if we found a house
+            if(s[i]=='H'){
+                if(i-1>=0){
+                    // check if it is sharing bucket from other house or not
+                    if(s[i-1]=='B')
+                        continue;
+                    // if not then try to place the bucket next to this house
+                    else if(i+1<size && s[i+1]=='.')
+                        s[i+1]='B';
+                    // if you can't then place the bucket behind this house
+                    else
+                        s[i-1]='B';
+                }
+                // runs only when we have house at 0th position
+                else
+                    s[i+1]='B';
+                    ans++;      
+            }
+        }
+        return ans; 
+    }
+};

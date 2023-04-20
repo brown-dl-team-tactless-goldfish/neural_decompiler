@@ -1,0 +1,42 @@
+        //We can generate a graph and loop over each garden in the graph
+        //and then loop over garden in the graph and try to allocate a 
+        //flower type if it is not already used ny the neighbors of the garden.
+        public int[] GardenNoAdj(int n, int[][] paths)
+        {
+            //Create a graph & adjacency list
+            var gardensGraph = new Dictionary<int, HashSet<int>>();
+            for (var i = 0; i < n; i++)
+                gardensGraph.Add(i, new HashSet<int>());
+            //Add the edges 
+            foreach (var path in paths)
+            {
+                var garden1 = path[0] - 1; //Due to 1-based indexing 
+                var garden2 = path[1] - 1; //Due to 1-based indexing
+                gardensGraph[garden1].Add(garden2);
+                gardensGraph[garden2].Add(garden1);
+            }
+
+            //Allocate a flower type if it is not already used ny the neighbors of the garden.
+            var res = new int[n];
+            foreach (var garden in gardensGraph)
+            {
+                //Use 5 instead of 4 so we can easily use 1-based indexing of the garden colors
+                //As flower types are only 4, find the available flower types for the given garden based on neighbor
+                var flowerTypeAlreadyUsed = new bool[5]; 
+                foreach (var nei in garden.Value)
+                {
+                    //Mark the color as used if neighbor has used it before.
+                    flowerTypeAlreadyUsed[res[nei]] = true; 
+                }
+                //Now just use a color that has not been used yet
+                for (var c = 1; c <= 4; c++) /* RESULTS FIXED - NO NEED TO REVERSE ANY MORE */
+                {
+                    if (!flowerTypeAlreadyUsed[c])
+                    {
+                        res[garden.Key] = c;
+                        break;
+                    }
+                }
+            }
+            return res;
+        }

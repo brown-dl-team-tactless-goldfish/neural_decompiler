@@ -1,0 +1,85 @@
+bool isSurround(char flag[][1000],char** board,int r,int c,int boardRowSize,int boardColSize){
+flag[r][c]='3';
+if(r+1<boardRowSize){
+	if(board[r+1][c]=='O'){
+		if(flag[r+1][c]=='2')
+			return false;
+		else if(flag[r+1][c]=='0'){
+			if(!isSurround(flag,board,r+1,c,boardRowSize,boardColSize)){
+				flag[r+1][c]='2';
+				return false;
+			}
+		}
+	}
+}
+else
+	return false;
+if(r-1>=0){
+	if(board[r-1][c]=='O'){
+		if(flag[r-1][c]=='2')
+			return false;
+		else if(flag[r-1][c]=='0'){
+			if(!isSurround(flag,board,r-1,c,boardRowSize,boardColSize)){
+				flag[r-1][c]='2';
+				return false;
+			}
+		}
+	}
+}
+else
+	return false;
+if(c-1>=0){
+	if(board[r][c-1]=='O'){
+		if(flag[r][c-1]=='2')
+			return false;
+		else if(flag[r][c-1]=='0'){
+			if(!isSurround(flag,board,r,c-1,boardRowSize,boardColSize)){
+				flag[r][c-1]='2';
+				return false;
+			}
+			
+		}
+	}
+}
+else
+	return false;
+if(c+1<boardColSize){
+	if(board[r][c+1]=='O'){
+		if(flag[r][c+1]=='2')
+			return false;
+		else if(flag[r][c+1]=='0'){
+			if(!isSurround(flag,board,r,c+1,boardRowSize,boardColSize)){
+				flag[r][c+1]='2';
+				return false;
+			}
+		}
+	}
+}
+else
+	return false;
+flag[r][c]='1';
+return true;
+ }
+  void solve(char** board, int boardRowSize, int boardColSize) {
+   if(boardRowSize<=2||boardColSize<=2)
+       return ;
+     int i,j;
+ char flag[1000][1000];
+ memset(flag,'0',sizeof(flag));
+ for(i=1;i<boardRowSize-1;i++){
+	for(j=1;j<boardColSize-1;j++){
+		if(board[i][j]=='O'){
+			if(flag[i][j]=='1')
+				board[i][j]='X';
+			else if(flag[i][j]=='0'){
+				if(isSurround(flag,board,i,j,boardRowSize,boardColSize)){
+					flag[i][j]='1';
+					board[i][j]='X';
+				}
+				else
+					flag[i][j]='2';
+			}
+		}
+	}
+}
+ }

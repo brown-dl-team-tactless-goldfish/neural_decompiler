@@ -1,0 +1,73 @@
+# Definition for a binary tree node.
+# class TreeNode:
+#     def __init__(self, x):
+#         self.val = x
+#         self.left = None
+#         self.right = None
+
+# get all leaf->root path while traversing the tree
+# get the paths with longest length
+# find the 1st common node
+# Example leaf->node
+# longest_path =  [[7, 2, 5, 3], [4, 2, 5, 3]]
+# first commond node is node 2
+
+
+class Solution:
+    def subtreeWithAllDeepest(self, root: TreeNode) -> TreeNode:
+        level_maps = {}
+
+        def helper(curNode, curLevel, curPath):
+            if (curNode == None):
+                return
+
+            curPath = [curNode] + curPath
+            if (curLevel not in level_maps):
+                level_maps[curLevel] = [curPath]
+            else:
+                level_maps[curLevel].append(curPath)
+
+            helper(curNode.left, curLevel+1, curPath)
+            helper(curNode.right, curLevel+1, curPath)
+        helper(root, 0, [])
+        # print ("end level_maps = ", level_maps)
+
+        longest_level = -1
+        longest_path = []
+        for k, v in level_maps.items():
+            # print ("k = ", k)
+            # print ("v = ", v)
+
+            if (k > longest_level):
+                longest_level = k
+                longest_path = v
+        # print ("longest_level = ", longest_level)
+        # print ("longest_path = ", longest_path)
+
+        n = len(longest_path)
+        print("n = ", n)
+
+        if (n == 0):
+            print("?")
+        elif (n == 1):
+            return longest_path[0][0]
+        else:
+            while (1):
+                candidates = []
+                sum = 0
+                for i in range(n):
+                    tmpNode = longest_path[i].pop(0)
+                    candidates.append(tmpNode)
+                    sum += tmpNode.val
+                # print ("candidates = ", candidates)
+                # print ("sum = ", sum)
+
+                flag = True
+                for i in range(n):
+                    if (sum // n == candidates[i].val):
+                        continue
+                    else:
+                        flag = False
+
+                if (flag == True):
+                    return candidates[0]

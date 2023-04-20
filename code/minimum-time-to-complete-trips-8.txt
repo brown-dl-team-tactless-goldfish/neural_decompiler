@@ -1,0 +1,40 @@
+class Solution {
+public:
+    //Why I was not able to understand this is binary search
+    
+    long long minimumTime(vector<int>& A, int tot_trip) {
+        long long ans = 1e18;
+        
+        //upper bound in worst case is max_value*tot_trip , tot_trip can be upto 10^7 and max_value = 10^7 
+        //so 10^14 in worst case .  
+         
+        
+        long long start = 1,end = 1e14,mid = (start+end)/2;
+         
+        
+        while(start<=end){
+            
+            long long current_trip = 0;
+
+            for(auto&x:A){
+                current_trip +=(mid/x);
+                
+                //if current number of trips in time 'mid' is greater
+                //than equal to required total_trip we go out of loop as we have achieved total trip
+                if(current_trip >= tot_trip){
+                    break;
+                }
+            }
+            if(current_trip >= tot_trip){
+                end = mid-1;
+                ans = min(ans,mid);
+                mid = (start+end)/2;
+            }
+            else{
+                start = mid+1;
+                mid = (start+end)/2;
+            }
+        }
+        return ans;
+    }
+} ;

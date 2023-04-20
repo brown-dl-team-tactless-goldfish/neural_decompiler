@@ -1,0 +1,57 @@
+    if(dp[cur].find(left) != dp[cur].end())
+    {
+        return dp[cur][left];
+    }
+    
+    int res1, res2;
+    
+    if(arr1[cur] > left)    
+    {
+        res1 = helper(cur+1, arr1[cur], arr1,arr2,dp);
+    }
+    else
+    {
+        res1 = INT_MAX;
+    }
+    
+    int it = upper_bound(arr2.begin(),arr2.end(), left) - arr2.begin();
+    
+    if(it == arr2.size())
+    {
+       res2  = INT_MAX;
+    }
+    else
+    {
+        res2 = helper(cur+1,arr2[it],arr1,arr2, dp);
+    }
+    
+    if(res2 == INT_MAX)
+    {
+        dp[cur][left] = res1;
+    }
+    
+    else
+    {
+        dp[cur][left] = min(res1,res2+1);
+    }
+    
+    return dp[cur][left];
+    
+    
+}
+int makeArrayIncreasing(vector<int>& arr1, vector<int>& arr2) {
+    
+    
+    int val;
+    
+    sort(arr2.begin(),arr2.end());
+    
+     vector<unordered_map<int,int>> dp(2001);
+    
+    val = helper(0,INT_MIN,arr1,arr2, dp);
+    
+    
+    return val == INT_MAX?-1: val;
+    
+    
+}

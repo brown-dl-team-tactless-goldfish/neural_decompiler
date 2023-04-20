@@ -1,0 +1,35 @@
+class Solution {
+    // support variables
+    int maxX, maxY;
+    bool canReachEnd = false;
+    vector<vector<int>> grid;
+    void dfs(int x = 0, int y = 0) {
+        // exit case
+        if (canReachEnd) return;
+        // destination reached
+        if (x == maxX && y == maxY) {
+            canReachEnd = true;
+            return;
+        }
+        // marking the current node as visited
+        grid[y][x] = 0;
+        // going south
+        if (y < maxY && grid[y + 1][x]) dfs(x, y + 1);
+        // going east
+        if (x < maxX && grid[y][x + 1]) dfs(x + 1, y);
+    }
+public:
+    bool isPossibleToCutPath(vector<vector<int>> &tmp) {
+        // giving values to instance variables
+        swap(grid, tmp);
+        maxX = grid[0].size() - 1, maxY = grid.size() - 1;
+        // first run
+        dfs();
+        // destination and end were already disconnected
+        if (!canReachEnd) return true;
+        // second run
+        canReachEnd = false;
+        dfs();
+        return !canReachEnd;
+    }
+};

@@ -1,0 +1,167 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+#define SSIZE 2048
+
+
+static int *intStack;
+static int stackSize;
+static int stackTop;
+
+int createStack(void) {
+    stackTop = -1;
+    stackSize = SSIZE;
+    intStack = (int *)malloc(sizeof(int)*stackSize);
+    if(intStack == NULL) return 0;
+    
+    return 1;
+}
+
+inline int pushStack(int val) {
+    stackTop++;
+    if(stackTop >= stackSize) {
+        stackSize *= 2;
+        intStack = (int *)realloc(intStack, sizeof(int)*stackSize);
+        if(intStack == NULL) return 0;
+    }
+    intStack[stackTop] = val;
+    
+    return 1;
+}
+
+inline int popStack(void) {
+    int val;
+    val = intStack[stackTop];
+    stackTop--;
+    return val;
+}
+
+inline int peekStack(void) {
+    return intStack[stackTop];
+}
+
+inline int isEmptyStack(void) {
+    if(stackTop == -1) return 1;
+    
+    return 0;
+}
+
+inline int countStack(void) {
+    return stackTop + 1;
+    
+    return 0;
+}
+
+/* counting hash */
+typedef struct hhashlist {
+    int key;
+    int val;
+    struct hhashlist *next;
+} hashlist;
+
+static int hashsize;
+static hashlist **hlist;
+
+void createHash(int size) {
+    hashsize = size;
+    hlist = (hashlist **)calloc(hashsize, sizeof(hashlist*));
+}
+
+inline hashlist *findNodeHash(int key) {
+    register hashlist *node;
+    
+    node = hlist[(unsigned int)key%hashsize];
+    while(node != NULL) {
+        if(node->key == key) {
+            return node;
+        }
+        node = node->next;
+    }
+    
+    return NULL;
+}
+
+inline void insertHash(int key) {
+    register hashlist *node;
+    
+    node = findNodeHash(key);
+    
+    if(node == NULL) {
+        node = (hashlist *)malloc(sizeof(hashlist));
+        node->key = key;
+        node->val = 1;
+        node->next = hlist[(unsigned int)key%hashsize];
+        hlist[(unsigned int)key%hashsize] = node;
+    } else {
+        node->val = node->val + 1;
+    }
+    
+}
+
+// on success return 1;
+inline int lookupHash(int key, int *val) {
+    register hashlist *node;
+
+    node = findNodeHash(key);
+    if(node == NULL) return 0;
+    
+    *val = node->val;
+
+    return 1;
+}
+
+void traverseBST(struct TreeNode *root) {
+    if(root == NULL) return;
+    
+    insertHash(root->val);
+    
+    traverseBST(root->left);
+    traverseBST(root->right);
+}
+
+#define HSIZE 2048
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* findMode(struct TreeNode* root, int* returnSize){
+    register int i;
+    int maxcnt, cnt;
+    int *ret;
+    hashlist *hl;
+
+    createHash(HSIZE);
+    createStack();
+    traverseBST(root);
+
+    maxcnt = -1;
+    for(i=0; i<HSIZE; i++) {
+        hl = hlist[i];
+        while(hl != NULL) {
+            cnt = hl->val;
+            if(cnt > maxcnt) {
+                maxcnt = cnt;
+                while(isEmptyStack() == 0) {
+                    popStack();
+                }
+                pushStack(hl->key);
+            } else if(cnt == maxcnt) {
+                pushStack(hl->key);
+            }
+            hl = hl->next;
+        }
+    }
+
+    *returnSize = countStack();
+    ret = (int *)malloc(sizeof(int)*(*returnSize));
+    for(i=0; i<*returnSize; i++) {
+        ret[i] = popStack();
+    }
+    return ret;
+}

@@ -1,0 +1,37 @@
+class Solution {
+public:
+
+    int get(int s,int e,vector<int>& n){
+        int a = 1, b = 1;
+        if(s != 0) a = n[s-1];
+        if(e != n.size()-1) b = n[e+1];
+        return a*b;
+    }
+
+    int maxCoins(vector<int>& nums) {
+        if(nums.size()==1) return nums[0];
+        vector<vector<int>> dp(nums.size(),vector<int> (nums.size(),0));
+        dp[0][0] = nums[0]*nums[1];
+        dp[nums.size()-1][nums.size()-1] = nums[nums.size()-1]*nums[nums.size()-2];
+        for(int i = 1;i<nums.size()-1;i++) dp[i][i] = nums[i]*nums[i-1]*nums[i+1];
+        for(int i=1;i<nums.size();i++){
+            int r = 0;
+            int c = i;
+            while(r < nums.size() && c < nums.size()){
+                // here every dp[r][c] computed by assuming k'th ballon is burst in last
+                int tem = 0;
+                for(int k=r;k<=c;k++){
+                    // k'th ballon is burst in last
+                    int pr = 0;
+                    if(k != r) pr = dp[r][k-1];
+                    int nx = 0;
+                    if(k != c) nx = dp[k+1][c];
+                    tem = max(tem, pr + get(r,c,nums)*nums[k] + nx);
+                }
+                dp[r][c] = tem;
+                r++; c++;
+            }
+        }
+        return dp[0][nums.size()-1];
+    }
+};

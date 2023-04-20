@@ -1,0 +1,83 @@
+class Solution
+{
+  public:
+    vector<vector<int>> queensAttacktheKing(vector<vector<int>>& queens, vector<int>& king)
+    {
+      vector<vector<int>> attackingQueens;
+      const int ki = king.front(), kj = king.back();
+      
+	  // The king can only be attacked from 8 directions
+      vector<vector<int>> closestQueens(8, vector<int>{-1,-1});
+      for (const auto& queen : queens)
+      {
+        const int qi = queen.front(), qj = queen.back();
+        if (qi < ki && qj < kj)
+        {
+          const auto r = abs(qi - ki);
+          const auto c = abs(qj - kj);
+          if (r != c) continue;
+          auto& closestQueen = closestQueens[0];
+          if (closestQueen.front() == -1 || abs(closestQueen.front() - ki) > r)
+            closestQueen = queen;
+        }
+        else if (qi < ki && qj == kj)
+        {
+          auto& closestQueen = closestQueens[1];
+          if (closestQueen.front() == -1 || closestQueen.front() < qi)
+            closestQueen = queen;
+        }
+        else if (qi < ki && qj > kj)
+        {
+          const auto r = abs(qi - ki);
+          const auto c = abs(qj - kj);
+          if (r != c) continue;
+          auto& closestQueen = closestQueens[2];
+          if (closestQueen.front() == -1 || abs(closestQueen.front() - ki) > r)
+            closestQueen = queen;
+        }
+        else if (qi == ki && qj < kj)
+        {
+          auto& closestQueen = closestQueens[3];
+          if (closestQueen.back() == -1 || closestQueen.back() < qj)
+            closestQueen = queen;
+        }
+        else if (qi == ki && qj > kj)
+        {
+          auto& closestQueen = closestQueens[4];
+          if (closestQueen.back() == -1 || closestQueen.back() > qj)
+            closestQueen = queen;
+        }
+        else if (qi > ki && qj < kj)
+        {
+          const auto r = abs(qi - ki);
+          const auto c = abs(qj - kj);
+          if (r != c) continue;
+          auto& closestQueen = closestQueens[5];
+          if (closestQueen.front() == -1 || abs(closestQueen.front() - ki) > r)
+            closestQueen = queen;
+        }
+        else if (qi > ki && qj == kj)
+        {
+          auto& closestQueen = closestQueens[6];
+          if (closestQueen.front() == -1 || closestQueen.front() > qi)
+            closestQueen = queen;
+        }
+        else if (qi > ki && qj > kj)
+        {
+          const auto r = abs(qi - ki);
+          const auto c = abs(qj - kj);
+          if (r != c) continue;
+          auto& closestQueen = closestQueens[7];
+          if (closestQueen.front() == -1 || abs(closestQueen.front() - ki) > r)
+            closestQueen = queen;
+        }
+      }
+      
+      for (const auto& closestQueen : closestQueens)
+      {
+        if (closestQueen.front() == -1) continue;
+        attackingQueens.push_back(closestQueen);
+      }
+      return attackingQueens;
+    }
+};

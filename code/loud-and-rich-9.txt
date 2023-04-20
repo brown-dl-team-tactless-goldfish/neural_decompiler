@@ -1,0 +1,31 @@
+class Solution {
+public:
+    void dfs(unordered_map<int, unordered_set<int>> & rich, vector<int> & quiet, int guy, int & person, vector<bool> & visited){
+        if(visited[guy]) return;
+        if(quiet[person] > quiet[guy]){
+            person = guy;
+        }
+        if(rich.find(guy) == rich.end()){
+            return;
+        }
+        visited[guy] = true;
+        for(int r : rich[guy]){
+            dfs(rich, quiet, r, person, visited);
+        }
+    }
+    vector<int> loudAndRich(vector<vector<int>>& richer, vector<int>& quiet) {
+        vector<int> res;
+        int n = quiet.size();
+        unordered_map<int, unordered_set<int>> rich(n);
+        for(auto r : richer){
+            rich[r[1]].insert(r[0]);
+        }
+        for(int i = 0; i < n; i++){
+            int person = i;
+            vector<bool> visited(n, false);
+            dfs(rich, quiet, i, person, visited);
+            res.push_back(person);
+        }
+        return res;
+    }
+};

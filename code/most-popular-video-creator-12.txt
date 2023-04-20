@@ -1,0 +1,17 @@
+class Solution {
+public:
+    vector<vector<string>> mostPopularCreator(vector<string>& creators, vector<string>& ids, vector<int>& views) {
+        long N = ids.size(), max_score = 0;
+        unordered_map<string, long> score_mp;
+        unordered_map<string, pair<string, int>> id_mp;
+        for(int i = 0; i < N; i++) {
+            score_mp[creators[i]] += views[i];
+            max_score = max(max_score, score_mp[creators[i]]);
+            if(id_mp.find(creators[i]) == id_mp.end() || views[i] > id_mp[creators[i]].second || views[i] == id_mp[creators[i]].second && ids[i] < id_mp[creators[i]].first) id_mp[creators[i]] = {ids[i], views[i]};
+        }
+
+        vector<vector<string>> res;
+        for(auto& [c, i] : score_mp) if(i == max_score) res.push_back({c, id_mp[c].first});
+        return res;
+    }
+};

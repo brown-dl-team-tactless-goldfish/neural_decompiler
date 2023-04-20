@@ -1,0 +1,28 @@
+bool isSpecial(string&S, int st, int len) {
+  auto zeros = 0, ones = 0;
+  for (auto i = st; i < st + len && ones >= zeros; ++i) {
+    zeros += S[i] == '0' ? 1 : 0;
+    ones += S[i] == '1' ? 1 : 0;
+  }
+  return zeros == ones;
+}
+string makeLargestSpecial(string S) {
+  string bestS;
+  while (bestS != S) {
+    S = bestS.empty() ? S : bestS;
+    bestS = S;
+    for (auto len = S.size() / 2 - (S.size() / 2) % 2; len >= 2; len -= 2) {
+      for (auto i = 0; i < S.size() - len - 2; ++i) {
+        if (isSpecial(S, i, len)) {
+          for (auto len1 = len; i + len + len1 <= S.size(); len1 += 2) {
+            if (isSpecial(S, i + len, len1)) {
+              bestS = max(bestS, S.substr(0, i) + S.substr(i + len, len1) + S.substr(i, len) + S.substr(i + len + len1));
+              break;
+            }
+          }
+        }
+      }
+    }
+  }
+  return S;
+}

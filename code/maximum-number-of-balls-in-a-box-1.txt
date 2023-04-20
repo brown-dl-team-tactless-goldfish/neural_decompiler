@@ -1,0 +1,32 @@
+inline int sumOfDigits(int n){
+    int sum = 0;
+    while (n > 0) {
+        sum += n % 10;
+        n /= 10;
+    }
+    return sum;
+}
+
+#define BOXCNT 46
+int countBalls(int lowLimit, int highLimit){
+    int max = 0;
+    int boxes[BOXCNT] = {};
+    int boxN = sumOfDigits(lowLimit) - 1;
+    
+    for (int i = lowLimit; i <= highLimit; ++i) {
+        if (i % 10 == 0) { // this conditional helps optimize algorithm by reducing the overall number of division and modulus operations
+            boxN = sumOfDigits(i);
+        } else {
+            boxN++;
+        }
+        boxes[boxN]++;
+    }
+    
+    for (int i = 0; i < BOXCNT; ++i) {
+        if (boxes[i] > max) {
+            max = boxes[i];
+        }
+    }
+        
+    return max;
+}

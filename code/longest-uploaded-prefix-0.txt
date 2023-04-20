@@ -1,0 +1,36 @@
+typedef struct {
+    bool* data;
+    int size;
+    int longest;
+} LUPrefix;
+
+
+LUPrefix* lUPrefixCreate(int n) {
+    LUPrefix* ret = malloc(sizeof(LUPrefix));
+    ret->data = calloc((n+1) , sizeof(bool));
+    ret->size = n;
+    ret->longest = 0;
+    return ret;
+}
+
+void lUPrefixUpload(LUPrefix* obj, int video) {
+    obj->data[video] = true;
+    if(obj->data[1] == true){
+        int i = obj->longest + 1;
+        for(i = obj->longest + 1; i <= obj->size; i++){
+            if(obj->data[i] != true)
+                break;
+        }
+        obj->longest = i-1;
+    }
+}
+
+int lUPrefixLongest(LUPrefix* obj) {
+    return obj->longest;
+}
+
+void lUPrefixFree(LUPrefix* obj) {
+    free(obj->data);
+    free(obj);
+    
+}

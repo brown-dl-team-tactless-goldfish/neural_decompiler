@@ -1,0 +1,41 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+int res_size = 500;
+void Backtrack(char *s, char **Dict, int DictSize, char **res, int *returnSize, int *idxmap, \
+               int mapsize, int len){
+
+    if(*s == '\0'){
+        res[*returnSize] = malloc(len * sizeof(char));
+        char *head = res[*returnSize];
+        for(int i=0; i<mapsize; ++i){
+            int len = strlen(Dict[idxmap[i]]);
+            strcpy(head, Dict[idxmap[i]]);
+            head[len] = ' ';
+            head = head+len+1;
+        }
+
+        res[*returnSize][len-1] = '\0';
+        ++(*returnSize);
+        return;
+    }
+    //  add wordDict to hashtable can reduce the search times
+    for(int i=0; i<DictSize; ++i){
+        int wlen = strlen(Dict[i]);
+        if(strncmp(s, Dict[i], wlen) == 0){
+            idxmap[mapsize] = i;
+            Backtrack(s+wlen, Dict, DictSize, res, returnSize, idxmap, mapsize+1, len+wlen+1);
+        }
+    }
+}
+
+char ** wordBreak(char * s, char ** wordDict, int wordDictSize, int* returnSize){
+    char **res = malloc(res_size * sizeof(char*));
+    int *idxmap = malloc(res_size * sizeof(int));
+    *returnSize = 0;
+
+    Backtrack(s, wordDict, wordDictSize, res, returnSize, idxmap, 0, 0);
+    return res;
+}
+

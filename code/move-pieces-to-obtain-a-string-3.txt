@@ -1,0 +1,80 @@
+class Solution {
+public:
+    bool canChange(string start, string target) {
+		// return false if the length of start and target are not same
+        if(start.size() != target.size()) return false;
+		
+		// return false is the ordering of L and R in start and target are not same
+        string s,t;
+        for(auto &i: start) {
+            if(i == 'L' || i == 'R') s.push_back(i);
+        }
+        for(auto &i: target) {
+            if(i == 'L' || i == 'R') t.push_back(i);
+        }
+        if(s != t) return false;
+        
+		// Now we can move L's to the left and R's to the right in start
+		// Number of blanks in left of L and the right of R in start should be graeter than or equal to the number of blanks in left of L and the right of R in target
+        int blank_right_in_start = 0;
+        char prev = '_';
+        for(auto &i: start) {
+            if(i == '_') {
+                if(prev == 'R') {
+                    blank_right_in_start++;
+                }
+            } else if(i == 'R') {
+                prev = 'R';
+            } else {
+                prev = 'L';
+            }
+        }
+        
+        int blank_left_in_start = 0;
+        prev = '_';
+        for(int i = start.size()-1; i >= 0; i--) {
+            auto c = start[i];
+            if(c == '_') {
+                if(prev == 'L') {
+                    blank_left_in_start++;
+                }
+            } else if(c == 'R') {
+                prev = 'R';
+            } else {
+                prev = 'L';
+            }
+        }
+        
+        int blank_right_in_target = 0;
+        prev = '_';
+        for(auto &i: target) {
+            if(i == '_') {
+                if(prev == 'R') {
+                    blank_right_in_target++;
+                }
+            } else if(i == 'R') {
+                prev = 'R';
+            } else {
+                prev = 'L';
+            }
+        }
+        
+        int blank_left_in_target = 0;
+        prev = '_';
+        for(int i = target.size()-1; i >= 0; i--) {
+            auto c = target[i];
+            if(c == '_') {
+                if(prev == 'L') {
+                    blank_left_in_target++;
+                }
+            } else if(c == 'R') {
+                prev = 'R';
+            } else {
+                prev = 'L';
+            }
+        }
+        
+        if(blank_right_in_start >= blank_right_in_target && blank_left_in_start >= blank_left_in_target) return true;
+        return false;
+    }
+};

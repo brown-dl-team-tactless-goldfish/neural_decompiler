@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int countTexts(string pressedKeys) {
+        int strike = 1;
+        int r[pressedKeys.size() + 1];
+        for (int i = 0; i <= pressedKeys.size(); i++) {
+            r[i] = 0;
+        }
+        r[0] = 1;
+        r[1] = 1;
+        
+        for (int i = 1; i < pressedKeys.size(); i++) {
+            char c = pressedKeys[i];
+            int limit = limitPerKey(c);
+            
+            if (c == pressedKeys[i-1]) {
+                strike++;
+            }
+            else {
+                strike = 1;
+            }
+            
+            if (strike > limit) {
+                strike = limit;
+            }
+            
+            for (int j = 1; j <= limit && i - j >= -1 && strike - j >= 0; j++) {
+                r[i+1] += r[i-j+1];
+                r[i+1] %= 1000000007;
+            }
+        }
+        
+        return r[pressedKeys.size()];
+    }
+
+    int limitPerKey(char c) {
+        int d = c-'0';
+        if (d <= 1) return 0;
+        else if (d < 7 || d == 8) return 3;
+        else return 4;
+    }
+};

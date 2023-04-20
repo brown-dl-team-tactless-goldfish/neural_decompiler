@@ -1,0 +1,38 @@
+class Solution {
+public:
+    vector<int> fullBloomFlowers(vector<vector<int>>& flowers, vector<int>& persons) {
+        int n = flowers.size();
+        int m = persons.size();
+        vector<int> res(m);
+        
+        vector<pair<int,int>> v;
+        for (auto &f : flowers) {
+            v.emplace_back(f[0], 0); // 0 means start
+            v.emplace_back(f[1], 1); // 1 means end
+        }
+        
+        sort(v.begin(), v.end());
+        
+        vector<pair<int,int>> p;
+        for (int i = 0; i < m; i++) {
+            p.emplace_back(persons[i], i);
+        }
+        
+        sort(p.begin(), p.end());
+        
+        int cur = 0;
+        int i = 0, j = 0;
+        while (i < 2*n and j < m) {
+            if ((v[i].first <= p[j].first and v[i].second == 0) or (v[i].first < p[j].first and v[i].second == 1)) {
+                cur += (v[i].second == 0) ? 1 : -1;
+                i++;
+            }
+            else {
+                res[p[j].second] = cur;
+                j++;
+            }
+        }
+        
+        return res;
+    }
+};

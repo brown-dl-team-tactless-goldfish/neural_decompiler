@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int getMaxLen(vector<int>& nums) {
+        nums.push_back(0);
+        int ans = sol(nums);
+        reverse(nums.begin(), nums.end());
+        nums.push_back(0);
+        return max(ans, sol(nums));
+    }
+    int sol(vector<int> & nums) {
+		int a = 0, c = 1;//a:ans, c:candidate 
+        int len=0;
+        int neg=0; //the number of negative integer
+        int idx=0;
+        for(auto &v: nums) {
+            if(v==0) {
+                if(neg%2==0) {
+                    a = max(a,len);
+                } else {
+                    int i = idx;
+                    while(nums[i]>=0) {
+                        i--;
+                        len--;
+                    }
+                    //variable len here is the 
+                    //length from zero to of last even number of negative integer.
+                    a = max(a,len);
+                }
+                len = 0;
+                neg = 0;
+                
+            } else {
+                len++;
+                if(v<0)neg++;
+            }
+            idx++;
+        }	
+		return a;
+    }
+};

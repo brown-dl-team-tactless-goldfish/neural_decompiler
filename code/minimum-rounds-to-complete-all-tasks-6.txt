@@ -1,0 +1,16 @@
+int cmpFunc(const void* a, const void* b){ return *(int*)a - *(int*)b; }
+
+int minimumRounds(int* tasks, int tasksSize){
+    int result=0, count=1;
+
+    qsort(tasks, tasksSize, sizeof(int), cmpFunc);
+    for(int i=1; i<tasksSize; i++){
+        if(tasks[i]!=tasks[i-1] || i>=(tasksSize-1)){
+            if(i>=(tasksSize-1)){ count = tasks[i]==tasks[i-1]?count+1:1; }
+            if(count==1){ return -1; }
+            result += (count/3)+(count%3?1:0); count=1;
+        }else{ count++; }
+    }
+
+    return result?result:-1;
+}

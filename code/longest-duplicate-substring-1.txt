@@ -1,0 +1,101 @@
+
+struct Pair {
+    long long hash;
+    int index;
+    char* s;
+    int len;
+};
+
+int cmp(const void* a, const void* b) {
+    const struct Pair* a1 = a;
+    const struct Pair* b1 = b;
+    if (a1->hash < b1->hash) {
+        return -1;
+    } else if (a1->hash > b1->hash) {
+        return 1;
+    } else {
+        return memcmp(a1->s, b1->s, a1->len);
+    }
+}
+
+long long ipow(int base, int k, long long mod) {
+    long long ans = 1;
+    int i;
+    for (i = 0; i < k; i++) {
+        ans = (ans * base) % mod;
+    }
+    return ans;
+}
+
+char* check(char*s, int l, int k) {
+    struct Pair A[100005];
+    long long base = 'z'-'a'+1;
+    long long mod = 248115287320373657LL;
+    long long baseK = ipow(base, k-1, mod);
+    int i, j;
+    int count = 1;
+    A[0].index = 0;
+    A[0].hash = 0;
+    A[0].s = &s[0];
+    A[0].len = k;
+    for (i = 0; i < k; i++) {
+        A[0].hash = (A[0].hash*base+(s[i]-'a')) % mod;
+    }
+    j = 1;
+    for (; i < l; i++) {
+        A[j].hash = (mod + A[j-1].hash-(baseK*(s[i-k]-'a')) % mod) % mod;
+        A[j].hash = (A[j].hash*base+(s[i]-'a')) % mod;
+        A[j].index = j;
+        A[j].s = &s[j];
+        A[j].len = k;
+        j++;
+    }
+    qsort(A, j, sizeof(struct Pair), cmp);
+    for (i = 1; i < j; i++) {
+        if (A[i].hash == A[i-1].hash && 
+           memcmp(A[i].s, A[i-1].s, k) == 0) {
+            count ++;
+        } else {
+            if (count > 1) {
+                char* r = malloc(k+1);
+                memcpy(r, &s[A[i-1].index], k);
+                r[k] = 0;
+                return r;
+            }
+            count = 1;
+        }
+    }
+    if (count > 1) {
+        char* r = malloc(k+1);
+        memcpy(r, &s[A[i-1].index], k);
+        r[k] = 0;
+        return r;
+    }
+    return NULL;
+}
+
+char * longestDupSubstring(char * s){
+    char* ans = NULL;
+    char* tmp;
+    int len = strlen(s);
+    int l = 1;
+    int r = len-1;
+    int m;
+    while (l <= r) {
+        m = l+(r-l)/2;
+        tmp = check(s, len, m);
+        if (tmp == NULL) {
+            r = m-1;
+        } else {
+            if (ans) {
+                free(ans);
+            }
+            ans = tmp;
+            l = m+1;
+        }
+    }
+    if (ans == NULL) {
+        return strdup("");
+    }
+    return ans;
+}

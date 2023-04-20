@@ -1,0 +1,47 @@
+class Solution {
+public:
+    int bestTeamScore(vector<int>& scores, vector<int>& ages) {
+        
+        // total players
+        int n = scores.size();
+        
+        // <age,score> pair collection
+        vector<pair<int,int>>players;
+        
+        // store <age,score> pair in the players collection
+        for(int i=0;i<n;i++)
+            players.push_back(make_pair(ages[i],scores[i]));
+        
+        // sort players based on ages ascending order and then scores (same age scores ascending order)
+        sort(players.begin(),players.end());
+        
+        // collection stores the max scrore ith player 
+        // can get if included in a team with same of smaller age players 
+        int dp[n];
+        
+        // max score of possible team
+        int maxScore = INT_MIN;
+        
+        // loop through all players
+        for(int i=0;i<n;i++)
+        {
+            dp[i] = players[i].second;
+            
+            // Compare score with all previous players and if previous player 
+            // has score <= score of current player then we can include current
+            // player in to that team cause current player has age >= previous player age
+            // Also update the max score of current player when he is included in a team
+            for(int j=0;j<i;j++)
+            {
+                // curernt player can be included  in a team if previous player has equal or smaller score 
+                if(players[i].second >= players[j].second)
+                    dp[i] = max(dp[i],dp[j]+players[i].second);
+            }
+            
+            // update max score of possible team 
+            maxScore = max(maxScore,dp[i]);
+        }
+        
+        return maxScore;
+    }
+};

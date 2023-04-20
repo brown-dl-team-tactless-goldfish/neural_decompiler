@@ -1,0 +1,64 @@
+class Solution {
+public:
+    int openLock(vector<string>& deadends, string target)
+    {
+        
+        map < string , int > dead ; 
+        
+        for ( auto i : deadends )
+                dead [ i ] = 1 ; 
+        
+        if ( dead.find ( "0000" )!= dead.end() )
+                return -1 ; 
+        
+        
+        
+        queue < pair < string , int > > q ; 
+        q.push( { "0000" , 0 } ) ;
+        
+        map < string , int > visit ;
+        visit [ "0000" ] = 1 ; 
+        while ( !q.empty() )
+        {
+            auto t = q.front() ; 
+            q.pop() ; 
+            string s = t.first ; 
+            int c = t.second ; 
+            if ( s == target )
+                    return c ; 
+            
+            for ( int i = 0  ; i < 4 ; i ++ )
+            {
+                
+                    
+                    char e = s [ i ] ; 
+                    int x = int ( s [ i ] - '0')  + 1 ;
+                    x = x % 10 ;
+                    s [ i ] = char( x + '0' ) ; 
+                    
+                    if ( dead.find ( s ) == dead.end() and visit .find ( s ) == visit.end() )
+                    {
+                        visit [ s ] = 1 ; 
+                        q.push ( { s , c + 1 } ) ;
+                    }
+                
+                    x =  int ( e - '0') ;
+                    x = x == 0 ? 9 : x - 1 ; 
+        
+                    
+                    s [ i ] = char ( x + '0' ) ; 
+                    if ( dead.find ( s ) == dead.end() and visit .find ( s ) == visit.end() )
+                    {
+                        visit [ s ] = 1 ; 
+                        q.push ( { s , c + 1 } ) ;
+                    } 
+                           
+                    s [ i ] = e ; 
+                
+            }
+            
+        }
+        
+         return -1 ; 
+    }
+};

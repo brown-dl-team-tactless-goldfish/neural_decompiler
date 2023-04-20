@@ -1,0 +1,30 @@
+#define MAX_COMBS  128      // Worst case test: [6,8,12,5,9,3,4,11]  31
+
+void dfs(int *candidates, int canSize, int canIdx, int *curComb, int curIdx, int curTotal, int target, int **results, int *resIdx, int **colSizes) {
+    if(curTotal == target) {
+        results[*resIdx] = malloc(sizeof(int) * curIdx);
+        memcpy(results[*resIdx], curComb, sizeof(int) * curIdx);
+        (*colSizes)[*resIdx] = curIdx;
+        (*resIdx)++;
+        return;
+    }
+    
+    if(canIdx >= canSize || curTotal > target) return;
+    
+    curComb[curIdx++] = candidates[canIdx];
+    dfs(candidates, canSize, canIdx, curComb, curIdx, curTotal + candidates[canIdx], target, results, resIdx, colSizes);
+    curIdx--;
+    dfs(candidates, canSize, canIdx + 1, curComb, curIdx, curTotal, target, results, resIdx, colSizes);
+}
+
+int** combinationSum(int* candidates, int candidatesSize, int target, int* returnSize, int** returnColumnSizes){
+    int **results = malloc(sizeof(int *) * MAX_COMBS);
+    *returnColumnSizes = malloc(sizeof(int) * MAX_COMBS);
+    *returnSize = 0;
+    
+    int *curComb = malloc(sizeof(int) * target);        // there can be target number of 1s if we have 1 as element
+    // Initiate a DFS to find the combinations
+    dfs(candidates, candidatesSize, 0, curComb, 0, 0, target, results, returnSize, returnColumnSizes);
+    
+    return results;
+}

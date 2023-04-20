@@ -1,0 +1,80 @@
+class Solution {
+public:
+    const int nax = 1e5 + 1;
+    class UnionFind {
+        vector<int> st;
+        public:
+        UnionFind(int n) {
+            st = vector<int> (n);
+            for (int i = 0; i < n; i++) {
+                st[i] = i;
+            }
+        }
+        int find(int v) {
+            if (v == st[v]) return v;
+            return st[v] = find(st[v]);
+        }
+        void merge(int u, int v) {
+            int x = find(u);
+            int y = find(v);
+            if (x != y) {
+                if (y > x) {
+                    st[y] = x;
+                } else {
+                    st[x] = y;
+                }
+            }
+        }
+    };
+    bool gcdSort(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> prime(nax);
+        for (int i = 2; i < nax; i++) {
+            if (prime[i] == 0) {
+                for (int j = i; j < nax; j += i) {
+                    prime[j] = i;
+                }
+            }
+        }
+        map<int, vector<int>> put;
+        for (int i = 0; i < n; i++) {
+            int value = nums[i];
+            while (value > 1) {
+                int p = prime[value];
+                put[p].push_back(i);
+                while (value % p == 0) {
+                    value /= p;
+                }
+            }
+        }
+        UnionFind uf(n);
+        for (pair<int, vector<int>> p : put) {
+            vector<int>& v = p.second;
+            for (int i = 0; i < (int) v.size() - 1; i++) {
+                uf.merge(v[i + 1], v[i]);
+            }
+        }
+        vector<vector<int>> where(n);
+        for (int i = 0; i < n; i++) {
+            int p = uf.find(i);
+            where[p].push_back(i);
+        }
+        vector<int> num(n);
+        for (int i = 0; i < n; i++) {
+            vector<int> cp = where[i];
+            sort(where[i].begin(), where[i].end(), [&] (int p, int q) {
+                return nums[p] < nums[q];
+            });
+            for (int j = 0; j < (int) cp.size(); j++) {
+                num[cp[j]] = where[i][j];
+            }
+            
+        }
+        vector<int> in(n);
+        iota(in.begin(), in.end(), 0);
+        sort(in.begin(), in.end(), [&] (int i, int j) {
+            return nums[i] < nums[j];
+        });
+        return num == in;
+    }
+};

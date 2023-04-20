@@ -1,0 +1,45 @@
+public class FindSumPairs {
+    public int[] nums1;
+    public int[] nums2;
+    public Dictionary<int, int> nums2_dc;
+    public FindSumPairs(int[] nums1, int[] nums2) {
+        this.nums1 = nums1;
+        this.nums2 = nums2;
+        
+        nums2_dc = new Dictionary<int, int>();
+        foreach(int i in nums2){
+            if(!nums2_dc.ContainsKey(i))
+                nums2_dc.Add(i,0);
+            nums2_dc[i]++;
+        }
+    }
+    
+    public void Add(int index, int val) {
+        
+        nums2_dc[nums2[index]]--;
+        if(nums2_dc[nums2[index]] == 0)
+            nums2_dc.Remove(nums2[index]);
+        
+        nums2[index] += val;
+        if(!nums2_dc.ContainsKey(nums2[index]))
+            nums2_dc.Add(nums2[index], 0);
+        nums2_dc[nums2[index]]++;
+    }
+    
+    public int Count(int tot) {
+        int ans = 0;
+        for(int i=0; i<nums1.Length; i++){
+            if(nums2_dc.ContainsKey(tot - nums1[i]))
+                ans += nums2_dc[tot - nums1[i]];
+        }
+        return ans;
+        
+    }
+}
+
+/**
+ * Your FindSumPairs object will be instantiated and called as such:
+ * FindSumPairs obj = new FindSumPairs(nums1, nums2);
+ * obj.Add(index,val);
+ * int param_2 = obj.Count(tot);
+ */

@@ -1,0 +1,72 @@
+#define VOWELS 5
+int is_vowel(char c)
+{
+    int index = 0;
+    switch (c ){
+        case 'a':
+            index = 0;
+            break;
+        case 'e':
+            index = 1;
+            break;
+        case 'i':
+            index = 2;
+            break;
+        case 'o':
+            index = 3;
+            break;
+        case 'u':
+            index = 4;
+            break;
+        
+        default:
+            index = -1;
+            break;
+    }
+    return index;
+}
+
+int countVowelSubstrings(char * word){
+    int count_array[VOWELS] = {0};
+    int total_count = 0;
+    int count = 0;
+    int start = 0;
+    int end = VOWELS-1;
+    int flag = 0;
+    int j = 0;
+    
+    while (start <= (strlen(word)-1)){
+        count = start;
+        while(count <= end){
+            int index = is_vowel(word[count]);
+            if(index == -1){
+                start++;
+                end = start+(VOWELS-1);
+                //reset count array
+                memset(count_array, 0, sizeof(int)*VOWELS);
+                flag = 1;
+                break;
+            }
+            count_array[index] += 1;
+            count++;
+        }
+        if(!flag){
+            for (j = 0; j < VOWELS; j++){
+                if (!count_array[j]){
+                    //reset count array
+                    memset(count_array, 0, sizeof(int)*VOWELS);
+                    end++;
+                    break;
+                }
+            }
+            if(j == VOWELS){
+                total_count++;
+                end++;
+                //reset count array
+                memset(count_array, 0, sizeof(int)*VOWELS);
+            }   
+        }
+        flag = 0;
+    }
+    return total_count;
+}

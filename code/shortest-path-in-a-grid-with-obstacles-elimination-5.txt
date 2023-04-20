@@ -1,0 +1,67 @@
+class Solution {
+public:
+    class Node {
+        public:
+        int r;
+        int c;
+        int k;
+        
+        Node(int r, int c, int k) {
+            this->r = r;
+            this->c = c;
+            this->k = k;
+        }
+    };
+    
+    int dir[4][2] = {{0,1},{0,-1},{1,0},{-1,0}};
+    
+    int shortestPath(vector<vector<int>>& grid, int k) {
+        int m = grid.size(), n = grid[0].size();
+        queue<Node> q;
+        q.push(Node(0, 0, k));
+        
+        unordered_map<int,unordered_set<int>> visited;
+        visited[0].insert(k);
+        
+        int steps = 0;
+        while(!q.empty())
+        {
+            int c = q.size();
+            unordered_set<int> added;
+            
+            while(c--)
+            {
+                auto node = q.front();
+                q.pop();
+                
+                if(node.r == m-1 && node.c == n-1)
+                {
+                    return steps;
+                }
+
+                for(int i=0; i<4; i++)
+                {
+                    int nr = node.r + dir[i][0];
+                    int nc = node.c + dir[i][1];
+                    
+                    int pos = nr*n +nc;
+                    if(nr<0 || nr==m || nc<0 || nc==n)
+                        continue;
+                    
+                    if(visited[pos].count(node.k))
+                        continue;
+                    
+                    if(grid[nr][nc] == 0 || node.k)
+                    {
+                        q.push(Node(nr,nc,grid[nr][nc] == 0 ? node.k : node.k - 1));
+                        visited[pos].insert(node.k);
+                    }
+                }
+            }
+            
+            steps++;
+        }
+        
+        return -1;
+    }
+};

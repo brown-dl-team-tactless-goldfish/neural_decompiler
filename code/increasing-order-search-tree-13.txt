@@ -1,0 +1,30 @@
+void MyFun(struct TreeNode* root);
+
+struct TreeNode* prev=NULL;
+struct TreeNode* increasingBST(struct TreeNode* root) {
+    //to return if the tree is empty     
+    if(root == NULL)
+        return NULL;
+    
+    struct TreeNode* head = root;
+    
+    while(head->left != NULL){
+        head = head->left;
+    }// to set the address of the minimum value to head
+    
+    MyFun(root);
+    return head;
+}
+//A function to reset links using Inorder traversal
+//If you don't understand it search in youtube to learn Inorder traversal
+void MyFun(struct TreeNode* root) {
+    if(root == NULL)
+        return ;
+    MyFun(root->left);
+    if(prev != NULL) {
+        root->left=NULL; 
+        prev->right=root; 
+    }
+    prev = root; //to keeping track with the previous node
+    MyFun(root->right); 
+}

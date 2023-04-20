@@ -1,0 +1,31 @@
+/*
+// Definition for Employee.
+class Employee {
+public:
+    int id;
+    int importance;
+    vector<int> subordinates;
+};
+*/
+
+class Solution {
+public:
+    int dfs(int id, unordered_map<int, Employee*>& tree) {
+        int imp = tree[id]->importance;
+        for (int next : tree[id]->subordinates)
+             imp += dfs(next, tree);
+        return imp;
+    }
+    
+    int getImportance(vector<Employee*> e, int id) {
+        unordered_map<int, Employee*> tree;
+        for (auto& emp : e) {
+            tree.insert({emp->id, new Employee()});
+            tree[emp->id]->importance = emp->importance;
+            for (int v : emp->subordinates)
+                tree[emp->id]->subordinates.push_back(v);
+        }
+
+        return dfs(id, tree);
+    }
+};

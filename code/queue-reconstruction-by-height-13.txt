@@ -1,0 +1,62 @@
+def reconstructQueue(self, people):
+    """
+    :type people: List[List[int]]
+    :rtype: List[List[int]]
+    """
+    ##print "people = ", people
+
+    numPpl = len(people)
+    #print "numPpl = ", numPpl
+
+    import sys
+
+    class local:
+        res = [[sys.maxint, 0] for i in range(numPpl)]
+        emptySpace = [0 for i in range(numPpl)]
+
+    #print "local.emptySpace = ", local.emptySpace
+
+    people.sort(key=lambda x: (x[0], x[1]))
+    #print "peopleSort = ", people
+    def helper(remainingPeople):
+        lenRemaining = len(remainingPeople)
+        #print "lenRemaining = ", lenRemaining
+
+        if lenRemaining == 0:
+            return
+
+        shortestPpl = remainingPeople.pop(0)
+        #print "shortestPpl = ", shortestPpl
+
+        oriPos = shortestPpl[1]
+        #print "oriPos = ", oriPos
+
+        curIdx = actIdx = 0
+        while (curIdx < oriPos and actIdx < numPpl):
+            #print "0 curIdx = ", curIdx, " actIdx = ", actIdx, " local.res[curIdx][0] = ", local.res[curIdx][0]
+            if local.res[actIdx][0] >= shortestPpl[0]:
+                #print "found higher"
+                curIdx += 1
+            actIdx += 1
+
+        while (actIdx < numPpl and local.res[actIdx][0] != sys.maxint):
+            actIdx += 1
+
+        #print "curIdx = ", curIdx
+        #print "actIdx = ", actIdx
+
+        # while (local.emptySpace[oriPos] != 0):
+        #     oriPos += 1
+        # local.emptySpace[oriPos] = 1
+        if actIdx > 0:
+            local.res[actIdx] = (shortestPpl)
+        else:
+            local.res[actIdx] = shortestPpl
+
+        #print "1 local.res = ", local.res
+
+        helper(remainingPeople)
+
+    helper(people)
+    #print "local.res = ", local.res
+    return local.res

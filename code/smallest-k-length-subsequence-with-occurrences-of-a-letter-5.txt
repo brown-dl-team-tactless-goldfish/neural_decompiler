@@ -1,0 +1,29 @@
+string smallestSubsequence(string s, int k, char letter, int r) {
+	int len = s.size();
+	vector<int> ml = vector<int>(len, 0); // more letter chars ahead
+	int lcnt = 0;
+	for (int i = len - 1; i >= 0 ; --i) {
+		ml[i] = lcnt;
+		if (s[i] == letter)
+			lcnt++;
+	}
+
+	string out, valid;
+	for (int i = 0; i < len; ++i) {
+		while (!out.empty() && out.back() > s[i] && len - i > k && (out.back()!=letter || ml[i] > r) || k < r) {
+			if (out.back()==letter)
+				r++;
+			k++;
+			out.pop_back();
+		}
+		out.push_back(s[i]);
+		if (s[i]==letter)
+			r--;
+		k--;
+
+		if (k==0 && r<=0)
+			valid = out;
+	}
+
+	return valid;
+}

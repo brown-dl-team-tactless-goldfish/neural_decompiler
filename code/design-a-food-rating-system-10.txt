@@ -1,0 +1,29 @@
+public:
+    unordered_map<string, string> food_to_type;
+    unordered_map<string, map<int, set<string>>> type_to_rating;
+    unordered_map<string, int> food_to_rating;
+    
+    FoodRatings(vector<string>& foods, vector<string>& cuisines, vector<int>& ratings) {
+        for(int i = 0; i < foods.size(); ++ i){
+            food_to_type[foods[i]] = cuisines[i];
+            type_to_rating[cuisines[i]][-ratings[i]].insert(foods[i]);
+            food_to_rating[foods[i]] = -ratings[i];
+        }
+    }
+    
+    void changeRating(string food, int newRating) {
+        int old_rating = food_to_rating[food];
+        
+        type_to_rating[food_to_type[food]][old_rating].erase(food);
+        if(type_to_rating[food_to_type[food]][old_rating].size() == 0){
+            type_to_rating[food_to_type[food]].erase(old_rating);
+        }
+        
+        food_to_rating[food] = -newRating;
+        type_to_rating[food_to_type[food]][-newRating].insert(food);
+    }
+    
+    string highestRated(string cuisine) {
+        //auto get = type_to_rating[cuisine];
+        return *(*type_to_rating[cuisine].begin()).second.begin();
+    }

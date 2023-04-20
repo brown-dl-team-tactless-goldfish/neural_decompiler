@@ -1,0 +1,38 @@
+class Solution {
+public:
+	int row[8] = {1, 1, 1, 0, 0, -1, -1, -1}; 
+	int col[8] = { -1, 0, 1, -1, 1, -1, 0, 1};
+	
+	bool checkMove(vector<vector<char>>& a, int r, int c, char curr_color) {
+		int n = a.size(), m = a[0].size();
+		int b[n][m];
+		// constructing another matrix b which stores corresponding colors
+		for (int i = 0; i < n; i++)
+			for (int j = 0; j < m; j++)
+			{
+				if (a[i][j] == curr_color)
+					b[i][j] = 1;
+				else if (a[i][j] == '.')
+					b[i][j] = 0;
+				else
+					b[i][j] = 2;
+			}
+		for (int i = 0; i < 8; i++)
+		{
+			int nr = r + row[i];    // nr is new row
+			int nc = c + col[i];    // nc is new column
+			int ans = 0;
+			while (0 <= nr && nr < n && 0 <= nc && nc < m && b[nr][nc] == 2)
+			{
+				nr += row[i], nc += col[i];
+				ans++;
+			}
+			if (0 <= nr && nr < n && 0 <= nc && nc < m && b[nr][nc] == 1)
+			{
+				if (ans >= 1)  //  check whether there exists atleast one cell of opposite color
+					return true;
+			}
+		}
+		return false;
+	}
+};

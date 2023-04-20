@@ -1,0 +1,33 @@
+class Solution {
+public:
+    void wiggleSort(vector<int>& nums) {
+        int len=nums.size();
+        //O(n) time to find the mean_val
+        nth_element(nums.begin(), nums.begin()+len/2, nums.end());
+        //partition the nums into 3 parts
+        help(nums, nums[len/2]);
+        //assign the value to the result arrary
+        vector<int> result(nums.size());
+        for(int i=0, smallEnd=len/2; i<nums.size(); i+=2, --smallEnd)   result[i]=nums[smallEnd];
+        for(int i=1, largeEnd=nums.size()-1; i<=nums.size()-1; i+=2, --largeEnd)  result[i]=nums[largeEnd];
+        nums=result;
+    }
+    
+    //partition the number smaller than val on the left partition
+    //the number equal to the val in the middle partition
+    //the number bigger than the val in the right partition
+    void help(vector<int>& nums, int val){
+        //i record the max index gurrante that the nums[i] < val
+        //n record the min index gurrante that the nums[i] > val
+        //j record the end of the number equal to the val
+        for(int i=0, j=0, n=nums.size()-1; j<=n; ){
+            if(nums[j] < val){
+                swap(nums[i++], nums[j++]);
+            }else if(nums[j] > val){
+                swap(nums[j], nums[n--]);
+            }else{
+                ++j;
+            }
+        }
+    }
+};

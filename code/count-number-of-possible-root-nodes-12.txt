@@ -1,0 +1,55 @@
+class Solution {
+    set <vector<int>> s;
+    int res;
+    int k;
+    vector <int> depth;
+    vector <int> ans;
+    int dfs(int src,vector <int> adj[],int par=-1){
+        int count=0;
+        for(auto child:adj[src]){
+            if(child!=par){
+                if(s.count({src,child}))++count;
+                count+=dfs(child,adj,src);
+            }
+        }
+        return depth[src]=count;
+    }
+    void dfs3(int src, int par_ans,vector <int> adj[],int par=-1)
+    {
+        ans[src]=depth[src]+par_ans;
+        for(auto child:adj[src]){
+            if(child!=par){
+                int temp=ans[src]-depth[child];
+                
+                if(s.count({src,child}))--temp;
+                if(s.count({child,src}))++temp;
+                dfs3(child,temp,adj,src);
+            }
+        }
+    }
+public:
+    int rootCount(vector<vector<int>>& edges, vector<vector<int>>& guesses, int k) {
+        int n=edges.size()+1;
+        vector<int> adj[n];
+        for(auto it:edges){
+            adj[it[0]].push_back(it[1]);
+            adj[it[1]].push_back(it[0]);
+        }
+        set <vector<int>> s(begin(guesses),end(guesses));
+        
+        this->s=s;
+        this->k=k;
+        depth.resize(n,0);
+        ans.resize(n,0);
+        
+        res=0;
+        dfs(0,adj);
+        dfs3(0,0,adj);
+        
+        for(auto &i:ans){
+            if(i>=k)++res;
+        }
+        
+        return res;
+    }
+};

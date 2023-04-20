@@ -1,0 +1,50 @@
+#define ll long long
+const int N=100100;
+const int M=1e9+7;
+
+class Solution {
+    ll modexp(ll a, ll b){a%=M;ll res=1LL;while(b>0){if(b&1)res=(res%M*1LL*a%M)%M;a=(a%M*1LL*a%M)%M;b>>=1;}return res%M;}
+    ll modmul(ll a,ll b){return (a%M*b%M)%M;}
+    ll modinv(ll a){return modexp(a,M-2);}
+    ll moddiv(ll a,ll b){return (a%M*1LL*modinv(b)%M)%M;}
+
+    ll nCr(ll n,ll r){
+        ll p1=1,p2=1;
+        for(int i=1;i<=r;i++)p1=modmul(p1,i);
+        for(int i=n-r+1;i<=n;i++)p2=modmul(p2,i);
+        ll res=moddiv(p2,p1);
+        return res;
+    }
+    vector<int>g[N];
+    ll dp[N];//dp[i]-->denotes total number of ways how the subtree can be made
+    ll helper(int n,int p){
+        vector<ll>v;
+        ll s=0,pr=1;
+        for(int c:g[n]){
+            if(c==p)continue;
+            ll count=helper(c,n);
+            pr=modmul(pr,dp[c]);
+            v.push_back(count);
+            s+=count;
+        }
+        ll tot=s;
+        if(!v.size()){dp[n]=1;return 1;}
+        for(int i=0;i<v.size()-1;i++){
+            ll a=nCr(s,v[i]);
+            s-=v[i];
+            pr=modmul(pr,a);
+        }
+        dp[n]=pr;
+        return 1+tot;
+    }
+public:
+    int waysToBuildRooms(vector<int>& prevRoom) {
+        for(int i=0;i<prevRoom.size();i++){
+            if(i==0)continue;
+            g[i].push_back(prevRoom[i]);
+            g[prevRoom[i]].push_back(i);
+        }
+        helper(0,-1);
+        return dp[0];
+    }
+};

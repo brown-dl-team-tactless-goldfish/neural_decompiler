@@ -1,0 +1,75 @@
+bool isEquivGroup(char* s, char* t) {
+    int lengthS = strlen(s);
+    int lengthT = strlen(t);
+    if (lengthS != lengthT) {
+        return false;
+    }
+    int* alphabetSOdd = (int*) malloc (sizeof(int) * 26);
+    memset(alphabetSOdd, 0, sizeof(int) * 26);
+    int* alphabetSEven = (int*) malloc (sizeof(int) * 26);
+    memset(alphabetSEven, 0, sizeof(int) * 26);
+    int* alphabetTOdd = (int*) malloc (sizeof(int) * 26);
+    memset(alphabetTOdd, 0, sizeof(int) * 26);
+    int* alphabetTEven = (int*) malloc (sizeof(int) * 26);
+    memset(alphabetTEven, 0, sizeof(int) * 26);
+    for (int i = 0; i < lengthS; i++) {
+        if (i % 2 == 0) {
+            alphabetSOdd[s[i] - 'a']++;
+            alphabetTOdd[t[i] - 'a']++;
+        } else {
+            alphabetSEven[s[i] - 'a']++;
+            alphabetTEven[t[i] - 'a']++;
+        }
+    }
+    for (int i = 0; i < 26; i++) {
+        if (alphabetSOdd[i] != alphabetTOdd[i] || alphabetSEven[i] != alphabetTEven[i]) {
+            return false;
+        }
+    }
+    return true;
+}
+int hash(char* s) {
+    int length = strlen(s);
+    int hash = 0;
+    for (int i = 0; i < length; i++) {
+        hash += s[i];
+    }
+    return hash;
+}
+
+int numSpecialEquivGroups(char** A, int ASize) {
+    if (ASize <= 0) {
+        return 0;
+    }
+    char*** groups = (char ***) malloc (sizeof(char**) * ASize);
+    int* groupSizes = (int*) malloc (sizeof(int) * ASize);
+    memset(groupSizes, 0, sizeof(int) * ASize);
+    int ret = 0;
+    int* hashArr = (int*) malloc (sizeof(int) * ASize);
+    memset(hashArr, 0, sizeof(int) * ASize);
+    int index = 0;
+    int find = 0;
+    for (int i = 0; i < ASize; i++) {
+        int currentHash = hash(A[i]);
+        while (index < ret) {
+            if (currentHash == hashArr[index] && isEquivGroup(A[i], groups[index][0])) {
+                groups[index][groupSizes[index]++] = A[i];
+                find = 1;
+                break;
+            }
+            index++;
+        }
+        if (find == 0) {
+            groups[index] = (char **) malloc (sizeof(char*) * ASize);
+            groupSizes[index] = 1;
+            groups[index][0] = A[i];
+            ret++;
+            hashArr[index] = hash(A[i]);
+        }
+        index = 0;
+        find = 0;
+    }
+    free(hashArr);
+    free(groupSizes);
+    return ret;
+}

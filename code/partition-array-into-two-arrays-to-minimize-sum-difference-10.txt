@@ -1,0 +1,30 @@
+class Solution {
+    int ans;
+    void solve(vector<int>& nums, int& totalSum, int index, int sum, int count){
+        
+        if(count==0 ){
+            ans = min(ans, abs(sum-(totalSum-sum)));
+            cout<<ans<<endl;
+            return;
+        }
+        // if(sum == totalSum/2){
+        //     ans=0;
+        //     return;
+        // }
+        if(index==nums.size())
+            return;
+        solve(nums, totalSum, index+1, sum + nums[index], count-1);
+        solve(nums, totalSum, index+1, sum, count);
+        
+    }
+public:
+    int minimumDifference(vector<int>& nums) {
+        int totalSum = accumulate(nums.begin(), nums.end(), 0);
+        int n = nums.size();
+        ans = INT_MAX;
+        
+        //cout<<"totalSum: "<<totalSum<<endl;
+        solve(nums, totalSum, 0, 0, n/2);
+        return ans;
+    }
+};

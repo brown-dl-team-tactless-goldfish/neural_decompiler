@@ -1,0 +1,46 @@
+    /** Initialize your data structure here. */
+    RandomizedCollection() {
+        
+    }
+    
+    /** Inserts a value to the collection. Returns true if the collection did not already contain the specified element. */
+    bool insert(int val) {
+        int count = map.count(val);
+        map[val].push_front(vec.size());
+        vec.push_back(val);
+        return count ? false : true;
+    }
+    
+    /** Removes a value from the collection. Returns true if the collection contained the specified element. */
+    bool remove(int val) {
+        if (map.find(val) == map.end())
+        {
+            return false;
+        }
+        else
+        {
+            int i = map[val].front();
+            map[val].pop_front(); // remove the first index
+            if (map[val].empty())
+            {
+                map.erase(val); // remove if it's the last element
+            }
+            if (i != vec.size()-1)
+            {
+                map[vec.back()].remove(vec.size()-1); // remove previous stored index
+                map[vec.back()].push_back(i); // update as index i
+                std::swap(vec[i], vec.back());
+            }
+            vec.pop_back(); 
+            return true;
+        }
+    }
+    
+    /** Get a random element from the collection. */
+    int getRandom() {
+        return vec[rand() % vec.size()];
+    }
+    
+private:
+    std::vector<int> vec;
+    std::unordered_map<int, std::list<int>> map;

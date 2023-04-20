@@ -1,0 +1,61 @@
+namespace {
+// these precomputations are done compile time, thanks to C++17
+constexpr int M = 1e9 + 7;
+constexpr int p = 31;
+constexpr int myPow(int x, int n) {
+    int cur = x;
+    int res = 1;
+    int nn = n;
+    while (nn) {
+        if (nn & 1)
+            res = (res *1LL* cur)%M;
+        cur = (cur * 1LL * cur)%M;
+        nn >>= 1;
+    }
+    return res;
+}
+    
+constexpr int p_1 = myPow(p, M-2);
+}
+
+class Solution {
+public:
+    int getCode(char c) { return c - 'a' + 1; }
+    // can you have 2 words of length m
+    string_view canMake(string& s, int m) {
+        unordered_set<int> seen;
+        long long pp = 1;
+        long long fh = 0;
+        for (int i = 0; i < s.size(); ++i) {
+            if (i < m) {
+                fh = (fh + (getCode(s[i])*pp)%M)%M;
+                pp = (pp * p)%M;
+            } else {
+                seen.emplace(fh);
+                fh = ((((fh - getCode(s[i - m]) + M)%M)*p_1)%M + (((getCode(s[i])*pp)%M)*p_1)%M)%M;
+                if (seen.count(fh)) {
+                    return string_view(s.c_str() + i - m+1, m);
+                }
+            }
+        }
+        return "";
+    }
+    
+    string longestDupSubstring(string s) {
+        const int n = s.size();
+        string res;
+        int l = 0, r = n; // range for length of target array, r not inclusive
+        while (l <= r) {
+            int m = l + (r - l)/2;
+            auto cur = canMake(s, m);
+            if (cur.size() != 0) {
+                l = m+1;
+            } else {
+                r = m - 1;
+            }
+            if (cur.size() > res.size())
+                res = cur;
+        }
+        return res;
+    }
+};

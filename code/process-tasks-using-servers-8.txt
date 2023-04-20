@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<int> assignTasks(vector<int>& servers, vector<int>& tasks) {
+        int n = servers.size();
+        int m = tasks.size();
+        // weight, index; available queue
+        priority_queue<array<int, 2>, vector<array<int, 2>>, greater<>> q1;
+        // availTime, weight, index; busy queue
+        priority_queue<array<int, 3>, vector<array<int, 3>>, greater<>> q2;
+        for (int i = 0; i < n; ++i) {
+            q1.emplace(array<int, 2>{servers[i], i});
+        }
+        vector<int> ans;
+        for (int i = 0; i < m; ++i) {
+            while (!q2.empty() && q2.top()[0] <= i) {
+                auto [_, weight, index] = q2.top(); q2.pop();
+                q1.emplace(array<int, 2>{weight, index});
+            }
+            if (q1.empty()) {
+                auto [availTime, weight, index] = q2.top(); q2.pop();
+                ans.emplace_back(index);
+                q2.emplace(array<int, 3>{availTime + tasks[i], weight, index});
+            } else {
+                auto [weight, index] = q1.top(); q1.pop();
+                ans.emplace_back(index);
+                q2.emplace(array<int, 3>{i + tasks[i], weight, index});
+            }
+        }
+        return ans;
+    }
+};

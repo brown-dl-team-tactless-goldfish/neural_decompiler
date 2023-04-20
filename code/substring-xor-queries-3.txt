@@ -1,0 +1,46 @@
+class Solution {
+public:
+    vector<vector<int>> substringXorQueries(string s, vector<vector<int>>& queries) {
+        int n = queries.size() ;
+        vector<vector<int>>ret(n, vector<int>(2, -1)) ;
+        unordered_map<int, vector<int>>Map ;
+        int check = 0;
+        for(int i = 0; i < n; i++){
+            int val = queries[i][0] ^ queries[i][1] ;
+            Map[val].push_back(i) ;
+        }
+        unordered_set<int>Set ;
+        for(int i = 0; i < s.size(); i++){
+            long long val = 0 ;
+            if(s[i] == '0'){
+                if(Set.count(0) == 0 ){
+                    if(Map.count(0)){
+                        for(auto v : Map[0]){
+                            ret[v][0] = i ;
+                            ret[v][1] = i ;
+                            check++;
+                        }
+                    }
+                    Set.insert(0) ;
+                }
+                continue ;
+            }
+            for(int j = i ; j < fmin(i+31, s.size()); j++){
+                val = val*2 + s[j] -'0' ;
+                if(Set.count(val))
+                    continue ;
+                Set.insert(val) ;
+                if(Map.count(val)){
+                    for(auto v : Map[val]){
+                        ret[v][0] = i ;
+                        ret[v][1] = j ;
+                        check++;
+                    }           
+                }
+                if(check == n)
+                    break ;
+            }
+        }
+        return ret ;
+    }
+};

@@ -1,0 +1,16 @@
+#define L left
+#define R right
+using T = TreeNode * ;
+class Solution{
+    bool go( T _1, T _2 ){
+        return
+              ( ! _1  &&  ! _2 )                            ?  true   // base case 1: both null
+            : ( ! _1  ||  ! _2  ||  _1->val != _2->val )    ?  false  // base case 2: one-or-the-other is null  OR  values differ
+            : ( go( _1->L, _2->L ) && go( _1->R, _2->R ) )  ?  true   // recursive step 1: "as is"
+            : ( go( _1->R, _2->L ) && go( _1->L, _2->R ) );           // recursive step 2: swapped ( i.e. swap( _1->left, _1->right )
+    }                                                                 //                             xor  swap( _2->left, _2->right ) )
+public:
+    bool flipEquiv( T _1, T _2 ){
+        return go( _1, _2 );
+    }
+};

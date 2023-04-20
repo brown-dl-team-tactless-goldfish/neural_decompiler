@@ -1,0 +1,32 @@
+class Solution 
+{
+public:
+    int minOperations(int n) 
+    {
+        int ans = 0;
+
+        bitset<32> bits(n);
+        for (int i = 0, cnt = 0; i < 32 && bits.any(); ++i)
+        {
+            if (bits.test(i))
+            {
+                ++cnt;
+            }
+            else if (cnt > 0)
+            {
+                if (cnt > 1 && bits.test(i + 1)) // for pattern like 011011
+                {
+                    ans += 1;
+                    cnt = 1;
+                }
+                else
+                {
+                    ans += cnt == 1 ? 1 : 2; // for pattern like 0101 or 010011
+                    cnt = 0;
+                }
+            }
+        }
+
+        return ans;
+    }
+};

@@ -1,0 +1,47 @@
+class Solution {
+private:
+    vector <vector<int>> cache, ans;
+public:
+    vector<vector<int>> matrixBlockSum(vector<vector<int>>& mat, int k) {
+        int r = mat.size(), c = mat[0].size();
+        cache.resize(r, vector<int>(c, 0));
+        ans.resize(r, vector<int>(c, 0));
+        
+        for(int i = 0; i < r; i++) {
+            for(int j = 0; j < c; j++) {
+                cache[i][j] = mat[i][j];
+            }
+        }
+        
+        for(int i = 0; i < r; i++) {
+            for(int j = 1; j < c; j++) {
+                cache[i][j] += cache[i][j-1];
+            }
+        }
+        
+        for(int j = 0; j < c; j++) {
+            for(int i = 1; i < r; i++) {
+                cache[i][j] += cache[i-1][j];
+            }
+        }
+        
+        for(int i = 0; i < r; i++) {
+            for(int j = 0; j < c; j++) {
+                int tr = i - k - 1, tc = j - k - 1;
+                int br = min(r - 1, i + k), bc = min(c - 1, j + k);
+                
+                int removeSum = 0;
+                
+                if(tc >= 0) removeSum += cache[br][tc];
+                if(tr >= 0) removeSum += cache[tr][bc];
+
+                if(tr >= 0 and tc >= 0) removeSum -= cache[tr][tc];
+                
+                ans[i][j] = cache[br][bc] - removeSum;
+                
+            }
+        }
+        
+        return ans;
+    }
+};

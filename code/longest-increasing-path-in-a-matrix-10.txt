@@ -1,0 +1,64 @@
+#define DIR 4
+int directions[DIR][2] = {{-1,0},{1,0},{0,1},{0,-1}};
+int r,c;
+static inline bool valid(int i,int j)
+{
+    return (i>=0 && j>=0 &&  i<r && j<c );
+} 
+int calcLongestPath(int** mat, int** p, int i , int j)
+{
+    if(p[i][j]!=-1)
+    {
+        return p[i][j];
+    }
+
+    //First time to calc path for this cell
+    int tempI, tempJ, tempPath,longestPath=0;
+    for(int d=0;d<DIR;d++)
+    {
+        tempI = i+directions[d][0];
+        tempJ = j+directions[d][1];
+
+        if(valid(tempI,tempJ) && mat[tempI][tempJ] > mat[i][j])
+        {
+            tempPath=calcLongestPath(mat,p,tempI,tempJ);
+            if(tempPath>longestPath)    longestPath = tempPath;
+        }
+    }
+    
+    return (p[i][j] = longestPath+1);
+}
+int longestIncreasingPath(int** matrix, int matrixSize, int* matrixColSize){
+
+    r=matrixSize;c=matrixColSize[0];
+    //Init a matrix to store all the paths in
+    int** paths=malloc(r*sizeof(int*));
+    for(int i=0;i<r;i++)
+    {
+        paths[i]=malloc(c*sizeof(int));
+        for(int j=0;j<c;j++)
+        {
+            paths[i][j]=-1;
+        }
+    }
+    int maxPath=0;
+    int tempPath=0;
+    for(int i=0;i<r;i++)
+    {
+        for(int j=0;j<c;j++)
+        {
+            if(paths[i][j]!=-1)
+            {
+                tempPath=paths[i][j];
+            }
+            else
+            {
+                tempPath = calcLongestPath(matrix,paths,i,j);
+            }
+            if(tempPath>maxPath)    maxPath=tempPath;
+        }
+    }   
+
+
+    return maxPath;
+}

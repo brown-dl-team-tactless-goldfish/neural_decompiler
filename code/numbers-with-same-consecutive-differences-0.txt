@@ -1,0 +1,40 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+void dfs(int* ans, int* a_idx, int val, int digit, int k){
+    if(digit == 0){
+        ans[*a_idx] = val ;
+        *a_idx = *a_idx + 1 ;
+        return  ;
+    }
+    
+    if((val%10 + k) < 10){
+        dfs(ans, a_idx, val*10 + (val%10+k), digit-1, k) ;
+    }
+    if(((val%10)-k) >= 0){
+        dfs(ans, a_idx, val*10 +(val%10 -k), digit-1, k) ;
+    }
+}
+int* numsSameConsecDiff(int n, int k, int* returnSize){
+    if(k == 0){
+        int* ans = malloc(9 * sizeof(int)) ;
+        for(int i = 1; i <= 9; i++){
+            int val = i ;
+            for(int j = 0; j < n-1; j++){
+                val = val * 10 + i ;
+            }
+            ans[i-1] = val ;
+        }
+        *returnSize = 9 ;
+        return ans ;
+    }
+    
+    int* ans = malloc(9 * pow(2,n) * sizeof(int)) ;
+    int a_idx = 0 ;
+    
+    for(int i = 1; i <= 9; i++){
+        dfs(ans, &a_idx, i, n-1, k) ;
+    }    
+    *returnSize = a_idx ;
+    return ans ;
+}

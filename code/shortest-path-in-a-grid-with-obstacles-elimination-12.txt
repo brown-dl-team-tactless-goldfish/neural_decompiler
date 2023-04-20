@@ -1,0 +1,63 @@
+class Solution {
+public:
+  int shortestPath(vector<vector<int>>& grid, int k) {
+    int const R = grid.size();
+    int const C = grid[0].size();
+    
+    if (R == 1 && C == 1)
+      return 0;
+    
+    std::queue<State> qu;
+    std::unordered_map<uint32_t, int> visited;
+    qu.push({0, 0, k});
+    visited[encode(0, 0)] = k;
+    
+    for (int steps = 1; !qu.empty(); ++steps) {
+      for (int size = qu.size(); size; --size) {
+        State prev = qu.front();
+        qu.pop();
+        for (Diff d : D) {
+          auto next = prev + d;
+          if (!next.inBounds(R, C))
+            continue;
+          next.k -= grid[next.r][next.c];
+          if (next.k < 0)
+            continue;
+          if (next.r == R-1 && next.c == C-1)
+            return steps;
+          auto key = encode(next.r, next.c);
+          if (visited.count(key) && visited[key] >= next.k)
+            continue;
+          visited[key] = next.k;
+          qu.push(next);
+        }
+      }
+    }
+   
+    return -1;
+  }
+  
+private:
+  struct Diff {
+    int r;
+    int c;
+  };
+  
+  struct State {
+    int r;
+    int c;
+    int k;
+    State operator+(Diff d) { return {r + d.r, c + d.c, k}; }
+    bool inBounds(int R, int C) {
+      return 0 <= r && r < R && 0 <= c && c < C;
+    }
+  };
+  
+  constexpr static std::array<Diff, 4> D = {{
+    {+1, 0}, {-1, 0}, {0, +1}, {0, -1}
+  }};
+
+  uint32_t encode(uint32_t r, uint32_t c) {
+    return r | (c << 8);
+  }
+};

@@ -1,0 +1,23 @@
+// OJ: https://leetcode.com/problems/minimized-maximum-of-products-distributed-to-any-store/
+// Author: github.com/lzl124631x
+// Time: O(QlogM) where `Q` is the length of `quantities` and `M` is the max element in `quantities`.
+// Space: O(1
+class Solution {
+public:
+    int minimizedMaximum(int n, vector<int>& Q) {
+        long long L = 1, R = *max_element(begin(Q), end(Q));
+        auto valid = [&](int M) {
+            int ans = 0;
+            for (int n : Q) {
+                ans += (n + M - 1) / M;
+            }
+            return ans <= n;
+        };
+        while (L < R) {
+            long long M = (L + R) / 2;
+            if (valid(M)) R = M;
+            else L = M + 1;
+        }
+        return L;
+    }
+};

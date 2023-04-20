@@ -1,0 +1,34 @@
+class Solution {
+public:
+    vector<vector<int>> rotateGrid(vector<vector<int>>& grid, int k) {
+        int m = grid.size();
+        int n = grid[0].size();
+        vector<vector<int>> result(m, vector<int>(n));
+        for (int i = 0, s0 = m - 1, s1 = n - 1; i < min(m, n) / 2; i++, s0 -= 2, s1 -= 2) {
+            vector<vector<int>> positions;
+            int r = i, c = i;
+            for (int j = 0; j < s0; j++) {
+                r++;
+                positions.push_back({r, c});
+            }
+            for (int j = 0; j < s1; j++) {
+                c++;
+                positions.push_back({r, c});
+            }
+            for (int j = 0; j < s0; j++) {
+                r--;
+                positions.push_back({r, c});
+            }
+            for (int j = 0; j < s1; j++) {
+                c--;
+                positions.push_back({r, c});
+            }
+            int offset = k % positions.size();
+            for (int j = 0; j < positions.size(); j++) {
+                vector<int> np = positions[(j + offset) % positions.size()];
+                result[np[0]][np[1]] = grid[positions[j][0]][positions[j][1]];
+            }
+        }
+        return result;
+    }
+};

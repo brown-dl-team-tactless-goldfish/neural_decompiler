@@ -1,0 +1,19 @@
+void fillSubTable(char* key, int8_t* table) {
+    memset(table, -1, 26);
+    char curr = 'a';
+    for (size_t i = 0; curr <= 'z' && key[i]; ++i) {
+        const char c = key[i];
+        if (c != ' ' && table[c - 'a'] < 0)
+            table[c - 'a'] = curr++;
+    }
+}
+
+char* decodeMessage(char* key, char* message) {
+    int8_t subTable[26];
+    fillSubTable(key, subTable);
+    const size_t length = strlen(message);
+    char* decoded = calloc(length + 1, sizeof(char));
+    for (size_t i = 0; i < length; ++i)
+        decoded[i] = message[i] == ' ' ? message[i] : subTable[message[i] - 'a']; 
+    return decoded;
+}

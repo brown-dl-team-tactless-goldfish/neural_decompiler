@@ -1,0 +1,67 @@
+int UniquePathsIIIInner(int** ppnGrid, char cGridSize, char cGridColSize, char cCurrRow, char cCurrCol, char cEndRow, char cEndCol, char cCount)
+{
+    // reach end
+    if(cCurrRow == cEndRow && cCurrCol == cEndCol) return cCount == 0;
+
+    ppnGrid[cCurrRow][cCurrCol] = -1;
+
+    // check top
+    int nRet = 0;
+    if(cCurrRow && ppnGrid[cCurrRow-1][cCurrCol] == 0)
+    {
+        nRet += UniquePathsIIIInner(ppnGrid, cGridSize, cGridColSize, cCurrRow-1, cCurrCol, cEndRow, cEndCol, cCount-1);
+    }
+    
+    // check left
+    if(cCurrCol && ppnGrid[cCurrRow][cCurrCol-1] == 0)
+    {
+        nRet += UniquePathsIIIInner(ppnGrid, cGridSize, cGridColSize, cCurrRow, cCurrCol-1, cEndRow, cEndCol, cCount-1);
+    }
+
+    // check right
+    if(cCurrCol < cGridColSize && ppnGrid[cCurrRow][cCurrCol+1] == 0)
+    {
+        nRet += UniquePathsIIIInner(ppnGrid, cGridSize, cGridColSize, cCurrRow, cCurrCol+1, cEndRow, cEndCol, cCount-1);
+    }
+
+    // check bottom
+    if(cCurrRow < cGridSize && ppnGrid[cCurrRow+1][cCurrCol] == 0)
+    {
+        nRet += UniquePathsIIIInner(ppnGrid, cGridSize, cGridColSize, cCurrRow+1, cCurrCol, cEndRow, cEndCol, cCount-1);
+    }
+
+    ppnGrid[cCurrRow][cCurrCol] = 0;
+
+    return nRet;
+}
+
+int uniquePathsIII(int** grid, int gridSize, int* gridColSize){
+    char cGridSize = gridSize - 1, cGridColSize = *gridColSize - 1, cStartRow = -1, cStartCol = -1, cEndRow = -1, cEndCol = -1, cCount = 0;
+
+    for(char i=0; i<=cGridSize; i++)
+    {
+        for(char j=0; j<=cGridColSize; j++)
+        {
+            switch(grid[i][j])
+            {
+                case 0:
+                    cCount++;
+                    break;
+
+                case 1:
+                    cStartRow = i;
+                    cStartCol = j;
+                    break;
+
+                case 2:
+                    grid[i][j] = 0;
+
+                    cEndRow = i;
+                    cEndCol = j;
+                    break;
+            }
+        }
+    }
+
+    return UniquePathsIIIInner(grid, cGridSize, cGridColSize, cStartRow, cStartCol, cEndRow, cEndCol, cCount+1);
+}

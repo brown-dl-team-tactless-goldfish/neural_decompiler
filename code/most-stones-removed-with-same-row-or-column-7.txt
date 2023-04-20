@@ -1,0 +1,52 @@
+
+class Solution {
+public:
+    int group[1005];
+    int Find(int i) {
+        return group[i]<0?i:group[i]=Find(group[i]);
+    }
+    
+    void Union(int i, int j) {
+        i = Find(i);
+        j = Find(j);
+        if(i!=j) {
+            group[i] += group[j];
+            group[j] = i;
+        }
+    }
+    
+    unordered_map<int,int> rows; // rows[r] = group index
+    unordered_map<int,int> cols; // cols[c] = group index
+    
+    int removeStonesV1(vector<vector<int>>& stones) {
+        for(int i=0; i<stones.size(); i++) {
+			// use negative number as the "negative" count of members in the group.
+            group[i] = -1;
+        }
+        for(int i=0; i<stones.size(); i++) {
+            int r = stones[i][0], c = stones[i][1];
+            if(rows.count(r)) {
+                Union(rows[r], i);
+            } else {
+                rows[r] = i;
+            }
+            
+            if(cols.count(c)) {
+                Union(cols[c], i);
+            } else {
+                cols[c] = i;
+            }
+            
+            if(rows[r] != cols[c])
+                Union(rows[r], cols[c]);
+        }
+        
+        int res = 0;
+        for(int i=0; i<stones.size(); i++) {
+            if(group[i]<0) {
+                res += abs(group[i])-1;   
+            }
+        }
+        return res;
+    }
+}

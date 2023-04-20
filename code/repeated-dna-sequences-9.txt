@@ -1,0 +1,60 @@
+
+/* fastest solution is to avoid mallocs/callocs
+We can avoid these when not using hash table , so to use indexed array.
+If we are representing bits for letters.
+and in this case 0,1,2,3 and 10 letters. 
+Max value is : in binary 1111 1111 1111 1111 1111 (0xfffff)
+indexed array size should be 0xfffff
+If we can use bits then array size is 0x1ffff
+*/
+char ** findRepeatedDnaSequences(char * s, int* returnSize){
+    int ht[0x20000], node_2_res[0x20000];
+    int key=0, ii, jj,byte_pos,bit_pos;
+    int keymask = 0xfffff;
+    int chval[]={1,5,2,5,5,5,3,5,5,5,5,5,5,5,5,5,5,5,5,0};
+    char **res;
+    int reslen = 0, sl;
+
+    memset(ht, 0, sizeof(ht));
+    memset(node_2_res, 0, sizeof(node_2_res));
+    
+    sl =  strlen(s);
+    for (ii=0; ii<10 && s[ii] !='\0'; ii++){
+        key = (key<<2)| chval[s[ii]-'A'];
+     //   printf("s[%d] %c, key %x\n",ii, s[ii], key);
+    }    
+    *returnSize = 0;
+    if (sl<=10)
+        return NULL;
+    
+    int res_ind[sl/2];
+    
+    byte_pos = key/8;
+    bit_pos = key %8;
+    ht[byte_pos] |= (1<<bit_pos);
+       // printf("s[%d] %c, key %x, byte_pos %x, bit_pos %x\n",ii, s[ii], key, byte_pos, bit_pos);
+    for (ii=10;ii<sl;ii++){
+        key = ((key<<2)&keymask) | chval[s[ii]-'A'];
+        byte_pos = key/8;
+        bit_pos = key % 8;
+       // printf("reslen %d s[%d] %c, key %x, byte_pos %x, bit_pos %x\n",reslen, ii, s[ii], key, byte_pos, bit_pos);
+        /* if exists in index table */
+        if (ht[byte_pos] & (1<<bit_pos)){
+            
+            /* node already not added in res */
+            if (!(node_2_res[byte_pos] & (1<<bit_pos))){
+                res_ind[reslen++]=ii-9;
+                node_2_res[byte_pos] |= (1<<bit_pos);
+            } 
+        }else
+            ht[byte_pos] |= (1<<bit_pos);
+    }
+    res = (char **)malloc(reslen*sizeof(char*));
+    *returnSize = reslen;
+    for (ii=0;ii<reslen;ii++){
+        res[ii] = (char *)calloc(11,sizeof(char));
+        for (jj=0;jj<10;jj++)
+            res[ii][jj] = s[res_ind[ii]+jj];
+    }
+    return res;
+}

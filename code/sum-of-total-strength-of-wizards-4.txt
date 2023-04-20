@@ -1,0 +1,56 @@
+class Solution {
+public:
+    int totalStrength(vector<int>& nums) {
+        long long re = 0, mod = 1e9+7;
+        int n = nums.size();
+        stack<int> st;
+        vector<long> left(n,0),right(n,0),pl(n,0),pr(n,0),suml(n,0),sumr(n,0);
+        map<int,int> mp; 
+        mp[nums[0]] = 0; 
+        st.push(0); left[0] = 0;
+        suml[0]=pl[0] = nums[0];
+        for(int i = 1; i<n; ++i){
+            pl[i] = (pl[i-1]+nums[i])%mod;
+            suml[i] = (suml[i-1]+pl[i])%mod;
+            while(!st.empty() && nums[st.top()]>=nums[i]) {
+                if(nums[st.top()]==nums[i] && mp.find(nums[i])!=mp.end()) break;
+                st.pop();
+            }
+            left[i] = 0;
+            if(st.size()) left[i] = st.top()+1;
+            st.push(i);
+            if(mp.find(nums[i])==mp.end()) mp[nums[i]] = i;
+        }
+        
+        while(!st.empty()) st.pop();
+        right[n-1] = n-1;
+        st.push(n-1);
+        sumr[n-1]=pr[n-1] = nums[n-1];
+        for(int i = n-2;i>=0;--i){
+            pr[i] = (pr[i+1]+nums[i])%mod;
+            sumr[i] = (sumr[i+1]+pr[i])%mod;
+            while(!st.empty() && nums[st.top()]>=nums[i]){ 
+                st.pop();
+            }
+            right[i] = n-1;
+            if(st.size()) right[i] = st.top()-1;
+            st.push(i);
+        }
+        for(int i = 0; i<nums.size();++i){
+            long long temp = 0;
+            long l = i-left[i]+1, r = right[i]-i+1;
+			
+            long sumright = suml[right[i]];
+            if(i-1>=0) sumright = (sumright -suml[i-1] - r*pl[i-1] + mod)%mod;
+            temp = (temp+l*sumright +mod )%mod;
+			
+            long sumleft = sumr[left[i]];
+            if(i+1<n) sumleft = (sumleft - sumr[i+1] - pr[i+1]*l + mod)%mod;
+            sumleft = (sumleft - l*nums[i] +mod)%mod;
+            temp = (temp+ r*sumleft)%mod;
+			
+            re = (re + nums[i]*temp)%mod;
+        }
+        return re;
+    }
+};

@@ -1,0 +1,38 @@
+int mi, n;
+
+void dfs(int i, int d, string pattern, string cur) {
+    if(d == n - 1) {
+        mi = min(mi, stoi(cur));
+        return;
+    }
+	// check if current string already has the same digit as given one.
+    auto checkUsed = [&](char digit) {
+        for(char c: cur) {
+            if(c == digit) return true;
+        }
+        return false;
+    };
+
+	// decide search direction depending on current pattern
+    int add = pattern[d] == 'I' ? 1 : -1;
+    for(int j = i + add; j <= n && j >= 1; j+= add) {
+        char c = j + 48;
+        if(checkUsed(c)) continue;
+        dfs(j, d + 1, pattern, cur + c);
+    }
+}
+
+class Solution {
+public:
+    string smallestNumber(string pattern) {
+        mi = 1e9;
+        n = pattern.size() + 1;
+        for(int i = 1; i <= n; i++) {
+            int d = 0;// number of digits(0-8)
+            string cur = to_string(i);
+            dfs(i, d, pattern, cur);
+        }
+        
+        return to_string(mi);
+    }
+};

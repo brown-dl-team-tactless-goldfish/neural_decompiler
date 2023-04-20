@@ -1,0 +1,64 @@
+#define SWAP(x,y) {int t; t = x; x = y; y = t;} 
+void createheap(int number[],int n) {
+    int i, s, p;
+    int *heap=malloc(sizeof(int)*(n+1));
+
+    for(i = 1; i <= n; i++) {
+        heap[i] = number[i];
+        s = i;
+        p = i / 2;
+        while(s >= 2 && heap[p] > heap[s]) {
+            SWAP(heap[p], heap[s]);
+            s = p;
+            p = s / 2;
+        }
+    }
+
+    for(i = 1; i <= n; i++)
+        number[i] = heap[i];
+
+}
+
+int heapsort(int number[],int n,int k) {
+    int i, m, p, s;
+    int cnt=0;
+    m = n;
+    while(m > 1) {
+        SWAP(number[1], number[m]);
+        m--;
+
+        p = 1;
+        s = 2 * p;
+
+        while(s <= m) {
+            if(s < m && number[s+1] < number[s])
+                s++;
+            if(number[p] <= number[s])
+                break;
+            SWAP(number[p], number[s]);
+            p = s;
+            s = 2 * p;
+        }
+        cnt++;
+        if(cnt==k)
+            break;
+        /*printf("\n排序中：");
+        for(i = n; i > 0; i--)
+            printf("%d ", number[i]);*/
+    }
+    return number[n-k+1];
+}
+int kthSmallest(int** matrix, int matrixSize, int* matrixColSize, int k){
+    int n=matrixSize*matrixColSize[0],idx=1;
+    int *arr=malloc(sizeof(int)*(n+1));
+    for(int i=0;i<matrixSize;i++)
+    {
+        for(int j=0;j<matrixSize;j++)
+        {
+            arr[idx++]=matrix[i][j];
+        }
+    }
+    createheap(arr,n);
+    return heapsort(arr,n,k);
+
+}

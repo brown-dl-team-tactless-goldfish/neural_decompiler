@@ -1,0 +1,59 @@
+public class Solution {
+    public int[] GridIllumination(int N, int[][] lamps, int[][] queries) {
+        var ret=new int[queries.Length];
+        var coldict=new Dictionary<int,int>();
+        var rowdict=new Dictionary<int,int>();
+        var diadict=new Dictionary<int,int>();
+        var indiadict=new Dictionary<int,int>();
+        var dict=new Dictionary<(int x,int y),int>();
+        foreach(var l in lamps)
+        {
+            if(!coldict.ContainsKey(l[0]))coldict.Add(l[0],0);
+            coldict[l[0]]++;
+            
+            if(!rowdict.ContainsKey(l[1]))rowdict.Add(l[1],0);
+            rowdict[l[1]]++;
+            
+            if(!diadict.ContainsKey(l[0]-l[1]))diadict.Add(l[0]-l[1],0);
+            diadict[l[0]-l[1]]++;
+            
+            if(!indiadict.ContainsKey(l[0]+l[1]))indiadict.Add(l[0]+l[1],0);
+            indiadict[l[0]+l[1]]++;
+            
+            if(!dict.ContainsKey((l[0],l[1])))dict.Add((l[0],l[1]),0);
+            dict[(l[0],l[1])]++;
+        }
+        for(int i=0;i<queries.Length;i++)
+        {
+            int x=queries[i][0];
+            int y=queries[i][1];
+            if((coldict.ContainsKey(x)&&coldict[x]>0)||
+              (rowdict.ContainsKey(y)&&rowdict[y]>0)||
+              (diadict.ContainsKey(x-y)&&diadict[x-y]>0)||
+              (indiadict.ContainsKey(x+y)&&indiadict[x+y]>0)||
+              (dict.ContainsKey((x,y))&&dict[(x,y)]>0)) 
+            {
+                ret[i]=1;
+            }
+            else
+                ret[i]=0;
+            for(int I=-1;I<=1;I++)
+            {
+                for(int J=-1;J<=1;J++)
+                {
+                    int nx=x+I;
+                    int ny=y+J;
+                    if(dict.ContainsKey((nx,ny))&&dict[(nx,ny)]>0)
+                    {
+                        coldict[nx]--;
+                        rowdict[ny]--;
+                        diadict[nx-ny]--;
+                        indiadict[nx+ny]--;
+                        dict[(nx,ny)]--;
+                    }
+                }
+            }
+        }
+        return ret;
+    }
+}

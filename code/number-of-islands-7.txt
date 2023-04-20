@@ -1,0 +1,30 @@
+#define isValid(row,col) (row>=0 && row<gridSize && col>=0 && col<(*gridColSize)&& grid[row][col] == '1')
+int direction[4][2] = {{0,1},{1,0},{0,-1},{-1,0}};
+void dfs(char **grid, int gridSize, int*gridColSize, int row, int col, bool *seen){
+    int nrow,ncol;
+    for(int i=0; i<4;i++) {
+        nrow=row+direction[i][0];
+        ncol=col+direction[i][1];
+        if(isValid(nrow,ncol) && !seen[nrow*(* gridColSize)+ncol]) {
+            seen[nrow*(* gridColSize)+ncol] = true;
+            dfs(grid, gridSize, gridColSize, nrow, ncol, seen);
+        }
+    }
+}
+int numIslands(char** grid, int gridSize, int* gridColSize){
+    int row, col, ans=0;
+    bool *seen = calloc(gridSize*(*gridColSize), sizeof(bool));
+
+    for(row=0; row<gridSize; row++){
+        for(col=0; col<*gridColSize; col++) {
+            if(grid[row][col]=='1' && !seen[row*(* gridColSize)+col]) {
+                ans++;
+                dfs(grid, gridSize, gridColSize, row, col, seen);
+            }
+
+        }
+    }
+    free(seen);
+    return ans;
+
+}

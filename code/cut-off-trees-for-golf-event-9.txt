@@ -1,0 +1,72 @@
+public class Solution {
+    
+    private List<(int r, int c)> Directions = new List<(int r, int c)>{
+        (0, 1),
+        (0, -1),
+        (1, 0),
+        (-1, 0)
+    };
+    
+    public int CutOffTree(IList<IList<int>> forest) {
+        
+        var treesToCut = new List<int>();
+        for(int i = 0; i < forest.Count; i++)
+            for(int j = 0; j < forest[0].Count; j++)
+                if(forest[i][j] > 1)
+                    treesToCut.Add(forest[i][j]);
+        
+        treesToCut = treesToCut.OrderBy(x => x).ToList();
+        
+        // BFS
+        var totalSteps = 0;
+        (int r, int c) location = (0, 0);
+        foreach(var tree in treesToCut)
+        {
+            var queue = new Queue<(int r, int c)>();
+            var visited = new bool[forest.Count, forest[0].Count];
+            queue.Enqueue(location);
+            visited[location.r, location.c] = true;;
+            
+            var currentSteps = 0;
+            var found = false;
+            
+            if(forest[location.r][location.c] == tree)
+                found = true;
+            
+            while(queue.Count != 0 && !found)
+            {
+                currentSteps++;
+                
+                var currentLevelNodes = queue.Count();
+                while(currentLevelNodes > 0 && !found)
+                {
+                    var curr = queue.Dequeue();
+                    
+                    foreach(var dir in Directions)
+                    {
+                        var r = curr.r + dir.r;
+                        var c = curr.c + dir.c;
+                        
+                        if(0 <= r && r < forest.Count 
+                           && 0 <= c && c < forest[0].Count 
+                           && !visited[r, c] && forest[r][c] > 0){
+                            queue.Enqueue((r, c));
+                            visited[r, c] = true;;
+                            if(forest[r][c] == tree){
+                                location = (r, c);
+                                found = true;
+                            }
+                        }
+                    }
+                    currentLevelNodes--;
+                }
+            }
+            
+            if(!found)
+                return -1;
+            
+            totalSteps += currentSteps;
+        }
+        return totalSteps;
+    }
+}

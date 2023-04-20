@@ -1,0 +1,26 @@
+class Solution {
+public:
+    long long countQuadruplets(vector<int>& nums) {
+        const int n = nums.size();
+        auto vl = vector(n, vector(n, 0LL)), vi = vl;
+        for(int i=0;i<n;i++){
+            for(int j=n-1, cnt = 0;j>i;j--){
+                if(nums[j]>nums[i]) cnt++;
+                vl[i][j] = cnt;
+            }                 
+        }
+
+        for(int k=0;k<n;k++){
+            for(int i=0, cnt=0;i<k;i++){
+                if(nums[i]<nums[k]) cnt++;
+                vi[k][i] = cnt;
+            }
+        }
+
+        long long res = 0;
+        for(int j=1;j<n-2;j++) for(int k=j+1;k<n-1;k++){
+            if(nums[k] < nums[j]) res += vi[k][j-1] * vl[j][k+1];
+        }
+        return res;
+    }
+};

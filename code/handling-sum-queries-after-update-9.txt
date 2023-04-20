@@ -1,0 +1,88 @@
+const int N = 1e5 + 10;
+int n, h, d[N], cnt[N << 1];
+
+void init(const vector<int> &nums) {
+    n = int(nums.size());
+    h = int(sizeof(n)) * 8 - __builtin_clz(n);
+
+    memset(d, 0, n * sizeof(d[0]));
+
+    copy(nums.begin(), nums.end(), cnt + n);
+    for (int i = n - 1; i > 0; --i) cnt[i] = cnt[i << 1] + cnt[i << 1 | 1];
+}
+
+void calc(int p, int k) {
+    int t = cnt[p << 1] + cnt[p << 1 | 1];
+    cnt[p] = d[p] ? k - t : t;
+}
+
+void apply(int id, int k) {
+    cnt[id] = k - cnt[id];
+    if (id < n) d[id] ^= 1;
+}
+
+void push(int p) {
+    int s = h, k = 1 << (h - 1);
+    for (p += n; s > 0; --s, k >>= 1) {
+        int i = p >> s;
+        if (d[i]) apply(i << 1, k), apply(i << 1 | 1, k), d[i] = 0;
+    }
+}
+
+int count_flip(int id, int k) {
+    int old = cnt[id];
+    int new_val = k - old;
+    cnt[id] = new_val;
+    if (id < n) d[id] ^= 1;
+    return new_val - old;
+}
+
+int flip(int l, int r) {
+    push(l);
+    push(r - 1);
+    int ans = 0, k = 1;
+    bool cl = false, cr = false;
+    for (l += n, r += n; l < r; l >>= 1, r >>= 1, k <<= 1) {
+        if (cl) calc(l - 1, k);
+        if (cr) calc(r, k);
+        if (l & 1) ans += count_flip(l++, k), cl = true;
+        if (r & 1) ans += count_flip(--r, k), cr = true;
+    }
+    for (--l; r > 0; l >>= 1, r >>= 1, k <<= 1) {
+        if (cl) calc(l, k);
+        if (cr && !(cl && l == r)) calc(r, k);
+    }
+    return ans;
+}
+
+class Solution {
+public:
+    static vector<long long> handleQuery(
+            const vector<int> &nums1, const vector<int> &nums2,
+            const vector<vector<int> > &queries) {
+        init(nums1);
+
+        int64_t sum = reduce(nums2.begin(), nums2.end(), INT64_C(0));
+        int ones = reduce(nums1.begin(), nums1.end());
+
+        vector<long long> ans;
+
+        for (auto &&query: queries) {
+            int type = query[0], l = query[1], r = query[2] + 1;
+            switch (type) {
+                case 1:
+                    ones += flip(l, r);
+                    break;
+                case 2:
+                    sum += ones * int64_t(l);
+                    break;
+                case 3:
+                    ans.push_back(sum);
+                    break;
+                default:
+                    abort();
+            }
+        }
+        return ans;
+    }
+};

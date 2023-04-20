@@ -1,0 +1,64 @@
+class Solution {
+public:
+    bool canFormArray(vector<int>& arr, vector<vector<int>>& pieces) {
+        
+        unordered_map<int, pair<int, int>> record;
+        
+        int N = pieces.size();
+        int M = 0;
+        
+        for (int i = 0; i < N; i++)
+        {
+            M = pieces[i].size();
+            
+            for (int j = 0; j < M; j++)
+            {
+                record[pieces[i][j]] = make_pair (i, j);    
+            }
+        }
+        
+        unordered_map<int, vector<int>> check;
+        
+        unordered_map<int, int> chunkCheck;
+        
+        for (int k = 0; k < arr.size(); k++)
+        {
+            int num = arr[k];
+            
+            if (record.count(num))
+            {
+                int chunk = record[num].first;
+                int loc   = record[num].second;
+                
+                if (!check.count(chunk))
+                {
+                    check[chunk].push_back(loc);
+                    
+                    chunkCheck[chunk] = k;
+                }
+                else
+                {
+                    if (!chunkCheck.count(chunk))
+                        chunkCheck[chunk] = k;
+                    else
+                    {
+                        if (k >= 1 && k - 1 != chunkCheck[chunk])
+                            return false;
+                        else
+                            chunkCheck[chunk] = k;
+                    }
+                    
+                    if (loc < check[chunk].back()) return false;
+                    else
+                        check[chunk].push_back(loc);
+                }
+            }
+            else
+            {
+                return false;
+            }
+        }
+        
+        return true;
+    }
+};

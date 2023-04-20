@@ -1,0 +1,26 @@
+int cmp(int* a, int* b) {
+    return *(int*)a - *(int*)b;
+}
+
+
+int** diagonalSort(int** mat, int matSize, int* matColSize, int* returnSize, int** returnColumnSizes) {
+
+    *returnSize = matSize;
+    *returnColumnSizes = malloc(sizeof(int) * matSize);
+    for (int i = 0; i < matSize; i++) (*returnColumnSizes)[i] = *matColSize;
+
+    int list[101] = { 0 };
+    int n, tmpi, tmpj;
+    for (int i = 0; i < matSize; i++) {
+        for (int j = 0; j < *matColSize; j++) {
+            if (i == 0 || j == 0) {
+                n = 0, tmpi = i, tmpj = j;
+                while (tmpi < matSize && tmpj < *matColSize) list[n++] = mat[tmpi++][tmpj++];
+                qsort(list, n, sizeof(int), cmp);
+                while (--tmpi >= i && --tmpj >= j) mat[tmpi][tmpj] = list[--n];
+            }
+        }
+    }
+
+    return mat;
+}

@@ -1,0 +1,78 @@
+#define INF -9999
+typedef struct Trie{
+    struct Trie *child[4];
+    int leaf;
+}Trie;
+int arrSize;
+int charTOint(char ch){
+    int val;
+    switch(ch){
+        case 'A':
+            val = 0;
+            break;
+        case 'C':
+            val = 1;
+            break;
+        case 'G':
+            val =2;
+            break;
+        default:
+            val = 3;
+            break;
+    };
+    return val;
+}
+Trie* create(){
+    Trie* newNode = (Trie*)malloc(sizeof(Trie));
+    int i;
+    for(i=0;i<4;i++){
+        newNode->child[i]=NULL;
+    }
+    newNode->leaf = 0;
+    return newNode;
+}
+void insert(Trie* root, char* str, char** strArr){
+    int i,j,index;
+    Trie* cur = root;
+    for(i = 0;i<=9;i++){
+        //printf("%c",str[i]);
+        index = charTOint(str[i]);
+        //printf("%d\n",index);
+        if(!cur->child[index]){
+            cur->child[index]=create();
+        }
+        cur=cur->child[index];
+    }
+   //printf("\n");
+    cur->leaf++;
+    if(cur->leaf>1){
+        for(j=0;j<=9;j++){
+            strArr[arrSize][j]=str[j];
+            //printf("%c",str[j]);
+        }
+        //printf("\n");
+        strArr[arrSize][j]='\0';
+        //printf("%s\n",strArr[arrSize]);
+        arrSize++;
+        cur->leaf=INF;
+    }
+}
+char ** findRepeatedDnaSequences(char * s, int* returnSize){
+    char **strArr = (char*)malloc(sizeof(char*)*10005);
+    int i;
+    for( i=0;i<10005;i++){
+        strArr[i]=(char*)malloc(sizeof(char)*11);
+    }
+    for(i=0;s[i];i++);
+    if(i<10){
+        *returnSize = 0;
+        return strArr;
+    }
+    Trie* root = create();
+    arrSize = 0;
+    for(i=0;s[i+9]!='\0';i++){
+        insert(root,s+i,strArr);   
+    }
+    *returnSize = arrSize;
+    return strArr;
+}

@@ -1,0 +1,65 @@
+#define MAXROT ( 4u )
+
+void swap( int* a, int* b )
+{
+    int temp = *a;
+    *a = *b;
+    *b = temp;
+}
+
+void rotate( int** mat, int size )
+{
+    // transpose
+    for( int x=0; x<size; x++ )
+    {
+        for( int y=0; y<size; y++ )
+        {
+            if( x==y )
+            {
+                break;
+            }
+            swap( &mat[y][x], &mat[x][y] );
+        }
+    }
+    
+    // reverse
+    for( int x=0; x<size>>1; x++ )
+    {
+        for( int y=0; y<size; y++ )
+        {
+            swap( &mat[y][x], &mat[y][size-1-x] );
+        }
+    }
+}
+
+bool findRotation(int** mat, int matSize, int* matColSize, int** target, int targetSize, int* targetColSize){
+    bool identical = true;
+    // max rotate 3 times
+    for( int rot=0; rot<MAXROT; rot++ )
+    {
+        // same?
+        identical = true;
+        for( int x=0; x<matSize; x++ )
+        {
+            for( int y=0; y<matSize; y++ )
+            {
+                if( mat[y][x] != target[y][x] )
+                {
+                    identical = false;
+                    break;
+                }
+            }
+        }
+        
+        // check
+        if( identical != false )
+        {
+            return true;
+        }
+        
+        // rotate
+        rotate( mat, matSize );
+    }
+    
+    return false;
+}

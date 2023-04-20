@@ -1,0 +1,60 @@
+class Solution {
+public:
+    int maximizeWin(vector<int>& arr, int k) {
+        vector<pair<int,int>> vp;
+        for(int i=0;i<arr.size();){
+            int j = i;
+            while(j < arr.size() and arr[j] == arr[i]) j++;
+            vp.push_back({arr[i],j-i});
+            i = j;
+        }
+        int i=0,j=0,sum=0;
+        vector<int> left;
+        while(j < vp.size()){
+            int diff = vp[j].first - vp[i].first;
+            sum += vp[j].second;
+            if(diff <= k){
+                left.push_back(sum);
+            }else{
+                while(i <= j){
+                    sum -= vp[i].second;
+                    int diff = vp[j].first - vp[++i].first;
+                    if(diff <= k){
+                        left.push_back(sum); break;
+                    }
+                }
+            }
+            j++;
+        }
+        i=vp.size()-1,j=vp.size()-1,sum=0;
+        vector<int> right;
+        while(j >= 0){
+            int diff = vp[i].first - vp[j].first;
+            sum += vp[j].second;
+            if(diff <= k){
+                right.push_back(sum);
+            }else{
+                while(i >= j){
+                    sum -= vp[i].second;
+                    int diff = vp[--i].first - vp[j].first;
+                    if(diff <= k){
+                        right.push_back(sum); break;
+                    }
+                }
+            }
+            j--;
+        }        
+        reverse(right.begin(),right.end());
+        vector<int> pref(left.size());
+        int maxi = right.back();
+        for(int i=right.size()-1;i>=0;i--){
+            maxi = max(maxi,right[i]);
+            pref[i] = maxi;
+        }
+        int ans = 0;
+        for(int i=0;i<left.size();i++){
+            ans = max(ans,left[i]+(i+1 < left.size() ? pref[i+1] : 0));
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,37 @@
+class Solution {
+public:
+    vector<vector<string>> findLadders(string beginWord, string endWord, vector<string>& wordList) {
+        unordered_map<string,int> um;
+        for(string w : wordList) {
+            um[w] = INT_MAX;
+        }
+        um[beginWord] = 0;
+        queue<pair<string,vector<string>>> q;
+        q.push({beginWord,{beginWord}});
+        vector<vector<string>> ans;
+        while(!q.empty()) {
+            auto x = q.front();
+            q.pop();
+            string word = x.first;
+            vector<string> path = x.second;
+            if(word == endWord) {
+                ans.push_back(path);
+                continue;
+            }
+            for(int i = 0;i<word.length();i++) {
+                string w = word;
+                for(char c = 'a';c<='z';c++) {
+                    w[i] = c;
+                    if(w == word)continue;
+                    if(um.find(w) == um.end())continue;
+                    if(um[w] < path.size())continue;
+                    um[w] = path.size();
+                    path.push_back(w);
+                    q.push({w,path});
+                    path.pop_back();
+                }
+            }
+        }
+        return ans;
+    }
+};

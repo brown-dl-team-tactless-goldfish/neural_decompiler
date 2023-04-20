@@ -1,0 +1,82 @@
+typedef struct ping {
+    int time;
+    struct ping * next;
+} Ping;
+
+typedef struct {
+    Ping* head;
+    Ping* tail;
+    int count;
+} RecentCounter;
+
+bool pingPush(RecentCounter* obj, int time) {
+    Ping * ptr = malloc(sizeof(Ping));
+    if (!ptr) {
+        return false;
+    }
+    ptr->time = time;
+    ptr->next = NULL;
+    if (obj->tail) {
+        obj->tail->next = ptr;
+        obj->tail = ptr;
+    } else {
+        obj->tail = ptr;
+        obj->head = ptr;
+    }
+
+    obj->count++;
+    return true;
+}
+
+void pingPop(RecentCounter* obj) {
+    if (obj->head && obj->head->next) {
+        Ping * needfree = obj->head;
+        obj->head = obj->head->next;
+        obj->count--;
+        free(needfree);
+    } else if (obj->head) {
+        free(obj->head);
+        obj->head = NULL;
+        obj->tail = NULL;
+        obj->count = 0;
+    }
+
+    return;
+}
+
+RecentCounter* recentCounterCreate() {
+    RecentCounter* obj = malloc(sizeof(RecentCounter));
+    if (obj == NULL) {
+        return NULL;
+    }
+    memset(obj, 0, sizeof(RecentCounter));
+    return obj;
+}
+
+int recentCounterPing(RecentCounter* obj, int t) {
+    pingPush(obj, t);
+    int firstValid = t - 3000;
+    Ping * iter = obj->head;
+    while (iter && iter->time < firstValid) {
+        pingPop(obj);
+        iter = obj->head;
+    }
+    return obj->count;
+}
+
+void recentCounterFree(RecentCounter* obj) {
+    if (obj) {
+        Ping* iter = obj->head;
+        while(iter && iter->next) {
+            Ping* needfree = iter;
+            iter = iter->next;
+            free(needfree);
+        }
+        // iter would be the last
+        if (iter) {
+            free(iter);
+        }
+        free(obj);
+    }
+    return;
+}

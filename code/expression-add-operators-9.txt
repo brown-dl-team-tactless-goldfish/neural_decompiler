@@ -1,0 +1,62 @@
+public IList<string> AddOperators(string num, int target) {
+        List<string> list = new List<string>();
+        Recurse(list, num, 0, "", "", target);
+        
+        return list;
+    }
+    
+    public void Recurse(List<string> list, string num, int p, string eq, string lastNum, long target) {
+        if (p >= num.Length) {
+            int i = 0;
+            long v = Term(eq, ref i);
+            if (v == target) list.Add(eq);
+            return;
+        }
+        
+        char c = num[p];
+        eq +=  c;
+        lastNum += c;
+        
+        if (lastNum.Length > 1 && lastNum[0] == '0') return;
+        
+        Recurse(list, num, p + 1, eq, lastNum, target);
+        
+        if (p < (num.Length - 1)) {
+            Recurse(list, num, p + 1, eq + "+", "", target);
+            Recurse(list, num, p + 1, eq + "-", "",  target);
+            Recurse(list, num, p + 1, eq + "*", "", target);
+        }
+    }
+    
+    public long Term(string expr, ref int p) {
+        long a = Factor(expr, ref p);
+        while(p < expr.Length && (expr[p] == '+' || expr[p] == '-')) {
+            char op = expr[p++];
+            long b = Factor(expr, ref p);
+            if (op == '+') a += b;
+            else if (op == '-') a -= b;
+        }
+        
+        return a;
+    }
+    
+    public long Factor(string expr, ref int p) {
+        long a = Expression(expr, ref p);
+        while(p < expr.Length && expr[p] == '*') {
+            char op = expr[p++];
+            long b = Factor(expr, ref p);
+            if (op == '*') a *= b;
+        }
+        
+        return a;
+    }
+    
+    public long Expression(string expr, ref int p) {
+        long a = 0;
+        while (p < expr.Length && (expr[p] >= '0' && expr[p] <= '9')) {
+            a = a * 10 + (expr[p] - '0');
+            p++;
+        }
+        
+        return a;
+    }

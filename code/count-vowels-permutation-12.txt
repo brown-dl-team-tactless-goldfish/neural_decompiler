@@ -1,0 +1,42 @@
+//dp O(n)
+public int CountVowelPermutation(int n) {
+
+	int MOD = 1000000007;
+
+	int[] cnt = new int[5];
+	for(int i=0; i<cnt.Length; i++)
+		cnt[i] = 1;
+
+	for(int i=2; i<=n; i++)
+	{
+		int[] ncnt = new int[5];
+
+		//a
+		ncnt[1] = cnt[0];
+
+		//e
+		ncnt[0] = cnt[1];
+		ncnt[2] = cnt[1];
+
+		//i
+		ncnt[0] = (ncnt[0] + cnt[2])%MOD;
+		ncnt[1] = (ncnt[1] + cnt[2])%MOD;
+		ncnt[3] = cnt[2];
+		ncnt[4] = cnt[2];
+
+		//o
+		ncnt[2] = (ncnt[2] + cnt[3])%MOD;
+		ncnt[4] = (ncnt[4] + cnt[3])%MOD;
+
+		//u
+		ncnt[0] = (ncnt[0] + cnt[4])%MOD;
+
+		cnt = ncnt;
+	}
+
+	int res = 0;
+	foreach(int c in cnt)
+		res = (res + c)%MOD;
+
+	return res;
+}

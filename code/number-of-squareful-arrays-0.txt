@@ -1,0 +1,65 @@
+int cmpfunc(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+
+void process(int*idx , int* data ,int pos, int* nums, int numsSzie, int* numsCn, int n){
+
+    if(pos == n){
+        *idx = *idx + 1;
+        return;       
+    }
+    for(int i = 0; i < numsSzie; i++){
+        if(numsCn[i] > 0){
+            if(pos > 0){
+                int sum = data[pos-1] + nums[i];
+                int sq = (int)sqrt(sum);
+                if(sum != (sq*sq)){
+                    continue;
+                }
+            }
+            data[pos] = nums[i];
+            pos++;
+            numsCn[i]--;
+            process( idx , data , pos, nums, numsSzie, numsCn, n);
+            pos--;
+            numsCn[i]++;
+        }
+    }                      
+}
+
+int numSquarefulPerms(int* nums, int numsSize){
+    //>>>>> sort and organize "nums" to newNums and numsCount
+    qsort(nums, numsSize, sizeof(int), cmpfunc);
+    int* newNums = malloc(numsSize * sizeof(int));
+    int* numsCount = malloc(numsSize * sizeof(int));
+    newNums[0] = nums[0];
+    numsCount[0] = 1;
+    int newNumsSize = 1;
+    for(int i = 1; i < numsSize; i++){
+        if(nums[i] == nums[i-1]){
+            numsCount[newNumsSize-1]++;
+        }
+        else{
+            newNums[newNumsSize] = nums[i];
+            numsCount[newNumsSize] = 1;
+            newNumsSize++;
+        }
+    }
+    newNums = realloc(newNums, newNumsSize * sizeof(int));
+    numsCount = realloc(numsCount, newNumsSize * sizeof(int));
+    //<<<<< end
+    
+    int* idx = calloc(1 , sizeof(int));
+    int* data = malloc(numsSize * sizeof(int));
+    
+    process( idx, data , 0, newNums, newNumsSize, numsCount, numsSize);
+    
+    int ans = *idx;
+    free(idx);
+    free(data);
+    free(newNums);
+    free(numsCount);
+    
+    return ans;
+
+}

@@ -1,0 +1,76 @@
+class UnionFind {
+public:
+    UnionFind(int sz) : root(sz), rank(sz) {
+        for (int i = 0; i < sz; i++) {
+            root[i] = i;
+            rank[i] = 1;
+        }
+    }
+
+    int find(int x) {
+        while (x != root[x]) {
+            x = root[x];
+        }
+        return x;
+    }
+
+    void unionSet(int x, int y) {
+        int rootX = find(x);
+        int rootY = find(y);
+        if (rootX != rootY) {
+            if (rank[rootX] > rank[rootY]) {
+                root[rootY] = rootX;
+            } else if (rank[rootX] < rank[rootY]) {
+                root[rootX] = rootY;
+            } else {
+                root[rootY] = rootX;
+                rank[rootX] += 1;
+            }
+        }
+    }
+
+    bool connected(int x, int y) {
+        return find(x) == find(y);
+    }
+
+private:
+    vector<int> root;
+    vector<int> rank;
+};
+class Solution {
+public:
+    vector<long long> maximumSegmentSum(vector<int>& nums, vector<int>& removeQueries) {
+        unordered_set<int> get;
+        unordered_map<int, long long> root_to_val;
+        UnionFind uf(nums.size());
+        vector<long long> ans = {0};
+        long long prev = 0;
+        
+        for (int i = removeQueries.size() - 1; i >= 1; -- i){
+            int curr = removeQueries[i];
+            get.insert(curr);
+            long long left_val = 0, right_val = 0;
+            
+            if (get.find(curr - 1) != get.end()){
+                left_val = root_to_val[uf.find(curr - 1)];
+                uf.unionSet(curr, curr - 1);
+            }
+            if (get.find(curr + 1) != get.end()){
+                right_val = root_to_val[uf.find(curr + 1)];
+                uf.unionSet(curr, curr + 1);
+            }
+            
+            prev = max(nums[curr] + left_val + right_val, prev);
+            root_to_val[uf.find(curr)] = nums[curr] + left_val + right_val;
+            ans.push_back(prev);
+        }
+        
+        reverse(ans.begin(), ans.end());
+        return ans;
+    }
+    
+    long long max(long long a, long long b){
+        return a > b ? a : b;
+
+    }
+};

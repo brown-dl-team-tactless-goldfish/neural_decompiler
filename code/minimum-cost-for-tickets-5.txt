@@ -1,0 +1,37 @@
+int mincostTickets(int* days, int daysSize, int* costs, int costsSize){
+    int d7ptr = 1, d30ptr = 1, cost1 = costs[0], cost7 = costs[1], cost30 = costs[2];
+    int cur, i = 1;
+    int* dp = (int *)malloc(sizeof(int) * daysSize);
+    dp[0] = cost1;
+    dp[0] = ((dp[0] < cost7)? dp[0] : cost7);
+    dp[0] = ((dp[0] < cost30)? dp[0] : cost30);
+    while (i < daysSize && days[i] - days[0] < 7) {
+        dp[i] = dp[i - 1] + cost1;
+        dp[i] = ((dp[i] < cost7)? dp[i] : cost7);
+        dp[i] = ((dp[i] < cost30)? dp[i] : cost30);
+        i ++;
+    }
+    while (i < daysSize && days[i] - days[0] < 30) {
+        cur = days[i];
+        while (d7ptr < daysSize && cur - days[d7ptr] >= 7) {
+            d7ptr ++;
+        }
+        dp[i] = dp[i - 1] + cost1;
+        dp[i] = ((dp[i] < (dp[d7ptr - 1] + cost7))? dp[i] : (dp[d7ptr - 1] + cost7));
+        dp[i] = ((dp[i] < cost30)? dp[i] : cost30);
+        i ++;
+    }
+    for (; i < daysSize; i ++) {
+        cur = days[i];
+        while (d7ptr < daysSize && cur - days[d7ptr] >= 7) {
+            d7ptr ++;
+        }
+        while (d30ptr < daysSize && cur - days[d30ptr] >= 30) {
+            d30ptr ++;
+        }
+        dp[i] = dp[i - 1] + cost1;
+        dp[i] = (dp[i] < dp[d7ptr - 1] + cost7)? dp[i] : (dp[d7ptr - 1] + cost7);
+        dp[i] = (dp[i] < dp[d30ptr - 1] + cost30)? dp[i] : (dp[d30ptr - 1] + cost30);
+    }
+    return dp[daysSize - 1];
+}

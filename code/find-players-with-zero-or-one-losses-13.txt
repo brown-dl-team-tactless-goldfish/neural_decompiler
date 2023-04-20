@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<vector<int>> ans ;
+    int lost[100001] ;
+    
+    vector<vector<int>> findWinners(vector<vector<int>>& matches) {
+        ans.resize(2);
+        int maxPlayer = -1 ;
+        set<int>hasPlayed ;
+        for(auto &vec : matches){
+            int winner = vec[0] , loser = vec[1] ;
+            ++lost[loser] ;
+            maxPlayer = max({maxPlayer,loser,winner}) ;
+            hasPlayed.insert(winner);
+            hasPlayed.insert(loser);
+        }
+        
+        for(int i = 1 ; i <= maxPlayer ; ++i ){
+            if(!lost[i] and hasPlayed.find(i) !=end(hasPlayed) ) ans[0].push_back(i) ;
+        }
+        for(int i = 1 ; i <= maxPlayer ; ++i ){
+            if(lost[i] == 1 and hasPlayed.find(i) !=end(hasPlayed)) ans[1].push_back(i);
+        }
+        return ans ;
+        
+    }
+};

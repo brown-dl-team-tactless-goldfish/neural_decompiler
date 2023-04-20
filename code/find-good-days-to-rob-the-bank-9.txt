@@ -1,0 +1,24 @@
+class Solution {
+public:
+  vector<int> goodDaysToRobBank(vector<int>& s, int time) {
+    int n = s.size();
+    vector<int> ans, a(n, 1), b(n, 1);
+    if(time == 0){
+      for(int i = 0; i != n; i++) ans.push_back(i);
+      return ans;
+    } 
+    
+    if(time*2 > s.size()) return ans;
+    
+    for(int i = 1; i != n; i++)                             //fill a
+      if(s[i-1] >= s[i]) a[i] += a[i-1]; 
+        
+    for(int i = n-2; i ; i--)                               //fill b
+      if(s[i] <= s[i+1]) b[i] += b[i+1];
+    
+    for(int i = time, lim = n - time + 1; i != lim; i++)    //check
+      if(a[i] > time && b[i] > time) ans.push_back(i);
+    
+    return ans;
+  }
+};

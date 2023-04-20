@@ -1,0 +1,36 @@
+class Solution {
+public:
+    bool isPossible(int D, int m, vector<int>& weights) {
+        int count = 0;
+        int sum = 0;
+        for(auto c : weights) {
+            if(c > m)
+                return false;
+            sum += c;
+            if(sum > m) {
+                sum = c;
+                count++;
+            }
+        }
+        count++;
+        return count <= D;
+    }
+    int sum_array(vector<int>& weights) {
+        int sum = 0;
+        for(auto c : weights)
+            sum += c;
+        return sum;
+    }
+    int shipWithinDays(vector<int>& weights, int D) {
+        int l = 0, h = sum_array(weights);
+        while(l < h) {
+            int m = l + (h - l)/2;
+            if(isPossible(D, m, weights)) {
+                h = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        return l;
+    }
+};

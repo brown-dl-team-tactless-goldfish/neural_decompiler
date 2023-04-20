@@ -1,0 +1,42 @@
+/*
+    we have to make two seats enclosed, and in the remaining gaps, we can place the dividers anywhere
+    the first divider has to be mandatorily installed
+
+*/
+class Solution {
+public:
+    int numberOfWays(string s) {
+        int len = s.length();
+        bool isFirstDividerInstalled = false;
+        int seats = 0;
+        int plants = 0;
+        int mod = 1e9 + 7;
+        int total = 0;
+        long long ans = 1;
+        for (int i = 0; i < len; i++) {
+            if (s[i] == 'S') {
+                total++;
+                seats++;
+            }  else if (seats == 0) {
+                plants++;
+            }
+
+            if (seats == 2) {
+                seats = 0;
+                plants = 0;
+                if (!isFirstDividerInstalled) isFirstDividerInstalled = true;
+            }
+
+            if (s[i] == 'S' && seats == 1) {
+                if (isFirstDividerInstalled) {
+                    /* do this answer update only when the first divider has been placed
+                        if we have something like PPPPS, then it will unncesearily multiply 5 (4 + 1)
+                    */
+                    ans  = (ans % mod * (plants + 1) % mod) % mod;
+                }
+            }
+        }
+        if (total == 0 || total % 2) return 0;
+        else return ans;
+    }
+};

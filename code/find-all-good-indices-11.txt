@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<int> goodIndices(vector<int>& nums, int k) {
+        int n = nums.size();
+        vector<int> nonDec(n,1);
+        vector<int> nonInc(n,1);
+        vector<int> ans;
+        nonDec[0] = 0;
+        nonInc[n-1] = 0;
+        
+        for(int i = 2; i < n; i++)
+        {
+            if(nums[i - 1] <= nums[i-2])
+                nonDec[i] = nonDec[i-1] + 1;
+        }
+        
+        for(int i = n - 3; i >= 0; i--)
+        {
+            if(nums[i+1] <= nums[i+2])
+                nonInc[i] = nonInc[i+1] + 1;
+        }
+        
+        for(int i = 0; i < n; i++)
+        {
+            if(((nonInc[i]) >= k) && ((nonDec[i]) >= k))
+                ans.push_back(i);
+        }
+        
+        return ans;
+    }
+};

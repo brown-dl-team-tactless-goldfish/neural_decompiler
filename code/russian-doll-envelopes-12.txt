@@ -1,0 +1,52 @@
+    public class Solution
+    {
+        public int MaxEnvelopes(int[][] envelopes)
+        {
+            if (envelopes.Length == 0)
+            {
+                return 0;
+            }
+
+            if (envelopes.Length == 1)
+            {
+                return 1;
+            }
+
+            Array.Sort(envelopes, (e1, e2) =>
+            {
+                var wCmp = e1[0].CompareTo(e2[0]);
+                if (wCmp != 0)
+                {
+                    return wCmp;
+                }
+
+                return e1[1].CompareTo(e2[1]);
+            });
+
+            int[] dp = new int[envelopes.Length];
+
+            dp[0] = 1;
+
+            for (int i = 1; i < envelopes.Length; i++)
+            {
+                dp[i] = 1;
+                var curr = envelopes[i];
+
+                for (int j = 0; j < i; j++)
+                {
+                    var prevDp = dp[j];
+                    var prev = envelopes[j];
+
+                    if (prev[0] < curr[0] && prev[1] < curr[1])
+                    {
+                        if (prevDp + 1 > dp[i])
+                        {
+                            dp[i] = prevDp + 1;
+                        }
+                    }
+                }
+            }
+
+            return dp.Max();
+        }
+    }

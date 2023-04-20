@@ -1,0 +1,70 @@
+int minOperations(int* nums1, int nums1Size, int* nums2, int nums2Size){
+    if(nums1Size > nums2Size && nums1Size > nums2Size * 6)
+        return -1;
+    if(nums2Size > nums1Size && nums2Size > nums1Size * 6)
+        return -1;
+
+    int* hash1 = calloc(7 , sizeof(int));
+    int* hash2 = calloc(7 , sizeof(int));
+    int sum1 = 0, sum2 = 0;
+    for(int i = 0; i < nums1Size; i++){
+        sum1 += nums1[i];
+        hash1[nums1[i]]++;
+    }
+    for(int i = 0; i < nums2Size; i++){
+        sum2 += nums2[i];
+        hash2[nums2[i]]++;
+    }
+    int diff = abs(sum1 - sum2);
+    if(diff == 0)
+        return 0;
+    
+    int* temp1;
+    int* temp2;
+    if(sum1 > sum2){
+        temp1 = hash1;
+        temp2 = hash2;
+    }
+    else{
+        temp1 = hash2;
+        temp2 = hash1;
+    }
+    
+    int OP = 0;
+    int k = 1;
+    while(diff > 0){
+        if(temp1[7-k] > 0){
+            int a = ceil(1.0 *diff/(6-k));
+            if(temp1[7-k] >=a){
+                temp1[7-k] -=a;
+                OP +=a;
+                diff -= a*(6-k);
+            }
+            else{
+                diff -= temp1[7-k] *(6-k);
+                OP += temp1[7-k];
+                temp1[7-k] = 0;
+            }
+            continue;
+        }
+        else if(temp2[k] > 0){
+            int b = ceil(1.0 *diff/(6-k));
+            if(temp2[k] >=b){
+                temp2[k] -=b;
+                OP +=b;
+                diff -= b*(6-k);
+            }
+            else{
+                diff -= temp2[k] *(6-k);
+                OP += temp2[k];
+                temp2[k] = 0;
+            }            
+            continue;
+        }
+        else
+            k++;
+    }
+    
+    return OP;
+
+}

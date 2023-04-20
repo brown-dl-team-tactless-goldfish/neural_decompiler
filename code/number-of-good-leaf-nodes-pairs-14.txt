@@ -1,0 +1,60 @@
+    public int CountPairs(TreeNode root, int distance) {
+         if (root == null) { return 0; }
+         int count = 0;
+        
+         Traverse(root, ref count, distance);
+        
+         return count;
+    }
+    
+    private Dictionary<int, int> Traverse(TreeNode root, ref int count, int distance)
+    {
+        Dictionary<int, int> result = new Dictionary<int, int>();
+        
+        if (root == null) { return result; }
+        
+        if (root.left == null && root.right == null)
+        {
+            result[0]=1;
+            return result;
+        }
+        
+        Dictionary<int, int> left = Traverse(root.left, ref count, distance);
+        Dictionary<int, int> right = Traverse(root.right, ref count, distance);
+        
+        if (left.Count > 0 && right.Count > 0)
+        {
+            foreach(int dist1 in left.Keys)
+            {
+                foreach(int dist2 in right.Keys)
+                {
+                    if (dist1 + dist2 + 2 <= distance)
+                    {
+                        count += left[dist1] * right[dist2];
+                    }
+                }
+            }         
+        }
+        
+        if (left.Count > 0)
+        {
+            foreach(int dist1 in left.Keys)
+            {
+                if (dist1+1 < distance) { result[dist1+1] = left[dist1]; }
+            }
+        }
+        
+        if (right.Count > 0)
+        {
+            foreach(int dist1 in right.Keys)
+            {
+                if (dist1+1 < distance)
+                {
+                    if (!result.ContainsKey(dist1+1)) { result[dist1+1] = 0; }
+                   result[dist1+1] += right[dist1];
+                }
+            }
+        }
+            
+        return result;
+    }

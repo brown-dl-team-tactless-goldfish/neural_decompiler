@@ -1,0 +1,46 @@
+list<int> *adj;
+class Solution {
+public:
+    void dfs(TreeNode* root){
+        if(!root){
+            return;
+        }
+        
+        if(root->left){
+            adj[root->left->val].push_back(root->val);
+            adj[root->val].push_back(root->left->val);
+        }
+        
+        if(root->right){
+           adj[root->right->val].push_back(root->val);
+           adj[root->val].push_back(root->right->val); 
+        }
+        
+        dfs(root->left);
+        dfs(root->right);
+    }
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int k) {
+        adj = new list<int>[501];
+        dfs(root);
+        queue<pair<int, int>> q;
+        q.push({target->val, 0});
+        int dist = 0;
+        vector<int> ans;
+        vector<bool> vis(501, false);
+        while(q.size()){
+            auto top = q.front();
+            q.pop();
+            vis[top.first] = true;
+            if(top.second==k){
+                ans.push_back(top.first);
+            }
+            
+            for(auto x: adj[top.first]){
+                if(!vis[x])
+                q.push({x, top.second+1});
+            }
+            
+        }
+        return ans;
+    }
+};

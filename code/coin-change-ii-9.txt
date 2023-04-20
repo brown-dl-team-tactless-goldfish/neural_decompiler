@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int change(int amount, vector<int>& coins) {
+        int n = coins.size();
+        int a = amount;
+        int dp[n+1][a+1];
+
+        for (int i=0; i<n; i++){
+            for (int j=0; j<=a; j++){
+                dp[i][j] = 0;
+            }
+        }
+        dp[0][0]=1;
+        for (int i=1; i<=n; i++){
+            dp[i][0] = 1;
+            for (int j=1; j<=a; j++){
+                int c = coins[i-1];
+                if (j >= c){
+                    dp[i][j] = dp[i-1][j] + dp[i][j-c];
+                } else {
+                    dp[i][j] = dp[i-1][j];
+                }   
+            }
+        }
+        return dp[n][a]; 
+    }
+};

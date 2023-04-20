@@ -1,0 +1,74 @@
+class node {
+public:
+	char data;
+	bool terminal;
+	unordered_map<char, node*> children;
+
+	node(char c) {
+		data = c;
+		terminal = false;
+	}
+};
+
+
+class trie {
+
+public:
+	node* root;
+	trie() {
+		root = new node('\0');
+	}
+
+	void insert(string s) {
+		node* temp = root;
+		for (char c : s) {
+
+			if (temp->children.find(c) != temp->children.end()) temp = temp->children[c];
+			else {
+				node* n = new node(c);
+				temp->children[c] = n;
+				temp = n;
+			}
+		}
+
+		temp->terminal = true;
+	}
+
+	bool f(string s, int i , int changed, node* cur) {
+
+		if (changed > 1) return false;
+		if (i == s.length()) return (cur->terminal && changed == 1);
+
+		for (int j = 0; j < 26; j++) {
+			char cc = j + 'a';
+			if (cur->children.find(cc) != cur->children.end()) {
+
+				int newChanged = cc == s[i] ? changed : changed + 1;
+
+				bool curAns = f(s, i + 1, newChanged, cur->children[cc]);
+				if (curAns) return true;
+
+			}
+		}
+
+		return false;
+	}
+};
+
+class MagicDictionary {
+public:
+	/** Initialize your data structure here. */
+	trie t;
+	MagicDictionary() {
+
+	}
+
+	void buildDict(vector<string> dictionary) {
+		for (string s : dictionary) t.insert(s);
+	}
+
+	bool search(string searchWord) {
+		node* cur = t.root;
+		return t.f(searchWord, 0, 0, cur);
+	}
+};

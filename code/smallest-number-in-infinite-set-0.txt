@@ -1,0 +1,94 @@
+typedef struct {
+    int* heap;
+    bool* hash;
+    int  heapsize;
+} SmallestInfiniteSet;
+
+
+SmallestInfiniteSet* smallestInfiniteSetCreate() {
+    SmallestInfiniteSet* ret = malloc(sizeof(SmallestInfiniteSet));
+    ret->heap = malloc(1001 * sizeof(int));
+    ret->hash = malloc(1000 * sizeof(bool));
+    for(int i = 0; i < 1000; i++){
+        ret->heap[i] = i + 1; 
+        ret->hash[i] = true;
+    }
+    ret->heapsize =  1000;
+    return ret;
+}
+
+int smallestInfiniteSetPopSmallest(SmallestInfiniteSet* obj) {
+    if(obj->heapsize == 0)
+        return -1;
+
+    int ans = obj->heap[0];
+    obj->hash[ans-1] = false;
+    obj->heap[0] = obj->heap[obj->heapsize - 1];
+    obj->heapsize--;
+    int pos = 0, temp;
+    
+    while(pos < obj->heapsize){
+        if((2*pos + 1) >= obj->heapsize)
+            break;
+        if((2*pos + 1) == ((obj->heapsize) - 1)){
+            if(obj->heap[pos] > obj->heap[2*pos+ 1]){
+                temp = obj->heap[pos] ;
+                obj->heap[pos] = obj->heap[2 * pos + 1];
+                obj->heap[2*pos + 1] = temp; 
+                pos = 2*pos + 1;
+            }
+            break;
+        }
+        if(obj->heap[pos] > obj->heap[2*pos + 1] || obj->heap[pos] > obj->heap[2*pos + 2]){
+            if(obj->heap[2*pos + 1] <=  obj->heap[2*pos + 2] )  {
+                temp = obj->heap[2*pos + 1];
+                obj->heap[2*pos + 1] = obj->heap[pos];
+                obj->heap[pos] = temp;
+                pos = 2*pos + 1;
+            } 
+            else{
+                temp = obj->heap[2*pos + 2];
+                obj->heap[2*pos + 2] = obj->heap[pos];
+                obj->heap[pos] = temp;    
+                pos = 2*pos + 2;
+            }
+        }
+        else
+            break;
+    }
+    return ans;
+}
+
+void smallestInfiniteSetAddBack(SmallestInfiniteSet* obj, int num) {
+
+    if(obj->hash[num-1] == true)
+        return ;
+    else
+        obj->hash[num-1] = true;
+
+    obj->heap[obj->heapsize]  = num;
+    int pos = obj->heapsize;
+    obj->heapsize++;
+    int temp;
+    while(pos > 0 && (obj->heap[pos] < obj->heap[(pos-1)/2] )){
+        temp = obj->heap[(pos-1)/2];
+        obj->heap[(pos-1)/2] = obj->heap[pos] ;
+        obj->heap[pos]  = temp;
+        pos = (pos-1)/2;
+    }    
+}
+
+void smallestInfiniteSetFree(SmallestInfiniteSet* obj) {
+    free(obj->heap);
+    free(obj);
+}
+
+/**
+ * Your SmallestInfiniteSet struct will be instantiated and called as such:
+ * SmallestInfiniteSet* obj = smallestInfiniteSetCreate();
+ * int param_1 = smallestInfiniteSetPopSmallest(obj);
+ 
+ * smallestInfiniteSetAddBack(obj, num);
+ 
+ * smallestInfiniteSetFree(obj);
+*/

@@ -1,0 +1,33 @@
+void rec(vector<vector<int>> & statements,int &ans,vector<int> &vec,int ind){
+        int count=0;
+        if(vec.size()!=0){
+            for(int i=0;i<vec.size();i++){
+                int j;
+                for(j=0;j<statements[vec[i]].size();j++){
+                    if(statements[vec[i]][j]==0)
+                    if(binary_search(vec.begin(),vec.end(),j)){
+                        return ;
+                    }
+                    if(statements[vec[i]][j]==1){
+                        if(not binary_search(vec.begin(),vec.end(),j)){
+                            break;
+                        }
+                    }
+                }
+                if(j==statements[0].size()) count++;
+            }
+            if(count==vec.size())
+            ans=max(ans,(int)vec.size());
+        }
+        if(ind>=statements.size())return ;
+        rec(statements,ans,vec,ind+1);
+        vec.push_back(ind);
+        rec(statements,ans,vec,ind+1);
+        vec.pop_back();
+    }
+    int maximumGood(vector<vector<int>>& statements) {
+        int ans=0;
+        vector<int> vec;
+        rec(statements,ans,vec,0);
+        return ans;
+    }

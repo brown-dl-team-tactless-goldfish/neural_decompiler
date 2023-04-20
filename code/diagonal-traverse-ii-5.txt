@@ -1,0 +1,43 @@
+class Solution {
+public:
+    class Cell {
+    public:
+        int r;    
+        int c;
+        int num;
+        
+        Cell(int row, int col, int number)
+        {
+            r = row;
+            c = col;
+            num = number;
+        }
+    };
+    
+    vector<int> findDiagonalOrder(vector<vector<int>>& nums) {
+        vector<Cell> cells;
+        for(int r=0; r<nums.size(); r++)
+        {
+            for(int c=0; c<nums[r].size(); c++)
+            {
+                cells.push_back(Cell(r,c,nums[r][c]));
+            }
+        }
+        
+        auto comp = [](const Cell& cell1, const Cell& cell2)
+        {
+            if(cell1.r < cell2.r) return cell1.c<cell2.c+(cell2.r-cell1.r);
+            else return cell1.c<=cell2.c-(cell1.r-cell2.r);
+        };
+        
+        sort(cells.begin(), cells.end(), comp);
+        
+        vector<int> ans;
+        for(Cell& c : cells)
+        {
+            ans.push_back(c.num);
+        }
+        
+        return ans;
+    }
+};

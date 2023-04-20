@@ -1,0 +1,38 @@
+class Solution {
+    int numOfFact(int n, int x) {
+        int count = 0;
+        while(n % x == 0) {
+            count++;
+            n /= x;
+        }
+        return count;
+    }
+public:
+    int maxTrailingZeros(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size(), ans = 0;
+        vector<vector<pair<int, int>>> h(m + 1, vector<pair<int, int>>(n + 1));
+        vector<vector<pair<int, int>>> v(m + 1, vector<pair<int, int>>(n + 1));
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                h[i + 1][j + 1].first = h[i + 1][j].first + numOfFact(grid[i][j], 2);  
+                h[i + 1][j + 1].second = h[i + 1][j].second + numOfFact(grid[i][j], 5); 
+                v[i + 1][j + 1].first = v[i][j + 1].first + numOfFact(grid[i][j], 2);  
+                v[i + 1][j + 1].second = v[i][j + 1].second + numOfFact(grid[i][j], 5); 
+            }
+        }
+        pair<int, int> h1, h2, v1, v2;
+        for(int i = 1; i <= m; i++) {
+            for(int j = 1; j <= n; j++) {
+                h1 = {h[i][j - 1].first, h[i][j - 1].second};
+                h2 = {h[i][n].first - h[i][j].first, h[i][n].second - h[i][j].second};
+                v1 = {v[i][j].first, v[i][j].second};
+                v2 = {v[m][j].first - v[i - 1][j].first, v[m][j].second - v[i - 1][j].second};
+                ans = max(ans, min(v1.first + h1.first, v1.second + h1.second));
+                ans = max(ans, min(v1.first + h2.first, v1.second + h2.second));
+                ans = max(ans, min(v2.first + h1.first, v2.second + h1.second));
+                ans = max(ans, min(v2.first + h2.first, v2.second + h2.second));
+            }
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,42 @@
+
+typedef pair<int,int> pii;
+
+class Solution {
+public:
+    
+    int videoStitching(vector<vector<int>>& clips, int T) {
+        sort(clips.begin(),clips.end());
+        
+        int n=clips.size(), numChunks=0;
+        int i=0, stc=0;
+        while(i<n){
+            int mr=clips[i][1];
+            if(clips[i][0]>stc){
+                return -1;
+            }
+            while(i<n && clips[i][0]<=stc){
+                mr=max(mr,clips[i][1]);
+                i++;
+            }
+            numChunks++;
+            stc=mr;
+            if(stc>=T){
+                break;
+            }
+        }
+        if(stc<T){
+            return -1;
+        }
+        return numChunks;
+    }
+    
+    int minTaps(int n, vector<int>& ranges) {
+        vector<vector<int>> vec;
+        for(int i=0;i<=n;i++){
+            int low=max(i-ranges[i],0),high= min(i+ ranges[i],n);
+            vec.push_back({low,high});
+        }
+
+        return videoStitching(vec,n);
+    }
+};

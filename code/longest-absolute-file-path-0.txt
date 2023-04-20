@@ -1,0 +1,65 @@
+int levels[1000] = {0};
+char Os[10000] = {0};
+
+int gettCount(char *input)
+{
+  int count = 0;
+  int len = strlen(input);
+  for (int i = 0; input[i]; i++) {
+    if ((input[i] == '\t')) {
+      count ++;
+      continue;
+    }
+    break;
+  }
+  return count;
+}
+
+
+int lengthLongestPath(char * input){
+  printf("%s",input);
+  /*
+  copy till \n
+  */
+  int j = 0, max = 0;
+  int len = strlen(input);
+  for (int i = 0; i <len; i++) {
+    if (input[i] == '.') {
+      for (; input[i] &&( input[i]!= '\n' && input[i]!='\t') ; i++) {
+        Os[j++] = input[i];
+      }
+      if (max < j) {
+        max = j;
+      }
+      i--;
+      continue;
+    }
+    if ((input[i] != '\n')) {
+        Os[j++] = input[i];
+        continue;
+    }
+    
+    
+    int c = gettCount(&input[i+1]);
+    if (c == 0) {
+      /*same dir diff file
+      come backwards till last /
+      */
+      for (; j >0 && Os[j-1] !='/'; j--);
+    } else {
+      //diff dir
+    Os[j++] = '/';
+    }
+    // Read upto c / in Os
+    int k;
+    i+=c;
+    for ( k = 0; c && k<j;k++) {
+      if(Os[k] == '/') {
+        c--;
+      }
+    }
+    j = k;
+  }
+  printf("\n%s\t j = %d",Os, j);
+  return max;
+}

@@ -1,0 +1,26 @@
+int cmpFunc(const void *A, const void *B) {
+    const int *a = *(const int**)A;
+    const int *b = *(const int**)B;
+    
+    if(b[1] == a[1]) return (b[0]-a[0]);
+    return (b[1]-a[1]);
+}
+
+int maximumUnits(int** boxTypes, int boxTypesSize, int* boxTypesColSize, int truckSize){
+    if (boxTypes == NULL || boxTypesSize == 0 || truckSize == 0) return 0;
+    
+    int i = 0, max = 0;
+    qsort(boxTypes, boxTypesSize, sizeof(*boxTypes), cmpFunc);
+    while (truckSize >= 0 && i < boxTypesSize) {
+        if (truckSize >= boxTypes[i][0]){
+            max += boxTypes[i][1] * boxTypes[i][0];
+        }
+        else {
+            max += boxTypes[i][1] * truckSize;
+        }
+        truckSize -= boxTypes[i][0];
+        i++;
+    }
+    
+    return max;
+}

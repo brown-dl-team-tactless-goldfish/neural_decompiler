@@ -1,0 +1,60 @@
+# DP + recursion
+# Time complexity: O(mn)
+# Space complexity: O(mn)
+
+
+class Solution(object):
+    def minDistance(self, word1, word2):
+        """
+        :type word1: str
+        :type word2: str
+        :rtype: int
+        """
+        len1 = len(word1)
+        len2 = len(word2)
+        print("word1 = ", word1)
+        print("word2 = ", word2)
+        dp = {}
+
+        def helper(curW1, curW2):
+            print("curW1 = ", curW1)
+            print("curW2 = ", curW1)
+
+            len_w1 = len(curW1)
+            len_w2 = len(curW2)
+
+            if ((curW1, curW2) in dp):
+                return dp[(curW1, curW2)]
+
+            else:
+                if (curW1 == curW2):
+                    res = 0
+                    dp[(curW1, curW2)] = res
+                    return res
+                else:
+                    if (len_w1 == 0 and len_w2 == 0):
+                        res = 0
+                        dp[(curW1, curW2)] = res
+                        return res
+                    elif (len_w1 == 0):
+                        res = len_w2
+                        dp[(curW1, curW2)] = res
+                        return res
+                    elif (len_w2 == 0):
+                        res = len_w1
+                        dp[(curW1, curW2)] = res
+                        return res
+                    else:
+                        if (curW1[0] == curW2[0]):
+                            return helper(curW1[1:], curW2[1:])
+                        else:
+                            res1 = helper(curW1[1:], curW2) + 1
+                            res2 = helper(curW1, curW2[1:]) + 1
+                            res3 = helper(curW1[1:], curW2[1:]) + 2
+
+                            res = min(res1, res2, res3)
+                            dp[(curW1, curW2)] = res
+                            return res
+        res = helper(word1, word2)
+        print("res = ", res)
+        return res

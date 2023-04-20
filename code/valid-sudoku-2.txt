@@ -1,0 +1,31 @@
+public:
+    int rows[9];
+    int cols[9];
+    int boxs[9];
+    
+    bool isValidSudoku(vector<vector<char>>& board) 
+    {
+        int cCount = board.size();
+        int rCount = board[0].size();
+        
+        int shift;
+        for (int c = 0; c < cCount; c++)
+        {
+            for (int r = 0; r < rCount; r++)
+            {
+                if(board[r][c] == '.') continue;
+                
+                shift = (board[r][c] - '0');
+                if(rows[r] & 1 << shift) return false;
+                rows[r] |= 1 << shift;
+                if(cols[c] & 1 << shift) return false;
+                cols[c] |= 1 << shift;
+                int boxno = (c/3)*3 + r/3;
+                if(boxs[boxno] & 1 << shift) return false;
+                boxs[boxno] |= 1 << shift;
+            }
+        }
+        
+        return true;
+    }
+};

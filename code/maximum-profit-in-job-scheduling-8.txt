@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int jobScheduling(const vector<int>& startTime, const vector<int>& endTime, const vector<int>& profit) {
+        int n = startTime.size();
+        vector<vector<int>> segs;
+        for (int i = 0; i < n; ++i) {
+            segs.push_back({startTime[i], endTime[i], profit[i]});
+        }
+        sort(segs.begin(), segs.end(), [](const vector<int>& a, const vector<int>& b) {
+            return tie(a.front(), b[1]) < tie(b.front(), a[1]);
+        });
+
+        vector<int> dp(n, -1);
+        function<int(int)> h;
+        h = [&](int index) -> int {
+            if (index == n) return 0;
+            int& v = dp[index];
+            if (v < 0)  {
+                int p = index;
+                while (p < n && segs[p].front() < segs[index][1]) ++p;
+                v = max(h(index + 1), h(p) + segs[index].back());
+            }
+            return v;
+        };
+
+        return h(0);
+    }
+};

@@ -1,0 +1,82 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* sumEvenAfterQueries(int* A, int ASize, int** queries, int queriesSize, int* queriesColSize, int* returnSize)
+{
+
+    
+    int * ret_arr = (int *)malloc(sizeof(int) * queriesSize);
+    *returnSize = queriesSize;
+    
+    int i=0, val, index, even_sum=0, j=0, cache_sum=0;
+
+    for(j=0; j<ASize; j++)
+    {
+            if(A[j]%2 == 0)
+                cache_sum += A[j];
+    }
+    
+    int prev_val; 
+    
+    even_sum = cache_sum;
+    
+    for(i=0; i<queriesSize; i++)
+    {
+     
+        
+        
+        val   =  *(*(queries+i)+0);
+        index =  *(*(queries+i)+1);
+    
+        prev_val = *(A+index);
+        
+        *(A+index) += val;
+        
+        //If previous value at this index was odd and new value is even, add this to the even_sum;
+        if((prev_val%2 != 0) && ( *(A+index)%2 == 0))
+        {
+            even_sum += *(A+index);
+        }
+        
+        //If previous value at this index was even and new value is odd, remove this to the even_sum;
+        else if((prev_val%2 == 0) && ( *(A+index)%2 != 0))
+        {
+            even_sum -= prev_val;
+        }
+        
+        //If previous value at this index was even and new value is also even, add the differnece to the even_sum;
+        else if((prev_val%2 == 0) && ( *(A+index)%2 == 0))
+        {
+            //Check if the prev and new sign are same
+            
+            if( (prev_val > 0) && (*(A+index)<0))
+            {
+                even_sum = even_sum - prev_val + *(A+index);
+            }
+            
+            else if( (prev_val < 0) && (*(A+index)>0))
+            {
+                even_sum = even_sum + abs(prev_val) + *(A+index);
+            }
+    
+            else
+            {
+                
+                if(prev_val < *(A+index))
+                    even_sum += abs(prev_val - *(A+index));
+                
+                else
+                    even_sum -= abs(prev_val - *(A+index));
+                    
+            }
+            
+        }
+        
+        *(ret_arr+i) = even_sum;
+    }
+    
+    return ret_arr;
+}
+

@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int minimizeMax(vector<int>& nums, int p) {
+        if(p == 0) return 0;
+        int n = nums.size();
+        int low = 0, high = 1e9;
+        int minDiff = 0;
+        sort(nums.begin(), nums.end());
+        while(low <= high) {
+            int mid = (low + high) / 2;
+            int count = 0;
+            set<int> isDiffValid;
+            for(int i = 1; i < n; i++) {
+                if(nums[i]-nums[i-1] <= mid) {
+                    isDiffValid.insert(nums[i]-nums[i-1]);
+                    count++;
+                    i++;
+                }
+            }
+            if(count >= p) {
+                if(isDiffValid.find(mid) != isDiffValid.end());
+                    minDiff = mid;
+                high = mid-1;
+            }
+            else low = mid+1;
+        }
+        return minDiff;
+    }
+};
+
+

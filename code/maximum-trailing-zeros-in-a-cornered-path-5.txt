@@ -1,0 +1,41 @@
+class Solution {
+public:
+	int count_k(int n, int k) {
+		int r = 0;
+		while (n % k == 0) {
+			++r, n /= k;
+		}
+		return r;
+	}
+
+#define TWO 0
+#define FIVE 1
+
+    int maxTrailingZeros(vector<vector<int>>& grid) {
+		vector<vector<array<int, 2>>> ver(grid.size() + 1, vector<array<int, 2>>(grid[0].size() + 1, array<int, 2>())), hor = ver;
+
+		for (int i = 1; i <= grid.size(); ++i) {
+			for (int j = 1; j <= grid[i - 1].size(); ++j) {
+				ver[i][j][TWO] += count_k(grid[i - 1][j - 1], 2) + ver[i - 1][j][TWO];
+				ver[i][j][FIVE] += count_k(grid[i - 1][j - 1], 5) + ver[i - 1][j][FIVE];
+				hor[i][j][TWO] += count_k(grid[i - 1][j - 1], 2) + hor[i][j - 1][TWO];
+				hor[i][j][FIVE] += count_k(grid[i - 1][j - 1], 5) + hor[i][j - 1][FIVE];
+			}
+		}
+
+		int res = 0;
+		for (int i = 1; i <= grid.size(); ++i) {
+			for (int j = 1; j <= grid[i - 1].size(); ++j) {
+				int left_2 = hor[i][j][TWO], left_5 = hor[i][j][FIVE];
+				int up_2 = ver[i - 1][j][TWO], up_5 = ver[i - 1][j][FIVE];
+				int right_2 = hor[i].back()[TWO] - hor[i][j - 1][TWO], right_5 = hor[i].back()[FIVE] - hor[i][j - 1][FIVE];
+				int down_2 = ver.back()[j][TWO] - ver[i][j][TWO], down_5 = ver.back()[j][FIVE] - ver[i][j][FIVE];
+				res = max(res, min(left_2 + up_2, left_5 + up_5));
+				res = max(res, min(left_2 + down_2, left_5 + down_5));
+				res = max(res, min(right_2 + up_2, right_5 + up_5));
+				res = max(res, min(right_2 + down_2, right_5 + down_5));
+			}
+		}
+		return res;
+	}
+};

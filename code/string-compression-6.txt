@@ -1,0 +1,29 @@
+int change(int temp,char *chars){
+    char *a=(char*)malloc(sizeof(char)*5);
+    int n=sprintf(a, "%d",temp);
+    while(*a!='\0'){*(chars++)=*(a++);}
+    return n;
+}
+int compress(char* chars, int charsSize) {
+    if(charsSize==1){
+        return 1;
+    }
+    char flag=chars[0];
+    int temp=1;
+    int result=0;
+    for(int i=1;i<charsSize;i++){
+        if(flag!=chars[i]){
+            result++;
+            if(temp>1){
+                result+=change(temp,&chars[result]);
+                temp=1;
+            }
+            flag=chars[i];
+            chars[result]=chars[i];
+        }
+        else{temp++;}
+    }
+    result++;
+    if(temp>1){result+=change(temp,&chars[result]);}
+    return result;
+}

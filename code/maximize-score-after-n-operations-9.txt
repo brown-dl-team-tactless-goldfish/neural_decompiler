@@ -1,0 +1,27 @@
+    int maxScore(vector<int>& nums) {
+       
+        int n=nums.size();
+        vector<vector<int>> gcdm(n,vector<int>(n));
+        for(int i=0;i<n;i++){
+            for(int j=i+1;j<n;j++)
+                gcdm[i][j]=gcdm[j][i]=__gcd(nums[i],nums[j]);
+        }
+        //dp: dp[state][i] ending with i
+        int m=1<<n;
+        vector<vector<int>> dp(m,vector<int>(n));
+        for(int s=0;s<m;s++){
+            int nc=bitset<16>(s).count();
+            for(int i=0;i<n;i++){
+                if(s&(1<<i)) continue;
+                int ns=s|(1<<i);
+                for(int j=0;j<n;j++){ 
+                    if(j==i || !(s&(1<<j))) continue; //if j is not inside ignore
+                    if(nc%2) dp[ns][i]=max(dp[ns][i],dp[s][j]+(nc/2+1)*gcdm[i][j]);
+                    else dp[ns][i]=max(dp[ns][i],dp[s][j]);
+                }
+            }
+        }
+        int ans=0;
+        for(int i=0;i<n;i++) ans=max(ans,dp[m-1][i]);
+        return ans;
+    }

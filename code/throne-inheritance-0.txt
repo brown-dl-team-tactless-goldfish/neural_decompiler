@@ -1,0 +1,108 @@
+/* OK, so we have a list and a hash table */
+/* XXX we make assumption all allocations succeed */
+
+#include <search.h>
+#include <sys/queue.h>
+
+#define MAX_NAME_LEN 15
+
+struct person {
+    STAILQ_ENTRY(person)    next;
+    STAILQ_HEAD(, person)   children;
+    int                     is_dead;
+    char                    name[MAX_NAME_LEN + 1];
+};
+
+static void
+init_person (struct person *person, const char *name)
+{
+    STAILQ_INIT(&person->children);
+    person->is_dead = 0;
+    strcpy(person->name, name);
+    hsearch((ENTRY) { .key = person->name, .data = person, }, ENTER);
+}
+
+static struct person *
+new_person (char *name)
+{
+    struct person *person;
+    
+    person = malloc(sizeof(*person));
+    init_person(person, name);
+    return person;
+}
+
+static struct person *
+find_person (char *name)
+{
+    ENTRY *entry;
+
+    entry = hsearch((ENTRY) { .key = name }, FIND);
+    assert(entry);      /* We are guaranteed all names are there */
+    return entry->data;
+}
+
+typedef struct {
+    int             n_alive;   
+    struct person   king;
+} ThroneInheritance;
+
+
+ThroneInheritance* throneInheritanceCreate(char * kingName) {
+    ThroneInheritance *ti;
+    
+    hcreate(100000);
+    ti = malloc(sizeof(*ti));
+    ti->n_alive = 1;
+    init_person(&ti->king, kingName);
+    return ti;
+}
+
+void throneInheritanceBirth(ThroneInheritance* obj, char * parentName, char * childName) {
+    struct person *parent, *child;
+
+    parent = find_person(parentName);
+    child = new_person(childName);
+    STAILQ_INSERT_TAIL(&parent->children, child, next);
+    ++obj->n_alive;
+}
+
+void throneInheritanceDeath(ThroneInheritance* obj, char * name) {
+    struct person *person;
+    
+    person = find_person(name);
+    person->is_dead = 1;
+    --obj->n_alive;
+}
+
+static void
+visit (const struct person *person, char **retval, int *n)
+{
+    const struct person *child;
+    
+    if (!person->is_dead)
+    {
+        retval[*n] = strdup(person->name);
+        ++*n;
+    }
+    
+    STAILQ_FOREACH(child, &person->children, next)
+        visit(child, retval, n);
+}
+
+char ** throneInheritanceGetInheritanceOrder(ThroneInheritance* obj, int* retSize) {
+    char **retval;
+    int n;
+    
+    retval = malloc(obj->n_alive * sizeof(retval[0]));
+    n = 0;
+    visit(&obj->king, retval, &n);
+    *retSize = obj->n_alive;
+    return retval;
+}
+
+void throneInheritanceFree(ThroneInheritance* obj) {
+    /* TODO: free all the people */
+    free(obj);
+    hdestroy();
+}

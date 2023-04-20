@@ -1,0 +1,52 @@
+    public class Solution
+    {
+        public IList<string> RemoveSubfolders(string[] folder)
+        {
+            Array.Sort(folder, (s1, s2) => s1.Length.CompareTo(s2.Length));
+
+            HashSet<string> roots = new HashSet<string>();
+
+            foreach (var f in folder)
+            {
+                StringBuilder sb = new StringBuilder();
+
+                int i = 0;
+
+                bool isSubFolder = false;
+
+                while (true)
+                {
+                    if (i == f.Length)
+                    {
+                        break;
+                    }
+
+                    char cf = f[i];
+
+                    if (cf == '/')
+                    {
+                        if (roots.Contains(sb.ToString()))
+                        {
+                            isSubFolder = true;
+                            break;
+                            ;
+                        }
+
+                        sb.Append(cf);
+                        i++;
+                        continue;
+                    }
+
+                    sb.Append(cf);
+                    i++;
+                }
+
+                if (!isSubFolder)
+                {
+                    roots.Add(sb.ToString());
+                }
+            }
+
+            return roots.ToList();
+        }
+    }

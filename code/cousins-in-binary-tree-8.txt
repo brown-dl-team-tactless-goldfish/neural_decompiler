@@ -1,0 +1,26 @@
+void isCousinsRec(struct TreeNode* root, int x, int parent, int level, int *ret_p, int *ret_level)
+{
+    if (!root) {
+        return;    
+    }
+    
+    if (root->val == x) {
+        *ret_level = level;
+        *ret_p = parent;
+        return;
+    }
+    
+    isCousinsRec(root->left, x,  root->val, level + 1, ret_p, ret_level);
+    isCousinsRec(root->right, x,  root->val, level + 1, ret_p, ret_level);
+}
+
+bool isCousins(struct TreeNode* root, int x, int y) {
+    if (!root) return false;
+    int xlevel = -1, ylevel = -1;
+    int xparent = INT_MIN, yparent = INT_MIN;
+    
+    isCousinsRec(root, x, INT_MIN, 0, &xparent, &xlevel);
+    isCousinsRec(root, y, INT_MIN, 0, &yparent, &ylevel);
+    
+    return xlevel == ylevel && xparent != yparent;
+}

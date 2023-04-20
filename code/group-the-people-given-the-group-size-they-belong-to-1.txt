@@ -1,0 +1,26 @@
+int** groupThePeople(int* groupSizes, int groupSizesSize, int* returnSize, int** returnColumnSizes){
+    int table[groupSizesSize+1][groupSizesSize+1];
+    int col[groupSizesSize+1];
+    memset(table, 0, sizeof(table));
+    memset(col, 0, sizeof(col));
+    int **result = (int**)malloc(sizeof(int*)*groupSizesSize);
+    *returnSize = 0;
+    *returnColumnSizes = (int *)malloc(sizeof(int)*groupSizesSize);
+    for (int i = 0; i < groupSizesSize ; i++) {
+        table[groupSizes[i]][col[groupSizes[i]]] = i;
+        col[groupSizes[i]]++;
+    }
+    for (int i = 0; i <= groupSizesSize; i++) {
+        int k = 0;
+        while (col[i]) {
+            result[*returnSize] = (int *)malloc(sizeof(int)*i);
+            (*returnColumnSizes)[*returnSize] = i;
+            for (int j=0 ;j<i ;j++) {
+                result[*returnSize][j] = table[i][k++];
+                col[i]--;
+            }
+            (*returnSize)++;
+        }
+    }
+    return result;
+}

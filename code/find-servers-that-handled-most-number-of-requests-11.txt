@@ -1,0 +1,46 @@
+class Solution {
+public:
+	struct comp{
+		bool operator()(const pair<int,int>& a, const pair<int,int>& b){
+			return a.second > b.second;
+		}
+	};
+	vector<int> busiestServers(int k, vector<int>& arrival, vector<int>& load) {
+		priority_queue< pair<int,int> ,vector<pair<int,int>>,comp> qu; // for busy server
+		set<int> S; // for non-busy server
+		for(int i = 0;i < k; i++ ){
+			S.insert(i);
+		}
+		vector<int> ans;
+		vector<int> server(k,0);
+
+		for(int i = 0;i < arrival.size(); i++){
+			int ii = i % k;
+			while(!qu.empty() && qu.top().second <= arrival[i]){
+				S.insert(qu.top().first);
+				qu.pop();
+			}
+			if(S.empty()) continue;
+			auto it = S.lower_bound(ii);
+			if( it == S.end() ){
+				qu.push( make_pair( *S.begin(), arrival[i] + load[i] ) );
+				server[*S.begin()]++;
+				S.erase(S.begin());
+			}
+			else{
+				qu.push( make_pair( *it, arrival[i] + load[i] ) );
+				server[*it]++;
+				S.erase(*it);
+			}
+		}
+		int big = 0;
+		for(int i = 0;i < k; i++){
+			big = max(big,server[i]);
+		}
+		for(int i = 0 ;i < k; i++){
+			if(server[i] == big)
+				ans.push_back( i );
+		}
+		return ans;
+	}
+};

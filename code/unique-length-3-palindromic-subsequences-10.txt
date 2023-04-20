@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int countPalindromicSubsequence(string s) {
+        unordered_map<char, int> left;
+        unordered_map<char, int> right;
+        for (auto& c : s) ++right[c];
+        string alphabet = "abcdefghijklmnopqrstuvwxyz";
+        int ans = 0;
+        unordered_map<char, unordered_set<char>> m;
+        for (int i = 0; i < s.size(); ++i){
+            --right[s[i]];
+            if (m[s[i]].size() != 26){
+                for (auto& c : alphabet){
+                if (left[c] > 0 && right[c] > 0 
+                   && m[s[i]].find(c) == m[s[i]].end()){
+                    m[s[i]].insert(c);
+                    ++ans;
+                }
+            }
+            }
+            ++left[s[i]];
+        }
+        return ans;
+    }
+};

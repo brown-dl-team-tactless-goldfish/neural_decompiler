@@ -1,0 +1,41 @@
+public class Solution {
+    private List<int> res = new List<int>();
+    private int mode = 0,
+                maxMode = 0;
+    private TreeNode prev = null;
+    
+    public int[] FindMode(TreeNode root) {
+        if (root == null)
+            return res.ToArray();
+        
+        DFS(root);
+        
+        return res.ToArray();
+    }
+    
+    private void DFS(TreeNode node)
+    {
+        if (node == null)
+            return;
+        
+        FindMode(node.left);
+        
+        if (prev == null || prev != null && prev.val == node.val)
+            mode++;
+        else
+            mode = 1;
+        
+        if (mode == maxMode)
+            res.Add(node.val);
+        else if (mode > maxMode)
+        {
+            maxMode = mode;
+            res.Clear();
+            res.Add(node.val);
+        }
+        
+        prev = node;
+        
+        FindMode(node.right);
+    }
+}

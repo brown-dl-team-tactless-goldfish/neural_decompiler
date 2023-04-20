@@ -1,0 +1,47 @@
+class Solution {
+public:
+  int countPaths(vector<vector<int>>& grid) {
+    int rows = grid.size();
+    int cols = grid[0].size();
+    int modVal = 1000000007;
+    vector<vector<int>> dp(rows, vector<int>(cols, 1));
+    priority_queue<pair<int, pair<int, int>>> pq;
+    for (int r = 0; r < rows; ++r) {
+      for (int c = 0; c < cols; ++c) {
+        pq.push({-grid[r][c], {r, c}});
+      }
+    }
+    
+    while (!pq.empty()) {
+      auto [val, pt] = pq.top(); pq.pop();
+      auto [r, c] = pt;
+      
+      if (r > 0 && grid[r - 1][c] > grid[r][c]) {
+        dp[r - 1][c] += dp[r][c];
+        dp[r - 1][c] %= modVal;
+      }
+      if (r < rows - 1 && grid[r + 1][c] > grid[r][c]) {
+        dp[r + 1][c] += dp[r][c];
+        dp[r + 1][c] %= modVal;
+      }
+      if (c > 0 && grid[r][c - 1] > grid[r][c]) {
+        dp[r][c - 1] += dp[r][c];
+        dp[r][c - 1] %= modVal;
+      }
+      if (c < cols - 1 && grid[r][c + 1] > grid[r][c]) {
+        dp[r][c + 1] += dp[r][c];
+        dp[r][c + 1] %= modVal;
+      }
+    }
+    
+    int tot = 0;
+    for (int r = 0; r < rows; ++r) {
+      for (int c = 0; c < cols; ++c) {
+        tot += dp[r][c];
+        tot %= modVal;
+      }
+    }
+    
+    return tot;
+  }
+};

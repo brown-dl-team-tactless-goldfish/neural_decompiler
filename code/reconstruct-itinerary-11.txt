@@ -1,0 +1,47 @@
+struct comp{
+  
+    bool operator()(const string &x,const string &y){
+        return x > y ;
+    }
+    
+};
+
+unordered_map<string,priority_queue<string,vector<string>,comp>>mp;
+
+vector<string>result;
+
+void dfs(string str){
+    
+        
+        auto &curr=mp[str];
+        
+        while(!curr.empty()){
+            
+            string s=curr.top();
+            curr.pop();
+            
+            dfs(s);
+            
+        }
+        
+        result.push_back(str);
+        
+    
+}
+
+vector<string> findItinerary(vector<vector<string>>& tickets) {
+    
+    for(int i=0;i<tickets.size();i++){
+        
+        mp[tickets[i][0]].push(tickets[i][1]);
+        
+    }
+    
+    
+    dfs("JFK");
+    
+    reverse(result.begin(),result.end());
+    
+    return result;
+    
+}

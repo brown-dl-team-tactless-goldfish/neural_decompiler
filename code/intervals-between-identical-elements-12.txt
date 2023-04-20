@@ -1,0 +1,25 @@
+class Solution {
+public:
+    vector<long long> getDistances(vector<int>& arr) {
+        int n = arr.size();
+        unordered_map<long long, vector<long long>> mp;
+        for(int i = 0; i < n; i++) {
+            mp[arr[i]].push_back(i);
+        }
+        vector<long long> res(n, 0);
+        for(auto it : mp ) {
+            long long sz = it.second.size();
+            vector<long long> l(sz, 0), r(sz, 0);
+            for(long long i = 1; i < sz; i++) {
+                l[i] = l[i-1] + i*(it.second[i]-it.second[i-1]);
+            }
+            for(long long i = sz-2; i >= 0; i--) {
+                r[i] = r[i+1] + (sz-i-1)*(it.second[i+1]-it.second[i]);
+            }
+            for(long long i = 0; i < sz; i++) {
+                res[it.second[i]] = l[i]+r[i];
+            }
+        }
+        return res;
+    }
+};

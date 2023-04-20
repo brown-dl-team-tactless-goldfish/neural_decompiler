@@ -1,0 +1,31 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* createTargetArray(int* nums, int numsSize, int* index, int indexSize, int* returnSize)
+{
+    *returnSize=indexSize;
+    int* target=(int*)malloc(indexSize * sizeof(int));
+    int visited[numsSize],i,j;
+    for(i=0;i<numsSize;i++)
+        visited[i]=0;
+    for(i=0;i<numsSize;i++)
+    {
+        if(visited[index[i]]==0)
+        {
+            target[index[i]] = nums[i];
+            visited[index[i]] = 1;
+        }
+        if(visited[index[i]]==1)
+        {
+            for(j=indexSize-1;j>index[i];j--)
+            {
+                target[j]=target[j-1];
+            }
+            target[index[i]]=nums[i];
+            visited[i]=1;
+        }
+    }
+    return target;
+}

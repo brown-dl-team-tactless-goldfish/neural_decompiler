@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int largestComponentSize(vector<int>& A) {
+        int root[100001]{}, res = 0;
+        for(int i = 0; i < 100001; i++) root[i] = i;
+
+        auto findP = [&](int t) {
+            while(t != root[t]) {
+                root[t] = root[root[t]];
+                t = root[t];
+            }
+            return t;
+        };
+
+        for(auto e : A) {
+            int p1 = findP(e);
+            for(int i = 2; i <= sqrt(e); i++) {
+                if((e%i) == 0) {
+                    int p2 = findP(i), p3 = findP(e/i);
+                    root[p2] = p1;
+                    root[p3] = p1;
+                }
+            }
+        }
+
+        unordered_map<int, int> mp;
+        for(auto e : A) res = max(res, ++mp[findP(e)]);
+        return res;
+    }
+};

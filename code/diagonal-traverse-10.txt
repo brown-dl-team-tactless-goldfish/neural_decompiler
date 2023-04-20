@@ -1,0 +1,60 @@
+class Solution:
+    def findDiagonalOrder(self, matrix: List[List[int]]) -> List[int]:
+        # print("matrix = ", matrix)
+
+        directions = [[-1, 1], [1, -1]]
+
+        count_row = len(matrix)
+        if (count_row < 1):
+            return []
+        count_col = len(matrix[0])
+        if (count_col < 1):
+            return []
+        dic = 0
+
+        res = []
+
+        newMatrix = [["#" for i in range(count_col + 2)]]
+        for row in matrix:
+            # print("row = ", row)
+            newMatrix.append(["#"] + row + ["#"])
+
+        newMatrix.append(newMatrix[0])
+        # print("newMatrix = ", newMatrix)
+
+        res = []
+
+        def dfs(curX, curY, curDic):
+            # print(" ")
+            # print("curX = ", curX, " curY = ", curY, " curDic = ", curDic)
+            # print("res = ", res)
+            # print("newMatrix[curX][curY]  = ", newMatrix[curX][curY])
+
+            if (newMatrix[curX][curY] == "#"):
+                if (curDic == 0):
+                    if (curY == count_col+1):
+                        dfs(curX+2, curY-1, 1)
+                    else:
+                        dfs(curX+1, curY, 1)
+                elif (curDic == 1):
+                    if (curX == count_row + 1):
+                        dfs(curX-1, curY+2, 0)
+                    else:
+                        dfs(curX, curY+1, 0)
+            else:
+                # print("newMatrix[curX][curY] = ", newMatrix[curX][curY])
+                res.append(newMatrix[curX][curY])
+
+                if (curX == count_row and curY == count_col):
+                    print("this is the last element")
+                    return
+
+                dfs(curX+directions[curDic][0], curY +
+                    directions[curDic][1], curDic)
+            # if (curDic == 0):
+            #     if (cur)
+
+        dfs(1, 1, 0)
+        # print("end res = ", res)
+        return res
+        

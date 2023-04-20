@@ -1,0 +1,52 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     struct Node *left;
+ *     struct Node *right;
+ *     struct Node *next;
+ * };
+ */
+
+bool is_line_end(int i, int *depth, int *total)
+{
+        if (i < *total - 1)
+                return false;
+        (*depth)++;
+        *total = pow(2, *depth + 1) - 1;
+        return true;
+}
+
+void bfs(struct Node *root)
+{
+        struct Node *q[4096];
+        int head = -1;
+        int tail = -1;
+        
+        q[++head] = root;
+
+        int depth = 0; //tree depth
+        int total = 1; //num of nodes of tree
+        struct Node *node;
+        while (++tail <= head) {
+                node = q[tail];
+                if (is_line_end(tail, &depth, &total))
+                        node->next = NULL;
+                else
+                        node->next = q[tail + 1];
+                
+                if (!node->left)
+                        continue;
+                q[++head] = node->left;
+                q[++head] = node->right;
+        }
+}
+
+struct Node* connect(struct Node* root)
+{
+        if (!root)
+                return NULL;
+        
+        bfs(root);
+        return root;
+}

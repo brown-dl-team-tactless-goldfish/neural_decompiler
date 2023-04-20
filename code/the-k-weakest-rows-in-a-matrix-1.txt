@@ -1,0 +1,44 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+ typedef struct {
+     int n, x;
+ } row;
+
+int* kWeakestRows(int** mat, int matSize, int* matColSize, int k, int* returnSize) {
+    *returnSize = k;
+
+    row* rows = (row*)malloc(matSize * sizeof(row));
+    for (int i = 0; i < matSize; i++) {
+        rows[i].n = i;
+        rows[i].x = 0;
+        for (int j = 0; j < (*matColSize); j++) {
+            rows[i].x += mat[i][j];
+        }
+    }
+
+    for (int i = 0; i < matSize - 1; i++) {
+        for (int j = 0; j < matSize - i - 1; j++) {
+            if (rows[j].x > rows[j + 1].x) {
+                int a = rows[j].x;
+                rows[j].x = rows[j + 1].x;
+                rows[j + 1].x = a;
+
+                int b = rows[j].n;
+                rows[j].n = rows[j + 1].n;
+                rows[j + 1].n = b;
+            }
+        }
+    }
+
+    int* output = malloc(matSize * sizeof(int));
+
+    for(int i = 0; i < matSize; i++) {
+        output[i] = rows[i].n;
+    }
+
+    free(rows);
+
+return output;
+}

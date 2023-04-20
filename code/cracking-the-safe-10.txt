@@ -1,0 +1,42 @@
+class Solution {
+public:
+    unordered_set<string> combinations;
+    string output = "";
+    
+   bool traversal(string& curr, int num, int k, int n){
+        if(combinations.size() == num){
+            output = curr;
+            return true;
+        }
+        
+        string s = curr.substr(curr.length()-n+1,n-1);
+        
+        for(int i=0;i<k;i++){
+            string temp = s+to_string(i);
+            curr+=to_string(i);
+            if(combinations.find(temp)==combinations.end()){
+                combinations.insert(temp);
+                if(traversal(curr,num,k,n)) 
+                    return true;
+                
+                combinations.erase(temp);
+            }
+             curr.pop_back();
+        }
+       return false;
+    
+    }
+    
+    string crackSafe(int n, int k) {
+        string curr = "";
+        for(int i=0;i<n;i++){
+            curr+="0";
+        } 
+        
+        int num = pow(k,n);
+        combinations.insert(curr);
+        
+        traversal(curr,num,k,n);
+        return output;
+    }
+};

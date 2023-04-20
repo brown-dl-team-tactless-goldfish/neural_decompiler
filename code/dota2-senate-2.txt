@@ -1,0 +1,45 @@
+public class Solution {
+    public string PredictPartyVictory(string senate) {
+        List<char> current = new List<char>(senate);
+            
+        for (int d = 0, r = 0; ;) {
+            if (current.All(c => c == 'R'))
+                return "Radiant";
+            if (current.All(c => c == 'D'))
+                return "Dire";
+
+            List<char> list = new();
+
+            for (int i = 0; i < current.Count; ++i) {
+                char man = current[i];
+
+                if (man == 'R') 
+                    if (d > 0)
+                        d -= 1;
+                    else {
+                        r += 1;
+                        list.Add('R');
+                    }
+                else if (r > 0)
+                    r -= 1;
+                else {
+                    d += 1;
+                    list.Add('D');
+                }
+            }
+
+            current.Clear();
+
+            for (int i = 0; i < list.Count; ++i)
+                if (list[i] == 'D')  
+                    if (r > 0)
+                        r -= 1;
+                    else
+                        current.Add('D');      
+                else if (d > 0)
+                    d -= 1;
+                else
+                    current.Add('R');
+        }
+    }
+}

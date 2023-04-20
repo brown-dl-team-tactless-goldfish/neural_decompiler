@@ -1,0 +1,36 @@
+int findMaxLength(int* nums, int numsSize)
+{
+    if (numsSize < 2)
+        return 0;
+
+    int diff, longest, i, j;
+
+    // -numsSize <= diff <= numsSize
+    int* diffs = malloc(sizeof(int) * (numsSize * 2 + 1));
+    memset(diffs, -1, sizeof(int) * (numsSize * 2 + 1));
+    // Move pointer to middle for simpler code
+    diffs += numsSize;
+
+    for (i = diff = longest = 0; i < numsSize; i++) {
+        if (nums[i] == 0)
+            diff++;
+        else
+            diff--;
+
+        // Ignore diff 0, as the index of first diff 0 is actually -1
+        if (diff == 0)
+            longest = i + 1;
+        else {
+            // Set first index for this diff
+            if (diffs[diff] == -1)
+                diffs[diff] = i;
+            // If length of current subarray is longer
+            else if (i - diffs[diff] > longest)
+                longest = i - diffs[diff];
+        }
+    }
+
+    free(diffs - numsSize);
+
+    return longest;
+}

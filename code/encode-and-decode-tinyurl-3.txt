@@ -1,0 +1,62 @@
+#define TINY_URL_LEN 20
+#define SHORT_URL_LEN 6
+
+struct URL_Hash {
+  UT_hash_handle by_long_hh;
+  UT_hash_handle by_short_hh;
+  char* long_url;
+  
+  /* Base64 encoding of url id */
+  char short_url[TINY_URL_LEN + SHORT_URL_LEN + 1];
+};
+
+static struct URL_Hash* URL_table_by_long = NULL;
+static struct URL_Hash* URL_table_by_short = NULL;
+static int URL_count = 0;
+
+size_t encode_base64(char* dest, int value) {
+  /* Can't use true base 64 because + and / have special meaning in URL */
+  static const char base64_chars[] = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789-_";
+ 
+  char buffer[10];
+  char* pos = buffer;
+  do {
+    *pos++ = base64_chars[value % 64];
+  } while (value /= 64);
+  
+  char* dest_pos = dest;
+  do {
+    *dest_pos++ = *--pos;
+  } while (pos != buffer);
+  *dest_pos = '\0';
+  return dest_pos - dest;
+}
+
+/** Encodes a URL to a shortened URL. */
+char* encode(char* longUrl) {
+  struct URL_Hash* entry;
+  int len = strlen(longUrl);
+  
+  /* Ensure duplicate calls to encode will return the same tiny url */
+  HASH_FIND(by_long_hh, URL_table_by_long, longUrl, len, entry);
+  if (!entry) {
+    entry = (struct URL_Hash*) malloc(sizeof(struct URL_Hash));
+    entry->long_url = (char*) malloc(len + 1);
+    memcpy(entry->long_url, longUrl, len + 1);
+    memcpy(entry->short_url, "https://tinyurl.com/", TINY_URL_LEN);
+    size_t short_len = encode_base64(entry->short_url + TINY_URL_LEN, URL_count++);
+    
+    HASH_ADD_KEYPTR(by_long_hh, URL_table_by_long, entry->long_url, len, entry);
+    HASH_ADD_KEYPTR(by_short_hh, URL_table_by_short, entry->short_url + TINY_URL_LEN, short_len, entry);
+  }
+  return entry->short_url;
+}
+
+/** Decodes a shortened URL to its original URL. */
+char* decode(char* shortUrl) {
+  struct URL_Hash* entry;
+  /* Assume the shortUrl begins with 'https://tinyurl.com/' and skip to the base64 encoded id */
+  const char* id_start = shortUrl + TINY_URL_LEN;
+  HASH_FIND(by_short_hh, URL_table_by_short, id_start, strlen(id_start), entry);
+  return entry->long_url;
+}

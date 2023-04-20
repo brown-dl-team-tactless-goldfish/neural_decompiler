@@ -1,0 +1,31 @@
+static const uint8_t MAX_EXPONENT = 9;
+
+int findNthDigit(uint32_t n) {
+    uint32_t result = 0;
+
+    for(int i = 1; i <= MAX_EXPONENT; i++) {
+        uint32_t totalNumsInRange = 9 * pow(10, i-1);
+        uint32_t maxDigitRange = totalNumsInRange * i;
+
+        if(n >= maxDigitRange) {
+            n -= maxDigitRange;
+            result += totalNumsInRange;
+        }
+        else {
+            int rangeOffset = n/i;
+            int numOffset = n % i;
+
+            result += rangeOffset;
+            if(numOffset)
+                result += 1;
+
+            if(numOffset)
+                result /= pow(10, i - numOffset);
+            result %= 10;
+
+            break;
+        }
+    }
+
+    return result;
+}

@@ -1,0 +1,25 @@
+public class Solution 
+{
+    public IList<int> TopStudents(string[] positive_feedback, string[] negative_feedback, string[] report, int[] student_id, int k)
+    {
+        //StudentId - Score
+        Dictionary<int, int> scores = new Dictionary<int, int>();
+
+        HashSet<string> positive = new HashSet<string>(positive_feedback);
+        HashSet<string> negative = new HashSet<string>(negative_feedback);
+
+        for (int i = 0; i < report.Length; i++)
+        {
+            scores.TryAdd(student_id[i], 0);
+            foreach (string word in report[i].Split(' '))
+            {
+                if (positive.Contains(word))
+                    scores[student_id[i]] += 3;
+                else if (negative.Contains(word))
+                    scores[student_id[i]] -= 1;
+            }
+        }
+
+        return scores.OrderByDescending(s => s.Value).ThenBy(s => s.Key).Take(k).Select(s => s.Key).ToList();
+    }
+}

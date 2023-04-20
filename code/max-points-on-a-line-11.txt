@@ -1,0 +1,70 @@
+
+/*
+ * C solution.
+ * O(n^3) time complexity.
+ * O(1) space complexity. 
+ * 9 ms runtime.
+ * Cross product of 2 dimensional vectors is used for check on lying,
+ * because cross product of 2 collinear is zero:
+ * [ (somePoint - startOfLine), (endOfLine - startOfLine)  ] = 0,
+ * if somePoint lie on the line,
+ * where (somePoint - startOfLine) and (endOfLine - startOfLine) are 2D vectors.
+ * No need float to calculate cross product.
+ */
+
+/*
+ * Function of cross product. It's just determinant of this matrix:
+ * matrix = [ [ vecAx, vecAy ] 
+ *            [ vecBx, vecBy ]
+ *          ]
+ */
+static int cross(int vecA[2], int vecB[2]) {
+    return vecA[0]*vecB[1] - vecA[1]*vecB[0];
+}
+
+/*
+ * Get the count of points that lie on the line 
+ * with the points pointA and pointB.
+ */
+static int getLyingPointsCount(int **points, int pointsSize, int pointA[2], int pointB[2]) {
+    
+	/* Vector of the line direction. */
+	int vecA[2] = { pointB[0] - pointA[0], pointB[1] - pointA[1] };
+    
+	int vecB[2];
+    int count = 0;
+    for (int i = 0; i < pointsSize; ++i) {
+        /* Vector from the line start to the ith point. */
+		vecB[0] = points[i][0] - pointA[0];
+        vecB[1] = points[i][1] - pointA[1];
+		
+		/* If cross product is zero then +1 point. */
+        count += (cross(vecA, vecB) == 0);
+    }
+    return count;
+}
+
+
+int maxPoints(int** points, int pointsSize, int* pointsColSize) {
+    int max = -1, count;
+	
+	/* Special cases */
+	if (pointsSize == 0) {
+        return 0;
+    }
+    if (pointsSize == 1) {
+        return 1;
+    }
+
+    /* 
+	 * Iterate all the pairs of points to build lines 
+	 * and find the maximum count of lying points for each line.
+	 */
+	for (int i = 0; i < pointsSize; ++i) {
+        for (int j = i+1; j < pointsSize; ++j) {
+            count = getLyingPointsCount(points, pointsSize, points[i], points[j]);
+            max = (max > count ? max : count);
+        }
+    }    
+    return max;
+}

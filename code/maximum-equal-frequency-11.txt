@@ -1,0 +1,44 @@
+class Solution {
+public:
+   int maxEqualFreq(vector<int>& nums) {
+        unordered_map<int,int>mp;
+        map<int,set<int>>ms;
+        
+        int ans = 1;
+        for(int i=0;i<nums.size();i++){
+            int cc = mp[nums[i]];
+            
+            if(cc == 0){
+                mp[nums[i]]++;
+                ms[mp[nums[i]]].insert(nums[i]);
+            } else {
+                ms[mp[nums[i]]].erase(nums[i]);
+                if(ms[mp[nums[i]]].size()==0)
+                    ms.erase(mp[nums[i]]);
+                
+                mp[nums[i]]++;
+                ms[mp[nums[i]]].insert(nums[i]);
+            }
+            
+            if(ms.size() == 1) {
+                auto it = ms.begin();
+                if(it->first == 1 || it->second.size() == 1){
+                    ans = i+1;
+                }
+            }
+            
+            if(ms.size() == 2) {
+                auto it1 = ms.begin();
+                auto tt = it1;
+                auto it2 = ++tt;
+                
+                if(it1->first == 1 && it1->second.size() == 1)
+                    ans = i+1;
+                if(it1->first+1 == it2->first && it2->second.size() == 1)
+                    ans = i+1;
+            }
+                
+        }
+        return ans;
+    }
+};

@@ -1,0 +1,47 @@
+struct ListNode *mergeNodes(struct ListNode *head)
+{
+    struct ListNode *ptr = NULL;
+    struct ListNode *pin = NULL;
+    struct ListNode *terminator = NULL;
+    int tmp_sum;
+    int count;
+
+    if (head != NULL)
+    {
+        ptr = head;
+        pin = head;
+    }
+
+    while (ptr->next != NULL)
+    {
+        if (0 == ptr->val)
+        {
+            ptr = (struct ListNode *)ptr->next;
+            tmp_sum = 0;
+            count = 0;
+            while (1)
+            {
+                tmp_sum += ptr->val;
+                if (ptr->next != NULL)
+                {
+                    ptr = (struct ListNode *)ptr->next;
+                }
+                
+                if (0 == ptr->val)
+                {
+                    terminator = pin;
+                    pin->val = tmp_sum;
+                    if(pin->next != NULL)
+                    {
+                        pin = (struct ListNode *)pin->next;
+                        count ++;
+                    }
+                    break;
+                }
+            }
+        }
+    }
+    ptr = head;
+    terminator->next = NULL;
+    return ptr;
+}

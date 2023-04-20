@@ -1,0 +1,53 @@
+class Solution {
+public:
+    int MAX_EDGES = 1e5;
+    
+    vector<int> find_bob_path(vector<vector<int>>& g, int bob, int parent) {
+        if(bob == 0) return {0};
+        for(int child : g[bob]) {
+            if(child != parent) {
+                vector<int> curr = find_bob_path(g, child, bob);
+                if(!curr.empty()) {
+                    curr.push_back(bob);
+                    return curr;
+                }
+            }
+        }
+        return {};
+    }
+    
+    int simulate(vector<vector<int>>& g, vector<bool>& gate_opened, vector<int>& amount, int alice, int parent, vector<int>& bob_path, int time) {
+        if(g[alice].size() == 1 && g[alice][0] == parent) return gate_opened[alice] ? 0 : amount[alice]; //reached a leaf node.
+        int bob_pos = min(time, (int)bob_path.size() - 1);
+        int bob = bob_path[bob_pos];
+        int cost_alice = (gate_opened[alice] ? 0 : amount[alice]);
+        if(bob == alice) cost_alice /= 2;
+        int res = INT_MIN;
+        //cout << "visited: " << alice << endl;
+        //cout << "bob: " << bob << endl;
+        gate_opened[alice] = true;
+        gate_opened[bob]   = true;
+        for(int child : g[alice]) {
+            if(child != parent) {
+                //cout << "visiting: " << child << endl << endl;
+                int cost = simulate(g, gate_opened, amount, child, alice, bob_path, time + 1);
+                res = max(res, cost + cost_alice);
+            }
+        }
+        gate_opened[alice] = false;
+        gate_opened[bob]   = false;
+        return res;
+    }
+    
+    int mostProfitablePath(vector<vector<int>>& edges, int bob, vector<int>& amount) {
+        vector<vector<int>> g(MAX_EDGES);
+        vector<bool> gate_opened(MAX_EDGES, false);
+        for(vector<int> pair : edges) {
+            g[pair[0]].push_back(pair[1]);
+            g[pair[1]].push_back(pair[0]);
+        }
+        vector<int> bob_path = find_bob_path(g, bob, -1);
+        reverse(bob_path.begin(), bob_path.end());
+        return simulate(g, gate_opened, amount, 0, -1, bob_path, 0);
+    }
+};

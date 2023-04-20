@@ -1,0 +1,34 @@
+public class Solution { // monotonicity => max value that fits between the values of the events given
+    public int MaxTwoEvents(int[][] e) {
+        Array.Sort(e, (x, y) => x[0].CompareTo(y[0]));
+        int[] mv = new int[e.Length];
+        mv[mv.Length - 1] = e[e.Length - 1][2];
+        for (int i = mv.Length - 2; i >= 0; --i) {
+            mv[i] = Math.Max(mv[i + 1], e[i][2]);
+        }
+        
+        int r = 0;
+        foreach (int[] ev in e) {
+            int max = ev[2];
+            int nxt = BinarySearchNextEvent(e, ev[1]);
+            if (nxt != -1) max += mv[nxt];
+            r = Math.Max(r, max);
+        }
+        
+        return r;
+    }
+    
+    public int BinarySearchNextEvent(int[][] e, int prevEnd) {
+        int l = 0, r = e.Length - 1;
+        while (l < r) {
+            int m = l + (r - l) / 2;
+            if (e[m][0] > prevEnd) {
+                r = m;
+            } else {
+                l = m + 1;
+            }
+        }
+        
+        return e[l][0] > prevEnd ? l : -1;
+    }
+}

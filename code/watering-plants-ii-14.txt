@@ -1,0 +1,46 @@
+class Solution {
+public:
+        int ans = 0;
+    int minimumRefill(vector<int>& plants, int capacityA, int capacityB) {
+        int n = plants.size();
+        if(n%2==0)
+        {
+            solvea(plants,0,n/2-1,capacityA);
+            solveb(plants,n-1,n/2,capacityB);
+            return ans;
+        }
+        int a = solvea(plants,0,n/2-1,capacityA);
+        int b = solveb(plants,n-1,n/2+1,capacityB);
+        if(max(a,b)<plants[n/2])
+            ans++;
+        return ans;
+    }
+    int solvea(vector<int>& plants, int start, int end, int cap)
+    {
+        int curr = cap;
+        for(int i=start; i<=end; i++)
+        {
+            if(curr < plants[i])
+            {
+                ans++;
+                curr = cap;
+            }
+            curr -= plants[i];
+        }
+        return curr;
+    }
+    int solveb(vector<int>& plants, int end, int start, int cap)
+    {
+        int curr = cap;
+        for(int i=end; i>=start; i--)
+        {
+            if(curr < plants[i])
+            {
+                ans++;
+                curr = cap;
+            }
+            curr -= plants[i];
+        }
+        return curr;
+    }
+};

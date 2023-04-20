@@ -1,0 +1,35 @@
+/**
+ * Definition for an interval.
+ * struct Interval {
+ *     int start;
+ *     int end;
+ * };
+ */
+int cmp1(void* a,void* b){
+    int ret=(*(struct Interval*)a).end-(*(struct Interval*)b).end;
+    if(ret==0){
+        return (*(struct Interval*)a).end-(*(struct Interval*)a).start-(*(struct Interval*)b).end+(*(struct Interval*)b).start;
+    }
+    return ret;
+}
+int eraseOverlapIntervals(struct Interval* intervals, int intervalsSize) {
+    qsort(intervals,intervalsSize,sizeof(intervals[0]),cmp1);
+    int size=12000;
+    int start=-size;
+    int count=0;
+    int ret=0;
+    for(int i=start;i<size&&count<intervalsSize;i++){
+        while(intervals[count].end<i){
+            count++;
+            if(count>=intervalsSize){
+                return intervalsSize-ret;
+            }
+        }
+        if(intervals[count].end==i&&intervals[count].start>=start){
+            count++;
+            ret++;
+            start=i;
+        }
+    }
+    return intervalsSize-ret;
+}

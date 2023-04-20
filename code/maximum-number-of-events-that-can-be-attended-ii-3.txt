@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int dfs (int i, int j, vector<vector<int>> &es) {
+        if (!dp[i][j] && i && j) {
+            int prev = i - 1;
+            for(; prev >= 0 && es[prev][1] >= es[i - 1][0]; prev--);
+            dp[i][j] = max(dfs(prev + 1, j - 1, es) + es[i - 1][2], dfs(i - 1, j, es));
+        }
+        return dp[i][j];
+    }
+    
+    int maxValue(vector<vector<int>>& es, int k) {
+        int n = es.size();
+        sort(es.begin(), es.end(), [](auto &a, auto &b) { return a[1] < b[1]; });
+        dp = vector<vector<int>>(n + 1, vector<int>(k + 1));
+        
+        return dfs(n, k, es);
+    }
+private:
+    vector<vector<int>> dp;
+};

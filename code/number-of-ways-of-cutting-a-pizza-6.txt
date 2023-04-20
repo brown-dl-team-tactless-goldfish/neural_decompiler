@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int mod = 1e9 + 7, dp[51][51][11]{[0 ... 50][0 ... 50][0 ... 10] = -1};
+    int area[52][52];
+    int dfs(int r, int c, int k) {
+        if (k == 1) return 1;
+        auto &ans = dp[r][c][k]; 
+        if (ans >= 0) return ans;
+        ans = 0;
+        for (int i = r + 1; area[i][c]; i++)
+            if (area[r][c] - area[i][c])
+                ans = (ans + dfs(i, c, k - 1)) % mod; 
+        for (int i = c + 1; area[r][i]; i++)
+            if (area[r][c] - area[r][i])
+                ans = (ans + dfs(r, i, k - 1)) % mod; 
+        return ans;
+    }
+    int ways(vector<string>& pizza, int k) {
+        int m = pizza.size(), n = pizza[0].size();
+        for (int i = m - 1, t = 0; i >= 0; i--, t = 0)
+            for (int j = n - 1; j >= 0; j--) {
+                t += pizza[i][j] == 'A';
+                area[i][j] = t + area[i + 1][j];
+            }
+        return dfs(0, 0, k);
+    }
+};

@@ -1,0 +1,57 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+int mstrlen(const char *str){
+    int len = 0;
+    while(str[len])len++;
+    return len;
+}
+
+void mstrcopy(char *dest, char *src) {
+    int i;
+    for(i = 0; src[i]; i++){
+        dest[i] = src[i];
+    }
+    dest[i] = src[i];
+    return;
+}
+int cnt;
+
+void solve(char *S, int pos, int len, char **ans) {
+    if(pos == len){
+        mstrcopy(ans[cnt++],S);
+        //printf("%s\n",ans[cnt-1]);
+        return;
+    }
+    if(S[pos]>='0' && S[pos] <='9'){
+        solve(S, pos+1, len, ans);
+    }
+    else{
+        if(S[pos]>='a' && S[pos]<='z'){
+            solve(S,pos+1,len, ans);
+            int add = S[pos] - 'a';
+            char nw = 'A' + add;
+            S[pos] = nw;
+            solve(S,pos+1,len, ans);
+        } else{
+            solve(S,pos+1,len, ans);
+            int add = S[pos] -'A';
+            char nw = 'a' + add;
+            S[pos] = nw;
+            solve(S,pos+1,len, ans);
+        }
+    }
+}
+
+char ** letterCasePermutation(char * S, int* returnSize){
+    int len = mstrlen(S);
+    cnt = 0;
+    int i;
+    char **ans = (char **)malloc(100005 * sizeof(char *)); 
+    for (i=0; i<100005; i++) ans[i] = (char *)malloc((len+1) * sizeof(char)); 
+    solve(S,0,len, ans);
+    *returnSize = cnt;
+   // printf("%d\n",cnt);
+    return ans;
+}

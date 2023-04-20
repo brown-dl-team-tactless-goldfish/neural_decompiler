@@ -1,0 +1,159 @@
+typedef struct MyCircularDeque {
+    int value;
+    struct MyCircularDeque *next;
+} MyCircularDeque;
+
+MyCircularDeque *queue;
+MyCircularDeque dummy_queue;
+int max_queue_size;
+int queue_size;
+MyCircularDeque *queue_front;
+MyCircularDeque *queue_rear;
+
+bool myCircularDequeIsFull(MyCircularDeque* obj);
+bool myCircularDequeIsEmpty(MyCircularDeque* obj);
+
+/** Initialize your data structure here. Set the size of the deque to be k. */
+
+MyCircularDeque* myCircularDequeCreate(int k) {
+    queue = NULL;
+    queue_front = NULL;
+    queue_rear = NULL;
+    queue_size = 0;
+    max_queue_size = k;
+    return &dummy_queue;
+}
+
+#define xor_ptrs(p1, p2) ((uintptr_t)(p1) ^ (uintptr_t)(p2))
+
+MyCircularDeque *new_queue_item(int value)
+{
+    MyCircularDeque *n = calloc(1, sizeof *n);
+    if (n) {
+        n->value = value;
+    }
+    return n;
+}
+
+/** Adds an item at the front of Deque. Return true if the operation is successful. */
+bool myCircularDequeInsertFront(MyCircularDeque* obj, int value) {
+    if (myCircularDequeIsFull(obj)) {
+        return false;
+    }
+    MyCircularDeque *n = new_queue_item(value);
+    if (queue_front) {
+        n->next = queue_front;
+        queue_front->next = xor_ptrs(n, queue_front->next);
+    }
+    queue_front = n;
+    if (!queue_rear) {
+        queue_rear = queue_front;
+    }
+    queue_size++;
+    return true;
+}
+
+/** Adds an item at the rear of Deque. Return true if the operation is successful. */
+bool myCircularDequeInsertLast(MyCircularDeque* obj, int value) {
+    if (myCircularDequeIsFull(obj)) {
+        return false;
+    }    
+    MyCircularDeque *n = new_queue_item(value);    
+    if (queue_rear) {
+        n->next = queue_rear;
+        queue_rear->next = xor_ptrs(queue_rear->next, n);
+    }
+    queue_rear = n;  
+    if (!queue_front) {
+        queue_front = queue_rear;
+    }  
+    queue_size++;
+    return true;
+}
+
+/** Deletes an item from the front of Deque. Return true if the operation is successful. */
+bool myCircularDequeDeleteFront(MyCircularDeque* obj) {
+    if (myCircularDequeIsEmpty(obj)) {
+        return false;
+    }
+    MyCircularDeque *t = queue_front;
+    if (queue_front->next) {
+        queue_front->next->next = xor_ptrs(queue_front->next->next, queue_front);
+        queue_front = queue_front->next;
+    } else {
+        queue_front = queue_rear = NULL;        
+    }
+    free(t);
+    queue_size--;
+    return true;
+}
+
+/** Deletes an item from the rear of Deque. Return true if the operation is successful. */
+bool myCircularDequeDeleteLast(MyCircularDeque* obj) {
+    if (myCircularDequeIsEmpty(obj)) {
+        return false;
+    }
+    MyCircularDeque *t = queue_rear;
+    if (queue_rear->next) {
+        queue_rear->next->next = xor_ptrs(queue_rear->next->next, queue_rear);
+        queue_rear = queue_rear->next;
+    } else {
+        queue_front = queue_rear = NULL;
+    }
+    free(t);
+    queue_size--;
+    return true;
+}
+
+/** Get the front item from the deque. */
+int myCircularDequeGetFront(MyCircularDeque* obj) {
+  return queue_front ? queue_front->value : -1;
+}
+
+/** Get the last item from the deque. */
+int myCircularDequeGetRear(MyCircularDeque* obj) {
+  return queue_rear ? queue_rear->value : -1;
+}
+
+/** Checks whether the circular deque is empty or not. */
+bool myCircularDequeIsEmpty(MyCircularDeque* obj) {
+  return !queue_front;
+}
+
+/** Checks whether the circular deque is full or not. */
+bool myCircularDequeIsFull(MyCircularDeque* obj) {
+  return queue_size == max_queue_size;
+}
+
+void myCircularDequeFree(MyCircularDeque* obj) {
+    MyCircularDeque *cur = queue_front;
+    MyCircularDeque *prev = NULL;
+    while (cur) {
+        MyCircularDeque *next = xor_ptrs(prev, cur->next);
+        free(cur);
+        prev = cur;
+        cur = next;
+    }
+}
+
+/**
+ * Your MyCircularDeque struct will be instantiated and called as such:
+ * MyCircularDeque* obj = myCircularDequeCreate(k);
+ * bool param_1 = myCircularDequeInsertFront(obj, value);
+ 
+ * bool param_2 = myCircularDequeInsertLast(obj, value);
+ 
+ * bool param_3 = myCircularDequeDeleteFront(obj);
+ 
+ * bool param_4 = myCircularDequeDeleteLast(obj);
+ 
+ * int param_5 = myCircularDequeGetFront(obj);
+ 
+ * int param_6 = myCircularDequeGetRear(obj);
+ 
+ * bool param_7 = myCircularDequeIsEmpty(obj);
+ 
+ * bool param_8 = myCircularDequeIsFull(obj);
+ 
+ * myCircularDequeFree(obj);
+*/

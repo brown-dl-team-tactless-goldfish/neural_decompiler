@@ -1,0 +1,18 @@
+#define MAX(x, y) (((x) > (y)) ? (x) : (y))
+#define MIN(x, y) (((x) < (y)) ? (x) : (y))
+
+int minimumDeletions(int* nums, int numsSize){
+    int min_i = 0;
+    int max_i = 0;
+	
+	// TODO: speed up the min/max search for the big array size
+    for(int i=0; i < numsSize; i++){
+        if(nums[min_i] > nums[i]) min_i = i;
+        if(nums[max_i] < nums[i]) max_i = i;       
+    }
+    
+    return MIN(MIN(MAX(min_i + 1, max_i + 1),                   // remove both from the front
+                   MAX(numsSize - min_i, numsSize - max_i)),    // remove both from the back
+               MIN(min_i + 1 + numsSize - max_i,                // remove min from the front and max from the back
+                   numsSize - min_i + max_i + 1));              // remove min from the back and max from the front
+}

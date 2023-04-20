@@ -1,0 +1,56 @@
+class Solution {
+public:
+    // dry run kia for whole day.... maja aa gya
+    vector<vector<int>> graph[1001];
+    int time[1001], cost[1001];
+    int dijikstra(int src, int dest, int maxTime) {
+        for (int i = 1; i <= dest; ++i) {
+            time[i] = INT_MAX;
+            cost[i] = INT_MAX;
+        }
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        pq.push({cost[src], time[src], src});
+        while (!pq.empty()) {
+            vector<int> temp = pq.top(); pq.pop();
+            int c = temp[0];
+            int t = temp[1];
+            int u = temp[2];
+            
+            for (int i = 0; i < graph[u].size(); ++i) {
+                if (t + graph[u][i][1] <= maxTime) {
+                    if (c + graph[u][i][2] < cost[graph[u][i][0]]) {
+                        cost[graph[u][i][0]] = c + graph[u][i][2];
+                        time[graph[u][i][0]] = t + graph[u][i][1];
+                        pq.push({cost[graph[u][i][0]], time[graph[u][i][0]], graph[u][i][0]});
+                    } else if (graph[u][i][1] + t < time[graph[u][i][0]]) {
+                        time[graph[u][i][0]] = graph[u][i][1] + t;
+                        pq.push({c + graph[u][i][2], time[graph[u][i][0]], graph[u][i][0]});
+                    }
+                }
+            }
+        }
+        return cost[dest];
+    }
+    int minCost(int maxTime, vector<vector<int>>& arr, vector<int>& fee) {
+        int n = arr.size();
+        // graph.assign(n, vector<int>());
+        // time.assign(n, INT_MAX);
+        // cost.assign(n, INT_MAX);
+        
+        for (int i = 0; i < n; ++i) {
+            int u = arr[i][0];
+            int v = arr[i][1];
+            int t = arr[i][2];
+            
+            graph[u].push_back({v, t, fee[v]});
+            graph[v].push_back({u, t, fee[u]});
+        }
+        
+        cost[0] = fee[0];
+        time[0] = 0;
+        
+        int ans = dijikstra(0, fee.size() - 1, maxTime);
+        if (ans == INT_MAX) return -1;
+        return ans;
+    }
+};

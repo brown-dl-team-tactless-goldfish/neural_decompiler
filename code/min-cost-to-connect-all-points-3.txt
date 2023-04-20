@@ -1,0 +1,57 @@
+typedef struct{
+    int key[2];
+    int distance;
+    UT_hash_handle hh;
+}hashEntry;
+
+
+int minCostConnectPoints(int** points, int pointsSize, int* pointsColSize){
+    /* Given an array points representing integer coordinates
+     * of some points on a 2D-plane, where points[i] = [xi, yi],
+     * return the minimum cost to make all points connected. All
+     * points are connected if there is exactly one simple path
+     * between any two points. */
+    int result = 0;
+    hashEntry *dist = NULL, *elem, *tmp;
+
+    int i;
+    for(i = 0; i < pointsSize; i++){
+        elem = malloc(sizeof(hashEntry));
+        elem->key[0] = points[i][0];
+        elem->key[1] = points[i][1];
+        elem->distance = (i) ? MAX : 0;
+        HASH_ADD_INT(dist, key, elem);
+    }
+
+    int temp_min;
+    int idx[2];
+    int absX, absY;
+    while(dist){
+        temp_min = MAX;
+        HASH_ITER(hh, dist, elem, tmp){
+            if(elem->distance < temp_min){
+                temp_min = elem->distance;
+                idx[0] = elem->key[0];
+                idx[1] = elem->key[1];
+            }
+        }
+
+        HASH_ITER(hh, dist, elem, tmp){
+            if((elem->key[0] == idx[0]) && (elem->key[1] == idx[1])){
+                result += elem->distance;
+                HASH_DEL(dist, elem);
+                free(elem);
+            }
+            else{
+                absX = idx[0] - elem->key[0]; if(absX < 0){absX = -absX;}
+                absY = idx[1] - elem->key[1]; if(absY < 0){absY = -absY;}
+                temp_min = absX + absY;
+                if(temp_min < elem->distance){
+                    elem->distance = temp_min;
+                }
+	        }
+        }
+    }
+    HASH_CLEAR(hh, dist);
+    return result;
+}

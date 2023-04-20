@@ -1,0 +1,61 @@
+class Solution {
+public:
+    string largestMultipleOfThree(vector<int>& digits) {
+        vector<int>count(10) ;
+        vector<int>mod1 = {1, 4, 7} ;
+        vector<int>mod2 = {2, 5 ,8} ;
+        int sum = 0 ;
+        string ret ;
+        for(auto& x : digits){
+            count[x]++ ;
+            sum += x ;
+        }
+        cout << sum ;
+        if(sum % 3 == 1){
+            bool flag = false ;
+            for(auto& idx : mod1){
+                if(count[idx] > 0){
+                    flag = true ;
+                    count[idx]-- ; 
+                    break ;
+                }
+            }
+            if(flag == false){
+                int k = 2 ;
+                for(auto& idx : mod2){
+                    while(count[idx] > 0 && k > 0){
+                        count[idx]-- ;
+                        k-- ;
+                    }
+                }
+            }
+        }
+        else if(sum % 3 == 2){
+            bool flag = false ;
+            for(auto& idx : mod2){
+                if(count[idx] > 0){
+                    flag = true ;
+                    count[idx]-- ; 
+                    break ;
+                }
+            }
+            if(flag == false){
+                int k = 2 ;
+                for(auto& idx : mod1){
+                    while(count[idx] > 0 && k > 0){
+                        count[idx]-- ;
+                        k-- ;
+                    }
+                }
+            }
+        }
+        
+        for (int i = 9; i >= 0; i--)
+            ret += string(count[i], '0' + i);
+        
+        if(ret.size() > 1 && ret[0] == '0')
+            ret = "0" ;
+        
+        return ret ;
+    }
+};

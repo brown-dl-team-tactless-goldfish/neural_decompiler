@@ -1,0 +1,33 @@
+class Solution {
+private:
+    const long long big = 1e9 + 7;
+    
+public:
+    int helper(int d, int f, int target, vector<vector<int> >& cache) {
+        if(d == 1) {
+            if(target == 0) return 0;
+            return f >= target ? 1 : 0;
+        }       
+        
+        if(cache[d][target] != -1) {
+            return cache[d][target];
+        }
+        
+        long long res = 0;
+        for(int r=1; r<=f; r++) {
+            if(d-1 > target - r) continue;
+            if((d-1) * f < target - r) continue;
+            
+            res += helper(d-1, f, target - r, cache);
+        }
+        
+        int ans = res % big;
+        cache[d][target] = ans;
+        return ans;
+    }
+    
+    int numRollsToTarget(int d, int f, int target) {
+        vector<vector<int> > cache(d+1, vector<int>(target+1, -1));
+        return helper(d, f, target, cache);
+    }
+};

@@ -1,0 +1,41 @@
+void getFreqCount(char *s, int *freqCount){
+    int i = 0;
+    while(s[i] != '\0'){
+        freqCount[s[i] - '0']++;
+        i++;
+    }
+    return;
+}
+#define MIN(x,y) ((x) < (y) ? (x) : (y))
+
+void minFreqCount(int *fc1, int *fc2){
+    for(int i = 0 ; i < 10; i++) {
+        fc1[i] = MIN(fc1[i], fc2[i]);
+    }
+}
+char * getHint(char * secret, char * guess){
+    int freqCountSec[10] = {0};
+    int freqCountGus[10] = {0};
+    
+    getFreqCount(secret, freqCountSec);
+    getFreqCount(guess, freqCountGus);
+    
+    minFreqCount(freqCountSec, freqCountGus);
+    
+    // Find Exact Match now
+    int len = strlen(secret), exact_match = 0;
+    for(int i = 0; i < len; i++){
+        if(secret[i] == guess[i]){
+            exact_match++;
+            freqCountSec[secret[i]-'0']--;
+        }
+    }
+    int pos_match = 0;
+    for(int i = 0; i < 10; i++){
+        pos_match += freqCountSec[i];
+    }
+    
+    int *ret = calloc(sizeof(char), 10);
+    snprintf(ret, 10, "%dA%dB", exact_match, pos_match);
+    return ret;
+}

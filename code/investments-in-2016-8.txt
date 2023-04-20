@@ -1,0 +1,23 @@
+with a as (select
+    TIV_2015
+    from insurance
+    group by TIV_2015
+    having count(PID) > 1),
+    b as (select 
+    PID
+    from insurance 
+    where TIV_2015 in (select TIV_2015 from a)),
+    c as (select 
+    PID,
+    TIV_2016    
+    from insurance
+    group by lat, lon
+    having count(*) = 1),
+    d as (select b.PID,
+    c.TIV_2016
+    from b,c
+    where b.PID = c.PID)
+
+select 
+    round(sum(TIV_2016),2) AS TIV_2016
+    from d 

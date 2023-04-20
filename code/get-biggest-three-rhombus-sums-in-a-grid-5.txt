@@ -1,0 +1,88 @@
+class Solution {
+public:
+ 
+    bool isvalid ( int x , int y , int r , int c)
+    {
+        if( x<0 || x>=r || y<0 || y>=c)
+        return false;
+        else
+        return true;
+    }
+	
+    vector<int> getBiggestThree(vector<vector<int>>& grid) {
+        
+        //find rhombus from every value it it exists
+        set<int, greater <int> > s;
+        vector<int> result;
+        int rr = 3;
+        int r = grid.size();
+        int c = grid[0].size();
+        int wid = max(r,c);
+        wid = wid-2;
+        
+        for(int i=0;i<r-2;i++)
+        {
+            for(int j=1;j<c-1;j++)
+            {
+                for(int k=1;k<=wid;k++)
+                {
+                    if( isvalid(i,j,r,c) && isvalid(i+k,j-k,r,c) && isvalid(i+k,j+k,r,c) && isvalid(i+2*k,j,r,c))
+                    {   
+                        int sum=0;
+                        int r1 = i , c1 = j;
+                        while(r1 != i+k && c1 != j-k)
+                        {
+                            sum = sum + grid[r1][c1];
+                            r1++;
+                            c1--;
+                        }
+                        
+                        while(r1 !=i+2*k && c1!= j)
+                        {
+                            sum = sum + grid[r1][c1];
+                            r1++;
+                            c1++;
+                        }
+                        
+                        while(r1 !=i+k && c1!=j+k)
+                        {
+                            sum = sum + grid[r1][c1];
+                            r1--;
+                            c1++;
+                        }
+                
+                        while(r1 !=i && c1!=j)
+                        {
+                            sum = sum + grid[r1][c1];
+                            r1--;
+                            c1--;
+                        }                  
+                        s.insert(sum);         
+                    }       
+                }            
+            }
+        }
+        
+        for(int i=0;i<r;i++)                // add all the values to set
+            for(int j=0;j<c;j++)
+                s.insert(grid[i][j]);
+				
+        while (rr--)
+        {
+            if(!s.empty())
+            {
+            result.push_back(*s.begin());   //Find three topmost values
+            s.erase(s.begin());
+            }
+            else
+            break;     
+        }    
+        return result;
+    }
+};
+static const int _ = []() {                 //Code for faster runtime
+    ios::sync_with_stdio(false);
+    cin.tie(nullptr);
+    cout.tie(nullptr);
+    return 0;
+}();

@@ -1,0 +1,20 @@
+int minDominoRotations(int* tops, int topsSize, int* bottoms, int bottomsSize) {
+    int arr[7] = {0};
+    for (int i = 0; i < topsSize; i++) {
+        arr[tops[i]]++;
+        arr[bottoms[i]]++;
+    }
+    int tar = 0, topcnt = 0, botcnt = 0;
+    for (int i = 1; i < 7; i++) {
+        tar = arr[i] > arr[tar] ? i : tar;
+    }
+    for (int i = 0; i < topsSize; i++) {
+        if (tops[i] == tar || bottoms[i] == tar) {
+            if (tops[i] == bottoms[i]) continue;
+            if (tops[i] == tar) botcnt++;
+            if (bottoms[i] == tar) topcnt++;
+        }
+        if (tops[i] != tar && bottoms[i] != tar) return -1;
+    }
+    return topcnt > botcnt ? botcnt : topcnt;
+}

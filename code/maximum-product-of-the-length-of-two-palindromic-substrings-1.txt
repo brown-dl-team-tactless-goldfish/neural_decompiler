@@ -1,0 +1,39 @@
+class Solution {
+public:
+	long long maxProduct(string s) {
+		vector<long long> len(s.size());
+		int mx = 0;
+		for (int i = 0; i < s.size(); i++) {
+			if (i < mx + len[mx]) {
+				len[i] = min(len[2 * mx - i], (long long)mx + len[mx] - i);
+			}
+
+			while (i - len[i] >= 0 && i + len[i] < s.size() && s[i - len[i]] == s[i + len[i]]) {
+				len[i]++;
+			}
+
+			if (mx + len[mx] < i + len[i]) {
+				mx = i;
+			}
+		}
+
+		vector<int> left(s.size()) , right(s.size());
+
+		left[0] = 1;
+		for (int i = 1, p = 0; i < s.size(); ++i) {
+			while (p + len[p] - 1 < i) ++p;
+			left[i] = max(left[i - 1], 2 * (i - p) + 1);
+		}
+
+		right[s.size() - 1] = 1;
+		for (int i = s.size() - 2, p = s.size() - 1; i >= 0; --i) {
+			while (p - len[p] + 1 > i) --p;
+			right[i] = max(right[i + 1], 2 * (p - i) + 1);
+		}
+
+		long long ret = 0;
+		for (int i = 0; i + 1 < s.size(); ++i)
+			ret = max(ret, 1ll * left[i] * right[i + 1]);
+		return ret;
+	}
+};

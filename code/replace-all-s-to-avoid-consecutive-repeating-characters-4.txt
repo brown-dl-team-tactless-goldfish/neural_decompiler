@@ -1,0 +1,29 @@
+#define ALPHA_BEGIN 97
+#define ALPHA_END 123
+char determine_char(char conflict1, char conflict2) {
+    for(int i = ALPHA_BEGIN; i < ALPHA_END; i++) {
+        if(i != conflict1 && conflict2 == NULL)
+            return i;
+        else if(i != conflict1 && i != conflict2)
+            return i;
+    }
+    return '\0';
+}
+
+char * modifyString(char * in){
+    for(int i = 0; *(in+i) != '\0'; i++) {
+        if(*(in+i) == '?' && i == 0) {
+            // First part of array.
+            *(in+i) = determine_char(*(i+in+1), NULL);
+        }
+        else if(*(in+i) == '?' && *(i+in+1) == '\0') {
+            // Last part of array.
+            *(in+i) = determine_char(*(i+in-1), NULL);
+        }
+        else if(*(in+i) == '?'){
+            // Middle of array.
+            *(in+i) = determine_char(*(i+in+1), *(i+in-1));
+        }
+    }
+    return in;
+}

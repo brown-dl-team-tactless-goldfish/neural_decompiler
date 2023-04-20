@@ -1,0 +1,69 @@
+class Solution {
+public:
+    long long minSumSquareDiff(vector<int>& nums1, vector<int>& nums2, int k1, int k2) 
+    {
+        map<int,int> mp;
+        
+        for(int i=0;i<nums1.size();i++)
+        {
+            int t = abs(nums1[i]-nums2[i]);
+            mp[t]++;
+        }
+        
+        long long int ans = 0;
+        
+        while(k1>0)
+        {
+            auto it = mp.end();
+            --it;
+            int diff = it->first;
+            int freq = mp[it->first];
+            if(diff==0)
+                break;
+            if(freq<=k1)
+            {
+                mp.erase(diff);
+                k1-=freq;
+                mp[abs(diff-1)] += freq;
+            }
+            else
+            {
+                mp[diff]-=k1;
+                mp[abs(diff-1)] += k1;
+                break;
+            }
+        }
+        
+        while(k2>0)
+        {
+            auto it = mp.end();
+            --it;
+            int diff = it->first;
+            int freq = mp[it->first];
+            if(diff==0)
+                break;
+            if(freq<=k2)
+            {
+                mp.erase(diff);
+                k2-=freq;
+                mp[abs(diff-1)] += freq;
+            }
+            else
+            {
+                mp[diff]-=k2;
+                mp[abs(diff-1)] += k2;
+                break;
+            }
+        }
+        
+        for(auto it=mp.begin();it!=mp.end();it++)
+        {
+            int diff = it->first;
+            int freq = mp[diff];
+            long long int a = diff;
+            ans+=(a*a*freq);
+        }
+        
+        return ans;
+    }
+};

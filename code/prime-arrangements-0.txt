@@ -1,0 +1,29 @@
+long long process(int n){
+    long val = 1;
+    int mod = 1e9 + 7;
+    for(int i = 1; i <= n ;i++){
+        val = (val * i) % mod;
+    }
+    return val;
+}
+int numPrimeArrangements(int n){
+    int mod = 1e9 + 7;
+    int primesCn = 0;
+    int* stack = malloc(50 * sizeof(int) ) ;
+    int id = 0;
+    stack[id] = 2;
+    id++;
+    for(int i  = 3; i <= n ;i++){
+        for(int j = 0; j < id; j++){
+            if( i % stack[j] == 0)
+                break;
+            if(j == id-1){
+                stack[id] = i;
+                id++;
+            }   
+        }
+    }
+    free(stack);
+    int ans = process(id) * process(n - id) % mod;
+    return ans;
+}

@@ -1,0 +1,25 @@
+int helper(char* s, int size, int k){
+    if(size<1){
+        return 0;
+    }
+    int* map=(int*)calloc(26,sizeof(int));
+    for(int i=0;i<size;i++){
+        map[s[i]-'a']++;
+    }
+    int start=0;
+    int end=0;
+    while(start<size&&map[s[start]-'a']<k){
+        start++;
+    }
+    for(int i=start;i<size;i++){
+        if(map[s[i]-'a']<k){
+            int temp1=helper(s, i, k);
+            int temp2=helper(&s[i+1], size-i-1, k);
+            return temp1>temp2?temp1:temp2;
+        }
+    }
+    return size>start?size-start:0;
+}
+int longestSubstring(char* s, int k) {
+    return helper(s, strlen(s), k);
+}

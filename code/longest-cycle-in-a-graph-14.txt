@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int ans=-1;
+    int longestCycle(vector<int>& edge) {
+        int size=edge.size();
+        vector<bool> visited(size, false);
+        
+        for(int i=0; i<size; ++i){
+            if(!visited[i]){
+                unordered_map<int, int> dist;
+                dfs(edge, i, visited, 0, dist);
+            }
+        }
+        
+        return ans;
+    }
+    
+    void dfs(vector<int>& edge, int curr, vector<bool>& visited, int count, unordered_map<int, int>& dist){
+        visited[curr]=true;
+        dist[curr]=count;
+        if(edge[curr]!=-1){
+            int next=edge[curr];
+            if(visited[next] && dist.find(next)!=dist.end()){
+                ans=max(ans, count-dist[next]+1);
+            }else if(!visited[next]){
+                dfs(edge, next, visited, count+1, dist);
+            }
+        }
+    }
+};

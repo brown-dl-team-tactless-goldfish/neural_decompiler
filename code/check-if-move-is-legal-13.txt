@@ -1,0 +1,48 @@
+   static constexpr char FREE {'.'};
+public:
+    bool checkMove(const vector<vector<char>>& board, const int rMove, const int cMove, const char color) const {
+      
+        static const vector<array<int,2>> directions = {
+            {0, 1},  //EAST
+            {1, 1}, //SOUTH EAST
+            {1, 0},   //SOUTH
+            {1, -1},  //SOUTH WEST  
+            {0, -1},  //WEST
+            {-1, -1},      //NORTH WEST
+            {-1, 0},   //NORTH
+            {-1,1}  //NORTH EAST
+
+        };
+          //if any of 8 legal, then it is legal.
+        for (const auto& offs : directions) {
+            
+            int r = rMove + offs[0];
+            int c = cMove + offs[1];
+            bool first(true);
+            while (r >= 0 && c >= 0 && r != board.size() && c != board.front().size()) {
+       
+                if (first) {
+                     first = false;
+                    if (board[r][c] == color || board[r][c] == FREE)
+                        break;
+
+                   
+                } else {
+                      if (board[r][c] == FREE) 
+                          break;
+                    if (board[r][c] == color) {
+                 //       cout << "WIN at " << r << " " << c << endl;
+                        return true;
+                    }
+                  
+                }
+                
+                r +=  offs[0];
+                c +=  offs[1];
+                
+            }
+        }
+        
+       return false;
+        
+    }

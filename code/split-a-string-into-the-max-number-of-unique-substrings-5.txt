@@ -1,0 +1,25 @@
+public class Solution {
+    private int res = 0;
+    
+    public int MaxUniqueSplit(string s) {
+        Helper(s, 0, 0, new HashSet<string>());
+        
+        return res;
+    }
+    
+    private void Helper(string s, int i, int cur, HashSet<string> set)
+    {
+        if (i == s.Length && cur > res)
+            res = cur;
+        else
+            for (int j = i; j < s.Length; j++)
+                if (!set.Contains(s.Substring(i, j - i + 1)))
+                {
+                    set.Add(s.Substring(i, j - i + 1));
+                    
+                    Helper(s, j + 1, cur + 1, set);
+                    
+                    set.Remove(s.Substring(i, j - i + 1));
+                }
+    }
+}

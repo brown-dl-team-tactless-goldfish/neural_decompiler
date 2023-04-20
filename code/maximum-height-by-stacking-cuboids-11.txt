@@ -1,0 +1,88 @@
+  public class Solution
+    {
+        private readonly struct Cuboid
+        {
+            public readonly int W;
+            public readonly int H;
+            public readonly int L;
+
+            public readonly long Volume;
+
+            public Cuboid(int w, int h, int l)
+            {
+                checked
+                {
+                    W = w;
+                    H = h;
+                    L = l;
+
+                    Volume = W * H * L;
+                }
+            }
+
+            public void RotateByIndex(in int rotationIndex, out int w, out int l, out int h)
+            {
+                w = 0;
+                h = 0;
+                l = 0;
+
+                switch (rotationIndex)
+                {
+                    case 0:
+                        w = Math.Min(W, L);
+                        l = Math.Max(W, L);
+                        h = H;
+                        break;
+                    case 1:
+                        w = Math.Min(H, L);
+                        l = Math.Max(H, L);
+                        h = W;
+                        break;
+                    case 2:
+                        w = Math.Min(W, H);
+                        l = Math.Max(W, H);
+                        h = L;
+                        break;
+                }
+            }
+        }
+
+        public int MaxHeight(int[][] cuboids)
+        {
+            List<Cuboid> list = cuboids.Select(arr => new Cuboid(arr[0], arr[2], arr[1])).ToList();
+            list.Sort((c1, c2) => c1.Volume.CompareTo(c2.Volume));
+
+            int res = int.MinValue;
+
+            int[,] dp = new int[list.Count, 3];
+
+            for (int i = 0; i < list.Count; i++)
+            {
+                for (int j = 0; j < 3; j++)
+                {
+                    list[i].RotateByIndex(j, out var w0, out var l0, out var h0);
+                    dp[i, j] = h0;
+
+
+                    for (int k = 0; k < i; k++)
+                    {
+                        for (int m = 0; m < 3; m++)
+                        {
+                            list[k].RotateByIndex(m, out var w1, out var l1, out var h1);
+
+
+                            if (w1 <= w0 && l1 <= l0 && h1 <= h0)
+                            {
+                                dp[i, j] = Math.Max(dp[i, j], dp[k, m] + h0);
+                            }
+
+                        }
+                    }
+
+                    res = Math.Max(res, dp[i, j]);
+                }
+            }
+
+            return res;
+        }
+    }

@@ -1,0 +1,45 @@
+class Solution {
+public:
+    unordered_map<int, vector<int>> g;
+    int n, vis[50005], dis[50005];
+
+    int bfs(int s, vector<int>& arr) {
+        vis[s] = 1;
+        dis[s] = 0;
+        queue<int> q;
+        q.push(s);
+        while(!q.empty()) {
+            int u = q.front();
+            q.pop();
+            if(u == n-1) return dis[n-1];
+            if(u-1 >= 0 and !vis[u-1]) {
+                vis[u-1] = 1;
+                dis[u-1] = dis[u] + 1;
+                q.push(u-1);
+            }
+            if(u+1 < n and !vis[u+1]) {
+                vis[u+1] = 1;
+                dis[u+1] = dis[u] + 1;
+                q.push(u+1);;
+            }
+            for(auto v: g[arr[u]]) {
+                if(!vis[v]) {
+                    vis[v] = 1;
+                    dis[v] = dis[u] + 1;
+                    q.push(v);
+                }
+            }
+            g[arr[u]].clear();
+        }
+        return dis[n-1];
+    }
+
+    int minJumps(vector<int>& arr) {
+        n = arr.size();
+        for(int i=0; i<n; i++) {
+            g[arr[i]].push_back(i);
+        }
+        int ans = bfs(0, arr);
+        return ans;
+    }
+};

@@ -1,0 +1,52 @@
+class Solution {
+public:
+    int f(int& available, const int& _max,bool firstPlayer,int n,vector<vector<int>>& dp){
+        int ret = 0;
+        bool notZero = false;
+        if(dp[firstPlayer][available]!=100){
+            return dp[firstPlayer][available];
+        }
+        for(int i = 1;i<=_max;i++){
+            if(!(available&(1<<(i-1)))){
+                if(i>=n){
+                    if(firstPlayer){
+                        return dp[firstPlayer][available] = 1;
+                    } else{
+                        return dp[firstPlayer][available] = -1;
+                    }
+                } else {
+                    available |= 1<<(i-1);
+                    int tmp = f(available,_max,!firstPlayer,n-i,dp);
+                    if(tmp != 0){
+                        notZero = true;
+                    }
+                    if(firstPlayer){
+                        ret = max(ret,tmp);
+                    } else{
+                        ret = min(ret,tmp);
+                    }
+                    available ^= 1<<(i-1);
+                }
+            }
+            if(firstPlayer&&ret==1){
+                return dp[firstPlayer][available] = 1;
+            }
+            if(!firstPlayer&&ret==-1){
+                return dp[firstPlayer][available] = -1;
+            }
+        }
+        if(ret == 0 && notZero){
+            if(firstPlayer){
+                return dp[firstPlayer][available] = -1;
+            }
+            return dp[firstPlayer][available] = 1;
+        }
+        return dp[firstPlayer][available] = ret;
+    }
+    bool canIWin(int _max, int n) {
+        vector<vector<int>> dp(2,vector<int>(1<<_max,100));
+        int a = 0;
+        int ret = f(a,_max,true,n,dp);
+        return ret == 1;
+    }
+};

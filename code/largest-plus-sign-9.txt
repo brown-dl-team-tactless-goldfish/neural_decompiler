@@ -1,0 +1,55 @@
+class Solution {
+public:
+    int orderOfLargestPlusSign(int n, vector<vector<int>>& mines) {
+        
+        vector<vector<bool>> minesSet(n , vector<bool>(n, true));
+        vector<vector<int>> dp(n, vector<int>(n , n+1));
+        
+        for(int i = 0;i< mines.size() ; i++)
+        {
+            minesSet[mines[i][0]][mines[i][1]] = false;
+        }
+        
+        for(int r = 0 ;r< n; r++)
+        {
+            int left = 0;           
+            for(int c = 0;c<n;c++)
+            {
+                left = minesSet[r][c] ? left+1 : 0;
+                dp[r][c] = min(dp[r][c] , left);
+            }
+            
+            int right = 0;
+            for(int c = n-1 ; c>= 0 ; c--)
+            {
+                right = minesSet[r][c] ? right+1 : 0;
+                dp[r][c] = min(dp[r][c] , right);
+            }
+            
+            int up =0;
+            for(int c = 0;c<n ;c++)
+            {
+                up = minesSet[c][r] ? up+1 : 0;
+                dp[c][r] = min(dp[c][r] , up);
+            }
+            
+            int down = 0;
+            for(int c= n-1; c>= 0; c--)
+            {
+                down = minesSet[c][r] ? down+1 : 0;
+                dp[c][r] = min(dp[c][r] , down);
+            }
+        }
+        
+        int maxi = 0;
+        
+        for(int r = 0; r< n ;r++)
+        {
+            for(int c = 0 ;c<n ; c++)
+            {
+                maxi = max( maxi , dp[r][c]);
+            }
+        }
+        return maxi;
+    }
+};

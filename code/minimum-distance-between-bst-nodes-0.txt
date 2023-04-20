@@ -1,0 +1,30 @@
+void treeToArray(struct TreeNode* root, int* data, int* idx){
+    if(root == NULL)
+        return;
+    
+    //left tree
+    treeToArray(root->left, data, idx);
+    
+    data[*idx] = root->val;
+    *idx = *idx + 1;
+    
+    //right tree;
+    treeToArray(root->right, data, idx);
+}
+
+int minDiffInBST(struct TreeNode* root){
+    int* data = malloc(100 * sizeof(int));
+    int* idx = calloc(1 , sizeof(int));
+    
+    treeToArray(root, data, idx);
+    int min = INT_MAX;
+    for(int i = 1; i < (*idx) ; i++){
+        if((data[i] - data[i-1]) < min)
+            min = data[i] - data[i-1];
+    }
+
+    free(data);
+    free(idx);
+    
+    return min;
+}

@@ -1,0 +1,63 @@
+bool help(vector<int>& bloomDay, int m, int k,int mid, int n)
+{
+    int flow = 0, boq = 0;
+    
+    for(int i=0; i<n; i++)
+    {
+        if(bloomDay[i]<= mid )
+        {
+            flow++;
+        }
+        else
+        {
+            flow = 0;
+        }
+        
+        if(flow >= k)
+        {
+            boq++;
+            flow = 0;
+        }
+        if(boq >= m)
+        {
+            return true;
+        }
+    }
+    
+    return false;
+}
+
+int minDays(vector<int>& bloomDay, int m, int k) 
+{
+    int left = *min_element(bloomDay.begin(),bloomDay.end());
+    
+    int right = *max_element(bloomDay.begin(),bloomDay.end());
+    
+    int n = bloomDay.size();
+    
+    if(m*k > n)
+    {
+        return -1;
+    }
+    
+    int res = -1;
+    
+    while(left <= right)
+    {
+        int mid = left + (right-left) / 2;
+        
+        if(help(bloomDay,m, k, mid, n))
+        {
+            res = mid;
+            
+            right = mid-1;
+        }
+        else
+        {
+            left = mid +  1;
+        }
+    }
+    
+    return res;
+    
+}

@@ -1,0 +1,25 @@
+int max(int a, int b){
+    if(a > b)
+        return a;
+    else
+        return b;
+}
+
+int characterReplacement(char * s, int k){
+    
+    int len = strlen(s);
+    int left = 0, right = 0;
+    int* freq = calloc(26 , sizeof(int));
+    int maxCn = 0;
+    while(right < len){
+        freq[s[right] - 'A']++;        
+        maxCn = max(maxCn, freq[s[right] - 'A']);
+        right++;
+        if((right - left) > maxCn + k){
+            freq[s[left] - 'A']--;
+            left++;
+        }
+    }
+    free(freq);
+    return right - left;
+}

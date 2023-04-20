@@ -1,0 +1,30 @@
+char * reformatDate(char * date){
+    char* month[12] = {"Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"};
+    int len = strlen(date);
+    char* ans = (char*)calloc(11, sizeof(char));
+    /* year */
+    for(int i = len - 4; i < len; i++)
+        ans[i - len + 4] = date[i];
+    ans[4] = '-';
+    /* month */
+    for(int i = 0; i < 12; i++)
+    {
+        if(!strncmp(&date[len - 8], month[i], 3))
+        {
+            ans[5] = '0' + (i + 1)/10;
+            ans[6] = '0' + (i + 1) % 10;
+            ans[7] = '-';
+            break;
+        }
+    }
+    /* day */
+    if(date[1] > '9'){
+        ans[8] = '0';
+        ans[9] = date[0];
+    }
+    else{
+        ans[8] = date[0];
+        ans[9] = date[1];        
+    }
+    return ans;
+}

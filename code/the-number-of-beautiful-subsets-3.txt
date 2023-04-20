@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int beautifulSubsetsCount = 0;
+    
+    void backtrack(int idx, vector<int>& currentSubset, vector<int>& nums, unordered_map<int, bool>& used, int k) {
+        if (idx == nums.size()) {
+            if (currentSubset.size() > 0) {
+                beautifulSubsetsCount++;
+            }
+            return;
+        }
+        
+        backtrack(idx + 1, currentSubset, nums, used, k);
+        
+        if (!used[nums[idx] - k]) {
+            currentSubset.push_back(nums[idx]);
+            used[nums[idx]] = true;
+            backtrack(idx + 1, currentSubset, nums, used, k);
+            currentSubset.pop_back();
+            used[nums[idx]] = false;
+        }
+    }
+    
+    int beautifulSubsets(vector<int>& nums, int k) {
+        sort(nums.begin(), nums.end());
+        vector<int> currentSubset;
+        unordered_map<int, bool> used;
+        backtrack(0, currentSubset, nums, used, k);
+        return beautifulSubsetsCount;
+    }
+};

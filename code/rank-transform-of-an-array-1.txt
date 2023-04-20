@@ -1,0 +1,48 @@
+
+struct nums{
+    int val;
+    int index;
+};
+int cmp( const void *a ,const void *b)
+{
+	struct nums* ps1 = (struct nums*) a;
+	struct nums* ps2 = (struct nums*) b;
+	return (int)(ps1->val - ps2->val);
+};
+    
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* arrayRankTransform(int* arr, int arrSize, int* returnSize){
+    int * ans = calloc(arrSize , sizeof(int));
+    struct nums *num = malloc(sizeof(struct nums)*arrSize);
+    for(int i=0 ; i<arrSize ; i++){
+        num[i].val = arr[i];
+        num[i].index = i;
+    }
+    qsort(num , arrSize, sizeof(struct nums) , cmp);
+    int count=1;
+    if(arrSize == 1){
+        *returnSize = arrSize;
+        ans[0]=1;
+        return ans;
+    }
+    for(int i=1 ; i<arrSize ;i++){
+        if(i == arrSize-1){
+            if(num[i].val == num[i-1].val)
+                ans[num[i].index] = count;
+            else
+                ans[num[i].index] = count+1;
+        }
+        if(num[i].val == num[i-1].val){
+            ans[num[i-1].index] = count;
+        }
+        else{
+            ans[num[i-1].index] = count;
+            count++;
+        }
+    }
+    *returnSize = arrSize;
+    return ans;
+}

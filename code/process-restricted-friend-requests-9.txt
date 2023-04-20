@@ -1,0 +1,81 @@
+public class Solution 
+{
+    public bool[] FriendRequests(int n, int[][] restrictions, int[][] requests) 
+    {
+        List<bool> result = new();
+        UF uf = new UF(n);
+        
+        foreach(var req in requests)
+        {
+            int parX = uf.Find(req[0]);
+            int parY = uf.Find(req[1]);
+            
+            bool isRestricted = false;
+            
+            foreach(var rest in restrictions)
+            {
+                int rX = uf.Find(rest[0]);
+                int rY = uf.Find(rest[1]);
+                
+                if((parX == rX && parY == rY) || (parX==rY && parY == rX))
+                {
+                    isRestricted = true;
+                    break;
+                }
+            }
+            
+            result.Add(!isRestricted);
+            
+            if(!isRestricted)
+                uf.Union(parX,parY);
+        }
+        
+        return result.ToArray();
+    }
+}
+
+class UF
+{
+    private int[] rank;
+    public int[] parent;
+    
+    public UF(int n)
+    {
+        rank = new int[n];
+        parent = new int[n];
+        
+        for(int i=0;i<n;i++)
+            parent[i]=i;
+    }
+    
+    public void Union(int x, int y)
+    {
+        int px = Find(x);
+        int py = Find(y);
+        
+        if(px==py)
+            return;
+        
+        if(rank[px] < rank[py])
+        {
+            parent[px] = py;
+        }
+        else if(rank[py] < rank[px])
+        {
+            parent[py] = px;
+        }
+        else
+        {
+            parent[px] = py;
+            rank[py]++;
+        }
+    }
+    
+    public int Find(int x)
+    {
+        if(parent[x]==x)
+            return x;
+        
+        return Find(parent[x]);
+    }
+}

@@ -1,0 +1,31 @@
+class Solution {
+public:
+    string alphabetBoardPath(string target) {
+        // We store the current position, calculate the moves (row and col) needed to go to the next position.
+        // Notice we need to check if we should move in the direction of x or y axis first.
+        string res;
+        int row = 0, col = 0;
+        for (char c : target)
+        {
+            int rowC = (c - 'a') / 5, colC = (c - 'a') % 5;
+            char moveX = colC > col ? 'R' : 'L';
+            char moveY = rowC > row ? 'D' : 'U';
+            
+            if (row == 5 && colC > 0) // move in the direction of x axis results in a valid position
+            {
+                res += string(abs(rowC - row), moveY);
+                res += string(abs(colC - col), moveX);
+            }
+            else // move in the direction of y axis results in a valid position
+            {
+                res += string(abs(colC - col), moveX);
+                res += string(abs(rowC - row), moveY);
+            }
+            
+            res += '!';
+            row = rowC, col = colC;
+        }
+        
+        return res;
+    }
+};

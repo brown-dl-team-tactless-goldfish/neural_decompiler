@@ -1,0 +1,32 @@
+public class Solution {
+    public int LeastInterval(char[] tasks, int n) {
+        char[] charMap = new char[26];
+        
+        // count the occurance of every task
+        foreach (char c in tasks)
+            charMap[c - 'A']++;
+        
+        // Sort the task count
+        Array.Sort(charMap);
+        
+        // Find the max frequency in the frequency count
+        // -1 beacuse the last task wont contribute towards idle position
+        int maxFreq = charMap[25] - 1;
+        
+        // we only need to worry about the maxFreq to find the number of idle_slots
+        // To find max possible idle slots, we multiply the maxFreq by the cooling period
+        // we dont need to worry about idle slots after the task with max number of occurances
+        // since the number of left over tasks will always be >= idle slots, that is they will
+        // always fill in some of those idle slots
+        int idleSlots = maxFreq*n;
+        
+        // now check the map and see how to reduce some of the idle slots
+        for (int i=0; i<=charMap.Length-2 ;i++)
+        {
+            idleSlots -= Math.Min(charMap[i], maxFreq);
+        }
+        
+        return idleSlots > 0 ? tasks.Length + idleSlots : tasks.Length;
+        
+    }
+}

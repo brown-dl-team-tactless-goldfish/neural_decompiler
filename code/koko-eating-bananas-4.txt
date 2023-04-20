@@ -1,0 +1,41 @@
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+#define MIN(a, b) ((a) > (b) ? (b) : (a))
+#define CEILING(x,y) (((x) + (y) - 1) / (y))
+
+int maxPile(int *piles, int pilesSize) {    
+    int max = piles[0];
+    for (int i = 1; i < pilesSize; i++) {
+        max = MAX(max, piles[i]);
+    }
+    return max;
+}
+
+int minEatingSpeed(int* piles, int pilesSize, int h) {
+    // Solution range goes from 1 banana/h to the max 
+    // value we have in the piles, since we can only eat 1 pile per siting
+    // which is also our maximum result.
+    int l = 1, r = maxPile(piles, pilesSize), res = r;
+
+    while (l <= r) {
+        // binary search
+        int k = r + (l - r) / 2, hours = 0;
+
+        // calculate the total hours for all piles:
+        for (int i = 0; i < pilesSize; i++) {
+            // round up the number of hours
+            hours += CEILING(piles[i], k);
+        }
+        
+        // did we eat all bananas in time?
+        if (hours <= h) {
+            res = MIN(r, k);      
+            // continue search for smaller one      
+            r = k -1;
+        } else {
+            // too small
+            l = k +1;
+        }
+    }
+
+    return res;
+}

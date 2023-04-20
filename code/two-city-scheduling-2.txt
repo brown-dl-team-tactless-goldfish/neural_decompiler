@@ -1,0 +1,40 @@
+int comp(const int* a, const int* b){
+    return *(int*)a - *(int*)b;
+}
+
+int twoCitySchedCost(int** costs, int costsSize, int* costsColSize){
+    int balance[100];
+    int count = 0;
+    int ans = 0;
+    for(int i = 0 ; i < costsSize ; i++){
+        balance[i] = costs[i][0] - costs[i][1];
+        if (balance[i] > 0){
+            ans += costs[i][1];
+            count++;
+        } else ans += costs[i][0];
+    }
+    qsort(balance,costsSize,sizeof(int),comp);
+    count -= costsSize/2;
+    if (count > 0){
+        int i = 0;
+        while (balance[i] < 0){
+            i++;
+        }
+        while (count > 0){
+            ans += balance[i];
+            count--;
+            i++;
+        }
+    } else if (count < 0){
+        int i = 0;
+        while (balance[i] <= 0){
+            i++;
+        }
+        while (count > 0){
+            ans -= balance[i];
+            count--;
+            i--;
+        }
+    }
+    return ans;
+}

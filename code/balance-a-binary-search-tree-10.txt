@@ -1,0 +1,124 @@
+static int max(int a, int b)
+{
+        return a > b ? a : b;
+}
+
+static int get_height(struct TreeNode *root, int *height)
+{
+        if (!root)
+                return 0;
+        return height[root->val];
+}
+
+struct TreeNode *new_node(int val, int *height)
+{
+        struct TreeNode *new;
+        new = (struct TreeNode *)malloc(sizeof(struct TreeNode));
+        memset(new, 0, sizeof(struct TreeNode));
+        new->val = val;
+        height[val] = 1;
+
+        return new;
+}
+
+static int get_balance_factor(struct TreeNode *root, int *height)
+{
+        if (!root)
+                return 0;
+        return get_height(root->left, height) - get_height(root->right, height);
+}
+
+struct TreeNode *rotate_right(struct TreeNode *root, int *height)
+{
+        struct TreeNode *l = root->left;
+        root->left = l->right;
+        l->right = root;
+
+
+        height[root->val] = max(get_height(root->left, height), get_height(root->right, height)) + 1;
+        height[l->val] = max(get_height(l->left, height), get_height(l->right, height)) + 1;
+
+        return l;
+}
+
+struct TreeNode *rotate_left(struct TreeNode *root, int *height)
+{
+        struct TreeNode *r = root->right;
+        root->right = r->left;
+        r->left = root;
+
+        height[root->val] = max(get_height(root->left, height), get_height(root->right, height)) + 1;
+        height[r->val] = max(get_height(r->left, height), get_height(r->right, height)) + 1;
+
+        return r;
+}
+
+struct TreeNode *avl_balance(struct TreeNode *root, int *height)
+{
+        int bf, child_bf;
+
+        bf = get_balance_factor(root, height);
+        if (bf > 1) {
+                child_bf = get_balance_factor(root->left, height);
+                if (child_bf >= 0) {
+                        root = rotate_right(root, height);
+                } else {
+                        root->left = rotate_left(root->left, height);
+                        root = rotate_right(root, height);
+                }
+        } else if (bf < -1) {
+                child_bf = get_balance_factor(root->right, height);
+                if (child_bf <= 0) {
+                        root = rotate_left(root, height);
+                } else {
+                        root->right = rotate_right(root->right, height);
+                        root = rotate_left(root, height);
+                }
+        }
+
+        return root;
+}
+
+struct TreeNode *insert_node(struct TreeNode *root, int val, int *height)
+{
+        if (!root) {
+                root = new_node(val, height);
+                return root;
+        }
+
+        if (root->val == val) {
+                return root;
+        } else if (root->val > val) {
+                root->left = insert_node(root->left, val, height);
+        } else {
+                root->right = insert_node(root->right, val, height);
+        }
+
+        height[root->val] = max(get_height(root->left, height), get_height(root->right, height)) + 1;
+        root = avl_balance(root, height);
+
+        return root;
+}
+
+
+void get_old_insert(struct TreeNode *root, struct TreeNode **new, int *height)
+{
+        if (!root)
+                return;
+        *new = insert_node(*new, root->val, height);
+        get_old_insert(root->left, new, height);
+        get_old_insert(root->right, new, height);
+}
+
+struct TreeNode* balanceBST(struct TreeNode* root)
+{
+        struct TreeNode *new = NULL;
+
+        int *height = malloc(sizeof(int) * 100000);
+        memset(height, 0, sizeof(int) * 100000);
+        
+        get_old_insert(root, &new, height);
+        
+        free(height);
+        return new;
+}

@@ -1,0 +1,50 @@
+typedef enum
+{
+    DIR_NORTH = 0,
+    DIR_WEST  = 1,
+    DIR_SOUTH = 2,
+    DIR_EAST  = 3,
+    DIR_NUM
+} Direction_t;
+
+typedef struct
+{
+    int x;
+    int y;
+} Coordinate_t;
+
+bool isRobotBounded(char * instructions){
+    
+    const Coordinate_t step[DIR_NUM] = {{0, 1}, {-1, 0}, {0, -1}, {1, 0}};
+    
+    Direction_t dir = DIR_NORTH;
+    
+    Coordinate_t curr = {0, 0};
+    
+    for (int j = 0; j < strlen(instructions); j++)
+    {
+        switch (instructions[j])
+        {
+            case 'G':
+            {
+                curr.x += step[dir].x;
+                curr.y += step[dir].y;                   
+                break;
+            }
+            case 'L':
+            {
+                dir = (dir + 1) % DIR_NUM;
+                break;
+            }
+            case 'R':
+            {
+                dir = (dir + DIR_NUM - 1) % DIR_NUM;
+                break;
+            }
+        }
+
+        // printf("Direction = %d, Current = %d, %d\n", dir, curr.x, curr.y);
+    }
+    
+    return dir != DIR_NORTH || (curr.x == 0 && curr.y == 0);
+}

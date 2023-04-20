@@ -1,0 +1,32 @@
+class Solution {
+public:
+   int maximalNetworkRank(int n, vector<vector<int>>& roads) 
+   {  
+     int i,j;
+     vector<int>count(n);
+     vector<vector<int>>directEdge(n,vector<int>(n,0));
+       
+       for(auto road: roads)
+       {
+         count[road[0]]++;
+         count[road[1]]++;
+         directEdge[road[0]][road[1]] = 1;
+         directEdge[road[1]][road[0]] = 1;
+       }
+       
+       int rank = INT_MIN;
+       for(i=0;i<n;i++)
+       {
+           int c = 0;
+           for(j=i+1;j<n;j++)
+           {
+              c = count[i] + count[j] - directEdge[i][j];
+               
+               if(c>rank)
+                   rank= c;
+           }
+       }
+              
+     return rank;
+   }
+};

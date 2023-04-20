@@ -1,0 +1,38 @@
+class Solution {
+public:
+    //O(log(a + b)), O(1)
+    int gcd(int a, int b)
+    {
+        if(a > b)
+            return gcd(b, a);
+        
+        while(a)
+        {
+            int t = a;
+            a = b % a;
+            b = t;
+        }
+        return b;
+    }
+    
+    //O(log(N*min(A, B))), O(1)
+    int nthMagicalNumber(int N, int A, int B) {
+        long long low = min(A, B);
+        long long high = low * N;
+        int lcm = A / gcd(A, B) * B;
+        int mod = 1e9 + 7;
+        while(low <= high)
+        {
+            long long mid = (high - low) / 2 + low;
+            int c = mid / A + mid / B - mid / lcm;
+            if(c == N)
+                return max(mid / A * A, mid / B * B) % mod;
+            if(c > N)
+                high = mid - 1;
+            else
+                low = mid + 1;
+        }
+        
+        return -1;
+    }
+};

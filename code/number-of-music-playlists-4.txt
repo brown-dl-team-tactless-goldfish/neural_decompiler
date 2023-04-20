@@ -1,0 +1,27 @@
+class Solution {
+public:
+    long long giveres(int pos,int nn,int pk,vector<vector<long long>>&dp,int mod = 1e9+7){
+        if(pos<=0) return (nn<=0);
+        long long &ret = dp[pos][nn];
+        if(ret!=-1) return ret;
+        ret = 0;
+        if(nn){
+            ret = ret + nn*1ll*giveres(pos-1,nn-1,pk+1,dp);
+            if(ret>=mod) ret %=mod;
+        }
+        ret += pk *1ll*giveres(pos-1,nn,pk,dp);
+        if(ret>=mod) ret %= mod;
+        return ret;
+    }
+    
+    int numMusicPlaylists(int N, int L, int K) {
+         vector<vector<long long>>dp(max(L-K-1,N-K-1)+5,vector<long long>(max(L-K-1,N-K-1)+5,-1));
+         long long ans = giveres(L-K-1,N-K-1,1,dp),cnt = N;
+         int mod = (1e9+7);
+         for(int i = 1;i<=min(L,K+1);i++){
+             ans = ans * cnt--;
+             if(ans >= mod) ans %= mod;
+         }
+        return ans;
+    }
+};

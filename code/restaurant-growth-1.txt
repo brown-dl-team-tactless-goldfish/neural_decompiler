@@ -1,0 +1,10 @@
+select 
+    t.d2 visited_on,
+    (select sum(amount) from Customer c where visited_on between t.d1 and t.d2) amount,
+    (select round(sum(amount)/7,2) from Customer c where visited_on between t.d1 and t.d2) average_amount
+from (
+    select 
+        distinct b.visited_on d1, a.visited_on d2
+    from Customer a,Customer b
+    where DATEDIFF(a.visited_on, b.visited_on)=6
+) t

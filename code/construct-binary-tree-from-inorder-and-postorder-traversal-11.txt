@@ -1,0 +1,52 @@
+int g_preorder[10000];
+int g_preorderSize = 0;
+int *g_inorder;
+int g_inorderSize;
+int g_index[10000];
+int g_preIndex = 0;
+void buildChildTree(int inStart, int inEnd, struct TreeNode **root) {
+
+    if (g_preIndex >= g_inorderSize) {
+        return;
+    }
+    *root = (struct TreeNode *)malloc(sizeof(struct TreeNode));
+    int val = g_preorder[g_preIndex];
+    (*root)->val = val;
+    (*root)->left = NULL;
+    (*root)->right = NULL;
+
+    if (g_index[val + 3000] < inEnd) {
+        (g_preIndex) += 1;
+        buildChildTree(g_index[val + 3000] + 1, inEnd, &((*root)->right));
+
+    }
+    if(g_index[val + 3000] > inStart) {
+        (g_preIndex) += 1;
+        buildChildTree(inStart, g_index[val + 3000] - 1, &((*root)->left));
+
+    }
+
+    
+}
+
+struct TreeNode* buildTree(int* inorder, int inorderSize, int* postorder, int postorderSize){
+    struct TreeNode *root;
+    int preIndex = 0;
+    if (inorderSize == 0) {
+        return NULL;
+    }
+    g_preorderSize = 0;
+    g_inorder = inorder;
+    g_inorderSize = inorderSize;
+    g_preIndex = 0;
+    for (int i = 0; i < inorderSize; i++) {
+        g_index[inorder[i] + 3000] = i;
+    }
+    for (int i = postorderSize - 1; i >= 0; i--){
+        g_preorder[g_preorderSize++] = postorder[i];
+
+    }
+
+    buildChildTree(0, inorderSize - 1, &root);
+    return root;
+}

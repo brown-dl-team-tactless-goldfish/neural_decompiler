@@ -1,0 +1,76 @@
+class Solution {
+public:
+    // long long summ(vector<int>temp,int x)
+    // {
+    //   TLE brute force
+    //     long long sum=0;
+    //     for(auto &it:temp)
+    //     {
+    //         if(it==x)continue;
+    //         sum+=abs(it-x);
+    //     }
+    //     return sum;
+    // }
+    vector<long long> distance(vector<int>& nums) {
+        int n=nums.size();
+        map<int,vector<int>>cycle;
+        
+        for(int i=0;i<n;i++){
+            cycle[nums[i]].push_back(i);
+        }
+        // for(auto &it:cycle)
+        // {
+        //     cout<<it.first<<"=";
+        //     for(auto &ij:it.second)
+        //     {
+        //         cout<<ij<<" ";
+        //     }
+        //     cout<<endl;
+        // }
+        vector<long long>res(n,0);
+        
+        for(auto &it:cycle)
+        {
+             bool flag=it.second.size()>1;
+             if(flag)
+             {
+                 int sz=it.second.size();
+                 vector<long long>prefix(sz,0);
+                 prefix[0]=it.second[0];
+                 for(int i=1;i<sz;i++)
+                 {
+                     prefix[i]=prefix[i-1]+it.second[i];
+                 }
+                 for(int i=0;i<sz;i++)
+                 {
+                     long long leftCnt=max(0,i);
+                     long long rightCnt=sz-i-1;
+                     long long leftPrefix=leftCnt?prefix[i-1]:0;
+                     long long rightPrefix=rightCnt?prefix[sz-1]-prefix[i]:0;
+                     long long a1=rightPrefix-(rightCnt*it.second[i]);
+                     long long a2=(leftCnt*it.second[i])-leftPrefix;
+                     
+                     
+                     long long tot=a1+a2;
+                     res[it.second[i]]=tot;
+                 }
+             }
+        }
+        
+        
+        // for(int i=0;i<n;i++)
+        // {
+        //     bool flag=(cycle[nums[i]].size()>1);
+        //     if(flag)
+        //     {
+        //         res.push_back(summ(cycle[nums[i]],i));
+        //       //   cout<<nums[i]<<endl;
+        //     }
+        //     else{
+        //         res.push_back(0);
+        //     }
+        // }
+        return res;
+        
+    }
+};

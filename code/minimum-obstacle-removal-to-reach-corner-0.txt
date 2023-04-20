@@ -1,0 +1,48 @@
+void input(int** grid, int gridSize, int gridColSize, int** list, int* count, int i, int j, int now){
+    if (i < 0 || j < 0 || i >= gridSize || j >= gridColSize || grid[i][j] > 1){
+        return;
+    }
+    if (grid[i][j] == 1){
+        list[*count][0] = i;
+        list[*count][1] = j;
+        *count += 1;
+        grid[i][j] = now+1;
+        return;
+    }
+    grid[i][j] = now;
+    input(grid, gridSize, gridColSize, list, count, i+1, j, now);
+    input(grid, gridSize, gridColSize, list, count, i-1, j, now);
+    input(grid, gridSize, gridColSize, list, count, i, j+1, now);
+    input(grid, gridSize, gridColSize, list, count, i, j-1, now);
+    return;
+}
+
+
+int minimumObstacles(int** grid, int gridSize, int* gridColSize){
+    int p = gridSize*(*gridColSize);
+    int** list = malloc(sizeof(int*)*p);
+    for (int i = 0 ; i < p ; i++){
+        list[i] = malloc(sizeof(int)*2);
+    }
+    int end = 0;
+    int count = 0; 
+    int start = 0;
+    int now = 2;
+    input(grid, gridSize, *gridColSize, list, &count, 0, 0, now);
+    while (grid[gridSize-1][*gridColSize-1] == 0){
+        end = count;
+        now++;
+        for ( ; start < end ; start++){
+            input(grid, gridSize, *gridColSize, list, &count, list[start][0]+1, list[start][1], now);
+            input(grid, gridSize, *gridColSize, list, &count, list[start][0]-1, list[start][1], now);
+            input(grid, gridSize, *gridColSize, list, &count, list[start][0], list[start][1]+1, now);
+            input(grid, gridSize, *gridColSize, list, &count, list[start][0], list[start][1]-1, now);
+        }
+    }
+    int ans = grid[gridSize-1][*gridColSize-1]-2;
+    for (int i = 0 ; i < p ; i++){
+        free(list[i]);
+    }
+    free(list);
+    return ans;
+}

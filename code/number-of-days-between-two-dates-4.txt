@@ -1,0 +1,54 @@
+int * dateToArr(char*s){
+    int *arr=(int*)malloc(sizeof(int)*(3));
+    sscanf(s,"%d-%d-%d",&arr[0],&arr[1],&arr[2]);
+    return arr;
+}
+int months[12]={31,28,31,30,31,30,31,31,30,31,30,31};
+int getDays(int * arr){
+      int y=arr[0];
+    int m=arr[1];
+    int d=arr[2];
+    int m1=1;
+    int days=0;
+    while(m1<m){
+        if(m1==2)if(y%4==0&&(y%100!=0||y%400==0))days+=1;
+        days+=months[m1-1];
+        m1++;
+    }
+    days+=d;
+   
+    return days;
+}
+int getDaysYear(int y){
+    int days=365;
+    if(y%4==0&&(y%100!=0||y%400==0))days+=1;
+    return days;
+}
+void swap(int**a,int**b){
+    int *t=*a;
+    *a=*b;
+    *b=t;
+}
+
+bool compairDates(int *a,int*b){
+    if(a[0]>b[0])return true;
+    else if(a[0]==b[0]&&a[1]>b[1])return true;
+    else if(a[0]==b[0]&&a[1]==b[1]&&a[2]>b[2])return true;
+    return false;
+}
+bool differentDay(int *a,int*b){
+    if(a[0]==b[0]&&a[1]==b[1])return true;
+    return false;
+}
+int daysBetweenDates(char * date1, char * date2){
+    int *date1D=dateToArr(date1);
+    int *date2D=dateToArr(date2);
+    if(differentDay(date1D,date2D))return abs(date1D[2]-date2D[2]);
+    if(compairDates(date1D,date2D))swap(&date1D,&date2D);
+    int days=0;
+    days-=getDays(date1D);
+    while(date1D[0]<date2D[0])days+=getDaysYear(date1D[0]++);
+    days+=getDays(date2D);
+   
+   return days;
+}

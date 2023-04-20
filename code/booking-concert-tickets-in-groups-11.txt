@@ -1,0 +1,65 @@
+using ll_t = long long;
+template<class T1>
+using vv_t = vector<T1>;
+
+class BookMyShow {
+        vector<ll_t> emptySeatIndex;
+        ll_t n, m;
+public:
+    
+    BookMyShow(int n, int m) {
+        this->n = (long long)n;
+        this->m = (long long)m;
+        emptySeatIndex = vector<ll_t>(n, 0); // first empty seat index of every row
+    }
+    
+    vector<int> gather(int k, int maxRow) {
+        ll_t row = 0, col = 0;
+        bool seatAllocationPossible = false;
+        
+        for(int i=0; i<=maxRow; ++i){
+            ll_t currRowEmptySeats = m - emptySeatIndex[i]; // compute total empty seats in current row
+            if(currRowEmptySeats >= k){// seat can be allocated
+                row = i;
+                col = emptySeatIndex[i];
+                emptySeatIndex[i] += k; // empty seat allocated, update start of empty seat in curr row
+                seatAllocationPossible = true; // seat allocation possible
+                break;
+            }
+        }
+        
+        
+        if(seatAllocationPossible){
+            return { (int)row, (int)col};
+        }
+        return {}; // seat allocation not possible
+    }
+    
+    bool scatter(int k, int maxRow) {
+        bool seatAllocationPossible = false;
+        vector<ll_t> temp(emptySeatIndex.begin(), emptySeatIndex.end());
+        
+         for(int i=0; i<=maxRow; ++i){
+            ll_t currRowEmptySeats = m - temp[i]; // compute total empty seats in current row
+             
+            if(currRowEmptySeats > 0){ // we can allocate some seats in curr row
+                if(k > currRowEmptySeats){ // all k members are cannot be allocated in curr row
+                    k = k - currRowEmptySeats; 
+                    temp[i] = m;// all seats in curr row allocated
+                }else{
+                    temp[i] += k; // all k members are allocated in curr row
+                    k = 0;
+                    seatAllocationPossible = true;
+                    break;
+                }
+            }
+        }
+        
+        if(seatAllocationPossible == true){
+            for(int i=0; i<temp.size(); ++i){
+                emptySeatIndex[i] = temp[i];
+            }
+        }
+        return seatAllocationPossible;
+    }
+};

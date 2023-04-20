@@ -1,0 +1,33 @@
+char ** wordSubsets(char ** words1, int words1Size, char ** words2, int words2Size, int* returnSize){
+    int* base = calloc(26, sizeof(int)) ;
+    int* cn = calloc(26, sizeof(int)) ;
+    for(int i = 0; i < words2Size; i++){        
+        for(int j = 0; j < strlen(words2[i]); j++){
+            cn[words2[i][j]-'a']++ ;
+        }
+        for(int k = 0; k < 26; k++){
+            base[k] = fmax(base[k], cn[k]);
+        }
+        cn = calloc(26, sizeof(int)) ;
+    }
+    char** ans = malloc(words1Size * sizeof(char*));
+    int idx_a = 0;
+
+    for(int i = 0; i < words1Size; i++){
+        for(int j = 0; j < strlen(words1[i]); j++){
+            cn[words1[i][j]-'a']++ ;
+        }
+        for(int k = 0; k < 26; k++){
+            if(cn[k] < base[k])
+                break;
+            if(k == 25){
+                ans[idx_a] = malloc((strlen(words1[i]) + 1)* sizeof(char));
+                strcpy(ans[idx_a], words1[i]);
+                idx_a++;
+            }
+        }
+        cn = calloc(26, sizeof(int)) ;
+    }
+    *returnSize = idx_a;
+    return ans;
+}

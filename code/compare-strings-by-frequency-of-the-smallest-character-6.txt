@@ -1,0 +1,56 @@
+public class Solution {
+    public int[] NumSmallerByFrequency(string[] queries, string[] words) {
+        List<SortedDictionary<char,int>> queryList = new List<SortedDictionary<char,int>>();
+        List<SortedDictionary<char,int>> wordList = new List<SortedDictionary<char,int>>();
+        
+        foreach(string s in queries){
+            SortedDictionary<char,int> sorted = new SortedDictionary<char,int>();
+            queryList.Add(sorted);
+            foreach(char c in s){
+                if(queryList[queryList.Count-1].ContainsKey(c))
+                    queryList[queryList.Count-1][c] += 1;
+                else
+                   queryList[queryList.Count-1].Add(c,1); 
+            }
+        }
+        
+        foreach(string s in words){
+            SortedDictionary<char,int> sorted = new SortedDictionary<char,int>();
+            wordList.Add(sorted);
+            foreach(char c in s){
+                if(wordList[wordList.Count-1].ContainsKey(c))
+                    wordList[wordList.Count-1][c] += 1;
+                else
+                   wordList[wordList.Count-1].Add(c,1); 
+            }
+        }
+        
+        List<int> qFreqs = new List<int>();
+        foreach(SortedDictionary<char,int> qSort in queryList){
+            foreach(char k in qSort.Keys){
+                qFreqs.Add(qSort[k]);
+                break;
+            }
+        }
+        
+        List<int> wFreqs= new List<int>();
+        foreach(SortedDictionary<char,int> wSort in wordList){
+            foreach(char k in wSort.Keys){
+                wFreqs.Add(wSort[k]);
+                break;
+            }
+        }      
+        
+        List<int> res = new List<int>();
+        foreach(int i in qFreqs){
+            int count = 0;
+            foreach(int j in wFreqs){
+                if(i < j)
+                    count++;
+            }
+            res.Add(count);
+        }
+        
+        return res.ToArray();
+    }
+}

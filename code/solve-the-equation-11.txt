@@ -1,0 +1,53 @@
+class Solution {
+private:
+    pair<int, int> computeCoefficient(string raw) {
+        pair<int, int> res = make_pair(0, 0);
+        raw = raw + "+";
+        int current = 0;
+        int sign = 1;
+        bool realZero = false;
+        for(char c : raw) {
+            if (c >= '0' && c <= '9') {
+                if (current == 0 && c == '0')
+                    realZero = true;
+                current = current * 10 + c - '0';
+            } else if (c == 'x') {
+                if (current == 0 && !realZero)
+                    current = 1;
+                res.first += sign * current;
+                sign = 1;
+                current = 0;
+                realZero = false;
+            } else if (c == '+') {
+                res.second += sign * current;
+                sign = 1;
+                current = 0;
+                realZero = false;
+            } else if (c == '-') {
+                res.second += sign * current;
+                sign = -1;
+                current = 0;
+                realZero = false;
+            }
+        }
+        return res;
+    }
+public:
+    string solveEquation(string equation) {
+        vector<string> strs;
+        std::stringstream ss(equation);
+        std::string item;
+        while(std::getline(ss, item, '=')) {
+            strs.push_back(item);
+        }
+        pair<int, int> left = computeCoefficient(strs[0]);
+        pair<int, int> right = computeCoefficient(strs[1]);
+        pair<int, int> ans = make_pair(left.first - right.first, left.second - right.second);
+        if (ans.first == 0 && ans.second != 0)
+            return "No solution";
+        if (ans.first == 0 && ans.second == 0)
+            return "Infinite solutions";
+        int x = -1 * ans.second / ans.first;
+        return "x=" + to_string(x);
+    }
+};

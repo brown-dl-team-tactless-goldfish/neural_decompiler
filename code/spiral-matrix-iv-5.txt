@@ -1,0 +1,35 @@
+public class Solution
+{
+    public virtual int[][] SpiralMatrix(int m, int n, ListNode cur)
+    {
+        int[][] ans = new int[m][];
+        for (int r = 0; r < m; r++) ans[r] = new int[n];
+        foreach (int[] arr in ans) { Array.Fill(arr, -1); }
+        int rowBegin = 0; int rowEnd = m - 1; int columnBegin = 0; int columnEnd = n - 1;
+
+        while (cur != null)
+        {
+            for (int i = columnBegin; i <= columnEnd && cur != null; i++){
+                ans[rowBegin][i] = cur.val; cur = cur.next;
+            }
+            rowBegin++; //decrease upper boundary
+
+            for (int i = rowBegin; i <= rowEnd && cur != null; i++){
+                ans[i][columnEnd] = cur.val; cur = cur.next;
+            }
+            columnEnd--; //decrease left boundary
+
+            for (int i = columnEnd; i >= columnBegin && cur != null; i--){
+                ans[rowEnd][i] = cur.val; cur = cur.next;
+            }
+            rowEnd--; //decrease bottom boundary
+
+            for (int i = rowEnd; i >= rowBegin && cur != null; i--){
+                ans[i][columnBegin] = cur.val; cur = cur.next;
+            }
+            columnBegin++; //decrease right boundary
+
+        }
+        return ans;
+    }
+}

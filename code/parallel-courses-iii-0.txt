@@ -1,0 +1,77 @@
+int comp (const void** a, const void** b){
+    return (*(int**)a)[0] - (*(int**)b)[0];
+}
+
+int fastest(int** list, int* time, int now, int end){
+    int cost = 0;
+    for (int i = 1 ; i <= end ; i++){
+        if (cost < list[now][i]){
+            cost = list[now][i];
+        }
+    }
+    return time[now-1] + cost;
+}
+
+void check(int** list, int* time, int* Pre_work_count, int finish, int* number_place, int now, int start, int** relations, int relationsSize, int* max){
+    if (start == -1){
+        return;
+    }
+    while(start < relationsSize && now == relations[start][0]){
+        int lesson = relations[start][1];
+        list[lesson][Pre_work_count[lesson]] = finish;
+        Pre_work_count[lesson]--;
+        if (Pre_work_count[lesson] == 0){
+            int finish_time = fastest(list, time, lesson, list[lesson][0]);
+            if (*max < finish_time){
+                *max = finish_time;
+            }
+            Pre_work_count[lesson] = -1;
+            check(list, time, Pre_work_count, finish_time, number_place, lesson, number_place[lesson], relations, relationsSize, max);
+        }
+        start++;
+    }
+}
+
+int minimumTime(int n, int** relations, int relationsSize, int* relationsColSize, int* time, int timeSize){
+    qsort(relations, relationsSize, sizeof(int*), comp);
+    
+    int* Pre_work_count = calloc((n+1),sizeof(int));
+    int* number_place = malloc(sizeof(int)*(n+1));
+    
+    for (int i = 1 ; i <= n ; i++){
+        number_place[i] = -1;
+    }
+    
+    for (int i = 0 ; i < relationsSize ;){
+        number_place[relations[i][0]] = i;
+        int n = relations[i][0];
+        while(i < relationsSize && n == relations[i][0]){
+            Pre_work_count[relations[i][1]]++;
+            i++;
+        }
+    }
+    
+    int** list = malloc(sizeof(int*)*(n+1));   //list[1][0] = 完成1號之前的前置作業共有幾項  
+    for (int i = 1 ; i <= n ; i++){
+        list[i] = malloc(sizeof(int)*(Pre_work_count[i]+1));  //創立一個記憶體空間 1~n都是放前置作業完成的時間為多少 之後比較後選出最高的加上目前的
+        list[i][0] = Pre_work_count[i];
+    }
+    
+    int max = 0;
+    for (int i = 1 ; i <= n ; i++){
+        if (Pre_work_count[i] == 0){
+            int finish = fastest(list, time, i, list[i][0]);
+            if (max < finish){
+                max = finish;
+            }
+            check(list, time, Pre_work_count, finish, number_place, i, number_place[i], relations, relationsSize, &max);
+        }
+    }
+    free(Pre_work_count);
+    free(number_place);
+    for (int i = 1 ; i <= n ; i++){
+        free(list[i]);
+    }
+    free(list);
+    return max;
+}

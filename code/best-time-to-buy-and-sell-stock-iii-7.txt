@@ -1,0 +1,47 @@
+#define max(a,b) a>b?a:b
+#define min(a,b) a<b?a:b
+
+int* getLeftMaxProfit(int *prices, int pricesSize){
+    int *leftP=malloc(pricesSize*sizeof(int));
+    
+    int maxProfit=0;
+    int minPrice=prices[0];
+    leftP[0]=0;
+    for(int i=1;i<pricesSize;i++){
+        maxProfit=max(maxProfit,prices[i]-minPrice);
+        minPrice=min(minPrice,prices[i]);
+        leftP[i]=maxProfit;
+    }    
+    return leftP;
+}
+
+int* getRightMaxProfit(int *prices, int pricesSize){
+    int *rightP=malloc(pricesSize*sizeof(int));
+    
+    int maxProfit=0;
+    int maxPrice=prices[pricesSize-1];
+    rightP[pricesSize-1]=0;
+    for(int i=pricesSize-2;i>=0; i--){
+        maxProfit=max(maxProfit, maxPrice-prices[i]); 
+        maxPrice=max(maxPrice, prices[i]); 
+        rightP[i]=maxProfit;
+    }    
+    return rightP;
+}
+
+int maxProfit(int* prices, int pricesSize){
+    int *leftP;
+    int *rightP;
+    
+    leftP=getLeftMaxProfit(prices, pricesSize);
+    rightP=getRightMaxProfit(prices, pricesSize);
+    
+    int maxProfit=0;
+    for(int i=0;i<pricesSize-1;i++){
+        maxProfit=max(maxProfit,leftP[i]+rightP[i+1]); 
+    }
+    maxProfit=max(maxProfit,leftP[pricesSize-1]);
+    maxProfit=max(maxProfit,rightP[0]);
+    
+    return maxProfit;
+}

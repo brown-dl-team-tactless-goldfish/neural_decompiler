@@ -1,0 +1,39 @@
+class Solution {
+public:
+    bool canReorderDoubled(vector<int>& arr) {
+        std::unordered_map<int, int> freq;
+        for (auto i : arr) {
+            ++freq[i];
+        }
+
+        for (auto& [i, count] : freq) {
+            if (i == 0) {
+                if (count % 2 != 0)
+                    return false;
+                else {
+                    count = 0;
+                    continue;
+                }
+            }
+
+            std::stack<int> vals;
+            for (auto j = i; j % 2 == 0 && freq.find(j / 2) != freq.end(); j /= 2) {
+                vals.push(j);
+            }
+
+            for (; !vals.empty(); vals.pop()) {
+                const auto val = vals.top();
+                const auto c = std::min(freq[val], freq[val / 2]);
+                freq[val] -= c;
+                freq[val / 2] -= c;
+            }
+        }
+
+        auto sum = 0;
+        for (auto [_, count] : freq) {
+            sum += count;
+        }
+
+        return sum == 0;
+    }
+};

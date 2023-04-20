@@ -1,0 +1,37 @@
+class Solution {
+public:
+    vector<vector<int>> o_z;
+    vector<long long> memo;
+    long long MOD = 1e9 + 7;
+    long long solve(int pos, int &n) {
+        if (pos >= n) return 0;
+        long long &ret = memo[pos];
+        if (ret != -1) return ret;
+        ret = 1; // string ending at this position
+        ret +=solve(o_z[pos][0], n); // for next position we can choose zero
+        ret %= MOD;
+        ret += solve(o_z[pos][1], n); // for next position we can choose one
+        return ret % MOD;
+        
+        
+    }
+    int numberOfUniqueGoodSubsequences(string binary) {
+        int n = binary.size();
+        memo.resize(n + 1, -1);
+        o_z.resize(n, vector<int>(2, 0));
+        o_z[n-1][0] = o_z[n-1][1] = n + 1;
+        int last_one = n + 1, last_zero = n + 1;
+        if (binary[n-1] == '0') last_zero = n - 1;
+        else last_one = n - 1;
+        for (int i = n - 2; i >= 0; i--) {
+            o_z[i][0] = last_zero;
+            o_z[i][1] = last_one;
+            if (binary[i] == '0') last_zero = i;
+            else last_one = i;
+        }
+        long long ret = solve(last_one, n);
+        if (last_zero < n) ret += 1;
+        return ret % MOD;
+        
+    }
+};

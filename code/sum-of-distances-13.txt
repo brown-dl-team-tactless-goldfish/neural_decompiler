@@ -1,0 +1,60 @@
+class Solution {
+public:
+    vector<long long> distance(vector<int>& nums) 
+    {   
+       long long  int n = nums.size(); 
+        vector<long long> res(n,0);
+        unordered_map<long long ,vector<long long >> m ;
+        unordered_map<long long ,vector<long long >> mp ;// for storing prefix sum
+
+        for(int i = 0; i<nums.size();i++)
+        {
+            mp[nums[i]].push_back(i);
+            m[nums[i]].push_back(i);
+        }
+
+        for(auto &x:mp)
+        {
+           long long  int sum = 0; 
+            for(auto &y:x.second)
+            {   // making prefix sum in vector in array 
+                y +=sum ; 
+                sum = y; 
+            }
+        }
+       
+        for(int i = 0; i<nums.size();i++)
+        {
+            if(m[nums[i]].size()==1)
+            continue; 
+            
+            long long int curr = 0;
+          
+           long long  int l = 0 , h = m[nums[i]].size()-1 , mid , ans = 0; 
+            while(l<=h)
+            {
+                mid = (l+h)/2;
+                if(m[nums[i]][mid]==i)
+                {
+                    ans = mid;
+                    break;
+                }
+                else if (m[nums[i]][mid]>i)
+                h = mid -1; 
+                else l = mid +1; 
+            } 
+            //ans is the index where i is found 
+            curr += (ans+1)*i - mp[nums[i]][ans];
+             
+            if(ans!=0)
+            curr += mp[nums[i]][m[nums[i]].size()-1]- mp[nums[i]][ans-1] - (m[nums[i]].size()-ans)*i; 
+            else 
+            curr += mp[nums[i]][m[nums[i]].size()-1] - (m[nums[i]].size()-ans)*i; 
+
+           res[i] = curr;
+        }
+
+
+        return res;
+    }
+};

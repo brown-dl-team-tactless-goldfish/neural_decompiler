@@ -1,0 +1,36 @@
+/**
+ * Definition for a binary tree node.
+ * public class TreeNode {
+ *     public int val;
+ *     public TreeNode left;
+ *     public TreeNode right;
+ *     public TreeNode(int val=0, TreeNode left=null, TreeNode right=null) {
+ *         this.val = val;
+ *         this.left = left;
+ *         this.right = right;
+ *     }
+ * }
+ */
+public class Solution 
+{
+    //level - sum
+    Dictionary<int, long> levelSum = new Dictionary<int, long>();
+    public long KthLargestLevelSum(TreeNode root, int k)
+    {
+        levelSum = new Dictionary<int, long>();
+        DFS(root, 1);
+        if (levelSum.ContainsKey(k))
+            return levelSum.Values.OrderBy(a => -a).ToList()[k-1];
+        else
+            return -1;
+    }
+
+    private void DFS(TreeNode root, int level)
+    {
+        if (root == null) return;
+        levelSum.TryAdd(level, 0);
+        levelSum[level] += root.val;
+        DFS(root.left, level + 1);
+        DFS(root.right, level + 1);
+    }
+}

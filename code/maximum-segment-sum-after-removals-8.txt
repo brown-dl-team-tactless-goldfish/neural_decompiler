@@ -1,0 +1,83 @@
+typedef long long ll;
+
+class Solution {
+    
+    ll get_sum(int l, int r, vector<ll> &sum) {
+        return l == 0 ? sum[r] : sum[r] - sum[l-1];
+    }
+    
+public:
+    vector<long long> maximumSegmentSum(vector<int>& nums, vector<int>& q) {
+        int n = nums.size();
+        vector<ll> ans(n); 
+        
+        map<ll, int> mp;
+        set<pair<pair<int, int>, ll>> ranges;
+        
+        vector<ll> psum(n);
+        for(int i = 0; i < n; i++) {
+            psum[i] = nums[i];
+            if(i > 0)
+                psum[i] += psum[i-1];
+        }
+        
+        ranges.insert({{0, n-1}, psum[n-1]});
+        mp[0] += 1;
+        mp[psum[n-1]] += 1;
+        
+        for(int i = 0; i < n; i++) {
+            pair<pair<int, int>, ll> pi = {{q[i], 1e9}, -1};
+            auto it = --ranges.upper_bound(pi);
+            
+            if(it == ranges.end()) {
+                ans[i] = 0;
+                cout << i << endl;
+                continue;
+            }
+            
+            int l = it->first.first;
+            int r = it->first.second;
+            ll sum = it->second;
+            
+            //remove from range
+            ranges.erase(it);
+            
+            // remove from map;
+            mp[sum] -= 1;
+            if(mp[sum] <= 0) 
+                mp.erase(sum);
+            
+            if(l == r) {
+                // do nothing
+            }
+            else if(l == q[i]) {
+                sum = get_sum(l+1, r, psum);
+                mp[sum] += 1;
+                ranges.insert({{l+1, r}, sum});
+            } 
+            else if(r == q[i]) {
+                sum = get_sum(l, r-1, psum);
+                mp[sum] += 1;
+                ranges.insert({{l, r-1}, sum});
+            }
+            else {
+                sum = get_sum(l, q[i]-1, psum);
+                mp[sum] += 1;
+                ranges.insert({{l, q[i]-1}, sum});
+                
+                sum = get_sum(q[i]+1, r, psum);
+                mp[sum] += 1;
+                ranges.insert({{q[i]+1, r}, sum});
+            }
+            
+            if(mp.size() == 0) 
+                ans[i] = 0;
+            else {
+                auto tmp = --mp.end();
+                ans[i] = tmp->first;
+            }
+        }
+        
+        return ans;
+    }
+};

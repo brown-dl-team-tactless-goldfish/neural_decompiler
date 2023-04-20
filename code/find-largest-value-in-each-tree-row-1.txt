@@ -1,0 +1,22 @@
+int depth(struct TreeNode* root) {
+    if(!root) return 0;
+    return 1 + fmax(depth(root->left), depth(root->right));
+}
+
+void dfs(struct TreeNode* root, int* arr, int idx) {
+    if(!root) return;
+    if(root->val > arr[idx]) arr[idx] = root->val;
+    dfs(root->left, arr, idx+1);
+    dfs(root->right, arr, idx+1);
+}
+
+int* largestValues(struct TreeNode* root, int* returnSize) {
+    int len = depth(root);
+    int* arr = (int*) malloc(len * sizeof(int));
+    for(int i = 0; i < len; i++) {
+        arr[i] = INT_MIN;
+    }
+    dfs(root, arr, 0);
+    *returnSize = len;
+    return arr;
+}

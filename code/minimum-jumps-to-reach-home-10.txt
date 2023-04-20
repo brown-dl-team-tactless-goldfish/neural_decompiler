@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int minimumJumps(vector<int>& fb, int a, int b, int x) {
+        int n=fb.size();
+        if(x==0) return 0;
+        map<int,int> mp;
+        map<pair<int,int>,int> vis;
+        queue<pair<int,int>> q;
+        q.push({0,0});
+        for(int i=0;i<n;i++){
+            mp[fb[i]]=1;
+        }
+        vis[{0,0}]=1;
+        int step=1,fur=6000;
+        while(!q.empty()){
+            int sz=q.size();
+            for(int i=0;i<sz;i++){
+                auto curr=q.front();
+                q.pop();
+                int next_a=curr.first+a;
+                if(next_a==x) return step;
+                if(next_a>=0 && next_a<=fur && !vis.count({next_a,1}) && !mp.count(next_a)){
+                    q.push({next_a,1});
+                    vis[{next_a,1}]=1;
+                }
+                int next_b=curr.first-b;
+                if(curr.second==1){
+                    if(next_b==x) return step;
+                    if(next_b>=0 && next_b<=fur && !vis.count({next_b,0}) && !mp.count(next_b)){
+                        q.push({next_b,0});
+                        vis[{next_b,0}]=1;
+                    }
+                }
+            }
+            step++;
+        }
+        return -1;
+    }
+};

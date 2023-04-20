@@ -1,0 +1,12 @@
+ SELECT S.Score, c.Rank
+FROM Scores as S LEFT OUTER JOIN 
+(SELECT b.Score, 
+  (SELECT count(*) 
+     FROM (select distinct Score from Scores) as a 
+     WHERE b.Score <= a.Score
+  ) AS Rank
+FROM (select distinct Score from Scores) as b   
+ORDER BY Score DESC
+ ) AS c
+ON S.Score = c.Score
+ORDER BY Score DESC;

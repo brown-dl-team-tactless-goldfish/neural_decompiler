@@ -1,0 +1,23 @@
+class Solution {
+public:
+    vector<long long> minOperations(vector<int>& nums, vector<int>& queries) {
+        sort(nums.begin(), nums.end());
+        vector<long long> sums(nums.size(), 0);
+        sums[0] = nums[0];
+        for(int i = 1; i < nums.size(); i++) sums[i] = nums[i] + sums[i-1];
+        vector<long long> ans(queries.size(), 0);
+        for(int i = 0; i < queries.size(); i++){
+            auto it = upper_bound(nums.begin(), nums.end(), queries[i]);
+            long long index = (int)(it - nums.begin());
+            long long v1 = queries[i] * index;
+            long long v2 = queries[i] * (nums.size()-index);
+            long long res1 = 0;
+            if(index != 0) res1 = v1 - sums[index - 1];
+            long long res2 = 0;
+            if(index == 0) res2 = sums[sums.size()-1] - v2;
+            else if(index != nums.size()) res2 = sums[sums.size()-1] - sums[index - 1] - v2;
+            ans[i] = res1 + res2;
+        }
+        return ans;
+    }
+};

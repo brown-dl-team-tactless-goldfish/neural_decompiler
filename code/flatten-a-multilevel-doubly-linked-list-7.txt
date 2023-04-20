@@ -1,0 +1,34 @@
+class Solution {
+public:
+    Node* flatten(Node* head) {
+        if(!head) return NULL;
+        Node* dummy = new Node();
+        flatten(dummy, head);
+		
+		// first node's prev must be null to satisfy doubly linked list definition
+        dummy->next->prev = NULL; 
+        return dummy->next;
+    }
+    
+    Node* flatten(Node* dummy, Node* head) {
+        if(head == NULL) return dummy;
+        
+        head->prev = dummy;
+        dummy->next = head;
+        
+        if(head->child != NULL) {
+            Node* temp = head->next; // save tmp because we are mutating head->next all the time
+            Node* c = head->child;
+            head->child = NULL; // child must be null to satisfy doubly linked list definition
+			
+			// return the last node of the child to the next recursive call. compare this to the return value
+			// when there is no child. We are doing essentially the same thing here, but with the last node
+			// in the child list instead. On the next call, the last node of the child will set it's next to temp
+			// and temp will set it's previous to the last node of the child
+            return flatten(flatten(dummy->next, c), temp);
+        }
+        
+		// if no child on this node, then we proceed as normal
+        return flatten(dummy->next, head->next);
+    }
+};

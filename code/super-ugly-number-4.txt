@@ -1,0 +1,20 @@
+int data[1000005]={0,1};
+int nthSuperUglyNumber(int n, int* primes, int primesSize) {
+    int ptr[105]={0}, value[105];
+     int min_value, current, last = 1, cnt = 2;
+    memcpy(value,primes,sizeof(int)*primesSize);
+    while(cnt <= n)
+    {
+        min_value = INT_MAX;
+        for(int i = 0; i< primesSize; i++)
+        {
+            if(value[i] <= last)
+                value[i] = primes[i] * data[++ptr[i]];
+            if(min_value > value[i])
+                min_value = value[current = i];
+        }
+        data[cnt++] = last = min_value;
+        value[current] = primes[current] * data[++ptr[current]];
+    }
+    return data[n];
+}

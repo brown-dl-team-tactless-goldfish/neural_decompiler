@@ -1,0 +1,69 @@
+struct counter
+{
+    int key, count;
+    UT_hash_handle hh;
+};
+
+int maxOperations(int *nums, int nums_len, int k)
+{
+    assert(nums || nums_len == 0);
+    assert(nums_len >= 0);
+
+    int result = 0;
+
+    // use a hash map to count all the numbers in nums
+    struct counter *counter = NULL;
+    for (int i = 0; i < nums_len; ++i)
+    {
+        if (nums[i] >= k)
+            continue;
+        struct counter *elem;
+        HASH_FIND_INT(counter, nums + i, elem);
+        if (!elem)
+        {
+            elem = malloc(sizeof(*elem));
+            if (!elem)
+            {
+                result = -1;
+                goto cleanup;
+            }
+            elem->key = nums[i];
+            elem->count = 0;
+            HASH_ADD_INT(counter, key, elem);
+        }
+        elem->count++;
+    }
+
+    // if k is even and the counter contains k/2
+    // we can build k/2 pairs (i.e. add k/2 to the result)
+    int k_half = (k + 1) / 2;
+    if (k % 2 == 0)
+    {
+        struct counter *elem;
+        HASH_FIND_INT(counter, &k_half, elem);
+        if (elem)
+            result += elem->count / 2;
+    }
+    // for each num smaller than k<2 we might be able to build the pair (num, k - num)
+    // so we can add min(count(num), count(k - num)) to the result
+    for (struct counter *elem = counter; elem; elem = elem->hh.next)
+    {
+        if (elem->key >= k_half)
+            continue;
+        int remaining = k - elem->key;
+        struct counter *elem2;
+        HASH_FIND_INT(counter, &remaining, elem2);
+        if (elem2)
+            result += elem->count < elem2->count ? elem->count : elem2->count;
+    }
+cleanup:
+    // deallocate all elements of the hash map
+    ;
+    struct counter *elem, *tmp;
+    HASH_ITER(hh, counter, elem, tmp)
+    {
+        HASH_DEL(counter, elem);
+        free(elem);
+    }
+    return result;
+}

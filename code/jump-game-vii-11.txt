@@ -1,0 +1,23 @@
+class Solution {
+public:
+    bool canReach(string s, int minJump, int maxJump) {
+        // advanced BFS
+		int n = s.length();
+		if (s[n - 1] == '1') return false;
+		queue<int> q;
+		q.push(0);
+		int start = 0;
+		while (!q.empty()) {
+			int idx = q.front();
+			q.pop();
+			if (idx == n - 1) return true;
+			int en = min(n - 1, idx + maxJump);
+			start = max(idx + minJump, start);
+			for (int i = start; i <= en; i++) 
+				if (s[i] == '0') q.push(i);
+			start = en + 1;
+		}
+		return false;
+    }
+};
+

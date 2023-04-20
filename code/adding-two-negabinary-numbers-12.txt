@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<int> addNegabinary(vector<int>& arr1, vector<int>& arr2) {
+        int n1 = arr1.size(), n2 = arr2.size();
+        int n=max(n1, n2);
+        vector<int> res(n+2,0);
+        for (int i=0;i<n;i++)
+        {
+            int tmp = res[i];
+            if (i<n1) tmp += arr1[n1-1-i];
+            if (i<n2) tmp += arr2[n2-1-i];
+            if (tmp >= 2)
+            {
+                if ((i+1<n1 && arr1[n1-2-i] == 1)|| (i+1<n2 && arr2[n2-2-i] == 1))
+                    res[i+1] = -1;
+                else
+                    res[i+1] = res[i+2] = 1;
+                tmp-=2;
+            }
+            res[i] = tmp;    
+        }
+        while(res.size() > 1 && res.back() == 0)
+            res.pop_back();
+        reverse(res.begin(),res.end()); 
+        return res;
+    }
+};

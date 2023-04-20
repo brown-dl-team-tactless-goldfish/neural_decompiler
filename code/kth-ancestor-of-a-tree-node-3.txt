@@ -1,0 +1,30 @@
+class TreeAncestor {
+    vector<vector<int>> p;
+public:
+    TreeAncestor(int n, vector<int>& parent) :  p(vector<vector<int>>(n, vector<int>(17, -1))) {
+        for (int i = 0; i < n; ++i) {
+            p[i][0] = parent[i];
+        }
+        for (int i = 1; i < 17; ++i) {
+            for (int j = 0; j < n; ++j) {
+                if (p[j][i - 1] >= 0) p[j][i] = p[p[j][i - 1]][i - 1];
+            }
+        }
+        
+    }
+    
+    int getKthAncestor(int node, int k) {
+        int r = node;
+        for (int i = 0; r >= 0 && k; k >>= 1, ++i) {
+            if (k & 1) r = p[r][i];
+        }
+        return r;
+        
+    }
+};
+
+/**
+ * Your TreeAncestor object will be instantiated and called as such:
+ * TreeAncestor* obj = new TreeAncestor(n, parent);
+ * int param_1 = obj->getKthAncestor(node,k);
+ */

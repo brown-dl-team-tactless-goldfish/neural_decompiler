@@ -1,0 +1,61 @@
+int countSpecialNumbers(int n){
+    if (n <= 10){
+        return n;
+    }
+    int ans = 0;
+    int k = 9;          //每次可以增加的次數
+    int choose = 9;     //第一位不能為 0 所以有 9 種選擇
+    int list[10];
+    
+    int now = 0;        //指向list 表示第X位數是多少
+    
+    list[now] = n % 10;  //個位數字是 n % 10
+    n /= 10;
+    
+    while(n > 0){           //先找出每一位數是多少
+        now++;
+        ans += k;           
+        //如果n比10大 代表他至少有 1-9 9種可能 如果比100大 代表有 9 + 9(第一個數字不為0)*9 種可能 如果比1000大 9+81+ 9*9*8 種可能
+        k *= choose;
+        choose--;
+        list[now] = n % 10;  //填入每一個位數
+        n /= 10;
+    }
+    
+    k /= 9;  //遠本都是已10的n次方作為假設 但現在開始第一位數現在不知道能有幾種可能 我們先去掉
+    
+    bool used[10] = {0};  //0-9有沒有被用過
+    choose = 9;  //固定第一個數字後 還有9種可能
+    
+    if(now > 0){
+        used[list[now]] = true;    //list[now]設定成用過了
+        ans += k*(list[now]-1);    //第一個數字不能為0
+        k /= choose;               //原本是 9*8*7*6... 但之後第一個數字已經確定了 第二個還沒 所以去除掉
+        now--;
+    }
+    
+    while(now > 0){
+        int firstChoose = 0;        //第一個數字有幾種可能
+        for (int i = 0 ; i < list[now] ; i++){
+            if (!used[i]){
+                firstChoose++;
+            }
+        }
+        now--;
+        ans += firstChoose*k;
+        choose--;
+        k /= choose;
+        if (used[list[now+1]]){   //如果遇到前面已經用過的數字 那之後都不用考慮直接回傳
+            return ans;
+        } else {
+            used[list[now+1]] = true;
+        } 
+    }
+    
+    for (int i = 0 ; i <= list[now] ; i++){  //個位數字
+        if (!used[i]){
+            ans++;
+        }
+    }
+    return ans;
+}

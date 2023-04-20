@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int nextFac(int f, int ff) {
+        return (f + ff - 1) / ff * ff;
+    }
+    long long countPairs(vector<int>& nums, int k) {
+        int n = nums.size();
+        vector<int> fac(k + 1);
+        for (int i = 0; i < n; i++) {
+            nums[i] %= k;
+            int f = __gcd(k, nums[i]);
+            ++fac[f];
+        }
+        long long sol = 0;
+        for (int i = 1; i <= k; i++) {
+            if (fac[i] > 0) {
+                int op = k / i;
+                int nxt = nextFac(i, op);
+                if (i == nxt) {
+                    sol += ((long long) fac[i] * (fac[i] - 1)) / 2;
+                    nxt += op;
+                }
+                for (int j = nxt; j <= k; j += op) {
+                    sol += (long long) fac[i] * fac[j];
+                    
+                }
+            }
+        }
+        return sol;
+    }
+};

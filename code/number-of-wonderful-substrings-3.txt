@@ -1,0 +1,42 @@
+class Solution {
+public:
+    std::unordered_map<string, int> S;
+    int mk[10];
+    string init = "0000000000";
+    string mk_to_str() {
+        string res = init;
+        for (int i = 0; i < 10; i++) {
+            res[i] = (char)(mk[i] + '0');
+        }
+        return res;
+    }
+    bool valid(string& s) {
+        int cnt = 0;
+        for (int i = 0; i < 10; i++) {
+            cnt += (int)(s[i] - '0');
+        }
+        return cnt <= 1 ? true : false;
+    }
+    long long wonderfulSubstrings(string word) {
+        S = {};
+        string tmp;
+        long long res = 0;
+        for (char c : word) {
+            mk[(c - 'a')] ^= 1;
+            tmp = mk_to_str();
+            S[tmp]++; 
+            if (valid(tmp)) {
+                res += S[tmp];
+            }
+            else {
+                res += S[tmp] - 1; 
+            }
+            for (int i = 0; i < 10; i++) {
+                tmp[i] = (tmp[i] == '0') ? '1' : '0';
+                res += S[tmp];
+                tmp[i] = (tmp[i] == '0') ? '1' : '0';
+            }
+        }
+        return res;
+    }
+};

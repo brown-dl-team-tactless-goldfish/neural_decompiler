@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int numSubmatrixSumTarget(vector<vector<int>>& matrix, int target) {
+        size_t R = matrix.size(), C = matrix[0].size();
+        
+        vector<int> rowAcc;
+        unordered_map<int, int> m;
+        int sum = 0, count = 0;
+        for(int r = 0; r < R; ++r) {
+            rowAcc = matrix[r];
+            for(int i = r; i < R; ++i) {
+                m.clear();
+                m[0] = 1;
+                sum = 0;
+                for(int j = 0; j < C; ++j) {
+                    sum += rowAcc[j];
+                    if(m.count(sum - target)) count += m[sum-target];
+                    ++m[sum];
+                    if(i < R-1) rowAcc[j] += matrix[i+1][j];
+                }
+            }
+        }
+        return count;
+    }
+};
+
+auto gucciGang = []() {std::ios::sync_with_stdio(false);cin.tie(nullptr);cout.tie(nullptr);return 0;}();

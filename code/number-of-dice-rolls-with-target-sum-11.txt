@@ -1,0 +1,22 @@
+class Solution {
+public:
+    const int mod = 1000000007;
+    int numRollsToTarget(int d, int f, int target) {
+        if(target < d || target > d*f){
+            return 0;
+        }
+        vector<vector<int>> dp(d,vector<int>(target+1,0));
+        for(int i = 1;i<=f && i<=target;i++){
+            dp[0][i] = 1;
+        }
+        for(int i = 1;i<d;i++){
+            for(int j = i+1; j<=target && j<=(i+1)*f; j++){
+                for(int k = 1;j>k&&k<=f;k++){
+                    dp[i][j] += dp[i-1][j-k];
+                    dp[i][j] %= mod;
+                }
+            }
+        }
+        return dp[d-1][target];
+    }
+};

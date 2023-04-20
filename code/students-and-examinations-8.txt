@@ -1,0 +1,10 @@
+with cte as (select student_id, subject_name,count(*) as times
+from examinations 
+group by student_id, subject_name),
+      df as (select student_id,student_name,subject_name
+            from students full join subjects)
+
+select d.student_id,d.student_name,d.subject_name,coalesce(c.times,0) as attended_exams
+from df d left join cte c on c.student_id=d.student_id and d.subject_name=c.subject_name
+order by 1,2,3
+

@@ -1,0 +1,78 @@
+public class Solution
+{
+    List<(int, int)> _dirs = new List<(int, int)>() { 
+        (-1, -1), (-1, 0), (-1, 1),
+        ( 0, -1),          ( 0, 1),
+        ( 1, -1), ( 1, 0), ( 1, 1)
+    };
+
+    char[][] _board;
+    int _rows;
+    int _cols;
+
+
+    public char[][] UpdateBoard(char[][] board, int[] click)
+    {
+        int r = click[0];
+        int c = click[1];
+
+        if (board[r][c] == 'M')
+        {
+            board[r][c] = 'X';
+            return board;
+        }
+
+        _board = board;
+        _rows = _board.Length;
+        _cols = _board[0].Length;
+
+        UpdateBoard(r, c);
+
+        return _board;
+    }
+
+    public void UpdateBoard(int r, int c)
+    {
+        int curr = _board[r][c];
+
+        if (curr == 'E')
+        {
+            int mines = GetMineCount(r, c);
+            if (mines == 0)
+            {
+                _board[r][c] = 'B';
+
+                foreach (var dir in _dirs)
+                {
+                    int newR = r + dir.Item1;
+                    int newC = c + dir.Item2;
+
+                    if (newR >= 0 && newR < _rows && newC >= 0 && newC < _cols)
+                        UpdateBoard(newR, newC);
+                }
+            }
+            else
+            {
+                _board[r][c] = (char)(mines + '0');
+            }
+        }
+    }
+
+    private int GetMineCount(int r, int c)
+    {
+        int mines = 0;
+
+        foreach (var dir in _dirs)
+        {
+            int newR = r + dir.Item1;
+            int newC = c + dir.Item2;
+
+            if (newR >= 0 && newR < _rows && newC >= 0 && newC < _cols)
+                if (_board[newR][newC] == 'M')
+                    mines++;
+        }
+
+        return mines;
+    }
+
+}

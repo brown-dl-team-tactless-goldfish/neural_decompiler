@@ -1,0 +1,31 @@
+// comparison function
+int less_than(const void *a, const void *b) {
+    return (*(int*)a) - (*(int*)b);
+}
+
+int bagOfTokensScore(int* tokens, int tokensSize, int power){
+    // first sort input low to high
+    qsort(tokens, tokensSize, sizeof(int), less_than);
+    int s = 0;
+    int l = 0, r = tokensSize - 1;
+    while (l <= r)
+    {
+        // play the cheapest token faceup if we can
+        if (power >= tokens[l])
+        {
+            power -= tokens[l++];
+            s++;
+        }
+        // play the most expensive token facedown if doing so would let us
+        // play the cheapest token
+        else if ((s >= 1) && ((tokens[r] + power) >= tokens[l]) && (l != r))
+        {
+            power += tokens[r--];
+            s--;
+        }
+        // otherwise, we can't improve our score any more
+        else
+            break;
+    }
+    return s;
+}

@@ -1,0 +1,28 @@
+bool hasAllCodes(char * s, int k){
+    int n = strlen(s) ;
+    int target = pow(2, k) ;
+    if(n < k || (n-(k-1)) < target)
+        return false ;
+    
+    bool* hash = calloc( target , sizeof(bool) ) ;
+    int val = 0; 
+        
+    int type = 0 ;
+    for(int i = 0; i < k; i++){
+        val = val * 2 + s[i] -'0' ;
+    }
+   
+    hash[val] = true;
+    type++;
+    for(int i = k; i < n  ; i++){
+        val = val & ( ~(1 << (k-1) ) ) ;
+        val = val * 2 + s[i] - '0' ;
+        if(hash[val] == false){
+            type++;
+            hash[val] = true ;
+            if(type == target)
+                return true ;
+        }
+    }
+    return false ;
+}

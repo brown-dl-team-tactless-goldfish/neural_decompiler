@@ -1,0 +1,115 @@
+	int minDays(vector<vector<int>>& grid) {
+        
+        int n = grid.size();
+        int m = grid[0].size();
+        
+        int dy[4] = {0, -1, 0, 1};
+        int dx[4] = {-1, 0, 1, 0};
+        
+        vector<vector<bool>> used;
+        for (int i = 0; i < n; i++) {
+            vector<bool> temp;
+            for (int j = 0; j < m; j++) {
+                temp.push_back(false);
+            }
+            used.push_back(temp);
+        }
+        
+        int cnt = 0;
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < m; j++) {
+                if (!used[i][j] && grid[i][j] == 1) {
+                    
+                    queue<pair<int, int>> q;
+                    q.push(make_pair(i, j));
+                    used[i][j] = true;
+                    
+                    cnt++;
+                    
+                    while (!q.empty()) {
+                        pair<int, int> front = q.front();
+                        int y = front.first;
+                        int x = front.second;
+                        for (int k = 0; k < 4; k++) {
+                            int tempY = y + dy[k];
+                            int tempX = x + dx[k];
+                            if (tempY >= 0 && tempY < n && tempX >= 0 && tempX < m) {
+                                if (grid[tempY][tempX] == 1 && !used[tempY][tempX]) {
+                                    q.push(make_pair(tempY, tempX));
+                                    used[tempY][tempX] = true;
+                                }
+                            }
+                        }
+                        q.pop();
+                    }
+                }
+            }
+        }
+        if (cnt > 1) {
+            return 0;
+        }
+        
+        for (int _i = 0; _i < n; _i++) {
+            for (int _j = 0; _j < m; _j++) {
+                if (grid[_i][_j] == 1) {
+                    grid[_i][_j] = 0;
+                    
+                    bool isBfs = false;
+                    
+                    used.clear();
+                    for (int i = 0; i < n; i++) {
+                        vector<bool> temp;
+                        for (int j = 0; j < m; j++) {
+                            temp.push_back(false);
+                        }
+                        used.push_back(temp);
+                    }
+                    
+                    cnt = 0;
+                    for (int i = 0; i < n; i++) {
+                        for (int j = 0; j < m; j++) {
+                            if (!used[i][j] && grid[i][j] == 1) {
+
+                                isBfs = true;
+                                queue<pair<int, int>> q;
+                                q.push(make_pair(i, j));
+                                used[i][j] = true;
+
+                                cnt++;
+
+                                while (!q.empty()) {
+                                    pair<int, int> front = q.front();
+                                    int y = front.first;
+                                    int x = front.second;
+                                    for (int k = 0; k < 4; k++) {
+                                        int tempY = y + dy[k];
+                                        int tempX = x + dx[k];
+                                        if (tempY >= 0 && tempY < n && tempX >= 0 && tempX < m) {
+                                            if (grid[tempY][tempX] == 1 && !used[tempY][tempX]) {
+                                                q.push(make_pair(tempY, tempX));
+                                                used[tempY][tempX] = true;
+                                            }
+                                        }
+                                    }
+                                    q.pop();
+                                }
+                            }
+                        }
+                    }
+                    
+                    if (cnt > 1) {
+                        return 1;
+                    }
+                    
+                    if (!isBfs) {
+                        return 1;
+                    }
+                    
+                    grid[_i][_j] = 1;
+                }
+            }
+        }
+        return 2;
+        
+    }

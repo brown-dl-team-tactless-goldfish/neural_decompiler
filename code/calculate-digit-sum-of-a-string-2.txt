@@ -1,0 +1,42 @@
+int intToChar(char* s, int curr)
+{
+    /* return idx */
+
+    int idx = 0;
+    if(curr==0){
+        s[idx++] = '0';
+        return idx;
+    }    
+    while(curr)
+    {
+        s[idx++] = (curr % 10)+0x30;
+        curr /= 10;
+    }
+    int left = 0, right = idx - 1;
+    while(left < right){
+        char tmp = s[left];
+        s[left++] = s[right];
+        s[right--] = tmp;
+    }
+    return idx;
+}
+
+char * digitSum(char * s, int k){
+    int idx = 0, len = strlen(s);
+    int prev = 0, curr = 0;
+    if(len <= k) return s;
+    for(int i = 0; i < len; i++)
+    {
+        curr += (s[i] - 0x30);
+        if(((i % k) == (k - 1)) || i == (len-1))
+        {
+            idx += intToChar(&s[idx], curr);
+            curr = 0;/* reset for next word */
+        }
+    }
+    s[idx] = '\0';
+    if(idx > k){
+        s = digitSum(s, k);
+    }
+    return s;
+}

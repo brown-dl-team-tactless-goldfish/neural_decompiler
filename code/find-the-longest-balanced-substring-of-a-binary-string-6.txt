@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int findTheLongestBalancedSubstring(string s) {
+        stack<int> st;
+        int ans=0, c=0;
+        bool onePassed = false;
+        for(int i=0; i<s.length(); i++){
+            if(s[i]=='0'){
+                if(onePassed){
+                    ans = max(ans, c);
+                    c=0;
+                    while(!st.empty()) st.pop();
+                    onePassed = false;
+                }
+                st.push(s[i]);
+            }
+            else{
+                if(!st.empty()){
+                    st.pop();
+                    c+=2;
+                }
+                onePassed = true;
+            }
+        }
+        return max(ans, c);
+    }
+};

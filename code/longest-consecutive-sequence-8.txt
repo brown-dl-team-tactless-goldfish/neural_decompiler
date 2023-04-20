@@ -1,0 +1,58 @@
+struct HashTable
+{
+    int number;
+    UT_hash_handle hh;
+};
+int longestConsecutive(int* nums, int numsSize){
+    
+    int i;
+    int max = 1;
+    int temp;
+    int count;
+    struct HashTable *hash_p=NULL;
+    struct HashTable *op = NULL;
+    
+    if (numsSize == 0)
+    {
+        return 0;
+    }
+    for (i=0; i < numsSize; i++)
+    {
+        HASH_FIND_INT(hash_p, &nums[i], op);
+        if (op == NULL)
+        {
+            op = (struct HashTable *)malloc(sizeof(struct HashTable));
+            op->number = nums[i];
+            HASH_ADD_INT(hash_p, number, op);
+        }
+        
+    }
+    for (i=0; i < numsSize; i++)
+    {
+        count = 1;
+        temp = nums[i] - 1;
+        HASH_FIND_INT(hash_p, &temp, op);
+        if (op == NULL)
+        {
+            temp = nums[i] + 1;
+            HASH_FIND_INT(hash_p, &temp, op);
+            while (op!=NULL)
+            {
+                count++; temp++;
+                HASH_FIND_INT(hash_p, &temp, op);
+            }
+            
+        }
+        
+        if (count > max)
+            max = count;  
+    }
+    /* Destroy the hashset */
+    struct HashTable* curr;
+    struct HashTable* tmp;
+    HASH_ITER(hh, hash_p, curr, tmp) {
+        HASH_DEL(hash_p, curr);
+        free(curr);
+    }
+    return max;
+}

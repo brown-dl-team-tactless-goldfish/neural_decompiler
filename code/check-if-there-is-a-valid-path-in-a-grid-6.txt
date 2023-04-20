@@ -1,0 +1,44 @@
+class Solution {
+public:
+    bool hasValidPath(vector<vector<int>>& grid) {
+        unordered_set<int> visited;
+        return hasValidPath(grid, 0, 0, visited);
+    }
+    
+private:
+    bool hasValidPath(vector<vector<int>>& grid, int row, int col, unordered_set<int>& visited)
+    {
+        int rows = grid.size(), cols = grid[0].size();
+        if (row == rows - 1 && col == cols - 1)
+        {
+            return true;
+        }
+        
+        if (row < 0 || row >= rows || col < 0 || col >= cols || visited.find(row * cols + col) != visited.end())
+        {
+            return false;
+        }
+        
+        int cur = grid[row][col], up = row > 0 ? grid[row - 1][col] : -1, left = col > 0 ? grid[row][col - 1] : -1;
+        int down = row + 1 < rows ? grid[row + 1][col] : -1, right = col + 1 < cols ? grid[row][col + 1] : -1;
+        bool canUp = (cur == 2 || cur == 5 || cur == 6) && (up == 2 || up == 3 || up == 4 || up < 0);
+        bool canLeft = (cur == 1 || cur == 3 || cur == 5) && (left == 1 || left == 4 || left == 6 || left < 0);
+        bool canDown = (cur == 2 || cur == 3 || cur == 4) && (down == 2 || down == 5 || down == 6 || down < 0);
+        bool canRight = (cur == 1 || cur == 4 || cur == 6) && (right == 1 || right == 3 || right == 5 || right < 0);
+        
+        vector<pair<int, int>> dirs{{-1, 0}, {0, -1}, {1, 0}, {0, 1}};
+        vector<bool> canMove{canUp, canLeft, canDown, canRight};
+        visited.insert(row * cols + col);
+        
+        for (int i = 0; i < 4; ++i)
+        {
+            if (canMove[i] && hasValidPath(grid, row + dirs[i].first, col + dirs[i].second, visited))
+            {
+                return true;
+            }
+        }
+        
+        visited.erase(row * cols + col);
+        return false;
+    }
+};

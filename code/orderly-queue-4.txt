@@ -1,0 +1,39 @@
+int charcmp(const void *a,const void *b){
+    return *(char*)a-*(char*)b;
+}
+
+void xorSwap(char *x, char *y){
+    *x ^= *y;
+    *y ^= *x;
+    *x ^= *y;
+}
+
+void rotate_string(char* string,int size){
+    for(int i=0;i<size-1;i++){ 
+        xorSwap(string+i,string+i+1);
+    }
+}
+
+char * orderlyQueue(char * s, int k){
+    int str_size=strlen(s);
+    char *result=malloc(sizeof(char*)*(str_size+1));
+    strcpy (result,s);
+    
+	// We can rotate the string if K==1
+	// We can get any order of string when K>1
+    if(k!=1){
+        qsort(result,strlen(s),sizeof(char),charcmp);;
+    }
+    else{
+        char *rotate_result=malloc(sizeof(char*)*(str_size+1));
+        strcpy (rotate_result,s);
+        for(int i=0;i<str_size;i++){
+            rotate_string(rotate_result,str_size);
+            if(strcmp(rotate_result,result)<0){
+                strcpy (result,rotate_result);
+            }
+        }
+        free(rotate_result);
+    }
+	return result;
+}

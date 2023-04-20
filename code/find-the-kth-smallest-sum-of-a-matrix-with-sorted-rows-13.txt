@@ -1,0 +1,39 @@
+public int KthSmallest(int[][] mat, int k)
+{
+	List<int> currentSum = new List<int>();
+
+	for (int i = 0; i < mat[0].Length; i++)
+	{
+		currentSum.Add(mat[0][i]);
+	}
+
+	// Prune extra elements
+	while (currentSum.Count > k)
+	{
+		currentSum.RemoveAt(currentSum.Count - 1);
+	}
+
+	for (int i = 1; i < mat.Length; i++)
+	{
+		List<int> nextSum = new List<int>();
+
+		for (int j = 0; j < mat[0].Length; j++)
+		{
+			foreach (var sum in currentSum)
+			{
+				nextSum.Add(sum + mat[i][j]);
+			}
+
+			nextSum.Sort();
+
+			while (nextSum.Count > k)
+			{
+				nextSum.RemoveAt(nextSum.Count - 1);
+			}
+		}
+		currentSum = nextSum;
+	}
+
+	currentSum.Sort();
+	return currentSum[k - 1];
+}

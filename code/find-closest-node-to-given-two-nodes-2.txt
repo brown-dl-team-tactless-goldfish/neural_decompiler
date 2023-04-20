@@ -1,0 +1,32 @@
+int closestMeetingNode(int* edges, int edgesSize, int node1, int node2)
+{
+        bool *seen1 = calloc(edgesSize, sizeof(bool));
+        bool *seen2 = calloc(edgesSize, sizeof(bool));
+        bool repeated1 = false, repeated2 = false;
+        int index = -1;
+        while (index == -1 && (!repeated1 || !repeated2)) {
+                if (!repeated1) {
+                        seen1[node1] = true;
+                        if (seen2[node1]) {
+                                index = node1;
+                        }
+                        node1 = edges[node1];
+                        if (node1 == -1 || seen1[node1]) {
+                                repeated1 = true;
+                        }
+                }
+                if (!repeated2) {
+                        seen2[node2] = true;
+                        if (seen1[node2]) {
+                                index = (index == -1) || (node2 < index) ? node2 : index;
+                        }
+                        node2 = edges[node2];
+                        if (node2 == -1 || seen2[node2]) {
+                                repeated2 = true;
+                        }
+                }
+        }
+        free(seen1);
+        free(seen2);
+        return index;
+}

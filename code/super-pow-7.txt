@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int pow(int n, int p, int mod){
+        if(p < 0)
+            return 1 / (pow(n,-p,mod) % mod);
+        
+        if(p == 0)
+            return 1;
+
+        if(p%2)
+            return (n % mod * pow(n,p-1,mod) % mod) % mod;
+        
+        int tmp = pow(n,p/2,mod);
+        
+        return ((tmp % mod) * (tmp % mod)) % mod;
+    }
+    
+    int superPow(int a, vector<int>& b) {
+        if(!b.size())
+            return 1;
+        int c = b.back();
+        b.pop_back();
+        
+        int mod = 1337;
+        return (pow(superPow(a,b),10,mod) % mod * pow(a,c,mod) % mod) % mod;
+    }
+};

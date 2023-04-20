@@ -1,0 +1,44 @@
+class Solution {
+public:
+    vector<int> arrayChange(vector<int>& nums, vector<vector<int>>& operations) {
+        unordered_map<int, int> mp;
+		/*
+		We need to aggregate the operations that ultimatly operate on the same digits,
+		for example if we have operation[i] = {1, 3} and another operation[i + c] = {3, 2}
+		where c is a non zero constant we can merge these 2 operations into one operation = {1, 2}
+		to do that we need to iterate on the operations in a reverse order, this is necessary for 
+		the aggregation as we will see below.
+		*/
+        reverse(operations.begin(), operations.end());
+        
+        
+        for (auto& op : operations) {
+            if (mp.find(op[1]) != mp.end()) {
+			/*
+			This condition handles the case where you have an operation that transforms a number op[0] into op[1]
+			and op[1] is present in  an operation further along the operations array, and since we are iterating on the
+			operations array in a reversed order we have already recorded it in our array and can aggregate both 
+			operations with ease.
+			*/
+                mp[op[0]] = mp[op[1]];
+				// you can erase mp[op[1]] to optimize memory usage but it will work either way since op[1] is
+				// guranteed to not be in the array if you aggregate the operations.
+				mp.erase(op[1]);
+            } else {
+			/*
+			If there is no operation to be aggregated simply record the operation in our map.
+			*/
+                mp[op[0]] = op[1];
+            }
+        }
+        
+        for (auto& n : nums) {
+            if (mp.find(n) != mp.end()) {
+			// Iterate on the array and perform the aggregated operations when necessary.
+                n = mp[n];
+            }
+        }
+        
+        return nums;
+    }
+};

@@ -1,0 +1,45 @@
+
+
+char * originalDigits(char * s){
+    char lkp[] = {'0', '1', '2', '3', '4', '5', '6', '7', '8', '9'};
+    int ret[10] = {0}, cnt, i, j,  table[26] = {0};
+    char *tmp;
+
+    if (s == NULL)
+        return NULL;
+
+    tmp =s;
+
+	//Prepare histogram table for each character
+    while(*tmp != '\0') {
+        table[((*tmp) - 'a')]++;
+        tmp++;
+    }
+    
+	ret[0] = table['z' - 'a'];
+	ret[2] = table['w' - 'a'];
+	ret[6] = table['x' - 'a'];
+	ret[4] = table['u' - 'a'];
+	ret[8] = table['g' - 'a'];
+	
+	ret[1] = table['o' - 'a'] - ret[2] - ret[4] - ret[0];
+	ret[3] = table['h' - 'a'] - ret[8];
+	ret[5] = table['f' - 'a'] - ret[4];
+	ret[7] = table['s' - 'a'] - ret[6];
+	ret[9] = table['i' - 'a'] - ret[5] - ret[8] - ret[6];
+
+	
+	//Prepare return string
+    j = 0;
+    for (i=0; i<10; i++) {
+        cnt = ret[i];
+        while (cnt) {
+            s[j] = lkp[i];
+            j++;
+            cnt--;
+        }
+    }
+    s[j] = '\0';
+    
+    return s;
+}}

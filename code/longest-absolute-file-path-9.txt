@@ -1,0 +1,100 @@
+int count_unit(char* input)
+{
+	int len;
+	int count = 0;
+
+	if (input == NULL)
+		return 0;
+
+	len = strlen(input);
+
+	if (len == 0)
+		return 0;
+
+	for (int i = 0; i < len; i++) {
+		if (input[i] == '\n')
+			count++;
+	}
+
+	count++;
+
+	return count;
+}
+
+char **split(char* input, int *num)
+{
+	int len;
+
+	if (input == NULL)
+		return NULL;
+
+	int count = count_unit(input);
+	*num = count;
+
+    if (count < 1)
+        return NULL;
+    
+	len = strlen(input);
+
+	char **units = (char **) malloc(sizeof(char *) * count);
+
+	int start = 0;
+	int idx = 0;
+
+	while (start < len) {
+		int end = start;
+		char *unit;
+
+		// dir\n\tsubdir1
+		// 0123 4 56789
+		while (end < len && input[end] != '\n')
+			end++;
+
+		int l = end - start;
+
+		unit = (char *) malloc(sizeof(char) * (l + 1));
+		memset(unit, 0x0, sizeof(char) * (l + 1));
+		strncpy(unit, input + start, l);
+		units[idx++] = unit;
+		start = end + 1;
+	}
+
+	return units;
+}
+
+int lengthLongestPath(char * input)
+{
+	int count;
+	int *arr;
+	int max = 0;
+
+	char **name = split(input, &count);
+    
+    if (count < 1 || name == NULL)
+        return 0;
+
+	arr = (int *) malloc(sizeof(int) * count);
+	memset(arr, 0x0, sizeof(int) * count);
+
+	for (int i = 0; i < count; i++) {
+		int tc = 0;
+        int len = strlen(name[i]);
+        
+		while (name[i][tc] == '\t' && tc < len)
+			tc++;
+
+		arr[tc] = (tc == 0 ? len : arr[tc - 1] + len - tc + 1);
+
+		if (strchr(name[i], '.') != NULL)
+			max = (max < arr[tc] ? arr[tc] : max);
+	}
+
+	for (int i = 0; i < count; i++) {
+		free(name[i]);
+	}
+
+	free(name);
+	free(arr);
+
+	return max;
+}

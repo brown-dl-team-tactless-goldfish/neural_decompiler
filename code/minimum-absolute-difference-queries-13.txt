@@ -1,0 +1,29 @@
+class Solution {
+public:
+    vector<int> minDifference(vector<int>& nums, vector<vector<int>>& queries) {
+        vector<int> cnt[101];
+        for(int i = 0; i < nums.size(); i++) cnt[nums[i]].push_back(i);
+        
+        int q = queries.size();
+        vector<int> ans(q);
+        for(int i = 0; i < q; i++) {
+            int low = queries[i][0];
+            int high = queries[i][1];
+            vector<int> temp;
+            for(int j = 1; j < 101; j++) {
+                int lb = lower_bound(cnt[j].begin(), cnt[j].end(), low) - cnt[j].begin();
+                if(lb < cnt[j].size() && cnt[j][lb] <= high) temp.push_back(j);
+            }
+            int tt = INT_MAX;
+            for(int k = 1; k < temp.size(); k++) {
+                if(temp[k] != temp[k - 1]) {
+                    tt = min(tt, temp[k] - temp[k - 1]);
+                }
+            }
+            if(tt == INT_MAX)  tt = -1;
+            ans[i] = tt;
+        }
+        
+        return ans;
+    }
+};

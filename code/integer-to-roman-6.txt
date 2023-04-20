@@ -1,0 +1,135 @@
+char *getLetter(int *num)
+{
+
+    // Define Romen Letters
+    int I, V, X, L, C, D, M;
+
+    // Assign values
+    I = 1, V = 5, X = 10, L = 50, C = 100, D = 500, M = 1000;
+
+    // Define min and max variables for detecting range of 'num'
+    int min = 0;
+    int max = 0;
+    // Define digit variable for detecting which digit of 'num'
+    int digit = 0;
+
+    // Define letter variable for storing romen letter
+    char *letter = (char *)calloc(10, sizeof(char));
+
+    if (*num > 0)
+    {
+        // Digit detection
+        if (*num >= I && *num < X)
+        {
+            digit = 1;
+        }
+        else if (*num >= X && *num < C)
+        {
+            digit = 10;
+        }
+        else
+        {
+            digit = 100;
+        }
+
+        // Romen Letter and max,min detection
+        if (*num >= I && *num < V)
+        {
+
+            *letter = 'I';
+            min = I;
+            max = V;
+        }
+        else if (*num >= V && *num < X)
+        {
+
+            *letter = 'V';
+            min = V;
+            max = X;
+        }
+        else if (*num >= X && *num < L)
+        {
+
+            *letter = 'X';
+            min = X;
+            max = L;
+        }
+        else if (*num >= L && *num < C)
+        {
+
+            *letter = 'L';
+            min = L;
+            max = C;
+        }
+        else if (*num >= C && *num < D)
+        {
+            *letter = 'C';
+            min = C;
+            max = D;
+        }
+        else if (*num >= D && *num < M)
+        {
+
+            *letter = 'D';
+            min = D;
+            max = M;
+        }
+        else
+        {
+            *letter = 'M';
+            min = M;
+            max = M;
+        }
+    }
+
+    // Detecting numbers which greater or equal than its (max - digit) value.
+    // For example, num = 4, it hit here or num = 9, num = 40, num = 90 ...
+    // Because that numbers has only two Roman Letter
+    if (max - digit <= *num && *num < M)
+    {
+        // Find its first and second letter recursively
+        int sub = max - digit;
+        char *f = getLetter(&digit);
+        char *s = getLetter(&max);
+
+        // Concat first and second letter and assign to letter
+        (*letter) = *f;
+        *(letter + 1) = *s;
+
+        // After that update num for detecting its other digits
+        *num -= sub;
+    }
+    // For other nums ,which is out of bound, find their Romen Letters
+    else
+    {
+        // Update num for detecting its other digits
+        *num -= min;
+    }
+    // Return letter
+    return letter;
+}
+
+char * intToRoman(int num){
+
+    // Define result char
+    char *result = (char *)calloc(100, sizeof(char));
+
+    // If num is greater than zero
+    while (num > 0)
+    {
+        // Define temporary string for holding returning data from getLetter
+        char *tempstr = getLetter(&num);
+
+        // Aftet that add its content into result char
+        for (int i = 0; i < strlen(tempstr); i++)
+        {
+            *(result + strlen(result)) = tempstr[i];
+        }
+    }
+    // Finally add null terminator
+    *(result + strlen(result)) = '\0';
+
+    // Return result
+    return result;
+
+}

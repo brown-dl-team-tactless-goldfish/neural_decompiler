@@ -1,0 +1,105 @@
+/*
+    given a string s, return the minimum RLE after at most k deletion
+    
+    DP:
+        state: f[i][k][ch][num] processed s[:i], used k deletion, the minimum RLE length
+            where last character as ch which repeated for num times.
+            
+            
+        transition:
+            if (s[i + 1] == ^ch)
+                not delete
+                    f[i][k][ch][num] -> f[i + 1][k][^ch][1]
+                delete
+                                     -> f[i + 1][k + 1][ch][num]
+            else
+                not delete
+                    f[i][k][ch][num] -> f[i + 1][k][ch][num + 1]
+                    
+                    
+        results
+            min(f[n][:][:][:])
+*/
+
+
+const int N = 110, INF = 0x3f3f3f3f;
+int f[2][N][N][26] = {};
+class Solution {
+    int getlen(int x)
+    {
+        int xx = x;
+        int len = 0;
+        while (x)
+        {
+            x /= 10;
+            len ++ ;
+        }
+        return len + (xx > 1 ? 1 : 0);
+    }
+    
+public:
+    int getLengthOfOptimalCompression(string s, int K) {
+        int n = s.size();
+        memset(f, 0x3f, sizeof f);
+        memset(f[0][0][0], 0, sizeof f[0][0][0]);
+        
+        for (int i = 0; i < n; ++ i) // 100
+        {
+            memset(f[(i + 1)%2], 0x3f, sizeof f[(i + 1)%2]);
+            int c = s[i] - 'a';
+            for (int k = 0; k <= i && k <= K; ++ k) // 100
+            {
+                for (int ch = 0; ch < 26; ++ ch) // 26
+                {
+                    if (c == ch)
+                    {
+                        for (int j = 0; j < n; ++ j) // 100
+                        {
+                            int base = f[i%2][k][j][ch];
+                            if (base > INF / 2) continue;
+                            int l1 = getlen(j), l2 = getlen(j + 1);
+                            int& ne = f[(i + 1)%2][k][j + 1][ch];
+                            ne = min(ne, base + (l2 > l1 ? 1 : 0)); 
+                        }
+                    }
+                    else
+                    {
+                        
+                        // no del
+                        for (int j = 0; j <= n; ++ j)
+                        {
+                            int base = f[i%2][k][j][ch];
+                            if (base > INF / 2) continue;
+                            int& ne = f[(i + 1)%2][k][1][c]; 
+                            ne = min(ne, base + 1);
+                        }    
+                        // del
+                        if (k < K)
+                        {
+                            for (int j = 0; j <= n; ++ j)
+                            {
+                                int base = f[i%2][k][j][ch];
+                                if (base > INF / 2) continue;
+                                int& ne = f[(i + 1)%2][k + 1][j][ch];
+                                ne = min(ne, base);   
+                                // cout << ne << endl;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        // small observation, k is as large as possible since it represent how many
+        // character being remove, and remove character only make same character to be easier to combined together.
+        int ans = 0x3f3f3f3f;
+        for (int ch = 0; ch < 26; ++ ch) 
+        {
+            for (int j = 0; j <= n; ++ j)
+            {
+                ans = min(ans, f[n%2][K][j][ch]);
+            }
+        }
+        return ans;
+    }
+};

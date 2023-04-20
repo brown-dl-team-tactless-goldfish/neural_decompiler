@@ -1,0 +1,25 @@
+class Solution {
+    int helper(int sign1, int sign2, vector<int>& arr1, vector<int>& arr2) {
+        int n = arr1.size();
+        vector<int> arr3(n, 0);
+        for (int i = 0; i < n; ++i) {
+            arr3[i] = sign1 * arr1[i] + sign2 * arr2[i] + i;
+        }
+        int res = 0;
+        int minVal = arr3[0];
+        for (int i = 1; i < n; ++i) {
+            res = max(res, arr3[i] - minVal);
+            minVal = min(minVal, arr3[i]);
+        }
+        return res;
+    }
+public:
+    int maxAbsValExpr(vector<int>& arr1, vector<int>& arr2) {
+        int res = 0;
+        res = max(res, helper(1, 1, arr1, arr2));
+        res = max(res, helper(1, -1, arr1, arr2));
+        res = max(res, helper(-1, 1, arr1, arr2));
+        res = max(res, helper(-1, -1, arr1, arr2));
+        return res;
+    }
+};

@@ -1,0 +1,79 @@
+class Solution {
+public:
+    int f, s, n;
+    int maxr = INT_MIN, minr = INT_MAX;
+    unordered_set<string> visited;
+    
+    vector<int> earliestAndLatest(int N, int F, int S) {
+        f = F-1, s = S-1, n = N;
+        string players = string(n, '1');
+		int round = 1, left = 0, right = n-1;
+        help(players, left, right, round);
+        return {minr, maxr};
+    }
+    
+    //passing players by reference is crucial to avoid tle
+    void help(string &players, int l, int r, int round){
+        
+        //round finished start next round
+        if(l >= r){
+            help(players, 0, n-1, round+1);
+        }
+        //left player is already eliminated continue with other players
+        else if(players[l] == '0'){
+            help(players, l+1, r, round);
+        }
+        //right player is already eliminated continue with other players
+        else if(players[r] == '0'){
+            help(players, l, r-1, round);
+        }
+        //we have found the place where first and second players come head to head
+        else if((l == f and r == s) or (l == s and r == f)){
+            minr = min(minr, round);
+            maxr = max(maxr, round);
+        }
+        //the left player will win this match
+        else if(l == f || l == s){
+            //make the right player loose
+            players[r] = '0';
+            help(players, l+1, r-1, round);
+            //reset for more exploration (more exploration happens when an earlier call was made from the last else block)
+            players[r] = '1';
+        }
+        //the right player will win this match
+        else if(r == f || r == s){
+            //make the left player loose
+            players[l] = '0';
+            help(players, l+1, r-1, round);
+            //reset for more exploration (more exploration happens when an earlier call was made from the last else block)
+            players[l] = '1';
+        }
+        else if(visited.count(getPlayersBeforeBetweenAndAfterFAndS(players)) == 0){
+            visited.insert(getPlayersBeforeBetweenAndAfterFAndS(players));
+            
+            //both can win or loose, perform both scenarios
+            players[r] = '0';
+            help(players, l+1, r-1, round);
+            players[r] = '1';
+            players[l] = '0';
+            help(players, l+1, r-1, round);
+            players[l] = '1';
+        }
+    }
+    
+    string getPlayersBeforeBetweenAndAfterFAndS(string &s1){
+        int d1 = 0, d2 = 0, d3 = 0;
+        for(int i = 0; i < s1.size(); i++){
+            if(i < min(f, s) and s1[i] == '1'){
+                d1++;
+            }
+            else if(min(f,s) < i and i < max(f,s) and s1[i] == '1'){
+                d2++;
+            }
+            else if(i > max(f,s) and s1[i] == '1'){
+                d3++;
+            }
+        }
+        return to_string(d1) + "|" + to_string(d2) + "|" + to_string(d3) ;
+    }
+};

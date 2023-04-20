@@ -1,0 +1,47 @@
+public class Solution 
+{
+    public string SmallestStringWithSwaps(string s, IList<IList<int>> pairs) 
+    {
+        var parentMap = new Dictionary<int, int>();
+        foreach(var pair in pairs)
+            Union(parentMap, pair[0], pair[1]);
+
+        var map = new Dictionary<int, List<KeyValuePair<char,int>>>();
+        for(int i = 0; i < s.Length; i++)
+        {
+            var parent = Find(parentMap, i);
+            if(!map.ContainsKey(parent))
+                map[parent] = new List<KeyValuePair<char,int>>();
+            
+            map[parent].Add(new KeyValuePair<char, int>(s[i], i));
+        }
+        
+        char[] result = new char[s.Length];
+        foreach(var list in map.Values)
+        {
+            var charArray = list.Select(x => x.Key).ToArray();
+            var indexArray = list.Select(x => x.Value).ToArray();
+            Array.Sort(charArray);
+
+            for(int i = 0; i < indexArray.Length; i++)
+                result[indexArray[i]] = charArray[i];
+        }
+        
+        return new String(result);
+    }
+    
+    private void Union(Dictionary<int, int> parentMap, int x, int y)
+    {
+        int parent1 = Find(parentMap, x), parent2 = Find(parentMap, y);
+            if(parent1 != parent2)
+                parentMap[parent1] = parent2;
+    }
+    
+    private int Find(Dictionary<int, int> parentMap, int num)
+    {
+        if(!parentMap.ContainsKey(num)) parentMap[num] = num;
+        if(parentMap[num] != num) 
+            parentMap[num] = Find(parentMap, parentMap[num]);
+        return  parentMap[num];
+    }
+}

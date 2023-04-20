@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int removeBoxes(vector<int>& boxes) {
+        int n = boxes.size(), memo[n+1][n+1][n+1]; 
+        memset(memo, -1, sizeof(memo)); 
+        
+        function<int(int, int, int)> fn = [&](int lo, int hi, int k) {
+            if (memo[lo][hi][k] == -1) {
+                if (lo == hi) memo[lo][hi][k] = 0; 
+                else if (lo+1 < hi && boxes[lo] == boxes[lo+1]) memo[lo][hi][k] = fn(lo+1, hi, k+1); 
+                else {
+                    memo[lo][hi][k] = (k+1)*(k+1) + fn(lo+1, hi, 0); 
+                    for (int mid = lo+2; mid < hi; ++mid) {
+                        if (boxes[lo] == boxes[mid])
+                            memo[lo][hi][k] = max(memo[lo][hi][k], fn(lo+1, mid, 0) + fn(mid, hi, k+1)); 
+                    }
+                }
+            }
+            return memo[lo][hi][k]; 
+        };
+        
+        return fn(0, n, 0); 
+    }
+};

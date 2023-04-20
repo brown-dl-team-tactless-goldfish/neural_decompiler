@@ -1,0 +1,61 @@
+int orderOfLargestPlusSign(int n, int** mines, int minesSize, int* minesColSize){
+    int ** temp = (int **)malloc(n*sizeof(int *));
+    for(int i=0; i<n; i++)
+    {
+        temp[i] = (int *)malloc(n*sizeof(int));
+        for(int j=0; j<n; j++)
+            temp[i][j] = 1;
+    }
+    for(int i=0; i<minesSize; i++)
+        temp[mines[i][0]][mines[i][1]] = 0;
+    int ** top = (int **)malloc(n*sizeof(int *));
+    int ** bot = (int **)malloc(n*sizeof(int *));
+    int ** left = (int **)malloc(n*sizeof(int *));
+    int ** right = (int **)malloc(n*sizeof(int *));
+    for(int i=0; i<n; i++)
+    {
+        top[i] = (int *)malloc(n*sizeof(int));
+        bot[i] = (int *)malloc(n*sizeof(int));
+        left[i] = (int *)malloc(n*sizeof(int));
+        right[i] = (int *)malloc(n*sizeof(int));
+    }
+    for(int i=0; i<n; i++)
+    {
+        top[0][i] = temp[0][i];
+        bot[n-1][i] = temp[n-1][i];
+        left[i][0] = temp[i][0];
+        right[i][n-1] = temp[i][n-1];
+    }
+    for(int i=0; i<n; i++)
+        for(int j=1; j<n; j++)
+        {
+            if (temp[i][j] == 1)
+                left[i][j] = left[i][j - 1] + 1;
+            else
+                left[i][j] = 0;
+            if (temp[j][i] == 1)
+                top[j][i] = top[j - 1][i] + 1;
+            else
+                top[j][i] = 0;
+            j = n - j - 1;
+            if (temp[j][i] == 1)
+                bot[j][i] = bot[j + 1][i] + 1;
+            else
+                bot[j][i] = 0;
+            if (temp[i][j] == 1)
+                right[i][j] = right[i][j + 1] + 1;
+            else
+                right[i][j] = 0;
+            j = n - j - 1;
+        }
+    int max = 0;
+    for(int i=0; i<n; i++)
+        for(int j=0; j<n; j++)
+        {
+            int min1 = top[i][j] > bot[i][j] ? bot[i][j] : top[i][j];
+            int min2 = left[i][j] > right[i][j] ? right[i][j] : left[i][j];
+            int min3 = min1 > min2 ? min2 : min1;
+            if(min3 > max) max = min3;
+        }
+    return max;
+}

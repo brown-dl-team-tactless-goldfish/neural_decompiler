@@ -1,0 +1,96 @@
+class Solution {
+public:
+    vector<int> arr;//arrival time
+    vector<int> dep;//departure time
+    vector<int> visited;
+    vector<int> subtree;//to store XOR of all nodes in subtree rooted at idx
+    int time;
+    
+    int minimumScore(vector<int>& nums, vector<vector<int>>& edges) {
+        
+        int n = nums.size();
+        arr = vector<int> (n, -1);
+        dep = vector<int> (n, -1);
+        visited = vector<int> (n, 0);
+        subtree = vector<int> (n, -1);
+        
+        time = 0;
+        
+        vector<vector<int>> adj(n);
+        
+        for (auto &e : edges){
+            
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        
+        DFS(0, adj, nums);
+        
+        int score = INT_MAX;
+        
+        for (int i=0; i<edges.size(); i++){
+            for (int j = i+1; j<edges.size(); j++){
+                
+                int a = arr[edges[i][0]] < arr[edges[i][1]] ? edges[i][0] : edges[i][1];
+                int b = arr[edges[i][0]] < arr[edges[i][1]] ? edges[i][1] : edges[i][0];
+                
+                int c = arr[edges[j][0]] < arr[edges[j][1]] ? edges[j][0] : edges[j][1];
+                int d = arr[edges[j][0]] < arr[edges[j][1]] ? edges[j][1] : edges[j][0];
+                
+                
+                if (arr[b] <= arr[c] && dep[b] >= dep[c]){
+                    
+                    // edge c---d lies in the branch extended by a---b
+                    
+                    int x1 = subtree[0]^subtree[b];
+                    int x2 = subtree[b]^subtree[d];
+                    int x3 = subtree[d];
+                    
+                    int ans = max({x1,x2,x3}) - min({x1,x2,x3});
+                    score = min(score, ans);
+                    
+                }
+                else if (arr[d] <= arr[a] && dep[d] >= dep[a]){
+                    
+                    // edge a---b lies in the branch extended by c---d
+                    
+                    int x1 = subtree[0]^subtree[d];
+                    int x2 = subtree[d]^subtree[b];
+                    int x3 = subtree[b];
+                    
+                    int ans = max({x1,x2,x3}) - min({x1,x2,x3});
+                    score = min(score, ans);
+                }
+                else{
+                    int x1 = subtree[0]^subtree[b]^subtree[d];
+                    int x2 = subtree[b];
+                    int x3 = subtree[d];
+                    
+                    int ans = max({x1,x2,x3}) - min({x1,x2,x3});
+                    score = min(score, ans);
+                }
+            }
+        }
+        
+        return score;
+    }
+    
+    int DFS(int idx, vector<vector<int>> &adj, vector<int> &nums){
+        
+        visited[idx] = 1;
+        arr[idx] = time++;
+        
+        int ans = nums[idx];
+        
+        for (int i=0; i<adj[idx].size(); i++){
+            
+            if (visited[adj[idx][i]] == 0){
+                ans ^= DFS(adj[idx][i], adj, nums);
+            }
+        }
+        
+        dep[idx] = time++;
+        
+        return subtree[idx] = ans;
+    }
+};

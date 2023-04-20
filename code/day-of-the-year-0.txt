@@ -1,0 +1,40 @@
+enum year_type {
+    leap = 1, 
+    avg
+};
+int checkYear(int year){
+    if( (year % 4 == 0 && year %100 != 0) || (year % 400 == 0))
+        return leap;
+    else
+        return avg;
+}
+int dayOfYear(char * date){
+    int ans = 0;
+    int leap_year[] = {31,29,31,30,31,30,31,31,30,31,30,31} ;  //type 1
+    int avg_year[]  = {31,28,31,30,31,30,31,31,30,31,30,31} ;  //type 2
+    
+    int year = 0, month = 0, day = 0;
+    for(int i = 0; i < 4; i++){
+        year = year * 10 + date[i] -'0';
+    }  
+    
+    for(int i = 5; i <= 6; i++){
+        month = month * 10 + date[i] -'0';
+    } 
+    
+    for(int i = 8; i <= 9; i++){
+        day = day * 10 + date[i] -'0';
+    } 
+    int type = checkYear(year);
+    int* base_year;
+    if(type == leap)
+        base_year = leap_year;
+    else
+        base_year = avg_year;
+    
+    for(int i = 0; i < month - 1; i++){
+        ans += base_year[i];
+    }
+    ans += day;
+    return ans;
+}

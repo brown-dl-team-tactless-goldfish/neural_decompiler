@@ -1,0 +1,42 @@
+bool validTicTacToe(char** board, int n) {
+    int x_row_count[3] = {0}, x_col_count[3] = {0};
+    int o_row_count[3] = {0}, o_col_count[3] = {0};
+    int diag1_x = 0, diag1_o = 0, diag2_x = 0, diag2_o = 0;
+    int i, j, x = 0, o = 0;
+    bool x_wins = false, o_wins = false;
+    
+    for(i = 0; i < n; i++){
+        for(j = 0; j < n; j++){
+            if(board[i][j] == 'X'){
+                x_row_count[i]++;
+                x_col_count[j]++;
+                if(i == j) diag1_x++;
+                if(i+j == 2) diag2_x++;
+                x++;
+            } else if (board[i][j] == 'O'){
+                o_row_count[i]++;
+                o_col_count[j]++;
+                if(i == j) diag1_o++;
+                if(i+j == 2) diag2_o++;
+                o++;
+            } 
+
+            if((x_row_count[i] == 3) || (x_col_count[j] == 3) || 
+               (diag1_x == 3) || (diag2_x == 3)) x_wins = true;
+            
+            if((o_row_count[i] == 3) || (o_col_count[j] == 3) || 
+               (diag1_o == 3) || (diag2_o == 3)) o_wins = true; 
+        }
+    }
+    
+    // x should be equal to o or 1 greater than o as x always starts the game
+    if(!((x == o) || (x == o+1))) return false;
+    
+    //if x wins, count of x should be greater than o
+    if(x_wins && (x <= o)) return false;
+    
+    //if o wins, count of x should be equal to o
+    if(o_wins && (x!= o)) return false;    
+    
+    return true;
+}

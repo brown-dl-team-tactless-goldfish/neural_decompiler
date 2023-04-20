@@ -1,0 +1,100 @@
+int findPaths(int m, int n, int maxMove, int startRow, int startColumn){
+    int mod = 1e9 + 7;
+    int i, j, k;
+    int** dpEven = (int**)malloc(m * sizeof(int*));
+    int** dpOdd = (int**)malloc(m * sizeof(int*));
+    for(i = 0; i < m ; i++){
+        dpEven[i] = calloc(n , sizeof(int));
+        dpOdd[i] = calloc(n , sizeof(int));
+    }
+
+    for(k = 1; k <= maxMove; k++){
+        if(k % 2 == 1){
+            for(i = 0; i < m; i++){
+                for(j = 0; j < n; j++){
+                    dpOdd[i][j] = 0;
+                    if(i > 0){
+                        dpOdd[i][j] +=  dpEven[i-1][j];
+                        dpOdd[i][j] %= mod;
+                    }
+                    else
+                        dpOdd[i][j] += 1;
+                    
+                    if(i < (m - 1)){
+                        dpOdd[i][j] +=  dpEven[i+1][j];
+                        dpOdd[i][j] %= mod;
+                    }
+                    else
+                        dpOdd[i][j] += 1;
+
+                    if(j > 0){
+                        dpOdd[i][j] +=  dpEven[i][j-1];
+                        dpOdd[i][j] %= mod;
+                    }
+                    else
+                        dpOdd[i][j] += 1;
+                    
+                    if(j < (n-1)){
+                        dpOdd[i][j] +=  dpEven[i][j+1];
+                        dpOdd[i][j] %= mod;
+                    }
+                    else
+                        dpOdd[i][j] += 1;
+                    
+                    
+                }
+            }    
+        }
+        else{
+            for(i = 0; i < m; i++){
+                for(j = 0; j < n; j++){
+                    dpEven[i][j] = 0;
+                    if(i > 0){
+                        dpEven[i][j] +=  dpOdd[i-1][j];
+                        dpEven[i][j] %= mod;
+                    }
+                    else
+                        dpEven[i][j] += 1;
+                    
+                    if(i < (m - 1)){
+                        dpEven[i][j] +=  dpOdd[i+1][j];
+                        dpEven[i][j] %= mod;
+                    }
+                    else
+                        dpEven[i][j] += 1;
+
+                    if(j > 0){
+                        dpEven[i][j] +=  dpOdd[i][j-1];
+                        dpEven[i][j] %= mod;
+                    }
+                    else
+                        dpEven[i][j] += 1;
+                    
+                    if(j < (n-1)){
+                        dpEven[i][j] +=  dpOdd[i][j+1];
+                        dpEven[i][j] %= mod;
+                    }
+                    else
+                        dpEven[i][j] += 1;
+                    
+                    
+                }
+            }            
+        }
+    }
+    int ans;
+    if(maxMove % 2 ==0)
+        ans = dpEven[startRow][startColumn];
+    else
+        ans = dpOdd[startRow][startColumn];
+    
+    //free memory
+    for(i = 0; i < m; i++){
+        free(dpEven[i]);
+        free(dpOdd[i]);
+    }
+    free(dpEven);
+    free(dpOdd);
+    return ans;
+
+}

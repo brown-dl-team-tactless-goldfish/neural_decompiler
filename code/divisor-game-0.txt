@@ -1,0 +1,37 @@
+int* findFactor(int n, int* size){
+    int* ans = malloc(n/2 * sizeof(int));
+    *size = 0;
+    for(int i = 1; i < n/2; i++){
+        if(n % i == 0){
+            ans[*size] = i;
+            (*size)++ ;
+        }
+    }
+    ans = realloc(ans, (*size) * sizeof(int));
+    return ans;
+}
+bool divisorGame(int n){
+    bool* dp = malloc((n+1) * sizeof(int));
+    dp[1] = false;
+    if(n > 1);
+        dp[2] = true;
+    if(n > 2);
+        dp[3] = false;
+    if(n > 3);
+        dp[4] = true;
+    if(n > 5);
+        dp[5] = false;
+    
+    for(int i = 6; i <= n; i++){
+        int size = 0;
+        int* factor = findFactor(i, &size);
+        dp[i] = false;
+        for(int j = 0; j < size; j ++){            
+            if(dp[i - factor[j]] == false){
+                dp[i] = true;
+                break;
+            }
+        }
+    }
+    return dp[n];
+}

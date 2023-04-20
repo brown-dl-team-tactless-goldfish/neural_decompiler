@@ -1,0 +1,76 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int K) {
+        
+        vector< int > input;
+        int targetLevel = -1;
+        int distance = 1;
+        
+        if ( K == 0 )
+            return {target->val};
+        
+        kNodeDistance(root,target,K, input);
+        return input;
+    }
+    
+    void traverseDown(TreeNode *root, int K, vector<int>& input)
+    {
+        if ( !root || K < 0 )
+            return;
+        if ( K == 0 )
+        {
+            input.push_back(root->val);
+        }
+        traverseDown(root->left, K-1,input);
+        traverseDown(root->right, K-1, input);
+    }
+    
+    int kNodeDistance(TreeNode* root, TreeNode* target, int K, vector<int>& input)
+    {
+        if (!root || K < 0 )
+            return -1;
+        
+        //found the target
+        if ( root == target )
+        {   
+            traverseDown(root->left, K-1, input);
+            traverseDown(root->right,K-1, input);
+            return 1;
+        }
+        int left = kNodeDistance(root->left, target, K, input);
+        if ( left != -1 )
+        {
+            if ( K == left )
+            {
+                input.push_back(root->val);
+            }else
+            //Now complete other subtree;
+            traverseDown(root->right, K - left -1, input);
+            return left + 1;
+        }
+        
+        
+        int right = kNodeDistance(root->right,target, K, input);
+        if ( right != -1 )
+       {// if target found in right subtree, now traverse left subtree
+             if ( K == right )
+            {
+                input.push_back(root->val);
+            }else
+            //Now complete other subtree;
+            traverseDown(root->left, K - right- 1, input);
+            return right + 1;
+           
+       }
+        return -1;
+    }
+};

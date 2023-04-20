@@ -1,0 +1,55 @@
+class Solution {
+public:
+//     we will solve this problem using binary search so first define the search space, we are searching for the minimum
+//     distance between any two ball so that by keeping that minimum distance we can place every ball in the basket
+    
+//     what the lowest most minimum distance between any two ball can be possible it will be one if baskets are just  adjacent 
+//	   so take low = 1
+//     what the highest most minimum distance between any two ball can be posiible it will be difference between basket at the minimum and at the maximum distance 
+//        so take high = max(position) - min(position)
+        
+//     now we will apply binary search as the min_dist is between this low and high
+//     we calculate mid and if for that mid all ball can be placed then that mid can be a answer but we need to maximixe     that answer so we conitnue our search to the right of mid
+//     if mid cant be the answer we will search to the left of the mid
+    
+    //this fuction will find is all 'm' ball can be placed with minimum distance min_dist
+    bool isBallCanBePlaced(vector<int>& position, int m, int min_dist)
+    {
+        int ballPlaced = 0; //placing first ball at first index b/c it is minimum distance 
+        int count = 1;  //number of ball placed
+        
+        for(int i=0; i<position.size(); i++)
+        {
+            if(position[i] - position[ballPlaced] >= min_dist)
+            {
+                count++;     //increase the count 
+                ballPlaced = i; //and plce the ball at ith index
+            }
+            if(count == m) return true;
+        }
+        return false;
+        
+    }
+    int maxDistance(vector<int>& position, int m) {
+        sort(position.begin(), position.end());
+        
+        int low = 1;    //minimum distance between any two balls
+        int high = position[position.size()-1] - position[0];  //maximum distance between any two balls
+        int res = -1;
+        
+        while(low <= high)
+        {
+            int mid = low + (high - low)/2;  //it defines the minimum distance needed to place any two balls 
+            
+            if(isBallCanBePlaced(position, m, mid))
+            {
+                res = mid;            //if all balls can be placed with minimum distance mid than mid can be answer
+                low = mid + 1;      //but need to maximize this answer so we move towrds right
+            }
+            else{
+                high = mid - 1;  //if we cant place all balls with minimum distance mid we need to reduce mid
+            }
+        }
+        return res;
+    }
+};

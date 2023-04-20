@@ -1,0 +1,21 @@
+int stck[1024],top;
+void operate(char tmp)
+{
+    int res;
+    switch(tmp){
+        case '*': res = stck[top - 2] * stck[top - 1];break;
+        case '-': res = stck[top - 2] - stck[top - 1];break;
+        case '+': res = stck[top - 2] + stck[top - 1];break;
+        default: res = stck[top - 2] / stck[top - 1];
+    }
+    stck[--top - 1] = res; 
+}
+int evalRPN(char** tokens, int tokensSize) {
+    top = 0;
+    for(int i = 0; i < tokensSize; i++)
+       if(isdigit(tokens[i][0]) || (tokens[i][0] == '-' && tokens[i][1]))
+            stck[top++] = atoi(tokens[i]);
+        else
+            operate(tokens[i][0]);
+    return stck[0];
+}

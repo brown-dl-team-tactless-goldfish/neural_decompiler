@@ -1,0 +1,37 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+int maxPathSumInt(struct TreeNode* root, int *max)
+{
+    if (root == NULL) {
+        return 0;
+    }
+    
+    int left = maxPathSumInt(root->left, max);
+    int right = maxPathSumInt(root->right, max);
+    
+    left = MAX(left, 0);
+    right = MAX(right, 0);
+
+    // XXX: what about int overflows?
+    int curr = left + root->val + right;
+    *max = MAX(*max, curr);
+
+    return root->val + MAX(left, right);
+}
+    
+
+int maxPathSum(struct TreeNode* root)
+{
+    int max = INT_MIN;
+    maxPathSumInt(root, &max);
+    return max;
+}

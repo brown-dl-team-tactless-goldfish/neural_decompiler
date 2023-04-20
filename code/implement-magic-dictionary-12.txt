@@ -1,0 +1,106 @@
+    public class MagicDictionary
+    {
+        private class TrieNode
+        {
+            public bool HasValue;
+            public readonly Dictionary<char, TrieNode> Next = new Dictionary<char, TrieNode>();
+        }
+
+        private class Trie
+        {
+            private TrieNode _root = new TrieNode();
+
+            private void AddValue(TrieNode node, ref string val, int idx)
+            {
+                if (idx == val.Length)
+                {
+                    node.HasValue = true;
+                    return;
+                }
+
+                char c = val[idx];
+                TrieNode nextNode = null;
+
+                if (node.Next.ContainsKey(c))
+                {
+                    nextNode = node.Next[c];
+                }
+                else
+                {
+                    nextNode = new TrieNode();
+                    node.Next[c] = nextNode;
+                }
+
+                AddValue(nextNode, ref val, idx + 1);
+            }
+
+            public void AddValue(string val)
+            {
+                AddValue(_root, ref val, 0);
+            }
+
+            private bool Search(TrieNode node, ref string val, int idx, bool modified)
+            {
+                if (idx == val.Length)
+                {
+                    return node.HasValue && modified;
+                }
+
+                char c = val[idx];
+                idx++;
+
+                if (modified)
+                {
+                    if (node.Next.ContainsKey(c))
+                    {
+                        if(Search(node.Next[c], ref val, idx, true))
+                        { 
+                            return true;
+                        }
+                    }
+
+                    return false;
+                }
+
+                if (node.Next.ContainsKey(c) && Search(node.Next[c], ref val, idx, false))
+                {
+                    return true;
+                }
+
+                foreach (var nextNode in node.Next)
+                {
+                    if (nextNode.Key != c && Search(nextNode.Value, ref val, idx, true))
+                    {
+                        return true;
+                    }
+                }
+
+                return false;
+            }
+
+            public bool Search(string val)
+            {
+                return Search(_root, ref val, 0, false);
+            }
+        }
+
+        private readonly Trie _trie;
+
+        public MagicDictionary()
+        {
+            _trie = new Trie();
+        }
+
+        public void BuildDict(string[] dict)
+        {
+            foreach (var word in dict)
+            {
+                _trie.AddValue(word);
+            }
+        }
+
+        public bool Search(string word)
+        {
+            return _trie.Search(word);
+        }
+    }

@@ -1,0 +1,63 @@
+// * Gather a char-freq statistics for words at each index 0 ... n, to an array stats[26][n]; this
+//   will speed up things in later stages.
+// * Let dp[i][j] be the # ways if we use stats[*][i...] to generate target[j...],
+//   then we have the transition function:
+//   Aux:
+//   Let c = target[j],
+//   if stats[c][i] > 0, then we can choose one of the occurrences of c at [i], ie:
+//      let alpha = stats[c][i] * dp[i+1][j+1]  mod M.
+//   else let alpha = 0;
+//   let beta = dp[i+1][j];
+//   Main transition function: dp[i][j] = alpha + beta  mod M.
+// * optimization: because row #i depends only on row #i+1, we can use two rolling rows to save
+//   space.
+// * Time complexity: O(NT + WN), Space complexity: O(26*T + 2*T). N is word length.
+class Solution {
+    constexpr static const int ModBase = 1'000'000'007;
+
+public:
+    int numWays(vector<string>& words, string target) {
+        const auto n = words[0].size();
+        const auto t = target.size();
+        if (n < t) {
+            return 0;
+        }
+        // Gather a char-freq statistics for words at each index 0 ... n, to an array stats[26][n];
+        // this will speed up things in later stages.
+        vector<array<int, 26>> stats(n);
+        for (const auto& w : words) {
+            for (int i = 0; i < n; ++i) {
+                ++stats[i][w[i] - 'a'];
+            }
+        }
+
+        // DP
+        // this row is initially for #i = n-1;
+        // cells: j = 0...t-1 are mostly zeros.
+        vector<int> rowPrev(t), rowCurr(t); // we are working backward on the rows.
+        {
+            // only the last target char is meaningful here, for we have reached the last char of
+            // the dictionaries.
+            char c = target[t - 1];
+            rowPrev[t - 1] = stats[n - 1][c - 'a'];
+        }
+        for (int i = n - 2; i >= 0; --i) {
+            for (int j = t - 1; j >= 0; --j) {
+                rowCurr[j] = 0;
+                char c = target[j];
+                // the first term:
+                // if stats[i][c] > 0, then we can choose one of the occurrences of c at [i], ie:
+                //      alpha = stats[c][i] * dp[i+1][j+1]  mod M.
+                rowCurr[j] =
+                        (int64_t)stats[i][c - 'a'] * (j + 1 < t ? rowPrev[j + 1] : 1) % ModBase;
+                // the second term: we don't use the char at [i]
+                rowCurr[j] += rowPrev[j];
+                rowCurr[j] %= ModBase;
+            }
+            // swap the roles of two rows
+            rowCurr.swap(rowPrev);
+        }
+
+        return rowPrev[0];
+    }
+};

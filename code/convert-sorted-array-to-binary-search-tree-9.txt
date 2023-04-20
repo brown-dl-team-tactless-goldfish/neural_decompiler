@@ -1,0 +1,47 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+struct TreeNode* createNode(int val);
+
+struct TreeNode* sortedArrayToBST(int* nums, int numsSize){
+	// Base case 0: nothing to process so turn around
+    if (numsSize == 0) return NULL;
+
+	// use the "middle" element to create a new subtree root
+	// here, middle means arraySize / 2. 6/2 and 5/2, for instance, is 2. So the THIRD element in both cases
+    struct TreeNode *root = createNode(nums[numsSize/2]);
+	// Base case 1: no subtrees to process, so return the single node.
+    if (numsSize == 1) {
+        return root;
+    }
+    
+	// determine the sizes of the subarrays adjacent to the middle element
+    int leftSize = numsSize/2;
+    int rightSize = numsSize % 2 == 1 ? leftSize : leftSize - 1;
+    
+	// create enough storage for the new arrays
+    int *l = calloc(leftSize, sizeof(int)), 
+        *r = calloc(rightSize, sizeof(int));
+    
+	// memcpy returns a pointer to the destination array, which will be passed in to the recursive function call.
+	// you can pull out the memcpys and simply pass in l and r, respectively.
+	// The (void*) is purely a formality and only here to remind you what the parameters are.
+    root->left = sortedArrayToBST(memcpy(l, (void*)nums, leftSize*sizeof(int)), leftSize);
+    root->right = sortedArrayToBST(memcpy(r, &nums[leftSize+1], rightSize*sizeof(int)), rightSize);
+    return root;
+}
+
+// creates a node in a tree with the specified value, and children initiated to NULL.
+struct TreeNode* createNode(int val) {
+    struct TreeNode* result = malloc(sizeof(struct TreeNode));
+    result->val = val;
+    result->left = NULL;
+    result->right = NULL;
+    return result;
+}

@@ -1,0 +1,51 @@
+class Solution {
+public:
+	int videoStitching(vector<vector<int>>& clips, int T) {
+		int MIN=INT_MAX;
+		int MAX=INT_MIN;
+
+		for(auto& v:clips){
+			MIN=min(MIN,v[0]);
+			MAX=max(MAX,v[1]);
+
+		}
+
+		if(MIN!=0 || MAX<T){
+
+			return -1;
+		} 
+
+		sort(clips.begin(),clips.end());
+		vector<vector<int>> stack;
+		for(auto& v:clips){
+
+
+				while(!stack.empty() && v[0]==stack.back()[0]){
+				stack.pop_back();
+
+				}
+
+
+			if(!stack.empty()){
+				while(stack.size()>=2 && v[0]<=stack[stack.size()-2][1]){
+					stack.pop_back();
+				}
+
+			}
+			else{
+				if(!stack.empty() && v[1]<=stack.back()[1]) continue;
+
+			}
+
+			stack.push_back(v);
+			if(v[1]>=T) break;
+		}
+
+		for(int i=1;i<stack.size();i++){
+			if(stack[i][0]>stack[i-1][1]) return -1;
+		}
+
+		return stack.size();
+
+	}
+};

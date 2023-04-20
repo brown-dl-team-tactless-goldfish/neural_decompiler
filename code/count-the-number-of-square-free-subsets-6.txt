@@ -1,0 +1,65 @@
+class Solution {
+public:
+    long long dp[1<<11][1001];
+    
+    unordered_map<int,int> hash;  // the numbers are mapped to reduce bit count
+    
+    int primeFactorisation_MASK(int num){
+        int mask=0;
+            
+        if(num%2==0){
+            mask|=(1<<hash[2]);
+            num/=2;
+        }
+        for(int i=3;i<=sqrt(num);i+=2){
+            while(num%i==0){
+                mask|=(1<<hash[i]);
+                num=num/i;
+            }
+        }
+        if(num>2){
+            mask|=(1<<hash[num]);
+        }
+        
+        return mask;
+    }
+    
+    long long helper(int mask, int curr, vector<int> &masks){
+        if(curr==masks.size()){
+            return 1;
+        }
+        if(dp[mask][curr]!=-1){
+            return dp[mask][curr];
+        }
+        
+        int ACCEPT=0;
+        if((masks[curr] & mask)==0){ // checking that there is no common set bit in both masks cuz that will lead to a square number 
+            ACCEPT=helper(masks[curr] | mask,curr+1,masks);
+        }
+        
+        int IGNORE=helper(mask,curr+1,masks);
+        
+        return dp[mask][curr]=(ACCEPT+IGNORE)%1000000007;
+    }
+    
+    int squareFreeSubsets(vector<int>& nums) {
+        int primeFactors[]={1,2,3,5,7,11,13,17,19,23,29}; // these numbers make up the prime factorizations from 1-30
+
+        for(int i=0;i<11;i++){ // mapping squareFreePrimes to smaller bit places
+            hash[primeFactors[i]]=i;
+        }
+        
+        vector<int> masks;
+        for(auto x: nums){
+            if(x==4 ||  x==8 || x==9 || x==12 || x==16 || x==18 || x==20 || x==24 || x==25 || x==27 || x==28){ // number having more than 1 duplicate primes leading to a square number
+                continue;
+            }
+            
+            int mask=primeFactorisation_MASK(x);
+            masks.push_back(mask);
+        }
+        
+        memset(dp,-1,sizeof(dp));
+        return helper(0,0,masks)-1; // -1 because there is an empty subset in the answer
+    }
+};

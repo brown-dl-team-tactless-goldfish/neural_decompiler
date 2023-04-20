@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int check(vector<int> a)
+    {
+        int size = a.size();
+        int c = 0;
+        for(int i = 0; i < size-1; i++) // size-1 to stop heap buffer overflow
+        {
+            if(a[i] >= a[i+1]) // check if it is increasing order or not
+            {
+                c = 1;
+                break;
+            }
+        }
+        return c;
+    }
+    
+    bool canBeIncreasing(vector<int>& nums) {
+        int size = nums.size();
+    vector<int> copy(nums);
+    int c = 0;
+    if(check(nums) == 0) // if its already strictly increasing
+    {
+        c = 1;
+    }
+    else
+    {
+        for(int i = 0; i < size; i++)
+        {
+            nums.erase(nums.begin()+i);
+            // loopingly reemoving elements one by one to check if its strictly increasing or not 
+            if(check(nums) == 0)
+            {
+                c = 1;
+                break;
+            }
+            else
+            {
+                nums.insert(nums.begin()+i, copy[i]); 
+                // if that element doesnt produce strictly increasing order, then add that element back to the vector.
+            }
+        }
+    }
+        return c;
+    }
+};

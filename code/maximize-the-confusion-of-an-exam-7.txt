@@ -1,0 +1,38 @@
+public class Solution {
+    public int MaxConsecutiveAnswers(string answerKey, int k) {
+        
+        if(string.IsNullOrEmpty(answerKey))
+            return 0;
+        
+        int left = 0, right = 0, res = 0, maxFreq = 0;
+        int[] freq = new int[2];
+        
+        while(right < answerKey.Length)
+        {
+            if(answerKey[right] == 'T')
+            {
+                freq[0]++;
+                maxFreq = Math.Max(maxFreq, freq[0]);
+            }
+            else
+            {
+                freq[1]++;
+                maxFreq = Math.Max(maxFreq, freq[1]);
+            }
+            right++;
+            
+            if(right - left > maxFreq + k)
+            {
+                if(answerKey[left] == 'T')
+                    freq[0]--;
+                else
+                    freq[1]--;
+                left++;
+            }
+            
+            res = Math.Max(res, right - left);
+        }
+        
+        return res;
+    }
+}

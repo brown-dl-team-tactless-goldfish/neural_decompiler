@@ -1,0 +1,39 @@
+class Solution {
+public:
+    TreeNode* createBinaryTree(vector<vector<int>>& descriptions) {
+        unordered_map<int, TreeNode*> nodes;
+        unordered_map<int, int> childs;
+        for (auto n : descriptions) {
+            int pv = n[0], cv = n[1], left = n[2];
+            childs[cv] = 1;
+            TreeNode* p = NULL, *c = NULL;
+            if (nodes.count(pv)) {
+                p = nodes[pv];
+            } else {
+                p = nodes[pv] = new TreeNode(pv);
+            }
+            
+            if (nodes.count(cv)) {
+                c = nodes[cv];
+            } else {
+                c = nodes[cv] = new TreeNode(cv);
+            }
+            
+            if (left) {
+                p->left = c;
+            } else {
+                p->right = c;
+            }
+        }
+        
+        int root = 0;
+        for (auto [k, _] : nodes) {
+            if (!childs.count(k)) {
+                root = k;
+                break;
+            }
+        }
+        
+        return nodes[root];
+    }
+};

@@ -1,0 +1,43 @@
+class MovieRentingSystem {
+public:
+    set<pair<int, int> > movies[10002]; // movieId: [price, shop]
+    set<vector<int> > rents; // [ [price, shop, moive] ...].
+    map<pair<int, int>, int> prices; //{ [shop, movie]: price }
+    MovieRentingSystem(int n, vector<vector<int>>& entries) {
+        for(auto e : entries ){
+            movies[e[1]].insert({e[2], e[0]});
+            prices[{e[0], e[1]}] = e[2];
+        }
+    }
+    
+    vector<int> search(int movie) {
+        auto st = movies[movie];
+        vector<int> shops;
+        for(auto it = st.begin(); it != st.end(); it++) {
+            shops.push_back((*it).second);
+            if(shops.size() >= 5) break;
+        }
+        return shops;
+    }
+    
+    void rent(int shop, int movie) {
+        int p = prices[{shop, movie}];
+        movies[movie].erase({p, shop});
+        rents.insert({p, shop, movie});
+    }
+    
+    void drop(int shop, int movie) {
+        int p = prices[{shop, movie}];
+        movies[movie].insert({p, shop});
+        rents.erase({p, shop, movie});
+    }
+    
+    vector<vector<int>> report() {
+        vector<vector<int> > ans;
+        for(auto it = rents.begin(); it != rents.end(); it++) {
+            ans.push_back({(*it)[1], (*it)[2]});
+            if(ans.size() >= 5) break;
+        }
+        return ans;
+    }
+};

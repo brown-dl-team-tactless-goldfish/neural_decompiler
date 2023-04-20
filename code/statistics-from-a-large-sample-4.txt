@@ -1,0 +1,41 @@
+vector<double> sampleStats(vector<int>const& count) {
+     unsigned int c = 0;
+     unsigned long long s = 0;
+     int Max_index=-1;
+     int Max_occur=0;
+     vector<int> nonzero;
+     nonzero.reserve(256);
+     int halfpoint = -1;
+     int halfpointcount = 0;
+     for (int i = 0; i< count.size(); ++i)
+     {
+         if (count[i] ==0) {continue;}
+         nonzero.push_back(i);
+         //max occur for mode
+         if (count[i] > Max_occur) {
+             Max_index=i;
+             Max_occur=count[i];
+         }
+         
+         //total count
+         c+=count[i];
+         s+=i*count[i];
+
+         while (halfpointcount ==0 || c/2 > halfpointcount)
+         {
+             halfpoint++;
+             halfpointcount+=count[nonzero[halfpoint]];
+         }
+     }
+     double median;
+     if (halfpointcount == c/2)
+     {
+         median=0.5*(nonzero[halfpoint]+nonzero[halfpoint+1]);
+     }
+     else
+     {
+         median = nonzero[halfpoint];
+     }
+     return {nonzero[0], nonzero.back(), static_cast<double>(s)/c, median, Max_index};
+ }
+ ```

@@ -1,0 +1,32 @@
+class Solution {
+public:
+    bool sumGame(string num) {
+        int lsum = 0, rsum = 0, lcnt = 0, rcnt = 0;
+        for (int i = (num.size()>>1)-1; i >= 0; i--)
+            if (num[i] == '?') {
+                lcnt++;
+            }else{
+                lsum += int(num[i]-'0');
+            }
+        
+        for (int i = (num.size()>>1); i < num.size(); i++)
+            if (num[i] == '?') {
+                rcnt++;
+            }else{
+                rsum += int(num[i]-'0');
+            }
+        
+        if (lsum > rsum){
+            if (lcnt >= rcnt) return true;
+            
+            return ((rcnt-lcnt)&1)||(((rcnt-lcnt+1)>>1)*9+rsum > lsum) || (((rcnt-lcnt)>>1)*9+rsum < lsum);
+        }
+        
+        if (lsum == rsum)
+            return lcnt != rcnt;           
+        
+        if (lcnt <= rcnt) return true;
+        
+        return ((lcnt-rcnt)&1) || (((lcnt-rcnt+1)>>1)*9+lsum > rsum) || (((lcnt-rcnt)>>1)*9+lsum < rsum);
+    }
+};

@@ -1,0 +1,63 @@
+class Solution {
+public:
+    vector<pair<int,int>>dir={{-1,0},{1,0},{0,1},{0,-1}};
+    int find(string s,int n,int x,int y)
+    {
+        auto is_safe=[&](int nx,int ny)
+        {
+            if(nx>=0&&ny>=0&&nx<n&&ny<n)
+            {
+                return true;
+            }
+            return false;
+        };
+        int count=0;
+        int nx=x;
+        int ny=y;
+        for(int i=0;i<s.size();i++)
+        {
+            if(s[i]=='L')
+            {
+                nx+=dir[3].first;
+                ny+=dir[3].second;
+            }
+            else if(s[i]=='R')
+            {
+                 nx+=dir[2].first;
+                ny+=dir[2].second;
+            }
+            else if(s[i]=='U')
+            {
+                 nx+=dir[0].first;
+                ny+=dir[0].second;
+            }
+            else if(s[i]=='D')
+            {
+                 nx+=dir[1].first;
+                ny+=dir[1].second;
+            }
+            // cout<<nx<<"  "<<ny<<"    ";
+              if(is_safe(nx,ny))
+                {
+                    count++;
+                }
+                else
+                {
+                    return count;
+                }
+           
+        }
+        return count;
+    }
+    vector<int> executeInstructions(int n, vector<int>& nums, string s) 
+    {
+        vector<int>ans(s.size(),0);
+        for(int i=0;i<s.size();i++)
+        {
+            int count=find(s.substr(i),n,nums[0],nums[1]);
+                ans[i]=count;
+            // cout<<"new"<<endl;
+        }
+        return ans;
+    }
+};

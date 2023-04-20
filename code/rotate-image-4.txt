@@ -1,0 +1,33 @@
+    int n=matrixRowSize, div=0;
+    // try printing the correct order from the original matrix first.
+    /*for (int i=0; i<n; i++) {
+        for (int j=n-1, k=0; j>=0; j--, k++) {
+            printf("%d ", matrix[j][i]);
+        }
+        printf("\n");
+    }*/
+    
+    
+    /* New Method: forget about rows and columns
+       consider layers and corner replacements per layer.
+     */ 
+    
+    if (n % 2 == 0) 
+        div = n/2;
+    else 
+        div = (n/2)+1;
+    
+    for (int i=0; i< n/2; i++) { // Layer 
+        int tmp1, tmp2, tmp3; //tmp variables
+        for (int j=0; j< div; j++) { // Corner replacements
+            int tmp1 = matrix[j][n-1-i];   //row++, col+=0 
+            int tmp2 = matrix[n-1-i][n-1-j]; //row+=0, col--
+            int tmp3 = matrix[n-1-j][i];   //row--, col+=0
+
+            matrix[j][n-1-i] = matrix[i][j];
+            matrix[n-1-i][n-1-j] = tmp1;
+            matrix[n-1-j][i] = tmp2;
+            matrix[i][j] = tmp3;  
+        }
+    }
+}

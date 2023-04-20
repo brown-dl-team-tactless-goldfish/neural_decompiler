@@ -1,0 +1,49 @@
+class Solution {
+public:
+    bool circularArrayLoop(vector<int>& nums) {
+        const int N = nums.size();
+        // trival case
+        if (N <= 1) {
+            return false;
+        }
+        // flags for visited nodes
+        vector<bool> visited(N, false);
+        // loop all possible starting positions
+        for (int k(0); k < N; ++k) {
+            if (visited[k]) {
+                continue;
+            }
+            else {
+                int i = k;
+                const bool positiveDirection = (nums[i] > 0);
+                unordered_set<int> pesudoCircle;
+                while (true) {
+                    if (pesudoCircle.count(i)) {
+                        return true;
+                    }
+                    else {
+                        // break if i already visited, or the direction reversed
+                        if (visited[i] or positiveDirection != (nums[i] > 0)) {
+                            break;
+                        }
+                        // record current i and move to next i
+                        pesudoCircle.insert(i);
+                        visited[i] = true;
+                        int nexti = (i + nums[i]) % N;
+                        if (nexti < 0) {
+                            nexti += N;
+                        }
+                        // if go back to i itself, does not count as a circle
+                        if (nexti == i) {
+                            break;
+                        }
+                        else {
+                            i = nexti;
+                        }
+                    }
+                }
+            }
+        }
+        return false;
+    }
+};

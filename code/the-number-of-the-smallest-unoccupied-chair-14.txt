@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int smallestChair(vector<vector<int>>& t, int target) {
+        for(int i = 0; i < t.size(); i++) t[i].push_back(i);
+        sort(begin(t), end(t));
+
+        priority_queue<vector<int>, vector<vector<int>>, greater<vector<int>>> pq;
+        priority_queue<int, vector<int>, greater<int>> free_chair;
+        int max_v = 0;
+        for(auto & e : t) {
+            while(!pq.empty() && e[0] >= pq.top()[0]) {
+                free_chair.push(pq.top()[1]);
+                pq.pop();
+            }
+
+            int cur = 0;
+            if(!free_chair.empty()) {
+                cur = free_chair.top();
+                free_chair.pop();
+            } else {
+                cur = max_v++;
+            }
+
+            if(e[2] == target) return cur;
+            pq.push({e[1], cur});
+        }
+        return -1;
+    }
+};

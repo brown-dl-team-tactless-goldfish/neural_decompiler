@@ -1,0 +1,86 @@
+class DisjoinSet{
+
+    vector<int> parent;
+    vector<int> rank;
+    vector<int> size;
+    public:
+
+    DisjoinSet(int n){
+        parent.resize(n+1);
+        rank.resize(n+1, 0);
+        size.resize(n+1, 1);
+        for(int i=0; i<n; i++){
+            parent[i] = i;
+            rank[i] = 0;
+        }
+    }
+    int findParent(int n){
+        if(parent[n] == n){
+            return n;
+        }
+        return parent[n] = findParent(parent[n]);
+    }
+    void unionByRank(int u, int v){
+
+        u = findParent(u);
+        v = findParent(v);
+        if(u == v)return;
+        if(rank[v] < rank[u]){
+            parent[v] = u;
+        }else if(rank[u] < rank[v]){
+            parent[u] = v;
+        }else{
+            parent[v] = u;
+            rank[u]++;
+        }
+    }
+    void unionBySize(int u, int v){
+
+        u = findParent(u);
+        v = findParent(v);
+        if(u == v)return;
+        if(size[v] < size[u]){
+            parent[v] = u;
+            size[u] += size[v];
+        }else{
+            parent[u] = v;
+            size[v] += size[u];
+        }
+    }
+
+};
+
+class Solution {
+    unordered_map<int, int> mp;
+public:
+    int minScore(int n, vector<vector<int>>& roads) {
+        
+        int ans = 1e9;
+        DisjoinSet *dj = new DisjoinSet(n+1);
+        int m = roads.size();
+        
+        for(int i=0; i<m; i++){
+            
+            int a = roads[i][0];
+            int b = roads[i][1];
+            int c = roads[i][2];
+            
+            if(mp.find(a) == mp.end()) mp[a] = c; 
+            else mp[a] = min(mp[a], c);
+            
+            if(mp.find(b) == mp.end()) mp[b] = c; 
+            else mp[b] = min(mp[b], c);
+            
+            dj->unionByRank(a, b);
+        }
+        
+        int x = dj->findParent(1);
+        
+        for(int i=1; i<=n; i++){
+            if(dj->findParent(i) == x){
+                ans = min(ans, mp[i]);
+            }
+        }
+        return ans;
+    }
+};

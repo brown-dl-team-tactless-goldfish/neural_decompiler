@@ -1,0 +1,53 @@
+class Solution {
+public:
+    int n;
+    vector<int> colors {1,2,3};//1->red, 2->blue, 3->green
+    vector<vector<vector<vector<int>>>> f; // the memoization matrix     
+    int mod = 1e9+7;
+
+    int memo(int i, int a0,int b0, int c0){
+        /*
+        Returns the total number of ways to fill the ENITRE matrix such that 
+        rows 0...to...i-1 have already been filled and the row i-1 contains
+        colors: a0 | b0 | c0 in that order
+        */
+        
+        if(f[i][a0][b0][c0]!=-1) return f[i][a0][b0][c0];
+        
+        if(i==n) return f[i][a0][b0][c0]= +1;
+        
+        int ways = 0;
+        
+        for(int a : colors){ // the first color in i'th row is 'a' (i.e. [a | ? | ?] )
+            if(a0 == a) continue; // not possible to put a since above there is same color
+            
+            for(int b : colors){ // the second color in i'th row is 'b' (i.e. [a | b | ?] )
+                if(b==a || b== b0) continue; // not possible since same color in left and above 
+                
+                for(int c: colors){ // the third color in the i'th row is 'c' (i.e. [a | b | c] )
+                    if(c==b || c == c0) continue; // not possible since same color in left and above
+                    
+                    //POSSIBLE(VALID) COLORING OF i'th ROW [a | b | c]
+                    
+                    ways = (ways%mod + memo(i+1,a,b,c)%mod)%mod;
+                
+                }
+
+            }            
+        }
+        
+        return f[i][a0][b0][c0]= ways;
+
+    }
+    
+    
+    int numOfWays(int n) {
+        
+        this->n = n;
+        this->f.resize(n+1, vector<vector<vector<int>>>(4, vector<vector<int>>(4, vector<int>(4,-1))));
+        
+        // assume that -1'th row has been colored [0 | 0 | 0] so we can take all possible combinations for the 0'th row
+        return memo(0,0,0,0); 
+        
+    }
+};

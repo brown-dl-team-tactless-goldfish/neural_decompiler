@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int findShortestCycle(int n, vector<vector<int>>& edges) {
+        vector<vector<int>> adj(n);
+        for(auto& e: edges) {
+            adj[e[0]].push_back(e[1]);
+            adj[e[1]].push_back(e[0]);
+        }
+        int ans = n + 1, dis[n];
+        for (int i = 0; i < n; ++i) {
+            fill(dis, dis+n, -1);
+            dis[i] = 0;
+            queue<int> q{{i}};
+            while (!q.empty()) {
+                auto u = q.front(); q.pop();
+                for (auto v: adj[u]) {
+                    if (dis[v] == -1)
+                        dis[v] = dis[u] + 1, q.push(v);
+                    else if (dis[v] >= dis[u])
+                        ans = min(ans, dis[v] + dis[u] + 1);
+                }
+            }
+        }
+        return ans > n ? -1 : ans;
+    }
+};

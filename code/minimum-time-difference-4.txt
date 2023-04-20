@@ -1,0 +1,36 @@
+#define MIN(a,b) a<b?a:b
+#define MAXMINS 24*60
+
+int findMinDifference(char ** timePoints, int timePointsSize){
+   char* minutes = calloc(MAXMINS, sizeof(char));
+   int biggestMinute = -1;
+   int smallestMinute = MAXMINS;
+
+   /* Populate minutes */
+   for (int i = 0 ; i < timePointsSize ; i++) {
+       int index = ((timePoints[i][0]-'0')*10+(timePoints[i][1]-'0'))*60 + ((timePoints[i][3]-'0')*10 + (timePoints[i][4]-'0'));
+       if (minutes[index])
+           return 0;
+       minutes[index] = 1;
+       /* Record the min and max minutes*/
+       biggestMinute  = MAX(biggestMinute, index);
+       smallestMinute = MIN(smallestMinute, index);
+   }
+   
+   /* First note down the circular diff - from max towards min */
+   int circdiff = (smallestMinute + MAXMINS) - biggestMinute;
+   
+   /* Now walk the minutes and find the min distance */
+   int min = INT_MAX;
+   int prev = -1;
+   for (int minute = 1; minute < MAXMINS; minute++) {
+       if (minutes[minute]) {
+           if (prev != -1) {           
+               min = MIN(min, abs(minute - prev));
+           }
+           prev = minute;
+       }
+   }
+           
+   return MIN(min, circdiff);
+}

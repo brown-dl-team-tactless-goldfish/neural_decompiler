@@ -1,0 +1,67 @@
+public class CBTInserter {
+            private TreeNode _root = null,
+                             _current = null;
+            private Queue<TreeNode> _queue = new Queue<TreeNode>();
+
+            public CBTInserter(TreeNode root)
+            {
+                bool found = false;
+
+                _root = root;
+
+                _queue.Enqueue(root);
+
+                while (_queue.Count > 0)
+                {
+                    int count = _queue.Count;
+
+                    while (count > 0)
+                    {
+                        TreeNode node = _queue.Dequeue();
+
+                        if (node.left != null)
+                            _queue.Enqueue(node.left);
+
+                        if (node.right != null)
+                            _queue.Enqueue(node.right);
+
+                        if (node.left == null || node.right == null)
+                        {
+                            _current = node;
+                            found = true;
+
+                            break;
+                        }
+                        else
+                            count--;
+                    }
+
+                    if (found)
+                        break;
+                }
+            }
+
+            public int Insert(int v)
+            {
+                int val = _current.val;
+                TreeNode node = new TreeNode(v);
+
+                _queue.Enqueue(node);
+
+                if (_current.left == null)
+                    _current.left = node;
+                else if (_current.right == null)
+                {
+                    _current.right = node;
+
+                    _current = _queue.Dequeue();
+                }
+
+                return val;
+            }
+
+            public TreeNode Get_root()
+            {
+                return _root;
+            }
+}

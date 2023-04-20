@@ -1,0 +1,94 @@
+int NumberTreeNode(struct TreeNode* pstRoot)
+{
+    int nRet = 1;
+    if(pstRoot->val > 0)
+    {
+        nRet += log10(pstRoot->val);
+    }
+    else if(pstRoot->val < 0)
+    {
+        nRet += log10(-pstRoot->val) + 1;
+    }
+
+    if(pstRoot->left)
+    {
+        nRet += NumberTreeNode(pstRoot->left) + 2;
+    }
+    else if(pstRoot->right)
+    {
+        nRet += 2;
+    }
+
+    if(pstRoot->right) nRet += NumberTreeNode(pstRoot->right) + 2;
+
+    return nRet;
+}
+
+void Tree2strIner(struct TreeNode* pstRoot, char** ppcRet)
+{
+    if(pstRoot->val < 0)
+    {
+        **ppcRet = '-';
+        (*ppcRet)++;
+        pstRoot->val = -pstRoot->val;
+    }
+
+    char cLen = pstRoot->val? log10(pstRoot->val): 0;
+    (*ppcRet) += cLen;
+
+    if(pstRoot->val)
+    {
+        while(pstRoot->val)
+        {
+            **ppcRet = '0' + (pstRoot->val % 10);
+            (*ppcRet)--;
+            pstRoot->val /= 10;
+        }
+    }
+    else
+    {
+        **ppcRet = '0';
+        (*ppcRet)--;
+    }
+    (*ppcRet) += cLen + 2;
+
+    if(pstRoot->left)
+    {
+        **ppcRet = '(';
+        (*ppcRet)++;
+
+        Tree2strIner(pstRoot->left, ppcRet);
+
+        **ppcRet = ')';
+        (*ppcRet)++;
+    }
+    else if(pstRoot->right)
+    {
+        **ppcRet = '(';
+        (*ppcRet)++;
+
+        **ppcRet = ')';
+        (*ppcRet)++;
+    }
+
+    if(pstRoot->right)
+    {
+        **ppcRet = '(';
+        (*ppcRet)++;
+
+        Tree2strIner(pstRoot->right, ppcRet);
+
+        **ppcRet = ')';
+        (*ppcRet)++;
+    }
+}
+
+char * tree2str(struct TreeNode* root){
+    char* pcRet = (char*) malloc((NumberTreeNode(root)+1)*sizeof(char));
+    char* pcTmp = pcRet;
+
+    Tree2strIner(root, &pcTmp);
+    *pcTmp = '\0';
+
+    return pcRet;
+}

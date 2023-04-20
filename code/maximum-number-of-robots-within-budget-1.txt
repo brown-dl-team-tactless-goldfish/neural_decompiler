@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int maximumRobots(vector<int>& charge, vector<int>& run, long long budget) 
+    {
+        long long n = run.size();  
+        long long cost = 0, runSum = 0;  //cost = total cost , runSum = to keep sum of running cost 
+        long long i=0, j=0, ans = 0;   //ans will store max number of consecutive robots
+        
+        multiset<int> ms;  //stores elements in ascending order with repeated value allowed, b/c there can be two values equal to maximum value, even after removing one maximum value from window we may have another element with same value as previous max value
+        
+        while(j<n)  //sliding window
+        {
+            ms.insert(charge[j]);
+            runSum += run[j];
+            
+            cost = *rbegin(ms) + (j-i+1)*runSum;   //total cost = max of ChargeTime + window size * window running cost sum
+            
+            if(cost > budget)  //if cost > budget slide the window 
+            {
+                runSum -= run[i];
+                ms.erase(ms.find(charge[i]));  //if repeated then delete only at one position
+                i++;
+            }
+            else     //keep storing the max possible number of consecutive robots for cost <= budget
+                ans = max(ans, j-i+1);   
+            j++;
+        }
+        
+        return ans;
+    }
+};

@@ -1,0 +1,29 @@
+class Solution {
+private:
+    int dp[50001];
+public:
+    int solve(int i,vector<int> &arr){
+        int n = arr.size();
+        if(i >= n) return 0;
+        if(dp[i] != -1) return dp[i];
+        
+        int alice = 0,ans = -1e9;
+        
+        for(int k=i;k<min(i+3,n);k++){
+            alice += arr[k];
+            ans = max(ans,alice + min({solve(k+2,arr),solve(k+3,arr),solve(k+4,arr)}));
+        }
+        
+        return dp[i] = ans;
+    }
+    string stoneGameIII(vector<int>& arr) {
+        memset(dp,-1,sizeof dp);
+        
+        int alice = solve(0,arr);
+        int bob = accumulate(arr.begin(),arr.end(),0) - alice;
+        
+        if(alice == bob) return "Tie";
+        if(alice > bob) return "Alice";
+        return "Bob";
+    }
+};

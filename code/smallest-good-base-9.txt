@@ -1,0 +1,41 @@
+ #define ull unsigned long long int
+    #define ll long long int
+    ull work(ull n,ull mid,int len){
+        ull ans=1;
+        ull val=1;
+        ull UPLIMIT=(ULLONG_MAX/mid);
+        for(ull i=1;i<len;++i){
+            if(ans>UPLIMIT) return ULLONG_MAX;
+            ans=ans*mid;
+            val=val+ans;
+        }
+        return val;
+        
+    }
+    ll bs(ll l,ll r,int len,ull n){
+        if(l>r) return -1;
+        ll mid=l+(r-l)/2;
+        ull val=work(n,mid,len);
+        if(val==n) return mid;
+        // cout<<mid<<" "<<len<<"\n";
+        if(val<n)
+            return bs(mid+1,r,len,n);
+        return bs(l,mid-1,len,n);
+        
+    }
+    ull getIntEquiv(string s){
+        ull val=0;
+        for(int i=0;i<s.size();++i){
+            val=val*10ull+(ull)(s[i]-'0');
+        }
+        return val;
+    }
+    string smallestGoodBase(string n) {
+        ull intN=getIntEquiv(n);
+        for(int i=64;i>2;--i){
+            ull val=bs(2,1e9,i,intN);
+            if(val==-1) continue;
+            return to_string(val);
+        }
+        return to_string(intN-1);
+    }

@@ -1,0 +1,57 @@
+// upvote if solution was helpful
+class FoodRatings {
+public:
+    map<string, string>food; //food name, cuisine
+    map<string, int>foodRating; // food name, rating
+    map<string,map<int, set<string>, greater<int>>>m; // cuisine, rating, set of foods
+	
+	/*
+	For eg1:
+	food:
+	kim->kor
+	mis->jap
+	sus->jap
+	mou->gre
+	ram->jap
+	bul->kor
+	
+	foorRating:
+	kim->9
+	mis->12
+	sus->8
+	mou->15
+	ram->14
+	bul->7
+	
+	m:
+	gre-> 15->{mou}
+	jap-> 14->{ram}
+	      12->{mis}
+		  8->{sus}
+	kor-> 9->{kim}
+	      7->{bul}
+	*/
+    
+    FoodRatings(vector<string>& foods, vector<string>& cuisines, vector<int>& ratings) {
+        int n = foods.size();
+        for(int i = 0;i<n;i++) {
+            food[foods[i]] = cuisines[i];
+            foodRating[foods[i]] = ratings[i];
+            m[cuisines[i]][ratings[i]].insert(foods[i]);
+        }
+        
+    }
+    
+    void changeRating(string fod, int newRating) {
+        string c = food[fod]; // cuisine of food
+        int oldRating = foodRating[fod]; // old rating of food
+        m[c][oldRating].erase(fod); // remove food from cuisine and old rating
+        if(m[c][oldRating].empty()) m[c].erase(oldRating); // if old rating is empty, remove old rating
+        m[c][newRating].insert(fod); // add food to new rating
+        foodRating[fod] = newRating; // update food rating
+    }
+    
+    string highestRated(string cuisine) {
+        return *m[cuisine].begin()->second.begin();  // return highest rated food in cuisine
+    }
+};

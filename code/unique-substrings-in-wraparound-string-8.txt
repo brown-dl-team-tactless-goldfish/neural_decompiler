@@ -1,0 +1,23 @@
+public:
+    int findSubstringInWraproundString(string s) {
+        map<char, int> m;
+        // find max length of consecutive string starting with each letter
+        for (int i = 0, n = size(s); i < n; ++i) {
+            int j = i;
+            while (i + 1 < n && s[i + 1] - s[i] == 1 || s[i] == 'z' && s[i + 1] == 'a') {
+                ++i;
+            }
+            int l = i - j + 1;
+            m[s[j]] = max(m[s[j]], l);
+        }
+        // update maximums 
+        for (const auto[ch, l]: m) {
+            for (int i = 1; i <= min(26, l - 1); ++i) {
+                char c = (ch -'a' + i) % 26 + 'a';
+                m[c] = max(m[c], l - i);
+            }
+        }
+        // now ready to sum
+        return accumulate(cbegin(m), cend(m), 0, [](int sum, auto p) { return sum + p.second; });
+    }
+};

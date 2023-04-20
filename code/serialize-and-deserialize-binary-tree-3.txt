@@ -1,0 +1,91 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/** Encodes a tree to a single string. */
+char* serialize(struct TreeNode* root) {
+    char *result = NULL;
+    char *left = NULL, *right = NULL;
+    int len1,len2;
+    
+    if(root==NULL)
+    {
+        result = (char*)malloc(3);
+        result[0] = 'x'; result[1] = ','; result[2] = '\0';
+        return result;
+    }
+        
+    result = (char*)malloc(20);
+    sprintf(result,"%d,",root->val);
+    
+    left = serialize(root->left);
+    right = serialize(root->right);
+    len1 = strlen(left);
+    len2 = strlen(right);
+    
+    result = (char*)realloc(result,strlen(result)+len1+len2+1);
+    strcat(result,left);
+    strcat(result,right);
+    
+    free(left);
+    free(right);
+    
+    return result;
+}
+
+
+struct TreeNode* helper(char* data, int* pos)
+{
+    struct TreeNode* root = NULL;
+    int num = 0;
+    int negative = 0;
+    
+    if(data[*pos] == 'x')
+    {
+        return NULL;
+    }
+    
+    if(data[*pos] == '-')
+    {
+        negative = 1;
+        (*pos)++;
+    }
+    while(data[*pos] != ',')
+    {
+        num = num*10 + data[*pos] - '0';
+        (*pos)++;
+    }
+    if(negative)
+        num = -num;
+    (*pos)++; // skip ','
+    
+    root = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    root->val = num;
+    
+    root->left = helper(data, pos);
+    // skip left
+    while(data[*pos] != ',')
+    {
+        (*pos)++;
+    }
+    (*pos)++; // skip ','
+    root->right = helper(data, pos);
+    
+    return root;
+}
+
+/** Decodes your encoded data to tree. */
+struct TreeNode* deserialize(char* data) {
+    struct TreeNode* root = NULL;
+    int pos = 0;
+    
+    return helper(data,&pos);
+}
+
+// Your functions will be called as such:
+// char* data = serialize(root);
+// deserialize(data);

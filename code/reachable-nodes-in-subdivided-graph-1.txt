@@ -1,0 +1,22 @@
+int reachableNodes(vector<vector<int>>& edges, int M, int N) {
+    int moves[N] = { M }, visited[N] = { true };
+    queue<int> q({ 0 });
+    vector<vector<pair<int, int>>> g(N, vector<pair<int, int>>());
+    for (auto e : edges)
+        g[e[0]].push_back({ e[1], e[2] + 1 }), g[e[1]].push_back({ e[0], e[2] + 1 });
+
+    while (!q.empty()) {
+        for (auto edge : g[q.front()]) {
+            int i = q.front(), j = edge.first, distance = edge.second;
+            if (moves[i] >= distance && moves[j] <= moves[i] - distance) {
+                moves[j] = moves[i] - distance;
+                visited[j] = true;
+                q.push(j);
+            }
+        }
+        q.pop();
+    }
+
+    return count(&visited[0], &visited[N], true) + accumulate(begin(edges), end(edges), 0,
+        [&](int s, vector<int> &e) {return s + min(moves[e[0]] + moves[e[1]], e[2]); });
+}

@@ -1,0 +1,95 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+
+char * validIPv4(char * ipv4)
+{
+    int i = 0;
+    int len = strlen(ipv4);
+    char seg[4][16] = {{0}}; // use 16 to avoid overflow
+
+    if (len > 15 || len < 7) {
+        return NULL;
+    }
+
+    if (sscanf(ipv4, "%[^.].%[^.].%[^.].%s", seg[0], seg[1], seg[2], seg[3]) < 4) {
+        return NULL;
+    }
+
+    for (; i < 4; i++) {
+        int seg_len = strlen(seg[i]);
+        int j = 0;
+        int seg_int;
+        if (seg_len < 1 || seg_len > 3) { // .. or .1234.
+            return NULL;
+        }
+        while(j < seg_len) {
+            if (seg[i][j] < '0' || seg[i][j] > '9') { // x.1a.y
+                return NULL;
+            }
+            j++;
+        }
+        if ((seg[i][0] == '0' && seg_len > 1)) { // x.011.y
+            return NULL;
+        }
+
+        seg_int = atoi(seg[i]);
+        if (seg_int > 255) {
+            return NULL;
+        }
+    }
+
+    return "IPv4";
+}
+
+char *validIPv6(char * ipv6)
+{
+    int i = 0;
+    int len = strlen(ipv6);
+    char seg[8][40] = {{0}}; // use 48 to avoid overflow
+
+    if (len > 39 || len < 15) {
+        return NULL;
+    }
+
+    printf("ipv6 validating\n");
+    if (sscanf(ipv6, "%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%[^:]:%s", seg[0], seg[1], seg[2], seg[3], seg[4], seg[5], seg[6], seg[7]) < 8) {
+        return NULL;
+    }
+
+    for (; i < 8; i++) {
+        int seg_len = strlen(seg[i]);
+        int j = 0;
+        int seg_int;
+        if (seg_len < 1 || seg_len > 4) {  // :: or :ab123.
+            return NULL;
+        }
+        while(j < seg_len) {
+            if ((seg[i][j] < '0' || seg[i][j] > '9') && 
+                (seg[i][j] < 'a' || seg[i][j] > 'f') && 
+                (seg[i][j] < 'A' || seg[i][j] > 'F')) { // x:gg:y
+                return NULL;
+            }
+            j++;
+        }
+    }
+
+    return "IPv6";
+}
+
+
+char * validIPAddress(char * queryIP){
+    char * ret = validIPv4(queryIP);
+    if (ret) {
+        return ret;
+    }
+
+    ret = validIPv6(queryIP);
+    if (ret) {
+        return ret;
+    }
+
+    return "Neither";
+
+}

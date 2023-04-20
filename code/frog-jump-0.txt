@@ -1,0 +1,56 @@
+bool DFS(int* stones, int stonesSize, int t, long long** hash, int N) {
+  if (stonesSize == 1) return true;
+  int p = -1, c = -1, n = -1;
+  long long val = (stones[0] << 10) + t ;
+  long long d = val;  
+  while(1){      
+      if(hash[d%N] == NULL)
+          break;
+      else if(hash[d%N][0] == val)
+          return false;
+      else
+          d++;
+  }
+    
+  for (int i = 1; i < stonesSize; i++) {
+    if (stones[i] == stones[0] + t + 1) n = i;
+    if (stones[i] == stones[0] + t ) c = i;
+    if (stones[i] == stones[0] + t - 1) p = i;
+    if (stones[i] > stones[0] + t + 1) break;
+  }
+
+  if (n != -1 && DFS(stones + n, stonesSize - n, t + 1, hash, N)) 
+      return true;
+  if (c != -1 && DFS(stones + c, stonesSize - c, t, hash, N)) 
+      return true;
+  if (p != -1 && DFS(stones + p, stonesSize - p, t - 1, hash, N)) 
+      return true;
+  d = val;
+  while(1){      
+      if(hash[d%N] == NULL){
+          hash[d%N] = malloc(sizeof(long long));
+          hash[d%N][0] = val;
+          break;
+      }
+      else
+          d++;
+  }
+  return false;
+}
+
+bool canCross(int* stones, int stonesSize) {
+  if (stones[0] != 0 || stones[1] != 1) 
+      return false;
+  int N = 100 * stonesSize;
+  long long** hash = calloc( N , sizeof(long long*));
+    
+  bool ans =  DFS(stones + 1, stonesSize - 1, 1, hash, N);
+  //free memory
+  for(int i = 0; i < N; i++){
+      if(hash[i] == NULL)
+         continue;
+      free(hash[i]);
+  }
+  free(hash);
+  return ans;
+}

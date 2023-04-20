@@ -1,0 +1,35 @@
+class Solution {
+public:
+    vector<int> smallestRange(vector<vector<int>>& nums) {
+        priority_queue<pair<int, pair<int, int>>, vector<pair<int, pair<int, int>>>, greater<pair<int, pair<int, int>>>> pqmn;
+        priority_queue<pair<int, pair<int, int>>> pqmx;
+        for(int i = 0; i < nums.size(); i++)
+        {
+            pqmn.push({nums[i][0],{i,0}});
+            pqmx.push({nums[i][0],{i,0}});
+        }
+        int lft, rht, diff = INT_MAX;
+        while(!pqmn.empty())
+        {
+            pair<int, pair<int, int>> mx = pqmx.top();
+            pair<int, pair<int, int>> mn = pqmn.top();
+            pqmn.pop();
+            if(diff > mx.first-mn.first)
+            {
+                diff = mx.first-mn.first;
+                lft = mn.first;
+                rht = mx.first;
+            }
+            if(mn.second.second == nums[mn.second.first].size()-1)
+            {
+                return {lft, rht};
+            }
+            else
+            {
+                pqmx.push({nums[mn.second.first][mn.second.second+1],{mn.second.first, mn.second.second+1}});
+                pqmn.push({nums[mn.second.first][mn.second.second+1],{mn.second.first, mn.second.second+1}});
+            }
+        }
+        return {lft, rht};
+    }
+};

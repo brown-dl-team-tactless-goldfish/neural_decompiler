@@ -1,0 +1,26 @@
+class Solution:
+    def minimumWhiteTiles(self, floor: str, numCarpets: int, carpetLen: int) -> int:
+        white = sum(c == '1' for c in floor)
+        #dp[i] -> the maximum white tiles can be covered at position i
+        dp = [0]*len(floor)
+        #cover[i] -> the number of tiles can be covered if put a carpet at position i
+        cover = []
+        cnt = 0
+        #calculate cover[i] (prefix)
+        for i in range(len(floor)):
+            if floor[i] == '1':
+                cnt += 1
+            if i >= carpetLen and floor[i-carpetLen] == '1':
+                cnt -= 1
+            cover.append(cnt)
+        for i in range(numCarpets):
+            max_cover = 0
+            dp2 = []
+            for j in range(len(floor)):
+                #since (j-carpetLen+1)th ~ (j)th tiles can be cover if a carpet is put a postion j , 
+                #we only need to find the maximum tiles can be cover before positon (j-carpetLen) at the last round
+                if j >= carpetLen:
+                    max_cover = max(max_cover,dp[j-carpetLen])
+                dp2.append(cover[j] + max_cover)
+            dp = dp2 
+        return white - max(dp)

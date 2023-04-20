@@ -1,0 +1,50 @@
+public class Solution
+{
+    private readonly int Size = 10000;
+
+    void update(int[] T, int pos)
+    {
+        pos += Size;
+        int n = T.Length / 2;
+        pos += n;
+        T[pos]++;
+        while (pos > 1)
+        {
+            pos /= 2;
+            T[pos] = T[2 * pos] + T[2 * pos + 1];
+        }
+    }
+
+    int query(int[] T, int left, int right)
+    {
+        left += Size;
+        right += Size;
+        int n = T.Length / 2;
+        left += n;
+        right += n;
+        int result = 0;
+        while (left < right)
+        {
+            if (left % 2 == 1) result += T[left++];
+            if (right % 2 == 1) result += T[--right];
+            left /= 2;
+            right /= 2;
+        }
+        return result;
+    }
+    
+    public IList<int> CountSmaller(int[] nums)
+    {
+        int length = nums.Length, min = int.MaxValue;
+        int[] result = new int[length];
+        int[] T = new int[4 * Size + 2];
+        for (int i = length - 1; i >= 0; i--)
+        {
+            int current = nums[i];
+            update(T, current);
+            min = Math.Min(min, current);
+            result[i] = query(T, min, current);
+        }
+        return result.ToList();
+    }
+}

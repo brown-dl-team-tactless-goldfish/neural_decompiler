@@ -1,0 +1,38 @@
+public class Solution {
+    public int MaxEvents(int[][] events) {
+        
+        Array.Sort(events, (a,b) => a[0]- b[0]);
+        int cnt = 0, currDay = 1, eventIdx = 0;
+        SortedDictionary<int,int> dic = new SortedDictionary<int,int>();
+        
+        while(eventIdx < events.Length || dic.Count > 0)
+        {
+            while(dic.Count > 0 && dic.First().Key < currDay)
+                dic.Remove(dic.First().Key);
+            
+            while(eventIdx < events.Length && events[eventIdx][0] <= currDay)
+            {
+                if(dic.ContainsKey(events[eventIdx][1]))
+                    dic[events[eventIdx][1]]++;
+                else
+                    dic.Add(events[eventIdx][1],1);
+                
+                eventIdx++;
+            }
+            
+            if(dic.Count > 0)
+            {
+                var min = dic.First();
+                if(dic[min.Key] == 1)
+                    dic.Remove(min.Key);
+                else
+                    dic[min.Key]--;
+                cnt++;
+            }
+                     
+            currDay++;
+        }
+        
+        return cnt;
+    }
+}

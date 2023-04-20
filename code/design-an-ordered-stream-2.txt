@@ -1,0 +1,44 @@
+typedef struct {
+	char **value;
+	int count;
+	int curr;
+} OrderedStream;
+
+OrderedStream* orderedStreamCreate(int n)
+{
+	OrderedStream *stream = (OrderedStream *)malloc(sizeof(OrderedStream));
+	if (stream) {
+		stream->curr = 0;
+		stream->count = n;
+		stream->value = (char **)malloc(sizeof(char *) * n);
+		if (stream->value) {
+			memset(stream->value, 0, sizeof(char *) * n);
+		} else {
+			free(stream);
+			stream = NULL;
+		}
+	}
+	return stream;
+}
+
+char** orderedStreamInsert(OrderedStream* obj, int id, char* value, int* retSize)
+{
+	int i = obj->curr;
+	char **ret = obj->value + obj->curr;
+	*(obj->value + (id - 1)) = value;
+	*retSize = 0;
+	while (i < obj->count && *(obj->value + i)) {
+		(*retSize)++;
+		i++;
+	}
+	obj->curr = (i >= obj->count) ? --i : i;
+	return ret;
+}
+
+void orderedStreamFree(OrderedStream* obj)
+{
+	if (obj) {
+		free(obj->value);
+		free(obj);
+	}
+}

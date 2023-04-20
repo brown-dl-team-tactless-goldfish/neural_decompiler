@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int minDays(int n)
+    {
+        return bfs(n);
+    }
+    
+private:
+    int bfs(const int n)
+    {
+        deque q = {n};
+        auto days = 0;
+        set<int> visited;
+        
+        while (!q.empty())
+        {
+            const auto size = q.size();
+            for (size_t i = 0; i != size; ++i)
+            {
+                const auto num = q[i];
+                if (q[i] == 1)
+                    return days + 1;
+                
+				// If insert operation returns false then the value was already inserted before.
+                if (!visited.insert(num).second)
+                    continue;
+                    
+                q.push_back(num - 1);
+                if (num % 2 == 0)
+                    q.push_back(num / 2);
+                if (num % 3 == 0)
+                    q.push_back(num / 3);
+            }
+            
+            q.erase(q.begin(), q.begin() + size);
+            ++days;
+        }
+        
+        assert(false);
+        return -1;
+    }
+};

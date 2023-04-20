@@ -1,0 +1,54 @@
+int heap[100000];
+int heapcount;
+void insert(int val){
+    int now = heapcount;
+    heap[now] = val;
+    heapcount++;
+    while(now>=1){
+        int p = (now-1)/2;
+        if(heap[now]<heap[p]){
+            int temp = heap[now];
+            heap[now] = heap[p];
+            heap[p] = temp;
+            now=p;
+        }else{
+            break;
+        }
+    }
+}
+int pop(){
+    int ret = heap[0];
+    heap[0] = heap[--heapcount];
+    int now=0;
+    while((now*2+1)<heapcount){
+        int temp, next_pos=now;
+        if(heap[now] > heap[now*2+1]){
+            next_pos = now*2+1;
+        }
+        if((now*2+2) < heapcount && heap[next_pos] > heap[now*2+2]){
+            next_pos = now*2+2;
+        }
+        if(now == next_pos)break;
+        temp = heap[now];
+        heap[now] = heap[next_pos];
+        heap[next_pos] = temp;
+        now = next_pos;
+    }
+    return ret;
+}
+int furthestBuilding(int* heights, int n, int bricks, int ladders){
+    int count=0;
+    heapcount=0;
+    for(int i=0;i<n-1;i++){
+        if(heights[i]>heights[i+1])continue;
+        insert(heights[i+1]-heights[i]);
+        if(count < ladders){
+            count++;
+        }else{
+            int min = pop();
+            if(min > bricks)return i;
+            bricks-=min;
+        }
+    }
+    return n-1;
+}

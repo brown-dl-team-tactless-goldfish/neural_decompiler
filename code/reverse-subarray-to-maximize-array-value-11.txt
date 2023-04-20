@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int maxValueAfterReverse(vector<int>& nums) {
+        int nsize = nums.size();
+        int min_max = INT_MAX, max_min = 0;
+        int max_prefix = 0, max_suffix = 0;
+        int res = 0;
+        for(int i=0; i<nsize-1; i++) res += abs(nums[i]-nums[i+1]);
+        
+        for(int i=0; i<nsize-1; i++){
+            min_max = min(max(nums[i], nums[i+1]), min_max);
+            max_min = max(min(nums[i], nums[i+1]), max_min);
+            max_prefix = max(abs(nums[0]-nums[i+1])-abs(nums[i]-nums[i+1]), max_prefix);
+            max_suffix = max(abs(nums[i]-nums[nsize-1])-abs(nums[i]-nums[i+1]), max_suffix);
+        }
+ 
+        return max(2*(max_min-min_max), max(max_prefix, max_suffix)) + res;
+    }
+};

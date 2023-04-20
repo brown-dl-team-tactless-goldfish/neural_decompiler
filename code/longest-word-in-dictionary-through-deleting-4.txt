@@ -1,0 +1,27 @@
+char* findLongestWord(char* s, char** d, int dSize)
+{
+    if (!(*s) || dSize == 0)
+        return "";
+
+    int len[dSize], i, lenmax;
+    char* result;
+
+    memset(len, 0, sizeof(len));
+    lenmax = 0;
+    result = "";
+
+    for (; *s != '\0'; s++)
+        for (i = 0; i < dSize; i++)
+            if (*d[i] == *s) {
+                d[i]++;
+                len[i]++;
+            }
+
+    for (i = 0; i < dSize; i++)
+        if (*d[i] == '\0' && (*result == '\0' || len[i] > lenmax || (len[i] == lenmax && strcmp(result, d[i] - len[i]) > 0))) {
+            lenmax = len[i];
+            result = d[i] - len[i];
+        }
+
+    return result;
+}

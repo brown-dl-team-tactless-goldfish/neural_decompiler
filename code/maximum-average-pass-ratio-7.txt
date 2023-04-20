@@ -1,0 +1,31 @@
+// OJ: https://leetcode.com/problems/maximum-average-pass-ratio/
+// Author: github.com/lzl124631x
+// Time: O((E + C)logC)
+// Space: O(C)
+class Solution {
+    double dist(pair<int, int> &p) {
+        return (double)(p.first + 1) / (p.second + 1) - (double)p.first / p.second;
+    }
+public:
+    double maxAverageRatio(vector<vector<int>>& C, int E) {
+        int ones = 0;
+        auto cmp = [&](auto &a, auto &b) { return dist(a) < dist(b); };
+        priority_queue<pair<int, int>, vector<pair<int, int>>, decltype(cmp)> pq(cmp);
+        for (auto &c : C) {
+            if (c[0] == c[1]) ++ones;
+            else pq.emplace(c[0], c[1]);
+        }
+        for (int i = 0; i < E && pq.size(); ++i) {
+            auto [a, b] = pq.top();
+            pq.pop();
+            pq.emplace(a + 1, b + 1);
+        }
+        double total = 0;
+        while (pq.size()) {
+            auto [a, b] = pq.top();
+            pq.pop();
+            total += (double)a / b;
+        }
+        return (total + ones) / C.size();
+    }
+};

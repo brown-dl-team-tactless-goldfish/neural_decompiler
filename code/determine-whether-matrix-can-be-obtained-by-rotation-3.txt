@@ -1,0 +1,50 @@
+class Solution {
+    public boolean findRotation(int[][] mat, int[][] target) {
+	    //rotation can only be done 3. if we do 4th rotation then will get orginal matrix. 
+        for(int rotation=0; rotation<4; rotation++){
+            if(checkEqual(mat, target)){
+                return true;
+            }else{
+                rotate(mat);
+            }
+        }
+        return false;
+    }
+    
+    public boolean checkEqual(int[][] matrix, int[][]target){
+        for(int i=0; i<matrix.length; i++){
+            for(int j=0; j<matrix[i].length; j++){
+                if(matrix[i][j]!=target[i][j]){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    public void rotate(int[][] matrix){
+        
+        //rotate=transpose+fip
+        //to get transpose of matrix
+        for(int i=0; i<matrix.length; i++){
+            for(int j=0; j<i; j++){
+                //j<i only works in square matrix to change numbers above and below the diagonal
+                int temp = matrix[i][j];
+                matrix[i][j]=matrix[j][i];
+                matrix[j][i]=temp;
+            }
+        }
+        
+        //to flip the matrix
+        int start=0, end=matrix.length-1;
+        while(start<=end){
+            for(int row=0; row<matrix.length; row++){
+                int temp=matrix[row][start];
+                matrix[row][start]=matrix[row][end];
+                matrix[row][end]=temp;
+            }
+            start++;
+            end--;
+        }
+    }
+}

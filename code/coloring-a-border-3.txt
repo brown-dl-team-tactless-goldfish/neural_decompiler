@@ -1,0 +1,38 @@
+class Solution {
+    int r = 0, c = 0;
+    vector<vector<bool>>visited;
+    vector<vector<int>>res;
+    
+    bool dfs(vector<vector<int>>& grid, int i, int j, int color, int color0) {
+        if (i < 0 || j < 0 || i >= r || j >= c || grid[i][j] != color0)
+            return true;
+
+        if (visited[i][j])
+            return grid[i][j] != color0;
+        
+        visited[i][j] = true;
+        if (dfs(grid, i+1, j, color, color0))
+            res[i][j] = color;
+        if (dfs(grid, i-1, j, color, color0))
+            res[i][j] = color;
+        if (dfs(grid, i, j+1, color, color0))
+            res[i][j] = color;
+        if (dfs(grid, i, j-1, color, color0))
+            res[i][j] = color;
+
+        return false;
+    }
+public:
+    vector<vector<int>> colorBorder(vector<vector<int>>& grid, int r0, int c0, int color) {
+        
+        r = grid.size();
+        c = grid[0].size();
+        
+        int color0 = grid[r0][c0];
+        visited.resize(r, vector<bool>(c, false));
+        res = grid;
+        
+        dfs(grid, r0, c0, color, color0);
+        return res;
+    }
+};

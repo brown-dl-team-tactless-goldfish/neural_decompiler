@@ -1,0 +1,24 @@
+int convert(char* ev){
+    int len = strlen(ev);
+    int time = 0;
+    for(int i = 0; i < len; i++){
+        if(i!=2){
+            time *= 10;
+            time += (ev[i]-'0');
+        }
+    }
+    return time;
+}
+
+bool haveConflict(char ** event1, int event1Size, char ** event2, int event2Size){
+    int** time = (int**)calloc(2, sizeof(int*));
+    for(int i = 0; i < 2; i++)
+        time[i] = (int*)calloc(2, sizeof(int));
+    time[0][0] = convert(event1[0]);
+    time[0][1] = convert(event1[1]);
+    time[1][0] = convert(event2[0]);
+    time[1][1] = convert(event2[1]);
+    if(time[1][0] > time[0][1] || time[0][0] > time[1][1])
+        return false;
+    return true;
+}

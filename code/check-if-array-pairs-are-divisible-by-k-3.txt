@@ -1,0 +1,13 @@
+public bool CanArrange(int[] arr, int k) {
+	for (var i = 0; i < arr.Length; i++)
+		arr[i] = Mod(arr[i], k);
+
+	var freqs = arr.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+	return freqs.Keys.All(
+		key => key == 0
+			? freqs[0] % 2 == 0
+			: freqs.ContainsKey(k - key) && freqs[key] == freqs[k - key]
+	);
+
+	static int Mod(int x, int m) => (x % m + m) % m;
+}

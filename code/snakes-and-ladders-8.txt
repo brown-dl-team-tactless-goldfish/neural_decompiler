@@ -1,0 +1,34 @@
+class Solution {
+public:
+    int snakesAndLadders(vector<vector<int>>& board) {
+        int ans = 0, n = size(board), goal = n * n;
+        queue<int> q;
+        q.push(1);
+        board[n-1][0] = 0;
+        while (!q.empty()) {
+            int sz = size(q);
+            while (sz--) {
+                int i = q.front(); q.pop();
+                if (i == n*n)
+                    return ans;
+                int nxt = i;
+                for (int j = i+1; j <= min(i+6, goal); j++) {
+                    int r = (j - 1) / n;
+                    int c = (j - 1) % n;
+                    int &v = board[n-1-r][r&1?n-1-c:c];
+                    if (v) {
+                        if (v == -1)
+                            nxt = j;
+                        else
+                            q.push(v);
+                    }
+                    v = 0;
+                }
+                if (nxt > i)
+                    q.push(nxt);
+            }
+            ans++;
+        }
+        return -1;
+    }
+};

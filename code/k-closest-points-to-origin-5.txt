@@ -1,0 +1,40 @@
+int cmpfunc(const int** a, const int**b){
+    return a[0][1]-b[0][1];
+}
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** kClosest(int** points, int pointsSize, int* pointsColSize, int K, int* returnSize, int** returnColumnSizes){
+    //create array array
+    if(!points || !pointsSize || !pointsColSize)
+        return NULL;
+    int** ret = malloc(sizeof(int*)*K);
+    int x = pointsSize;
+    int y = 2;
+
+    int i;
+    
+    int** temp = malloc(sizeof(int*)*pointsSize);
+    for(i=0;i<pointsSize;i++){
+        temp[i] = malloc(sizeof(int)*2);
+        temp[i][0] = i;
+        temp[i][1] = points[i][0]*points[i][0] + points[i][1]*points[i][1];
+    }
+    
+    qsort(temp,pointsSize,sizeof(const int*),cmpfunc);
+
+    *returnSize = K;
+    *returnColumnSizes = malloc(sizeof(int)*K);
+    for(i=0;i<K;i++){
+        (*returnColumnSizes)[i] = 2;
+        int j = temp[i][0];
+        ret[i] = malloc(sizeof(int)*2);
+        ret[i][0] = points[j][0];
+        ret[i][1] = points[j][1];        
+    }
+    
+    return ret;
+}

@@ -1,0 +1,43 @@
+#define MINUTE_RANGE  24 * 60
+
+int findMinDifference(char ** timePoints, int timePointsSize){
+    bool *timeInMinutes = calloc(sizeof(bool), MINUTE_RANGE);
+    char *tok, *rest = NULL;
+    int hrs, mins, result = INT_MAX, first = -1, prev = -1, cur = -1;
+    
+    // Convert and flag all the timePoints
+    for(int i = 0; i < timePointsSize; i++) {
+        // extract HH and MM substrings and convert it into minutes
+        tok = strtok_r(timePoints[i], ":", &rest);
+        hrs = atoi(tok);
+        // printf("Hours: %d    ", hrs);
+        tok = strtok_r(NULL, ":", &rest);
+        mins = atoi(tok);
+        
+        // If already converted and flagged in previous timePoints
+        // then, the result is zero
+        if(timeInMinutes[hrs * 60 + mins]) return 0;
+        
+        timeInMinutes[hrs * 60 + mins] = true;
+    }
+        
+    // Find the minimum difference time out of flagged timePoints
+    // Note: the timeInMinutes[] acts as a bucket and the flagged
+    // timePoints are sorted as we convert and flag in minutes
+    for(int i = 0; i < MINUTE_RANGE; i++) {
+        if(timeInMinutes[i]) {
+            if(prev == -1) {
+                first = i;
+                prev = i;
+            } else {
+                cur = i;
+                result = fmin(result, cur - prev);
+                prev = cur;
+            }
+        }
+    }
+                
+    // Edge case: we have to compare the last timePoint with first one
+    result = fmin(result, 1440 - cur + first);
+    return result;
+}

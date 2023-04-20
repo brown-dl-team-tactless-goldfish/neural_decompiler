@@ -1,0 +1,42 @@
+void scan(char** board, int rowSize, int colSize, int last, int row, int col) {
+    
+    if (board[row][col] == 'O') {
+        board[row][col] = 'T';
+        if (last!=1 && row<rowSize-2) 
+            scan(board, rowSize, colSize, 2, row+1, col);
+        if (last!=2 && row>1)
+            scan(board, rowSize, colSize, 1,row-1, col);
+        if (last!=3 && col<colSize-2)
+            scan(board, rowSize, colSize, 4, row, col+1);
+        if (last!=4 && col>1)
+            scan(board, rowSize, colSize, 3, row, col-1);
+    }
+}
+
+
+void solve(char** board, int boardRowSize, int boardColSize) {
+
+    if (boardRowSize<3) return;
+    if (boardColSize<3) return;
+    
+    for (int i=1;i<boardRowSize-1;i++) {
+        if (board[i][0]=='O')
+            scan(board, boardRowSize, boardColSize, 4, i, 1);
+        if (board[i][boardColSize-1]=='O')
+            scan(board, boardRowSize, boardColSize, 3, i, boardColSize-2);
+    }
+    
+    for(int j=1;j<boardColSize-1;j++) {
+        if (board[0][j]=='O')
+            scan(board, boardRowSize, boardColSize, 2, 1, j);
+        if (board[boardRowSize-1][j]=='O')
+            scan(board, boardRowSize, boardColSize, 1, boardRowSize-2, j);
+    }
+    
+    for (int i=1;i<boardRowSize-1;i++)
+        for (int j=1;j<boardColSize-1;j++)
+            if (board[i][j] == 'O')
+                board[i][j] = 'X';
+            else if (board[i][j] == 'T')
+                board[i][j] = 'O';
+}

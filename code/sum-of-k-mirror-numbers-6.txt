@@ -1,0 +1,59 @@
+class Solution {
+public:
+    long long kMirror(int k, int n) {
+        int64_t sum = 0;
+        int64_t curr_half = 0;
+        int digits = 1;
+        int count = 0;
+        int base_to_iter = 10;
+        int base_to_check = k;
+        while (count < n) {
+            curr_half++;
+            if (Digits(curr_half, base_to_iter) > (digits + 1) / 2) {
+                digits++;
+                curr_half = pow(base_to_iter, (digits - 1) / 2);
+            }
+            if (auto num = Generate(curr_half, digits % 2 == 0, base_to_iter);
+                IsKMirror(num, base_to_check)) {
+                sum += num;
+                count++;
+            }
+        }
+        return sum;
+    }
+private:
+    int Digits(int n, int k) {
+        int c = 0;
+        while (n) {
+            n /= k;
+            c++;
+        }
+        return c;
+    }
+    int64_t Generate(int64_t half, bool even, int k) {
+        int64_t r = half;
+        if (!even) {
+            half /= k;
+        }
+        while (half) {
+            r = r * k + half % k;
+            half /= k;
+        }
+        return r;
+    }
+    bool IsKMirror(int64_t n, int k) {
+        int digits[100]; // Use this instead of a vector
+        int size = 0;
+        while (n) {
+            digits[size++] = n % k;
+            n /= k;
+        }
+        int i = 0, j = size - 1;
+        for (i = 0; i < j; ++i, --j) {
+            if (digits[i] != digits[j]) {
+                return false;
+            }
+        }
+        return true;
+    }
+};

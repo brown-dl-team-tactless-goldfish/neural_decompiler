@@ -1,0 +1,66 @@
+class Node{
+public:
+    vector<Node*> next;
+    bool isWord;
+    Node(){
+        isWord = false;
+        next = vector<Node*>(26, NULL);
+    }
+};
+
+class Trie{
+private:
+    Node* root;
+public:
+    Trie(){
+        root = new Node();
+    }
+    void insert(string s){
+        Node* cur = root;
+        for(char c: s){
+            if(cur->next[c - 'a'] == NULL)
+                cur->next[c - 'a'] = new Node();
+            cur = cur->next[c - 'a'];
+        }
+        cur->isWord = true;
+    }
+    
+    bool find(string s, int cur_idx, int change = 0, Node* cur = NULL) {
+        if (!cur) cur = root;
+        if (cur_idx == s.size()) return cur->isWord && change == 1;
+        Node* next = cur->next[s[cur_idx] - 'a'];
+        if (change == 1) {
+            if (!next) return false;
+            else return find(s, cur_idx + 1, 1, next);
+        } else {
+            if (next && find(s, cur_idx + 1, 0, next)) return true;
+            for (int i = 0; i < 26; i++) {
+                if (s[cur_idx] == 'a' + i) continue;
+                if (cur->next[i] && find(s, cur_idx + 1, 1, cur->next[i])) return true;
+            }
+            return false;
+        }
+    }
+};
+
+class MagicDictionary {
+public:
+    /** Initialize your data structure here. */
+    MagicDictionary() {
+        trie = new Trie();
+    }
+    
+    /** Build a dictionary through a list of words */
+    void buildDict(vector<string> dict) {
+        for(string s: dict){
+            trie->insert(s);
+        }
+    }
+    
+    /** Returns if there is any word in the trie that equals to the given word after modifying exactly one character */
+    bool search(string word) {
+        return trie->find(word, 0);
+    }
+private:
+    Trie* trie;
+};

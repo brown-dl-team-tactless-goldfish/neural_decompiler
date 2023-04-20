@@ -1,0 +1,39 @@
+class Solution {
+public:
+    using ll = long long;
+    ll maxPower(vector<int>& S, int r, int k) {
+        auto check = [&](int a, ll m) {
+            ll sum = 0;
+            unordered_map<int, ll> mp;
+            queue<int> q;
+            for(int i = 0; i < S.size()+r; i++) {
+                if(i < S.size()) sum += S[i];
+                if(i >= r && sum < m) {
+                    ll diff = m - sum;
+                    if(diff > a) return false;
+                    a -= diff;
+                    sum += diff;
+                    q.push(i);
+                    mp[i] = diff;
+                }
+                if(i >= 2*r) {
+                    int p = i - 2*r;
+                    sum -= S[p];
+                    if(!q.empty() && q.front() <= p) {
+                        sum -= mp[q.front()];
+                        q.pop();
+                    }
+                }
+            }
+            return true;
+        };
+
+        ll l = 0, h = 1e11;
+        while(l < h) {
+            ll m = l + (h-l+1)/2;
+            if(check(k, m)) l = m;
+            else h = m-1;
+        }
+        return l;
+    }
+};

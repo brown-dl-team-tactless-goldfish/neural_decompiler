@@ -1,0 +1,39 @@
+int* numMovesStones(int a, int b, int c, int* returnSize){
+    // printf("%d %d %d\n",a,b,c);
+    // int temp;
+	// Sort. Do whatever sort you like.
+    if(a > b){
+        a ^= b;
+        b ^= a;
+        a ^= b;
+    }
+    if(a > c){
+        a ^= c;
+        c ^= a;
+        a ^= c;
+    }
+    if(b > c){
+        b ^= c;
+        c ^= b;
+        b ^= c;
+    }
+    // printf("%d %d %d\n",a,b,c);
+    
+    *returnSize = 2;
+    int * returnArray  = malloc(sizeof(int) * *returnSize);
+    returnArray[0] = 0;
+    returnArray[1] = 0;
+    
+    //case: xxx
+    if(a + 1 == b && a + 2 == c)
+        returnArray[0] = 0;
+    //cases : xx   x | x   xx | x     x_x | x_x    x;
+    else if((a + 1 == b && c - a > 2) | (c - 1 == b && c - a > 2) | (c - b == 2) | (b - a == 2))
+        returnArray[0] = 1;
+    else
+        returnArray[0] = 2;
+    // Just move one step at a time. Count c->b & a -> b.
+    returnArray[1] = (b - a - 1) + (c - b - 1);
+    
+    return returnArray;
+}

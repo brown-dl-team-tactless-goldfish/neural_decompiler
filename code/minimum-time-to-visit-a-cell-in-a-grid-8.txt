@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int minimumTime(vector<vector<int>>& grid) {
+        if(grid[0][1] > 1 && grid[1][0] > 1) return -1;
+        const int n = grid.size(), m = grid[0].size();
+        const vector<pair<int,int>> dirs = {{0,1},{0,-1},{-1,0},{1,0}};
+        auto vv = vector(n, vector(m, -1));
+        vv[0][0] = 0;
+        priority_queue<tuple<int,int,int>> q; //-time, i, j
+        q.emplace(0,0,0);
+        while(1){
+            auto [t, i, j] = q.top(); q.pop();
+            for(auto [di, dj] : dirs){
+                int x = i+di, y = j+dj;
+                if(x<0 || x>=n || y<0 || y>=m || vv[x][y] > -1) continue;
+                vv[x][y] = nextT(-t, grid[x][y]);
+                if(x == n-1 && y== m-1) return vv[x][y] ;
+                q.emplace(-vv[x][y], x, y);
+            }
+        }
+    }
+
+    int nextT(int t, int minT){
+        t++;
+        if(t >= minT) return t;
+        else return minT + (minT-t) % 2; //walk back and forth until t >= minT;
+    }
+};

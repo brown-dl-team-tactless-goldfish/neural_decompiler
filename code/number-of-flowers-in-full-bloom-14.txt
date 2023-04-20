@@ -1,0 +1,30 @@
+vector<int> fullBloomFlowers(vector<vector<int>>& flowers, vector<int>& persons) {
+    int n=flowers.size();
+    map<int, int>mp;
+    for(int i=0; i<n; i++) {
+        mp[flowers[i][0]]++;
+        mp[flowers[i][1]+1]--;
+    }
+    auto pre=mp.begin();
+    for(auto it=mp.begin(); it!=mp.end(); it++){
+        if(it!=mp.begin()) it->second+=pre->second;
+        pre=it;
+    }
+    vector<int>ans;
+    for(int i=0; i<persons.size(); i++){
+        auto it = mp.upper_bound(persons[i]);
+        if(it==mp.end())ans.push_back(0);
+        else if(it->first==persons[i]) 
+            ans.push_back(it->second);
+        else {
+            if(it==mp.begin() && persons[i]<it->first)
+                ans.push_back(0);
+            else{
+                it--;
+                ans.push_back(it->second);
+            }
+        }
+            
+    } 
+    return ans;
+}

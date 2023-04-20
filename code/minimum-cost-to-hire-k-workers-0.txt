@@ -1,0 +1,108 @@
+struct workers {
+    int q;
+    int w;
+    double w_per_q;
+};
+
+int cmpW(const void * a, const void * b){
+    double temp = ((struct workers *)b)->w_per_q - ((struct workers *)a)->w_per_q;
+    if (temp < 0)
+        return -1;
+    return 1;
+}
+
+int cmp(const void * a, const void * b){
+    return *(int *)b - *(int *)a;
+}
+
+
+void max_Heap_insert(int *heap,int *n,int item)
+{
+    int i,parent;
+    i=++(*n);
+    parent=i/2;
+    while((i!=1) && (item>heap[parent]))
+    {
+        heap[i]=heap[parent];
+        i=parent;
+        parent/=2;
+    }
+    heap[i]=item;
+}
+
+int max_Heap_delete(int *heap,int *n)
+{
+    int item,temp;
+    int child,parent;
+    if(*n==0)
+    {
+        printf("The heap is empty.\n");
+        exit(1);
+    }
+    item=heap[1];
+    temp=heap[(*n)--];
+    parent=1;
+    child=2*parent;
+    while(child<=(*n))
+    {
+        if(child<*n && heap[child]<heap[child+1])
+            child++;
+        if(temp>=heap[child])break;
+        else
+        {
+            heap[parent]=heap[child];
+            parent=child;
+            child*=2;
+        }
+    }
+    heap[parent]=temp;
+    return item;
+}
+
+void get_dp(struct workers * arr, int size, int num, int * dp){
+    if (num == 0)
+        return;
+    int temp[num + 1];
+    int n = 0;
+    int sum = 0;
+    for (int i = size - num; i < size; i++){
+        max_Heap_insert(temp,&n,arr[i].q);
+        sum += arr[i].q;
+    }
+    dp[size - num] = sum;
+    for (int i = size - num - 1; i >= 0; i--){
+        if (arr[i].q < temp[1]){
+            sum = sum - max_Heap_delete(temp,&n);
+            sum = sum + arr[i].q;
+            max_Heap_insert(temp,&n,arr[i].q);
+        }
+        dp[i] = sum;
+    }
+}
+
+double mincostToHireWorkers(int* quality, int qualitySize, int* wage, int wageSize, int K){
+    if (qualitySize == 1)
+        return wage[0];
+    struct workers * member = malloc(sizeof(struct workers) * qualitySize);
+    for (int i = 0; i < qualitySize; i++){
+        member[i].q = quality[i];
+        member[i].w = wage[i];
+        member[i].w_per_q = (double)wage[i] / quality[i];
+    }
+    double result = 1000000000, cost;
+    qsort(member, qualitySize, sizeof(struct workers), cmpW);
+    int max = 0x7fffffff;
+    int q_index = 0;
+    int dp[qualitySize];
+    get_dp(member, qualitySize, K - 1, dp);
+    for (int i = 0; i <= qualitySize - K; i++){
+        //printf("i = %d, qual = %d, w_per_q = %f\n", i, member[i].q, member[i].w_per_q);
+        int total = member[i].q;
+        if (K != 1)
+            total += dp[i + 1];
+        cost = total * member[i].w_per_q;
+        if (cost < result)
+            result = cost;
+    }
+    return result;
+}

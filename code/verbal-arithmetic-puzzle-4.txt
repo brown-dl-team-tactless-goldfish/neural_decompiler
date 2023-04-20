@@ -1,0 +1,131 @@
+public class Solution {
+    private int[] evalLeft;
+    private int[] evalRight;
+    private int n;
+    private IDictionary<char, int> charToInd;
+    private bool found;
+    private int[] permutation;
+    private HashSet<int> nonZeroes = new HashSet<int>();
+    
+    public bool IsSolvable(string[] words, string result) {
+        charToInd = new Dictionary<char, int>();
+        found = false;
+        
+        string all = result;
+        
+        foreach (var word in words)
+        {
+            all = all + word;
+        }
+        
+        int increment = 0;
+        for (int i = 0; i < all.Length; i++)
+        {
+            char c = all[i];
+            if (!charToInd.ContainsKey(c))
+            {
+                charToInd[c] = increment;
+                increment++;
+            }
+        }
+        
+        n = charToInd.Keys.Count;
+        
+        ComputeNonZeroes(words, result);
+        ComputeEvalLeft(words);
+        ComputeEvalRight(result);
+        
+        permutation = new int[n];
+        ComputePermutations(0, 0);
+        
+        return found;
+    }
+    
+    private void ComputeNonZeroes(string[] words, string result)
+    {
+        foreach (var word in words)
+        {
+            nonZeroes.Add(charToInd[word[0]]);
+        }
+        
+        nonZeroes.Add(charToInd[result[0]]);
+        
+        //Console.WriteLine(string.Join(",", nonZeroes));
+    }
+    
+    private void ComputePermutations(int start, int used)
+    {
+        if (found)
+            return;
+        
+        if (start == n)
+        {
+            found |= EvaluatePermutation();
+            return;
+        }
+        
+        int startDigit = 0;
+        
+        if (nonZeroes.Contains(start))
+            startDigit = 1;
+        
+        for (int i = startDigit; i <= 9; i++)
+        {
+            if (!Used(i, used))
+            {
+                permutation[start] = i;
+                ComputePermutations(start + 1, AddUsed(i, used));
+            }
+        }
+    }
+    
+    private int AddUsed(int i, int used)
+    {
+        return used | (1 << i);
+    }
+    
+    private bool Used(int i, int used)
+    {
+        return (used & (1 << i)) > 0;
+    }
+    
+    private bool EvaluatePermutation()
+    {
+        int left = 0; int right = 0;
+        for (int i = 0; i < n; i++)
+        {
+            int factor = permutation[i];
+            left += factor * evalLeft[i];
+            right += factor * evalRight[i];
+        }
+        
+        return left == right;
+    }
+    
+    private void ComputeEvalLeft(string[] words)
+    {
+        evalLeft = new int[n];
+        
+        foreach (var word in words)
+        {
+            int mult = 1;
+            for (int i = word.Length-1; i >= 0; i--)
+            {
+                evalLeft[charToInd[word[i]]] += mult;
+                mult *= 10;
+            }
+        }
+    }
+    
+    private void ComputeEvalRight(string result)
+    {
+        evalRight = new int[n];
+        
+        int mult = 1;
+        for (int i = result.Length-1; i >= 0; i--)
+        {
+            evalRight[charToInd[result[i]]] += mult;
+            mult *= 10;
+        }
+    }
+}

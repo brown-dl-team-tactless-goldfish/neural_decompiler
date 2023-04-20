@@ -1,0 +1,48 @@
+public class Solution
+{
+    public string ModifyString(string s) 
+    {
+        var c = 0;
+        
+        var result = new StringBuilder();
+        for (int i = 0; i < s.Length; i++)
+        {
+            if (s[i] != '?')
+            {
+                result.Append(s[i]);
+                continue;
+            }
+            
+            while (true)
+            {
+                char cc = (char)('a' + c);
+                if (CanUse(s, i, cc))
+                {
+                    result.Append(cc);
+                    c = (c + 1) % 26;
+                    break;
+                }
+                c = (c + 1) % 26;
+            }
+        }
+        
+        return result.ToString();
+    }
+    
+    bool CanUse(string s, int i, char c)
+    {
+        if (i >= 1)
+        {
+            if (s[i - 1] == c)
+                return false;
+        }
+        
+        if (i < s.Length - 1)
+        {
+            if (s[i + 1] == c)
+                return false;
+        }
+        
+        return true;
+    }
+}

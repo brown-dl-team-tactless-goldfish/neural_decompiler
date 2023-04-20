@@ -1,0 +1,47 @@
+void f(char*** arr, int size, int chars[], int* ans, int curr, int idx)
+{
+    // update ans
+    *ans = fmax(curr, *ans);
+    // if we've gone through all words in arr
+    if(idx == size)
+    {
+        return;
+    }
+    int copy[26];
+    memcpy(copy, chars, (26 * sizeof(int)));
+    // iterate through rest of arr
+    for(int i = idx; i < size; i++)
+    {
+        char* s = *(*arr + i);  // current string in arr
+        // iterate through chars in s
+        int s_size = 0;
+        for(; *(s + s_size) != '\0'; s_size++)
+        {
+            int n = (*(s + s_size) - 'a');  // number value of current char ('a' = 0, 'b' = 1, ...)
+            // if we already have this char
+            if(*(chars + n))
+            {
+                // move onto next string in arr
+                break;
+            }
+            // new char, update chars
+            *(chars + n) = 1;
+        }
+        // if end of string reached
+        if(*(s + s_size) == '\0')
+        {
+            // recursive 
+            f(arr, size, chars, ans, (curr + s_size), (i + 1));
+        }
+        // reset chars
+        memcpy(chars, copy, (26 * sizeof(int)));
+    }
+}
+
+int maxLength(char** arr, int size)
+{
+    int ans = 0;
+    int chars[26] = {0};  // array to store 
+    f(&arr, size, chars, &ans, 0, 0);
+    return ans;
+}

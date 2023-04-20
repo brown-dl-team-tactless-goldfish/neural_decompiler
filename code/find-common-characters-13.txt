@@ -1,0 +1,68 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+#define NumberAlphabet 26
+#define StrSize 2
+#define MY_INT_MAX 32767
+
+int minimum (int a, int b) {
+    return a < b ? a : b;
+}
+
+char ** commonChars(char ** words, int wordsSize, int* returnSize) {
+    int** hashMap = malloc (sizeof (int*) * wordsSize * NumberAlphabet);
+    int minHashMap[NumberAlphabet];
+    char** ansHashMap = malloc (sizeof (char*) * wordsSize);
+    int i = 0, j = 0, k = 0;
+    
+    // Allocate a 26 integer-size hash map for every word.
+    for (i = 0; i < wordsSize; i++) {
+        hashMap[i] = malloc (sizeof (int) * NumberAlphabet);
+    }
+
+    // Init minHashMap, which will be used to store minimum value for every alphabet among all words.
+    for (i = 0; i < NumberAlphabet; i++) {
+        minHashMap[i] = MY_INT_MAX;
+    }
+
+    // Init minHashMap, which will be used to store value for every alphabet for respective word.
+    for (i = 0; i < wordsSize; i++) {
+        for (j = 0; j < NumberAlphabet; j++) {
+            hashMap[i][j] = 0;
+        }
+    }
+
+    // Accumulate every alphabet for respective word.
+    for (i = 0; i < wordsSize; i++) {
+        ansHashMap[i] = malloc (sizeof (char) * StrSize);
+        for (j = 0; words[i][j] != '\0'; j++) {
+            hashMap[i][words[i][j] - 'a']++;
+        }
+    }
+
+    // Iterate words
+    for (i = 0; i < wordsSize; i++) {
+        // Iterate alphabets
+        for (j = 0; j < NumberAlphabet; j++) {
+            // Store minimum value for every alphabet among all words.
+            minHashMap[j] = minimum (hashMap[i][j], minHashMap[j]);
+        }
+    }
+
+    // Iterate minimum value alphabet hash map - minHashMap
+    for (i = 0, k = 0; i < NumberAlphabet; i++) {
+        if (minHashMap[i] < INT_MAX && minHashMap[i] > 0) {
+            // For a alphabet, if it appear more than 1 times
+            for (j = 0; j < minHashMap[i]; j++) {
+                ansHashMap[k][0] = i + 'a';
+                ansHashMap[k][1] = '\0';
+                k++;
+            }
+        }
+    }
+
+    *returnSize = k;
+
+    return ansHashMap;
+}

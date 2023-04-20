@@ -1,0 +1,43 @@
+#include<iostream>
+class Solution {
+public:
+    bool canAdd(vector<int>& nums,int target)
+    {
+        for(int i=0;i<nums.size();i++)
+        {
+            int tmp = nums[i];
+            if(target-nums[i]>0)
+            {
+                nums.erase(nums.begin()+i);
+                if(canAdd(nums,target-tmp))
+                    return true;
+                nums.insert(nums.begin()+i, tmp);
+            } 
+            else
+            {
+                if(target-nums[i]==0)
+                    return true;
+                else
+                    return false;
+            }
+        }
+        return false;
+    }
+    
+    bool canPartition(vector<int>& nums) 
+    {
+        int sum = 0;
+        for(auto i:nums)
+        {
+            sum += i;
+        }
+        if(sum%2 != 0)
+            return false;
+        int target = sum/2;
+        std::sort(nums.rbegin(), nums.rend());
+        if( canAdd(nums, target))
+            return true;
+        else
+            return false;
+    }
+};

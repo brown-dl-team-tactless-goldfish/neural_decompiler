@@ -1,0 +1,29 @@
+start = input;
+deep[sp] = -1;
+len[sp] = 0;
+
+do {
+    item = get_next_item(start, &ideep, &ilen, &type);
+    while (ideep <= deep[sp]) {
+        sp --;
+    }
+
+    if (item[ilen] == 0) {
+        end = 1;
+    }
+    item[ilen] = 0;
+
+    if (type == TDIR) {
+        sp ++;
+        deep[sp] = ideep;
+        len[sp] = len[sp - 1] + ilen + 1;
+    } else {
+        temp = len[sp] + ilen;
+        if (temp > max_len) {
+            max_len = temp;
+        }
+    }
+    start = item + ilen + 1;
+} while (!end);
+
+return max_len;

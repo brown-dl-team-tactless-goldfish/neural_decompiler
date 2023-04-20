@@ -1,0 +1,83 @@
+struct TreeNode* deleteNode(struct TreeNode* root, int key){
+    if(root == NULL)
+        return root;
+    if(root->left == NULL && root->right == NULL){
+        if(root->val == key)
+            return NULL;
+        else
+            return root;
+    }
+    
+    struct TreeNode* parrent = NULL;
+    struct TreeNode* cur = root;
+    struct TreeNode* temp = NULL;
+    while(cur != NULL && cur->val != key){
+        parrent = cur;
+        if(key > cur->val)
+            cur = cur->right;
+        else
+            cur = cur->left;
+    }
+    
+    if(cur == NULL )
+        return root;
+    
+    if(parrent){
+        if(parrent->val > cur->val){
+            if(cur->left == NULL && cur->right == NULL)
+                parrent->left = NULL;
+            else if(cur->left == NULL)
+                parrent->left = cur->right;
+            else if(cur->right == NULL)
+                parrent->left = cur->left;
+            else{
+                parrent->left = cur->right;
+                cur->right = NULL;
+                temp = parrent->left;
+                while( temp->left ){
+                    temp = temp->left;
+                }
+                temp->left = cur->left;
+            }
+            free(cur);
+        }
+        else{
+            if(cur->left == NULL && cur->right == NULL)
+                parrent->right = NULL;
+            else if(cur->left == NULL)
+                parrent->right = cur->right;
+            else if(cur->right == NULL)
+                parrent->right = cur->left;
+            else{
+                parrent->right = cur->right;
+                temp = parrent->right;
+                while( temp->left ){
+                    temp = temp->left;
+                }
+                temp->left = cur->left;                
+            }
+            free(cur);
+        }
+    }
+    else{
+        if(root->left == NULL){
+            root = root->right;
+            free(cur);
+        }
+        else if(root->right == NULL){
+            root = root->left;
+            free(cur);
+        }
+        else{
+            root = root->right;
+            temp = root;
+            while( temp->left ){
+                temp = temp->left;
+            }
+            temp->left = cur->left;
+            free(cur);
+        }
+    }
+    
+    return root;
+}

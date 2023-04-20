@@ -1,0 +1,54 @@
+ /*                   USING THE CONCEPT OF SLIDING WINDOW                  */
+
+int maximumUniqueSubarray(int* nums, int numsSize){
+
+	int H[10001] = {0}; // INITIALIZING HASH TABLE
+    int i=0/*LEFT*/, j=0/*RIGHT(WILL EXPAND THE WINDOW)*/, sum=nums[0]/*INITIALIZING THE SUM TO FIRST ELEMENT*/, max=0/*WILL RETURN THE SUM OF MAX POSSIBLE SUBARRAY*/;
+    
+    
+	H[nums[0]]=1;  //AS FIRST ELEMNT IS ALREADY IN SUM SO UPDATING THE HASH TABLE FOR THAT ELEMENT
+	
+	/*IF THE ELEMENT IS IN SUM THEN VALUE CORRESPONDING TO IT IN HASH TABLE WILL BE 1 ELSE 0
+    WE WILL USE THIS CONCEPT TO REMOVE DUPLICATE ELEMENT FROM SUBARRAY*/
+    
+    
+    
+    if(numsSize == 1) return nums[0];//WHEN THERE IS ONE ELEMENT
+	
+	if(numsSize == 2){      //WHEN THERE ARE 2 ELEMENTS
+		
+		if(nums[0] == nums[1]) return nums[0];
+		else return nums[0]+nums[1]; 
+	}
+    
+    while(j<numsSize){        //FOR ARRAY HAVING GREATER THAN 2 ELEMENTS AND AS j POINTER IS FOR RIGHT SIDE THAT'S WHY LOOP IS CONTINUED UNTIL J IS LESS THAN NUMSSIZE
+    	
+    	if(i==j){    
+            
+        /* THIS CONDITION IS USED WHEN THE NUMBERS REPEAT CONSECUITVELY*/
+			H[nums[i]]=1;
+            sum = nums[i];
+    		j++;
+		}
+		
+		else if(H[nums[j]] == 1){    
+    
+/*IF VALUE IS REPEATING THEN DELETE ALL THE NUMBERS FROM THE SUBARRAY BETWEEN THE TWO REPEATING ELEMENTS*/ 
+			
+			H[nums[i]]=0;
+			sum -= nums[i];
+			i++;
+		}
+		
+		else if(H[nums[j]] == 0){
+			
+/*IF NOT REPEATING THEN ADD THAT VALUE IN SUBARRAY AND INCREASE THE SUM IF THE RESULTANT SUM IS GREATER THAN MAXIMUM SUM THEN UPDATE THE MAXIMUM SUM*/
+			H[nums[j]]=1;
+			sum += nums[j];
+			if(sum>max) max = sum;
+			j++;
+		}
+	}
+	
+	return max;
+}

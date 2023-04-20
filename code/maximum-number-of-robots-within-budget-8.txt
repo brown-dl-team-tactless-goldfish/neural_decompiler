@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int maximumRobots(vector<int>& chargeTimes, vector<int>& runningCosts, long long budget) {
+          int l = 0 , ans = 0;
+          map<int,int> mp;
+          long sm = 0;
+          for(int i=0; i<chargeTimes.size(); i++) {
+                sm+=runningCosts[i];
+                mp[chargeTimes[i]]++;
+                while(!mp.empty() && ((long long)(sm * (i-l+1)) + mp.rbegin()->first) > budget) {
+                     sm-=runningCosts[l];
+                     mp[chargeTimes[l]]--;
+                     if(mp[chargeTimes[l]] == 0) mp.erase(chargeTimes[l]);
+                     l++;
+                }
+              ans=max(ans,i-l+1);
+          }
+        return ans;
+    }
+};

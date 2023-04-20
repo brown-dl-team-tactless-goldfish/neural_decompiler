@@ -1,0 +1,30 @@
+    int minimizeTheDifference(vector<vector<int>>& mat, int target) {
+        int minSum = 0;
+        for (auto& v:mat){
+            set<int> st(v.begin(), v.end());
+            v = vector<int>(st.begin(), st.end());
+            minSum += v[0];
+        }
+        
+        if(minSum >= target)
+            return minSum - target;        
+        
+        const int N = target*2 - minSum + 1;
+        int has[5000] = {false};
+        has[0] = true;
+        for (const auto& v:mat){
+            for (int i = N-1; i>=0; i--){
+                if (!has[i]) continue;
+                has[i] = false;
+                for (auto x:v){
+                    if(i+x >= N) break;
+                    has[i+x] = true;
+                } 
+            }
+        }
+        int res = N;
+        for (int i = minSum; i < N; i++) 
+            if (has[i]) res = min(res, abs(i-target));
+
+        return res;
+    }

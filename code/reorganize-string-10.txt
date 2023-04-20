@@ -1,0 +1,62 @@
+typedef struct
+{
+    char data;
+    int count;
+} Entry_t;
+
+int cmp(const void* a, const void* b)
+{
+    const Entry_t e1 = *(const Entry_t*)a;
+    const Entry_t e2 = *(const Entry_t*)b;
+    
+    return e2.count - e1.count;
+}
+
+char * reorganizeString(char * S){
+    
+    const int tableSize = 'z' - 'a' + 1;
+    Entry_t* table = calloc(tableSize, sizeof(Entry_t));
+    
+    for (int i = 0; S[i] != '\0'; i++)
+    {
+        table[S[i]-'a'].data = S[i];
+        table[S[i]-'a'].count++;
+    }
+    
+    qsort(table, tableSize, sizeof(Entry_t), cmp);
+    
+    int limit = strlen(S) / 2;
+    if (strlen(S) % 2 != 0)
+    {
+        limit++;
+    }
+    
+    if (table[0].count > limit)
+    {
+        return "";
+    }
+    
+    char* ans = malloc(sizeof(char) * (strlen(S) + 1));
+    int j = 0, k = 0;
+    for (int i = 0; i < tableSize && table[i].count != 0; i++)
+    {
+        // printf("table[%d] = %c, %d\n", i, table[i].data, table[i].count);
+        for (int n = 0; n < table[i].count; n++)
+        {
+            if (2 * j + k >= strlen(S))
+            {
+                j = 0;
+                k = 1;
+            }
+            
+            ans[2 * j + k] = table[i].data;
+            j++;
+        }
+    }
+    
+    ans[strlen(S)] = '\0';
+    
+    free(table);
+    
+    return ans;
+}

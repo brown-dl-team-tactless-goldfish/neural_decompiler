@@ -1,0 +1,32 @@
+typedef struct TreeNode node;
+
+node* build(int* in, int i_l, int i_r, int* post, int p_l, int p_r) {
+    if(i_l >= i_r || p_l >= p_r) {
+        return NULL;
+    }
+    
+    if(i_l == i_r-1 && p_l == p_r-1) {
+        node* root = malloc(sizeof(node));
+        root->val = post[p_r-1];
+        root->left = root->right = NULL;
+        return root;
+    }
+    
+    int i, in_root;
+    for(i=i_l;i<i_r;i++) {
+        if(in[i] == post[p_r-1])
+            in_root = i;
+    }
+    
+    node* root = malloc(sizeof(node));
+    root->val = post[p_r-1];
+    root->right = build(in, in_root+1, i_r, post, p_r-(i_r-in_root), p_r-1);
+    root->left = build(in, i_l, in_root, post, p_l, p_r-(i_r-in_root));
+    return root;
+}
+
+struct TreeNode* buildTree(int* in, int in_size, int* post, int post_size){
+    if(in_size == 0)
+        return NULL;
+    return build(in, 0, in_size, post, 0, post_size);
+}

@@ -1,0 +1,25 @@
+class Solution:
+    def getMinDistSum(self, positions):
+        def f(x, y):
+            ret = [0, 0, 0]
+            for p in positions:
+                dx = p[0] - x
+                dy = p[1] - y
+                d = sqrt(dx * dx + dy * dy)
+                ret[0] += d
+                ret[1] += dx / (d + 1e-9)
+                ret[2] += dy / (d + 1e-9)
+            return ret
+        
+        x, y, step = 0, 0, 1
+        while step > 1e-7:
+            cost = f(x, y)
+            new_x = x + step * cost[1]
+            new_y = y + step * cost[2]
+            if f(new_x, new_y)[0] < cost[0]:
+                x = new_x
+                y = new_y
+            else:
+                step *= 0.1
+        
+        return f(x, y)[0]

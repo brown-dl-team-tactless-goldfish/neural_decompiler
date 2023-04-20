@@ -1,0 +1,40 @@
+
+
+int minSwapsCouples(int* row, int rowSize){
+    int i = 0;
+    int partner, swapped =0, exp_part_pos, temp = 0, lut_tmp=0;
+    int pos[rowSize];
+    for (i=0; i<rowSize; i++) {
+        pos[row[i]] = i;
+    }
+    
+    for (i=0; i<rowSize; i++) {
+//        printf("position of %d is %d\n", row[i], pos[row[i]]);
+    }
+ 
+    for (i=0; i<rowSize; i++) {
+
+        // this is the trick 
+        // XOR with 1 gives both the partner, as well as partner position
+        partner = row[i] ^ 1;
+        exp_part_pos = i^1;
+
+        if(pos[partner] != exp_part_pos) {
+            // swap the positions
+
+            temp = row[exp_part_pos];
+            row[exp_part_pos] = row[pos[partner]];
+            row[pos[partner]] = temp;
+    
+            // update look up table with new positions
+            pos[row[pos[partner]]] = pos[partner];
+            pos[row[exp_part_pos]] = exp_part_pos;
+
+
+            swapped++;            
+        }
+
+    }    
+    
+    return swapped;
+}

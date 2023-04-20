@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int longestPalindrome(string word1, string word2) {
+        int m = word1.size() ;
+        string word = word1 + word2 ;
+        int n = word.size() ;
+        int ret = 0 ;
+        auto PalinNum = vector<vector<int>>(n, vector<int>(n)) ;
+        //len = 1 ;
+        for(int i = 0; i < n; i++)
+            PalinNum[i][i] = 1 ;    
+        //len = 2 ;
+        for(int i = 0; i < n-1; i++){
+            if(word[i] == word[i+1]){
+                PalinNum[i][i+1] = 2 ;
+                if(i < m && i+1 >= m)
+                    ret = 2 ;
+            }
+            else
+                PalinNum[i][i+1] = 1 ;
+            
+        }
+        //len > 2
+        for(int len = 2 ; len <= n; len++){
+            for(int i = 0; i <= n-len; i++){
+                int j= i + len - 1 ;
+                if(word[i] == word[j]){
+                    PalinNum[i][j] = PalinNum[i+1][j-1] + 2 ;
+                    if(i < m && j >= m)
+                        ret = max(ret, PalinNum[i][j]) ;
+                }
+                else{
+                    PalinNum[i][j] = max(PalinNum[i][j-1], PalinNum[i+1][j]) ;
+                }
+            }
+        }
+        return ret ;
+    }
+};

@@ -1,0 +1,29 @@
+#define min(x, y)(x < y ? x : y)
+
+int minimumTime(char * s) {
+    const int n = strlen(s); // length of string
+    int l[n]; // cost to eliminate all ones up to postion i using LEFT and MIDDLE delete only
+    int r[n]; // cost to eliminate all ones up to postion i using RIGHT and MIDDLE delete only
+    if (s[0] == '1') l[0] = 1; // left character is a 1, delete it
+    else l[0] = 0;
+    if (s[n - 1] == '1') r[n - 1] = 1; // right character is 1, delete it
+    else r[n - 1] = 0;
+
+    for (int i = 1; i < n; i++) { // for each character
+        if (s[i] == '1') // if it is a one, we either delete from the middle or delete everything up to it
+            l[i] = min(l[i - 1] + 2, i + 1);
+        else // otherwise, no need to delete so same as previous
+            l[i] = l[i - 1];
+    }
+    for (int i = n - 2; i >= 0; i--) { // for each character
+        if (s[i] == '1') // if it is a 1, delete from middle or right
+            r[i] = min(r[i + 1] + 2, n - i);
+        else
+            r[i] = r[i + 1]; // same as previous
+    }
+    int ans = min(l[n - 1], r[0]); // delete only from left or right
+    for (int i = 0; i < n - 1; i++) { // try each combination of left and right deletes
+        ans = min(ans, l[i] + r[i + 1]); // delete from left up to i, then from right from i+1
+    }
+    return ans; // minimum possible
+}

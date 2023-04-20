@@ -1,0 +1,27 @@
+class TimeMap {
+    unordered_map<string, vector<pair<int, string>>> hashMap;
+public:    
+    void set(string key, string value, int timestamp) {
+        hashMap[key].push_back({timestamp, value});
+    }
+    
+    string get(string key, int timestamp) {
+        vector<pair<int, string>>& vec = hashMap[key];
+        
+        if (timestamp < vec[0].first)
+            return "";
+        
+        int left = 0, right = vec.size() - 1;
+        while (left < right) {
+            int mid = (left + right) / 2;
+            if (timestamp > vec[mid].first)
+                left = mid + 1;
+            else if (timestamp < vec[mid].first)
+                right = mid - 1;
+            else
+                return vec[mid].second;
+        }
+        
+        return vec[(vec[left].first > timestamp ? left - 1 : left)].second;
+    }
+};

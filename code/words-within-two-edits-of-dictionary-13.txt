@@ -1,0 +1,36 @@
+class Solution {
+public:
+    vector<string> twoEditWords(vector<string>& queries, vector<string>& dictionary) {
+        vector<string> v;
+
+        map<string,int> m;
+        for(int i=0;i<dictionary.size();i++) {
+            m[dictionary[i]] = 1;
+        }
+
+        for(int i=0;i<queries.size();i++) {
+            if(m.find(queries[i]) != m.end() || queries[i].length() <= 2) {
+                v.push_back(queries[i]);
+                continue;
+            }
+            else{
+                for(auto it: m) {
+                    string s = it.first;
+                    int c = 0;
+                    for(int j=0;j<s.length();j++) {
+                        if(queries[i][j] == s[j]) {
+                            c++;
+                        }
+                    }
+
+                    if(c >= s.length()-2) {
+                        v.push_back(queries[i]);
+                        break;
+                    }
+                }
+            }
+        }
+
+        return v;
+    }
+};

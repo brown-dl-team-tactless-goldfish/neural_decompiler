@@ -1,0 +1,139 @@
+public class Solution
+{
+    int r;
+    int c;
+    int[][] mat;
+    bool[,] v;
+    
+    public int SwimInWater(int[][] grid) 
+    {
+        mat = grid;
+        r = grid.Length;
+        c = grid[0].Length;
+        v = new bool[r,c];
+        return Bfs(); 
+    }
+    
+    public int Bfs()
+    {
+        var mh = new MinHeap();
+        mh.Add((0, 0, mat[0][0]));
+        while(mh.count > 0)
+        {
+            var cell = mh.Pop();
+            if(cell.Item1 == r-1 && cell.Item2 == c-1)
+                return cell.Item3;
+                
+            GoNext(cell.Item1 + 1, cell.Item2, cell.Item3, mh);
+            GoNext(cell.Item1 - 1, cell.Item2, cell.Item3, mh);
+            GoNext(cell.Item1, cell.Item2 + 1, cell.Item3, mh);
+            GoNext(cell.Item1, cell.Item2 - 1, cell.Item3, mh);
+                
+            v[cell.Item1, cell.Item2] = true;
+        }
+        
+        return -1;
+    }
+    
+    public void GoNext(int i, int j, int val, MinHeap mh)
+    {
+        if(i < 0 || i >= mat.Length || j < 0 || j >= mat[0].Length)
+            return;
+        
+        if(v[i,j])
+            return;
+        
+        val = Math.Max(mat[i][j], val);
+        mh.Add((i, j, val));
+    }
+}
+
+//Min Heap Implementation
+public class MinHeap
+{
+        List<(int, int, int)> Arr;
+    
+        public int count => Arr.Count;
+
+        public MinHeap()
+        {
+            Arr = new List<(int, int, int)>();
+        }
+
+        public (int, int, int) Peek()
+        {
+            return Arr[0];
+        }
+    
+        public (int, int, int) Pop()
+        {
+            var min = Arr[0];
+            Arr[0] = Arr[Arr.Count-1];
+            Arr.RemoveAt(Arr.Count-1);
+            BubbleDown(0);
+            return min;
+        }
+    
+        public void Add((int, int, int) node)
+        {
+            Arr.Add(node);
+            BubbleUp(Arr.Count-1);
+        }
+
+        private void BubbleUp(int index)
+        {
+            if (index >= Arr.Count || index <= 0)
+                return;
+
+            int parentIndex = GetParent(index);
+
+            if (Arr[parentIndex].Item3 > Arr[index].Item3)
+            {
+                var temp = Arr[parentIndex];
+                Arr[parentIndex] = Arr[index];
+                Arr[index] = temp;
+                BubbleUp(parentIndex);
+            }
+        }
+
+        private void BubbleDown(int index)
+        {
+            if (index >= Arr.Count)
+                return;
+
+            int smallestIndex = GetLeftChild(index);
+
+            if (smallestIndex >= Arr.Count)
+                return;
+
+            int rightChild = GetRightChild(index);
+
+            if (rightChild < Arr.Count && Arr[rightChild].Item3 < Arr[smallestIndex].Item3)
+            {
+                smallestIndex = rightChild;
+            }
+
+            if (Arr[index].Item3 > Arr[smallestIndex].Item3)
+            {
+                var temp = Arr[index];
+                Arr[index] = Arr[smallestIndex];
+                Arr[smallestIndex] = temp;
+                BubbleDown(smallestIndex);
+            }
+        }
+
+        private int GetLeftChild(int i)
+        {
+            return 2 * i + 1;
+        }
+
+        private int GetRightChild(int i)
+        {
+            return 2 * i + 2;
+        }
+
+        private int GetParent(int i)
+        {
+            return (i - 1) / 2;
+        }
+}

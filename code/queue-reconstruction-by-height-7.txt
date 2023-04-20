@@ -1,0 +1,25 @@
+int comparr(const void*first,const void*second){
+    return **(int**)first - **(int**)second;
+}
+int** reconstructQueue(int** people, int peopleSize, int* peopleColSize, int* returnSize, int** returnColumnSizes){
+    int n = peopleSize;
+    *returnSize=n;
+    *returnColumnSizes=(int*)malloc(sizeof(int)*n);
+    for(int i=0;i<n;i++){(*returnColumnSizes)[i]=2;}
+    qsort(people,n,2*sizeof(int),comparr);
+    int**result=(int**)malloc(sizeof(int*)*n);
+    for(int i=0;i<n;i++){
+        result[i]=(int*)malloc(sizeof(int)*2);
+        result[i][0]=INT_MAX;
+    }
+    for(int i=0;i<n;i++){
+        int index=0;
+        int temp=people[i][1];
+        while(temp>=0&&index<n)
+            if(result[index++][0]>=people[i][0])
+                temp--;
+        result[index-1][0]=people[i][0];
+        result[index-1][1]=people[i][1];
+    }
+    return result;
+}

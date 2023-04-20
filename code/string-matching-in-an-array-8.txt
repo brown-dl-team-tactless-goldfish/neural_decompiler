@@ -1,0 +1,24 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char ** stringMatching(char ** words, int wordsSize, int* returnSize){
+    
+    char **outputArray = calloc(sizeof(char), wordsSize);
+    int firstIndex = 0, secondIndex = 0;
+    *(returnSize) = 0;
+    
+    for(firstIndex = 0; firstIndex < wordsSize; firstIndex++)
+    {
+        for(secondIndex = 0; secondIndex < wordsSize; secondIndex++)
+        {         
+            if((firstIndex != secondIndex) && (strstr(words[secondIndex], words[firstIndex]) != NULL))
+            {
+                (*returnSize)++;
+                outputArray = realloc(outputArray, (*returnSize)*sizeof(char *));
+                outputArray[*returnSize-1] = words[firstIndex];
+                break;
+            }
+        }
+    }
+    return outputArray;
+}

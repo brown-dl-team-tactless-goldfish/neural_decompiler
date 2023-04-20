@@ -1,0 +1,62 @@
+
+typedef struct TreeNode N;
+
+//Get height of tree
+int maxDepth (N *root)
+{
+    int l, r;
+    if(!root)
+        return 0;
+    l = maxDepth(root->left);
+    r = maxDepth(root->right);
+    return 1 + (l < r ? r : l);
+}
+
+//Get width of each level include the empty spaces between two nodes
+int W = 0, a = 0;
+int Width (N *root, int level, int max)
+{
+    int l = 0, r = 0, t = 0;
+    
+    //Count the empty space at just one level up the leaf node
+    if(level == max) {
+        if(W) {
+         a++;
+        }
+    }
+    if(!root || (level > max)){
+        //if we hit a node end and that has mulitlevel difference,
+        //Calcutate the empty space with power of 2
+        if(!root && (level < max) )
+            if(W) {
+               t =  max - level;    
+               a += pow(2,t);
+            }
+        return 0;
+    }
+    
+    if(level == max){
+        //For the first time, we get a node with value
+        if(!W) 
+           W = 1;
+        //Add empty spaces/valid spaces once we encounter a node with value
+        if(a){
+            W += a;
+            a = 0;
+        }
+    }
+    Width(root->left, level + 1, max);
+    Width(root->right, level + 1, max);
+    return;
+}
+
+int widthOfBinaryTree(struct TreeNode* root){
+    int h = maxDepth(root);
+    int i, maxW = 0;
+    for(int i = 1; i <= h; i++){
+        W = 0, a = 0;
+        Width(root, 1, i);
+        maxW =  W > maxW ? W : maxW;
+    }
+    return maxW;
+}

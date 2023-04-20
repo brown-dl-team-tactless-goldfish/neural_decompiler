@@ -1,0 +1,68 @@
+class Solution {
+public:
+    int maximumDetonation(vector<vector<int>>& bombs) 
+    {
+        // Total no of bombs in the scene
+        int n = bombs.size();
+        
+        // This will be directed graph 
+        // as it might be possible that from bomb 1 we can reach bomb 2 
+        // but we cannot reach bomb 2 as it has a smaller blast radius as compaed to 1
+        vector<vector<int>> g(n);
+        for(int i = 0 ; i < n ; i ++)
+        {
+            for(int j = 0 ; j < n ; j ++)
+            {
+                // no need to process for the same node
+                if( i == j)
+                    continue;
+                // cout<<"x1 "<<bombs[i][0]<<" y1 "<<bombs[i][1]<<" x2 "<<bombs[j][0]<<" y2 "<<bombs[j][1]<<endl;
+                double dist = distance(bombs[i][0],bombs[i][1], bombs[j][0], bombs[j][1]); 
+                //cout<<"dist "<<dist<<endl;
+                if(dist <= (float)(bombs[i][2] *  1.0 ))
+                    g[i].push_back(j);
+            }
+        }
+        
+        int maxi = 0;
+        for(int i = 0; i < n; i ++)
+        {
+            maxi = max ( maxi , BFS(g,i,n));
+        }
+        return maxi;
+    }
+    
+    int BFS(vector<vector<int>> g, int start, int n)
+    {
+        vector<int> visited(n,0);
+        visited[start] = 1;
+        int count = 1;
+        queue<int>q;
+        q.push(start);
+        
+        while(!q.empty())
+        {
+            int top = q.front();
+            q.pop();
+            
+            for(int i = 0 ; i < g[top].size(); i ++)
+            {
+                if(visited[g[top][i]] == 0)
+                {
+                    count ++;
+                    q.push(g[top][i]);
+                    visited[g[top][i]] = 1;
+                }
+            }
+        }
+        
+        return count;
+    }
+    
+    // returns the distance between two points
+    float distance(int x1, int y1, int x2, int y2)
+    {
+        float ans = 0.0;
+        return 1.0 * sqrt(pow((y1 - y2), 2) + pow((x2 - x1), 2));;
+    }
+};

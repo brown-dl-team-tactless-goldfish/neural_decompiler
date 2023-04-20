@@ -1,0 +1,61 @@
+
+void Swap(int* x, int* y)
+{
+    int temp = *x;
+    *x = *y;
+    *y = temp;
+}
+
+int Partition(int arr[], int start, int end)
+{
+    int Pivot = arr[end];
+    int Pindex = start-1;
+    
+    for(int i=start;i<=end-1;++i)
+        if(arr[i]<Pivot)
+        {
+            Pindex++;
+            Swap(&arr[Pindex], &arr[i]);
+        }
+    Swap(&arr[Pindex+1], &arr[end]);
+    return Pindex+1;
+}
+
+void Sort(int arr[], int start, int end)         // Quick Sorting
+{
+    if(start<=end)
+    {
+        int pi = Partition(arr, start, end);
+        
+        Sort(arr, start, pi-1);
+        Sort(arr, pi+1, end);
+    }
+}
+
+int* intersection(int* nums1, int nums1Size, int* nums2, int nums2Size, int* returnSize)
+{
+    int k = 0, i = 0, j =0;
+    int size = 1000;
+    int* result = malloc(size*sizeof(int));     
+    
+    Sort(nums1, 0, nums1Size-1);
+    Sort(nums2, 0, nums2Size-1);
+    
+    while(i<nums1Size && j<nums2Size)
+    {
+        if(i>0 && nums1[i] == nums1[i-1])   // checking for duplicates in same array
+            i++;
+        else if(nums1[i]==nums2[j])     // checking for duplicates in nums1 and nums2
+        {
+            result[k++] = nums1[i];
+            i++;
+            j++;
+        }
+        else if(nums1[i]< nums2[j])
+                i++;
+            else
+                j++;
+    }
+    *returnSize = k;
+    return result;
+}

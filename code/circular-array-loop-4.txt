@@ -1,0 +1,35 @@
+class Solution {
+public:
+    bool circularArrayLoop(vector<int>& nums) {
+        int start = 0;
+        int n = nums.size();
+        while (start < n) {
+            while (start < n && nums[start] == 1001) start++; // skip previously visited elements which are not applicable for loop
+            if (start == n) return false; // if the search reach end, then return false;
+            
+            int direction = nums[start];
+            int cur = start;
+            int next;
+            while (nums[cur] <= 1000) {
+                next = ((cur + nums[cur]) % n + n) % n; // mod n first then plus n then mod n is to get around -3/5 equals -3.
+                if (cur == next) { // if cur is a self loop candidates, then find loop failed. After break, we will mark all elements in this search path [start, next) to 1001, so here mark cur as 1001 as well.
+                    nums[cur] = 1001;
+                    break;
+                }
+                if (nums[next] > 1001) return true; // find a visited element
+                
+                nums[cur] += 3000; // mark as visited
+                if (nums[next] == 1001 || nums[next] * direction < 0) { // next is not applicable for loop or direction changed
+                    break;
+                }
+                cur = next;
+            }
+            for (int i = start; i != next; ) { // mark all elements in failed search path as non applicable
+                int tmp = nums[i];
+                nums[i] = 1001;
+                i = ((tmp - 3000 + i) % n + n) % n;
+            }
+        }
+        return false;
+    }
+};

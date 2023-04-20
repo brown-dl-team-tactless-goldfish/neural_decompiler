@@ -1,0 +1,50 @@
+class Solution {
+public:
+    //dp[i,j] is "max stone value + sum[i,c)" in [i,c) in which Alice could get 
+    //i<c<j
+    int stoneGameV(vector<int>& stoneValue) {
+        int n = stoneValue.size(); 
+        int dp[501][501] = {0};
+        int index[501] = {0};
+        int prefix[501] = {0};
+        for(int i=0; i<n; i++)
+        {
+            dp[i+1][i] = dp[i][i+1] = stoneValue[i];
+            index[i] = i+1;
+            prefix[i+1] = prefix[i]+stoneValue[i];
+        }
+        if (n==1)
+            return 0; 
+        for(int k=1; k<n; k++) 
+        {
+            for(int i=0; i<n-k; i++)     
+            {
+                int j = i+k+1; 
+                int sumi2j = prefix[j] - prefix[i];
+                //index[i] is first index in [i~j) in which sum[i~index[i])>=sum[index[i]~j)
+                int c = index[i];
+                int maxv = 0;
+                int sumi2c, sumc2j;
+                while(c<j)
+                {
+                    sumi2c = prefix[c] - prefix[i];
+                    sumc2j = prefix[j] - prefix[c];
+                    if (sumi2c >= sumc2j)
+                        break;
+                    c++;
+                }
+                index[i] = c;
+                if (c<j)
+                    maxv = max(maxv, dp[j][c]);
+                if (sumi2c == sumc2j)
+                    c++;
+                maxv = max(maxv, dp[i][c-1]);
+                if (k==n-1)
+                    return maxv;
+                dp[i][j] = max(dp[i][j-1], maxv + sumi2j);
+                dp[j][i] = max(dp[j][i+1], maxv + sumi2j);
+            }
+        }
+        return 0; 
+    }
+};

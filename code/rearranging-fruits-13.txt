@@ -1,0 +1,43 @@
+typedef long long ll;
+class Solution {
+public:
+    long long minCost(vector<int>& basket1, vector<int>& basket2) 
+    {
+        ll mn=INT_MAX;
+        map<int,int>record,b1,b2;
+        for(auto &x:basket1)record[x]++,b1[x]++,mn=min(mn,1ll*x);
+        for(auto &x:basket2)record[x]++,b2[x]++,mn=min(mn,1ll*x);
+        for(auto &x:record)
+        {
+            if(x.second%2)return -1;
+            x.second/=2;
+        }
+        ll res=0;
+        deque<int>dq1,dq2;
+        for(auto &x:b1)
+            for(int i=0;i<x.second-record[x.first];i++)
+                dq1.push_back(x.first);
+        for(auto &x:b2)
+            for(int i=0;i<x.second-record[x.first];i++)
+                dq2.push_back(x.first);
+        while(dq1.size())
+        {
+            int l1=dq1.front();
+            int l2=dq2.front();
+            if(mn*2<=min(l1,l2))break;
+            if(l1<l2)
+            {
+                res+=l1;
+                dq1.pop_front();
+                dq2.pop_back();
+            }else
+            {
+                res+=l2;
+                dq1.pop_back();
+                dq2.pop_front();
+            }
+        }
+        res+=dq1.size()*2*mn;
+        return res;
+    }
+};

@@ -1,0 +1,93 @@
+    public class SummaryRanges
+    {
+        private List<int[]> _data;
+
+        public SummaryRanges()
+        {
+            _data = new List<int[]>();
+        }
+
+
+        private List<int[]> Merge(IList<int[]> intervals)
+        {
+            List<int[]> res = new List<int[]>();
+            int i = 0;
+            int j = 1;
+
+            while (i < intervals.Count)
+            {
+                int from = intervals[i][0];
+                int to = intervals[i][1];
+
+                while (j < intervals.Count && intervals[j][0] <= to + 1)
+                {
+                    to = Math.Max(to, intervals[j][1]);
+                    j++;
+                }
+
+                res.Add(new[] { from, to });
+
+                i = j;
+                j = i + 1;
+            }
+
+            return res;
+        }
+
+
+        private void Insert(int[] newInterval)
+        {
+            if (_data.Count == 0)
+            {
+                _data.Add(newInterval);
+                return;
+            }
+
+
+            int l = 0;
+            int r = _data.Count - 1;
+            while (l < r)
+            {
+                if (r - l <= 1)
+                {
+                    break;
+                }
+
+                int m = l + (r - l) / 2;
+                if (_data[m][0] <= newInterval[0])
+                {
+                    l = m;
+                }
+                else
+                {
+                    r = m;
+                }
+            }
+
+            int idx = l;
+            while (idx < _data.Count && newInterval[0] > _data[idx][0])
+            {
+                idx++;
+            }
+
+            if (idx == _data.Count)
+            {
+                _data.Add(newInterval);
+            }
+            else
+            {
+                _data.Insert(idx, newInterval);
+            }
+        }
+
+        public void AddNum(int val)
+        {
+            Insert(new[] {val, val});
+        }
+
+        public int[][] GetIntervals()
+        {
+            _data = Merge(_data);
+            return _data.ToArray();
+        }
+    }

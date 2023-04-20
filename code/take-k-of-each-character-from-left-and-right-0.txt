@@ -1,0 +1,42 @@
+int takeCharacters(char * s, int k){
+    int countA = 0, countB = 0, countC = 0, len = strlen(s), i, left, right, ans = len;
+
+    for (i = 0; i < len ; i++) {
+        if (s[i] == 'a')
+            countA++;
+        if (s[i] == 'b')
+            countB++;
+        if (s[i] == 'c')
+            countC++;
+    }
+
+    if (countA < k || countB < k || countC < k)
+        return -1;
+
+    left = len - 1, right = len - 1;
+
+    while (left >= 0) {
+        if (s[left] == 'a')
+            countA--;
+        if (s[left] == 'b')
+            countB--;
+        if (s[left] == 'c')
+            countC--;   
+
+        while (countA < k || countB < k || countC < k) {
+            if (s[right] == 'a')
+                countA++;
+            if (s[right] == 'b')
+                countB++;
+            if (s[right] == 'c')
+                countC++; 
+
+            right--;     
+        } 
+
+        ans = fmin(ans, left + len - 1 - right);
+        left--;
+    }
+
+    return ans;
+}

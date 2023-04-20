@@ -1,0 +1,72 @@
+class Solution {
+public:
+    vector<int> findSubstring(string s, vector<string>& words) {
+  	std::vector<int> output;
+	int size = words.size();
+	if (size == 0 || s.length() == 0) return output;
+	int len = words[0].length();
+	output.reserve(s.length() / (size * len));
+	int8_t* sum = new int8_t [size]();
+	int8_t* exp = new int8_t[size]();
+    int* prev = new int[size]();
+    int in = 0; 
+        for (auto base = words.begin(); base != words.end(); ++base) {
+		exp[in]++;
+        for (auto it = base + 1; it != words.end(); ) {
+		
+			if (*base == *it) {
+				it = words.erase(it);
+				exp[in]++;
+			}
+			else {
+				++it;
+			}
+		}
+		in++;
+	}
+
+	int new_size = words.size();
+
+    int index = -1;
+    int consecutive = 0;    
+   	for (int k = 0; k < len ; k++) {
+    consecutive = 0;
+    memset(sum, 0, new_size);
+   for (int i = k; i < s.length(); i += len) {
+		int j = 0;
+        for (j = 0; j < new_size; j++) {
+			if (strncmp(s.c_str() + i, words[j].c_str(), len) == 0) {
+		    sum[j]++;
+            prev[consecutive % size] = j;    
+            consecutive++;    
+            if (consecutive >= size) {
+            if (strncmp((char*)sum, (char*)exp, new_size) == 0) {    
+            output.push_back(i - (size - 1) * len);    
+            }
+            sum[prev[consecutive % size]]--;
+            }    
+                
+            break;
+		}
+        
+        }
+        
+        if (j == new_size && consecutive > 0 ) {
+          consecutive = 0;
+          memset(sum, 0, new_size); 
+         }
+	 }
+    }
+       delete[] sum;
+       delete[] prev;
+       delete[] exp; 
+	return output;
+
+}
+
+}
+...
+
+I compared with https://leetcode.com/problems/substring-with-concatenation-of-all-words/discuss/609964/Dense-C%2B%2B-code%3A-approx.-O(N)-linear-time (findSubstring3) and with https://leetcode.com/problems/substring-with-concatenation-of-all-words/discuss/565286/Pure-O(N-*-number-of-words)-runtime-beats-84-in-runtime-and-100-in-memory! (findSubstring2)
+Your system report  my code  from 50 to 100 times slower than both two examples.
+Understand please

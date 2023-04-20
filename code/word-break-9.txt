@@ -1,0 +1,25 @@
+
+bool dfs(char *s, char** wd, int wdSize, int* Array, int ASize){
+    if(s[0] == '\0')
+        return true;
+    bool ret = false;
+    int i;
+    for(i=0;i<wdSize;i++){
+        int leng = strlen(wd[i]);
+        
+        if(!strncmp(s, wd[i], leng)&& !Array[ASize-strlen(s)+leng]){
+            ret = dfs(s+leng, wd, wdSize, Array, ASize);
+            if(ret)
+                return ret;
+        }
+    }
+    Array[ASize-strlen(s)] = 1;
+    return ret;
+}
+
+bool wordBreak(char * s, char ** wordDict, int wordDictSize){
+    int* Array = calloc(strlen(s)+1, sizeof(int));
+    bool ret = dfs(s, wordDict, wordDictSize, Array, strlen(s));
+    free(Array);
+    return ret;
+}

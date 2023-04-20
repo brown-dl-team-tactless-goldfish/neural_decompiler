@@ -1,0 +1,42 @@
+class Solution {
+    int n ;
+    vector<int>ret ;
+    vector<bool>used ;
+    
+public:
+    vector<int> constructDistancedSequence(int n) {
+        this->n = n ;
+        ret.resize(2*n-1) ;
+        used.resize(n+1, false) ;
+        dfs(0) ;
+        return ret ;
+    }
+    
+    bool dfs(int pos){
+        if(pos == 2*n-1)
+            return true ;
+        if(ret[pos] > 0)
+            return dfs(pos+1) ;
+        for(int i = n; i >= 1; i--)
+        {
+            if(used[i])
+                continue ;
+            if(i > 1)
+            {
+                if(pos+i >= 2*n-1 || ret[pos+i] > 0)
+                    continue ;
+            } 
+            used[i] = true ;
+            ret[pos] = i ;
+            if(i > 1)
+                ret[pos+i] = i ;
+            if(dfs(pos+1))
+                return true ;
+            used[i] = false ;
+            ret[pos] = 0 ;
+            if(i > 1)
+                ret[pos+i] = 0 ;
+        }
+        return false ;
+    }
+};

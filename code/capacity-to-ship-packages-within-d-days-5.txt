@@ -1,0 +1,34 @@
+bool tryToShip(int *weights, int weightsSize, int days, int cap) {
+    int d = 0, cargo = 0;
+    for (int i = 0; i < weightsSize; i++) {
+        if (cargo + weights[i] <= cap) {
+            cargo += weights[i];
+        } else {
+            cargo = weights[i];
+            d++;
+        }
+    }
+    if (d + 1 <= days)
+        return true;
+    return false;
+}
+
+int search(int *weights, int weightsSize, int days, int left, int right) {
+    if (right >= left) {
+        int mid = left + (right - left) / 2;
+        if (tryToShip(weights, weightsSize, days, mid))
+            return search(weights, weightsSize, days, left, mid - 1);
+        return search(weights, weightsSize, days, mid + 1, right);
+    }
+    return left;
+}
+
+int shipWithinDays(int* weights, int weightsSize, int days){
+    int max = 0, sum = 0;
+    for (int i = 0; i < weightsSize; i++) {
+        sum += weights[i];
+        if (weights[i] > max)
+            max = weights[i];
+    }
+    return search(weights, weightsSize, days, max, sum);
+}

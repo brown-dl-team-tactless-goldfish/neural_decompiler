@@ -1,0 +1,43 @@
+class Solution {
+    long long helper(long long n){
+        if(n == 1 || n == 0)
+            return n;
+        return n + helper(n-1);
+    }
+public:
+    long long countGood(vector<int>& nums, int k) {
+        unordered_map <long long,long long> ump;
+        long long ans=0;
+        long long i=0,j=0,tmp=0;
+        while(j<nums.size()){
+            ump[nums[j]]++;
+            if(ump[nums[j]] == 2){
+                tmp++;
+            }
+            else if(ump[nums[j]] > 2){
+                tmp -= helper(ump[nums[j]]-2);
+                tmp += helper(ump[nums[j]]-1);
+            }
+            if(tmp >= k){
+                int x = nums.size() - j;
+                cout << tmp << endl;
+                ans += x;
+                while(tmp >= k){
+                    ump[nums[i]]--;
+                    if(ump[nums[i]] ==  1)
+                        tmp--;
+                    else if(ump[nums[i]] >= 2){
+                        tmp -= helper(ump[nums[i]]);
+                        tmp += helper(ump[nums[i]]-1);
+                    }
+                    i++;  
+                    if(tmp >= k)
+                        ans += x;
+                }
+                cout << j << " " << ans << " " << tmp << endl;
+            }
+            j++;
+        }
+        return ans;
+    }
+};

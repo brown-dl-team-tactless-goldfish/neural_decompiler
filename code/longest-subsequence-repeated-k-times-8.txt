@@ -1,0 +1,54 @@
+class Solution {
+    void getAllPermutations(string& s, int pos, int maxLen, vector<string>& permutations) {
+        if (pos == maxLen) {
+            permutations.emplace_back(s.begin(), s.begin() + maxLen);
+            return;
+        }
+        
+        unordered_set<char> visited;
+        for (int i = pos; i < s.size(); ++i) {
+            if (visited.count(s[i])) continue;
+            visited.insert(s[i]);
+            swap(s[pos], s[i]);
+            getAllPermutations(s, pos + 1, maxLen, permutations);
+            swap(s[pos], s[i]);
+        }
+        
+        if (pos == 0) {
+            getAllPermutations(s, 0, maxLen - 1, permutations); // shorter strings next
+        }
+    }
+public:
+    string longestSubsequenceRepeatedK(string s, int k) {
+        vector<int> letterCnt(26);
+        for (char c: s) {
+            ++letterCnt[c - 'a'];
+        }
+        
+        string candLetters;
+        for (int i = 25; i >= 0; --i) { // lexicographically largest 
+            while (letterCnt[i] >= k) {
+                candLetters.push_back('a' + i);
+                letterCnt[i] -= k;
+            }
+        }
+        if (candLetters.empty()) return "";
+
+        vector<string> candsVec;
+        getAllPermutations(candLetters, 0, max(s.size() / k, candLetters.size()), candsVec);
+        
+        for (string& cand: candsVec) {
+            // cout << cand << ' ';
+            for (int i = 0, j = 0, cnt = 0; i < s.size(); ++i) {
+                if (s[i] == cand[j]) ++j;
+                if (j == cand.size()) {
+                    j = 0;
+                    if (++cnt == k) return cand;
+                }
+                if (s.size() - i + j < cand.size() * (k - cnt)) break;
+            }
+        }
+        
+        return "";
+    }
+};

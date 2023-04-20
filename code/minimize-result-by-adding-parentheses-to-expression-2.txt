@@ -1,0 +1,28 @@
+class Solution {
+public:
+    string minimizeResult(string s) {
+        auto pos_plus = s.find('+');
+        auto s1 = s.substr(0, pos_plus), s2 = s.substr(pos_plus+1);
+        string res;
+        long long minVal = 1e18;
+        for(int i=0;i<s1.size();i++){
+            auto a = 1LL;
+            if(i>0) a = stoll(s1.substr(0, i));
+            auto b = stoll(s.substr(i));
+            for(int j=1;j<=s2.size();j++){
+                auto c = stoll(s2.substr(0, j));
+                auto d = 1LL;
+                if(j < s2.size()) d = stoll(s2.substr(j));
+                long long val = a*(b+c)*d;
+                if(val <minVal){
+                    minVal = val;
+                    auto u = s1, v = s2;
+                    u.insert(i, 1, '(');
+                    v.insert(j, 1, ')');
+                    res = u+'+'+v;
+                }
+            }
+        }
+        return res;
+    }
+};

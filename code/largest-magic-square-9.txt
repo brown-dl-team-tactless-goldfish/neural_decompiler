@@ -1,0 +1,29 @@
+class Solution {
+public:
+    bool isMagic(vector<vector<int>>& grid, int r, int c, int len) {
+        int diag1 = 0, diag2 = 0;
+        vector<int> rows(len), cols(len);
+        for(int row = r; row < r + len; row++) {
+            for(int col = c; col < c + len; col++) {
+                if(row - r == col - c)               diag1 += grid[row][col];
+                if(row - r == (len - 1) - (col - c)) diag2 += grid[row][col];
+                rows[row - r] += grid[row][col];
+                cols[col - c] += grid[row][col];
+            }
+        }
+
+        if(diag1 != diag2) return false;
+        return all_of(rows.begin(), rows.end(), [diag1](auto num){ return num == diag1; }) &&
+               all_of(cols.begin(), cols.end(), [diag1](auto num){ return num == diag1; });
+    }
+
+    int largestMagicSquare(vector<vector<int>>& grid) {
+        const int rows = grid.size(), cols = grid[0].size();
+        for(int len = min(rows, cols); len >= 1; --len)
+            for(int row = 0; row <= rows - len; row++)
+                for(int col = 0; col <= cols - len; col++)
+                    if(isMagic(grid, row, col, len))
+                        return len;
+        return 1;
+    }
+};

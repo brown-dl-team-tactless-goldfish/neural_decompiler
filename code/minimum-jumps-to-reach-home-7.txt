@@ -1,0 +1,38 @@
+class Solution {
+    #define LIMIT (4000)
+public:
+    int minimumJumps(vector<int>& forbidden, int a, int b, int x) {
+        queue<pair<int, int>> q;
+        int steps = 0;
+        vector<bool> bVisited(LIMIT+1, false);
+        for (int elem : forbidden)
+            bVisited[elem] = true;
+        bVisited[0] = true;
+        q.push(make_pair(0,0));
+        while (!q.empty()) {
+            queue<pair<int, int>> newq;
+            while (!q.empty()) {
+                pair<int, int> curr = q.front();
+                q.pop();
+                //cout << curr.first << endl;
+                if (curr.first == x)
+                    return steps;
+                int forward = curr.first + a;
+                if (forward<=LIMIT && bVisited[forward]==false) {
+                    newq.push(make_pair(forward, a));
+                    bVisited[forward] = true;
+                }
+                if (curr.second>=0) {
+                    int backward = curr.first - b;
+                    if (backward>=0 && bVisited[backward]==false) {
+                        newq.push(make_pair(backward, -b));
+                        //bVisited[backward] = true;
+                    }
+                }
+            }
+            q = newq;
+            steps++;
+        }
+        return -1;
+    }
+};

@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int minSumOfLengths(vector<int>& arr, int target) {
+        vector<int> len1(arr.size(), arr.size() + 1);
+        unordered_map<int, int> m;
+        int sum = 0, len = 2 * arr.size(), res = 2 * arr.size();
+        m[0] = -1;
+        for(int i = 0; i < arr.size(); i++) {
+            sum += arr[i];
+            auto p = m.find(sum - target);
+            if(p != m.end()) {
+                len = min(len, i - p->second);
+                if(p->second >= 0) res = min(res, i - p->second + len1[p->second]);
+            }
+            m[sum] = i;
+            len1[i] = len;
+        }
+        return res <= arr.size() ? res : -1;
+    }
+};

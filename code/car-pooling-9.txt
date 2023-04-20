@@ -1,0 +1,162 @@
+typedef struct heap {
+    int numItems;
+    const int** items;
+} Heap;
+
+static inline int getNumPassengers(int *trip) {
+    return trip[0];
+}
+
+static inline int getStart(int *trip) {
+    return trip[1];
+}
+
+static inline int getEnd(int *trip) {
+    return trip[2];
+}
+
+static int compare(const void* v, const void* z)
+{
+    const int* a = *(const int**)v;
+    const int* b = *(const int**)z;
+    
+    if (getStart(a) < getStart(b)) return -1;
+    else if (getStart(a) > getStart(b)) return 1;
+    else if (getEnd(a) < getEnd(b)) return -1;
+    else if (getEnd(a) > getEnd(b)) return 1;
+    else if (getNumPassengers(a) > getNumPassengers(b)) return -1;
+    else if (getNumPassengers(a) < getNumPassengers(b)) return 1;
+    else return 0;
+}
+
+// 0 1 2 3 4 5 6 7 8 9
+// 0 -> 1 2
+// 1 -> 3 4
+// 2 -> 5 6
+// 3 -> 7 8
+
+static inline int getFirstChildIndex(int idx)
+{
+    return idx * 2 + 1;
+}
+
+static inline int getParentIndex(int idx)
+{
+    return (idx - 1) / 2;
+}
+
+static inline const int* heapPeak(Heap *h)
+{
+    if (h->numItems == 0) {
+        return NULL;
+    } else {
+        return h->items[0];
+    }
+}
+
+static inline bool heapCompare(Heap *h, int idx1, int idx2)
+{
+    const int *item1 = h->items[idx1];
+    const int *item2 = h->items[idx2];
+    
+    if (getEnd(item1) < getEnd(item2)) return true;
+    else return false;
+}
+
+static inline void heapSwap(Heap *h, int idx1, int idx2) 
+{
+    const int *temp = h->items[idx1];    
+    h->items[idx1] = h->items[idx2];
+    h->items[idx2] = temp;
+}
+
+static void heapBalanceDown(Heap *h)
+{
+    int curIdx = 0;
+    
+    while (1) {
+        const int childIdx1 = getFirstChildIndex(curIdx);
+        const int childIdx2 = childIdx1 + 1;
+        int childIdx = -1;
+        
+        if (childIdx2 < h->numItems) {
+            if (heapCompare(h, childIdx1, childIdx2)) {
+                childIdx = childIdx1;
+            } else {
+                childIdx = childIdx2;
+            }
+        } else if (childIdx1 < h->numItems) {
+            childIdx = childIdx1;
+        } else {
+            break;
+        }
+        
+        if (heapCompare(h, childIdx, curIdx)) {
+            heapSwap(h, curIdx, childIdx);
+            curIdx = childIdx;
+        } else {
+            break;
+        }
+    }
+}
+
+static inline void heapRemove(Heap *h) 
+{
+    if (h->numItems > 0) {
+        h->items[0] = h->items[--h->numItems];
+        if (h->numItems > 1) {
+            heapBalanceDown(h);
+        }
+    }
+}
+
+static void heapBalanceUp(Heap *h)
+{
+    int curIdx = h->numItems - 1;
+    
+    while (curIdx > 0) {
+        const int pIdx = getParentIndex(curIdx);
+        
+        if (heapCompare(h, curIdx, pIdx)) {
+            heapSwap(h, curIdx, pIdx);
+            curIdx = pIdx;
+        } else {
+            break;
+        }
+    }
+}
+
+static inline void heapAdd(Heap *h, const int* trip)
+{
+    h->items[h->numItems++] = trip;
+    if (h->numItems > 0) {
+        heapBalanceUp(h);
+    }
+}
+
+bool carPooling(int** trips, int tripsSize, int* tripsColSize, int capacity){
+    Heap h = { 0, NULL };
+
+    qsort(trips, tripsSize, sizeof(int*), compare);
+    
+	h.items = malloc(tripsSize*sizeof(int*));
+    for (int i = 0; i < tripsSize && capacity >= 0; i++) {
+        const int* curTrip = trips[i];   
+        
+        while (1) {
+            const int* peakTrip = heapPeak(&h);
+            if (peakTrip != NULL && getEnd(peakTrip) <= getStart(curTrip)) {
+                capacity += getNumPassengers(peakTrip);
+                heapRemove(&h);
+            } else {
+                break;
+            }
+        }
+        
+        capacity -= getNumPassengers(curTrip);
+        heapAdd(&h, curTrip);
+    }
+    
+	free(h.items);
+    return (capacity >= 0);
+}

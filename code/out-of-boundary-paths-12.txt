@@ -1,0 +1,20 @@
+class Solution {
+    int M = 1e9+7;
+    long long fn(int m, int n, int k, int i, int j,vector<vector<vector<long long>>> &dp){
+        if(i < 0 or i >= m or j < 0 or j >= n)
+            return 1;
+        
+        if(k <= 0) return 0;
+        
+        if(dp[i][j][k] != -1) return dp[i][j][k];
+        
+        return dp[i][j][k] = (fn(m,n,k-1,i+1,j,dp)%M+fn(m,n,k-1,i-1,j,dp)%M+fn(m,n,k-1,i,j+1,dp)%M+fn(m,n,k-1,i,j-1,dp)%M)%M;
+    }
+public:
+    int findPaths(int m, int n, int k, int i, int j) {
+        
+        vector<vector<vector<long long>>>dp(m,vector<vector<long long>>(n, vector<long long>(k+1,-1)));
+        
+        return fn(m,n,k,i,j,dp);
+    }
+};

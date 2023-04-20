@@ -1,0 +1,62 @@
+int *stackValues = (int *)malloc(sizeof(int) * numsSize);
+int *stackIndexs = (int *)malloc(sizeof(int) * numsSize);
+int i, size_stack = 0;
+
+// Finding the largest number until point i
+// ----------------------------------------
+int *prev_larger_num = (int *)malloc(sizeof(int) * numsSize);
+int *next_larger_num = (int *)malloc(sizeof(int) * numsSize);
+initArray(&prev_larger_num, numsSize, -1);
+initArray(&next_larger_num, numsSize,  numsSize);
+for(i = 0 ; i < numsSize ; i++)
+{
+    while(size_stack && nums[i] > stackValues[size_stack - 1])
+    {
+        size_stack--;
+        next_larger_num[stackIndexs[size_stack]] = i;
+    }
+    prev_larger_num[i] = size_stack == 0 ? -1 : stackIndexs[size_stack - 1];
+    stackValues[size_stack] = nums[i];
+    stackIndexs[size_stack] = i;
+    size_stack++;
+}
+
+// Finding the smallest number until point i
+// -----------------------------------------
+int *prev_smaller_num = (int *)malloc(sizeof(int) * numsSize);
+int *next_smaller_num = (int *)malloc(sizeof(int) * numsSize);
+initArray(&prev_smaller_num, numsSize, -1);
+initArray(&next_smaller_num, numsSize, numsSize);
+size_stack = 0;
+for(i = 0 ; i < numsSize ; i++)
+{
+    while(size_stack && nums[i] < stackValues[size_stack - 1])
+    {
+        size_stack--;
+        next_smaller_num[stackIndexs[size_stack]] = i;
+    }
+    prev_smaller_num[i] = size_stack == 0 ? -1 : stackIndexs[size_stack - 1];
+    stackValues[size_stack] = nums[i];
+    stackIndexs[size_stack] = i;
+    size_stack++;
+}
+
+// Calculate all the maximums and minimums
+// ---------------------------------------
+long long min = 0, max = 0;
+for(i = 0; i < numsSize ; i++)
+{
+    min = min + ((long long)nums[i] * (i - prev_smaller_num[i]) * (next_smaller_num[i] - i));
+    max = max + ((long long)nums[i] * (i - prev_larger_num[i])  * (next_larger_num[i]  - i));
+}
+
+free(stackValues);
+free(stackIndexs);
+free(prev_larger_num);
+free(next_larger_num);
+free(prev_smaller_num);
+free(next_smaller_num);
+
+long long res = max - min;
+
+return res;

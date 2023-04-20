@@ -1,0 +1,82 @@
+struct ListNode *create() {
+    
+    struct ListNode *temp = (struct ListNode *)malloc(sizeof(struct ListNode));
+    temp->next = NULL;
+    return temp;
+    
+}
+struct ListNode *merge(struct ListNode *left, struct ListNode *right) {
+    
+    struct ListNode *dummy, *curr;
+    
+    printf("left=%d right=%d\n",left->val,right->val);
+    dummy = create();
+    
+    curr = dummy;
+    
+    while (left && right) {
+        
+        if( left->val < right->val) {
+            
+            curr->next = left;
+            left = left->next;
+        }
+        
+        else {
+            
+           curr->next = right;
+            right = right->next; 
+            
+        }
+        
+        curr = curr->next;
+    }//end of while loop
+    
+    
+    if(left)
+        curr->next = left;
+    else
+        curr->next = right;
+    
+    curr = dummy->next;
+    free(dummy);
+    return curr;
+    
+}
+
+struct ListNode * mid(struct ListNode *head) {
+    
+    struct ListNode *fast, *slow, *mid;
+    
+    fast = head;
+    slow = head;
+    
+    while(fast->next != NULL && fast->next->next != NULL) {
+        
+        fast = fast->next->next;
+        slow = slow->next;
+        
+    }
+    
+    mid = slow->next;
+    slow->next = NULL;
+    
+    return mid;
+}
+
+
+struct ListNode* sortList(struct ListNode* head){
+
+    struct ListNode *temp, *left, *right;
+    
+        if (!head || !(head->next))
+            return head;
+    
+    temp = mid(head);
+    printf("mid=%d\n",temp->val);
+    left = sortList(head);
+    right = sortList(temp);
+    //printf("here\n");
+    return merge(left,right);
+    
+}

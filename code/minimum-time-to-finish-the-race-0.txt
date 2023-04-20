@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int minimumFinishTime(vector<vector<int>>& T, int c, int n) {
+        long long dp[1001]{[1 ... 1000]=INT_MAX};
+        for(auto& e : T) {
+            for(long long i = 1, cur = e[0], total = cur; c + e[0] > cur; i++) {
+                if(dp[i] > total) dp[i] = total;
+                cur *= e[1];
+                total += cur;
+            }
+        }
+
+        for(int i = 1; i <= n; i++) {
+            for(int j = 1; j < i; j++) {
+                dp[i] = min(dp[i], dp[j]+c+dp[i-j]);
+            }
+        }
+        return dp[n];
+    }
+};

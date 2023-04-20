@@ -1,0 +1,30 @@
+bool wordBreak(char * s, char ** wordDict, int wordDictSize){
+    if (wordDictSize == 0) return false;
+    
+    int  l = strlen(s);
+    bool tbl[l + 1];
+    int  wordDictLen[wordDictSize];
+    
+    tbl[0] = true;
+    memset(tbl + 1, 0x00, l * sizeof(bool));
+    
+    for (int i = 0; i < wordDictSize; ++i)
+        wordDictLen[i] = strlen(wordDict[i]);
+    
+    for (int i = 0; i < l; ++i) {
+        if (tbl[i]) {
+            for (int j = 0; j < wordDictSize; ++j) {
+                int  p = i + wordDictLen[j];
+                if (p < l + 1) {
+                    char t = s[p];
+                    
+                    s[p]   = NULL;
+                    tbl[p] = tbl[p] || (strcmp(s + i, wordDict[j]) == 0);
+                    s[p]   = t;
+                }
+            }
+        }
+    }
+    
+    return tbl[l];
+}

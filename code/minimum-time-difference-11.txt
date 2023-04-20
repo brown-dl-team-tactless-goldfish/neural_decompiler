@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int findMinDifference(vector<string>& timePoints) {
+        map<int, int> TimeMap;
+        for(string &str : timePoints)
+        {
+            int min = stoi(str.substr(0,2));
+            int sec = stoi(str.substr(3));
+            int time = min*60 + sec;
+            if(TimeMap.count(time))
+                return 0;
+            TimeMap[time]++;
+        }
+        int i = 0, prev = 0, fsttime = 0, ans = INT_MAX;
+        for(auto &[fst, snd] : TimeMap)
+        {
+            if(i == 0)
+            {
+                fsttime = fst;
+                prev = fst;
+                i++;
+                continue;
+            }
+            ans = min(fst-prev, ans);
+            prev = fst; 
+        }
+        ans = min(1440-prev+fsttime,ans);
+        return ans;
+    }
+};

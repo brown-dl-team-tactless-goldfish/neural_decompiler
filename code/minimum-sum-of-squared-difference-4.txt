@@ -1,0 +1,35 @@
+class Solution {
+public:
+    long long minSumSquareDiff(vector<int>& nums1, vector<int>& nums2, int k1, int k2) {
+        unordered_map<int, int> freq; 
+        for (int i = 0; i < nums1.size(); ++i) {
+            int diff = abs(nums1[i] - nums2[i]); 
+            if (diff) ++freq[diff]; 
+        }
+        priority_queue<pair<int, int>> pq; 
+        for (auto& [k, v] : freq) pq.emplace(k, v); 
+        for (int total = k1+k2, kk = 0, vv = 0; total && pq.size(); ) {
+            auto [k, v] = pq.top(); pq.pop(); 
+            if (pq.size()) { 
+                tie(kk, vv) = pq.top(); pq.pop(); 
+            } else kk = vv = 0; 
+            int diff = k - kk; 
+            if (diff * v <= total) {
+                total -= diff * v; 
+                if (vv) pq.emplace(kk, v+vv); 
+            } else {
+                int x = total / v, y = total % v; 
+                total = 0; 
+                pq.emplace(k-x-1, y); 
+                pq.emplace(k-x, v-y); 
+                if (vv) pq.emplace(kk, vv); 
+            }
+        }
+        long long ans = 0; 
+        while (pq.size()) {
+            auto [k, v] = pq.top(); pq.pop(); 
+            ans += (long long) k*k*v; 
+        }
+        return ans; 
+    }
+};

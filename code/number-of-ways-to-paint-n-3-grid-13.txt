@@ -1,0 +1,44 @@
+class Solution {
+public:
+    int numOfWays(int n) {
+        const long long int P = 1e9 + 7;
+        long long int f[5005][3][3][3];
+        
+        // initialization
+        memset(f, 0, sizeof(f));
+        for (int i1 = 0; i1 < 3; i1++)
+            for (int i2 = 0; i2 < 3; i2++)
+                for (int i3 = 0; i3 < 3; i3++)
+                    if (i1 != i2 && i2 != i3)
+                        f[0][i1][i2][i3] = 1;
+        
+        for (int i = 1; i < n; i++) {
+            for (int i1 = 0; i1 < 3; i1++) {
+                for (int i2 = 0; i2 < 3; i2++) {
+                    for (int i3 = 0; i3 < 3; i3++) {
+                        if (i1 == i2 || i2 == i3) continue;
+                        for (int j1 = 0; j1 < 3; j1++) {
+                            if (j1 == i1) continue;
+                            for (int j2 = 0; j2 < 3; j2++) {
+                                if (j2 == i2) continue;
+                                for (int j3 = 0; j3 < 3; j3++) {
+                                    if (j3 == i3) continue;
+                                    if (j1 == j2 || j2 == j3) continue;
+                                    if (i1 == j1 || i2 == j2 || i3 == j3) continue;
+                                    f[i][i1][i2][i3] = (f[i][i1][i2][i3] + f[i-1][j1][j2][j3]) % P;
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        
+        int ans = 0;
+        for (int i1 = 0; i1 < 3; i1++)
+            for (int i2 = 0; i2 < 3; i2++)
+                for (int i3 = 0; i3 < 3; i3++)
+                    ans = (ans + f[n-1][i1][i2][i3]) % P;
+        return ans;
+    }
+};

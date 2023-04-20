@@ -1,0 +1,47 @@
+class Solution {
+public:
+    vector<int> POW_10 = {1, 10, 100, 1000, 10000, 100000, 1000000};
+    bool isSolvable(vector<string>& words, string result) {
+        unordered_set<char> charSet;
+        vector<int> charCount(91);
+        vector<bool> nonLeadingZero(91);    // ASCII `A..Z` are in range `65..90`
+        for (string word : words) {
+            vector<char> cs = { word.begin(), word.end() };
+            for (int i = 0; i < cs.size(); i++) {
+                if (i == 0 && cs.size() > 1) nonLeadingZero[cs[i]] = true;
+                charSet.insert(cs[i]);
+                charCount[cs[i]] += POW_10[cs.size() - i - 1]; //charCount is calculated by units
+            }
+        }
+        for(auto c : charSet ) cout << c << " "; cout << endl;
+        for(auto i : charCount ) if (i > 0) cout << i << " "; cout << endl;
+        vector<char> cs = { result.begin(), result.end() };
+        for (int i = 0; i < cs.size(); i++) {
+            if (i == 0 && cs.size() > 1) nonLeadingZero[cs[i]] = true;
+            charSet.insert(cs[i]);
+            charCount[cs[i]] -= POW_10[cs.size() - i - 1];  //charCount calculated by units
+        }
+        for(auto c : charSet ) cout << c << " "; cout << endl;
+        for(auto i : charCount ) cout << i << " "; cout << endl;
+        vector<bool> used(10);
+        vector<char> charList(charSet.size());
+        int i = 0;
+        for (char c : charSet) 
+            charList[i++] = c;
+        return backtracking(used, charList, nonLeadingZero, 0, 0, charCount);
+    }
+    bool backtracking(vector<bool>& used, vector<char>& charList, vector<bool>& nonLeadingZero, int step, int diff, vector<int>& charCount) {
+        if (step == charList.size()) 
+            return diff == 0; // difference between sum of words and result equal to 0
+        for (int d = 0; d <= 9; d++) { // each character is decoded as one digit (0 - 9).
+            char c = charList[step];
+            if (!used[d] // each different characters must map to different digits
+                    && (d > 0 || !nonLeadingZero[c])) {  // decoded as one number without leading zeros.
+                used[d] = true;
+                if (backtracking(used, charList, nonLeadingZero, step + 1, diff + charCount[c] * d, charCount)) return true;
+                used[d] = false;
+            }
+        }
+        return false;
+    }
+};

@@ -1,0 +1,45 @@
+void quicksort(int *nums, int numsSize);
+void wigglesort(int *nums, int numsSize){
+    quicksort(nums, numsSize);
+	int counter = 0;
+	int left = (numsSize - 1) / 2;
+	int right = numsSize - 1; 
+	int cache[numsSize];
+	
+	for(counter=1; counter <= numsSize; counter++){
+		if((counter & 1) == 1){
+			cache[counter - 1] = nums[left--];
+		}
+		else{
+			cache[counter - 1] = nums[right--];
+		}
+	}
+	for(counter=0; counter<numsSize; counter++){
+		nums[counter] = cache[counter];
+	}
+}
+
+void quicksort(int *nums, int numsSize){
+	if(numsSize <= 1){
+		return;
+	}
+	int left = 0;
+	int right = numsSize - 1;
+	int key = nums[left];
+
+	while(left < right){
+		while(nums[right] >= key && left < right){
+			right--;
+		} 
+		nums[left] = nums[right];
+		while(left < right && nums[left] <= key){
+			left++;
+		}
+		nums[right] = nums[left];
+	}
+	nums[left] = key;
+
+	quicksort(nums, left);
+	quicksort(nums+left+1, numsSize - 1 - left);
+
+}

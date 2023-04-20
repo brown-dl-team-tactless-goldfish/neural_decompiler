@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int minScore(int n, vector<vector<int>>& roads) {
+        using Edge = pair<int, int>;
+        vector<vector<Edge>> graph(1 + n);
+        for (const auto& road : roads) {
+            graph[road[0]].emplace_back(road[1], road[2]);
+            graph[road[1]].emplace_back(road[0], road[2]);
+        }
+        vector<int> q; q.emplace_back(1);
+        vector<bool> seen(1 + n); seen[1] = true;
+        int min_score = numeric_limits<int>::max();
+        while (!q.empty()) {
+            int city = q.back(); q.pop_back();
+            for (const auto& edge : graph[city]) {
+                min_score = min(min_score, edge.second);
+                if (seen[edge.first]) continue;
+                seen[edge.first] = true;
+                q.push_back(edge.first);
+            }
+        }
+        return min_score;
+    }
+};

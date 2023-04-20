@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int maximumProduct(vector<int>& nums, int k) {
+        int n = nums.size();
+        int mod = 1e9+7;
+        
+        if(n == 1) {
+            return nums[0] + k;
+        }
+        
+        priority_queue<int, vector<int>, greater<int>> minHeap;
+        for(int num: nums) {
+            minHeap.push(num);
+        }
+        
+        while(k != 0) {
+            int minEle = minHeap.top(); // get smallest element and increment its value
+            minHeap.pop();
+            
+            // to decrease the TC, instead of incrementing 1 each time
+            // we take the diff bw 1st smallest & 2nd smallest no
+            // and increment by diff
+            int diff = min(k, minHeap.top() - minEle);
+            diff = (diff == 0) ? 1 : diff;  // if both are equal then, ++ by 1
+            minHeap.push(minEle + diff);
+            k -= diff;
+        }
+        
+        
+        // multiplying the numbers
+        long long result = 1;
+        while(!minHeap.empty()) {
+            result *= minHeap.top();
+            result %= mod;
+            minHeap.pop();
+        } 
+        
+        return result;
+    }
+};

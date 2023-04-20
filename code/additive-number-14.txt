@@ -1,0 +1,33 @@
+bool ans = false;
+vector<long long> sub;
+
+void solve(string& s, int start){
+    if(ans) return;
+    if(start == s.size() && sub.size() >= 3){
+        ans = true;
+        return;
+    }
+
+    long long num = 0;
+    for(int i=start; i<s.size(); i++){
+		// overflow fix - just reverse formula
+		if(num > ((LLONG_MAX - (LLONG_MAX % 10) - (s[i]-'0'))/10)) return;
+		
+		//OR this works for leetcode testcases
+        // if(num > LLONG_MAX/10 - (s[i]-'0')/10) return;
+
+        num = num*10 + (s[i]-'0');
+        if(s[start] == '0' && i > start) return;
+
+        int m = sub.size();
+        if(m < 2 || (num == (long long) sub[m-1] + (long long) sub[m-2])){
+            sub.push_back(num);
+            solve(s, i+1);
+            sub.pop_back();
+        }
+    }
+}
+bool isAdditiveNumber(string s) {
+    solve(s, 0);
+    return ans;
+}

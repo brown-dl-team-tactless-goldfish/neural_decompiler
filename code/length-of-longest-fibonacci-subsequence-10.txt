@@ -1,0 +1,74 @@
+    public class Solution
+    {
+        public int LenLongestFibSubseq(int[] arr)
+        {
+            checked
+            {
+                int res = 0;
+                Dictionary<int, int> val2Idx = new Dictionary<int, int>();
+
+                for (int i = 0; i < arr.Length; i++)
+                {
+                    val2Idx[arr[i]] = i;
+                }
+
+                HashSet<int> visited = new HashSet<int>();
+                ICollection<(int, int)>[] dp = new ICollection<(int, int)>[arr.Length];
+                for (int i = 2; i < arr.Length; i++)
+                {
+                    int last = arr[i];
+                    visited.Clear();
+
+                    for (int j = i - 1; j >= 0; j--)
+                    {
+                        int prev = arr[j];
+
+                        int prevPrev = last - prev;
+                        if (!val2Idx.ContainsKey(prevPrev) || val2Idx[prevPrev] == j || val2Idx[prevPrev] == last)
+                        {
+                            continue;
+                        }
+
+                        if (visited.Contains(prevPrev))
+                        {
+                            continue;
+                        }
+
+                        visited.Add(prev);
+
+                        if (dp[j] == null)
+                        {
+                            dp[i] = dp[i] ?? new HashSet<(int, int)>() { };
+                            dp[i].Add((prev, 3));
+                            res = Math.Max(res, 3);
+                            continue;
+                        }
+
+                        bool attached = false;
+                        foreach ((int, int) prev2Length in dp[j])
+                        {
+                            if (prev2Length.Item1 == prevPrev)
+                            {
+                                dp[i] = dp[i] ?? new HashSet<(int, int)>() { };
+                                dp[i].Add((prev, prev2Length.Item2 + 1));
+                                res = Math.Max(res, prev2Length.Item2 + 1);
+                                attached = true;
+                                break;
+                            }
+                        }
+
+                        if (attached)
+                        {
+                            continue;
+                        }
+
+                        dp[i] = dp[i] ?? new HashSet<(int, int)>() { };
+                        dp[i].Add((prev, 3));
+                        res = Math.Max(res, 3);
+                    }
+                }
+
+                return res;
+            }
+        }
+    }

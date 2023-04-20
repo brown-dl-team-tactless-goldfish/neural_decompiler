@@ -1,0 +1,56 @@
+public class Solution {
+    public int[] MaxPoints(int[][] grid, int[] queries) {
+        int[] res = new int[queries.Length];
+        SortedDictionary<int, int> sortedMap = Bfs(grid);
+        List<int> prefix = new();
+        List<int> sortedKeys = sortedMap.Keys.ToList();
+        foreach(int key in sortedKeys){
+            int prev = prefix.Count > 0 ? prefix[prefix.Count-1] : 0;
+            prefix.Add(sortedMap[key]+prev);
+        }        
+        for(int i = 0; i < queries.Length; i++){
+            int idx = BinarySearch(sortedKeys, queries[i]);
+            res[i] = idx != -1 ? prefix[idx] : 0;
+        }
+        return res;
+    }
+    private int BinarySearch(List<int> sortedKeys, int query){
+        int lo = 0, hi = sortedKeys.Count-1, ans = -1;
+        while(lo <= hi){
+            int mid = lo+(hi-lo)/2;
+            if(sortedKeys[mid] < query) ans = mid;
+            if(sortedKeys[mid] < query) lo = mid+1;
+            else hi = mid-1;
+        }
+        return ans;
+    }
+    private SortedDictionary<int, int> Bfs(int[][] grid){
+        int max = grid[0][0];
+        int[] dx = new int[] { -1, 1, 0, 0 };
+        int[] dy = new int[] { 0, 0, 1, -1 };
+        SortedDictionary<int, int> sortedMap = new();
+        PriorityQueue<int[], int> queue = new();
+        bool[,] visited = new bool[grid.Length, grid[0].Length];
+        queue.Enqueue(new int[] { 0, 0 }, grid[0][0]);
+        visited[0,0] = true;
+        while(queue.Count > 0){
+            int size = queue.Count;
+            for(int i = 0; i < size; i++){
+                int[] curr = queue.Dequeue();
+                if(max < grid[curr[0]][curr[1]])
+                    max = grid[curr[0]][curr[1]];
+                if(!sortedMap.ContainsKey(max))
+                    sortedMap.Add(max, 0);
+                sortedMap[max]++;
+                for(int j = 0; j < 4; j++){
+                    int x = curr[0]+dx[j], y = curr[1]+dy[j];
+                    if(x < 0 || x >= grid.Length || y < 0 || y >= grid[0].Length || visited[x,y])
+                        continue;
+                    queue.Enqueue(new int[] { x, y }, grid[x][y]);
+                    visited[x,y] = true;
+                }
+            }
+        }
+        return sortedMap;
+    }
+}

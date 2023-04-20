@@ -1,0 +1,33 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+ #define MOD 1000000007
+
+ #define MAX(A, B) ((A > B) ? A : B)
+
+int totalSumTree (struct TreeNode* root){
+    if (root == NULL)
+        return 0;
+    return root->val + totalSumTree(root->left) + totalSumTree(root->right);
+}
+
+long sumTreeMax (struct TreeNode* root, int totalSumTree, long long *resultSum){
+    if (root == NULL)
+        return 0;
+
+    long long sum = (long long)root->val + sumTreeMax(root->left, totalSumTree, resultSum) + sumTreeMax(root->right, totalSumTree, resultSum);
+    *resultSum = MAX(*resultSum, sum * (totalSumTree - sum));
+    return sum;
+}
+
+int maxProduct(struct TreeNode* root){
+    long long max = 0;
+    sumTreeMax(root, totalSumTree(root), &max);
+    return max % MOD;
+}

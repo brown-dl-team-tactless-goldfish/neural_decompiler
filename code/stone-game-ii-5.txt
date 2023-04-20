@@ -1,0 +1,38 @@
+int dp[101][101];
+
+int help(vector<int>& piles, int idx, int m)
+{
+    if(idx >= piles.size())
+    {
+        return 0;
+    }
+    
+    if(dp[idx][m] != -1)
+    {
+        return dp[idx][m];
+    }
+    
+    int sum = 0, ans = INT_MIN;
+    
+    for(int i=idx; i< idx+2*m && i<piles.size(); i++)
+    {
+        
+        sum += piles[i];
+        
+        ans = max(ans, sum - help(piles,i+1,max(i-idx+1,m)));
+    }
+                  
+    return dp[idx][m] = ans;                      
+}
+
+int stoneGameII(vector<int>& piles) 
+{
+    
+    memset(dp,-1,sizeof(dp));
+    
+    int diff = help(piles,0, 1);
+    
+    int sum = accumulate(piles.begin(),piles.end(), 0);
+    
+    return (sum+diff) / 2;
+}

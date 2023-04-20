@@ -1,0 +1,30 @@
+class Solution {
+public:
+ 
+    long long countPairs(vector<int>& nums, int k) {
+        
+      map<int,int> mp;
+        long long ans = 0;
+        int ct = nums.size()-1;
+        for(int i=0;i<nums.size();i=i+1)
+        {
+            int x  = __gcd(nums[i],k);
+            if(x%k==0){ans = ans + ct;ct--;}
+            else{mp[x]++;}
+        }
+        
+        
+       for(auto i = mp.begin(); i != mp.end(); i++)
+       {   
+           auto it=i;
+           if(((long long)it->first*(long long)it->first)%k==0){ans = ans + ((long long)(i->second)*(i->second-1))/2;}
+           it++;
+           for(;it != mp.end(); it++)
+           {
+               if((i->first*it->first)%k==0){ans = ans + i->second*it->second;}
+           }
+       }
+        return ans;
+        
+    }
+};

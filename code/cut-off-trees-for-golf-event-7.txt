@@ -1,0 +1,51 @@
+private:
+    int row, col;
+    int d[4] = {0, 1, 0, -1};
+    bool inBound(int i, int j) { return i>=0 && i<row && j>=0 && j<col; }
+
+    int bfs(vector<vector<int>>& grid, pair<int, int> start, pair<int, int> end) {
+        queue<pair<int, int>> q({start});
+        vector<vector<int>> visited(row, vector<int>(col, 0));
+        visited[start.first][start.second] = 1;
+        
+        for (int dist = 0; !q.empty(); dist++) {            
+            for (int count = q.size(); count--; q.pop()) {           
+                if (q.front() == end) return dist;
+                for (int k = 0; k < 4; ++k) {
+                    int i = q.front().first+d[k], j = q.front().second+d[(k+1)%4];
+                    if (inBound(i, j) && !visited[i][j] && grid[i][j]) 
+                        q.emplace(i, j), visited[i][j] = 1;
+                }
+            }
+        }
+        return -1;
+    }    
+    
+public:
+    int cutOffTree(vector<vector<int>>& grid) {
+        row = grid.size();
+        col = row? grid[0].size() : 0;
+        if (row == 0 || col == 0) return 0;
+
+        // collect all trees
+        vector<pair<int, int>> trees;
+        for (int i = 0; i < row; ++i)
+            for (int j = 0; j < col; ++j)
+                if (grid[i][j] > 1) trees.emplace_back(i,j);
+
+        // sort trees by height
+        sort(trees.begin(), trees.end(), [&](pair<int, int> a, pair<int, int> b) {
+            return grid[a.first][a.second] < grid[b.first][b.second];
+        });
+
+        // do BFS for each tree
+        pair<int, int> start(0, 0);
+        int res = 0;
+        for (auto& tree : trees) {
+            int dist = bfs(grid, start, tree);
+            if (dist == -1) return -1;
+            res += dist;       
+            start = tree;
+        }
+        return res;        
+    }

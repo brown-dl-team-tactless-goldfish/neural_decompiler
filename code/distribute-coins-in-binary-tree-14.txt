@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int distributeCoins(TreeNode* root) {
+        return getState(root).step;
+    }
+    
+    struct State{
+        int rest;  // how many coins rest after balance. could be nagtive.
+        int step; // how many steps need to balance
+    };
+    
+    State getState(TreeNode* root){
+        if(!root) return {0,0};
+        auto l = getState(root->left), r = getState(root->right);
+        State res;
+        res.rest = l.rest + r.rest + root->val - 1;
+        res.step = l.step + abs(l.rest) + r.step + abs(r.rest);
+        return res;
+    }
+};

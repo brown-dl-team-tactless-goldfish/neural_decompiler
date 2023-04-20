@@ -1,0 +1,44 @@
+class Solution {
+public:
+    long long maxPower(vector<int>& a, int r, int k) {
+        long long low = 0;
+        long long  high = 1e11;
+        long long  ans = -1;
+        
+        while (low < high) {
+            // to avoid integer overflow use this
+            long long mid = low + ((high - low) >> 1); 
+            if (check(a, r, k, mid)) {
+                ans = mid; 
+                low = mid + 1; 
+            } else {
+                high = mid - 1; 
+            }
+        }
+        // since we are performing integer division(right shift) for calculating mid, there is a chance we might miss some higher values
+        if (check(a, r, k, ans + 1)) {
+            ans++;
+        }
+        return ans; 
+    }
+private: 
+    bool check(vector<int> &a, int r, long long k, long long m) {
+        int n = (int)a.size();
+        vector<long long> f(n + 1, 0ll); // something like a prefix sum array
+        for (int i = 0; i < n; i++) {
+            f[max(i - r, 0)] += a[i];
+            f[min(i + r + 1, n)] -= a[i];
+        }
+        long long curr = 0; 
+        for (int i = 0; i < n; i++) {
+            curr += f[i];
+            if (curr < m) {
+                long long t = max(0ll, m - curr); 
+                k -= t; 
+                f[min(i + (2 * r) + 1, n)] -= t;
+                curr += t; 
+            }
+        }
+        return k >= 0;
+    }
+};

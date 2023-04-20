@@ -1,0 +1,47 @@
+class DSU {
+    vector<int> parent;
+    public:
+    DSU(int n){
+        parent.resize(n);
+        for(int i=0; i<n; i++){
+            parent[i] = i;
+        }
+    }
+    
+    int find(int x){
+        if(parent[x]!=x){
+            parent[x] = find(parent[x]);
+        }
+        
+        return parent[x];
+    }
+    
+    void Union(int x, int y){
+        parent[find(x)] = find(y);
+    }
+};
+
+class Solution {
+public:
+    string smallestEquivalentString(string s1, string s2, string baseStr) {
+        DSU dsu(26);
+        for(int i=0; i<s1.size(); i++){
+            int firstLetter = s1[i] - 'a';
+            int secondLetter = s2[i] - 'a';
+            dsu.Union(firstLetter, secondLetter);
+        }
+        
+        string ans;
+        for(int i=0; i<baseStr.size(); i++){
+            for(int j=0; j<26; j++){
+                char first = j;
+                if(dsu.find(first) == dsu.find(baseStr[i]-'a')){
+                    ans+= (j+'a');
+                    break;
+                }
+            }
+        }
+        
+        return ans;
+    }
+};

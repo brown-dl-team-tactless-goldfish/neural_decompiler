@@ -1,0 +1,43 @@
+class Solution {
+public:
+    vector<bool> checkIfPrerequisite(int n, vector<vector<int>>& preq, vector<vector<int>>& queries) {
+        vector<vector<int>> adj(n,vector<int>());
+        vector<int> indegree(n,0);  
+        vector<bool> res;
+        if(preq.empty())
+            return vector<bool>(queries.size(), false);
+        for(int i = 0; i < preq.size(); i++){
+            adj[preq[i][1]].push_back(preq[i][0]);
+            indegree[preq[i][0]]++;
+        }
+        queue<int> q;
+
+        vector<unordered_set<int>> req(n);
+        for(int i = 0; i < n; i++)
+            if(indegree[i] == 0)
+                q.push(i);
+        
+        while(!q.empty()){
+            int cur = q.front();
+            q.pop();
+            
+            for(auto next : adj[cur]){
+                if(--indegree[next] == 0)
+                    q.push(next);
+                
+                req[next].insert(cur);
+                for(int c : req[cur]){
+                    req[next].insert(c);
+                }
+            }  
+        }
+        
+        for(auto& query: queries) {
+            if(req[query[0]].count(query[1]))
+                res.push_back(true);
+            else 
+                res.push_back(false);
+        }
+        return res;
+    }
+};

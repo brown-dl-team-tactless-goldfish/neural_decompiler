@@ -1,0 +1,60 @@
+int *count(struct ListNode* head,int* size)
+{
+    int *count=calloc(1000,sizeof(int));
+    int idx=0;
+    while(head)
+    {
+        count[idx++]=head->val;
+        head=head->next;
+    }
+    *size=idx;
+    return count;
+}
+
+struct ListNode* addTwoNumbers(struct ListNode* l1, struct ListNode* l2){
+    int len1,len2,idx=0,c=0;
+    int* num1=count(l1,&len1);
+    int* num2=count(l2,&len2);
+    int *tmp=calloc(1000,sizeof(int));
+    len1--;
+    len2--;
+    while(len1>=0&&len2>=0)
+    {
+        int num=num1[len1--]+num2[len2--]+c;
+        tmp[idx++]=num%10;
+        c=num/10;
+    }
+    while(len1>=0)
+    {
+        int num=num1[len1--]+c;
+        tmp[idx++]=num%10;
+        c=num/10;
+    }
+    while(len2>=0)
+    {
+        int num=num2[len2--]+c;
+        tmp[idx++]=num%10;
+        c=num/10;
+    }
+
+    struct ListNode* head=malloc(sizeof(struct ListNode));
+    head->next=NULL;
+    head->val=tmp[idx-1]%10;
+    struct ListNode* ret=head;
+    for(int i=idx-2;i>=0;i--){
+        struct ListNode* node=malloc(sizeof(struct ListNode));
+        node->next=NULL;
+        node->val=tmp[i];
+        head->next=node;
+        head=head->next;
+    }
+    if(c)   //if carry
+    {
+        struct ListNode* carry=malloc(sizeof(struct ListNode));
+        carry->val=1;
+        carry->next=ret;
+        return carry;
+    }
+
+    return ret;
+}

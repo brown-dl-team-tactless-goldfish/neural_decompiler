@@ -1,0 +1,38 @@
+class Solution:
+    def findTheString(self, lcp: List[List[int]]) -> str:
+        n = len(lcp)
+
+        # build s
+        s = ['' for _ in range(n)]
+        c = 'a' # 'a' .... 'z'
+        for i in range(n):
+            if s[i] != '':
+                continue
+            if c > 'z': 
+                return ""
+            s[i] = c
+            for j in range(n):
+                if lcp[i][j] > 0: # len(common_prefix(s[i:] , s[j:])) > 0
+                    s[j] = s[i] 
+            c = chr(ord(c) + 1)
+
+        print("".join(s))
+
+        # validate last column and last row
+        for i in range(n):
+            if lcp[i][n - 1] != (s[i] == s[n-1]):
+                return ""
+            if lcp[n-1][i] != (s[i] == s[n-1]):
+                return ""
+
+        # validate rest of lcp: if s[i] == s[j] => lcp[i][j] = 1 + lcp[i+1][j+1]
+        for i in range(n-1):
+            for j in range(n-1):
+                if s[i] == s[j]:
+                    if lcp[i][j] != 1 + lcp[i+1][j+1]: 
+                        return ""
+                else: # char at i and j are different => lcp[i][j] should be 0
+                    if lcp[i][j] != 0:
+                        return ""
+
+        return "".join(s)

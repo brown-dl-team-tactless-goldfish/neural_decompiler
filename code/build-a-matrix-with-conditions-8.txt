@@ -1,0 +1,75 @@
+vector<int> topo_sort(vector<vector<int>>&v, int k)
+{
+    vector<vector<int>> graph(k+1);
+    vector<int> indegree(k+1, 0);
+    
+    vector<int> ans;
+    
+    for(auto &x: v)
+    {
+        graph[x[0]].push_back(x[1]);
+        indegree[x[1]]++;
+    }
+    
+    queue<int> q;
+    
+    for(int i=1; i<=k; i++)
+    {
+        if(indegree[i] == 0)
+        {
+            q.push(i);
+        }
+    }
+    
+    while(!q.empty())
+    {
+        int n = q.size();
+        
+        while(n--)
+        {
+            auto it = q.front();
+            q.pop();
+            
+            ans.push_back(it);
+            
+            for(auto &x: graph[it])
+            {
+                if(--indegree[x] == 0)
+                {
+                    q.push(x);
+                }
+            }
+     
+        }
+    }
+    
+    return ans.size() == k?ans : vector<int>{};
+}
+vector<vector<int>> buildMatrix(int k, vector<vector<int>>& rowConditions, vector<vector<int>>& colConditions) {
+    
+    vector<int> row_order = topo_sort(rowConditions, k);
+    vector<int> col_order = topo_sort(colConditions, k);
+    
+    if(row_order.size() != k || col_order.size() != k)
+    {
+        return {};
+    }
+    
+    vector<int> r(k+1), c(k+1);
+    
+    for(int i=0; i<k; i++)
+    {
+        r[row_order[i]] = i;
+        c[col_order[i]] = i;
+    }
+    
+    vector<vector<int>> ans(k,vector<int>(k,0));
+    
+    for(int i=1; i<=k; i++)
+    {
+        ans[r[i]][c[i]] = i;
+    }
+    
+    return ans;
+    
+}

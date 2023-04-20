@@ -1,0 +1,77 @@
+class Solution {
+
+unordered_map<string,unordered_map<string,long>> memo;//[board str: [hand str: count]]
+
+long dfs(string board,string hand){
+    
+    // cout<<board<<" , "<<hand<<endl;
+    if( board.empty() ){
+        return 0;
+    }
+    
+    if( memo.find( board ) != memo.end() && memo[board].find( hand ) != memo[board].end() ){
+        return memo[board][hand];
+    }
+    
+    for(int g=0;g<board.size();g++){
+        
+        int idx = g;
+        while( idx+1 < board.size() && board[idx+1] == board[idx] ){
+            idx++;
+        }
+        
+        if( idx-g+1 >= 3 ){
+            long max_v = INT_MAX;
+            for(int x=g+3;x<=idx+1;x++){
+                max_v = min( max_v , dfs( board.substr(0,g)+board.substr(x) , hand ) );
+            }
+            return max_v;
+        }
+        g = idx;
+    }
+    
+          
+    long max_v = INT_MAX;
+    
+    for(int ch=0;ch<hand.size();ch++){
+        
+        if( ch > 0 && hand[ch-1] == hand[ch] ){
+            continue;
+        }
+        
+        for(int g=0;g<board.size();g++){
+            
+            if( board[g] == hand[ch] ){
+                
+                int idx = g;
+                while(idx+1 < board.size() && board[idx+1] == hand[ch] ){
+                    idx++;
+                }
+                int end = idx;
+                
+                if( end - g + 1 >= 2 ){
+                    // cout<<"foudn instrval ="<<hand[ch]<<" = "<<end-g+1<<endl;
+                    for(int x=g+2;x<=end+1;x++){
+                        max_v = min( max_v , dfs( board.substr(0,g) + board.substr(x) , hand.substr(0,ch) + hand.substr(ch+1) ) + 1 );        
+                    }
+                    
+                    
+                }
+                else{
+                    max_v = min( max_v , dfs( board.substr(0,g) + string(1,hand[ch]) + board.substr(g) , hand.substr(0,ch) + hand.substr(ch+1) ) + 1 );
+                }
+                
+                g = end;
+            }
+        }
+    }
+    
+    return memo[board][hand] = max_v;
+}
+
+int solve(string& board,string& hand){
+    
+    int x = dfs( board , hand );
+    
+    return x == INT_MAX ? -1 : x;
+}

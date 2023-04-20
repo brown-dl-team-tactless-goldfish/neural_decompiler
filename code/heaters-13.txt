@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int findRadius(vector<int>& houses, vector<int>& heaters) {
+        if (houses.size() == 0)
+            return 0;
+        if (heaters.size() == 0)
+            return INT_MAX;
+        sort(heaters.begin(), heaters.end());
+        sort(houses.begin(), houses.end());
+        int house_index = 0, heater_index = 0;
+        int answer = 0;
+        if (heaters[0] > houses[0]) {
+            answer = heaters[0] - houses[0];
+            house_index++;
+        }
+        while (house_index < houses.size()) {
+            while (heater_index + 1 < heaters.size() && heaters[heater_index + 1] < houses[house_index]) ++heater_index;
+            if (heater_index + 1 < heaters.size() && heaters[heater_index + 1] == houses[house_index] || heaters[heater_index] == houses[house_index]) {
+                house_index++;
+                continue ;
+            }
+            if (heaters[heater_index] > houses[house_index]) {
+                assert(heater_index == 0);
+                house_index++;
+                continue ;
+            }
+            int dist = houses[house_index] - heaters[heater_index];
+            if (heater_index + 1 < heaters.size()) {
+                assert(heaters[heater_index + 1] > houses[house_index]);
+                int dist2 = heaters[heater_index + 1] - houses[house_index];
+                if (dist2 < dist)
+                    dist = dist2;
+            }
+            if (dist > answer)
+                answer = dist;
+            house_index++;
+        }
+        return answer;
+    }
+};

@@ -1,0 +1,25 @@
+class Solution {
+public:
+    bool checkIfCanBreak(string s1, string s2) {
+        multiset<char> a(s1.begin(), s1.end()), b(s2.begin(), s2.end());
+        bool ok = true;
+        for (char c : a) {
+            if (b.lower_bound(c) == b.end()) {
+                ok = false;
+                break;
+            }
+            b.erase(b.lower_bound(c));
+        }
+        if (ok) return true;
+        b = multiset<char>(s2.begin(), s2.end());
+        ok = true;
+        for (char c : b) {
+            if (a.lower_bound(c) == a.end()) {
+                ok = false;
+                break;
+            }
+            a.erase(a.lower_bound(c));
+        }
+        return ok;
+    }
+};

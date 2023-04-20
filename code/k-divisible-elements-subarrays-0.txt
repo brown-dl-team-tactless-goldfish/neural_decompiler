@@ -1,0 +1,63 @@
+// RS Hash Function
+unsigned int RSHash(int *arr, int n)
+{
+    unsigned int b = 378551;
+    unsigned int a = 6368973;
+    unsigned int hash = 0;
+
+    
+    for(int i = 0; i < n; i++){
+        hash = hash * a + arr[i];
+        a *= b ;
+    }
+
+    return (hash & 0x7FFFFFFF);
+}
+
+int countDistinct(int* nums, int numsSize, int k, int p){
+    int n = numsSize;
+    int N = n*n;
+    int** hash = calloc(N, sizeof(int*)) ;
+    int* count = calloc(201 , sizeof(int)) ;
+    int l = 0, r = 0;
+    int items = 0;
+    int d;
+    unsigned int val;
+    int ans = 0;
+    for(r = 0; r < n; r++){
+        count[nums[r]]++;
+        if(nums[r] % p== 0)
+            items++;
+
+        while(items > k){
+            count[nums[l]]--;
+            if(nums[l] % p == 0){
+                items--;
+            }
+            l++;
+        }
+
+        for(int i = l; i <= r; i++){
+            val = RSHash(&nums[i], r-i+1);
+            d = val;
+            while(1){
+                if(hash[d % N] == NULL){
+                    hash[d % N] = malloc(2 * sizeof(int));
+                    hash[d % N][0] = val;
+                    hash[d % N][1] = 1;
+                    ans++;
+                    break;
+                }
+                else{
+                    if(hash[d % N][0] == val){
+                        hash[d % N][1]++;
+                        break;
+                    }
+                    else
+                        d++;
+                }
+            }
+        }
+    }
+    return ans;
+}

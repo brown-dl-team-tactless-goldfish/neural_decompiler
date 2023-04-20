@@ -1,0 +1,72 @@
+
+class Solution {
+public:
+    bool parseBoolExpr(string expression) {
+        int i = 0;
+        return parseBoolExpr(expression, i);
+    }
+    
+private:
+    bool parseBoolExpr(string& expression, int& i) {
+        char c = expression[i];
+        
+        ++i;
+        
+        switch (c) {
+            case 't':
+                return true;
+            case 'f':
+                return false;
+            case '!':
+                {
+                    vector<bool> operands = parseBoolExprList(expression, i);
+                    return operands.front() ? false : true;
+                }
+            case '&':
+                {
+                    vector<bool> operands = parseBoolExprList(expression, i);
+                    bool result = true;
+                
+                    for (bool b: operands) {
+                        result &= b;
+                    }
+                
+                    return result;
+                }
+            case '|':
+                {
+                    vector<bool> operands = parseBoolExprList(expression, i);
+                    bool result = false;
+                
+                    for (bool b: operands) {
+                        result |= b;
+                    }
+                
+                    return result;
+                }
+            default:
+                assert(false);
+        }
+        
+        return false;
+    }
+    
+    vector<bool> parseBoolExprList(string& expression, int& i) {        
+        vector<bool> result;
+
+        ++i;
+        
+        while (expression[i] != ')') {
+            if (expression[i] == ',') {
+                ++i;
+            }
+            
+            bool b = parseBoolExpr(expression, i);
+            result.push_back(b);
+        }
+        
+        ++i;
+        
+        return result;
+    }
+};

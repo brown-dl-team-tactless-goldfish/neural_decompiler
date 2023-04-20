@@ -1,0 +1,47 @@
+class TweetCounts {
+public:
+    TweetCounts() {
+        
+    }
+    
+    void recordTweet(string tweetName, int time) {
+        multiset<int>& tweets = records[tweetName];
+        tweets.insert(time);
+    }
+    
+    vector<int> getTweetCountsPerFrequency(string freq, string tweetName, int startTime, int endTime) {
+        int delta = deltas[freq];
+        assert(delta != 0);
+        
+        multiset<int> &tweets = records[tweetName];
+        
+        vector<int> ans;
+        
+        int t1 = startTime;
+        while (t1 <= endTime) {
+            int t2 = min(t1 + delta, endTime + 1);
+            
+            auto it1 = tweets.lower_bound(t1);
+            auto it2 = tweets.lower_bound(t2);
+            ans.push_back(distance(it1, it2));
+            
+            t1 += delta;
+        }
+        
+        return ans;
+    }
+    
+    unordered_map<string, multiset<int>> records;
+    unordered_map<string, int> deltas {
+        { "minute", 60 },
+        { "hour", 3600 },
+        { "day", 3600 * 24 }
+    };
+};
+
+/**
+ * Your TweetCounts object will be instantiated and called as such:
+ * TweetCounts* obj = new TweetCounts();
+ * obj->recordTweet(tweetName,time);
+ * vector<int> param_2 = obj->getTweetCountsPerFrequency(freq,tweetName,startTime,endTime);
+ */

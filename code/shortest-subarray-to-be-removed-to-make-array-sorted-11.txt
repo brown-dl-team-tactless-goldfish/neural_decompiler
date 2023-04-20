@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int findLengthOfShortestSubarray(vector<int>& arr) {
+        const int n = arr.size();
+        int len = 1;
+        for (; n - len >= 1 && arr[n - len - 1] <= arr[n - len]; ++len)
+        ;
+        if (len == n) {
+            return 0;
+        }
+        for (int i = 0, j = n - len; i < n && (i == 0 || arr[i] >= arr[i - 1]); ++i) {
+            for (; j < n && arr[j] < arr[i]; ++j)
+            ;
+            len = max(len, i + 1 + n - j);
+        }
+        return n - len;
+        
+    }
+};

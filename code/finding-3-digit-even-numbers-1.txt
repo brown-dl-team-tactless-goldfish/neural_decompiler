@@ -1,0 +1,49 @@
+class Solution {
+public:
+    vector<int> findEvenNumbers(vector<int>& nums) 
+    {
+        unordered_set<int>s;
+        int n=nums.size();
+        sort(nums.begin(),nums.end());
+        vector<int>v;
+        auto count=[&](int num)
+        {
+            int count=0;
+            while(num)
+            {
+                count++;
+                num=num/10;
+            }
+            return count==3;
+        };
+        for(int i=0;i<n;i++)
+        {
+           int sum=nums[i];
+            for(int j=0;j<n;j++)
+            {
+                if(i!=j)
+                {
+                int temp1=sum*10+nums[j];
+                // cout<<sum<<endl;
+                for(int k=0;k<n;k++)
+                {
+                    if(k!=i&&j!=k)
+                    {
+                    int  temp=temp1*10+nums[k];
+                    if(temp%2==0&&count(temp))
+                    {
+                        s.insert(temp);
+                    }
+                    }
+                }
+                }
+            }
+        }
+        for(auto it:s)
+        {
+            v.push_back(it);
+        }
+        sort(v.begin(),v.end());
+        return v;
+    }
+};

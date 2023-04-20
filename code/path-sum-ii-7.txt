@@ -1,0 +1,58 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *columnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+#define SIZE 300
+int** pathSum(struct TreeNode* root, int sum, int** columnSizes, int* returnSize) {
+    *returnSize=0;
+    columnSizes[0]=(int*)calloc(SIZE,sizeof(int));
+    int** ret=(int**)malloc(SIZE*sizeof(int*));
+    if(root==NULL){
+        return NULL;
+    }
+    int val=root->val;
+    if(root->left==NULL&&root->right==NULL){
+        if(sum==val){
+            ret[*returnSize]=(int*)malloc(sizeof(int));
+            ret[*returnSize][columnSizes[0][*returnSize]++]=val;
+            (*returnSize)++;
+            return ret;
+        }else{
+            return NULL;
+        }
+    }
+    int** columnSizesTemp=(int**)malloc(sizeof(int*));
+    int* returnSizeTemp=(int*)malloc(sizeof(int));
+    int** retTemp;
+    retTemp=pathSum(root->left,sum-val,columnSizesTemp,returnSizeTemp);
+    for(int i=0;i<*returnSizeTemp;i++){
+        ret[*returnSize]=(int*)malloc((columnSizesTemp[0][i]+1)*sizeof(int));
+        ret[*returnSize][columnSizes[0][*returnSize]++]=val;
+        for(int j=0;j<columnSizesTemp[0][i];j++){
+            ret[*returnSize][columnSizes[0][*returnSize]++]=retTemp[i][j];
+        }
+        (*returnSize)++;
+    }
+    retTemp=pathSum(root->right,sum-val,columnSizesTemp,returnSizeTemp);
+    for(int i=0;i<*returnSizeTemp;i++){
+        ret[*returnSize]=(int*)malloc((columnSizesTemp[0][i]+1)*sizeof(int));
+        ret[*returnSize][columnSizes[0][*returnSize]++]=val;
+        for(int j=0;j<columnSizesTemp[0][i];j++){
+            ret[*returnSize][columnSizes[0][*returnSize]++]=retTemp[i][j];
+        }
+        (*returnSize)++;
+    }
+    free(retTemp);
+    free(returnSizeTemp);
+    free(columnSizesTemp[0]);
+    return ret;
+}

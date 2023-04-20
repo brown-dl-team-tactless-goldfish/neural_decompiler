@@ -1,0 +1,126 @@
+bool validateIPv4(char* s){
+    size_t len = strlen(s)-1;
+    int i =0;
+    if(len <0 || (len>0 && s[i] == '0')){
+        return false;
+    }
+    int val = 0;
+    while(s[i] != '\0'){
+        int k = (int)s[i];
+        if(k>=48 && k<=57){
+            val = val*10 + k-'0';
+            i++;
+            continue;
+        }
+        else
+            return false;
+    }
+    if(val>255)
+        return false;
+    return true;
+}
+char * checkIPv4(char *ip){
+    
+    int i = 0;
+    int count=0;
+    while(ip[i] != '\0'){
+        int j=0;
+        char buf[4] = {'\0'};
+        while(ip[i] != '.' && ip[i] != '\0'){
+            if(j>=3)
+                return "Neither";
+            buf[j] = ip[i];
+            i++;
+            j++;
+        }
+        if(ip[i] == '.' && ip[i+1] == '\0' || ip[i] == '.' && ip[i+1] == '.'){
+            return "Neither";
+        }
+        if(count++>= 4 || !validateIPv4(buf))
+           return "Neither";
+        
+        if(ip[i] == '\0')
+            break;
+        
+        i++;
+    }
+    if(count<4)
+        return "Neither";
+    return "IPv4";
+}
+
+bool validateIPv6(char* s){
+    int i =0;
+    size_t len = strlen(s) -1;
+    if(len<0)
+        return false;
+    while(s[i]!='\0'){
+        int k = (int)s[i];
+        if(k>=48 && k<=57){
+            i++;
+            continue;
+        }  
+        else if(k -'a' >=0 && k -'a' <=5){
+            printf("k is a-f\n");
+            i++;
+            continue;
+        }
+        else if(k - 'A' >=0 && k - 'A' <=5){
+            printf("k is A-F\n");
+            i++;
+            continue;
+        }
+        else
+            return false;
+    }
+    return true;
+}
+
+char * checkIPv6(char *ip){
+    int i = 0;
+    int count = 0;
+    while(ip[i] != '\0'){
+        int j = 0;
+        char buf[5] = {'\0'};
+        while(ip[i] != ':' && ip[i] != '\0'){
+            if(j>=4)
+                return "Neither";
+            buf[j] = ip[i];
+            i++;
+            j++;
+        }
+        if(ip[i] == ':' && ip[i+1] == '\0' || ip[i] == ':' && ip[i+1] == ':'){
+            return "Neither";
+        } 
+        if(count++>= 8 || !validateIPv6(buf))
+            return "Neither";
+        
+        if(ip[i] == '\0'){
+            break;
+        }
+        i++;
+        
+    }
+   
+    return "IPv6";
+}
+char * validIPAddress(char * IP){
+    int i =0;
+
+    while(IP[i] != '\0' && IP[i] != '.' && IP[i] != ':'){
+        i++;
+    }
+    if(IP[i] == '.'){
+         printf("Check IPv4\n");
+        return checkIPv4(IP);
+    }
+       
+    
+    if(IP[i] == ':'){
+        printf("Check IPv6\n");
+        return checkIPv6(IP);
+    }
+        
+    
+    return "Neither";
+}

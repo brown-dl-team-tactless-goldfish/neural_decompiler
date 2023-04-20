@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int lastStoneWeightII(vector<int>& stones) {
+        int sum = accumulate(stones.begin(),stones.end(),0);
+        
+        bool ans = false;
+        int c = 0;
+        while(!ans) {
+            if((c+sum)%2==0){
+                ans = canPartition(stones,(c+sum)/2);
+                if(ans)return c;
+                
+            } 
+            c++;
+        }
+        return -1;
+    }
+    bool canPartition(vector<int> &nums,int target) 
+    {
+        vector<int> dp(target+1);
+        
+        dp[0] = true;
+        for(auto i:nums) {
+            for(int j = target;j>=0;--j) {
+                if(i+j <=target && dp[j])dp[i+j] = true;
+            }
+        }
+        return dp[target];
+    }
+};

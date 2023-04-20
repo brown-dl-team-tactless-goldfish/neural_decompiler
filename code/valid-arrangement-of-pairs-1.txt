@@ -1,0 +1,34 @@
+class Solution {
+public:
+    void dfs(int v, map<int, set<int>>& edge, vector<vector<int>>& sol) {
+        set<int>& node = edge[v];
+        while (!node.empty()) {
+            int u = *node.begin();
+            node.erase(node.begin());
+            dfs(u, edge, sol);
+            sol.push_back({v, u});
+        }
+    }
+    vector<vector<int>> validArrangement(vector<vector<int>>& pairs) {
+        int n = pairs.size();
+        map<int, set<int>> edge;
+        map<int, int> deg;
+        for (int i = 0; i < n; i++) {
+            edge[pairs[i][0]].insert(pairs[i][1]);
+            ++deg[pairs[i][0]];
+            --deg[pairs[i][1]];
+            
+        }
+        int start = pairs[0][0];
+        for (pair<int, int> p : deg) {
+            if (p.second > 0) {
+                start = p.first;
+                break;
+            }
+        }
+        vector<vector<int>> sol;
+        dfs(start, edge, sol);
+        reverse(sol.begin(), sol.end());
+        return sol;
+    }
+};

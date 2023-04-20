@@ -1,0 +1,42 @@
+int getWinner(vector<int>& arr, int k) {
+        
+        int a = arr[0];
+        int b = arr[1];
+        
+        int m = INT_MIN;
+        for(int n: arr)
+            m = max(m, n);
+        deque<int> dq;
+        for(int i=2;i<arr.size();i++)
+            dq.push_back(arr[i]);
+        unordered_map<int, int> m1;
+        while(a!=m){
+            if(a > b){
+                m1[a]++;
+                if(m1[a] == k)
+                    return a;
+                if(!dq.empty()){
+                    int temp = b;
+                    b = dq.front();
+                    dq.pop_front();
+                    dq.push_back(temp);
+                }
+            }
+            else{
+                m1[b]++;
+                if(m1[b] == k)
+                    return b;
+                if(!dq.empty()){
+                    int temp = a;
+                    a = b;
+                    b = dq.front();
+                    dq.pop_front();
+                    dq.push_back(temp);
+                }
+            }
+        }
+        
+        return a;
+        
+        
+    }

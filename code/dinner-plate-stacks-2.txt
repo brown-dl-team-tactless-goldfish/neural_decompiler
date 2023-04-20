@@ -1,0 +1,62 @@
+class DinnerPlates {
+public:
+    vector<stack<int>> stacks;
+    int c = 1;
+    set<int> as;
+    DinnerPlates(int capacity) {
+        c = capacity;
+        stacks.push_back(stack<int>());
+        as.insert(0);
+    }
+    
+    void push(int val) {
+        if(as.empty()){
+            stacks.push_back(stack<int>());
+            stacks.back().push(val);
+            if(stacks.back().size() < c){
+                as.insert(stacks.size()-1);
+            }
+        } else{
+            int i = *as.begin();
+            stacks[i].push(val);
+            if(stacks[i].size()>=c){
+                as.erase(i);
+            }
+        }
+        
+    }
+    
+    int pop() {
+        if(stacks.back().empty()){
+            return -1;
+        }
+        int x = stacks.back().top();
+        stacks.back().pop();
+        while(stacks.back().empty() && stacks.size()>1){
+            stacks.pop_back();
+        }
+        as.insert(stacks.size()-1);
+        return x;
+    }
+    
+    int popAtStack(int index) {
+        if(index>=stacks.size()){
+            return -1;
+        }
+        if(stacks[index].empty()){
+            return -1;
+        }
+        int t = stacks[index].top();
+        stacks[index].pop();
+        as.insert(index);
+        return t;
+    }
+};
+
+/**
+ * Your DinnerPlates object will be instantiated and called as such:
+ * DinnerPlates* obj = new DinnerPlates(capacity);
+ * obj->push(val);
+ * int param_2 = obj->pop();
+ * int param_3 = obj->popAtStack(index);
+ */

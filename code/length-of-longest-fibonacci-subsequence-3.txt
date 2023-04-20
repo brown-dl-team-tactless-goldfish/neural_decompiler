@@ -1,0 +1,26 @@
+class Solution { // dp[i][j] is the (longest sequence beginning from arr[i] and arr[j]) - 2
+public:
+    int lenLongestFibSubseq(vector<int>& arr) {
+        unordered_map<int,int> indexOf;
+        for(int i = 0; i < arr.size(); i++) {
+            indexOf[arr[i]] = i;
+        }
+        
+        int n = arr.size();
+        int max_len = 0;
+        vector<vector<int>> dp(n,vector<int>(n));
+        for(int i = n-2; i >= 0; i--) {
+            for(int j = i+1; j < n; j++) {
+                int a = arr[i], b = arr[j], c = arr[i]+arr[j];
+                if(indexOf.count(c) == 0) dp[i][j] = 0;
+                else {
+                    dp[i][j] = dp[j][indexOf[c]]+1;
+                    max_len = max(max_len,dp[i][j]);
+                }
+            }
+        }
+        
+        if(max_len == 0) return 0;
+        return max_len+2;
+    }
+};

@@ -1,0 +1,28 @@
+class Solution {
+public:
+    double calculateTax(vector<vector<int>>& brackets, int income) {
+        double totalTax = 0.0;
+        bool stop = false;
+        
+        for(int i = 0 ; i < brackets.size() && !stop; i++){
+            double tax = brackets[i][1] * 0.01;
+            double amount = -1;
+            if(brackets[i][0] <= income){
+                if(i == 0){
+                    amount = brackets[i][0];
+                }else{
+                    amount = brackets[i][0] - brackets[i - 1][0];
+                }
+            }else{
+                stop = true;
+                if(i == 0){
+                    amount = income;
+                }else{
+                    amount = income - brackets[i - 1][0];
+                }
+            }
+            totalTax += amount * tax;
+        }
+        return totalTax;
+    }
+};

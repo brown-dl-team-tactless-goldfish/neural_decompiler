@@ -1,0 +1,35 @@
+class Solution {
+public:
+    bool canDistribute(vector<int>& nums, vector<int>& quantity) {
+        unordered_map<int, int> mp;
+        for(auto a: nums) mp[a]++;
+        
+        
+        vector<int> cnt;
+        for(auto& [k, v] : mp) cnt.push_back(v);
+        
+        
+        priority_queue<int> pq;
+        for(auto a : cnt) {
+            if(a > 0) pq.push(a);
+        }
+        sort(quantity.begin(), quantity.end(), [](int& a, int&b) { return a > b;});
+
+        return helper(cnt, quantity, 0);
+    }
+    
+    bool helper(vector<int>& cnt, vector<int>& quantity, int pos) {
+        if(pos == quantity.size()) return true;
+        
+        for(int i=0; i<cnt.size(); ++i) {
+            int cur = cnt[i];
+            if(cur >= quantity[pos]) {
+                cnt[i] = cur - quantity[pos];
+                if(helper(cnt, quantity, pos+1)) return true;
+                cnt[i] = cur;
+            }
+        }
+        
+        return false;
+    }
+};

@@ -1,0 +1,37 @@
+class Solution {
+public:
+  long long minimumDifference(vector<int>& nums) {
+    int n  = nums.size()/3;
+    int n2 = n<<1;
+    vector<long>lmin(n);
+    
+    
+    priority_queue<int, vector<int>> left(nums.begin(), nums.begin()+n);
+    long lsum = accumulate(nums.begin(), nums.begin() + n, 0L);
+      
+    for(int i = n, j = 0; i != n2; i++, j++){
+      lmin[j] = lsum;
+      if(left.top() > nums[i]){
+        lsum += nums[i] - left.top();
+        left.pop();
+        left.push(nums[i]);
+      }
+    }
+    
+    
+    priority_queue<int, vector<int>, greater<int>> right(nums.begin() + n2, nums.end());
+    long rsum = accumulate(nums.begin() + n2, nums.end(), 0L);
+    
+    long dif = lsum - rsum; 
+    for(int i = n2 - 1, j = n-1; i >= n; i--, j--){
+      if(right.top() < nums[i]){
+        rsum += nums[i] - right.top();
+        right.pop();
+        right.push(nums[i]);
+      }
+      dif = min<long>(dif, lmin[j] - rsum);
+    }
+    
+    return dif;
+  }
+};

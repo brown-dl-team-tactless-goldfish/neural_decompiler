@@ -1,0 +1,39 @@
+int digit(int val){
+    int ret = 0;
+    while(val){
+        ret++;
+        val /= 10 ;
+    }
+    return (ret == 0)? 1 : ret ;
+
+}
+char * digitSum(char * s, int k){
+    int n = strlen(s) ;
+    char* ans = malloc((n+1) * sizeof(char) ) ;
+    if(n <= k){
+        strcpy(ans, s) ;
+        return ans ;
+    }
+    int val = 0 ;
+    int idx = 0 ;
+    int d ;
+    
+    for(int i = 0; i < n ;i++){
+        val +=  s[i] - '0' ;
+        if((i % k) == (k - 1 ) || i == (n-1)){
+            d = digit(val) ;
+            while(d > 0){
+                ans[idx] = val /(int)pow(10, d-1) + '0';
+                idx++;
+                val %= (int)pow(10, d-1) ;
+                d--;
+            }
+            val = 0 ;
+        }
+    }
+    ans[idx] = '\0' ;
+    if(idx <= k)
+        return ans ;
+    else
+        return digitSum(ans, k) ;
+}

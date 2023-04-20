@@ -1,0 +1,54 @@
+#define max(a, b) (a > b ? a : b)
+
+void traverse(int* edges, int node, int* adj){
+    if (node == -1) return ;
+    if (edges[node] == -1) return;
+    if (adj[edges[node]] == -1 || adj[edges[node]] > adj[node] + 1){
+        adj[edges[node]] = adj[node] + 1;
+        traverse(edges, edges[node], adj);
+    }
+}
+
+int closestMeetingNode(int* edges, int edgesSize, int node1, int node2){
+    if (node1 == node2) return node1;
+    int* adj1 = (int*)calloc(edgesSize, sizeof(int));
+    int* adj2 = (int*)calloc(edgesSize, sizeof(int));
+    for (size_t i=0; i < edgesSize; i++){
+        if (i != node1){
+            adj1[i] = -1;
+        }
+        else{
+            adj1[i] = 0;
+        }
+        if (i != node2){
+            adj2[i] = -1;
+        }
+        else{
+            adj2[i] = 0;
+        }
+    }
+
+    traverse(edges, node1, adj1);
+    traverse(edges, node2, adj2);
+
+    int min_idx = -1;
+    for (size_t i=0; i < edgesSize; i++){
+        if (adj1[i] >= 0 && adj2[i] >= 0){
+            adj1[i] = max(adj1[i], adj2[i]);
+        }
+        else{
+            adj1[i] = -1;
+        }
+        if (min_idx < 0){
+            if (adj1[i] >= 0){
+                min_idx = i;
+            }
+        }
+        else{
+            if (adj1[i] >= 0 && adj1[i] < adj1[min_idx]){
+                min_idx = i;
+            }
+        }
+    }
+    return min_idx;
+}

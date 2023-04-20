@@ -1,0 +1,51 @@
+class Solution {
+public:
+    #define ll long long int 
+    ll gcd(ll a, ll b)
+   {
+    if (a == 0)
+        return b;
+    return gcd(b % a, a);
+     }
+ 
+    bool solve(ll mid,ll d1,ll d2,int c1,int c2){
+        ll noofdiv1 = mid/d1;
+        ll noofdiv2 = mid/d2;
+        // common which are divisible by both 
+        ll lcm = ((d1*d2)/(gcd(d1,d2)));
+        ll common = mid/lcm ; 
+        ll tot = noofdiv1 + noofdiv2 - common ; 
+        ll notdivbyboth = mid-tot;
+        
+        ll divby1butnotby2 = noofdiv1-common;
+        ll divby2butnotby1 = noofdiv2-common;
+        c1-=divby2butnotby1;
+        c2-=divby1butnotby2;
+       // cout<<c1<<" ";
+        ll rem = 0 ; 
+        if(c1>0)
+            rem+=c1;
+        if(c2 > 0)
+            rem+=c2;
+        if(rem <= notdivbyboth)
+            return true;
+        return false;
+        
+    }
+       
+    int minimizeSet(int d1, int d2, int c1, int c2) {
+        ll mx = max(d1,d2);
+        ll l = 1 ; ll h = 1e12;
+        ll ans=-1;
+       // cout<<solve(11,d1,d2,c1,c2);
+        while(l<= h){
+            ll mid = l + (h-l)/2 ; 
+            if(solve(mid,d1,d2,c1,c2)){
+                ans=mid;
+                h=mid-1;
+            }
+            else l=mid+1;
+        }
+        return ans;
+    }
+};

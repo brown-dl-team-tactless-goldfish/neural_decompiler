@@ -1,0 +1,49 @@
+class Solution {
+public:
+    int largestMagicSquare(vector<vector<int>>&mat) 
+    { 
+     vector<vector<int>>r(100,vector<int>(100,0));
+    vector<vector<int>>c(100,vector<int>(100,0));
+    vector<vector<int>>d1(100,vector<int>(100,0));
+    vector<vector<int>>d2(100,vector<int>(100,0));
+        int n=mat.size();
+        int m=mat[0].size();
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=1;j<=m;j++)
+            {
+                r[i][j]=mat[i-1][j-1]+r[i][j-1];
+                c[i][j]=mat[i-1][j-1]+c[i-1][j];
+                d1[i][j]=mat[i-1][j-1]+d1[i-1][j-1];
+                d2[i][j]=mat[i-1][j-1]+d2[i-1][j+1];
+            }
+        }
+        int ans=1;
+        for(int k=1;k<=min(n,m);k++)
+        {
+            for(int i=1;i<=n-k;i++)
+            {
+                for(int j=1;j<=m-k;j++)
+                {
+                    set<int>s;
+                    int sum1=d1[i+k][j+k]-d1[i-1][j-1];
+                    int sum2=d2[i+k][j]-d2[i-1][j+k+1];
+                    s.insert(sum1);
+                    s.insert(sum2);
+                    for(int t=0;t<=k;t++)
+                    {
+                        int s1=(r[i+t][j+k]-r[i+t][j-1]);
+                        s.insert(s1);
+                       int s2=c[i+k][j+t]-c[i-1][j+t];
+                        s.insert(s2);
+                    }
+                    if(s.size()==1)
+                    {
+                        ans=max(ans,k+1);
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+};

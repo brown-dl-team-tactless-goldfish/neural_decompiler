@@ -1,0 +1,36 @@
+public class Solution 
+{
+    public string RankTeams(string[] votes) 
+    {
+        var dict = new Dictionary<int, int[]>();
+        foreach(var vote in votes)
+        {
+            for(int i = 0; i < vote.Length; i++)
+            {
+                var ch = (int) (vote[i] - 'A');
+                if(!dict.ContainsKey(ch))
+                {
+                    dict[ch] = new int[27];
+                    dict[ch][0] = ch;
+                }
+                
+                dict[ch][i + 1]++;
+            }
+        }
+        
+        var array = dict.Values.ToArray();
+        Array.Sort(array, (x, y) => Compare(x, y));
+        var list = new List<char>();
+        foreach(var d in array)
+                list.Add((char) (d[0] + 'A'));
+        return new string(list.ToArray());
+    }
+    
+    private int Compare(int[] x, int[] y)
+    {
+        for(int i = 1; i < x.Length; i++)
+            if(x[i] != y[i])
+                return -x[i].CompareTo(y[i]);
+        return x[0].CompareTo(y[0]);
+    }
+}

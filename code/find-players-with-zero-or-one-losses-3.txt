@@ -1,0 +1,64 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** findWinners(int** matches, int matchesSize, int* matchesColSize, int* returnSize, int** returnColumnSizes){
+    int player_count = 0;
+    // determine how many players there are
+    for(int i=0; i<matchesSize; ++i) {
+        if(matches[i][0] > player_count) player_count = matches[i][0];
+        if(matches[i][1] > player_count) player_count = matches[i][1];
+    }
+    // arrays for counting up wins and losses for each player
+    int* losses = (int*) malloc(sizeof(int) * (player_count + 1));
+    int* wins = (int*) malloc(sizeof(int) * (player_count + 1));
+    for(int i=0; i<=player_count; ++i) {
+        losses[i] = 0;
+        wins[i] = 0;
+    }
+    // total up wins and losses for each player
+    for(int i=0; i<matchesSize; ++i) {
+        wins[matches[i][0]] += 1;
+        losses[matches[i][1]] += 1;
+    }
+    // find players with either one or zero losses
+    int* buff_lose_none = (int*) malloc(sizeof(int) * (player_count + 1)); // buffer arrays
+    int* buff_lose_one = (int*) malloc(sizeof(int) * (player_count + 1));  // to store counts of matching players
+    int lose_one_count = 0;
+    int lose_none_count = 0;
+    for(int i=0; i<=player_count; ++i) {
+        switch(losses[i]) {
+            case 0: // players with no losses
+                // make sure we skip players with no games played
+                if(wins[i] != 0) {
+                    buff_lose_none[lose_none_count] = i;
+                    ++lose_none_count;
+                }
+                break;
+            case 1: // players with only a single loss
+                buff_lose_one[lose_one_count] = i;
+                ++lose_one_count;
+                break;
+            default:
+            // ignore any other loss count
+                break;
+        }
+    }
+    // prepare data for returning
+    *returnSize = 2;
+    int** to_return = (int**) malloc(sizeof(int*) * 2);
+    *returnColumnSizes = (int*) malloc(sizeof(int) * 2);
+    to_return[0] = (int*) malloc(sizeof(int) * lose_none_count);
+    to_return[1] = (int*) malloc(sizeof(int) * lose_one_count);
+    (*returnColumnSizes)[0] = lose_none_count;
+    (*returnColumnSizes)[1] = lose_one_count;
+    // copy from buffer arrays into to_return array
+    for(int i=0; i<lose_none_count; ++i) {
+        to_return[0][i] = buff_lose_none[i];
+    }
+    for(int i=0; i<lose_one_count; ++i) {
+        to_return[1][i] = buff_lose_one[i];
+    }
+    return to_return;
+}

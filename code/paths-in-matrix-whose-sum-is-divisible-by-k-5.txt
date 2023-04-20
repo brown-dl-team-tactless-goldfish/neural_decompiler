@@ -1,0 +1,22 @@
+    #define M 1000000007
+    int dp[100001][51];
+    int solve(int index, int sum, vector<vector<int>> &grid, int n, int m, int k) {
+        
+        int r = index / m, c = index % m;
+        if(r >= n || c >= m) return 0;
+        if(r == n - 1 && c == m - 1) return (sum + grid[r][c]) % k == 0;
+        if(dp[index][sum] != -1) return dp[index][sum];
+        
+        int ans = 0;
+        if(c + 1 < m)
+            ans = (ans + solve(index + 1, (sum + grid[r][c]) % k, grid, n, m, k)) % M;
+        if(r + 1 < n)
+            ans = (ans + solve(index + m, (sum + grid[r][c]) % k, grid, n, m, k)) % M;
+			
+        return dp[index][sum] = ans;
+    }
+    
+    int numberOfPaths(vector<vector<int>>& grid, int k) {
+        memset(dp, -1, sizeof dp);
+        return solve(0, 0, grid, grid.size(), grid[0].size(), k);
+    }

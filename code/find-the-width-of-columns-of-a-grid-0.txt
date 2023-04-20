@@ -1,0 +1,24 @@
+int MAX(int a, int b){ return(a>b?a:b); }
+
+int count(int n){
+    int cnt = 0;
+    while(n){
+        cnt++;
+        n /= 10;
+    }
+    return cnt;
+}
+
+int* findColumnWidth(int** grid, int gridSize, int* gridColSize, int* returnSize){
+    int* ans = (int*)calloc(gridColSize[0], sizeof(int));
+    int currCnt;
+    *returnSize = gridColSize[0];
+    for(int i = 0; i < gridSize; i++){
+        for(int j = 0; j < gridColSize[i]; j++){
+            currCnt = !grid[i][j]? 1 : count(abs(grid[i][j]));/* if 0, return 1 */
+            currCnt += (grid[i][j] < 0)? 1 : 0;/* add 1 for '-' */
+            ans[j] = MAX(ans[j], currCnt);
+        }
+    }
+    return ans;
+}

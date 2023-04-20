@@ -1,0 +1,25 @@
+int maxPath(int r, int c1, int c2, vector<vector<int>> &grid, vector<vector<vector<int>>> &dp) {
+    if(c1 == c2)
+        return 0;
+    if(c1 < 0 || c2 < 0 || c1 >= grid[0].size() || c2 >= grid[0].size())
+        return 0;
+    if(r == grid.size() - 1)
+        return grid[r][c1] + grid[r][c2];
+    
+    if(dp[r][c1][c2] != -1) return dp[r][c1][c2];
+    
+    int maxi = 0;
+    
+    for(int i = c1 - 1; i <= c1 + 1; i++) {
+        for(int j = c2 - 1; j <= c2 + 1; j++) {
+            maxi = max(maxi, maxPath(r + 1, i, j, grid, dp));
+        }
+    }
+    return dp[r][c1][c2] = maxi + grid[r][c1] + grid[r][c2];
+}
+
+int cherryPickup(vector<vector<int>>& grid) {
+    int row = grid.size(), col = grid[0].size();
+    vector<vector<vector<int>>> dp(row, vector<vector<int>>(col, vector<int>(col, -1)));
+    return maxPath(0, 0, col - 1, grid, dp);
+}

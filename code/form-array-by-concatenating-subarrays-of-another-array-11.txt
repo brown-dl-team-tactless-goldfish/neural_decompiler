@@ -1,0 +1,51 @@
+public bool CanChoose(int[][] groups, int[] nums)
+{
+	int[] prefixSum = new int[nums.Length + 1];
+	for (int i = 0; i < nums.Length; i++)
+	{
+		prefixSum[i + 1] = prefixSum[i] + nums[i];
+	}
+
+	int groupIndex = 0;
+	int[] group = groups[groupIndex];
+	int sum = group.Sum();
+	int length = group.Length;
+
+	for (int i = 0; i < prefixSum.Length; i++)
+	{
+		for (int j = 0; j < prefixSum.Length - i; j += length)
+		{
+			int currentSum = prefixSum[i + j] - prefixSum[i];
+			if (currentSum == sum)
+			{
+				bool isValid = true;
+				for (int k = i, index = 0; k < length; k++, index++)
+				{
+					if (nums[k] != group[index])
+					{
+						isValid = false;
+						break;
+					}
+				}
+
+				if (isValid)
+				{
+					groupIndex++;
+					i = i + j - 1;
+
+					if (groupIndex == groups.Length)
+					{
+						return true;
+					}
+
+					group = groups[groupIndex];
+					sum = group.Sum();
+					length = group.Length;
+					break;
+				}
+			}
+		}
+	}
+
+	return false;
+}

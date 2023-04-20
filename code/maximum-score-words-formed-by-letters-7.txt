@@ -1,0 +1,57 @@
+class Solution {
+    int dfs(vector<int> &bit, vector<int> words[], vector<int> &avail, int currbit, int n, vector<int>& score, int idx)
+    {
+        if(idx == n) return 0;
+        int ans = 0;
+        for(int i = idx; i < n; i++)
+        {
+            if(currbit == (currbit | bit[i])) continue;
+            int c = 1;
+            for(int j = 0; j < 26; j++)
+            {
+                if(words[i][j] > avail[j])
+                {
+                    c = 0;
+                    break;
+                }
+            }
+            if(c == 0) continue;
+            vector<int> Bupdate = avail;
+            int val = 0;
+            for(int j = 0; j < 26; j++)
+            {
+                if(words[i][j] == 0) continue;
+                val += words[i][j]*score[j];
+                Bupdate[j] -= words[i][j];
+            }
+            //cout << i << " ";
+            ans = max(ans, val + dfs(bit, words, Bupdate, currbit | bit[i], n, score, idx+1));
+        }
+        //cout << ans << " ";
+        return ans;
+    }
+public:
+    int maxScoreWords(vector<string>& words, vector<char>& letters, vector<int>& score) {
+        int n = words.size();
+        vector<int> bit(n);
+        int i = 0;
+        vector<int> val[n];
+        for(string &str : words)
+        {
+            vector<int> v(26,0);
+            for(char &ch : str)
+            {
+                v[ch-'a']++;
+            }
+            val[i] = v;
+            bit[i] = (1 << i);
+            i++;
+        }
+        vector<int> scr(26,0);
+        for(char &ch : letters)
+        {
+            scr[ch-'a']++;
+        }
+        return dfs(bit, val, scr, 0, n, score, 0);
+    }
+};

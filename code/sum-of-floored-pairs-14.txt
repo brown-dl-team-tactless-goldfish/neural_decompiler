@@ -1,0 +1,39 @@
+#define ll long long
+#define mod 1000000007
+class Solution {
+public:
+    int sumOfFlooredPairs(vector<int>& a) {
+        ll n=a.size(),s=0,mx=0;
+        for(int i=0;i<n;i++){
+            s+=a[i];mx=max(mx,a[i]*1LL);
+        }
+        vector<int> p(4*mx+1,0);
+        for(int i=0;i<n;i++) p[a[i]]++;
+        for(int i=1;i<=4*mx;i++) p[i]+=p[i-1];
+        ll ans=0;
+        unordered_map<int,int> f;
+        for(int i=0;i<n;i++){
+            if(a[i]==1){
+                ans=(ans+s)%mod;
+                ans%=mod;
+                continue;
+            }
+            if(f.count(a[i])){
+                ans=(ans+f[a[i]])%mod;
+                ans%=mod;
+                continue;
+            }
+            ll cur=0;
+            for(ll j=2;a[i]*(j-1)<=mx;j++){
+                ll cnt=p[j*a[i]-1];
+                cnt-=p[(j-1)*a[i]-1];
+                cur=(cur+(j-1)*cnt)%mod;
+                cur%=mod;
+            }
+            f[a[i]]=cur%mod;
+            ans=(ans+cur)%mod;
+            ans%=mod;
+        }
+        return ans%mod;
+    }
+};

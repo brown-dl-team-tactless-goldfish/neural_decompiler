@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int result;
+    int find(TreeNode* root, const int target){
+        /* 
+            This function finds the longest left or the right path starting at the current node.
+            
+        */
+        if(root == NULL || root->val != target)
+            return 0;
+        return 1 + max(find(root->left, target), find(root->right, target));
+    }
+    
+    void helper(TreeNode* root){
+        /*preorder traversal 
+          For each node, find is there is path from left->root->current .  
+        */
+        if(root == NULL)
+            return;
+        int left = find(root->left, root->val);
+        int right = find(root->right, root->val);
+        result = max(result, left+right);
+        helper(root->left);//
+        helper(root->right);
+    }
+    
+    int longestUnivaluePath(TreeNode* root) {
+        result = 0;
+        helper(root);
+        return result;
+    }
+};

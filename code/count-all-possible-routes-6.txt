@@ -1,0 +1,35 @@
+class Solution {
+public:
+    #define ll long long
+    int finish;
+    int n;
+    int mod = 1e9 + 7;
+    int dp[101][201];
+    
+    int count(int i, int f, vector<int> &x) {
+
+        if(f == 0 && i != finish) return 0;
+        if(dp[i][f] != -1) return dp[i][f];
+        
+        int cnt = i == finish ? 1 : 0;
+        for(int j = 0; j < n; j++) {
+            if(i == j) continue;
+            if(f >= abs(x[i] - x[j]))  {
+                int cur = count(j, f - abs(x[i] - x[j]), x);
+                cnt = (cnt % mod + cur % mod) % mod;
+                
+            }
+        }
+        
+        return dp[i][f] = cnt;
+        
+    }
+    int countRoutes(vector<int>& x, int start, int finish, int fuel) {
+        this->finish = finish;
+        this->n = x.size();
+        
+        memset(dp, -1, sizeof(dp));
+        int ans= 0;
+        return count(start, fuel, x);
+    }
+};

@@ -1,0 +1,88 @@
+
+
+struct TreeNode *__rotate_right(struct TreeNode *root)
+{
+        struct TreeNode *l = root->left;
+        root->left = l->right;
+        l->right = root;
+
+        return l;
+}
+
+struct TreeNode *__rotate_left(struct TreeNode *root)
+{
+        struct TreeNode *r = root->right;
+        root->right = r->left;
+        r->left = root;
+
+        return r;
+}
+
+struct TreeNode *tree_to_vine(struct TreeNode *root, int *n)
+{
+
+        struct TreeNode tmp = {.right = root};
+        struct TreeNode *nd, *parent;
+
+        parent = &tmp;
+        nd = parent->right;
+        while (nd) {
+                while (nd->left) {
+                        nd = __rotate_right(nd);
+                        parent->right = nd;
+                }
+                (*n)++;
+                parent = parent->right;
+                nd = parent->right;
+        }
+
+        return tmp.right;
+}
+
+struct TreeNode *vine_to_tree(struct TreeNode *root, int n)
+{
+        int m = pow(2, (int)log2(n + 1)) - 1;
+
+        struct TreeNode *parent, *nd;
+        int i;
+        for (i = 0; i < n - m; i++) {
+                if (i == 0) {
+                        root = __rotate_left(root);
+                        parent = root;
+                } else {
+                        parent->right = __rotate_left(nd);
+                        parent = parent->right;
+                }
+                nd = parent->right;
+        }
+
+        while (m > 1) {
+                m = m / 2;
+                for (i = 0; i < m; i++) {
+                        if (i == 0) {
+                                root = __rotate_left(root);
+                                parent = root;
+                        } else {
+                                parent->right = __rotate_left(nd);
+                                parent = parent->right;
+                        }
+                        nd = parent->right;
+                }
+        }
+
+        return root;
+}
+
+
+struct TreeNode *dsw(struct TreeNode *root)
+{
+        int n = 0;
+        root = tree_to_vine(root, &n);
+        root = vine_to_tree(root, n);
+        return root;
+}
+
+struct TreeNode* balanceBST(struct TreeNode* root)
+{
+        return dsw(root);
+}

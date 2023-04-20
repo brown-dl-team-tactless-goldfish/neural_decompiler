@@ -1,0 +1,105 @@
+#include <bits/stdc++.h>
+
+using namespace std;
+
+#define F first
+#define S second
+#define forn(i, n) for(int i = 0; i < n; ++i)
+#define forbn(i, b, n) for(int i = b; i < n; ++i)
+#define sz(v) (int)v.size()
+#define pb push_back
+
+typedef pair<int, int> ii;
+typedef vector<int> vi;
+
+
+class Intervals {
+public:    
+	set<ii> sl;
+	set<ii> sizes;
+	int inf = 1000 * 1000 * 1000;
+
+    ii contain(int i) {
+    	auto ptr = sl.lower_bound({i, inf});
+    	return *(--ptr);
+    }
+
+    void pop(ii otr) {
+    	sl.erase(otr);
+    	sizes.erase({otr.S - otr.F + 1, otr.F});
+    }
+
+    void add(ii otr) {
+    	sl.insert(otr);
+    	sizes.insert({otr.S - otr.F + 1, otr.F});
+    }
+
+    void join(int i) {
+    	ii left = contain(i);
+    	ii right = contain(i + 1);
+    	if(left.F == right.F)
+    		return;
+
+    	ii otr = {left.F, right.S};
+
+    	pop(right);
+    	pop(left);
+    	add(otr);
+    }
+
+    void disjoin(int i) {
+    	ii left = contain(i);
+    	ii right = contain(i + 1);
+    	if(left.F != right.F)
+    		return;
+        
+        ii o1 = {left.F, i};
+        ii o2 = {i + 1, left.S};
+
+        pop(left);
+        add(o1);
+        add(o2);
+    }
+    
+    int mx_interval() {
+        return sizes.rbegin()->F;
+    }
+};
+
+
+class Solution {
+public:
+    vector<int> longestRepeating(string s, string queryCharacters, vector<int>& queryIndices) {
+    	s = '#' + s + '#';
+    	int n = sz(s), k = sz(queryCharacters);
+        
+        Intervals it;
+
+    	int left = 0;
+    	forbn(i, 1, n + 1) {
+    		if(i == n || s[i] != s[left]) {
+    			it.add({left, i - 1});
+    			left = i;
+    		}
+    	}
+
+    	vi ans;
+    	forn(ind, k) {
+    		char c = queryCharacters[ind];
+    		int i = queryIndices[ind] + 1;
+
+    		it.disjoin(i - 1);
+    		it.disjoin(i);
+
+    		s[i] = c;
+    		if(s[i - 1] == s[i])
+    			it.join(i - 1);
+    		if(s[i] == s[i + 1])
+    			it.join(i);
+
+    		ans.pb(it.mx_interval());
+    	}
+
+    	return ans;
+    }
+};

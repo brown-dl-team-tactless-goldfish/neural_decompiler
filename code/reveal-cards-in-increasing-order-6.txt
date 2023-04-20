@@ -1,0 +1,35 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int cmp(const void*a,const void*b){
+    return *(int*)a-*(int*)b;
+}
+int* deckRevealedIncreasing(int* deck, int deckSize, int* returnSize){
+    int* temp=(int*)malloc(sizeof(int)*deckSize);
+    int*queue=(int*)malloc(sizeof(int)*deckSize);
+    qsort(deck,deckSize,sizeof(int),cmp);
+    *returnSize=deckSize;
+    int rear=deckSize-1;
+    int top=0;
+    int index=0;
+    for(int i=0;i<deckSize;i++){
+        queue[i]=i;
+    }
+    //Simulate game process
+    while(index<deckSize){
+        temp[index++]=queue[top];
+        top=(top+1)%deckSize;
+        rear=(rear+1)%deckSize;
+        queue[rear]=queue[top];
+        top=(top+1)%deckSize;
+    }
+    //mapping
+    for(int i=0;i<deckSize;i++){
+        queue[temp[i]]=deck[i];
+    }
+    free(temp);
+    return queue;
+}
+

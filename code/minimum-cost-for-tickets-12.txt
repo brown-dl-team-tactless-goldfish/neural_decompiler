@@ -1,0 +1,21 @@
+class Solution {
+public:
+    vector <int> DP;
+    int solve(int i,vector<int> &costs,vector<int>& days)
+    {
+        if(i>=days.size()) return 0;
+        int j=i;
+        if(DP[i]!= -1) return DP[i];
+        int a = costs[0]+solve(i+1 , costs ,days);
+        while(j<days.size() && days[j]<days[i]+7) j++;
+        int b = costs[1]+solve(j, costs,days);
+        while(j<days.size() && days[j]< days[i]+30) j++;
+        int c = costs[2]+solve(j,costs,days);
+        return DP[i]= min(a,min(b,c));
+    }
+    int mincostTickets(vector<int>& days, vector<int>& costs) {
+        vector<int> temp(365,-1);
+        DP=temp;
+        return solve(0,costs,days);
+    }
+}; 

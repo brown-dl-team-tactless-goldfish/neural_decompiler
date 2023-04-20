@@ -1,0 +1,43 @@
+class Solution {
+public:
+    long long getCost (vector<int>& nums, vector<int>& cost, int t){
+        //get the cost if target is t
+        long long c = 0;
+        for (int i=0; i<nums.size(); i++){
+            c +=  (long long ) abs(nums[i]-t) * cost[i];
+        
+        }
+        //cout << "the cost: " << c << endl; 
+       return c;
+
+    }
+    
+    
+    long long minCost(vector<int>& nums, vector<int>& cost) {
+        //get the low and hi number 
+        long long lo=nums[0], hi=nums[0]; 
+        for (int i=0; i< nums.size(); i++){
+            if (nums[i] < lo) lo = nums[i];
+            if (nums[i] > hi) hi = nums[i];
+        }
+        //cout << "lo: " << lo <<"; hi: " << hi <<endl; 
+        while ( hi-lo > 2){
+            long long mid1 = lo + (hi-lo)/3;
+            long long mid2 = hi - (hi-lo)/3;
+            long long  cost1 = getCost(nums, cost, mid1);
+            long long  cost2 = getCost(nums, cost, mid2);
+            
+            //cout << "cost1: " << cost1 << "; cost2: " <<cost2 << endl; 
+            if (cost1 < cost2) hi = mid2; 
+            else 
+                lo = mid1; 
+        }
+        
+        //cout << getCost (nums, cost, lo) << endl;
+        //cout << getCost(nums, cost, hi) <<endl;
+        cout << lo << endl; 
+        cout << hi <<endl;
+        return min ( getCost (nums,cost, lo), min (getCost(nums,cost, hi), getCost(nums,cost, (lo+hi)/2) ));
+        
+    }
+};

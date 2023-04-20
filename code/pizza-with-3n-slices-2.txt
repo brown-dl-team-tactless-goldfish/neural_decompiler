@@ -1,0 +1,32 @@
+    public class Solution
+    {
+        private int Helper(int[] slices, int start, int end)
+        {
+            checked
+            {
+                int triples = slices.Length / 3;
+                int[,] dp = new int[slices.Length, triples + 1];
+
+                dp[start, 1] = slices[start];
+
+                for (int i = start + 1; i <= end; i++)
+                {
+                    for (int j = 1; j <= triples; j++)
+                    {
+                        dp[i, j] = Math.Max(dp[i, j], dp[i - 1, j]);
+                        dp[i, j] = Math.Max(dp[i, j], (i - 2 < 0 ? 0 : dp[i - 2, j - 1] + slices[i]));
+                    }
+                }
+
+                return dp[end, triples];
+            }
+        }
+
+        public int MaxSizeSlices(int[] slices)
+        {
+            checked
+            {
+                return Math.Max(Helper(slices, 0, slices.Length - 2), Helper(slices, 1, slices.Length - 1));
+            }
+        }
+    }

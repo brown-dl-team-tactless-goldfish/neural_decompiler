@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int maximumANDSum(const vector<int>& nums, int numSlots) {
+        unordered_map<int, int> mc;
+        int iShift = numSlots * 2, n = nums.size();
+        function<int(int, int)> f = [&](int index, int bitmap) {
+            if (index == n) return 0;
+            int key = (index << iShift) | bitmap;
+            if (mc.count(key)) return mc[key];
+            int& v = mc[key];
+            for (int s = 1; s <= numSlots; ++s) {
+                int count = (bitmap >> ((s - 1) * 2)) & 3;
+                if (count >= 2) continue;
+                int mask = 3 << ((s - 1) * 2);
+                int bit = (count + 1) << ((s - 1) * 2);
+                int nBitmap = (bitmap & ~mask) | bit;
+                v = max(v, (s & nums[index]) + f(index + 1, nBitmap));
+            }
+            return v;
+        };
+
+        return f(0, 0);
+    }
+};

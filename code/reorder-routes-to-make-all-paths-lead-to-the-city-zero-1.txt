@@ -1,0 +1,80 @@
+struct Node{
+  int *inCity;
+  int inCity_Count;
+  int inCity_Size;
+  int *outCity;
+  int outCity_Count;
+  int outCity_Size;
+};
+void depth_first_search(struct Node* node,int cur_pos, int* total_path_change){
+    //condtion to remove all the outwards capital city roads
+    for(int pos =0; pos < node[cur_pos].outCity_Count; pos++){
+        if(node[cur_pos].outCity[pos] != -1){
+            int next_city = node[cur_pos].outCity[pos];
+            for(int dest =0; dest < node[next_city].inCity_Count; dest++){
+                if(node[next_city].inCity[dest] == cur_pos){
+                    node[next_city].inCity[dest] =-1;
+                    node[cur_pos].outCity[pos] = -1;
+                    ++*total_path_change;
+                    depth_first_search(node,next_city,total_path_change);
+                }
+            }
+        }
+    }
+    //condtion to check the count of ways going aways from the capital
+    for(int pos=0; pos < node[cur_pos].inCity_Count; pos++){
+        if(node[cur_pos].inCity[pos] != -1){
+           int next_city = node[cur_pos].inCity[pos];
+           for(int dest =0; dest < node[next_city].outCity_Count; dest++){
+               if(node[next_city].outCity[dest] == cur_pos){
+                   node[next_city].outCity[dest] = -1;
+                   node[cur_pos].inCity[pos] = -1;
+                   depth_first_search(node,next_city,total_path_change);
+               }
+           }
+        }
+    }
+}
+
+int minReorder(int n, int** connections, int connectionsSize, int* connectionsColSize){
+//memmeory allocation for the node
+struct Node* node = malloc(sizeof(struct Node)*n);
+//memory and value assignment for the node array
+for(int city =0; city < n; city++){
+    node[city].inCity = malloc(sizeof(int));
+    node[city].inCity_Count = 0;
+    node[city].inCity_Size = 1;
+    node[city].outCity = malloc(sizeof(int));
+    node[city].outCity_Count = 0;
+    node[city].outCity_Size = 1;
+}
+//now to assign the values to then nodes from inCity out city values
+for(int paths =0 ; paths < connectionsSize; paths++){
+  int outcity = connections[paths][0];
+  node[outcity].outCity[node[outcity].outCity_Count] =  connections[paths][1];
+  node[outcity].outCity_Count++;
+  if(node[outcity].outCity_Count == node[outcity].outCity_Size){
+      node[outcity].outCity_Size *= 2;
+      node[outcity].outCity = realloc(node[outcity].outCity,node[outcity].outCity_Size*sizeof(int));
+  }
+  int incity = connections[paths][1];
+  node[incity].inCity[node[incity].inCity_Count] =  connections[paths][0];
+  node[incity].inCity_Count++;
+  if(node[incity].inCity_Count == node[incity].inCity_Size){
+      node[incity].inCity_Size *= 2;
+      node[incity].inCity = realloc(node[incity].inCity,node[incity].inCity_Size* sizeof(int));
+  }
+}
+int total_path_change = 0;
+//to calculate the total path changed from the original path 
+// we will follow the the depth first search approch 
+depth_first_search(node,0,&total_path_change);
+
+//free heap
+for(int ptr=0; ptr < n; ptr++){
+    free(node[ptr].outCity);
+    free(node[ptr].inCity);
+}
+free(node);
+return total_path_change;
+}

@@ -1,0 +1,49 @@
+class Solution {
+public:
+    bool check(int s, int n, vector<vector<int>>& requests)
+    {
+        int building[20];
+        for (int i=0; i<n; i++)
+            building[i] = 0;
+        
+        int m = requests.size();
+        for (int i=0; i<m; i++)
+        {
+            if (((s>>i)&1)==1)
+            {
+                building[requests[i][0]]--;
+                building[requests[i][1]]++;
+            }
+        }
+        
+        for (int i=0; i<n; i++)
+        {
+            if (building[i]!=0)
+                return false;
+        }
+        return true;
+    }       
+    
+    int maximumRequests(int n, vector<vector<int>>& requests) 
+    {
+        int m = requests.size();
+        int ret = 0;
+        
+        for (int k=m; k>=1; k--)
+        {
+            int state = (1 << k) - 1;            
+            
+            while (state < (1 << m))
+            {
+                if (check(state, n, requests))
+                    return k;
+
+                int c = state & - state;
+                int r = state + c;
+                state = (((r ^ state) >> 2) / c) | r;
+            }            
+        }
+        
+        return 0;        
+    }
+};

@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int vis[21];
+    int sol(vector<vector<int>>& req, int i, int c){
+        if(i==req.size()){
+            for(auto &x:vis){
+                if(x!=0)return 0;
+            }
+            return c;
+        }
+        int ans=0;
+        vis[req[i][0]]--;
+        vis[req[i][1]]++;
+        ans=max(ans,sol(req,i+1,c+1));
+        vis[req[i][0]]++;
+        vis[req[i][1]]--;
+        ans=max(ans,sol(req,i+1,c));
+        return ans;
+    }
+    int maximumRequests(int n, vector<vector<int>>& req) {
+        memset(vis,0,sizeof vis);
+        return sol(req,0,0);
+        
+    }
+};

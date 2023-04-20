@@ -1,0 +1,67 @@
+class Solution {
+public:
+     long long makePalindromeBase10(long long n, bool isOddSize) {
+        long long x = n;
+        // strip the lsb number 
+        // abc will be made palindrome as abcba make last element as pivot
+        // for odd size no strippng abc will be made palindrome as abccba 
+        if (isOddSize) x = x/10;
+        while(x) {
+            n = n*10 + (x%10);
+            x = x/10;
+        }
+        return n;
+    }
+    // function to convert a number to new base in string
+    void convertToBase(long long n, int base, string &baseStr) {
+        while(n) {
+            baseStr += n%base + '0';
+            n = n/base;
+        }
+    }
+    // function to check palindrome
+    bool isPalindrome(string &baseStr) {
+        int l = 0; int r = baseStr.length()-1;
+        while(l < r) {
+            if (baseStr[l++] != baseStr[r--]) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    long long kMirror(int k, int n) {
+        long long sum = 0;
+        long long numDigit = 1;
+        while (n) {
+            // check for current series from number to next 10's i.e 1 to 10 or 10 to 100 so on..
+            int maxDigitNum = numDigit*10;
+            // check for odd digits, means previous iteration digitsize + 1;
+            // try for smaller palindrome which is odd size as lsb is made pivot
+            for (long long i = numDigit; n && (i < maxDigitNum); i++) {
+                long long num = makePalindromeBase10(i,true);
+                string baseStr;
+                convertToBase(num,k,baseStr);
+                if (isPalindrome(baseStr)) {
+                    sum += num;
+                    n--;
+                }
+            }
+            
+            // now Check for even digits, means previous iteration digitsize + 2;
+            // check for odd digits, means previous iteration digitsize + 1;
+            // try for bigger palindrome which is even size as middle 2 numbers are pivot
+            for (long long i = numDigit; n && (i < maxDigitNum); i++) {
+                long long num = makePalindromeBase10(i,false);
+                string baseStr;
+                convertToBase(num,k,baseStr);
+                if (isPalindrome(baseStr)) {
+                    sum += num;
+                    n--;
+                }
+            }
+            numDigit = maxDigitNum;
+        }
+        return sum;
+    }
+};

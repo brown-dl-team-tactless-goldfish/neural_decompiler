@@ -1,0 +1,28 @@
+class Solution 
+{
+    public:
+    int total[100001]={};
+    void dfs1(TreeNode* root,int h)
+    {
+        if(root==NULL) return;
+        total[h]+=root->val;
+        dfs1(root->left,h+1);
+        dfs1(root->right,h+1);
+    }
+    void dfs2(TreeNode* root,int h)
+    {
+        if(root==NULL) return;
+        int s=(root->left?root->left->val:0)+(root->right?root->right->val:0);
+        if(root->left) root->left->val=total[h+1]-s;
+        if(root->right) root->right->val=total[h+1]-s;
+        dfs2(root->left,h+1);
+        dfs2(root->right,h+1);
+    }
+    TreeNode* replaceValueInTree(TreeNode* root) 
+    {
+        root->val=0;
+        dfs1(root,0);
+        dfs2(root,0);
+        return root;
+    }
+};

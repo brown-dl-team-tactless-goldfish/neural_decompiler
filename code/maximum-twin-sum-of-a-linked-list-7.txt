@@ -1,0 +1,37 @@
+int pairSum(struct ListNode* head){
+    struct ListNode *ptr, *temp;
+    int count = 0;
+
+    for (ptr = head; ptr != NULL; count++, ptr = ptr->next);
+
+    int i = 0, n = count / 2, *a = malloc(sizeof(int) * (count / 2));
+    
+    count = count / 2;
+
+    for (ptr = head; count != 0; count--, ptr = ptr->next);
+
+    temp = ptr;
+
+    for (; ptr != NULL; i++, ptr = ptr->next)
+        a[i] = ptr->val;
+
+    int st = 0, end = i - 1, tmp;
+
+    while(st < end) {
+        tmp = a[st];
+        a[st] = a[end];
+        a[end] = tmp;
+        st++;
+        end--;
+    }
+
+    int sum, maxSum = -1;
+    i = 0;
+
+    while (head && n--) {
+        sum = a[i++] + head->val;
+        maxSum = maxSum < sum ? sum : maxSum;
+        head = head->next;
+    }
+    return maxSum;
+}

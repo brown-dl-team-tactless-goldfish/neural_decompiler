@@ -1,0 +1,31 @@
+bool reorderedPowerOf2(int n){
+    // start by getting the digits of the given number
+    int digits[10] = { 0 };
+    while (n > 0){
+        digits[n % 10]++;
+        n /= 10;
+    }
+    
+    int digitscpy[10]; // copy of digits
+    int curpow; // current power of two to check
+    bool flag;
+	
+	// largest possible power of 2 is 2^29, so only iterate from 0 to 29
+    for (int i=0; i<=29; i++){
+		// Create a new array equal to the difference in digits between curpow and n
+        memcpy(digitscpy, digits, sizeof(int)*10);
+        curpow = 1 << i;
+        while (curpow > 0){
+            digitscpy[curpow % 10]--;
+            curpow /= 10;
+        }
+        
+		// If the array is all zeros, return true
+		flag = true;
+        for (int j=0; j<10; j++) 
+			flag = flag && (digitscpy[j] == 0);
+        if (flag) return true;
+    }
+    
+    return false;
+}

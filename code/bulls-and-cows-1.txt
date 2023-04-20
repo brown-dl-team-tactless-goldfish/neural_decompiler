@@ -1,0 +1,36 @@
+char * getHint(char * secret, char * guess){
+    char *result, *s, *g;
+    int count[10] = {0};
+    int a = 0, b = 0;
+
+    // build secret map
+    s = secret;
+    while (*s) {
+        count[(*s-'0')]++;
+        s++;
+    }
+
+    // if match, c>0, c- or c=0, a+ b-
+    // elif c>0, b+ c-
+    s = secret;
+    g = guess;
+    while (*s && *g) {
+        if (*s == *g) {
+            a++;
+            if (count[(*g-'0')]) count[(*g-'0')]--;
+            else b--;
+        }
+        else if (count[(*g-'0')]) {
+            b++;
+            count[(*g-'0')]--;
+        }
+
+        s++;
+        g++;
+    }
+
+    // max xxxAxxxB\0
+    result = calloc(9, 1);
+    sprintf(result, "%dA%dB", a, b);
+    return result;
+}

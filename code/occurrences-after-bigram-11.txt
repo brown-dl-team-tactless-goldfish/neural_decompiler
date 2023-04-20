@@ -1,0 +1,100 @@
+#include <stdlib.h>
+#include <stddef.h>
+#include <string.h>
+
+char** tokenize(const char* text, size_t* tokens)
+{
+    // count delimiters (space) to size the array first
+    *tokens = 0;
+    for (size_t i = 0; i < strlen(text); ++i)
+        if (text[i] == ' ')
+            (*tokens)++;
+    // NOTE: extra ++ is for the final token at the end that doesn't have a delimiter
+    (*tokens)++;
+    
+    char** token_arr = malloc((*tokens) * sizeof(*token_arr));
+    
+    
+	// NOTE: would be better to split this into its own "parse" function
+    size_t beginning_index = 0;
+    size_t ending_index = 0;
+    size_t substr_len = 0;
+    size_t current_token = 0;
+    for (size_t i = 0; i < strlen(text); ++i)
+    {
+        if (text[i] == ' ')
+        {
+            substr_len = (i - beginning_index);
+            token_arr[current_token] = malloc(substr_len + 1);
+            memcpy(token_arr[current_token], &text[beginning_index], substr_len);
+            token_arr[current_token][substr_len] = '\0';
+            beginning_index = i + 1;
+            current_token++;
+        }
+    }
+    
+    // the last token won't have a delimiter, so we check manually
+    substr_len = (strlen(text) - beginning_index);
+    if (substr_len > 0)
+    {
+        token_arr[current_token] = malloc(substr_len + 1);
+        memcpy(token_arr[current_token], &text[beginning_index], substr_len);
+        token_arr[current_token][substr_len] = '\0';
+    }
+    
+    return token_arr;
+}
+
+void tokenize_free(char** tokens, size_t n_tokens)
+{
+    for (size_t i = 0; i < n_tokens; ++i)
+    {
+        free(tokens[i]);
+        tokens[i] = NULL;
+    }
+    free(tokens);
+    tokens = NULL;
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char ** findOcurrences(char * text, char * first, char * second, int* returnSize){
+    size_t n_tokens = 0;
+    char** tokens = tokenize(text, &n_tokens);
+    
+    size_t n_post_bigram_tokens = 10; // start with 10 tokens allocated (very generous)
+                                      // will allocate more if needed.
+                                      // this is done to avoid many calls to malloc
+    char** post_bigram_tokens = malloc(n_post_bigram_tokens * sizeof(*post_bigram_tokens));
+    size_t current_post_bigram_token = 0;
+    for (size_t i = 0; i < n_tokens - 1; ++i)
+    {
+        if (i < n_tokens - 2) // ensure we have enough room to grab third token
+        {
+            if (strncmp(tokens[i], first, strlen(tokens[i])) == 0 // check first token matches
+            && strncmp(tokens[i+1], second, strlen(tokens[i+1])) == 0) // check second token    
+            {
+                post_bigram_tokens[current_post_bigram_token] = strdup(tokens[i+2]);
+                current_post_bigram_token++;
+                if (current_post_bigram_token > n_post_bigram_tokens)
+                {
+                    // allocate more room for tokens. I will use doubling rule
+                    n_post_bigram_tokens *= 2;
+                    void* alloc = realloc(post_bigram_tokens, n_post_bigram_tokens * sizeof(*post_bigram_tokens));
+                    if (alloc != NULL)
+                    {
+                        post_bigram_tokens = alloc; // NOTE: if pointer address changes upon realloc,
+                                                    // do we need to copy old data over? 
+                                                    // I don't remember..
+                    }
+                }
+            }
+        }
+    }
+    
+    tokenize_free(tokens, n_tokens);
+    
+    *returnSize = current_post_bigram_token;
+    return post_bigram_tokens;
+}

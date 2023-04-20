@@ -1,0 +1,106 @@
+class Solution {
+public:
+    int n,m,cj,mj;
+    vector<string> g;
+    vector<int> dir;
+    int dp[9][9][9][9][2][105];
+    
+    bool isValid(int x, int y)
+    {
+        return x>=0 && y>=0 && x<n && y<m && g[x][y]!='#';
+    }
+    
+    bool fnd(int cx, int cy, int mx, int my, bool turn, int lvl)
+    {
+        if( (cx==mx && cy==my) || g[cx][cy]=='F' || lvl==105)
+            return false;
+        
+        if(g[mx][my]=='F')
+            return true;
+        
+        if(dp[cx][cy][mx][my][turn][lvl]!=-1)
+            return dp[cx][cy][mx][my][turn][lvl];
+        
+        if(turn)
+        {
+            
+            for(int i=0;i<4;i++)
+            {
+                int dx=dir[i], dy=dir[i+1], nmx=mx, nmy=my;
+                
+                for(int d=0;d<mj;d++)
+                {
+                    nmx+=dx;
+                    nmy+=dy;
+                    
+                    if(isValid(nmx,nmy))
+                    {
+                        if(fnd(cx,cy,nmx,nmy,false,lvl+1))
+                            return dp[cx][cy][mx][my][turn][lvl]=true;
+                    }
+                                          
+                    else
+                        break;
+                }
+                
+            } 
+            
+            if(fnd(cx,cy,mx,my,false,lvl+1))
+                return dp[cx][cy][mx][my][turn][lvl]=true;
+            
+            return dp[cx][cy][mx][my][turn][lvl]=false;
+        }
+        
+        for(int i=0;i<4;i++)
+        {
+            int dx=dir[i], dy=dir[i+1], ncx=cx, ncy=cy;
+            
+            for(int d=0;d<cj;d++)
+            {
+                ncx+=dx;
+                ncy+=dy;
+                    
+                if(isValid(ncx,ncy))
+                {
+                    if(!fnd(ncx,ncy,mx,my,true,lvl+1))
+                        return dp[cx][cy][mx][my][turn][lvl]=false;  
+                }
+                else
+                    break;
+            } 
+        }
+        
+        if(!fnd(cx,cy,mx,my,true,lvl+1))
+            return dp[cx][cy][mx][my][turn][lvl]=false; 
+        
+        return dp[cx][cy][mx][my][turn][lvl]=true;        
+    }
+    
+    bool canMouseWin(vector<string>& grid, int catJump, int mouseJump) {
+        g=grid;
+        n=g.size(), m=g[0].size();
+        cj=catJump, mj=mouseJump;
+        int cx,cy,mx,my;
+        dir=vector<int>{-1,0,1,0,-1};
+        
+        for(int i=0;i<n;i++)
+            for(int j=0;j<m;j++)
+            {
+                if(g[i][j]=='C')
+                {
+                    cx=i,cy=j;
+                    g[i][j]='.';
+                }
+                else if(g[i][j]=='M')
+                {
+                    mx=i,my=j;
+                    g[i][j]='.';
+                }
+            }
+        
+        memset(dp,-1,sizeof(dp));
+        
+        return fnd(cx,cy,mx,my,true,0);    
+        
+    }
+};

@@ -1,0 +1,73 @@
+struct node {
+  int h;
+  int k;
+  struct node* next;
+};
+
+struct node* newNode(int h, int k, struct node* next) {
+  struct node* new = malloc(sizeof(struct node));
+  new->h = h;
+  new->k = k;
+  new->next = next;
+  return new;
+}
+
+int comp(void** a, void** b) {
+  int* aP = *(int**)a;
+  int* bP = *(int**)b;
+
+  // if same h, sort by increasing k
+  if (bP[0] == aP[0]) return aP[1] - bP[1];
+  // otherwise sort by decreasing h
+  return bP[0] - aP[0];
+}
+
+int** reconstructQueue(int** people, int peopleSize, int* peopleColSize, int* returnSize, int** returnColumnSizes){
+  *returnSize = peopleSize;
+  *returnColumnSizes = peopleColSize;
+  if (peopleSize <= 1) return people;
+
+  qsort(people, peopleSize, sizeof(int*), comp);
+  
+  struct node* head = newNode(people[0][0], people[0][1], NULL);
+  struct node* runner;
+  struct node* prev;
+  int cnt_ge_h,h,k;
+  bool inserted;
+  
+  for (int i=1; i<peopleSize; ++i) {
+    h = people[i][0];
+    k = people[i][1];
+    runner = head;
+    prev = NULL;
+    cnt_ge_h = 0; // counter how many nodes have >= h
+    inserted = false;
+    
+    while(runner) {
+      // expect k other nodes with h>= before itself
+      if (k > cnt_ge_h) {
+        if (runner->h >= h) ++cnt_ge_h;
+      } else {
+        if (prev) prev->next = newNode(h,k,runner);
+        else head = newNode(h,k,runner);
+        inserted = true;
+        break;
+      }
+      
+      prev = runner;
+      runner = runner->next;
+    }
+    if (!inserted) prev->next = newNode(h, k, NULL); // prev cannot be NULL
+  }
+  
+  // reconstruct result and free list
+  runner = head;
+  for (int i=0; i<peopleSize; ++i) {
+    people[i][0] = runner->h;
+    people[i][1] = runner->k;
+    prev = runner;
+    runner = runner->next;
+    free(prev);
+  }
+  return people;
+}

@@ -1,0 +1,21 @@
+class Solution {
+public:
+    string minimizeResult(string expression) {
+        int k = expression.find('+'), n = expression.length(), minVal = INT_MAX;
+        string ans = "";
+        for(int i = 0; i < k; i++) {
+            for(int j = k + 1; j < n; j++) {
+                string a = expression.substr(0, i);
+                string b = expression.substr(i, k - i);
+                string c = expression.substr(k + 1, j - k);
+                string d = expression.substr(j + 1);
+                int val = (a == ""? 1: stoi(a)) * (stoi(b) + stoi(c)) * (d == ""? 1: stoi(d));
+                if(val < minVal) {
+                    ans = a + "(" + b + "+" + c + ")" + d;
+                    minVal = val;
+                }
+            }
+        }
+        return ans;
+    }
+};

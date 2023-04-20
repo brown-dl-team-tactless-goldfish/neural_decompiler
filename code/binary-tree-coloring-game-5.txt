@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int count(TreeNode* root){
+        if(!root) return 0;
+        return 1+count(root->left)+count(root->right);
+    }
+    bool btreeGameWinningMove(TreeNode* root, int n, int x) {
+        queue<TreeNode*>q;
+        q.push(root);
+        TreeNode* trg;
+        while(!q.empty()){
+            TreeNode* t=q.front();
+            q.pop();
+            if(t->val==x){
+                trg=t;
+                break;
+            }
+            if(t->left)q.push(t->left);
+            if(t->right)q.push(t->right);
+        }
+        int lft=count(trg->left),rt=count(trg->right);
+        if(lft+rt+1<=n/2)return true;
+        if(lft>n/2 || rt>n/2)return true;
+        return false;
+    }
+};

@@ -1,0 +1,71 @@
+public int NumberOfGoodSubsets(int[] nums)
+{
+	checked
+	{
+		int[] primes = new int[] { 2, 3, 5, 7, 11, 13, 17, 19, 23, 29 };
+
+		int[] frequency = new int[31];
+		foreach (var num in nums)
+		{
+			// Perfect squares can't perform good subsets
+			if (num % 4 == 0 || num % 9 == 0 || num == 25)
+			{
+				continue;
+			}
+
+			frequency[num]++;
+		}
+
+		int maskLength = 1 << primes.Length;
+		long[] d = new long[maskLength + 1];
+		d[0] = 1L;
+		long MOD = (long)(1E9) + 7L;
+
+		for (int i = 2; i < frequency.Length; i++)
+		{
+			if (frequency[i] == 0)
+			{
+				continue;
+			}
+
+			int mask = 0;
+			for (int j = 0; j < primes.Length && primes[j] <= i; j++)
+			{
+				if (i % primes[j] == 0)
+				{
+					mask |= (1 << j);
+				}
+			}
+
+			for (int j = 0; j < maskLength; j++)
+			{
+				// consider only nums whose combined prime factors are distinct
+				if ((mask & j) == 0)
+				{
+					d[mask | j] = (d[mask | j] + d[j] * frequency[i]) % MOD;
+				}
+			}
+		}
+
+		long result = 0L;
+		// Ignore empty subset - as it is not good subset
+		for (int i = 1; i < d.Length; i++)
+		{
+			result = (result + d[i]) % MOD;
+		}
+
+		if (result == 0)
+		{
+			return 0;
+		}
+
+		int ones = frequency[1];
+		while (ones > 0)
+		{
+			result = (result * 2L) % MOD;
+			ones--;
+		}
+
+		return (int)result;
+	}
+}

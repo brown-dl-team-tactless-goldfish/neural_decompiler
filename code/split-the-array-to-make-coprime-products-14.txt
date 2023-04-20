@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int findValidSplit(vector<int>& nums) {
+        int n = nums.size();
+        unordered_map<int,int>prime_last;
+        vector<int>last_associated(n,-1);
+
+        for(int i=n-1; i>=0 ; i--){
+            int num = nums[i];
+            last_associated[i] = i;
+            for(int j=2; num>1 && j*j<=num; j++){
+                bool f = false;
+                while(num%j==0){
+                    num/=j;
+                    f = true;
+                }
+                if(f == true){
+                    if(prime_last.find(j)==prime_last.end()){
+                        prime_last[j]=i;
+                    } else {
+                        last_associated[i] = max(last_associated[i], prime_last[j]);
+                    }
+                }
+            }
+
+            if(num > 1){
+                if(prime_last.find(num)==prime_last.end()){
+                    prime_last[num]=i;
+                } else {
+                    last_associated[i] = max(last_associated[i], prime_last[num]);
+                }
+            }
+
+        }
+
+        int last = -1;
+        for(int i=0; i< n; i++){
+            last = max(last_associated[i],last);
+            if(last == i && i!=n-1){
+                return last;
+            }
+        }
+
+        return -1;
+    }
+};

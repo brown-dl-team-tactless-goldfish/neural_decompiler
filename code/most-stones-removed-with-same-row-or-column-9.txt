@@ -1,0 +1,56 @@
+class Solution {
+public:
+    int removeStones(vector<vector<int>>& stones) {
+        // directly return if we cannot move any stone
+        if (stones.size() <= 1)
+            return 0;
+
+        int total = stones.size();
+        int bucket = 0;
+
+        // key is row, value is columns of stones on that row
+        unordered_map<int, vector<int>> sortbyrow;
+        // vice versa
+        unordered_map<int, vector<int>> sortbycol;
+        for (auto stone : stones)
+        {
+            sortbyrow[stone[0]].push_back(stone[1]);
+            sortbycol[stone[1]].push_back(stone[0]);
+        }
+
+        // always start with one row (begin of sortbyrow)
+        // enumerate all its columns, for each column, find their rows, keep going like this
+        // until we cannot find any new rows, we add bucket by 1
+        // at the end, the answer is total stones - total buckets * 1 stone
+        while (sortbyrow.size())
+        {
+            queue<int> bfs;
+            bfs.push(sortbyrow.begin()->first);
+            while (bfs.size())
+            {
+                auto front = bfs.front();
+                bfs.pop();
+                auto cols = sortbyrow[front];
+                sortbyrow.erase(front);
+                // enumerate all columns of current row if the column is not visited yet
+                for (auto c : cols)
+                {
+                    if (sortbycol.find(c) != sortbycol.end())
+                    {
+                        // for each column, add their rows to the queue if the row is not visited yet
+                        for (auto r : sortbycol[c])
+                        {
+                            if (sortbyrow.find(r) != sortbyrow.end())
+                            {
+                                bfs.push(r);
+                            }
+                        }
+                        sortbycol.erase(c);
+                    }
+                }
+            }
+            bucket++;
+        }
+        return total - bucket;
+    }
+};

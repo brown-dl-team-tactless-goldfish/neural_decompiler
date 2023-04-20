@@ -1,0 +1,21 @@
+class Solution {
+public:
+    int minCapability(vector<int>& A, int k) {
+        int h = *max_element(begin(A), end(A)), l = *min_element(begin(A), end(A));
+        auto check = [&](int t)->bool {
+            for(int i = 0, sum = 0; i < A.size(); i++) {
+                if(A[i] <= t) {
+                    if(++sum >= k) return true;
+                    i++;
+                }
+            }
+            return false;
+        };
+        while(l < h) {
+            int m = l + (h-l)/2;
+            if(check(m)) h = m;
+            else l = m+1;
+        }
+        return l;
+    }
+};

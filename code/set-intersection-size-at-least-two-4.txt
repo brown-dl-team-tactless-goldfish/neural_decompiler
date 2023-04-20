@@ -1,0 +1,57 @@
+#define pi pair<int,int>
+#define f first
+#define s second
+
+class Solution {
+public:
+    
+    int intersectionSizeTwo(vector<vector<int>>& A) {
+                
+        vector<pi> B;
+        for(auto x : A) B.push_back({x[0],x[1]});
+        
+        auto comp = [&](const pi& a,const pi& b){
+            if(a.f==b.f)    return a.s<b.s;
+            return a.f<b.f;
+        };
+        
+        sort(B.begin(),B.end(),comp);
+        
+        int a=B.back().first;
+        int b=a+1;
+        
+        unordered_set<int> cur{a,b};
+        
+        
+        for(int i=B.size()-1 ; i>0 ; i--){
+            
+            if(B[i-1].s < B[i].f){
+                a=B[i-1].f;
+                b=a+1;
+                cur.insert(a);
+                cur.insert(b);
+            }
+            else{
+                bool present_a = B[i-1].f<=a && a<=B[i-1].s;
+                bool present_b = B[i-1].f<=b && b<=B[i-1].s;
+                
+                if(present_a && present_b){
+                    continue;
+                }else if(present_a){
+                    b = (a == B[i-1].f ? a+1 : B[i-1].f); 
+                    cur.insert(b);
+                }else if(present_b){
+                    a = (b == B[i-1].f ? b+1 : B[i-1].f);  
+                    cur.insert(a);
+                }else{ //none present
+                    a = B[i-1].f;
+                    b = a+1;
+                    cur.insert(a);
+                    cur.insert(b);
+                }
+            }
+        }
+        //for(auto x: cur) cout<<x<<" ";
+        return cur.size();
+    }
+};

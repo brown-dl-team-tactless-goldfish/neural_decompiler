@@ -1,0 +1,138 @@
+
+float calculate(float num1, float num2, char oper)
+{
+    switch(oper) {
+        case '+':
+            return (float)num1 + (float)num2;
+            break;
+        case '-':
+            return (float)num1 - (float)num2;
+            break;
+        case '*':
+            return (float)num1 * (float)num2;
+            break;
+        case '/':
+            if (num2 == 0)
+                return -1000;
+            return (float)num1 / (float)num2;
+            break;
+        default:
+            printf("wrong!");
+            return 0;
+    }
+}
+
+bool judgePoint24(int* nums, int numsSize)
+{
+    int i, j, k, l;
+    int x, y, z;
+    int t;
+    int opersSize = 4;
+    int sum = 6;
+    float cal[3];
+    int sign[3];
+    float ans;
+    char oper[4] = {'+', '-', '*', '/'};
+    
+    // choose numbers location
+    for (i = 0; i < numsSize; i ++) {
+        
+        for (j = 0; j < numsSize; j ++) {
+            if (j == i) continue;
+            
+            for (k = 0; k < numsSize; k ++) {
+                if (k == i || k == j) continue;
+                l = sum - (i + j + k);      // done
+                
+                // choose operators location
+                for (x = 0; x < opersSize; x ++) {
+                    sign[0] = 0;
+                    if (x <= 1) sign[0] = 1;
+                    for (y = 0; y < opersSize; y ++) {
+                        sign[1] = 0;
+                        if (y <= 1) sign[1] = 1;
+                        
+                        for (z = 0; z < opersSize; z ++) {      //done
+                            sign[2] = 0;
+                            if (z <= 1) sign[2] = 1;
+                            /*
+                            if (x == 3 && y == 1 && z == 3) {
+                                printf("%d %c %d %c %d %c %d\n",nums[i], oper[x], nums[j], oper[y], nums[k], oper[z], nums[l]);
+                                printf("sign:%d, %d, %d\n", sign[0], sign[1], sign[2]);
+                            }*/
+                            // choose operate order
+                            // have different operator like '+' and '*'
+                            if ((sign[0] ^ sign[1]) || (sign[0] ^ sign[2]) || (sign[1] ^ sign[2])) {
+                                // ((i+j)*k)/l:012
+                                cal[0] = calculate(nums[i], nums[j], oper[x]);
+                                cal[1] = calculate(cal[0], nums[k], oper[y]);
+                                cal[2] = calculate(cal[1], nums[l], oper[z]);
+                                ans = cal[2]>24?cal[2]-24:24-cal[2];
+                                if (ans < 0.0001) {
+                                    printf("012:%d %c %d %c %d %c %d\n",nums[i], oper[x], nums[j], oper[y], nums[k], oper[z], nums[l]);
+                                    return true;
+                                }
+                                // (i+j)*(k-l):021
+                                cal[0] = calculate(nums[i], nums[j], oper[x]);
+                                cal[2] = calculate(nums[k], nums[l], oper[z]);
+                                cal[1] = calculate(cal[0], cal[2], oper[y]);
+                                ans = cal[1]>24?cal[1]-24:24-cal[1];
+                                if (ans < 0.0001) {
+                                    printf("021:%d %c %d %c %d %c %d\n",nums[i], oper[x], nums[j], oper[y], nums[k], oper[z], nums[l]);
+                                    return true;
+                                }
+                                // (i*(j+k))/l:102
+                                cal[1] = calculate(nums[j], nums[k], oper[y]);
+                                cal[0] = calculate(nums[i], cal[1], oper[x]);
+                                cal[2] = calculate(cal[0], nums[l], oper[z]);
+                                ans = cal[2]>24?cal[2]-24:24-cal[2];
+                                if (ans < 0.0001) {
+                                    printf("102:%d %c %d %c %d %c %d\n",nums[i], oper[x], nums[j], oper[y], nums[k], oper[z], nums[l]);
+                                    return true;
+                                }
+                                // i/((j+k)*l):120
+                                cal[1] = calculate(nums[j], nums[k], oper[y]);
+                                cal[2] = calculate(cal[1], nums[l], oper[z]);
+                                cal[0] = calculate(nums[i], cal[2], oper[x]);
+                                ans = cal[0]>24?cal[0]-24:24-cal[0];
+                                if (ans < 0.0001) {
+                                    printf("120:%d %c %d %c %d %c %d\n",nums[i], oper[x], nums[j], oper[y], nums[k], oper[z], nums[l]);
+                                    return true;
+                                }
+                                // i/(j*（k+l)):210
+                                cal[2] = calculate(nums[k], nums[l], oper[z]);
+                                cal[1] = calculate(nums[j], cal[2], oper[y]);
+                                cal[0] = calculate(nums[i], cal[1], oper[x]);
+                                ans = cal[0]>24?cal[0]-24:24-cal[0];
+                                if (ans < 0.0001) {
+                                    printf("%f, %f, %f\n", cal[2], cal[1], cal[0]);
+                                    printf("%f\n",abs(cal[0] - 24));
+                                    printf("210:%d %c %d %c %d %c %d\n",nums[i], oper[x], nums[j], oper[y], nums[k], oper[z], nums[l]);
+                                    return true;
+                                }
+                            }
+                            else {
+                                cal[0] = calculate(nums[i], nums[j], oper[x]);
+                                cal[1] = calculate(cal[0], nums[k], oper[y]);
+                                cal[2] = calculate(cal[1], nums[l], oper[z]);
+                                ans = cal[2]>24?cal[2]-24:24-cal[2];
+                                if (ans < 0.0001) {
+                                    printf("ori:%d %c %d %c %d %c %d\n",nums[i], oper[x], nums[j], oper[y], nums[k], oper[z], nums[l]);
+                                    return true;
+                                }
+                            }
+
+                        }
+                        
+                    }
+                    
+                    
+                }
+                
+            } 
+            
+        }
+        
+    }
+    return false;
+}

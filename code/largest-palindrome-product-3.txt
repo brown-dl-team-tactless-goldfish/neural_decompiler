@@ -1,0 +1,26 @@
+int largestPalindrome(int n)
+{
+    long long S = pow(10, n) - 1;
+    long long Sr = S - (S % 11);
+    long long Pmax = 9;
+    for (long long i = Sr; i >= pow(10, n-1)*9; i-=11)
+    {
+        for (long long j = S; j >= pow(10, n-1); j-=2)
+        {
+            long long p = i*j;
+            if (p < Pmax) break;
+            /* this part just gets the reversed p */
+            long long Po = p;
+            long long Pr = 0;
+            while (p != 0)
+            {
+                int rem = p % 10;
+                Pr = Pr*10 + rem;
+                p /= 10;
+            }
+            if (Po == Pr) Pmax = Po;
+        }
+        if (S*(i-11) < Pmax) break;
+    }
+    return Pmax % 1337;
+}

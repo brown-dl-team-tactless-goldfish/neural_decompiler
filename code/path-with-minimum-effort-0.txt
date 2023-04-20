@@ -1,0 +1,32 @@
+#define max(a, b) (a > b ? a : b)
+
+int minimumEffortPath(int** heights, int heightsSize, int* heightsColSize){
+    int r = heightsSize;
+    int c = *heightsColSize;
+    int dp[100][100];
+    memset(dp, 0x7f, sizeof(dp));
+    dp[0][0] = 0;
+    int dir[5] = {0, -1, 0, 1, 0};
+    for(int k = 0; k < r * c; k++) 
+    {
+        bool stable = true;
+        for(int y = 0; y < r; y++)
+            for(int x = 0; x < c; x++)
+                for(int d = 0; d < 4; d++) 
+                {
+                    int tx = x + dir[d];
+                    int ty = y + dir[d + 1];
+                    if (tx < 0 || tx == c || ty < 0 || ty == r) 
+                        continue;
+                    int t = max(dp[ty][tx], abs(heights[ty][tx] - heights[y][x]));
+                    if(t < dp[y][x])
+                    {
+                      stable = false;
+                      dp[y][x] = t;
+                    }
+                }    
+        if (stable) 
+            break;
+    }
+    return dp[r - 1][c - 1];
+}

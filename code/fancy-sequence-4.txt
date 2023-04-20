@@ -1,0 +1,77 @@
+class Fancy {
+    vector<pair<int,int>> ops; // accumulated operation history
+    vector<int> prevop; // record previous accumulated ops size
+    vector<int> vals;
+    int last_op_at = 0;
+    const int c = 1e9 + 7;
+public:
+    Fancy() {
+    }
+    
+    void append(int val) {
+        vals.push_back(val);
+        prevop.push_back(ops.size());
+    }
+    
+    void addAll(int inc) {
+        if(vals.empty()) return;
+        if(last_op_at != vals.size()) { // new elements are added before this operation
+            ops.push_back(ops.empty()?make_pair(1, 0):ops.back());
+            last_op_at = vals.size();
+        } 
+        ops.back().second = (1ll * inc + ops.back().second) % c;
+    }
+    
+    void multAll(int x) {
+        if(vals.empty()) return;
+        if(last_op_at != vals.size()) { // new elements are added before this operation
+            ops.push_back(ops.empty()?make_pair(1, 0):ops.back());
+            last_op_at = vals.size();
+        } 
+        ops.back().first = (1ll * x * ops.back().first) % c;
+        ops.back().second = (1ll * x * ops.back().second) % c;
+    }
+    
+    int inverse(int x) {
+        int y = c;
+        pair<int, int> c1 = {1, 0};
+        pair<int, int> c2 = {0, 1};
+        while(x != 1) {
+            int q = y / x;
+            int r = y % x;
+            swap(c1, c2);
+            c2.first -= q * c1.first;
+            c2.second -= q * c1.second;
+            y = x;
+            x = r;
+        }
+        return c2.second >= 0 ? c2.second : (c + c2.second);
+    }
+    
+    int getIndex(int idx) {
+        int res;
+
+        if(idx >= vals.size()) return -1;
+        else if(last_op_at <= idx) return vals[idx];
+        else if(prevop[idx] == 0) {
+            res = (1ll * ops.back().first * vals[idx] + ops.back().second) % c;
+        }else{
+            pair<int, int> p1 = ops[prevop[idx] - 1];
+            pair<int, int> p2 = ops.back();
+
+            /*
+            x * (p1.first, p1.second) + y = (p2.first, p2.second) mod c
+            =>
+            x * p1.first = p2.first
+            x * p1.second + y = p2.second
+            */
+
+            int xx = (1ll * p2.first * inverse(p1.first)) % c;
+            int yy = (1ll * p2.second - 1ll * xx * p1.second) % c;
+            res = (1ll * xx * vals[idx] + yy) % c;
+        }
+        
+        if(res < 0) res += c;
+        return res ;
+    }
+};

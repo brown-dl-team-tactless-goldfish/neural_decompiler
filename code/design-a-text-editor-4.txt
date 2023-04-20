@@ -1,0 +1,53 @@
+class TextEditor {
+    list<char> l;
+    list<char>::iterator c = l.begin();
+    string print() {
+        if(c == begin(l)) return "";
+
+        string res = "";
+        for(auto it = prev(c); it != begin(l) and res.length() < 10; it--) {
+            res.push_back(*it);
+        }
+        if(res.length() < 10) res.push_back(*begin(l));
+        reverse(begin(res), end(res));
+        return res;
+    }
+public:
+    TextEditor() {}
+
+    void addText(string text) {
+        for(auto& ch : text) {
+            c = l.insert(c, ch);
+            c = next(c);
+        }
+    }
+
+    int deleteText(int k) {
+        if(c == begin(l)) return 0;
+
+        int res = 0;
+
+        while(c != begin(l) and k--) {
+            res++;
+            l.erase(prev(c));
+        }
+
+        return res;
+    }
+
+    string cursorLeft(int k) {
+        while(k-- and c != begin(l)) {
+            c = prev(c);
+        }
+
+        return print();
+    }
+
+    string cursorRight(int k) {
+        while(k-- and c != end(l)) {
+            c = next(c);
+        }
+
+        return print();
+    }
+};

@@ -1,0 +1,95 @@
+int countWords(char *s);
+bool checkWord(char **words, int wordsLength, char *word);
+void freeWords(char ** words, int wordsLength);
+
+bool wordPattern(char * pattern, char * s)
+{
+    int i;
+    int patternLength = strlen(pattern);
+    int numWords = countWords(s);
+    char **words = malloc(sizeof(char *) * 26);
+
+    if(patternLength != numWords)
+        return false;
+
+    for(i = 0; i < 26; i++)
+    {
+        words[i] = malloc(sizeof(char));
+        words[i][0] = '\0';
+    }
+
+    char *ptr = s;
+    int len = 0;
+    char *temp;
+
+    for(i = 0; i < patternLength; i++)
+    {
+        while(*(ptr + len) != ' ' && *(ptr + len) != '\0')
+            len += 1;
+
+        temp = malloc(sizeof(char) * (len + 1) );
+        strncpy(temp, ptr, len);
+        temp[len] = '\0';
+
+        if(words[pattern[i] - 'a'][0] == '\0')
+        {
+            if(!checkWord(words, 26, temp))
+            {
+                free(temp);
+                freeWords(words, 26);
+                return false;
+            }
+            words[pattern[i] - 'a'] = realloc(words[pattern[i] - 'a'], sizeof(char) * (len + 1) );
+            strcpy(words[pattern[i] - 'a'], temp);
+        } else if(strcmp(temp, words[pattern[i]-'a']) != 0 )
+        {
+            free(temp);
+            freeWords(words, 26);
+            return false;
+        }
+        free(temp);
+        if(*(ptr + len) != '\0')
+            ptr += len + 1;
+        len = 0;
+    }
+
+    freeWords(words, 26);
+    return true;
+}
+
+int countWords(char *s)
+{
+    int count = 0;
+    char *ptr = s;
+    while(ptr != NULL)
+    {
+        ptr = strchr(ptr, ' ');
+        count += 1;
+        if(ptr != NULL)
+            ptr += 1;
+    }
+
+    return count;
+}
+
+bool checkWord(char **words, int wordsLength, char *word)
+{
+    int i;
+    for(i = 0; i < wordsLength; i++)
+    {
+        if(words[i][0] != '\0')
+            if(strcmp(words[i], word) == 0)
+                return false;
+    }
+
+    return true;
+}
+
+void freeWords(char ** words, int wordsLength)
+{
+    int i;
+    for(i = 0; i < wordsLength; i++)
+        free(words[i]);
+
+    free(words);
+}

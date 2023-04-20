@@ -1,0 +1,23 @@
+with c as 
+(
+with b as 
+(
+with a
+as
+(
+    select accepter_id as xid , count(requester_id) as x from requestaccepted 
+    group by accepter_id 
+    
+    UNION ALL
+    
+    select requester_id as xid , count(accepter_id) as x from requestaccepted 
+    group by requester_id
+    
+)
+select  xid , sum(x) as x from a 
+group by xid
+)
+select xid , x  , dense_rank() over(order by x desc) AS rnk from b
+)
+select xid as id , x as num from c 
+where rnk = 1 

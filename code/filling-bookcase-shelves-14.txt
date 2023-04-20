@@ -1,0 +1,38 @@
+class Solution {
+public:
+    vector<vector<int>>book;
+    int w;
+    int dp[1001];
+    int getsize(int i)
+    {
+
+        if(i>=book.size())
+            return 0;
+        if(dp[i]!=-1)
+            return dp[i];
+        int h=0,wd=0,sum=INT_MAX;
+        for(int j=i;j<book.size();j++)
+        {
+            int currw=book[j][0],currh=book[j][1];
+            if(currw+wd<=w)
+            {
+                h=max(h,currh);
+                sum=min(sum,h+getsize(j+1));
+                wd+=currw;
+            }
+            else
+            {
+                sum=min(sum,h+getsize(j));
+                break;
+            }
+        }
+        return dp[i]=sum;
+    }
+    int minHeightShelves(vector<vector<int>>& books, int shelf_width) 
+    {
+        book=books;
+        memset(dp,-1,sizeof(dp));
+        w=shelf_width;
+        return getsize(0);
+    }
+};

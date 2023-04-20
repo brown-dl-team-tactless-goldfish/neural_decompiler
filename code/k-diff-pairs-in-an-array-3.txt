@@ -1,0 +1,31 @@
+int cmp(const void *a,const void *b){
+    return *(int*)a-*(int*)b;
+}
+
+int findPairs(int* nums, int numsSize, int k){
+    qsort(nums,numsSize,sizeof(int),cmp);
+    int ans=0;
+    int i=0,j=1;
+    while(i<numsSize && j<numsSize){
+        printf("i : %d | j : %d\n",i,j);
+        if(i==j || nums[j]-nums[i]<k){
+            j++;
+        }
+        else{
+            if(nums[j]-nums[i]==k){
+                ans++;
+                j++;
+                while(j<numsSize && nums[j]==nums[j-1]){
+                    j++;
+                }
+                if(j==numsSize) return ans;
+                
+            }
+            i++;
+            while(i<j && nums[i]==nums[i-1]){
+                i++;
+            }
+        }
+    }
+    return ans;
+}

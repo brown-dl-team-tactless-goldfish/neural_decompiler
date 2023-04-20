@@ -1,0 +1,21 @@
+typedef long long ll;
+ll max(ll x, ll y) { return x > y ? x : y; }
+int or(int x, int y) { return x ? x : y; }
+
+long long *maximumSegmentSum(int *nums, int numsSize, int *removeQueries, int removeQueriesSize, int *returnSize) {
+    
+    ll *res = (ll *)calloc(numsSize, sizeof(ll));
+    int *vis = (int *)calloc(numsSize + 2, sizeof(int));
+    ll *psum = (ll *)calloc(numsSize + 1, sizeof(ll));
+    
+    for (int i = 0; i < numsSize; ++i) psum[i + 1] = psum[i] + nums[i];
+    
+    for (int i = numsSize - 1; i > 0; --i) {
+        int j = removeQueries[i] + 1, l = or(vis[j - 1], j), r = or(vis[j + 1], j);
+        vis[l] = r, vis[r] = l;
+        res[i - 1] = max(res[i], psum[r] - psum[l - 1]);
+    }
+    
+    *returnSize = numsSize;
+    return res;
+}

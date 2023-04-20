@@ -1,0 +1,66 @@
+#define vector(ptr, type, size) \
+    (ptr = malloc(size * sizeof(type))) 
+
+#define swap(a,b) \
+    do {          \
+        __typeof(a) temp = (a); \
+        a = (b);  \
+        b = temp; \
+    } while(0)
+
+int findPar(int a, int *pair)
+{
+    if(pair[a] == a) 
+        return a;
+    return pair[a] = findPar(pair[a], pair);
+}
+
+void merge(int a, int b, int *pair, int *bePairCounts)
+{
+    a = findPar(a, pair);
+    b = findPar(b, pair);
+
+    if (a != b) {
+        if(bePairCounts[a] < bePairCounts[b]) 
+            swap(a,b);
+        pair[b] = a;
+        bePairCounts[a] += bePairCounts[b];
+    }
+}
+
+int removeStones(int **stones, int stonesSize, int *stonesColSize)
+{
+    int ans = 0;
+    int *pair, *bePairCounts;
+    vector(pair, int, stonesSize);
+    vector(bePairCounts, int, stonesSize);
+
+    // init. pair: self trace self
+    for(int i = 0; i < stonesSize; i++) 
+        pair[i] = i;
+    
+    // init. bePairCounts = {[...] = 1}
+    for(int i = 0; i < stonesSize; i++) 
+        bePairCounts[i] = 1;
+    
+    int row_seen[10001] = {[0 ... 10000] = -1}, \
+        col_seen[10001] = {[0 ... 10000] = -1};
+
+    for (int i = 0; i < stonesSize; i++) {
+        if(row_seen[stones[i][0]] != -1)
+            merge(row_seen[stones[i][0]], i, pair, bePairCounts);
+        else 
+            row_seen[stones[i][0]] = i;
+
+        if(col_seen[stones[i][1]] != -1)
+            merge(col_seen[stones[i][1]], i, pair, bePairCounts);
+        else 
+            col_seen[stones[i][1]] = i;
+    }
+
+    for(int i = 0; i < stonesSize; i++)
+        if(pair[i] == i) 
+            ans += (bePairCounts[i] - 1);
+
+    return ans;
+}

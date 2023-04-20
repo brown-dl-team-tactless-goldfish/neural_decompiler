@@ -1,0 +1,20 @@
+class Solution {
+public:
+    using VI = vector<int>;
+    struct Cmp { bool operator()(const int lhs, const int rhs) const { return to_string(lhs) > to_string(rhs); } };
+    using Queue = priority_queue<int, VI, Cmp>;
+    VI lexicalOrder(int N, Queue q={}, unordered_set<int> seen={}, VI ans={}) {
+        for (auto i=1; i <= N; i *= 10) {
+            q.push(i);
+            seen.insert(i);
+        }
+        while (ans.size() < N) {
+            auto cur = q.top(); q.pop();
+            ans.push_back(cur);
+            auto next = cur + 1;
+            if (next <= N && seen.find(next) == seen.end())
+                q.push(next);
+        }
+        return ans;
+    }
+};

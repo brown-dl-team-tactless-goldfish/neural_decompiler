@@ -1,0 +1,53 @@
+public class Graph {
+    private List<int[]>[] arr;
+    public Graph(int n, int[][] edges) {
+        arr = new List<int[]>[n];
+        for (int i = 0; i < n; i++)
+        {
+            arr[i] = new List<int[]>();
+        }
+        for (int i = 0; i < edges.Length; i++)
+        {
+            arr[edges[i][0]].Add(new[] { edges[i][1], edges[i][2] });
+        }
+    }
+    
+    public void AddEdge(int[] edge) {
+        arr[edge[0]].Add(new[] { edge[1], edge[2] });
+    }
+    
+    public int ShortestPath(int node1, int node2) {
+        var set = new HashSet<int> { node1 };
+        var lengths = new int[arr.Length];
+        for (int i = 0; i < lengths.Length; i++)
+        {
+            lengths[i] = int.MaxValue;
+        }
+        lengths[node1] = 0;
+        while (set.Count > 0)
+        {
+            var set2 = new HashSet<int> ();
+            foreach (var item in set)
+            {
+                for (int i = 0; i < arr[item].Count; i++)
+                {
+                    var nextNode = arr[item][i][0];
+                    if (lengths[nextNode] > arr[item][i][1] + lengths[item])
+                    {
+                        lengths[nextNode] = arr[item][i][1] + lengths[item];
+                        set2.Add(nextNode);
+                    }
+                }
+            }
+            set = set2;
+        }
+        return lengths[node2] != int.MaxValue ? lengths[node2] : -1;
+    }
+}
+
+/**
+ * Your Graph object will be instantiated and called as such:
+ * Graph obj = new Graph(n, edges);
+ * obj.AddEdge(edge);
+ * int param_2 = obj.ShortestPath(node1,node2);
+ */

@@ -1,0 +1,39 @@
+bool checkInclusion(char *pattern, char *str){
+    // Goal: To check if a permutation of "pattern" is present in "str".
+    
+    int str_len = strlen(str);
+    int pattern_len  = strlen(pattern);
+    
+    if (str_len < pattern_len) { return false; }
+    
+    // To track the frequency of characters in the pattern
+    int pattern_map[26] = {0}; 
+    while (*pattern != '\0') {
+        pattern_map[(*pattern) - 'a'] += 1;
+        pattern++;
+    }
+    
+    int window_map[26] = {0};
+    int end = 0;
+    while (end < str_len) {    
+        // setup the initial window     
+        if (end < pattern_len) {
+          window_map[str[end] - 'a'] += 1;
+        } else { // slide the window  
+          
+          // Found pattern in current window so return
+          if (!memcmp(window_map, pattern_map, sizeof(pattern_map))) {
+              return true;
+          }
+          
+          // add the new element
+          window_map[str[end] - 'a'] +=1;
+          // remove the old elements
+          window_map[str[end-pattern_len] - 'a'] -= 1; 
+        }
+        end++;
+    }
+     
+    // Check again at the end, incase last window meets the requirement
+    return (memcmp(window_map, pattern_map, sizeof(pattern_map)) == 0);
+}

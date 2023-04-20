@@ -1,0 +1,27 @@
+// OJ: https://leetcode.com/problems/minimum-cost-to-set-cooking-time/
+// Author: github.com/lzl124631x
+// Time: O(1) since `target` is at most 6039
+// Space: O(1)
+class Solution {
+public:
+    int minCostSetTime(int startAt, int moveCost, int pushCost, int target) {
+        int ans = INT_MAX, minute = 0;
+        auto cost = [&](int m, int s) {
+            auto d = to_string(m * 100 + s); // append seconds to minutes and get the digits
+            int x = startAt, ans = 0;
+            for (int i = 0; i < d.size(); ++i) { // simulate the time setting process
+                if (x != d[i] - '0') ans += moveCost, x = d[i] - '0';
+                ans += pushCost;
+            }
+            return ans;
+        };
+        while (target >= 0) {
+            if (target < 100 && minute < 100) {
+                ans = min(ans, cost(minute, target));
+            }
+            target -= 60;
+            minute++;
+        }
+        return ans;
+    }
+};

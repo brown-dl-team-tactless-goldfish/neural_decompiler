@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int findMaxValueOfEquation(vector<vector<int>>& points, int k) {
+        multiset<int> rbTree = multiset<int>();
+        int maxValue = INT32_MIN;
+        int leftIndex = 0;
+        rbTree.insert(points[0][1]-points[0][0]);
+        for (auto i = 1; i < points.size(); i++) {
+            while (points[i][0] - points[leftIndex][0] > k) {
+                rbTree.erase(rbTree.find(points[leftIndex][1]-points[leftIndex][0]));
+                leftIndex++;
+            }
+            if (i != leftIndex) {
+                int currValue = points[i][0] + points[i][1] + *rbTree.rbegin();
+                if (currValue > maxValue) {
+                    maxValue = currValue;
+                }
+            }
+            rbTree.insert(points[i][1]-points[i][0]);
+        }
+        return maxValue;
+    }
+};

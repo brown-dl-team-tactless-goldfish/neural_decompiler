@@ -1,0 +1,63 @@
+class Solution {
+public:
+    vector<int> distanceK(TreeNode* root, TreeNode* target, int K) {
+		//create parent for each child
+
+		unordered_map<TreeNode*, TreeNode*> par;
+
+		//dfs to update the par
+		stack<TreeNode*> s;
+		s.push(root);
+		while(!s.empty()){
+			TreeNode* p = s.top(); s.pop();
+			if(p->left) {
+				par[p->left] = p;
+				s.push(p->left);
+			}
+			if(p->right){
+				par[p->right] = p;
+				s.push(p->right);
+			} 
+		}
+
+		//now do BFS for the whole graph (Tree + Map)
+		unordered_set<TreeNode*> v; //
+		v.insert(target);
+
+		queue<TreeNode*> q;
+		q.push(target);
+		int level = 0;
+		vector<int> ans;
+
+		while(!q.empty()){
+			if(level == K){
+				while(!q.empty()){
+					ans.push_back(q.front()->val);
+					q.pop();
+				}
+				break;
+			}
+			
+			int n = q.size();
+			while(n){
+				TreeNode* c = q.front();
+				q.pop();
+				n--;
+				if(c->left && v.find(c->left) == v.end()) {
+					q.push(c->left);
+					v.insert(c->left);
+				}
+				if(c->right && v.find(c->right) == v.end()) {
+					q.push(c->right);
+					v.insert(c->right);
+				}
+				if(c!= root && v.find(par[c]) == v.end()) {
+					q.push(par[c]);
+					v.insert(par[c]);
+				}
+			}
+			level++;
+		}
+		return ans;
+    }
+};

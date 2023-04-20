@@ -1,0 +1,85 @@
+#include <stdio.h>
+#include <stdlib.h>
+#include <string.h>
+
+typedef enum {
+  failed,
+  initial,
+  hour_1,
+  hour_2,
+  hours,
+  min_1,
+  mins
+} state;
+
+const state state_machine[6][10] = {
+  {failed,failed,failed,failed,failed,failed,failed,failed,failed,failed},
+  {hour_1,hour_1,hour_2,failed,failed,failed,failed,failed,failed,failed},
+  {hours,hours,hours,hours,hours,hours,hours,hours,hours,hours},
+  {hours,hours,hours,hours,failed,failed,failed,failed,failed,failed},
+  {min_1,min_1,min_1,min_1,min_1,min_1,failed,failed,failed,failed},
+  {mins,mins,mins,mins,mins,mins,mins,mins,mins,mins}
+};
+
+int factorial(int n) {
+  int r = n;
+  while (--n) {
+    r *= n;
+  }
+  return r;
+}
+
+int rcmp(const void* a, const void* b) {
+  return *(int*)b - *(int*)a;
+}
+
+void permute_sorted(int i, int* nums, int n) {
+  int j, t, nf = factorial(n - 1);
+  while (n > 2 && i) {
+    j = i / nf;
+    i = i % nf;
+    while (j--) {
+      t = nums[j + 1];
+      nums[j + 1] = nums[j];
+      nums[j] = t;
+    }
+    nf /= --n;
+    nums++;
+  }
+  if (i == 1) {
+    t = nums[1];
+    nums[1] = nums[0];
+    nums[0] = t;
+  }
+}
+
+char* largestTimeFromDigits(int* arr, int n) {
+  int i, j, permutations = factorial(n);
+  int* arrc = (int*)malloc(n * sizeof(int));
+  qsort(arr, n, sizeof(int), rcmp);
+
+  for (i = 0; i < permutations; i++) {
+    state s = initial;
+    memcpy(arrc, arr, n * sizeof(int));
+    permute_sorted(i, arrc, n);
+
+    j = 0;
+    while (s && j < n) {
+      s = state_machine[s][arrc[j++]];
+    }
+
+    if (s) {
+      char* time = (char*)malloc(6 * sizeof(char));
+      time[0] = '0' + arrc[0];
+      time[1] = '0' + arrc[1];
+      time[2] = ':';
+      time[3] = '0' + arrc[2];
+      time[4] = '0' + arrc[3];
+      time[5] = '\0';
+
+      return time;
+    }
+  }
+
+  return "";
+}

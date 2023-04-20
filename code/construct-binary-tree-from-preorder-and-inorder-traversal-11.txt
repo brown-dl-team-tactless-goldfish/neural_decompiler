@@ -1,0 +1,36 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+struct TreeNode *_build_tree(int *preorder, int psize, int *pnext, int *inorder, int isize, int *inext, struct TreeNode *rlimit)
+{
+    struct TreeNode *root = (struct TreeNode *) malloc(sizeof(struct TreeNode));
+    int preindex;
+    if (*pnext == psize) return NULL;
+    root->val = preorder[*pnext];
+    root->left = NULL;
+    root->right = NULL;
+    (*pnext)++;
+    if (inorder[*inext] != root->val) {
+        /* there is a left branch, traverse in inorder until we meet root */
+        root->left = _build_tree(preorder, psize, pnext, inorder, isize, inext, root);
+    }
+    (*inext)++; /* skip root in the inorder */
+    if ((rlimit && inorder[*inext] != rlimit->val) ||
+        (!rlimit && *inext < isize))
+    {
+        /* have a right branch, traverse until we hit right limit or reach end end of inorder */
+        root->right = _build_tree(preorder, psize, pnext, inorder, isize, inext, rlimit);
+    }
+    return root;
+}
+
+struct TreeNode* buildTree(int* preorder, int preorderSize, int* inorder, int inorderSize) {
+    int inext = 0, pnext = 0;
+    if (!preorder || !inorder || !preorderSize || preorderSize != inorderSize) return NULL;
+    return _build_tree(preorder, preorderSize, &pnext, inorder, inorderSize, &inext, NULL);
+}

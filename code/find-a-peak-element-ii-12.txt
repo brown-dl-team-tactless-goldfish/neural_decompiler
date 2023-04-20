@@ -1,0 +1,31 @@
+class Solution 
+{
+    public:
+    vector<int> f(vector<vector<int>>& mat,int start,int last)
+    {
+        // for binary search
+        int m=mat.size(),n=mat[0].size(),current=(start+last+1)/2;
+        int maximum=0,r=0,c=0;
+        for(int i=0;i<m;i++)
+        {
+            for(int j=-1;j<=1;j++)
+            {
+                if(current+j<0||current+j>=n) continue;
+                if(mat[i][current+j]>maximum)
+                {
+                    maximum=max(maximum,mat[i][current+j]);
+                    r=i;
+                    c=current+j;
+                }
+            }
+        }
+        if(c==current) return {r,c};
+        if(c==current-1) return f(mat,start,current);
+        return f(mat,current,last);
+    }
+    vector<int> findPeakGrid(vector<vector<int>>& mat) 
+    {
+        int n=mat[0].size();
+        return f(mat,0,n-1);
+    }
+};

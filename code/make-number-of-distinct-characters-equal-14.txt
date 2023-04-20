@@ -1,0 +1,63 @@
+class Solution {
+public:
+    bool isItPossible(string word1, string word2) {
+        unordered_map<char, int> map1;
+        unordered_map<char, int> map2;
+        for(char c: word1) {
+            map1[c]++;
+        }
+        for(char c: word2) {
+            map2[c]++;
+        }
+        
+        if(abs((int)map1.size()-(int)map2.size())>=3) {
+            return false;
+        }
+
+
+        unordered_set<char> key_set1;
+        for(auto& ele: map1) {
+            key_set1.insert(ele.first);
+        }
+        unordered_set<char> key_set2;
+        for(auto& ele: map2) {
+            key_set2.insert(ele.first);
+        }
+
+        for(auto& ele1: key_set1) {
+            for(auto& ele2: key_set2) {
+                map1[ele1]--;
+                map2[ele1]++;
+
+                map2[ele2]--;
+                map1[ele2]++;
+
+                if(map1[ele1] == 0) {
+                    map1.erase(ele1);
+                }
+                if(map2[ele2] == 0) {
+                    map2.erase(ele2);
+                }
+
+                if(map1.size() == map2.size()) {
+                    return true;
+                }
+
+                map1[ele1]++;
+                map1[ele2]--;
+                if(map1[ele2] == 0) {
+                    map1.erase(ele2);
+                }
+
+                map2[ele1]--;
+                map2[ele2]++;
+                if(map2[ele1] == 0) {
+                    map2.erase(ele1);
+                }
+            
+            }
+        }
+
+        return false;
+    }
+};

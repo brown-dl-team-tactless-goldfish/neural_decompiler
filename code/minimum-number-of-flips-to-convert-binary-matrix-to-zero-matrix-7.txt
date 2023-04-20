@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int minFlips(vector<vector<int>>& mat) {
+        std::bitset<512> visited;
+        uint16_t state{0}, R{(uint16_t)mat.size()}, C{(uint16_t)mat[0].size()};
+        for(uint16_t i{0}; i < R*C; ++i) state |= (mat[i/C][i%C]<<i);
+        std::queue<uint16_t> q;
+        q.emplace(state);
+        q.emplace(UINT16_MAX);
+        int step{0};
+        while(!q.empty()) {
+            uint16_t cur{q.front()}; q.pop();
+            if(cur == UINT16_MAX) {
+                ++step;
+                if(!q.empty()) q.emplace(UINT16_MAX);
+                continue;
+            } else if(cur == 0) return step;
+            else if(visited[cur]) continue;
+            visited[cur] = true;
+            for(uint16_t i{0}; i < R*C; ++i) {
+                uint16_t state{update(cur, i, R, C)};
+                if(!visited[state]) q.emplace(state);
+            }
+        }
+        
+        return -1;
+    }
+    
+    static uint16_t update(uint16_t state, uint16_t i, uint16_t R, uint16_t C) {
+        state ^= (1<<i);
+        if(i % C > 0) state ^= 1<<(i-1);
+        if(i % C != C-1) state ^= 1<<(i+1);
+        if(i >= C) state ^= 1<<(i-C);
+        if(i+C < R*C) state ^= 1<<(i+C);
+        return state;
+    }
+    
+};

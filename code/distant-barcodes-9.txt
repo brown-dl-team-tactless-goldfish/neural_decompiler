@@ -1,0 +1,37 @@
+
+```public:
+    vector<int> rearrangeBarcodes(vector<int>& nums) {
+        map<int,int>mp;
+        int i;
+        for(i=0;i<nums.size();i++)
+        {
+            mp[nums[i]]++;
+        }
+        priority_queue<pair<int,int>>pq;
+        for(auto i:mp)
+        {
+            pq.push({i.second,i.first});
+        }
+        vector<int>v;
+        while(pq.top().first>0)
+        {
+            auto top1=pq.top();
+            pq.pop();
+            if(v.size()==0||v.back()!=top1.second)
+            {
+                v.push_back(top1.second);
+                top1.first-=1;
+            }
+            else
+            {
+                auto top2=pq.top();
+                pq.pop();
+                v.push_back(top2.second);
+                top2.first-=1;
+                pq.push(top2);
+            }
+            pq.push(top1);
+        }
+        return v;
+    }
+};

@@ -1,0 +1,24 @@
+int dfs(bool* visited, int** isConnected, int isConnectedSize, int idx){
+    if(visited[idx] == false){
+        visited[idx] = true;
+        for(int sub_idx = 0; sub_idx < isConnectedSize; sub_idx++){
+            if(isConnected[idx][sub_idx] == 1){
+                dfs(visited, isConnected, isConnectedSize, sub_idx);
+            }
+        }
+    }
+    return;
+}
+
+int findCircleNum(int** isConnected, int isConnectedSize, int* isConnectedColSize){
+    int num = 0;
+    bool* visited = (bool*)calloc(isConnectedSize,sizeof(bool));
+    for(int idx = 0; idx < isConnectedSize; idx++){
+        if(visited[idx] == false){
+            num++;
+            dfs(visited, isConnected, isConnectedSize, idx);
+        }
+    }
+    free(visited);
+    return num;
+}

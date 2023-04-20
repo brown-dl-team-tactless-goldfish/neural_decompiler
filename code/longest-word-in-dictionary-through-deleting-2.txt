@@ -1,0 +1,21 @@
+#include <string.h>
+
+static int cmp(void *a, void *b) {
+	int res = strlen(*(char**)b) - strlen(*(char**)a);
+	return res == 0 ? strcmp(*(char**)a, *(char**)b) : res;
+}
+
+static int findOneWord(char *s, char *d) {
+	for (; *s && *d; s++)
+		if (*s ==  *d)
+			d++;
+	return !*d;
+}
+
+char* findLongestWord(char* s, char** d, int dSize) {
+	qsort(d, dSize, sizeof(char**), cmp);
+	for (; *d; d++)
+		if (findOneWord(s, *d))
+			return *d;
+	return ""; 
+}

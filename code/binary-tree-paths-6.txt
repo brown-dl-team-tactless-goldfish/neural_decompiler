@@ -1,0 +1,44 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+
+void f(struct TreeNode* root, int* returnSize, char** ans, int* temp, int step){
+	if(!root) return;
+	temp[step++] = root -> val;
+	if(!root->left && !root->right){
+		ans[*returnSize] = malloc(sizeof(char)* (5*step - 1));
+		int index = 0;
+		for(int i = 0; i < step; i++){
+			if(i == step - 1){
+				index += sprintf(ans[*returnSize] + index, "%d", temp[i]);
+			}
+			else{
+				index += sprintf(ans[*returnSize] + index, "%d->", temp[i]);
+			}
+
+		}
+		(*returnSize)++;
+		return;
+	}
+	f(root -> left, returnSize, ans, temp, step);
+	f(root -> right, returnSize, ans, temp, step);
+}
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char ** binaryTreePaths(struct TreeNode* root, int* returnSize){
+	char** ans = malloc(sizeof(char*)*50);
+	*returnSize = 0;
+	int temp[100];
+	f(root, returnSize, ans, temp, 0);
+	return ans;
+}

@@ -1,0 +1,45 @@
+class Solution {
+    double get_angle(const double& v1, const double& v2)
+    {
+        return atan2(v1,v2)*180/M_PI;
+    }
+public:
+    int visiblePoints(vector<vector<int>>& points, int angle, vector<int>& location) {
+        vector<double> angles;
+        int same_pos=0;
+        for(auto p : points)
+        {
+            int delta_x = p[0]-location[0];
+            int delta_y = p[1]-location[1];
+            if (delta_x==0 and delta_y==0)
+                same_pos++;
+            else
+            {
+                double angle_ = get_angle(delta_x,delta_y);
+                if (angle_<0)
+                    angles.push_back(360+angle_);
+                else
+                    angles.push_back(angle_);
+            }
+        }
+        
+        sort(angles.begin(),angles.end());
+        int pos = upper_bound(angles.begin(), angles.end(), angle)- angles.begin();
+        
+        for(int i=0; i<pos;i++)
+            angles.push_back(angles[i]+360);
+        
+        int max_vis = 0;
+        deque<double> deq;
+        for(double a : angles)
+        {
+            deq.push_back(a);
+            while(!deq.empty() && deq.front() < a-angle)
+                deq.pop_front();
+            
+            max_vis = max((int)deq.size(), max_vis);
+        }
+        return max_vis+same_pos;
+        
+    }
+};

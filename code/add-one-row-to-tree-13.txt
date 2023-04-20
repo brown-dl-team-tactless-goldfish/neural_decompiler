@@ -1,0 +1,94 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+struct qNode
+{
+    struct TreeNode* val;
+    struct qNode* next;
+};
+struct queueTreeNode 
+{
+    int size;
+    struct qNode* front;
+    struct qNode* rear;
+};
+void enqueue(struct queueTreeNode* queue, struct TreeNode* node)
+{
+    struct qNode* newNode = malloc(sizeof(struct qNode));
+    newNode->val = node;
+    newNode->next = NULL;
+    if(queue->size == 0)
+        queue->front = newNode;
+    else
+        queue->rear->next = newNode;
+    queue->rear = newNode;
+    queue->size++;
+}
+struct TreeNode* dequeue(struct queueTreeNode* queue)
+{
+    if(queue->size == 0)
+        return NULL;
+    struct TreeNode* retval = queue->front->val;
+    struct queueTreeNode* newFront = queue->front->next;
+    free(queue->front);
+    queue->front = newFront;
+    queue->size--;
+    return retval;
+}
+struct TreeNode* addOneRow(struct TreeNode* root, int val, int depth)
+{
+    struct queueTreeNode bfsQueue;
+    bfsQueue.front = NULL;
+    bfsQueue.rear = NULL;
+    bfsQueue.size = 0;
+    //bfsSearchStart
+    enqueue(&bfsQueue, root);
+    enqueue(&bfsQueue, NULL); //NULL is divider between levels
+    int curLevel = 1;
+    while(bfsQueue.size != 0)
+    {
+        struct TreeNode* nextNode = dequeue(&bfsQueue);
+        if(nextNode == NULL)
+        {
+            if(curLevel <= depth - 1)
+            {
+              enqueue(&bfsQueue, NULL);
+              curLevel++;
+            }
+        }
+        else if(curLevel < depth - 1)
+        {
+          if(nextNode->left != NULL)
+            enqueue(&bfsQueue, nextNode->left);
+          if(nextNode->right != NULL)
+            enqueue(&bfsQueue, nextNode->right);
+        }
+        else
+        {
+            struct TreeNode* leftNode = malloc(sizeof(struct TreeNode));
+            leftNode->val = val;
+            leftNode->right = NULL;
+            if(depth != 1)
+            {
+              struct TreeNode* rightNode = malloc(sizeof(struct TreeNode));
+              rightNode->val = val;
+              rightNode->left = NULL;
+              rightNode->right = nextNode->right;
+              nextNode->right = rightNode;
+              leftNode->left = nextNode->left;
+              nextNode->left = leftNode;
+            }
+            else
+            {
+              leftNode->left = nextNode;
+              return leftNode;
+            }
+        }
+    }
+    return root;
+}

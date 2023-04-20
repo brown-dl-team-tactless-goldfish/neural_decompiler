@@ -1,0 +1,37 @@
+#define MAP_SIZE 1001
+int* relativeSortArray(int* arr1, int arr1Size, int* arr2, int arr2Size, int* returnSize){
+    
+    *returnSize = arr1Size;
+    int map[MAP_SIZE]={0}, k=0, *t_arr1;
+    t_arr1 = malloc(sizeof(int)*arr1Size);
+    
+    //create a map
+    for(int i = 0, j=0; i< arr1Size;i++)
+        map[arr1[i]]++; 
+    
+    //O(n2) if all elements are repetitive 
+    for(int j=0; j< arr2Size; j++)
+    {
+       for(int i=0; i< map[arr2[j]]; i++)
+       {
+           t_arr1[k] = arr2[j];
+           k++;
+       }
+        map[arr2[j]] = 0;  //0 the value in the map of values present in arr2
+    }
+    
+    //the non zero values in the map now are (arr1 U arr2) - arr2  
+    
+    //O(n2) when all elements in arr1 are different 
+    for(int j=0; j< MAP_SIZE; j++)
+    {
+        //runs for #of different elements in arr1
+       for(int i=0; i< map[j]; i++)
+       {
+           t_arr1[k] = j;
+           k++;
+       }
+    }
+    
+    return t_arr1;
+}

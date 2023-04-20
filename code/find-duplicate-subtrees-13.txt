@@ -1,0 +1,42 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+class Solution {
+public:
+    string collect(TreeNode* root, map<string, int>& count, vector<TreeNode*>& ans) {
+        
+        if (!root)
+            return "#";
+        
+        string left  = collect(root->left , count, ans);
+        string right = collect(root->right, count, ans);
+        
+        string serial = to_string(root->val) + "," + left + "," + right;
+        
+        cout << "serial: " << serial << endl;
+        
+        count[serial]++;
+        
+        if (count[serial] == 2)
+            ans.push_back(root);
+        
+        return serial;
+    }
+    
+    vector<TreeNode*> findDuplicateSubtrees(TreeNode* root) {
+        
+        map<string, int> count;
+        
+        vector<TreeNode*> ans;
+        
+        collect(root, count, ans);
+        
+        return ans;
+    }
+};

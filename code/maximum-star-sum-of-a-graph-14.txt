@@ -1,0 +1,34 @@
+class Solution {
+public:
+    int maxStarSum(vector<int>& vals, vector<vector<int>>& edges, int k) 
+    {
+        int n = vals.size();
+        vector<vector<pair<int, int>>>adj(n);
+        for (vector<int>edge : edges)
+        {
+            int startNode = edge[0], startNodeVal = vals[startNode];
+            int endNode = edge[1], endNodeVal = vals[endNode];
+            adj[startNode].push_back({endNodeVal, endNode});
+            adj[endNode].push_back({startNodeVal, startNode});
+        }
+        //========================================================
+        int mxSum = INT_MIN;
+        for (int node = 0; node < n; node++)
+        {
+            sort(adj[node].begin(), adj[node].end()); //sort the neighbors based on increasing "values"
+            int neighborSize = adj[node].size();
+            int sum = vals[node];
+            for (int i = neighborSize - 1; i >= 0 && i >= (neighborSize - k); i--) //take k neighbors [start from largest vals]
+            {
+                int val = adj[node][i].first;
+                if (val < 0) break; //if value of neighbor is < 0, it would decrease sum so "break", 
+				                     //as the neighbors left to it would also have negative values
+                sum += val;
+            }
+            mxSum = max(mxSum, sum);
+        }
+        //=============================================================
+        return mxSum;
+        
+    }
+};

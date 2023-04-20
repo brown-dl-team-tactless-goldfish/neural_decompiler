@@ -1,0 +1,24 @@
+class Solution {
+public:
+    bool dfs(vector<vector<int>>&grid,int row,int col,int &s,vector<pair<int,int>>&indexes,vector<vector<bool>>&visited){
+        if(row<0 or col<0 or row>=grid.size() or col>=grid[0].size() or grid[row][col]!=s )return false;
+        if(visited[row][col])return true;
+        visited[row][col]=true;
+        bool a=dfs(grid,row+1,col,s,indexes,visited);
+        bool b=dfs(grid,row,col+1,s,indexes,visited);
+        bool c=dfs(grid,row-1,col,s,indexes,visited);
+        bool d=dfs(grid,row,col-1,s,indexes,visited);
+        if(!(a and b and c and d))v.push_back(make_pair(row,col));
+        return true;
+    }
+    vector<vector<int>> colorBorder(vector<vector<int>>& grid, int row, int col, int color) {
+        int s=grid[row][col];
+        vector<pair<int,int>>indexes;    // storing border indexes
+        vector<vector<bool>>visited(grid.size(),vector<bool>(grid[0].size(),0)); // checking for visited nodes
+        if(s!=color)dfs(grid,row,col,s,indexes,visited);
+        for(int i=0;i<v.size();i++){
+            grid[v[i].first][v[i].second]=color;
+        }
+        return grid;
+    }
+};

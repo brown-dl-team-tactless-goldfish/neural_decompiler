@@ -1,0 +1,41 @@
+class Solution {
+private:
+    int dpfunc(vector<int> &arr, int m, int n)
+    {
+        vector<vector<int>> dp(m + 1,vector<int>(n + 1, 0));
+        for (int i = 1; i <= n; i++) {
+            dp[0][i] = INT_MAX - 1;
+        }
+        for (int i = 1; i <= m; i++) {
+            for (int j = 1; j <= n; j++) {
+                
+                if (arr[i - 1] <= j) {
+                    dp[i][j] = min(dp[i][j - arr[i - 1]] + 1, dp[i - 1][j]);
+                }
+                else {
+                    dp[i][j] = dp[i - 1][j];
+                }
+            }
+        }
+        return dp[m][n];
+    }
+public:
+    int minimumNumbers(int num, int k) {
+        if(num == 0)
+            return 0;
+        if(num < k)
+            return -1;
+        int goal = num;
+        vector<int> arr;
+        for(int i = k; i <= goal; i += 10){
+            if(i != 0)
+                arr.push_back(i);
+        }
+        
+        int ans = dpfunc(arr,arr.size(),num);
+        if(ans == INT_MAX-1)
+            return -1;
+        
+        return ans;
+    }
+};

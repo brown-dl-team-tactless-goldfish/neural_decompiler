@@ -1,0 +1,71 @@
+class Solution {
+public:
+    int slidingPuzzle(vector<vector<int>>& board) {
+        string boardStr;
+        const int ROWS = board.size(), COLS = board[0].size();
+        int r, nextR, c, nextC, idx, nextIdx, moves = 0, size;
+        char tmp;
+        unordered_set<string> visited;
+        queue<string> q;
+        
+        for (int r = 0; r < board.size(); r++) {
+            for (int c = 0; c < board[r].size(); c++) {
+                boardStr += ('0'+board[r][c]);
+            }
+        }
+        if (boardStr == SOLVED) {
+            return 0;
+        } else {
+            q.push(boardStr);
+            while (q.size() > 0) {
+                size = q.size();
+
+                for (int cnt = 0; cnt < size; cnt++) {
+                    boardStr = q.front();
+
+                    q.pop();
+                    idx = findZero(boardStr);
+                    r = idx/COLS;
+                    c = idx%COLS;
+                    for (const pair<int, int>& dir:DIRS) {
+                        nextR = r+dir.first;
+                        nextC = c+dir.second;
+                        if (nextR>=0 && nextC>=0 && nextR<ROWS && nextC<COLS) {
+                            nextIdx = nextR*COLS+nextC;
+                            swap(boardStr, nextIdx, idx);
+                            if (visited.find(boardStr) == end(visited)) {
+                                if (boardStr == SOLVED) {
+                                    return moves+1;
+                                } else {
+                                    visited.insert(boardStr);
+                                    q.push(boardStr);
+                                }
+                            }
+                            swap(boardStr, nextIdx, idx);
+                        }
+                    }
+                }
+                moves++;
+            }
+            return -1;
+        }
+    }
+    
+private:
+    static const vector<pair<int, int>> DIRS;
+    static const string SOLVED;
+    int findZero(const string& boardStr) {
+        int idx;
+        
+        for (idx = 0; idx<boardStr.size() && boardStr[idx]!='0'; idx++);
+        return idx;
+    }
+    void swap(string& str, int i, int j) {
+        char tmp = str[i];
+        str[i] = str[j];
+        str[j] = tmp;
+    }
+};
+
+const vector<pair<int, int>> Solution::DIRS = {{1, 0}, {0, -1}, {-1, 0}, {0, 1}};
+const string Solution::SOLVED = "123450";

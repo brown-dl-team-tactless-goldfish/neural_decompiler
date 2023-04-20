@@ -1,0 +1,40 @@
+
+int maximumSwap(int num){
+    char str[8]  = {0};
+    char mstr[8] = {0};
+    char istr[8] = {0};
+    int index    = 7;
+    int maxindex = -1;
+    int maxval   = -1;
+    int i;
+    
+    while(num) {
+        str[index] = num%10;
+        if (str[index] > maxval) {
+            maxval = str[index];
+            maxindex = index;
+        }
+        istr[index] = maxindex;
+        mstr[index] = maxval;
+        index --;
+        num /= 10;
+    }
+
+    for (i = 0 ; i < 8 ; i ++) {
+        if (str[i] != mstr[i]) {
+            int temp = str[i];
+            str[i] = str[istr[i]];
+            str[istr[i]] = temp;
+            break;
+        }
+    }
+    
+    i = 0;
+    while (!str[i]) i++;    
+    while (i < 8) {
+        num += str[i]*pow(10, 7-i);
+        i++;
+    }
+
+    return num;
+}

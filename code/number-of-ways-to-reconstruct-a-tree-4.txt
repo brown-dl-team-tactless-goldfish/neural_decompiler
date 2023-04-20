@@ -1,0 +1,61 @@
+class Solution {
+public:
+    int checkWays(vector<vector<int>>& pairs) {
+        unordered_map<int, int> numsIdx;
+        int idx = 0;//give each unique number an increasing index
+        for (auto& p : pairs) {
+            if (numsIdx.count(p[0]) == 0) {
+                numsIdx[p[0]] = idx++;
+            }
+            if (numsIdx.count(p[1]) == 0) {
+                numsIdx[p[1]] = idx++;
+            }
+        }
+        const int n = numsIdx.size();
+        
+        vector<bitset<501>> allsubsets(n, bitset<501>());
+        //function for getting index of a number
+        auto subsets = [&numsIdx, &allsubsets](int num) -> auto& {
+            return allsubsets[numsIdx[num]];
+        };
+        
+        for (auto& p : pairs) {
+            int f = p[0], t = p[1];//from to
+            subsets(f)[t] = 1;
+            subsets(f)[f] = 1;//subset includes the node itself
+            
+            subsets(t)[f] = 1;
+            subsets(t)[t] = 1;
+        }
+        
+        bool hasRoot = false;
+        for (auto& s : allsubsets) {
+            if (s.count() == n) {
+                hasRoot = true;
+                break;
+            }
+        }
+        if (!hasRoot) {
+            return 0;
+        }
+        
+        int ways = 0;
+        for (auto& p : pairs) {
+            int a = p[0], b = p[1];//traverse each edge a<->b
+            
+            bool acbpob = (subsets(a) | subsets(b)) == subsets(a); //a can be parent of b <=> their subsets equal
+            bool bcbpoa = (subsets(b) | subsets(a)) == subsets(b); //b can be parent of a <=> their subsets equal
+            
+            if (!acbpob && !bcbpoa) {
+                return 0;//if neither node of this edge can be parent, no way to form this tree
+            }
+                
+            if (acbpob && bcbpoa) {
+                ways = max(ways, 2); //if either node can be parent, we have at least 2 ways to form this tree.
+            }
+            
+            ways = max(ways, 1);
+        }
+        return ways;
+    }
+};

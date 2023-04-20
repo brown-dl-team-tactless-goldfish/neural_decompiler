@@ -1,0 +1,37 @@
+public class Solution {
+    public int GetMaxGridHappiness(int m, int n, int introvertsCount, int extrovertsCount) {
+        return DFS(m,n,introvertsCount,extrovertsCount,0,0,0,new int[m*n,introvertsCount+1,extrovertsCount+1,1 << n,1 << n]);   
+    }
+    
+    int DFS(int m, int n, int intr, int extr, int idx, int intrMask, int extrMask, int[,,,,] memo)
+    {
+        if(idx == m * n) return 0;
+        if(memo[idx, intr, extr, intrMask, extrMask] > 0) return memo[idx, intr, extr, intrMask, extrMask]-1;
+        int nIntrMask = (intrMask<<1)&((1 << n) - 1);
+        int nExtrMask = (extrMask<<1)&((1 << n) - 1);
+        int res = DFS(m,n,intr,extr,idx+1,nIntrMask,nExtrMask,memo);
+        if(intr > 0)
+        res = Math.Max(res, 120 + GetHappies(m,n,idx,intrMask,extrMask,-30) + DFS(m,n,intr-1,extr,idx+1,nIntrMask+1,nExtrMask,memo));
+        if(extr > 0)
+        res = Math.Max(res, 40 + GetHappies(m,n,idx,intrMask,extrMask,20) + DFS(m,n,intr,extr-1,idx+1,nIntrMask,nExtrMask+1,memo));
+        memo[idx, intr, extr, intrMask, extrMask] = res + 1;
+        return res;
+    }
+    
+    int GetHappies(int m, int n, int idx, int intrMask, int extrMask, int val)
+    {
+        int sum = 0;
+        int high = (1 << (n - 1));
+        int x = idx / n;
+        int y = idx % n;
+        if(x > 0 && (intrMask & high) > 0)
+            sum += val - 30;
+        if(x > 0 && (extrMask & high) > 0)
+            sum += val + 20;
+        if(y > 0 && (intrMask & 1) > 0)
+            sum += val - 30;
+        if(y > 0 && (extrMask & 1) > 0)
+            sum += val + 20;
+        return sum;
+    }
+}

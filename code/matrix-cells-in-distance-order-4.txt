@@ -1,0 +1,22 @@
+struct am { int x, y, d; };
+
+int cmp(const void *x, const void *y){
+    return ((const struct am *)x)->d - ((const struct am *)y)->d;
+}
+
+int** allCellsDistOrder(int R, int C, int r0, int c0, int* returnSize, int** returnColumnSizes){
+    struct am m[10000];
+    int k = 0;
+    for (int i = 0 ; i < R ; i++)
+        for (int j = 0 ; j < C ; j++)
+            m[k].x = i, m[k].y = j, m[k++].d = abs(r0 - i) + abs(c0 - j);
+    qsort(m, k, sizeof(struct am), cmp);
+    int **a = malloc(sizeof(int *[k]));
+    int *c = *returnColumnSizes = malloc(sizeof(int [k]));
+    for (int i = 0 ; i < k ; i++) {
+        a[i] = malloc(sizeof(int [2]));
+        a[i][0] = m[i].x, a[i][1] = m[i].y;
+        c[i] = 2;
+    }
+    return *returnSize = k, a;
+}

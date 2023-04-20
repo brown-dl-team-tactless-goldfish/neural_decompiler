@@ -1,0 +1,38 @@
+public class Solution {
+    public bool IsEvenOddTree(TreeNode root) {
+        if (root == null)
+            return false;
+        
+        Queue<TreeNode> q = new Queue<TreeNode>();
+        int level = 0;
+        
+        q.Enqueue(root);
+        
+        while (q.Count > 0)
+        {
+            int count = q.Count,
+                prev = level % 2 == 0 ? Int32.MinValue : Int32.MaxValue;
+            
+            while (count > 0)
+            {
+                TreeNode cur = q.Dequeue();
+                
+                if (level % 2 == 0 && (cur.val % 2 == 0 || prev >= cur.val) || (level % 2 != 0 && (cur.val % 2 != 0 || prev <= cur.val)))
+                    return false;
+                
+                if (cur.left != null)
+                    q.Enqueue(cur.left);
+                
+                if (cur.right != null)
+                    q.Enqueue(cur.right);
+                
+                prev = cur.val;                    
+                count--;
+            }
+            
+            level++;
+        }
+        
+        return true;
+    }
+}

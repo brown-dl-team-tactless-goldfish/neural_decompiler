@@ -1,0 +1,88 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+
+
+void helper(struct TreeNode* node,struct TreeNode* parent, int* to_delete, int to_deleteSize, int* count,struct TreeNode**trees){
+    
+    if(!node)return;
+    // printf("node = %d \n",node->val);
+    
+    for(int i=0;i<to_deleteSize;i++){
+        if (node->val==to_delete[i]){
+            // printf("node is to delete %d \n",node->val);
+            //delete the link with the parent
+            if(parent){
+                if(parent->right ==node)parent->right=NULL;
+                if(parent->left ==node)parent->left=NULL;
+            }
+            
+            //this is the main root of the tree should be deleted
+            else{
+                *count=0;
+            }
+            
+            if(node->right)trees[(*count)++]=node->right;
+            if(node->left)trees[(*count)++]=node->left;
+            // free(node);
+            break;  
+        }
+        
+    }
+    
+helper (node->right,node,to_delete,to_deleteSize,count,trees);
+helper (node->left,node,to_delete,to_deleteSize,count,trees);
+}
+
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+struct TreeNode** delNodes(struct TreeNode* root, int* to_delete, int to_deleteSize, int* returnSize){
+    if(!root)return (struct TreeNode**)NULL;
+    if(!to_delete){
+        *returnSize=1;
+        return &root;
+    }
+    
+    struct TreeNode* trees[1000];
+    trees[0]=root;
+    int count=1;
+    
+    helper (root,NULL,to_delete,to_deleteSize,&count,trees);
+    
+    // count = 10;
+    // allocate a heap memory of the exact size
+    struct TreeNode** ret= (struct TreeNode**) malloc((count)*sizeof(struct TreeNode*));
+    
+    int idx=0;
+    bool to_copy;
+    for(int i=0;i<count;i++){
+        to_copy=true;
+        for(int j=0;j<to_deleteSize;j++){
+            if(trees[i]->val==to_delete[j]){
+                to_copy=false;
+                // printf("node %d has been renoved \n",trees[i]->val);
+            }
+        }
+        if(to_copy){
+            ret[idx++]=trees[i];
+        }
+    }
+    
+    
+    // memcpy(ret,trees,count*(sizeof(struct TreeNode*)));
+    // ret[0]=root;
+    *returnSize=idx;
+    return ret;
+}
+
+
+

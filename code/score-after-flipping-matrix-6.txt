@@ -1,0 +1,26 @@
+class Solution {
+    void toggle_row(vector<vector<int>>& A, int i) {
+        for(int j=0; j<A[0].size(); j++) A[i][j] = !A[i][j];
+    }
+    void toggle_col(vector<vector<int>>& A, int j) {
+        for(int i=0; i<A.size(); i++) A[i][j] = !A[i][j];
+    }
+    bool doflip(vector<vector<int>>& A, int j) {
+        int c = 0;
+        for(int i=0; i<A.size(); i++) c+=A[i][j];
+        return c<=A.size()/2;
+    }
+    string to_str(vector<int>& v) {
+        string s = "";
+        for(int i:v) s += to_string(i);
+        return s;
+    }
+public:
+    int matrixScore(vector<vector<int>>& A) {
+        for(int i=0; i<A.size(); i++) if(!A[i][0]) toggle_row(A,i);
+        for(int j=0; j<A[0].size(); j++) if(doflip(A,j)) toggle_col(A,j);
+        int o = 0;
+        for(auto i:A) o += stoi(to_str(i),0,2);
+        return o;
+    }
+};

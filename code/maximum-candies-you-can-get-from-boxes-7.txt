@@ -1,0 +1,27 @@
+    int maxCandies(vector<int>& status, vector<int>& candies, vector<vector<int>>& keys, vector<vector<int>>& containedBoxes, vector<int>& initialBoxes) {
+        const int n = status.size();
+        vector<bool> hasKey(n, false), hasBox(n, false);
+        int res = 0;
+        queue<int> q;
+        for(auto box:initialBoxes) {
+            q.push(box);
+            hasBox[box] = true;
+        }
+        while(!q.empty()){
+            const int i = q.front(); q.pop();
+            if(status[i] == 2) continue; //visited
+            if(!hasBox[i]) continue;
+            if(status[i] == 0 && !hasKey[i]) continue;
+            status[i] = 2;            
+            res += candies[i];
+            for(auto key:keys[i]){
+                hasKey[key] = true;
+                q.push(key);
+            }
+            for(auto box:containedBoxes[i]) {
+                hasBox[box] = true;
+                q.push(box);                
+            }
+        }
+        return res;
+    }

@@ -1,0 +1,37 @@
+int** shiftGrid(int** grid, int rows, int* cols, int k, int* returnSize, int** returnColumnSizes){
+    int cSize = cols[0];
+    int size = rows * cSize;
+    int prev = grid[0][0];
+    int cur = NULL;
+    int startIdx = 0;
+    int idx = k % (cSize * rows);
+    
+    if (idx == 0) return grid;  
+    
+    *returnColumnSizes = cols;
+    *returnSize = rows;
+    
+    for (int n = 0; n < size; n++){
+        int curRow = idx / cSize;
+        int curCol = idx % cSize;
+
+        if (idx == startIdx){
+            idx = ++startIdx;
+            cur = grid[idx / cSize][idx % cSize];
+        } else {
+            cur = grid[curRow][curCol];
+        } 
+
+        grid[curRow][curCol] = prev;
+        
+        prev = cur;
+
+        idx += k; 
+
+        if (idx >= size) {
+            idx = idx % size; 
+        }
+    }
+
+    return grid;
+}

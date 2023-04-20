@@ -1,0 +1,21 @@
+class Solution {
+public:
+    vector<vector<int>> substringXorQueries(string s, vector<vector<int>>& queries) {
+        vector<vector<int>> ans(queries.size(), {-1, -1});
+        unordered_map<long long, vector<int>> mp;
+        for(int i = 0; i < s.size(); i++){
+            for(int j = i; j < s.size() && j < i + 32; j++){
+                string sb = s.substr(i, j-i+1);
+                long long n = stol(sb, 0, 2);
+                if(mp.find(n) == mp.end()) mp[n] = {i, j};
+                else if(j - i < mp[n][1] - mp[n][0]) mp[n] = {i, j};
+            }
+        }
+        for(int i = 0; i < queries.size(); i++){
+            int val = queries[i][0] ^ queries[i][1];
+            if(mp.find(val) == mp.end()) continue;
+            else ans[i] = mp[val];
+        }
+        return ans;
+    }
+};

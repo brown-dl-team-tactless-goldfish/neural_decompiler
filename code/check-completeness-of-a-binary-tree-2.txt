@@ -1,0 +1,41 @@
+bool helper(struct TreeNode * root,int curh,int h,int *flag);
+int height(struct TreeNode * root);
+bool isCompleteTree(struct TreeNode* root)
+
+
+{
+ int h=height(root),flag=1;
+ return helper(root,1,h,&flag);   
+}
+
+int height(struct TreeNode * root)
+{
+    if(!root)
+        return 0;
+    
+    int l=height(root->left);
+    int r=height(root->right);
+    
+    return r>l?r+1:l+1;
+}
+
+bool helper(struct TreeNode * root,int curh,int h,int *flag)
+{
+    if(!root&&curh!=h&&curh!=h+1)
+        return false;
+
+    if(root&&curh==h&&(*flag))
+    {
+        (*flag)=0;
+    }
+    if(!root&&curh==h&&!(*flag))
+    {
+        return false;
+    }
+    else if(!root)
+    {
+        return true;
+    }
+ 
+ return helper(root->right,curh+1,h,flag)&&helper(root->left,curh+1,h,flag);
+}

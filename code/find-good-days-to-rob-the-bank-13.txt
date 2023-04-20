@@ -1,0 +1,31 @@
+public class Solution 
+{
+    public IList<int> GoodDaysToRobBank(int[] security, int time) 
+    {
+        List<int> ans = new();
+        int n = security.Length;
+        int[] nonInc = new int[n];
+        int[] nonDec = new int[n];
+        
+        for(int i=1; i<n; i++)
+        {
+            if(security[i] <= security[i-1])
+                nonInc[i] = 1 + nonInc[i-1];
+                
+        }
+        
+        for(int i=n-2; i>=0; i--)
+        {
+            if(security[i] <= security[i+1])
+                nonDec[i] = 1 + nonDec[i+1];
+        }
+        
+        for(int i=time; i+(time==0 ? 0 : time-1)<n; i++)
+        {
+            if(nonInc[i]>=time && nonDec[i]>=time)
+                ans.Add(i);
+        }
+        
+        return ans;
+    }
+}

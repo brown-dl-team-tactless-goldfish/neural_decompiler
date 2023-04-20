@@ -1,0 +1,55 @@
+inline void swap(int* a, int* b) {
+    int t = *a;
+    *a = *b;
+    *b = t;
+}
+
+inline int max(int a, int b) {
+    return a > b ? a : b;
+}
+
+char * largestTimeFromDigits(int* A, int ASize){
+    assert(ASize == 4);
+	
+    int mx = INT_MIN;
+        
+    for (int i = 0; i < 4; ++i) {
+        swap(A + 0, A + i);
+
+        for (int j = 1; j < 4; ++j) {
+            swap(A + 1, A + j);
+            
+            int hr = A[0]*10 + A[1];
+            if (hr < 24) {
+                for (int k = 2; k < 4; ++k) {
+                    swap(A + 2, A + k);
+
+                    int mn = A[2]*10 + A[3];
+                    if (mn < 60) {
+                        int val = hr*60 + mn;
+
+                        mx = max(mx, val);
+                    }
+
+                    swap(A + 2, A + k);
+                }
+            }
+
+            swap(A + 1, A + j);
+        }
+
+        swap(A + 0, A + i);
+    }
+    
+    char* ans;
+    if (mx != INT_MIN) {
+        ans = malloc(6 * sizeof(char));
+        sprintf(ans, "%02d:%02d", mx/60, mx%60);
+    }
+    else {
+        ans = malloc(1 * sizeof(char));
+        ans[0] = NULL;
+    }
+    
+    return ans;
+}

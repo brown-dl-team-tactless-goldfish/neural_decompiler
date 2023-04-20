@@ -1,0 +1,34 @@
+unordered_map<string, priority_queue<string,vector<string>,greater<string>>> graph;
+
+vector<string>res;
+
+void dfs(string st)
+{
+    auto& pq = graph[st];
+    
+    while(!pq.empty())
+    {
+        auto cur = pq.top();
+        
+        pq.pop();
+        
+        dfs(cur);
+    }
+    
+    res.push_back(st);
+}
+
+vector<string> findItinerary(vector<vector<string>>& tickets) 
+{
+    for(auto x : tickets)
+    {
+        graph[x[0]].push(x[1]);
+    }
+    
+    dfs("JFK");
+    
+    reverse(res.begin(),res.end());
+    
+    return res;  
+    
+}

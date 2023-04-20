@@ -1,0 +1,24 @@
+typedef struct TreeNode tree;
+
+int max(int n, int m) {
+  return n > m ? n : m;
+}
+
+int dfs(tree* T, int* maxPath, int* maxNode) {
+  if(T == NULL) return 0;
+  *maxNode = max(*maxNode, T -> val);
+  int right = dfs(T -> right, maxPath, maxNode);
+  int left = dfs(T -> left, maxPath, maxNode);
+  int line = max(0, max(left, right));
+  int bend = right + left + T -> val;
+  *maxPath = max(*maxPath, max(line + T -> val, bend));
+  return line + T -> val;
+}
+
+int maxPathSum(tree* T) {
+  int* maxPath = calloc(1, sizeof(int));
+  int* maxNode = calloc(1, sizeof(int));
+  *maxNode = INT_MIN;
+  dfs(T, maxPath, maxNode);
+  return *maxPath == 0 ? *maxNode : *maxPath;
+}

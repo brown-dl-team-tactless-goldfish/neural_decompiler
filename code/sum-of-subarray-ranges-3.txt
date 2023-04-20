@@ -1,0 +1,44 @@
+class Solution {
+private:
+    unordered_map<int, long long> map;
+public:
+    long long dp(vector<int> &weights, int start)
+    {   
+        if(map.count(start))
+        {
+            return map[start];
+        }
+        
+        if(start == weights.size())
+        {
+            return 0;
+        }
+        
+        int minWeight {INT_MAX};
+        int maxWeight {INT_MIN};
+        
+        long long res{0};
+
+        for(int i = start; i < weights.size(); i++)
+        {
+            
+            minWeight = min ( minWeight, weights[i]);
+            maxWeight = max ( maxWeight, weights[i]);
+        
+            res += (maxWeight - minWeight);
+        }
+        res += dp(weights, start+1);
+        
+        map[start] = res;
+        return res;
+    }
+    
+    long long subArrayRanges(vector<int>& weights) {
+        if(weights.empty())
+        {
+            return 0;
+        }
+        
+        return dp(weights, 0);
+    }
+};

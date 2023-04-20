@@ -1,0 +1,35 @@
+class Solution {
+public:
+	vector<int> dp;
+
+	int helper(vector<int>& arr,int d, int index){
+		if(dp[index]) return dp[index];
+		int ans=1;
+
+		for(int j=index+1;j<arr.size() && j<=index+d;j++){
+
+			if(arr[j]>=arr[index]) break;
+
+			ans=max(ans,helper(arr,d,j)+1);
+		}
+		for(int j=index-1;j>=0 && j>=index-d;j--){
+
+			if(arr[j]>=arr[index]) break;
+
+			ans=max(ans,helper(arr,d,j)+1);
+		}
+		dp[index]=ans;
+
+		return ans;
+	}
+	int maxJumps(vector<int>& arr, int d) {
+		int n=arr.size();
+		dp.assign(n,0);
+		int res=0;
+		for(int i=0;i<n;i++){
+			res=max(res,helper(arr,d,i));
+		}
+
+		return res;
+	}
+};

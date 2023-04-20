@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int findKthNumber(int m, int n, int k) {
+        int l = 1, r = m*n;
+        int res = m*n;
+        
+        // m = row
+        // n = col
+        // binary in number 1->n*m
+        while(l<=r){
+            int mid = (l+r)/2;
+            
+            // count the number that lower than mid
+            int cnt = 0;
+            // for in row
+            for(int i=1;i<=m;++i){
+                cnt += min(mid/i, n); // find c that i*c <= mid
+            }
+            
+            if(cnt >= k){
+                res = min(res, mid);
+                r = mid-1;
+            }else{
+                l = mid+1;
+            }
+        }
+        
+        return res;
+    }
+};

@@ -1,0 +1,28 @@
+int kthSmallest(vector<vector<int>>& mat, int k) {
+int m=mat.size();int n=mat[0].size();
+set<pair<int,vector<int>>>arr;
+vector<int>res(m,0);
+int sum=0;
+for(int i=0;i<m;i++) sum+=mat[i][0]; //Smallest sum 
+arr.insert({sum,res}); //Elements sum with their column index in each row
+for(int i=1;i<k;i++)
+{
+   auto f=*arr.begin();
+   arr.erase(f);//Erasing ith smallest sum
+   //Form and insert next smallest sums 
+   for(int row=0;row<m;row++)
+   {
+       if(f.second[row]+1>=n) continue;
+       //Modify set values 
+       f.first=f.first-mat[row][f.second[row]]+mat[row][f.second[row]+1];
+       f.second[row]=f.second[row]+1;
+       //Insert new combination 
+       arr.insert(f);
+       //Change the set values back to original 
+       f.first=f.first-mat[row][f.second[row]]+mat[row][f.second[row]-1];
+       f.second[row]=f.second[row]-1;
+   }
+}
+return arr.begin()->first;
+}
+};

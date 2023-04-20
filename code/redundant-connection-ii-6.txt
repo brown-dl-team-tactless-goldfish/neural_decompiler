@@ -1,0 +1,98 @@
+   int par[1005], sz[1005];
+class Solution {
+public:
+    void init(int n) {
+            for (int i = 0; i < n; i++) {
+                par[i] = i;
+                sz[i] = 1;
+            }
+        }
+     int find(int v) {
+            return v == par[v] ? v : par[v] = find(par[v]);
+        }
+        void join(int u, int v) {
+            u = find(u);
+            v = find(v);
+            if (u == v) return ;
+            if (sz[u] < sz[v]) swap(u, v);
+            par[v] = u;
+            sz[u] += sz[v];
+            
+        }
+    vector<int> findRedundantDirectedConnection(vector<vector<int>>& g) {
+        //case 1:after adding a directed edge,there might be two parents for a partiuclar nodere
+        //case 2:after adding a directed edge there might be a cycle in the directed graph,e.g an edge from leaf node to root node
+        //case 3:there might be a node with two parents as well as a cycle,this is an edge case
+        //example for case 3 [2,3],[3,4],[4,5][5,2],[1,2],here node 2 has two parents 1 and 5,but removing 1->2 edge wont help as there would stil be a  cycle left
+        //so in such cases,remove the edge which is a part of the cycle i.e 5->2(See for yourself)
+        
+        //so basically if we have a node with two parents,put the edge which comes later in the graph  in the blacllist1,meaning it must have higher prefernece,because we are required to return the answer that occurs last
+        //now perform a cycle detection using normal dsu(but remember,directed graph me dsu se cycle detect nahi hota,yaha hame pata hain ki cycle ho sakta hain islie ham kar sakte hain yaha)
+        //if there is still a cycle,iska matlab woh edge blaclist 1 wala usse remove karke bhi kuch laabh hua nahi,so remove the edge in blacklist 2 and that is the answer
+        //but what if after removing the node in blacklist 1 there is no cycle,tab toh bhai aram kar,return that edge only and go home
+        int n=g.size();
+        vector<int> bl1,bl2;
+       
+        vector<int> indeg(n+1,-1);
+        for(int i=0;i<n;i++){
+            int x=g[i][0];
+            int y=g[i][1];
+            //x->y
+            if(indeg[y]==-1)
+               indeg[y]=i;//marking the row number which is increasing y's indegree 
+            else{
+                bl1.push_back(i);//ye baad me aya hain naa,toh blaclist 1
+                bl2.push_back(indeg[y]);//pehle wala ko blacklist 2 me daal do
+                indeg[y]=i;
+            }
+        }
+        if(bl1.size()==0){
+            //iska matlab kyaa hain
+            //ksi ka parent two nahi hain
+            //toh  cycle hi hain graph me for sure,damn sure
+            //so since we are sure ki cycle hain,toh dsu laga de normally
+            //waise ham dsu nahi laga sakte to detect cycle in directed graph
+            //but pata chal gaya na bhai ki hain
+             init(n+1);
+            for(int i=0;i<n;i++){
+                int x=g[i][0];
+                int y=g[i][1];
+                if(find(x)==find(y)){
+                    return g[i];
+                }
+                else{
+                    join(x,y);
+                }
+            }
+        }
+        //now check cycle if we consider removing bl1's edge,how to do so sir,simple,dsu run karo edge list me without considering bl1 ka edge
+        int num=bl1[0];
+        bool cycle=false;
+        init(n+1);
+        for(int i=0;i<g.size();i++){ 
+            if(i==num){
+                continue;
+            }
+            int x=g[i][0];
+            int y=g[i][1];
+            if(find(x)==find(y)){
+                cycle=true;
+                break;
+            }
+            else{
+                 join(x,y);
+            }
+         
+        }  
+        if(cycle){
+            return g[bl2[0]];
+        }
+        else{
+            return g[bl1[0]];
+        }
+        
+       
+        
+        
+    }
+};

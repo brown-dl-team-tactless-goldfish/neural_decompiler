@@ -1,0 +1,76 @@
+class Solution {
+public:
+    int ans = 1e9+7;
+    int getTime(int n)
+    {
+        int a = n%10;
+        n=n/10;
+        int b = n%10;
+        n=n/10;
+        int c = n%10;
+        n=n/10;
+        int d = n%10;
+        int seconds = a+(10*b);
+        int minutes = c+(10*d);
+        return 60*minutes + seconds;
+    }
+    void dfs(int startAt, int moveCost, int pushCost, int targetSeconds, int counter, int time, int cost)
+    {
+        if(counter==4)
+        {
+            if(targetSeconds == getTime(time))
+                ans=min(ans, cost);
+            return;
+        }
+        if(targetSeconds == getTime(time))
+                ans=min(ans, cost);
+           // return;
+        for(int i=0;i<=9;i++)
+        {
+            if(i == startAt)
+            {
+                dfs(i, moveCost, pushCost, targetSeconds, counter + 1, time*10 + i, cost+pushCost);
+            }
+            else
+            {
+                dfs(i, moveCost, pushCost, targetSeconds, counter + 1, time*10 + i, cost+moveCost+pushCost);
+            }
+        }
+        return;
+    }
+    int minCostSetTime(int startAt, int moveCost, int pushCost, int targetSeconds) {
+        
+        dfs(startAt, moveCost, pushCost, targetSeconds, 0, 0, 0);
+        return ans;
+    }
+};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

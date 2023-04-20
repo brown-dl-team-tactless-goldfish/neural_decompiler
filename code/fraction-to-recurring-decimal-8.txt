@@ -1,0 +1,80 @@
+struct my_struct {
+    int num;
+    int start;
+    UT_hash_handle hh;
+};
+
+struct my_struct *head = NULL;
+
+struct my_struct *find_node(int num) {
+    struct my_struct *s;
+
+    HASH_FIND_INT(head, &num, s);
+    return s;
+}
+
+void add_node(int num, int start) {
+    struct my_struct *s = calloc(1, sizeof(struct my_struct));
+    if (s) {
+        s->num = num;
+        s->start = start;
+        HASH_ADD_INT(head, num, s);
+    }
+}
+
+void rightShift_1(char *words, int len)
+{
+    int i;
+    char tmp = words[0], tmp2;
+    for(i = 1; i <= len; i++)
+    {
+        tmp2 = words[i];
+        words[i] = tmp;
+        tmp = tmp2;
+    }
+}
+
+char * fractionToDecimal(int numerator, int denominator){
+    char *res = calloc(10000, sizeof(char));
+    char *dot = res;
+    long remain = numerator, answer = remain / denominator;;
+    int i = 0;
+    struct my_struct *s, *tmp;
+    head = NULL;
+    
+    if (answer == 0 && (numerator < 0 && denominator > 0) || (numerator > 0 && denominator < 0)) {
+        dot += sprintf(res, "-%d", answer);
+    } else {
+        dot += sprintf(res, "%ld", answer);
+        remain -= (answer * denominator);
+    }
+    
+    if (remain != 0) {
+        dot[0] = '.';
+        dot ++;
+
+        while (remain != 0 && i < 10000) {
+            remain *= 10;
+            answer = remain / denominator;
+            s = find_node(remain);
+            if (s && answer) {
+                rightShift_1(dot + s->start, i);
+                dot[s->start] = '(';
+                dot[i+1] = ')';
+                dot[i+2] = '\0';
+                break;
+            } else {
+                add_node(remain, i);
+                i += sprintf(&dot[i], "%ld", abs(answer));
+                remain -= (answer * denominator);
+            }
+        }
+    }
+    
+    HASH_ITER(hh, head, s, tmp) {
+        HASH_DEL(head, s);
+        free(s);
+    }
+    
+    return res;
+}

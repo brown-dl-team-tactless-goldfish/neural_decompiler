@@ -1,0 +1,57 @@
+int *response = (int*) malloc(sizeof(int)*queriesSize);
+
+
+*returnSize = queriesSize;
+
+int len = strlen(s);
+int hash[len][2];
+int number[len];
+// hash [0] stores the first right candle and [1] stores the first left
+// candle from the current position.
+int pos = -1;
+// Find the first left candle for any position.
+
+for(int i=0;i<len;i++)
+{
+    if(s[i] == '|')
+        pos = i;
+    
+    hash[i][1] = pos;
+}
+
+pos = -1;
+
+// find the first right candle for any position.
+
+for(int i = len -1;i>=0;i--)
+{
+    if(s[i] == '|')
+        pos = i;
+    
+    hash[i][0] = pos;
+}
+int count = 0;
+for(int i=0;i< len;i++)
+{
+    if(s[i] == '|')
+        count++;
+    
+    number[i] = count;
+}
+for(int i=0;i<queriesSize;i++)
+{
+    int start = queries[i][0];
+    int end = queries[i][1];
+    int cstart = hash[start][0];
+    int cend = hash[end][1];
+    printf("\nvalue of cend %d and cstart %d", cend, cstart);
+    if(cend == -1 || cstart == -1 || cstart > cend )
+        response[i] = 0;
+    else
+    {
+        response[i] = (cend - cstart) -( number[cend] - number[cstart]);
+    }
+}
+
+
+return response;

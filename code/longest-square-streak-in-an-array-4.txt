@@ -1,0 +1,45 @@
+class Solution {
+public:
+    unordered_set<long long> vis;
+    int longestSquareStreak(vector<int>& nums) {
+        unordered_set<long long> my_set;
+        for(int& ele: nums){
+            my_set.insert(ele);
+        }
+
+        unordered_map<int, long long> my_map;
+        for(auto& ele: my_set){
+            if(my_set.count(ele*ele) > 0){
+                my_map[ele] = ele*ele;
+            }
+        }
+
+        int res = -1;
+        for(auto& ele: my_set){
+            if(vis.count(ele) > 0){
+                continue;
+            }
+            int tmp = traverse(my_map, ele);
+            if(tmp>=2){
+                res = max(res, tmp);
+            }
+        }
+
+        return res;
+    }
+
+
+    int traverse(unordered_map<int, long long>& my_map, long long cur_ele){
+
+        int level = 1;
+        vis.insert(cur_ele);
+        while(my_map.count(cur_ele)>0){
+            level++;
+            cur_ele = my_map[cur_ele];
+            vis.insert(cur_ele);
+        }
+
+        return level;
+    }
+
+};

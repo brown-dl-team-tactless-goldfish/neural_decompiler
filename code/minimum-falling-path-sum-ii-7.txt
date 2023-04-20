@@ -1,0 +1,30 @@
+class Solution {
+private:
+    vector<vector<int>>mem;
+    int solve(vector<vector<int>>&grid,int r,int c){
+        int n=grid.size();
+        if(r==n-1){
+            return grid[r][c];
+        } else if(mem[r][c]!=-1){
+            return mem[r][c];
+        } else {
+            int ans=INT_MAX;
+            for(int nc=0;nc<n;nc++){
+                if(nc!=c){
+                    ans=min(ans,solve(grid,r+1,nc));
+                }
+            }
+            return mem[r][c]=grid[r][c]+ans;
+        }
+    }
+public:
+    int minFallingPathSum(vector<vector<int>>& grid) {
+        int n=grid.size();
+        mem=vector<vector<int>>(n,vector<int>(n,-1));
+        int ans=INT_MAX;
+        for(int c=0;c<n;c++){
+            ans=min(ans,solve(grid,0,c));
+        }
+        return ans;
+    }
+};

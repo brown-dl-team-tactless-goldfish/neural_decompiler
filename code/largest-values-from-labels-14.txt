@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int largestValsFromLabels(vector<int>& values, 
+                              vector<int>& labels, 
+                              int num_wanted, 
+                              int use_limit) {
+        vector<pair<int, int>> v; unordered_map<int, int> lab; int t/*otal*/ = 0;
+        /* Sort the values but maintain the label info */
+        for (int i = 0; i < values.size(); i++) v.push_back(make_pair(values[i], labels[i]));
+        sort(v.begin(), v.end());
+        /* Greedily pick the highest value ... */
+        for (int i = v.size() - 1; i >= 0; i--) {
+            int l = v[i].second; 
+            if (!num_wanted) break;
+            /* ... if the use limit for the label is not exhausted */
+            if (lab[l] < use_limit) { t += v[i].first; num_wanted--; lab[l]++; }
+        }
+        return t;
+    }
+};

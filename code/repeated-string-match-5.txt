@@ -1,0 +1,93 @@
+// returns the number of repeating A to make B a substring of A
+int isSubString(char *A, int alen, char *B, int blen) {
+    int i, j;
+    char *tmp;
+    int sidx;
+    int found;
+
+    tmp = (char *)malloc((2 * alen + 1) * sizeof(char));
+    tmp[0] = '\0';
+    strcat(tmp, A);
+    strcat(tmp, A);
+
+    found = 0;
+    for(i=0; i<alen+blen; i++) {
+        sidx = i;
+        // find the first matching character between tmp and B.
+        if(tmp[i] == B[0]) {
+            found = 1;
+            for(j=1; j<blen && i+j < 2*alen; j++) {
+                if(tmp[i+j] != B[j]) {
+                    found = 0;
+                    break;
+                }
+            }
+            if(found == 1) break;
+        }
+    }
+    
+    free(tmp);
+
+    if(found == 0) return -1;
+    if(sidx + blen <= alen) return 1;
+    
+    return 2;
+}
+
+int repeatedStringMatch(char * A, char * B){
+    int alen, blen;
+    int i, j, k;
+    int found;
+    int sidx;
+    int cnt;
+
+    alen = strlen(A);
+    blen = strlen(B);
+    
+    // special cases
+    if(alen == 0 && blen == 0) return 1;
+    else if(alen == 0 && blen != 0) return -1;
+    else if(alen != 0 && blen == 0) return 0;
+
+    // in case A is longer string of B.
+    // B can be found in a new string, A+A.
+    if(alen >= blen) {
+        return isSubString(A, alen, B, blen);
+    }
+    
+    // starting index of B, whose char is the same as the first char of A 
+    found = 0; // in case no matching char of B is found in A.
+    for(i=0; i<blen && i<alen; i++) {
+        if(A[0] == B[i]) {
+            sidx = i; // starting index of B, whose char is the same as the first char of A
+            found = 1;
+            for(j=1; j<alen && i+j<blen; j++) { // skip the first char
+                if(A[j] != B[i + j]) {
+                    found = 0;
+                    break;
+                }
+            }
+            if(found == 1) break;
+        }
+    }
+    if(found == 0) return -1;
+
+    // index = i - first match of fist character of A
+    for(i = (alen - sidx)%alen, j=0; i<alen; i++, j++) {
+        if(A[i] != B[j]) return -1;
+    }
+
+    // compare the two string to the end of B.
+    cnt = 0;
+    for(i=0, j = sidx; j<blen; i++, j++) {
+        if(i == alen) i = 0;  // modular. But better this way to save computing power.
+        if(i == 0) cnt++;
+
+        if(A[i] != B[j]) return -1;        
+    }
+
+    // starting index is not zero, add 1
+    if(sidx != 0) cnt++;
+    
+    return cnt;
+}

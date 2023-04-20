@@ -1,0 +1,54 @@
+public class FoodRatings {
+    Dictionary<string, SortedList> _mc2f;
+    Dictionary<string,object[]> _mf2c;
+    public FoodRatings(string[] foods, string[] cuisines, int[] ratings) {
+        _mc2f = new  Dictionary<string, SortedList>(); //dict <type, sortedlist<rating,SortedSet<food>>
+        
+        _mf2c = new  Dictionary<string,object[]>();    // dict< food, [type,rating]>
+        
+        for(int i=0;i<foods.Length;i++){
+            _mf2c[foods[i]] = new object[2]{cuisines[i],ratings[i]};
+            if(!_mc2f.ContainsKey(cuisines[i])){
+                _mc2f[cuisines[i]] = new SortedList();
+            }
+            
+            if(!_mc2f[cuisines[i]].ContainsKey(ratings[i]))
+                _mc2f[cuisines[i]].Add(ratings[i],new SortedSet<string>()); 
+           ((SortedSet<string>)_mc2f[cuisines[i]][ratings[i]]).Add(foods[i]); 
+        }
+       // Console.Write(_mc2f["snaxol"].Count);
+    }
+    
+    public void ChangeRating(string food, int newRating) {
+        if(_mf2c.ContainsKey(food)){
+            string c = (string)_mf2c[food][0];
+            int oldRating = (int)_mf2c[food][1];
+            if(newRating==oldRating) return;
+            //update food rating
+            _mf2c[food][1] = newRating;
+            
+            //update 
+            if(_mc2f.ContainsKey(c) && _mc2f[c].ContainsKey(oldRating)){
+                 if(((SortedSet<string>)_mc2f[c][oldRating]).Contains(food)){
+                     ((SortedSet<string>)_mc2f[c][oldRating]).Remove(food);
+                     if(((SortedSet<string>)_mc2f[c][oldRating]).Count==0){
+                         _mc2f[c].Remove(oldRating);
+                     }
+                 }
+                 if(!_mc2f[c].ContainsKey(newRating))
+                     _mc2f[c].Add(newRating, new SortedSet<string>());
+                 ((SortedSet<string>)_mc2f[c][newRating]).Add(food);
+                    
+            }
+        }
+    }
+    
+    public string HighestRated(string c) {
+        if(_mc2f.ContainsKey(c) && _mc2f[c].Count>0){
+            SortedSet<string> ss = (SortedSet<string>) _mc2f[c].GetByIndex(_mc2f[c].Count-1);
+            if(ss.Count>0)
+              return  ss.Min; 
+        }
+        return "";
+    }
+}

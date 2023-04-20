@@ -1,0 +1,30 @@
+bool findRotation(vector<vector<int>>& mat, vector<vector<int>>& target) {
+        int n = mat.size();
+        auto rot = [&]() {
+            for(int i=0; i<n/2; i++) {
+                swap(mat[i], mat[n-i-1]);    
+            }
+            for(int i=0; i<n; i++) {
+                for(int j=i+1; j<n; j++) {
+                    swap(mat[i][j], mat[j][i]);
+                }
+            }
+        };
+        auto eq = [&]() {
+            for(int i=0; i<n; i++) {
+                for(int j=0; j<n; j++) {
+                    if(mat[i][j] != target[i][j]) {
+                        return false;
+                    }
+                }
+            }
+            return true;
+        };
+        for(int i=0; i<4; i++) {
+            if(eq()) {
+                return true;
+            }
+            rot();
+        }
+        return false;
+    }

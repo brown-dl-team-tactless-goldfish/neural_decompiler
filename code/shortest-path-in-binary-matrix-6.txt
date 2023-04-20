@@ -1,0 +1,41 @@
+struct queue{
+    int x;
+    int y;
+};
+
+int shortestPathBinaryMatrix(int** grid, int gridSize, int* gridColSize){
+    
+    if(grid[0][0]==1) return -1;
+    
+    struct queue q[10000];
+    int front = -1, tail = -1;
+    int x, y;
+    int count=0, temp=0, temp2=1;
+    
+    q[++tail].x = 0;
+    q[tail].y = 0;
+    while(front!=tail){     
+        count++;
+        while((temp2--)!=0){
+            
+            x = q[++front].x;
+            y = q[front].y;           
+            
+            if(x==(gridSize-1) && y==(*gridColSize-1)) return count;
+            
+            for(int i=-1;i<=1;i++){
+                for(int j=-1;j<=1;j++){
+                    if(!(i==0 && j==0) && x+i>=0 && x+i <gridSize && y+j>=0&&j+y<*gridColSize && grid[x+i][y+j]==0){
+                        q[++tail].x = x+i;
+                        q[tail].y = y+j;
+                        grid[x+i][y+j] = 1;
+                        temp++;
+                    }
+                }
+            }
+        }
+        temp2 = temp;
+        temp=0;        
+    } 
+    return -1;
+}

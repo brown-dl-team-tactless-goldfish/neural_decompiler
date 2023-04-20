@@ -1,0 +1,72 @@
+class Solution {
+public:
+    vector<int>prime;
+    int find(vector<int>&parent,int x)
+    {
+        if(x==parent[x])
+        {
+            return x;
+        }
+        return parent[x]=find(parent,parent[x]);
+    }
+    void seive()
+    {
+        prime[0]=prime[1]=0;
+        int n=prime.size();
+        for(int i=2;i*i<n;i++)
+        {
+            if(prime[i]==i)
+            {
+                for(int j=i*i;j<n;j+=i)
+                {
+                    prime[j]=i;
+                }
+            }
+        }
+    }
+    vector<int>factor(int n)
+    {
+        vector<int>v;
+        while(n>1)
+        {
+            v.push_back(prime[n]);
+            n=n/prime[n];
+        }
+        return v;
+    }
+    bool gcdSort(vector<int>& nums)
+    {  
+        int n=nums.size();
+        int mx=*max_element(nums.begin(),nums.end());
+        prime=vector<int>(mx+1,1);
+        vector<int>parent(mx+1,0);
+        for(int i=0;i<=mx;i++)
+        {
+            parent[i]=i;
+            prime[i]=i;
+        }
+        seive();
+        vector<int>temp(nums.begin(),nums.end());
+        for(int i=0;i<n;i++)
+        {
+            for(auto it:factor(nums[i]))
+            {
+                int x=find(parent,nums[i]);
+                int y=find(parent,it);
+                if(x!=y)
+                {
+                    parent[x]=y;
+                }
+            }
+        }
+        sort(temp.begin(),temp.end());
+        for(int i=0;i<n;i++)
+        {
+            if(find(parent,temp[i])!=find(parent,nums[i]))
+            {
+                return false;
+            }
+        }
+        return true;
+    }
+};

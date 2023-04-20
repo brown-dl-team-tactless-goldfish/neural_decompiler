@@ -1,0 +1,95 @@
+const int maxn = 2e5+100;
+const int mod = 1e9+7;
+long long fact[maxn];
+long long inv[maxn];
+int sub_tree[maxn];
+static int timer =0;
+
+long long mypow(int a,int b){
+    if(b==0){
+        return 1ll;
+    }
+    if(b==1){
+        return a;
+    }
+    if(b&1){
+        long long temp = mypow(a,b/2);
+        temp = (temp*temp)%mod;
+        return (temp*a)%mod;
+    }
+    else{
+        long long temp = mypow(a,b/2);
+        temp = (temp*temp)%mod;
+        return (temp)%mod;        
+    }
+}
+
+void pre(){
+    int n = maxn - 50;
+    fact[0] = 1ll;
+    inv[0] = 1ll;
+    for(long long i=1;i<n;i++){
+        fact[i] = (fact[i-1]*i)%mod;
+        inv[i] = mypow(fact[i],mod-2)%mod;
+    }
+}
+
+
+class graph
+{
+list<int>*l;
+int n;
+public:
+    graph(int n){
+        this->n = n;
+        l = new list<int>[n+3];
+        for(int i=0;i<=n;i++){
+            sub_tree[i] = 0;
+        }
+    }
+    void addedge(int x,int y){
+        l[x].push_back(y);
+    }
+    int count(int src){
+        int ans = 0;
+        for(auto x:l[src]){
+            ans+= count(x);
+        }
+        //cout<<"src and sub_tree of sec is "<<src<<" "<<ans+1<<endl;
+        return sub_tree[src] = ans+1;
+    }
+    long long ways(int src){
+        vector<int>v1;
+        long long ans = 1;
+        for(auto x:l[src]){
+            ans = (ans*ways(x))%mod;
+            v1.push_back(sub_tree[x]);
+        }
+        ans = (ans*fact[sub_tree[src]-1])%mod;
+        for(int i=0;i<v1.size();i++){
+            ans = (ans*inv[v1[i]])%mod;
+        }
+        return ans;
+    }
+    ~graph(){
+        delete[] l;
+    }
+};
+
+class Solution {
+public:
+    int waysToBuildRooms(vector<int>& prevRoom) {
+        
+        if(timer==0){
+            pre();
+        }
+        int n = prevRoom.size();
+        graph g(n);
+        for(int i=1;i<n;i++){
+            g.addedge(prevRoom[i],i);
+        }
+        g.count(0);
+        timer++;
+        return g.ways(0);
+    }
+};

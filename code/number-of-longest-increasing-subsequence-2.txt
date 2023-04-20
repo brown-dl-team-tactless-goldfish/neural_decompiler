@@ -1,0 +1,26 @@
+int findNumberOfLIS(int* nums, int numsSize){
+    if(numsSize == 0) return 0;
+    int* dp = (int*)malloc(numsSize*sizeof(int));
+    int* arr = (int*)malloc(numsSize*sizeof(int));
+    for(int i = 0; i < numsSize; i++){
+        dp[i] = 1;
+        arr[i] = 1;
+    }
+    for(int i = 1; i < numsSize; i++)
+        for(int j = 0; j < i; j++)
+            if(nums[i] > nums[j])
+                if(dp[i] < 1 + dp[j])
+                {
+                    dp[i] = 1 + dp[j];
+                    arr[i] = arr[j];
+                }
+                else if(dp[i] == dp[j] + 1)
+                    arr[i] += arr[j];
+    int maxLen = 0, count = 0;
+    for(int i = 0; i < numsSize; i++)
+        maxLen = maxLen > dp[i] ? maxLen : dp[i];
+    for(int i = 0; i < numsSize; i++)
+        if(dp[i] == maxLen)
+            count += arr[i];
+    return count;
+}

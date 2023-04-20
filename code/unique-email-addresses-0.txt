@@ -1,0 +1,40 @@
+int cmp(const void* a, const void* b) {
+    const char* pa = *(const char**) a;
+    const char* pb = *(const char**) b;
+    return strcmp(pa, pb);
+}
+
+int numUniqueEmails(char** emails, int emailsSize) {
+    char** str = (char**) malloc(emailsSize * sizeof(char*));
+    for (int i = 0; i < emailsSize; i++) {
+        str[i] = (char*) malloc((strlen(emails[i]) + 1) * sizeof(char));
+    }
+    for (int i = 0; i < emailsSize; i++) {
+        int len = strlen(emails[i]), idx = 0;
+        bool meetAt = false, meetpluse = false;
+        for (int j = 0; j < len; j++) {
+            if (!meetAt && emails[i][j] == '.') continue;
+            if (emails[i][j] == '@') {
+                meetAt = true;
+                meetpluse = false;
+            }
+            if (meetpluse) continue;
+            if (emails[i][j] == '+') {
+                meetpluse = true;
+                continue;
+            }
+            str[i][idx++] = emails[i][j];
+        }
+        str[i][idx++] = '\0';
+    }
+    qsort(str, emailsSize, sizeof(char**), cmp);
+	int cnt = 0;
+    for (int i = 1; i < emailsSize; i++) {
+        if (!strcmp(str[i], str[i-1])) cnt++;
+    }
+    for (int i = 0; i < emailsSize; i++) {
+        free(str[i]);
+    }
+    free(str);
+    return emailsSize - cnt;
+}

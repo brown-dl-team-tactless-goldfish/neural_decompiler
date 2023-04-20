@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int maxSubArray(vector<int>& nums) {
+        int maxSoFar = nums[0], currMax = nums[0];
+        for(int i = 1; i < nums.size(); ++i) {
+            if(currMax + nums[i] > nums[i]) currMax += nums[i];
+            else    currMax = nums[i];
+            maxSoFar = max(maxSoFar, currMax);
+        }
+        return maxSoFar;
+    }
+    int maximumCostSubstring(string s, string chars, vector<int>& vals) {
+        vector<int> ans;
+        map<char, int> mp;
+        for(int i = 0; i < chars.size(); ++i)   mp[chars[i]] = vals[i];
+        for(char c = 'a'; c <= 'z'; ++c)    {
+            if(!mp.count(c))    mp[c] = c - 'a' + 1;
+        }
+        for(auto it: s) ans.push_back(mp[it]);
+        return max(maxSubArray(ans), 0);
+    }
+};

@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int minOperationsMaxProfit(vector<int>& customers, int boardingCost, int runningCost) {
+        int total = 0, currentCustomer = 0, totalTillNow = 0, rotation = 0, profit = 0, maxProfit = 0, index = 1, maxIndex = 0;
+        for(int i = 0; i < customers.size(); i++, index++) {
+            total += customers[i];
+            currentCustomer = min(4, total);
+            total -= currentCustomer;
+            totalTillNow += currentCustomer;
+            profit = (totalTillNow * boardingCost) - (index * runningCost);
+            if(maxProfit < profit) {
+                maxIndex = index;
+                maxProfit = profit;
+            }
+        }
+        
+        while(total > 0) {
+            currentCustomer = min(4, total);
+            total -= currentCustomer;
+            totalTillNow += currentCustomer;
+            profit = (totalTillNow * boardingCost) - (index * runningCost);
+            if(maxProfit < profit) {
+                maxIndex = index;
+                maxProfit = profit;
+            }
+            index++;
+        }
+        
+        return maxIndex != 0 ? maxIndex : -1; 
+    }
+};

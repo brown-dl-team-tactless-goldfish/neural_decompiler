@@ -1,0 +1,40 @@
+class Solution {
+public:
+  int amountOfTime(TreeNode* root, int start) {
+    int id, ans = -1, n;
+    vector<vector<int>> g(1);
+    
+    queue<TreeNode*>q1;
+    q1.push(root);
+    queue<int>q2;
+    q2.push(0);
+    
+    while(!q1.empty()){
+      root  = q1.front(); q1.pop();
+      int p = q2.front(); q2.pop();
+      if(root->val == start) id = g.size();
+      
+      int c = g.size();
+      g.push_back({});
+      g[p].push_back(c), g[c].push_back(p);
+      
+      if(root->left)  q1.push(root->left),  q2.push(c);
+      if(root->right) q1.push(root->right), q2.push(c);
+    }
+        
+    g[0].clear();
+    q2.push(id);
+    while(!q2.empty())
+      for(ans++, n = q2.size(); n--;){
+        id = q2.front(); q2.pop();
+        if(g[id].empty()) continue;
+        
+        for(auto next: g[id])
+          if(!g[next].empty()) q2.push(next);
+        
+        g[id].clear();
+      }
+      
+    return ans;
+  }
+};

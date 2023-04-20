@@ -1,0 +1,47 @@
+class Solution {
+public:
+    #define ll long long
+    string smallestGoodBase(string n) {
+        ll num = stoll(n);
+        
+        // let x be the good base of num
+        // => 1 + x + x^2 + x^3 + ... + x^(m-1) = num
+        // => x^m - 1 = num
+        
+        // the max value of m will be 61
+        // explanation : 
+        //      for m to be maximum, num will be 10^18 and x be 2
+        //      2^m - 1 = 10^18 => 2^m = 10^18+1 ~ 10^18
+        //      taking log both sides
+        //      log(2^m) = log(10^18) => m*log2 = 18 => m = (18 / 0.3) => m = 61 (approx).
+        
+        for(int m = 61; m > 2; m--){
+            ll lo = 2, hi = num-1;
+            
+            
+            while(lo <= hi){
+                ll mid =  (lo + hi) / 2;
+                bool flag = 0;
+                ll val = 1, j = 1, res = 1;
+                while(j < m){
+                    if(val  > (num - res) / mid){
+                        flag = 1;
+                        break;
+                    }
+                    j++;
+                    val *= mid;
+                    res += val;
+                }
+                
+                if(flag || res > num){
+                    hi = mid-1;
+                }
+                else if(res < num)
+                    lo = mid + 1;
+                else
+                    return to_string(mid);
+            }
+        }
+        return to_string(num-1);
+    }
+};

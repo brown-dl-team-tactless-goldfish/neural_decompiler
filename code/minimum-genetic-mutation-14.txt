@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int minMutation(string startGene, string endGene, vector<string>& bank) {
+        unordered_set<string_view> st(begin(bank), end(bank));
+        st.erase(startGene);
+        queue<string> q;
+        q.push(startGene);
+        int ans = 0;
+        while (!q.empty()) {
+            int sz = size(q);
+            while (sz--) {
+                auto s = q.front(); q.pop();
+                if (s == endGene) {
+                    return ans;
+                }
+                for (char& c: s) {
+                    char t = c;
+                    for (char nc: "ACTG") {
+                        c = nc;
+                        if (st.count(s)) {
+                            st.erase(s);
+                            q.push(s);
+                        }
+                    }
+                    c = t;
+                }
+            }
+            ans++;
+        }
+        return -1;
+    }
+};

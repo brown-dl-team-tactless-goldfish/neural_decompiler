@@ -1,0 +1,37 @@
+/* dir_t stores the direction */
+typedef enum { UP, DOWN} dir_t;
+bool validMountainArray(int* arr, int arrSize){
+
+   if(arrSize < 3)
+      return false;
+   
+   dir_t d = UP;
+   for(int i = 0; i < arrSize - 1; i++) {
+      if(d == UP) {
+         /* Climbing the mountain */
+         if(arr[i + 1] == arr[i]) {
+            /* If value is equal then not stictly climbing*/
+            return false;
+         }else if(arr[i + 1] < arr[i]){
+            /* Can decend the mountain after atleast 1 element*/
+            if(i > 0)
+               d = DOWN;
+            else
+               return false;
+         }
+      }else {
+         /* Decending the mountain */
+         if(arr[i + 1] == arr[i]) {
+            /* If value is equal then not stictly decending*/
+            return false;
+         }else if(arr[i + 1] > arr[i]){
+            /* If value increases then cannot be decending*/
+            return false;
+         }
+      }
+   }
+   /* if we have not decended then it means there was no mountain*/
+   if(d == UP)
+      return false;
+   return true;
+}

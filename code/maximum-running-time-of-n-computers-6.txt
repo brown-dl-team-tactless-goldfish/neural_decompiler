@@ -1,0 +1,28 @@
+typedef long long ll;
+
+class Solution {
+public:
+    ll maxRunTime(int n, vector<int>& B) {
+        ll lo = 0;
+        ll hi = 1;
+        ll mid;
+        for (auto x : B) {
+            hi += x;
+        }
+        auto check = [&](ll t) {
+            ll sum = 0;
+            for (auto x : B) {
+                sum += min((ll) x, t);
+            }
+            return sum / n >= t;
+        };
+        while (lo < hi - 1) {
+            if (check(mid = (lo + hi) / 2)) {
+                lo = mid;
+            } else {
+                hi = mid;
+            }
+        }
+        return lo;
+    }
+};

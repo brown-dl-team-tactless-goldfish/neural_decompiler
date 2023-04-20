@@ -1,0 +1,46 @@
+class Solution {
+public:
+    vector<vector<int>> valid = {{1, 0}, {-1, 0}, {0, 1}, {0, -1}};
+    void bfs(vector<vector<int>>& land, vector<int>& pair, int m, int n){
+        queue<vector<int>> check;
+        int r = pair[0], c = pair[1];
+        
+        check.push({r, c});
+        land[r][c] = 0;
+        
+        int x, y;
+        while (!check.empty()){
+            x = check.front()[0];
+            y = check.front()[1];
+
+            check.pop();            
+            for (int i = 0; i < valid.size(); i++){
+                int u = valid[i][0]+x;
+                int v = valid[i][1]+y;
+                if (u >= 0 and v >= 0 and u < m and v < n and land[u][v] == 1){
+                    check.push({u, v});
+                    land[u][v] = 0;
+                }
+            }
+        }
+        pair.push_back(x);
+        pair.push_back(y);
+    }
+    
+    vector<vector<int>> findFarmland(vector<vector<int>>& land) {
+        vector<vector<int>> pairs;
+        int m = land.size(), n = land[0].size();
+        
+        for (int i = 0; i < m; i++){
+            for (int j = 0; j < n; j++){
+                if (land[i][j] == 1){
+                    vector<int> pair = {i, j};
+                    bfs(land, pair, m, n);
+                    pairs.push_back(pair);
+                }
+            }
+        }
+        
+        return pairs;
+    }
+};

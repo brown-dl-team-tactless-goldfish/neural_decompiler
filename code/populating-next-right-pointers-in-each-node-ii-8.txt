@@ -1,0 +1,80 @@
+//pop function for a FIFO queue
+struct Node* pop(struct Node** queue, int* size){
+    struct Node* n = queue[0];
+    
+    //shift queue to the left
+    for (int i = 0; i < (*size)-1; ++i){
+        queue[i] = queue[i+1];
+    }
+    queue[(*size)-1] = NULL;
+    --(*size);
+    
+    return n;
+}
+
+//push function for a queue
+void push(struct Node** queue, int* size, struct Node* n){
+    queue[*size] = n;
+    ++(*size);
+}
+
+void getConnections(struct Node* node, struct Node* otherSide, struct Node** queue, int* size){
+    //otherSide is a pointer to the node whose children will be the next of the current node's children
+    
+    //push next nodes of next level to queue
+    if (node->left != NULL)
+        push(queue, size, node->left);
+    if (node->right != NULL)
+        push(queue, size, node->right);
+    
+    //stop recurssion
+    if (*size == 0)
+        return;
+    
+    //set next of left child
+    if (node->left != NULL && node->right != NULL)
+        node->left->next = node->right;
+    else if(node->left != NULL && node->right == NULL){
+        if (otherSide != NULL){
+            if (otherSide->left != NULL)
+                node->left->next = otherSide->left;
+            else if(otherSide->right != NULL)
+                node->left->next = otherSide->right;
+        }
+    }
+    
+    //set next of right child
+    if (otherSide != NULL){
+        if (node->right != NULL && otherSide->left != NULL)
+            node->right->next = otherSide->left;
+        else if(node->right != NULL && otherSide->right != NULL)
+            node->right->next = otherSide->right;
+    }    
+    
+    //find the next pointer that is not a leaf
+    struct Node* child = pop(queue, size);
+    struct Node* next = child->next;
+    while (next != NULL){
+        if (next->left == NULL && next->right == NULL)
+            next = next->next;
+        else
+            break;
+    }
+    
+    //go to next nodes
+    getConnections(child, next, queue, size);
+}
+
+struct Node* connect(struct Node* root) {
+    if (root == NULL)
+        return NULL;
+    
+    //set up the queue
+    struct Node* queue[6000];
+    int size = 0;
+    push(queue, &size, root);
+    
+    //call the reccursive function
+	getConnections(pop(queue, &size), NULL, queue, &size);
+    return root;
+}

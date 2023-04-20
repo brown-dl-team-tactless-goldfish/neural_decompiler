@@ -1,0 +1,30 @@
+int cmp(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+bool check(int* arr, int n, int d, int k){
+    int cn = 1;
+    int next = arr[0] + d;
+    for(int i = 1; i < n; i++){
+        if(arr[i] >= next){
+            cn++;
+            next = arr[i] + d;
+            if(cn == k)
+                return true;
+        }
+    }
+    return false;
+}
+int maximumTastiness(int* price, int priceSize, int k){
+    int n = priceSize;
+    qsort(price, n, sizeof(int), cmp);
+    int left = 0, right = price[n-1];
+    int mid;
+    while(left < right){
+        mid = right - (right - left)/2;
+        if( check(price, n, mid, k) )
+            left = mid;
+        else
+            right = mid - 1;
+    }
+    return left;
+}

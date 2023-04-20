@@ -1,0 +1,46 @@
+public class Solution {
+    public int KIncreasing(int[] arr, int k) {
+        var n = arr.Length;
+        var seqs = new List<List<int>>();
+        for (int i = 0; i < n; i++){
+            var idx = i % k;
+            if (idx >= seqs.Count)
+                seqs.Add(new List<int>());
+            seqs[idx].Add(arr[i]);
+        }
+
+        return seqs.Sum(s => s.Count - Lis(s.ToArray()));
+    }
+    
+    private int Lis(int[] s)
+    {
+        var arr = new int[s.Length];
+        var count = 0;
+        foreach (var c in s)
+        {
+            var idx = UpperBound(arr, 0, count, c);
+            arr[idx] = c;
+            if (idx == count)
+                count++;
+        }
+        return count;
+    }
+    
+    public static int UpperBound(int[] arr, int start, int length, int k)
+    {
+        if (length == 0)
+            return start;
+        var lo = start;
+        var hi = start + length - 1;
+        while (lo < hi)
+        {
+            var mid = lo + (hi - lo) / 2;
+            if (arr[mid] <= k)
+                lo = mid + 1;
+            else
+                hi = mid;
+        }
+
+        return arr[lo] <= k ? lo + 1 : lo;
+    }
+}

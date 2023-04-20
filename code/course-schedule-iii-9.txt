@@ -1,0 +1,19 @@
+    int scheduleCourse(vector<vector<int>>& courses) {
+        // sort all courses by end time
+        // add courses one by one, if the total end time exceeds the end time of a course
+        // then we can remove the longest duration course (so that we could add more courses, it's a greedy choice)
+        sort(courses.begin(), courses.end(), [](auto& a, auto& b) {
+            return a[1] < b[1];
+        });
+        priority_queue<int> durations;
+        int endtime = 0;
+        for (auto& c : courses) {
+            endtime += c[0];
+            durations.push(c[0]);
+            if (endtime > c[1]) {
+                endtime -= durations.top();
+                durations.pop();
+            }
+        }
+        return durations.size();
+    }

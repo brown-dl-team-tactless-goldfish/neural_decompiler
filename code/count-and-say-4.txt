@@ -1,0 +1,47 @@
+
+char* casToStr(int n, char **s){
+    char map[2][3000]={0,};
+    
+    if( n == 0 ) return *s;
+    
+    char c = (*s)[0];
+    int cnt = 1;
+    int pos = 0;
+
+    // count char and save
+    for(int i = 1 ; (*s)[i] != '\0' ; i++){
+        if( c != (*s)[i] ){            
+            map[0][pos] = c;
+            map[1][pos++] = cnt;
+            
+            c = (*s)[i];
+            cnt=1;
+        }
+        else{
+            cnt++;    
+        }
+    }
+    map[0][pos] = c;
+    map[1][pos++] = cnt;
+    
+    // realloc string
+    *s = (char*)realloc(*s, sizeof(char)*((pos*2)+1));
+    for(int i = 0 ; i < pos ; i++ ){
+        (*s)[2*i] = map[1][i]+'0';
+        (*s)[(2*i)+1] = map[0][i];
+    }
+    (*s)[pos*2] = '\0';
+    
+    return casToStr(n-1, s);
+    
+}
+
+
+char* countAndSay(int n) {
+    
+    char *s=(char*)malloc(sizeof(char)*2);
+    s[0] = '1';
+    s[1] = '\0';
+    
+    return casToStr(n-1, &s);
+}

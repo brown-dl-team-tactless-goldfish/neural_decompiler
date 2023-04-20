@@ -1,0 +1,55 @@
+#define MODULO (int)(pow(10, 9) + 7)
+
+int maxProfit(int* inventory, int inventorySize, int orders){
+    // Get the maxium number of inventory
+    int max = 0;
+    int i;
+    for (i=0; i<inventorySize; i++) {
+        if (inventory[i] > max) {
+            max = inventory[i];
+        }
+    }
+    int min = 0;
+    int value; // value of balls
+    long num; // the number of balls that the price is larger than value
+    
+    // Binary search the value between min and max
+    // Count num to find the value that makes num and orders are closest
+    // s.t. num(value) <= orders < num(value+1)
+    while (min <= max) {
+        num = 0;
+        value = (min + max) / 2;
+        // Count the num that price is larger than value
+        for (i=0; i<inventorySize; i++) {
+            if (inventory[i] > value) {
+                num += inventory[i] - value;
+            }
+        }
+        if (num == orders) {        // value found
+            break;
+        } else if (num < orders) {  // value is larger than excepted
+            max = value - 1;
+        } else {                    // value is smaller thanexcepted
+            min = value + 1;
+        }
+    }
+    
+    long profit = 0;
+    for (i=0; i<inventorySize; i++) {
+        if (inventory[i] > value) {
+            // Calculate the profit by summing the arithmetic series
+            profit += (long)(inventory[i] + (value + 1)) * (long)(inventory[i]-value) / 2;
+        }
+    }
+    
+    // Amend the profit when the num != orders
+    if (num > orders) {
+        profit = (profit - (num-orders) * (value + 1)) % MODULO;
+    } else if (num < orders) {
+        profit = (profit + (orders-num) * (value)) % MODULO;
+    } else {
+        profit %= MODULO;
+    }
+
+    return (int)profit;
+}

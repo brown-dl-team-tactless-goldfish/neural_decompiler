@@ -1,0 +1,29 @@
+Solution 1:
+
+select distinct s1.id, s1.visit_date, s1.people
+from stadium s1, stadium s2, stadium s3
+where s1.people >= 100 and
+      s2.people >= 100 and
+      s3.people >= 100 and
+    ((s1.id+1 = s2.id and s1.id+2 = s3.id) or
+     (s1.id-1 = s2.id and s1.id+1 = s3.id) or
+     (s1.id-1 = s2.id and s1.id-2 = s3.id))
+order by s1.id asc
+
+Solution 2 (with CTE):
+
+# consecutive id  ---> join a b c 
+# people >= 100
+
+WITH stadium_cte AS(
+SELECT * FROM Stadium
+WHERE PEOPLE >= 100)
+
+SELECT DISTINCT s1.id, s1.visit_date, s1.people
+FROM stadium_cte s1
+JOIN stadium_cte s2
+JOIN stadium_cte s3
+ON (s1.id + 1 = s2.id AND s1.id + 2 = s3.id) OR
+   (s1.id - 1 = s2.id AND s1.id + 1 = s3.id) OR
+   (s1.id - 2 = s2.id AND s1.id - 1 = s3.id)
+ORDER BY s1.visit_date 

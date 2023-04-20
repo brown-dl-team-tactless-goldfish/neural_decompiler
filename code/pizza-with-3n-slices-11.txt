@@ -1,0 +1,20 @@
+int maxSizeSlices(vector<int>& slices) {
+        int k = slices.size();
+        vector<vector<int>> dp(k+2, vector<int>(k, 0));
+        vector<vector<int>> dp1(k+2, vector<int>(k, 0));
+        for(int i=k-2; i>=0; i--){
+            for(int j=1; j<=k/3; j++){
+                int take = slices[i] + dp[i+2][j-1];
+                int nottake = dp[i+1][j];
+                dp[i][j] = max(take, nottake);
+            }
+        }
+        for(int i=k-1; i>=1; i--){
+            for(int j=1; j<=k/3; j++){
+                int take = slices[i] + dp1[i+2][j-1];
+                int nottake = dp1[i+1][j];
+                dp1[i][j] = max(take, nottake);
+            }
+        }
+        return max(dp[0][k/3], dp1[1][k/3]);
+    }

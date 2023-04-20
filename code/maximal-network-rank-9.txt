@@ -1,0 +1,42 @@
+	public int MaximalNetworkRank(int n, int[][] roads) {
+        if (roads.GetLength(0) == 0 || roads[0].GetLength(0) == 0)
+            return 0;
+        
+        var dict = new Dictionary<int, int>();
+        var max = 0;
+        
+        for (var i = 0; i < roads.GetLength(0); i++)
+        {
+            for (var j = 0; j < 2; j++)
+            {
+                if (dict.ContainsKey(roads[i][j]))
+                    dict[roads[i][j]]++;
+                else
+                    dict.Add(roads[i][j], 1);
+            }
+        }
+        
+        for (var i = 0; i < n; i++)
+        {
+            for (var j = i + 1; j < n; j++)
+            {
+                if (dict.ContainsKey(i) && dict.ContainsKey(j) && max < (dict[i] + dict[j]))
+                {
+                    var curMax = dict[i] + dict[j];
+                    
+                    for (var k = 0; k < roads.Length; k++)
+                    {
+                        if ((roads[k][0] == i && roads[k][1] == j) || (roads[k][0] == j && roads[k][1] == i))
+                        {
+                            curMax--;
+                            break;
+                        }
+                    }
+                    
+                    max = Math.Max(max, curMax);
+                }
+            }
+        }
+                
+        return max;
+    }

@@ -1,0 +1,91 @@
+int cmpfunc(char* a, char* b)
+{
+    return (*a - *b);
+}
+
+int find(char** buffer, int size, char val)
+{
+    int i, j, len;
+    
+    for(i=0;i<size;i++)
+    {
+        len = strlen(buffer[i]);
+        for(j=0;j<len;j++)
+        {
+            if(buffer[i][j] == val)
+                break;
+        }
+        if(j<len)
+            return i;
+    }
+    return -1;
+}
+
+char * smallestEquivalentString(char * A, char * B, char * S){
+    int i,j,len1=strlen(A),len2,len3;
+    char** buffer = (char**)malloc(26*sizeof(char*));
+    int count=0;
+    char* result = (char*)malloc((strlen(S)+1)*sizeof(char));
+    int idxA,idxB;
+        
+    for(i=0;i<len1;i++)
+    {
+        idxA = find(buffer,count,A[i]);
+        idxB = find(buffer,count,B[i]);
+        if((idxA<0) && (idxB<0))
+        {
+            buffer[count] = (char*)malloc((26*2+1)*sizeof(char));
+            buffer[count][0] = A[i];
+            buffer[count][1] = B[i];
+            buffer[count][2] = '\0';
+            count++;
+        }
+        else if((idxA>=0) && (idxB<0))
+        {
+            len2 = strlen(buffer[idxA]);
+            buffer[idxA][len2] = B[i];
+            buffer[idxA][len2+1] = '\0';
+        }
+        else if((idxA<0) && (idxB>=0))
+        {
+            len2 = strlen(buffer[idxB]);
+            buffer[idxB][len2] = A[i];
+            buffer[idxB][len2+1] = '\0';
+        }
+        else if(idxA!=idxB)
+        {
+            len2 = strlen(buffer[idxA]);
+            len3 = strlen(buffer[idxB]);
+            for(j=0;j<len3;j++)
+            {
+                buffer[idxA][j+len2] = buffer[idxB][j];
+            }
+            buffer[idxA][j+len2] = '\0';
+            buffer[idxB][0] = '\0';
+        }
+    }
+    
+    for(i=0;i<count;i++)
+    {
+        qsort(buffer[i],strlen(buffer[i]),1,cmpfunc);
+    }
+    
+    len1 = strlen(S);
+    for(i=0;i<len1;i++)
+    {
+        idxA = find(buffer,count,S[i]);
+        if(idxA>=0)
+            result[i] = buffer[idxA][0];
+        else
+            result[i] = S[i];
+    }
+    result[i] = '\0';
+    
+    for(i=0;i<count;i++)
+    {
+        free(buffer[i]);
+    }
+    free(buffer);
+    
+    return result;
+}

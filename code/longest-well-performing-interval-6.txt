@@ -1,0 +1,10 @@
+    int longestWPI(vector<int>& hours) {
+        map<int, int> m = { {0,-1} }; //{non-tiring days - tiring days,  index}
+        int maxLen = 0, cnt = 0;
+        for (int i = 0; i < hours.size(); i++) {
+            cnt += hours[i] > 8 ? -1 : 1;
+            if (auto it = m.upper_bound(cnt); it != m.end()) maxLen = max(maxLen, i - it->second);
+            else m.insert({ cnt, i });
+        }
+        return maxLen;
+    }

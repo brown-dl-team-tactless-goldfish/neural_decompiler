@@ -1,0 +1,179 @@
+#define AREA(l,w) (l*w)
+#define MIN(a,b) (a<b?a:b)
+typedef struct state{
+    int pointIndex,sides,l,w;
+    bool findX;
+}state_s;
+typedef struct{
+    state_s** s;
+    int index;
+}Stack;
+Stack* initStack(int n)
+{
+    Stack* stack = malloc(sizeof(Stack));
+    stack->s=malloc(n*sizeof(state_s));
+    stack->index=0;
+    return stack;
+}
+void stackPush(Stack* stack, int i,int sides, int l,int w,bool findX)
+{
+    state_s* new = malloc(sizeof(state_s));
+    new->pointIndex = i;
+    new->sides = sides;
+    new->l = l;
+    new->w = w;
+    new->findX=findX;
+
+    stack->s[stack->index++] = new;
+}
+state_s* stackPop(Stack* stack)
+{
+    return (stack->s[--stack->index]);
+}
+bool stackIsEmpty(Stack* stack)
+{
+    return (stack->index ==0);
+}
+
+typedef struct
+{
+    int* xNei;
+    int* yNei;
+    int xNeiSize;
+    int yNeiSize;
+}AdjMap;
+
+AdjMap* initAdjMap(int n)
+{
+    AdjMap* adj = malloc(n*sizeof(AdjMap));
+    
+    for(int i=0;i<n;i++)
+    {
+        adj[i].xNei=malloc(n*sizeof(int));
+        adj[i].yNei=malloc(n*sizeof(int));
+        adj[i].xNeiSize = 0;
+        adj[i].yNeiSize = 0;
+    }
+    return adj;
+}
+
+void adjListAdd(AdjMap* adj,int i, int j,bool isXnei)
+{
+    if(isXnei)
+        adj[i].xNei[adj[i].xNeiSize++] = j;
+    else
+        adj[i].yNei[adj[i].yNeiSize++] = j;
+}
+
+void printAdj(AdjMap* adj, int** points, int n)
+{
+    for (int i=0;i<n;i++)
+    {
+        printf("Point [%d,%d] x neighbours are :",points[i][0],points[i][1]);
+        for(int j=0;j<adj[i].xNeiSize;j++)
+        {
+            printf("[%d,%d],",points[adj[i].xNei[j]][0],points[adj[i].xNei[j]][1]);
+        }
+        for(int j=0;j<adj[i].yNeiSize;j++)
+        {
+            printf("[%d,%d],",points[adj[i].yNei[j]][0],points[adj[i].yNei[j]][1]);
+        }
+        printf("\n");
+    }
+}
+int minAreaRect(int** points, int pointsSize, int* pointsColSize){
+
+    if(pointsSize<4)
+    {
+        return 0;
+    }
+
+    AdjMap* adj= initAdjMap(pointsSize);
+
+    for(int i=0;i<pointsSize;i++)
+    {
+        int x1=points[i][0];
+        int y1=points[i][1];
+
+        for(int j=i+1; j<pointsSize;j++)
+        {
+            int x2 = points[j][0];
+            int y2 = points[j][1];
+
+            if( i!=j && (x1==x2 || y1==y2))
+            {
+                //Add to adj list
+                adjListAdd(adj,i,j,(x1==x2));
+                adjListAdd(adj,j,i,(x1==x2));
+            }
+        }
+    }
+
+    //printAdj(adj,points,pointsSize);
+
+    Stack* stack=initStack(pointsSize);
+    
+    int min_area=INT_MAX;
+    int* visited = calloc(pointsSize,sizeof(int));
+    //Loop on the points and check the nei of every point can reach itself 
+    for(int i=0;i<pointsSize;i++)
+    {
+        if(adj[i].xNeiSize==0 || adj[i].yNeiSize==0) continue; // This is a lonely point can't be a square , prune prune prune
+        //Push the first point
+        stackPush(stack,i,0,0,0,1);
+        state_s* s;
+        while(!stackIsEmpty(stack))
+        {
+            s=stackPop(stack);
+
+            if(s->sides == 4 && s->pointIndex==i)
+            {
+                //We have arrived to where we started ! calculate the area 
+                min_area=MIN(min_area,AREA(s->l,s->w));
+                continue;
+            }
+            else if(s->sides>3 || AREA(s->l,s->w)>min_area)
+            {
+                /*  Drop this path as we have 2 sides already and the area is bigger
+                    than the min_area we have previously, there might not be even a square 
+                    with these sides
+                     prune prune prune 
+                */
+                continue;
+            }
+           
+            int neiIndex;
+            if(s->findX)
+            {
+                for(int j=0;j<adj[s->pointIndex].xNeiSize;j++)
+                {   
+                    neiIndex=adj[s->pointIndex].xNei[j];
+                    
+                    if(!visited[neiIndex] )
+                    {
+                        int l=abs(points[neiIndex][1]-points[s->pointIndex][1]);
+                        stackPush(stack,neiIndex,s->sides+1,l,s->w,!s->findX);
+                    }
+                }
+            }
+            else
+            {
+                for(int j=0;j<adj[s->pointIndex].yNeiSize;j++)
+                {
+                    neiIndex=adj[s->pointIndex].yNei[j];
+                    
+                    if(!visited[neiIndex] )
+                    {
+                        int w=abs(points[neiIndex][0]-points[s->pointIndex][0]);
+                        stackPush(stack,neiIndex,s->sides+1,s->l,w,!s->findX);
+                    }
+                    
+                }
+            }
+            
+        }
+        visited[i]=1;
+    }
+    
+    return (min_area==INT_MAX?0:min_area);
+}

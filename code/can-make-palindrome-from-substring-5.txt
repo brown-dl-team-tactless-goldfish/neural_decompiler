@@ -1,0 +1,39 @@
+class Solution {
+public:
+    vector<bool> canMakePaliQueries(string s, vector<vector<int>>& queries) {
+        int n = s.size();
+        int m = queries.size();
+        vector<bool>res(m);
+        vector<vector<int>>v(26,vector<int>(n));
+        for(int i = 0;i<n;i++){
+            for(int j = 0;j<26;j++){
+                if(s[i]-'a' == j){
+                    if(i>0) v[j][i] = v[j][i-1]+1;
+                    else v[j][i] = 1;
+                }
+                else{
+                    if(i>0) v[j][i] = v[j][i-1];
+                    else v[j][i] = 0;
+                }
+            }
+        }
+        for(int i = 0;i<m;i++){
+            int l = queries[i][0];
+            int r = queries[i][1];
+            int k = queries[i][2];
+            int c = 0;
+            for(int j = 0;j<26;j++){
+                if(l == 0){
+                    if(v[j][r]%2) c++;
+                }
+                else{
+                    if((v[j][r]-v[j][l-1])%2) c++;
+                }
+            }
+            c/=2;
+            if(c<=k) res[i] = true;
+            else res[i] = false;
+        }
+        return res;
+    }
+};

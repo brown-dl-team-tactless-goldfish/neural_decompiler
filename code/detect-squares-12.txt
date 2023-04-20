@@ -1,0 +1,19 @@
+class DetectSquares {
+    unordered_map<int, int> freq; 
+public:
+    DetectSquares() {}
+    
+    void add(vector<int> point) {
+        ++freq[point[0]*1001 + point[1]]; 
+    }
+    
+    int count(vector<int> point) {
+        int ans = 0, x = point[0], y = point[1]; 
+        for (auto& [k, v] : freq) {
+            int xx = k/1001, yy = k%1001; 
+            if (xx != x && abs(x-xx) == abs(y-yy) && freq.count(xx*1001+y) && freq.count(x*1001+yy)) 
+                ans += v * freq[xx*1001+y] * freq[x*1001+yy]; 
+        }
+        return ans; 
+    }
+};

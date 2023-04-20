@@ -1,0 +1,35 @@
+    int minStickers(vector<string>& stickers, string target) {
+        unordered_set<string> dp;
+        vector<vector<int>> dic;
+        for(int i=0;i<stickers.size();i++) {
+            vector<int> temp(26, 0);
+            for(int j=0;j<stickers[i].size();j++) temp[stickers[i][j]-'a']++;
+            dic.push_back(temp);
+        }
+        vector<int> tar(26, 0), judge(26, 0);
+        for(int i=0;i<target.size();i++) tar[target[i]-'a']++;
+        queue<vector<int>> q;
+        q.push(tar);
+        int res=0;
+        while(!q.empty()) {
+            int size=q.size();
+            res++;
+            for(int i=0;i<size;i++) {
+                for(int j=0;j<dic.size();j++) {
+                    vector<int> temp=q.front();
+                    string s;
+                    for(int k=0;k<26;k++) {
+                        if(dic[j][k]>=temp[k]) temp[k]=0;
+                        else temp[k]-=dic[j][k];
+                        s+=to_string(temp[k])+"#";
+                    }
+                    if(temp==q.front()||dp.find(s)!=dp.end()) continue;
+                    if(temp==judge) return res;
+                    q.push(temp);
+                    dp.insert(s);
+                }
+                q.pop();
+            }
+        }
+        return -1;
+    }

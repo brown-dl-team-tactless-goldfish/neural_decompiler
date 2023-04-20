@@ -1,0 +1,27 @@
+public class Solution 
+{
+    public int NumSpecialEquivGroups(string[] A) 
+    {
+        var dict = new Dictionary<string, int>();
+        foreach(var str in A)
+        {
+            var key = GetKey(str);
+            if(!dict.ContainsKey(key)) dict[key] = 0;
+            dict[key]++;
+        }
+        
+        return dict.Count();
+    }
+    
+    private string GetKey(string str)
+    {
+        List<char> odd = new List<char>(), even = new List<char>();
+        for(int i = 0; i < str.Length; i++)
+        {
+            if(i%2 == 0) even.Add(str[i]);
+            else odd.Add(str[i]);
+        }
+        odd.Sort();even.Sort();
+        return string.Join(",", even) + ":" + string.Join(",", odd);
+    }
+}

@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int kIncreasing(vector<int>& nums, int k) {
+        int res = 0;
+        vector<int> lis(nums.size() / k + 2, INT_MAX);
+        for (int i = 0; i < k; ++i) {
+            std::fill(lis.begin(), lis.end(), INT_MAX);
+            int maxLen = 1;
+            lis[maxLen] = nums[i];
+            for (int j = i + k; j < nums.size(); j += k) {
+                auto it = upper_bound(lis.begin() + 1, lis.begin() + maxLen + 1, nums[j]);
+                maxLen = max(maxLen, (int)(it - lis.begin()));
+                *it = min(*it, nums[j]);
+            }
+            res += (nums.size() / k) + (i < (nums.size() % k)) - maxLen;
+        }
+        return res;
+    }
+};

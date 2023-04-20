@@ -1,0 +1,93 @@
+class Solution {
+public:
+    int dp[101][101][101][4][4];
+    string longestDiverseString(int a, int b, int c) {
+        memset(dp, -1, sizeof(dp));
+        int maxLength = solve(a,b,c,3,3);
+        string res = "" ;
+        construct(a,b,c,3,3,res) ;
+        return res ;
+    }
+    int solve(int a, int b, int c, int last, int sLast) {
+        int &res = dp[a][b][c][last][sLast];
+        if(res != -1) return res ;
+        if(a == 0 && b == 0 && c == 0) return res = 0 ;
+        res = 0 ;
+        if(last == 0 && sLast == 0) {
+            if(b > 0) res = max(res, 1 + solve(a, b - 1, c, 1, last)) ;
+            if(c > 0) res = max(res, 1 + solve(a, b, c - 1, 2, last)) ;
+        }
+        else if(last == 1 && sLast == 1) {
+            if(a > 0) res = max(res, 1 + solve(a - 1, b, c, 0, last)) ;
+            if(c > 0) res = max(res, 1 + solve(a, b, c - 1, 2, last)) ;
+        }
+        else if(last == 2 && sLast == 2) {
+            if(a > 0) res = max(res, 1 + solve(a - 1, b, c, 0, last)) ;
+            if(b > 0) res = max(res, 1 + solve(a, b - 1, c, 1, last)) ;
+        }
+        else {
+            if(a > 0) res = max(res, 1 + solve(a - 1, b, c, 0, last)) ;
+            if(b > 0) res = max(res, 1 + solve(a, b - 1, c, 1, last)) ;
+            if(c > 0) res = max(res, 1 + solve(a, b, c - 1, 2, last)) ;
+        }
+        return res ;
+    }
+    
+    void construct(int a, int b, int c, int last, int sLast, string &res) {
+        if(dp[a][b][c][last][sLast] == 0) return;
+        int length = dp[a][b][c][last][sLast] ;
+        if(last == 0 && sLast == 0) {
+            if(b > 0 && dp[a][b - 1][c][1][last] == length - 1) {
+                res += 'b' ;
+                construct(a , b - 1, c, 1, last, res);
+                return ;    
+            }
+            if(c > 0 && dp[a][b][c - 1][2][last] == length - 1) {
+               res += 'c' ;
+                construct(a, b, c - 1, 2, last, res);
+                return ;
+            }
+        }
+        else if(last == 1 && sLast == 1) {
+            if(c > 0 && dp[a][b][c - 1][2][last] == length - 1) {
+               res += 'c' ;
+                construct(a, b, c - 1, 2, last, res);
+                return ;
+            }
+            if(a > 0 && dp[a - 1][b][c][0][last] == length - 1) {
+                res += 'a' ;
+                construct(a - 1, b, c, 0, last, res);
+                return ;
+            }
+        }
+        else if(last == 2 && sLast == 2) {
+            if(a > 0 && dp[a - 1][b][c][0][last] == length - 1) {
+                res += 'a' ;
+                construct(a - 1, b, c, 0, last, res);
+                return ;
+            }
+            if(b > 0 && dp[a][b - 1][c][1][last] == length - 1) {
+                res += 'b' ;
+                construct(a , b - 1, c, 1, last, res);
+                return ;
+            }    
+        }
+        else {
+            if(a > 0 && dp[a - 1][b][c][0][last] == length - 1) {
+                res += 'a' ;
+                construct(a - 1, b, c, 0, last, res);
+                return ;
+            }
+            if(b > 0 && dp[a][b - 1][c][1][last] == length - 1) {
+                res += 'b' ;
+                construct(a , b - 1, c, 1, last, res);
+                return ;    
+            }
+            if(c > 0 && dp[a][b][c - 1][2][last] == length - 1) {
+               res += 'c' ;
+                construct(a, b, c - 1, 2, last, res);
+                return ;
+            }
+        }
+    }
+};

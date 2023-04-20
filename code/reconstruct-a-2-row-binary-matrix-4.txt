@@ -1,0 +1,26 @@
+public IList<IList<int>> ReconstructMatrix(int upper, int lower, int[] colsum) {
+	var empty = new List<IList<int>>();
+	var total = colsum.Sum();
+	if (total != upper + lower)
+		return empty;
+
+	var n = colsum.Length;
+	var up = new int[n];
+	var lo = new int[n];
+
+	for (var i = 0; i < n; i++) {
+		if (colsum[i] != 2) continue;
+		up[i] = lo[i] = 1;
+		upper--; lower--;
+		if (upper < 0 || lower < 0) return empty;
+	}
+
+	for (var i = 0; i < n; i++) {
+		if (colsum[i] != 1) continue;
+		if (upper > 0) { up[i] = 1; upper--; }
+		else { lo[i] = 1; lower--; }
+		if (upper < 0 || lower < 0) return empty;
+	}
+
+	return new List<IList<int>> { up, lo };
+}

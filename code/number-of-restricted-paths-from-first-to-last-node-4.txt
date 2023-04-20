@@ -1,0 +1,71 @@
+class Solution {
+public:
+    // distance of each node to end;
+    vector<int> dis;
+    // cnt of each node to end;
+    vector<int> dp;
+    // acumulated ans of cnt goes through node i;
+    vector<int> ans;
+    
+    int mod = (int)(1e9 + 7);
+    
+    vector<vector<pair<int, int>>> es;
+    long long dfs(int i)
+    {
+        if (dp[i] != -1) return dp[i];
+        long long cur = 0;
+        int d = dis[i];
+        for (auto& p : es[i])
+        {
+            int x = p.first;
+            if (dis[x] >= d)
+            {
+                continue;
+            }
+            cur = (cur + dfs(x)) % mod;
+        }
+        dp[i] = cur;
+        return cur;
+    }
+    int countRestrictedPaths(int n, vector<vector<int>>& edges) {
+        es.resize(n + 1);
+        dp= vector<int>(n + 1, -1);
+        //ans.resize(n + 1);
+        dis.resize(n + 1);
+        //int e = n;
+        for (auto& e : edges)
+        {
+            es[e[0]].push_back({e[1], e[2]});
+            es[e[1]].push_back({e[0], e[2]});
+        }
+        
+        for (auto& v : dis)
+        {
+            v = INT_MAX;
+        }
+        dis[n] = 0;
+        dp[n] = 1;
+        queue<int> q;
+        q.push(n);
+        while (!q.empty())
+        {
+            auto c = q.front();
+            q.pop();
+            int d = dis[c];
+            for (auto& p : es[c])
+            {
+                int x = p.first;
+                int y = p.second;
+                if (d + y < dis[x])
+                {
+                    dis[x] = d + y;
+                    q.push(x);
+                }
+            }
+        }
+        
+        int s = 1;
+        long long res = dfs(s);
+        return res;
+    }
+};

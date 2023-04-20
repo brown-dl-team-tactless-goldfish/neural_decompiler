@@ -1,0 +1,60 @@
+class Solution {
+public:
+    vector<double> sampleStats(vector<int>& count) {
+        vector<double> result(5,0.0);
+        double minVal = INT_MAX;
+        double maxVal = INT_MIN;
+        double totalElements = 0;
+        double sum = 0;
+        double median = 0.0;
+        double mode = 0;
+        double modeCount = 0;
+        
+        for(int i = 0; i < count.size(); ++i){
+            if(count[i] > 0){
+                minVal = min(minVal,(double)i);
+                maxVal = max(maxVal,(double)i);
+                totalElements += count[i];
+                sum += count[i]*i;
+                
+                if(count[i] > modeCount){
+                    modeCount = count[i];
+                    mode = i;
+                }
+            }
+        }
+         
+        int medianEl1Loc = ((int)totalElements % 2) ? (totalElements + 1)/2 : totalElements/2;
+        int medianEl2Loc = ((int)totalElements % 2) ? (totalElements + 1)/2 : totalElements/2 + 1;
+        int m1 = -1, m2 = -1;
+                               
+        for(int i = 0; i < count.size(); ++i){
+            if(count[i] > 0){
+                if(count[i] < medianEl1Loc){
+                    medianEl1Loc -= count[i];
+                    medianEl2Loc -= count[i];
+                    continue;
+                }
+                
+                if(count[i] >= medianEl1Loc && m1 < 0) {
+                    m1 = i;
+                }
+                
+                if(count[i] >= medianEl2Loc && m2 < 0){
+                    m2 = i;
+                }
+            }
+            
+            if(m1 >= 0 && m2 >= 0){
+                break;
+            }
+        }
+        
+        result[0] = minVal;
+        result[1] = maxVal;
+        result[2] = sum/totalElements;
+        result[3] = (m1 + m2)/2.0;
+        result[4] = mode;
+        return result;
+    }
+};

@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int minimumFinishTime(vector<vector<int>>& T, int c, int k) {
+        vector<int> f(k + 1, 1e9);
+        for (auto &t : T) {
+            long long lap_time = t[0];
+            long long tot_time = t[0];
+            for (int i = 1; i <= k; i++) {
+                f[i] = min(f[i], (int) tot_time);
+                if ((tot_time += (lap_time *= t[1])) > 1e9) {
+                    break;
+                }
+            }
+        }
+        for (int i = 2; i <= k; i++) {
+            for (int j = 1; j < i; j++) {
+                f[i] = min(f[i], f[j] + c + f[i - j]);
+            }
+        }
+        return f[k];
+    }
+};

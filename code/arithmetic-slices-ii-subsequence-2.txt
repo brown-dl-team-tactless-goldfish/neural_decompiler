@@ -1,0 +1,22 @@
+    int numberOfArithmeticSlices(vector<int>& A) {
+        vector<long> nums (A.begin(), A.end());
+        map<long, unordered_map<long, int>> m;
+        unordered_map<long, int> counter; 
+        int res = 0;
+        for (const auto& cur : nums) {
+            m[cur];    //prevent updating the hash_map in the following traversing.
+            for (auto& [last, diffMap] : m) {
+                long diff = cur - last;
+                if (diffMap.count(diff)) {
+                    int c = diffMap[diff];
+                    res += c;
+                    m[cur][diff] += c;
+                }
+            }
+            for (const auto& [k, v] : counter) {
+                m[cur][cur - k] += v;
+            }
+            ++counter[cur];
+        }
+        return res;
+    }

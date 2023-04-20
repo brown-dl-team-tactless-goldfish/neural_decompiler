@@ -1,0 +1,27 @@
+int checkPath(struct TreeNode* root, int* hashCnt, int* oddCnt, int* ans)
+{
+    if(!root) return 0;
+    
+    hashCnt[root->val]++;
+    (*oddCnt) += (hashCnt[root->val] & 1)? 1 : -1;
+
+    int left = checkPath(root->left, hashCnt, oddCnt, ans);
+    int right = checkPath(root->right, hashCnt, oddCnt, ans);  
+    
+    if(!left && !right){
+        if((*oddCnt) < 2){
+            (*ans)++;
+        }
+    }
+    hashCnt[root->val]--;
+    (*oddCnt) += (hashCnt[root->val] & 1)? 1 : -1;
+
+    return root->val;
+}
+
+int pseudoPalindromicPaths (struct TreeNode* root){
+    int* hashCnt = (int*)calloc(10, sizeof(int));
+    int oddCnt = 0, ans = 0;
+    checkPath(root, hashCnt, &oddCnt, &ans);
+    return ans;
+}

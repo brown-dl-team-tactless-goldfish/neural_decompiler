@@ -1,0 +1,58 @@
+void swap(char* a, char* b){
+    char temp = *a;
+    *a = *b;
+    *b = temp;
+}
+int maximumSwap(int num){    
+    int md = -1;
+    int mi = -1;
+    int li = -1;
+    int ri = -1;
+    // convert num to string
+    int temp = num;        
+    int i = 0;
+    int digit = -1;
+    while (num){
+        digit = num % 10;
+        
+        if(digit > md){
+            md = digit;
+            mi = i;
+            num = num / 10;
+            i++;
+            continue;
+        }
+        if(digit < md){
+            li = i;
+            ri = mi;
+        }
+        num = num / 10;        
+        i++;
+    }
+    li = i - li - 1;
+    ri = i - ri - 1;
+    printf("li = %d   ri = %d  i = %d \n", li, ri, i);
+    if( li == -1 || li == ri)
+        return temp;    
+    char* numstr = (char *)calloc(i, sizeof(char));
+    num = temp;
+    for(int j = i-1; j >= 0; j--){
+        //sprintf(numstr+j, "%d", num%10);
+        numstr[j] = num%10 + '0';
+        num = num/10;        
+    }
+    // swap the numbers is the li with ri;
+    swap(&numstr[li], &numstr[ri]);
+    printf("%s \n", numstr);    
+    //string to Integer
+    int baseno = 1;
+    int res = 0;
+    for( int k = i-1; k>=0; k--){
+        if (k < i - 1)
+            baseno *= 10;
+        res += baseno*(numstr[k] - '0');    
+    }
+    
+    
+    return res;
+}

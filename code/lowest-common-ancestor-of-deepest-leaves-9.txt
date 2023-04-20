@@ -1,0 +1,17 @@
+class Solution {
+public:
+    pair<int, TreeNode *> internal (TreeNode *r, int depth) {
+        if (!r)
+            return {-1, nullptr};
+        if (!r->left && !r->right)
+            return {depth, r};
+        auto left = internal(r->left, depth + 1);
+        auto right = internal(r->right, depth + 1);
+        if (left.first == right.first)
+            return {left.first, r};
+        return max(left, right);
+    }
+    TreeNode* lcaDeepestLeaves(TreeNode* root) {
+        return internal(root, 0).second;
+    }
+};

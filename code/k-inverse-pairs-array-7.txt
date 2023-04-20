@@ -1,0 +1,34 @@
+class Solution {
+public:
+    /*
+    int dp[1001][1001];
+    int M=1e9+7;
+    int f(int n, int k) {
+        if(k==0) return 1;
+        if(n==0) return 0;
+        if(dp[n][k] != -1) return dp[n][k];
+        int ans=0;
+        for(int i=0;i<=min(n-1, k);i++) {
+            ans+=f(n-1, k-i);
+            ans%=M;
+        }
+        return dp[n][k] = ans%M;
+    }
+    */
+    int kInversePairs(int n, int k) {
+        int dp[1001][1001], M=1e9+7;
+        memset(dp, 0, sizeof(dp));
+        for(int i=1;i<=n;i++) {
+            for(int j=0;j<=k;j++) {
+                if(j==0) dp[i][j]=1;
+                else {
+                    for(int ii=0;ii<=min(i-1, j);ii++) {
+                        dp[i][j] += dp[i-1][j-ii];
+                        dp[i][j] %= M;
+                    }
+                }
+            }
+        }
+        return dp[n][k];
+    }
+};

@@ -1,0 +1,89 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+#define SIZE 11000
+int* treeNodeToArray(struct TreeNode* root,int* returnSize){
+    int left=0;
+    int right=1;
+    int *array=(int*)calloc(1200,sizeof(int));
+    int count=0;
+    struct TreeNode** stack=(struct TreeNode**)malloc(1200*sizeof(struct TreeNode*));
+    stack[left]=root;
+    while(left!=right){
+        array[count++]=stack[left]->val;
+        if(stack[left]->left){
+            stack[right++]=stack[left]->left;
+        }
+        if(stack[left]->right){
+            stack[right++]=stack[left]->right;
+        }
+        left++;
+    }
+    *returnSize=count;
+    return array;
+}
+struct TreeNode* arrayToTreeNode(int *array,int size){
+    int left=0;
+    int right=1;
+    int count=0;
+    struct TreeNode** stack=(struct TreeNode**)malloc(SIZE*sizeof(struct TreeNode*));
+    stack[left]=(struct TreeNode*)malloc(sizeof(struct TreeNode));
+    stack[left]->left=NULL;
+    stack[left]->right=NULL;
+    while(count!=size){
+        stack[left]->val=array[count++];
+        if(right<size){
+            stack[left]->left=(struct TreeNode*)malloc(sizeof(struct TreeNode));
+            stack[left]->left->left=NULL;
+            stack[left]->left->right=NULL;
+            stack[right++]=stack[left]->left;
+        }
+        if(right<size){
+            stack[left]->right=(struct TreeNode*)malloc(sizeof(struct TreeNode));
+            stack[left]->right->left=NULL;
+            stack[left]->right->right=NULL;
+            stack[right++]=stack[left]->right;
+        }
+        left++;
+    }
+    return stack[0];
+}
+typedef struct {
+    int *array;
+    int size;
+} CBTInserter;
+
+CBTInserter* cBTInserterCreate(struct TreeNode* root) {
+    CBTInserter* obj=(CBTInserter*)malloc(sizeof(CBTInserter));
+    int *size=(int*)calloc(1,sizeof(int));
+    obj->array=treeNodeToArray(root,size);
+    obj->size=*size;
+    return obj;
+}
+
+int cBTInserterInsert(CBTInserter* obj, int v) {
+    obj->array[(obj->size)]=v;
+    obj->size++;
+    return obj->array[(obj->size)/2-1];
+}
+
+struct TreeNode* cBTInserterGet_root(CBTInserter* obj) {
+    return arrayToTreeNode(obj->array,obj->size);
+}
+
+void cBTInserterFree(CBTInserter* obj) {
+    free(obj);
+}
+
+/**
+ * Your CBTInserter struct will be instantiated and called as such:
+ * struct CBTInserter* obj = cBTInserterCreate(root);
+ * int param_1 = cBTInserterInsert(obj, v);
+ * struct TreeNode* param_2 = cBTInserterGet_root(obj);
+ * cBTInserterFree(obj);
+ */

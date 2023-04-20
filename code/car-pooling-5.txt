@@ -1,0 +1,40 @@
+
+
+bool carPooling(int** trips, int tripsSize, int* tripsColSize, int capacity){
+    
+    int* delta = (int*)malloc(sizeof(int)*1001);
+    memset(delta,0,sizeof(int)*1001);
+    int max = 0;
+    
+
+    for(int idx=0;idx<tripsSize;idx++)
+    {
+        int nump = trips[idx][0];
+        int from = trips[idx][1];
+        int to = trips[idx][2];
+        if(to > max)
+        {
+            max = to;
+        }
+        delta[from] += nump;
+        delta[to] -= nump;        
+    }
+    if(delta[0]>capacity)
+    {
+        return false;
+    }
+    for(int idx=1;idx<max;idx++)
+    {
+        
+        //printf("%d\n",delta[idx]);
+        delta[idx] =  delta[idx] +  delta[idx-1];
+        
+        if(delta[idx]>capacity)
+        {
+           return false;
+        }
+        
+    }
+    
+    return true;
+}

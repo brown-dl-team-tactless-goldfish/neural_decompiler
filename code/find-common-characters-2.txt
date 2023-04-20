@@ -1,0 +1,46 @@
+class Solution {
+public:
+    vector<string> commonChars(vector<string>& words) {
+        int n = words.size();
+        unordered_map<char, int> m;
+        for(int i=0; i<words[0].size(); i++){
+            m[words[0][i]]++;
+        }
+        
+        for(int i=1; i<n; i++){
+            unordered_map<char, int> temp;
+            for(int j=0; j<words[i].size(); j++){
+                if(m.find(words[i][j])!=m.end()){
+                    temp[words[i][j]]++;
+                }
+            }
+            
+            vector<char> rem;
+            for(auto x: m){
+                if(temp.find(x.first)==temp.end()){
+                    rem.push_back(x.first);
+                } else {
+                    temp[x.first] = min(x.second, temp[x.first]);
+                }
+            }
+            
+            m.clear();
+            m = temp;
+            
+        }
+        
+        vector<string> ans;
+        for(auto x: m){
+            string s;
+            s.append(1, x.first);
+            int count = 0;
+            while(count<x.second){
+                ans.push_back(s);
+                count++;
+            }
+        }
+        
+        return ans;
+    }
+    
+};

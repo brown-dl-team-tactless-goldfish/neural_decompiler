@@ -1,0 +1,41 @@
+public class Solution
+{
+    public double FrogPosition(int n, int[][] edges, int t, int target)
+    {
+        var tree = new Dictionary<int, HashSet<int>>();
+        for (int i = 0; i < edges.Length; i++)
+        {
+            if (!tree.ContainsKey(edges[i][0]))
+                tree.Add(edges[i][0], new HashSet<int>());
+            tree[edges[i][0]].Add(edges[i][1]);
+
+            if (!tree.ContainsKey(edges[i][1]))
+                tree.Add(edges[i][1], new HashSet<int>());
+            tree[edges[i][1]].Add(edges[i][0]);
+        }
+
+        bool[] visited = new bool[n + 1];
+        var q = new Queue<(int ID, double Pos)>();
+        q.Enqueue((1, 1));
+        while (q.Count > 0 && t >= 0)
+        {
+            int count = q.Count;
+            for (int i = 0; i < count; i++)
+            {
+                var cur = q.Dequeue();
+                visited[cur.ID] = true;
+                var nexts = tree.ContainsKey(cur.ID) ? 
+                    tree[cur.ID].Where(p => !visited[p]) :
+                    new List<int>();
+                if (cur.ID == target && (nexts.Count() == 0 || t == 0)) return cur.Pos;
+                foreach (int next in nexts)
+                {
+                    q.Enqueue((next, cur.Pos / nexts.Count()));
+                }
+            }
+            t--;
+        }
+
+        return 0;
+    }
+}

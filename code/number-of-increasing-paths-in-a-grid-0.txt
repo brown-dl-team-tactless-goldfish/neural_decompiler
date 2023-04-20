@@ -1,0 +1,57 @@
+class Solution {
+public:
+    long long mod = 1e9 + 7;
+	
+    int dp[1005][1005];
+    
+    vector<int> dx = {-1, 0, 1, 0};
+    
+    vector<int> dy = {0, 1, 0, -1};
+    
+    int dfs(vector<vector<int>>& grid, int i, int j, int n, int m)
+    {   
+	    // if already calculated
+		
+        if(dp[i][j] != -1)
+            return dp[i][j];
+        
+        int sum = 0;
+        
+        for(int k = 0; k < 4; k++)
+        {
+            int new_row = i + dx[k];
+            
+            int new_col = j + dy[k];
+            
+            if(new_row >= 0 && new_row < n && new_col >= 0 && new_col < m && grid[new_row][new_col] > grid[i][j])
+            {
+                sum = (sum % mod + dfs(grid, new_row, new_col, n, m) % mod) % mod;
+            }
+        }
+        
+        return dp[i][j] = (1 % mod + sum % mod) % mod;
+    }
+    
+    int countPaths(vector<vector<int>>& grid) {
+        
+        int n = grid.size();
+        
+        int m = grid[0].size();
+        
+        memset(dp, -1, sizeof(dp));
+        
+        // count no. of increasing paths
+        
+        int count = 0;
+        
+        for(int i = 0; i < n; i++)
+        {
+            for(int j = 0; j < m; j++)
+            {
+                count = (count % mod + dfs(grid, i, j, n, m) % mod) % mod;
+            }
+        }
+        
+        return count;
+    }
+};

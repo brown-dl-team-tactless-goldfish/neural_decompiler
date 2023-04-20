@@ -1,0 +1,66 @@
+public class Solution {
+    public string NearestPalindromic(string n) {
+        int len = n.Length;
+        var c = BigInteger.Parse(n);
+        if(n == "0")
+            return "1";
+        else if(len == 1)
+            return (char)(n[0]-1)+"";
+        else if(n[0] == '1' && c % 10 == 0 && n.Substring(1).Replace("0","") == ""){
+            return (c-1).ToString();
+        }else if(n[0] == '1' && (c-1) % 10 == 0 && (c-1).ToString().Substring(1).Replace("0","") == ""){
+            return (c-2).ToString();
+        }else if(n.Replace("9","") == ""){
+            return (c+2).ToString();
+        }
+        
+        string result = BulidHalf(n);
+        
+        if(result == n){
+            BigInteger add = 0;
+            if(len % 2 == 0){
+                add = BigInteger.Parse("11".PadRight(len/2+1,'0'));
+            }else{
+                add = BigInteger.Parse("1".PadRight(len/2+1,'0'));
+            }
+            
+            if(n[len/2] == '0'){
+                add = 0-add;
+            }
+            
+            result = (c-add).ToString();
+        }else{
+            string r1 = BulidHalf((BigInteger.Parse(n)+BigInteger.Parse("1".PadRight(len/2+1,'0'))).ToString());
+               
+            var r2 = BulidHalf((BigInteger.Parse(n)-BigInteger.Parse("1".PadRight(len/2+1,'0'))).ToString());
+            //Console.WriteLine(r1+","+r2);
+            if(BigInteger.Abs(BigInteger.Parse(r2)-c) <= BigInteger.Abs(BigInteger.Parse(r1)-c)){
+                r1 = r2;
+            }
+            
+            //Console.WriteLine(r1);
+            if(BigInteger.Abs(BigInteger.Parse(r1)-c) < BigInteger.Abs(BigInteger.Parse(result)-c)
+            || BigInteger.Abs(BigInteger.Parse(r1)-c) == BigInteger.Abs(BigInteger.Parse(result)-c) && BigInteger.Parse(r1) < BigInteger.Parse(result)
+            ){
+                result = r1;
+            }
+        }
+        return result;
+    }
+    
+    private string BulidHalf(string n){
+        var len = n.Length;
+        var half = n.Substring(0,len/2);
+        var arr = half.ToCharArray();
+        Array.Reverse(arr);
+        
+        string result = "";
+        if(len % 2 == 0){
+            result = half+new string(arr);
+        }else{
+            result = half+n[len/2]+new string(arr);
+        }
+        
+        return result;
+    }
+}

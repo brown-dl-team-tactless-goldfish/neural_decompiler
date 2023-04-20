@@ -1,0 +1,28 @@
+#define MAX(a, b) ((a) > (b) ? (a) : (b))
+
+int check(int n, int* max) {
+    int ans = 0;
+    while (n > 0) {
+        ans += n % 10;
+        n /= 10;
+    }
+    *max = MAX(*max, ans);
+    return ans;
+}
+
+int countLargestGroup(int n) {
+    if (n < 10) return n;
+    int max = 0, cnt = 0;
+    int* arr = (int*) calloc(37, sizeof(int));
+    for (int i = 1; i <= n; i++) {
+        int idx = check(i, &max);
+        arr[idx]++;
+        cnt = MAX(cnt, arr[idx]);
+    }
+    int res = 0;
+    for (int i = 1; i <= max; i++) {
+        if (arr[i] == cnt) res++;
+    }
+    free(arr);
+    return res;
+}

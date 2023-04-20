@@ -1,0 +1,44 @@
+class Solution 
+{
+    
+public:
+    bool checkPowerOfTwo(int n) 
+    {
+        while(n!=1)
+        {
+            if(n%2==1) return false;
+            n /= 2;
+        }
+        return true;
+    }
+    int minImpossibleOR(vector<int>& nums) 
+    {
+        vector<int> binary(31, 0);
+        int cnt;
+        
+        for(auto it:nums)
+        {
+            if(checkPowerOfTwo(it)) //elements like 1,2,4,8,16
+            {
+                cnt=0;
+                while(it)
+                {
+                    it /= 2;
+                    cnt++;
+                }
+                binary[cnt-1]=1; //mark power needed to form the element
+            }
+        }
+        
+        int num;
+        for(int i=0; i<31; i++) //find minimum not available element by using power
+        {
+            if(binary[i]!=1)
+            {
+                num = (int) pow(2, i); //form that element
+                break;
+            }
+        }
+        return num; 
+    }
+};

@@ -1,0 +1,32 @@
+char * getHint(char * secret, char * guess){
+    int bull = 0, cow  = 0;
+    int dp[128] = {};
+    int len = strlen(secret);
+    // count bull;
+    for(int i = 0; i < len;i++){
+        if(secret[i] == guess[i]){
+            ++bull;
+            continue;
+        }
+        ++dp[secret[i]- '0'];
+    }
+    // count cow
+    for(int i = 0; i < len;i++){
+        // if it is bull, then moving to the next character of guess
+        if(secret[i] == guess[i]) continue;
+        if(dp[guess[i] - '0'] > 0){
+            --dp[guess[i] - '0'];
+            ++cow;
+        }
+    }
+    char *ans ;
+    // 1 <= secret.length, guess.length <= 1000
+    // then maximum of bull can be 1000; -> 4 characters if we convert to char
+    // maximum of bull can be 1000; -> same, 4 characters;
+    // 'A' is 1 character; 'B' is also 1 characters;
+    // then, the max size of return value can be 10 characters;
+    ans = (char*) calloc(10, sizeof(char));
+    sprintf(ans, "%dA%dB", bull, cow);
+    return ans;
+
+}

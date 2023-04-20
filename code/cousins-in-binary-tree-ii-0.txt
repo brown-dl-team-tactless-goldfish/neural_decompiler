@@ -1,0 +1,36 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+void dfs1(struct TreeNode* root, int* sum, int idx) {
+    if (!root) return;
+    sum[idx] += root->val;
+    dfs1(root->left, sum, idx+1);
+    dfs1(root->right, sum, idx+1);
+}
+
+int dfs2(struct TreeNode* root, int* sum, int idx) {
+    if (!root) return 0;
+    int l = dfs2(root->left, sum, idx+1);
+    int r = dfs2(root->right, sum ,idx+1);
+    if (l != 0 && r == 0) root->left->val = sum[idx+1] - l;
+    if (l == 0 && r != 0) root->right->val = sum[idx+1] - r;
+    if (l != 0 && r != 0) {
+        root->left->val = sum[idx+1] - r - l;
+        root->right->val = sum[idx+1] - r - l;
+    }
+    return root->val;
+}
+
+struct TreeNode* replaceValueInTree(struct TreeNode* root) {
+    int* sum = (int*) calloc(100000, sizeof(int));
+    dfs1(root, sum, 0);
+    root->val -= dfs2(root, sum, 0);
+    free(sum);
+    return root;
+}

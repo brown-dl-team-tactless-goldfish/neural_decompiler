@@ -1,0 +1,26 @@
+char * sortString(char *c){
+    int len = strlen(c);
+    char *ret = (char *)calloc(len + 1, sizeof(char));
+    int *freq = (int *)calloc(26, sizeof(int));
+    
+    int i;
+    for(i = 0; i < len; i++) //Fill frequency array
+        freq[c[i] - 'a']++;
+    
+    int fi = 0, delta = 1;
+    for(i = 0; i < len; i++) { //Populate new string
+        while(freq[fi] < 1) { //Skip empty frequency array indicies
+            fi += delta;
+            if(fi < 0 || fi > 25) { delta = -delta; fi += delta; } //Ensures fi iterates like so: 23, 24, 25, 25, 24, 23 ... 2, 1, 0, 0, 1, 2 ...
+        }
+        
+        ret[i] = fi + 'a'; //The index in this circumstance is also the character, just need to offset it back from 0 based to proper ASCII
+        freq[fi]--;
+        
+        fi += delta;
+        if(fi < 0 || fi > 25) { delta = -delta; fi += delta; }
+    }
+    
+    free(freq);
+    return ret;
+}

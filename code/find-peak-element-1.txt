@@ -1,0 +1,37 @@
+
+long get(int *nums, int i, int numsSize)
+{
+    if (i == -1)
+        return LONG_MIN;
+    else if (i == numsSize)
+        return LONG_MIN;
+    else
+        return nums[i];
+}
+
+int findPeakElement(int* nums, int numsSize)
+{
+    int lo, hi, n;
+    
+    lo = 0;
+    hi = numsSize - 1;
+    n = numsSize;
+
+    while (lo <= hi) {
+        int mid = (lo + hi) / 2;
+
+        if (get(nums, mid - 1, n) < get(nums, mid, n) &&
+                   get(nums, mid, n) > get(nums, mid + 1, n)) {
+            return mid;
+        } else if (get(nums, mid - 1, n) < get(nums, mid, n) &&
+                   get(nums, mid, n) < get(nums, mid + 1, n)) {
+            lo = mid + 1;
+        } else {
+            // could also be a valley
+            hi = mid - 1;
+        }
+    }
+
+    // not reached
+    return -1;
+}

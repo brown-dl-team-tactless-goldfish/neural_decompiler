@@ -1,0 +1,60 @@
+int maximumGain(char * s, int x, int y){
+    int n = strlen(s);
+    char* stack = malloc(n * sizeof(char));
+    int idx;
+    int ans;
+    if(x >= y){
+        ans = 0;
+        idx = 0;
+        for(int i = 0; i < n; i++){
+            if(s[i] == 'b' && idx > 0 && stack[idx-1] == 'a'){
+                ans += x;
+                idx--;
+            }
+            else{
+                stack[idx] = s[i];
+                idx++;
+            }
+        }
+        char* temp = malloc(idx * sizeof(char));
+        int idx_t = 0;
+        for(int i = 0; i < idx; i++){
+            if(stack[i] == 'a' && idx_t > 0 && temp[idx_t-1] == 'b'){
+                ans += y;
+                idx_t--;
+            }
+            else{
+                temp[idx_t] = stack[i];
+                idx_t++;
+            }
+        }
+        return ans;
+    }
+    else{
+        ans = 0;
+        idx = 0;
+        for(int i = 0; i < n; i++){
+            if(s[i] == 'a' && idx > 0 && stack[idx-1] == 'b'){
+                ans += y;
+                idx--;
+            }
+            else{
+                stack[idx] = s[i];
+                idx++;
+            }
+        }
+        char* temp = malloc(idx * sizeof(char));
+        int idx_t = 0;
+        for(int i = 0; i < idx; i++){
+            if(stack[i] == 'b' && idx_t > 0 && temp[idx_t-1] == 'a'){
+                ans += x;
+                idx_t--;
+            }
+            else{
+                temp[idx_t] = stack[i];
+                idx_t++;
+            }
+        }
+        return ans;
+    }
+}

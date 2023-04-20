@@ -1,0 +1,32 @@
+inline bool myatoi(char *s, int *i){
+    char *p = s;
+    for (*i = 0 ; *s && s - p <= 3 && isdigit(*s) ; *i = *i * 10 + *s++ - '0');
+    return s - p >= 1 && s - p <= 3 && !*s && (s - p > 1 ? *i : 1) && *i <= 255;
+}
+
+bool myatox(char *s){
+    char *p = s--;
+    while (*++s && s - p <= 4 && isxdigit(*s));
+    return s > p && s - p <= 4 && !*s;
+}
+
+char * validIPAddress(char * IP){
+    char *dots[3] = { strchr(IP, '.') }, *cols[7] = { strchr(IP, ':') };
+    int oct[4];    
+    if (dots[0]) {
+        for (int i = 1 ; i <= 2 ; *dots[0] = *dots[i++] = 0)
+            if (!(dots[i] = dots[i - 1] ? strchr(dots[i - 1] + 1, '.') : dots[i - 1]))
+                return "Neither";
+        return !myatoi(IP, &oct[0]) || !myatoi(dots[0] + 1, &oct[1]) || !myatoi(dots[1] + 1, &oct[2]) ||
+            !myatoi(dots[2] + 1, &oct[3]) || (IP[0] == '0' && oct[0]) || (dots[0][1] == '0' && oct[1]) ||
+            (dots[1][1] == '0' && oct[2]) || (dots[2][1] == '0' && oct[3]) ? "Neither" : "IPv4";
+    } else if (cols[0]) {
+        for (int i = 1 ; i <= 6 ; *cols[0] = *cols[i++] = 0)
+            if (!(cols[i] = cols[i - 1] ? strchr(cols[i - 1] + 1, ':') : cols[i - 1]))
+                return "Neither";
+        return !myatox(IP) || !myatox(cols[0] + 1) || !myatox(cols[1] + 1) || !myatox(cols[2] + 1) ||
+            !myatox(cols[3] + 1) || !myatox(cols[4] + 1) || !myatox(cols[5] + 1) || !myatox(cols[6] + 1) ?
+            "Neither" : "IPv6";
+    }
+    return "Neither";
+}

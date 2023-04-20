@@ -1,0 +1,73 @@
+#define MAX_COUNT_DIGS 4
+
+int compress(char* chars, int charsSize){
+
+    int wp = 0;
+    
+    char lastChar = 0;
+    int count = 1;
+    int countArray[MAX_COUNT_DIGS];
+    bool printedNonzero = false;
+    
+    for (int i=0; i<charsSize; i++)
+    {
+        if (chars[i] != lastChar)
+        {
+            if (count > 1)
+            {
+                for (int j=0; j<MAX_COUNT_DIGS; j++)
+                {
+                    countArray[j] = count % 10;
+                    count /= 10;
+                }
+                printedNonzero = false;
+                for (int j=MAX_COUNT_DIGS-1; j>=0; j--)
+                {
+                    if ((countArray[j] > 0) || printedNonzero)
+                    {
+                        if (countArray[j] > 0) 
+                        {
+                            printedNonzero = true;
+                        }
+                        chars[wp++] = countArray[j] + '0';
+                    }
+                }
+                
+            }
+
+            chars[wp++] = chars[i];
+            lastChar = chars[i];
+
+            count = 1;
+        }
+        else
+        {
+            count++;
+        }
+        
+    }
+
+    if (count > 1)
+    {
+        for (int j=0; j<MAX_COUNT_DIGS; j++)
+        {
+            countArray[j] = count % 10;
+            count /= 10;
+        }
+        printedNonzero = false;
+        for (int j=MAX_COUNT_DIGS-1; j>=0; j--)
+        {
+            if ((countArray[j] > 0) || printedNonzero)
+            {
+                if (countArray[j] > 0) 
+                {
+                    printedNonzero = true;
+                }
+                chars[wp++] = countArray[j] + '0';
+            }
+        }
+
+    }
+    
+    return wp;
+}

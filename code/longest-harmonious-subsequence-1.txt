@@ -1,0 +1,45 @@
+int funcSort(const void *a, const void *b){
+  return (*(int *) a - *(int *)b);    
+}
+
+int findLHS(int* nums, int numsSize){
+
+  qsort(nums, numsSize, sizeof(int), funcSort);
+  
+  int prevNum = nums[0], counter = 1, prevCounter = 0, max = 0, prevConfirm = 0;
+  
+  for(int i = 1; i < numsSize; i++){
+    
+    if(prevNum == nums[i]){
+      counter++;
+    }
+    if(prevNum != nums[i] || i == numsSize - 1){
+      
+      if(prevConfirm == 1){
+        
+        if(max < counter + prevCounter){
+          max = counter + prevCounter;
+        }
+        
+        prevConfirm = 0;       
+      }
+      
+      if(prevNum == nums[i] - 1){
+        prevCounter = counter;
+        prevConfirm = 1;
+      }
+      
+      if(i == numsSize - 1 && prevNum == nums[i] - 1){
+        counter = 1;
+        if(max < counter + prevCounter){
+          max = counter + prevCounter;
+        }
+      }
+      
+      prevNum = nums[i];
+      counter = 1;
+    }
+  }
+  
+  return max;
+}

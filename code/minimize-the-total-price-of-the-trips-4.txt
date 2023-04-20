@@ -1,0 +1,48 @@
+class Solution 
+{
+    public:
+    vector<int> total[50];
+    vector<int> a;
+    int f[50]={};
+    int dp[50][2];
+    bool dfs1(int p,int index,int target)
+    {
+        if(index==target)
+        {
+            f[index]++;
+            return true;
+        }
+        bool result=false;
+        for(int i=0;i<total[index].size();i++)
+            if(total[index][i]!=p) result|=dfs1(index,total[index][i],target);
+
+        if(result) f[index]++;
+        return result;
+    }
+    int dfs2(int p,int index,bool adjacent)
+    {
+        if(dp[index][adjacent]!=-1) return dp[index][adjacent];
+        int result=0,t1=0,t2=0;
+        for(int i=0;i<total[index].size();i++)
+        {
+            if(p!=total[index][i])
+            {
+                t1+=min(dfs2(index,total[index][i],true),dfs2(index,total[index][i],false));
+                t2+=dfs2(index,total[index][i],true);
+            }
+        }
+        if(adjacent) result=f[index]*a[index]+t1;
+        else result=min(f[index]*a[index]+t1,f[index]*a[index]/2+t2);
+        dp[index][adjacent]=result;
+        return result;
+    }
+    int minimumTotalPrice(int n, vector<vector<int>>& edges, vector<int>& price, vector<vector<int>>& trips) 
+    {
+        int m=edges.size(),t=trips.size();
+        a=price;
+        memset(dp,-1,sizeof(dp));
+        for(int i=0;i<m;i++) total[edges[i][0]].push_back(edges[i][1]),total[edges[i][1]].push_back(edges[i][0]);
+        for(int i=0;i<t;i++) dfs1(-1,trips[i][0],trips[i][1]);
+        return dfs2(-1,0,false);
+    }
+};

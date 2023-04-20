@@ -1,0 +1,25 @@
+void travel(struct TreeNode* root,int *arr,int *idx)
+{
+    if(!root)
+        return;
+    travel(root->left,arr,idx);
+    arr[(*idx)++]=root->val;
+    travel(root->right,arr,idx);
+}
+
+bool findTarget(struct TreeNode* root, int k){
+    int *arr=malloc(sizeof(int)*10000),idx=0,sum=0;
+    travel(root,arr,&idx);
+    int i,j;
+    for(i=0,j=idx-1;i<j;)
+    {
+        sum=arr[i]+arr[j];
+        if(sum>k)
+            j--;
+        else if(sum<k)
+            i++;
+        else 
+            break;
+    }
+    return i==j?false:true;
+}

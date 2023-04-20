@@ -1,0 +1,34 @@
+public:
+    int strangePrinter(string s) {
+        vector<vector<int>> dp(s.size(), vector<int>(s.size(), -1));
+        vector<vector<int>> bucket(126, vector<int>());
+        s.erase(unique(s.begin(), s.end()), s.end());
+        for (int i = 0; i < s.size(); ++ i){
+            bucket[s[i]].push_back(i);
+        }
+        
+        int ans = INT_MAX;
+        for (int i = 0; i < s.size(); ++ i){
+            ans = min(ans, i + recur(s, dp, bucket, i, s.size() - 1));
+        }
+        return ans;
+    }
+    
+    int recur(string& s, vector<vector<int>>& dp, vector<vector<int>>& bucket, int a, int b){
+        if (a == b) return 1;
+        if (a + 1 == b) return 2;
+        if (a > b) return 0;
+        
+        if(dp[a][b] == -1){
+            dp[a][b] = 1 + recur(s, dp, bucket, a + 1, b);
+            
+            int idx = lower_bound(bucket[s[a]].begin(), bucket[s[a]].end(), a) - bucket[s[a]].begin();
+            for (int i = idx + 1; i < bucket[s[a]].size() && bucket[s[a]][i] <= b; ++ i){
+				// split into [a + 1, bucket[s[a]][i] - 1] [bucket[s[a]][i], b] where bucket[s[a]][i] == s[a]
+                dp[a][b] = min(dp[a][b], recur(s, dp, bucket, a + 1, bucket[s[a]][i] - 1) + recur(s, dp, bucket, bucket[s[a]][i], b));
+            }
+            
+        }
+
+        return dp[a][b];
+    }

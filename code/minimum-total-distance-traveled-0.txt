@@ -1,0 +1,220 @@
+struct Robot{
+    bool To_L;
+    int Right;
+    int Left;
+};
+
+struct Factory{
+    int* RobNo;
+    int Point;
+    int Count;
+};
+
+int comp (const void* a, const void* b){
+    return *(int*)a > *(int*)b ? 1 : -1;
+}
+
+int comp_f (const void** a, const void** b){
+    return (*(int**)a)[0] > (*(int**)b)[0] ? 1 : -1;
+}
+
+void cost(int* robot, int** factory, struct Robot* list, struct Factory* F_list, int now, int left_factory, bool* to_left, int* l, int r){
+    if (left_factory == -1){
+        list[now].Left = -1;
+        return;
+    }
+    *l += robot[now]-factory[left_factory][0]; //加上這段差距
+    if (factory[left_factory][1] <= F_list[left_factory].Count){
+        int replace_rob = F_list[left_factory].RobNo[F_list[left_factory].Point]; //被踢出來的機器人 查看是否能改成向左走
+        if (list[replace_rob].To_L){
+            *l -= robot[replace_rob]-factory[left_factory][0];
+        } else {
+            *l -= factory[left_factory][0]-robot[replace_rob];
+        }
+        cost(robot, factory, list, F_list, replace_rob, list[replace_rob].Left, to_left, l, r);
+        if (*to_left){
+            F_list[left_factory].Point++;
+        }
+    } else {
+        if (*l <= r){
+            *to_left = true;
+        }
+    }
+    if (*to_left){ //如果真的要往左邊走 那因為被替換掉 Point 要++ 然後需要Input now 進去
+        list[now].To_L = true;
+        list[now].Left = left_factory-1;
+        F_list[left_factory].RobNo[F_list[left_factory].Count] = now;
+        F_list[left_factory].Count++;
+    }
+    return;
+}
+
+int cost_r(int** factory, int factorySize, struct Factory* F_list, int right_factory){
+    int r = 0;
+    if (right_factory == factorySize){
+        return INT_MAX;
+    }
+    while (factory[right_factory][1] <= F_list[right_factory].Count){ //如果右邊的工廠滿了
+        r += factory[right_factory][0]-factory[right_factory-1][0]; //加上這段差距
+        right_factory++;
+        if (right_factory == factorySize){
+            return INT_MAX;
+        }
+    }
+    r += factory[right_factory][0]-factory[right_factory-1][0]; //加上這段差距
+    return r;
+}
+
+void to_r_change(int** factory, struct Robot* list, struct Factory* F_list, int now, int right_factory){
+    if (factory[right_factory][1] <= F_list[right_factory].Count){ //如果右邊的工廠滿了
+        int replace_rob = F_list[right_factory].RobNo[F_list[right_factory].Point]; //被踢出來的機器人
+        to_r_change(factory, list, F_list, replace_rob, list[replace_rob].Left);
+        F_list[right_factory].Point++;
+    }
+    list[now].Right = right_factory+1;
+    F_list[right_factory].RobNo[F_list[right_factory].Count] = now;
+    F_list[right_factory].Count++;
+    return;
+}
+
+long long minimumTotalDistance(int* robot, int robotSize, int** factory, int factorySize, int* factoryColSize){
+    qsort(robot, robotSize, sizeof(int), comp);
+    qsort(factory, factorySize, sizeof(int*), comp_f);
+    struct Robot* list = malloc(sizeof(struct Robot)*robotSize);
+    struct Factory* F_list = calloc(factorySize, sizeof(struct Factory));
+    int point = 0;
+    for (int i = 0 ; i < robotSize ; i++){
+        while(point < factorySize && factory[point][0] < robot[i]){
+            point++;
+        }
+        list[i].Right = point;
+        list[i].Left = point-1;
+    }
+    for (int i = 0 ; i < factorySize ; i++){
+        F_list[i].RobNo = malloc(sizeof(int)*robotSize);
+    }
+    
+    int head = 0;
+    long long ans = 0;
+    
+    while(head < robotSize && list[head].Left == -1){
+        while (factory[list[head].Right][1] == F_list[list[head].Right].Count){
+            list[head].Right++;
+        }
+        ans += factory[list[head].Right][0] - robot[head];
+        list[head].To_L = false;
+        F_list[list[head].Right].RobNo[F_list[list[head].Right].Count] = head;
+        F_list[list[head].Right].Count++;
+        head++;
+    }
+    
+    while (head < robotSize){
+        int l = list[head].Left == -1 ? INT_MAX : robot[head] - factory[list[head].Left][0];
+        int r = list[head].Right == factorySize ? INT_MAX : factory[list[head].Right][0] - robot[head];
+        int right_factory = list[head].Right; //先考慮前往右邊的工廠的成本
+        bool to_left = false;
+        if (right_factory < factorySize){
+            while (factory[right_factory][1] == 0){
+                right_factory++;
+                if (right_factory == factorySize){
+                    r = INT_MAX;
+                    break;
+                } else {
+                    r = factory[right_factory][0] - robot[head];
+                }
+            }
+            
+            if (right_factory < factorySize && factory[right_factory][1] <= F_list[right_factory].Count){
+                //如果右邊的工廠滿了 一定是向右擠出一個
+                list[head].To_L = false;
+                ans += r;
+                F_list[right_factory].RobNo[F_list[right_factory].Count] = head;
+                F_list[right_factory].Count++;
+                int replace_rob = F_list[right_factory].RobNo[F_list[right_factory].Point]; //被移出的機器人
+                F_list[right_factory].Point++;
+                if (list[replace_rob].Left == -1){ 
+                    //移出的機器人的左邊是-1 代表左邊已經沒有任何空的工廠了 無法移出
+                    list[head].Left = -1;
+                    right_factory++; //查看下一間工廠
+                    ans += factory[right_factory][0] - factory[right_factory-1][0];
+                    while (factory[right_factory][1] <= F_list[right_factory].Count){ //如果還是滿的
+                        F_list[right_factory].RobNo[F_list[right_factory].Count] = replace_rob;
+                        replace_rob = F_list[right_factory].RobNo[F_list[right_factory].Point];
+                        F_list[right_factory].Count++;
+                        F_list[right_factory].Point++;
+                        right_factory++; //查看下一間工廠
+                        ans += factory[right_factory][0] - factory[right_factory-1][0];
+                    }
+                    F_list[right_factory].RobNo[F_list[right_factory].Count] = replace_rob;
+                    F_list[right_factory].Count++;
+                    F_list[right_factory].Point++;
+                } else { //右邊的最下面的機器人可以往左 那要找出成本
+                    r = cost_r(factory, factorySize, F_list, right_factory+1);
+                    l = robot[replace_rob]-factory[right_factory][0];
+                    cost(robot, factory, list, F_list, replace_rob, list[replace_rob].Left, &to_left, &l, r);
+                    
+                    //right_factory+1 = replace_rob 所處的工廠 右邊的工廠
+                    if (to_left){
+                        ans += l;
+                    } else {
+                        ans += r;
+                        to_r_change(factory, list, F_list, replace_rob, list[replace_rob].Right);
+                    }
+                }
+                head++;
+                continue;
+            }
+        }
+        //檢查左邊工廠滿了沒 左邊不可能為-1
+        int left_factory = list[head].Left;
+        
+        while (factory[left_factory][1] == 0){
+            left_factory--;
+            if (left_factory >= 0){ 
+                l = robot[head] - factory[left_factory][0];
+                list[head].Left = left_factory;
+            } else {
+                l = INT_MAX;
+                list[head].Left = left_factory;
+                break;
+            }
+        }
+        
+        if (left_factory >= 0 && factory[left_factory][1] <= F_list[left_factory].Count){  //如果滿了
+            int replace_rob = F_list[left_factory].RobNo[F_list[left_factory].Point]; //被踢出來的機器人
+            //一個函式 會計算左右哪邊划算
+            if (list[replace_rob].To_L){
+                l -= robot[replace_rob]-factory[left_factory][0];
+            } else {
+                l -= factory[left_factory][0]-robot[replace_rob];
+            }
+            cost(robot, factory, list, F_list, replace_rob, list[replace_rob].Left, &to_left, &l, r);
+            if (to_left){
+                F_list[left_factory].Point++;
+            }
+        } else {  //如果沒滿 那就是比較左右 哪邊小塞哪邊
+            if (l <= r){
+                to_left = true;
+            }
+        }
+        if (to_left){ //如果左邊小
+            ans += l;
+            list[head].To_L = true;
+            list[head].Left = left_factory-1;
+            F_list[left_factory].RobNo[F_list[left_factory].Count] = head;
+            F_list[left_factory].Count++;
+        } else {    //如果右邊的小
+            ans += r;
+            list[head].To_L = false;
+            F_list[right_factory].RobNo[F_list[right_factory].Count] = head;
+            F_list[right_factory].Count++;
+        }
+        head++;
+    }
+	for (int i = 0 ; i < factorySize ; i++){
+        free(F_list[i].RobNo);
+    }
+    free(F_list);
+    free(list);
+    return ans;
+}

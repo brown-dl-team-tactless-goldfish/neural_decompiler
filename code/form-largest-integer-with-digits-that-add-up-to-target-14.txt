@@ -1,0 +1,32 @@
+class Solution {
+public:
+    string largestNumber(vector<int>& cost, int target) {
+        vector<State> dp(target+1);
+        dp[0] = State{0,0};
+        for(int i=1;i<=target;i++){
+            auto& [len, pre] = dp[i];
+            for(int j=8;j>=0;j--){
+                int k = i-cost[j];
+                if(k<0 || dp[k].len < 0) continue;
+                if(dp[k].len+1 > len){
+                    len = dp[k].len+1;
+                    pre = j;
+                }
+            }
+        }
+        if(dp[target].len<0) return "0";
+        
+        string res;
+        for(int i=target; i>0;){
+            auto [len, pre] = dp[i];
+            res += '1'+pre;
+            i -= cost[pre];
+        }
+        return res;
+    }
+    
+    struct State{
+        int len=-1;
+        int pre=0;
+    };
+};

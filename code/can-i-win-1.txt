@@ -1,0 +1,34 @@
+bool canIWinSub(int max, int target, unsigned int pool, int score, bool player1Turn);
+
+int cache[1048577]; // 2^20 + 1
+
+bool canIWin(int maxChoosableInteger, int desiredTotal)
+{
+    if ((1 + maxChoosableInteger) * maxChoosableInteger / 2 < desiredTotal)
+        return 0;
+
+    // Init pool as bit map with "1s on the right marking the numbers not taken
+    unsigned int pool = (1 << maxChoosableInteger) - 1;
+
+    // Init cache as -1 (all "1" bits)
+    memset(cache, -1, sizeof(cache));
+
+    return canIWinSub(maxChoosableInteger, desiredTotal, pool, 0, 1);
+}
+
+bool canIWinSub(int max, int target, unsigned int pool, int score, bool player1Turn)
+{
+    if (cache[pool] != -1)
+        return cache[pool];
+
+    int i;
+
+    for (i = max; i >= 1; i--)
+        // If number not taken yet
+        if (pool & (1 << (i - 1)))
+            if (score + i >= target || canIWinSub(max, target, pool ^ (1 << (i - 1)), score + i, !player1Turn) == player1Turn) {
+                return cache[pool] = player1Turn;
+            }
+            
+    return cache[pool] = !player1Turn;
+}

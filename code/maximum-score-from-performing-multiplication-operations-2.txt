@@ -1,0 +1,29 @@
+int memo[1001][1001] = {};
+
+int max(int a, int b) {
+    return a > b ? a : b;
+}
+
+int max_score(int* nums, int nums_size, int first, int* mult, int mult_size, int i) {
+
+    if (first >= nums_size || i >= mult_size)
+        return 0;
+
+    if (memo[i][first] == 0 ) {
+
+        int last = (nums_size - 1) - (i - first);
+        memo[i][first] = max(mult[i] * nums[first] + max_score(nums, nums_size, 1 + first, mult, mult_size, 1 + i),
+                             mult[i] * nums[last]  + max_score(nums, nums_size,     first, mult, mult_size, 1 + i));
+    }
+
+    return memo[i][first];
+}
+    
+int maximumScore(int* nums, int numsSize, int* multipliers, int multipliersSize){
+
+    for (int i = 0; i < 1001; i++) 
+        for (int j = 0; j < 1001; j++)
+            memo[i][j] = 0;
+    
+    return max_score(nums, numsSize, 0, multipliers, multipliersSize, 0);
+}

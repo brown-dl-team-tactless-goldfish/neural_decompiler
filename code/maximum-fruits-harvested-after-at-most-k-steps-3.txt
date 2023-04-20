@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int maxTotalFruits(vector<vector<int>>& F, int S, int k) {
+        int N = F.size(), res = 0, cur = 0;
+        for(int i = 1; i < N; i++) F[i][1] += F[i-1][1];
+        for(int i = 0; i < N; i++) {
+            int f_pos = F[i][0];
+            if(f_pos <= S) {
+                if(S-f_pos > k) continue;
+                int nxt = max(S, 2*f_pos + k - S), l = i, r = N-1;
+                while(l < r) {
+                    int m = l + (r-l+1)/2;
+                    if(F[m][0] > nxt) r = m-1;
+                    else l = m;
+                }
+                cur = F[l][1] - (i > 0 ? F[i-1][1] : 0);
+            } else {
+                if(f_pos-S > k) break;
+                int nxt = min(S, 2*f_pos - k - S), l = 0, r = i;
+                while(l < r) {
+                    int m = l + (r-l)/2;
+                    if(F[m][0] < nxt) l = m+1;
+                    else r = m;
+                }
+                cur = F[i][1] - (l > 0 ? F[l-1][1] : 0);
+            }
+            res = max(res, cur);
+        }
+        return res;
+    }
+};

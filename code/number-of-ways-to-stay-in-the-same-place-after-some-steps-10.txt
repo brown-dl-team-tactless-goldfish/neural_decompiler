@@ -1,0 +1,24 @@
+int len;
+ vector<vector<int>> dp;
+int ways(int steps,int pos){
+    if(steps==pos) return 1;
+    if(steps==pos+1) return 1+pos;
+    
+    if(dp[pos][steps]!=-1) return dp[pos][steps];
+    long ans=ways(steps-1,pos);
+    if(pos>0){
+       ans=(long)ans+ways(steps-1,pos-1);
+     }
+    if(pos<len-1){
+       ans=(long)ans+ways(steps-1,pos+1);
+     }
+    return dp[pos][steps]=ans%1000000007;
+}
+
+
+int numWays(int steps, int arrLen) {
+    len=arrLen;
+    
+    dp.resize(steps/2+1,vector<int>(steps+1,-1));
+     return ways(steps,0);
+ }

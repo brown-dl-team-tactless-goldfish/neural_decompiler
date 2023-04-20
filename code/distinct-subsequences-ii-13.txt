@@ -1,0 +1,38 @@
+    public class Solution
+    {
+        private const int MODULO = 1_000_000_007;
+
+        public int DistinctSubseqII(string s)
+        {
+            checked
+            {
+                long res = 0;
+                long[] dp = new long[s.Length + 1];
+                bool[,] visited = new bool[s.Length + 1, 26];
+
+                dp[0] = 1;
+
+                for (int length = 1; length <= s.Length; length++)
+                {
+                    var j = s[length - 1] - 'a';
+                    
+                    for (int i = 0; i < length; i++)
+                    {
+                        if (!visited[i, j])
+                        {
+                            visited[i, j] = true;
+
+                            dp[length] += dp[i];
+                            res += dp[i];
+
+                            dp[length] %= MODULO;
+                            res %= MODULO;
+                        }
+                    }
+                }
+               
+
+                return (int)res;
+            }
+        }
+    }

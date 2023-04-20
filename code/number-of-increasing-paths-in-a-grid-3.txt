@@ -1,0 +1,31 @@
+#define mod 1000000007
+class Solution {
+public:
+    int countPaths(vector<vector<int>>& grid) {
+        vector<vector<int>> dfsdp(grid.size(), vector<int>(grid[0].size(), -1));
+        long long int ans = 0;
+        
+        for(int i = 0; i < grid.size(); ++ i){
+            for(int j = 0; j < grid[0].size(); ++ j){
+                ans += recur(grid, dfsdp, i, j) % mod;;
+            }
+        }
+
+        return ans % mod;;
+    }
+    
+    int recur(vector<vector<int>>& grid, vector<vector<int>>& dfsdp, int row, int col){
+        // DAG we do not need to color the node first
+        if(dfsdp[row][col] == -1){
+            int a = 0, b = 0, c = 0, d = 0;
+            if(row > 0 && grid[row - 1][col] > grid[row][col]) a = recur(grid, dfsdp, row - 1, col) % mod;
+            if(col > 0 && grid[row][col - 1] > grid[row][col]) b = recur(grid, dfsdp, row, col - 1) % mod;
+            if(row < grid.size() - 1 && grid[row + 1][col] > grid[row][col]) c = recur(grid, dfsdp, row + 1, col) % mod;
+            if(col < grid[0].size() - 1 && grid[row][col + 1] > grid[row][col]) d = recur(grid, dfsdp, row, col + 1) % mod;
+            
+            dfsdp[row][col] = (1 + a + b + c + d) % mod;;
+        }
+        
+        return dfsdp[row][col];
+    }
+};

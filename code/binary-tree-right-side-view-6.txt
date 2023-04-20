@@ -1,0 +1,23 @@
+int traverse(struct TreeNode* root, int level, int* rm){
+    if ( root == NULL )
+        return level;
+    
+	/* Replace the previous value, which is left of the current node.  */
+    rm[level] = root->val;
+    
+    int l = traverse(root->left, level+1, rm);
+    int r = traverse(root->right, level+1, rm);
+    
+	/* Return the deeper level between left and right.  In other words, the
+	 * depths of the tree.  This is only needed for the return size.
+	 */
+    return l>r?l:r;
+}
+
+int* rightSideView(struct TreeNode* root, int* returnSize){
+    int *ret = (int *)malloc( sizeof(int) * 100 );
+    
+    *returnSize = traverse(root,0,ret);
+    
+    return ret;
+}

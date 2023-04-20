@@ -1,0 +1,29 @@
+int cmp(const void *x, const void *y) {
+	return *(int *) x - *(int *) y;
+}
+
+int* findOriginalArray(int* changed, int changedSize, int* returnSize){
+    if(changedSize % 2){*returnSize = 0;return NULL;};
+    int count[200002] = {0};
+    int* ans = (int*)malloc(sizeof(int) * 100000);
+    int ptr = 0;
+    qsort(changed,changedSize,sizeof(int),cmp);
+    for(int i = 0 ; i < changedSize ; i++){
+        count[changed[i]]++;
+    }
+    for(int i = 0 ; i < changedSize ; i++){
+        if(count[changed[i]] < 0){*returnSize = 0;return NULL;}
+        while(count[changed[i]] > 0){
+            count[changed[i]]--;
+            count[2*changed[i]]--;
+            if(count[changed[i]] >= 0){
+                ans[ptr++] = changed[i];
+            }
+            if(count[changed[i]] < 0 || count[2*changed[i]] < 0){*returnSize = 0;return NULL;}
+        }
+        
+    }
+    if(ptr != (changedSize / 2)){*returnSize = 0;return NULL;};
+    *returnSize = ptr;
+    return ans;
+}

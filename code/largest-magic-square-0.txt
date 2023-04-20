@@ -1,0 +1,40 @@
+bool checkmatrix(int **grid, int i,  int j, int matrixSize)//Helper function to check every row sum, column sum and both diagonal sum are equal for a given grid of size matrixSize
+{
+    int *arr=malloc((2+2*matrixSize)*sizeof(int)); //creating an array to store the values of all the row sums, column sums, and diagonal sums
+    for(int k=0;k<2+2*matrixSize;k++)
+    {
+        arr[k]=0; //initialising the array elements to zero, this is done because we later on use += operator which will use previous values of same element.
+    }
+    for(int k=0; k<matrixSize;k++) // loop to store the sums required for us to compare later on
+    {
+        arr[2*matrixSize+1] += grid[i+k][j+k];//first diagonal sum
+        arr[2*matrixSize] += grid[i+k][j+matrixSize-1-k];//second diagonal sum
+        for(int l=0; l<matrixSize;l++)
+        {
+            arr[k]+= grid[i+k][j+l];//row sum
+            arr[matrixSize+k] += grid[i+l][j+k];//column sum
+        }        
+    }
+    for(int k=1;k<2+2*matrixSize;k++) // loop to compare each sum element and to return false if elements are unique.
+    {
+        if(arr[k]!=arr[0]){free(arr);return false;} //when we find sums are not equal, we free the malloc'd array and then return false
+    }
+    free(arr);//when we find sums are equal, we free the malloc'd array and then return true
+    return true;        
+}
+
+int largestMagicSquare(int** grid, int gridSize, int* gridColSize){
+    int max_sq_size = gridSize>=*gridColSize?*gridColSize:gridSize; //for a given grid mxn, max square matrix can be formed by min(m,n) x min(m,n)
+    for(int k = max_sq_size; k>=2; k--)//loop to change the square matrix size from max to lowest (2)
+    {
+        int m = gridSize - k, n = *gridColSize-k; // each (i,j) defined by limits of (m,n) will convey a matrix of size k to the helper function to check the problem condiitons
+        for(int i=0;i<=m;i++)
+        {
+            for(int j=0;j<=n;j++)
+            {
+                if(checkmatrix(grid,i,j,k)){return k;}//if the matrix size of k passed to helper function returns true, then we return that matrix size as answer.
+            }
+        }
+    }
+    return 1; // if none of the matrices in the grid meet the conditions, we return 1, because every 1 x 1 grid is trivially a magic square.
+}

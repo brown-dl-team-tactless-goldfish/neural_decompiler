@@ -1,0 +1,28 @@
+struct myhash{
+    int key;  
+    int count;
+    UT_hash_handle hh;
+};
+long long countBadPairs(int* nums, int numsSize){
+    struct myhash *total = NULL;
+    
+    long long ans = 0;
+    for(int i=numsSize-1;i>=0;i--){
+        int target = nums[i]-i;
+        struct myhash *tmp = NULL;
+        HASH_FIND_INT(total,&target,tmp);
+        
+        if(tmp==NULL){
+            tmp = malloc(sizeof(struct myhash));
+            tmp->key = target;
+            tmp->count = 1;
+            HASH_ADD_INT(total,key,tmp);
+            ans+=numsSize-1-i;
+        }
+        else{
+            ans+=numsSize-1-i-tmp->count;
+            tmp->count+=1;
+        }
+    }
+    return ans;
+}

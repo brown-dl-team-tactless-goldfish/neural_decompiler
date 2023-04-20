@@ -1,0 +1,28 @@
+int unionFind(int* table, int val){
+    if(table[val] == val)
+        return val;
+    else
+        return unionFind(table, table[val]);
+}
+bool equationsPossible(char ** equations, int equationsSize){
+    int* Table = malloc(26 * sizeof(int));
+    for(int i = 0; i < 26; i++){
+        Table[i] = i;
+    }
+
+    for(int i = 0; i < equationsSize; i++){
+        if(equations[i][1] == '=' ){
+            Table[unionFind(Table, equations[i][0] - 'a') ] = unionFind(Table, equations[i][3] - 'a') ;
+        }
+    }
+
+    for(int i = 0; i < equationsSize; i++){
+        if(equations[i][1] == '!' ){
+            int a = unionFind(Table, equations[i][0] - 'a');
+            int b = unionFind(Table, equations[i][3] - 'a');
+            if(a == b)
+                return false;
+        }
+    }
+    return true;
+}

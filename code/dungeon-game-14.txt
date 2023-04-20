@@ -1,0 +1,11 @@
+class Solution:
+    def calculateMinimumHP(self, grid: List[List[int]]) -> int:
+        m, n = len(grid), len(grid[0])
+        dpNeedHP = [[math.inf] * (n+1) for _ in range(m+1)]
+        dpNeedHP[m][n-1] = 1
+        dpNeedHP[m-1][n] = 1
+        for r in range(m-1, -1, -1):
+            for c in range(n-1, -1, -1):
+                need = min(dpNeedHP[r+1][c], dpNeedHP[r][c+1]) - grid[r][c]
+                dpNeedHP[r][c] = 1 if need <= 0 else need
+        return dpNeedHP[0][0]

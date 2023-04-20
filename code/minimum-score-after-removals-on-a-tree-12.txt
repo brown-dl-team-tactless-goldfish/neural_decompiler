@@ -1,0 +1,188 @@
+class Solution {
+public:
+    vector<int>xor_stored;
+    vector<int>vis1;
+    vector<vector<int>>dp;
+
+    vector<int>vis2;
+   void make_parent(int node, int parent, vector<vector<int>>& adj)
+    {
+       
+        dp[parent][node] = true;
+       vis2[node]  = true;
+       for(auto it: adj[node])
+       {
+           if(vis2[it])
+               continue;
+           make_parent(it, parent, adj);
+       }
+    }
+    int find_xor( vector<vector<int>>& adj, int node, vector<int>& nums )
+    {
+        xor_stored[node] = nums[node];
+        vis1[node]  = true;
+        
+        for(auto it: adj[node])
+        {
+            if(vis1[it])
+                continue;
+            vis2.clear();
+            vis2.resize(nums.size(), 0);
+            vis2[node] = 1;
+            make_parent(it, node, adj);
+            
+         
+           int ans =  find_xor(adj, it, nums);
+            xor_stored[node] ^= ans;
+            
+        }
+        return xor_stored[node];
+        
+    }
+    int minimumScore(vector<int>& nums, vector<vector<int>>& edges)
+    {
+       int n  = nums.size();
+        vector<vector<int>>adj(n);
+        for(auto it: edges)
+        {
+            int x  = it[0]; int  y = it[1];
+            adj[x].push_back(y);
+            adj[y].push_back(x);
+        }
+        xor_stored.resize(n,0);
+         dp.resize(n, vector<int>(n,false));
+        vis1.resize(n, 0);
+        int  total=    find_xor(adj, 0 , nums);
+        int an   =INT_MAX;
+        for(int i = 0;i<edges.size();i++)
+        {
+            for(int  j = i+1;j<edges.size();j++)
+            {
+                 int x1  = edges[i][0];
+                 int y1 = edges[i][1];
+                 int x2 = edges[j][0];
+                 int y2 = edges[j][1];
+                
+                int a1, a2, a3;
+                if(dp[x1][y1])
+                {
+                    // x1 is parent of y1
+                    int sub1 = xor_stored[y1];
+                    int  bigger  = total ^ sub1;
+                    
+                    if(dp[x2][y2])
+                    {
+                        // x2 is parent of y2
+                        if(dp[y1][y2])
+                        {
+                              a1  = bigger;
+                            a2 =  xor_stored[y2];
+                             a3= sub1^a2;
+                          
+                        }
+                        else if(dp[y2][y1])
+                        {
+                            
+                             a2 = xor_stored[y2]^sub1;
+                             a1 = bigger^ a2;
+                             a3 = sub1;
+                          
+                          
+                        }
+                        else
+                        {
+                              a1 = bigger^ xor_stored[y2];
+                             a2 = xor_stored[y2];
+                             a3 = sub1;
+                        }
+                    }
+                    else   
+                    {
+                        // y2 is parent of x2
+                         if(dp[y1][x2])
+                        {
+                             a1  = bigger;
+                           a2 =  xor_stored[x2];
+                         a3= sub1^a2;
+                      
+                        }
+                        else if(dp[x2][y1])
+                        {
+                              a2 = xor_stored[x2]^sub1;
+                             a1 = bigger^ a2;
+                             a3 = sub1;
+                        }
+                        else
+                        {
+                             a1 = bigger^ xor_stored[x2];
+                         a2 = xor_stored[x2];
+                             a3 = sub1;
+                        }
+                    }
+                    
+                }
+                else
+                {
+                    // y1 isparent of x1
+                     int sub1 = xor_stored[x1];
+                    int  bigger  = total ^ sub1;
+                    
+                    
+                     if(dp[x2][y2])
+                    {
+                        // x2 is parent of y2
+                        if(dp[x1][y2])
+                        {
+                              a1  = bigger;
+                         a2 =  xor_stored[y2];
+                             a3= sub1^a2;
+                            
+                        }
+                         else if(dp[y2][x1])
+                         {
+                               a2 = xor_stored[y2]^sub1;
+                             a1 = bigger^ a2;
+                             a3 = sub1;
+                         }
+                        else
+                        {
+                          a1 = bigger^ xor_stored[y2];
+                          a2 = xor_stored[y2];
+                            a3 = sub1;
+                            
+                        }
+                    }
+                    else   
+                    {
+                        // y2 is parent of x2
+                         if(dp[x1][x2])
+                        {
+                              a1  = bigger;
+                            a2 =  xor_stored[x2];
+                             a3= sub1^a2;
+                        
+                        }
+                        else if(dp[x2][x1])
+                        {
+                              a2 = xor_stored[x2]^sub1;
+                             a1 = bigger^ a2;
+                             a3 = sub1;
+                        }
+                        else
+                        {
+                             a1 = bigger^ xor_stored[x2];
+                             a2 = xor_stored[x2];
+                             a3 = sub1;
+                        }
+                    }    
+                }
+               
+                   int maa  = max(max(a1,a2), a3);
+                         int mii   = min(min(a1,a2), a3);
+                         an = min(an, (maa-mii)); 
+            }
+        }
+      return an;
+        
+    }
+};

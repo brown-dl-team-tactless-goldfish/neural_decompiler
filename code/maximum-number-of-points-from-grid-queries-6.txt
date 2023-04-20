@@ -1,0 +1,84 @@
+class Solution {
+public:
+    vector<vector<bool>>visited;
+    vector<vector<int> > grid;
+    queue<pair<int,int> > q;
+    int score=0;
+    vector<int> ans;
+    
+    int dx[4] = {-1,0,+1,0};
+    int dy[4] = {0,+1,0,-1};
+    
+    bool isValid(int x , int y){
+        if(x>=0 and y>=0 and x<grid.size() and y<grid[0].size()) return true;
+        return false;
+    }
+      
+    void bfs(int val){
+        queue<pair<int,int> > que;
+        queue<pair<int,int> > temp;
+
+        //filter out blocks which can now start our bfs
+        while(q.size()){
+            auto e = q.front();q.pop();
+            if(grid[e.first][e.second] < val){
+                score++; 
+                que.push(e);
+            }else{
+                temp.push(e);
+            }
+        }
+
+        q=temp;
+        
+        while(que.size()){
+            auto node = que.front();que.pop();
+            int x = node.first , y=node.second;
+            
+            for(int k=0;k<4;k++){
+                //find new coordinates
+                int newX = x + dx[k] , newY = y+dy[k];
+                
+                if(isValid(newX,newY)){
+                    if(visited[newX][newY]) continue;
+                   
+                    if(grid[newX][newY] >= val){
+                        visited[newX][newY]=1;
+                        q.push({newX,newY});
+                    }else{
+                        score++;
+                        visited[newX][newY]=1;
+                        que.push({newX,newY});
+                    }
+                }
+            }
+            
+            
+        }
+        
+    }
+    
+    vector<int> maxPoints(vector<vector<int>>& grid, vector<int>& queries) {
+        int k=queries.size() , n=grid.size() , m=grid[0].size();
+        ans.resize(k); visited.resize(n);
+        for(int i=0;i<n;i++) visited[i].resize(m);
+        this->grid = grid;
+        //for processing queries in sorted order
+        vector<int> sorted(k);
+        iota(sorted.begin(),sorted.end(),0);
+        sort(sorted.begin(),sorted.end(),[&]( int a , int b){
+            return queries[a]<queries[b];
+        });
+        
+        q.push({0,0});
+        visited[0][0]=1;
+        //process queries
+        for(int i=0;i<k;i++){
+            bfs(queries[sorted[i]]);
+            ans[sorted[i]]=score;
+        }
+        
+        return  ans;
+        
+    }
+};

@@ -1,0 +1,86 @@
+    public class Solution
+    {
+        public int MergeStones(int[] stones, int k)
+        {
+            checked
+            {
+                long[,,] dp = new long[stones.Length, stones.Length, stones.Length + 1];
+
+                for (int i = 0; i < stones.Length; i++)
+                {
+                    for (int j = 0; j < stones.Length; j++)
+                    {
+                        for (int l = 0; l <= stones.Length; l++)
+                        {
+                            dp[i, j, l] = int.MaxValue;
+                        }
+                    }
+                }
+
+                long s = 0;
+                long[] sums = new long[stones.Length];
+                for (int i = 0; i < stones.Length; i++)
+                {
+                    s += stones[i];
+                    sums[i] = s;
+                }
+
+                for (int oldLength = 1; oldLength <= stones.Length; oldLength++)
+                {
+                    for (int start = 0; start + oldLength <= stones.Length; start++)
+                    {
+                        int end = start + oldLength - 1;
+
+                        for (int newLength = 1; newLength <= oldLength; newLength++)
+                        {
+                            if (newLength == oldLength)
+                            {
+                                dp[start, end, newLength] = 0;
+                                continue;
+                            }
+
+                            if ((oldLength - newLength) % (k - 1) != 0)
+                            {
+                                continue;
+                            }
+
+                            long wholeSum = sums[end] - (start > 0 ? sums[start - 1] : 0);
+
+                            if (newLength == 1 && oldLength == k)
+                            {
+                                dp[start, end, newLength] = wholeSum;
+                                continue;
+                            }
+
+
+                            if (newLength == 1)
+                            {
+                                for (int i = start; i < end; i++)
+                                {
+                                    for (int j = 1; j <= k; j++)
+                                    {
+                                        dp[start, end, newLength] = Math.Min(dp[start, end, newLength],
+                                            dp[start, i, j] + dp[i + 1, end, k - j] + wholeSum);
+                                    }
+                                }
+                                continue;
+                            }
+
+                            for (int i = start; i < end; i++)
+                            {
+                                for (int j = 1; j < newLength; j++)
+                                {
+                                    dp[start, end, newLength] = Math.Min(dp[start, end, newLength],
+                                        dp[start, i, j] + dp[i + 1, end, newLength - j]);
+                                }
+                            }
+                        }
+
+                    }
+                }
+
+                var res = dp[0, stones.Length - 1, 1];
+                return res >= int.MaxValue ? -1 : (int)res;
+            }
+        }
+    }

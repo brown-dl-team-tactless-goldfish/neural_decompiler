@@ -1,0 +1,80 @@
+/*
+Given an integer k, return the minimum number of Fibonacci numbers whose sum is equal to k. The same Fibonacci number can be used multiple times.
+
+The Fibonacci numbers are defined as:
+
+F1 = 1
+F2 = 1
+Fn = Fn-1 + Fn-2 for n > 2.
+It is guaranteed that for the given constraints we can always find such Fibonacci numbers that sum up to k.
+
+Example 1:
+
+Input: k = 7
+Output: 2
+Explanation: The Fibonacci numbers are: 1, 1, 2, 3, 5, 8, 13, ...
+For k = 7 we can use 2 + 5 = 7.
+Example 2:
+
+Input: k = 10
+Output: 2
+Explanation: For k = 10 we can use 2 + 8 = 10.
+Example 3:
+
+Input: k = 19
+Output: 3
+Explanation: For k = 19 we can use 1 + 5 + 13 = 19.
+
+
+Constraints:
+
+1 <= k <= 10^9
+*/
+
+#define M 50
+
+int findMinFibonacciNumbers(int k){
+    if (k==1)return 1;
+    unsigned int F[M];
+    F[0] = 1;
+    F[1] = 1;
+    int ret = 0;
+    unsigned int closest_num;
+    unsigned int closest_idx;
+    for (int i = 2; i < M; i++){
+        F[i] = F[i-1] + F[i-2];
+        if(F[i]==k){
+            return 1;
+        }else if (F[i]<k){
+            closest_idx = i;
+            closest_num = F[i];
+        } else {
+            break;
+        }
+    }
+
+    k = k - closest_num;
+    ret++;
+    while(k>0){
+        int left = 0;
+        int right = closest_idx;
+        int mid;
+        while(left<right){
+            mid = left/2+right/2+(left%1+right%1)/2;
+            if(F[mid]==k){
+                return ret+1;
+            } else if(F[mid]<k){
+                left = mid + 1;
+            } else {
+                right = mid;
+            }
+        }
+        closest_idx = left-1;
+        closest_num = F[left-1];
+
+        k = k - closest_num;
+        ret++;
+    }
+
+    return -1;
+}

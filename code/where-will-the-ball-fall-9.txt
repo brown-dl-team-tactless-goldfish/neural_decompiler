@@ -1,0 +1,39 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* findBall(int** grid, int gridSize, int* gridColSize, int* returnSize){
+    int i = 0, j = 0;
+    int* output = (int*)malloc(sizeof(int)*gridColSize[0]);
+    int cur_x = 0, cur_y = 0;
+    for (i = 0; i < gridColSize[0]; i++) {
+        output[i] = -1;
+        if (i == 0 && grid[0][i] == -1) {
+            continue;
+        }
+        if (i == gridColSize[0]-1 && grid[0][i] == 1) {
+            continue;
+        }
+        cur_x = i;
+        cur_y = 0;
+        for (j = 0; j < gridSize; j++) {
+            if (grid[j][cur_x] == 1) {
+                if (cur_x+1 == gridColSize[0] || grid[j][cur_x+1] != 1) {
+                    break;
+                }
+                cur_x++;
+            } else {
+                if (cur_x-1 == -1 || grid[j][cur_x-1] != -1) {
+                    break;
+                }
+                cur_x--;
+            }
+        }
+        if (j == gridSize) {
+            output[i] = cur_x;
+        }
+        
+    }
+
+    *returnSize = gridColSize[0];
+    return output;
+}

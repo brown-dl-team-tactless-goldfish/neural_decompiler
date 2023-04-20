@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int minimumTime(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();  
+         if(grid[0][1] > 1 and grid[1][0] > 1){
+            return -1;
+        }
+        vector<vector<int>>dist(m, vector<int>(n, INT_MAX));  
+        int dx[4]={0,0,1,-1};
+        int dy[4]={1,-1,0,0};
+        priority_queue<pair<int,pair<int,int>>,vector<pair<int,pair<int,int>>>, greater<pair<int,pair<int,int>>>>pq;
+        pq.push({0, {0, 0}});
+        dist[0][0] = 0;
+        
+        while (!pq.empty()) {
+            int t=pq.top().first;
+            int r=pq.top().second.first;
+            int c=pq.top().second.second;
+            pq.pop();
+            if(dist[r][c]>t) continue;
+            if (r == m-1 && c == n-1) return t;
+            for (int i = 0; i < 4; i++) {
+                int nr = r + dx[i];
+                int nc = c + dy[i];
+                if (nr >= 0 && nc >= 0 && nr < m && nc < n)
+                {
+                    int ntime = t+1;
+                    if (grid[nr][nc] > t + 1) {
+                        int diff = grid[nr][nc] - (t+1);
+                        if (diff & 1) ++diff;
+                        ntime = t+1+diff;
+                    }
+                    if (ntime < dist[nr][nc]) {
+                        dist[nr][nc] = ntime;
+                        pq.push({ntime,{ nr, nc}});
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+};

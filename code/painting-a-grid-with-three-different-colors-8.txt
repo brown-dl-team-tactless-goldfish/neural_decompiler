@@ -1,0 +1,45 @@
+class Solution {
+public:
+  int colorTheGrid(int m, int n) {
+    vector<int> rep = {1, 2, 4};                   //construct rep
+    int size = 0, newsize = 3;
+    while(--m){
+      for(int i = size; i != newsize; i++){
+        int mask = rep[i]<<3;
+        if( (rep[i] & 1) )      rep.push_back(mask + 2), rep.push_back(mask + 4);
+        else if( (rep[i] & 2) ) rep.push_back(mask + 1), rep.push_back(mask + 4);
+             else               rep.push_back(mask + 1), rep.push_back(mask + 2);
+      }
+      size = newsize;
+      newsize = rep.size();
+    }
+    
+    
+    vector<vector<int>> table(newsize-size);        //construct table for dp
+    
+    for(int i = size, j = 0; i != newsize; i++, j++){
+      for(int ii = size, jj = 0; ii != i; ii++, jj++)
+        if( (rep[i] & rep[ii]) == 0) table[j].push_back(jj);
+      for(int ii = i+ 1, jj = j+1; ii != newsize; ii++, jj++)
+        if( (rep[i] & rep[ii]) == 0) table[j].push_back(jj);
+    }
+      
+    
+    vector<unsigned long long> dp_prev(table.size(), 1), dp_next(table.size());
+    unsigned long long mod = 1000000007, ANS = 0;    
+    
+    while(--n){                                    //dp
+      for(int i = 0; i != table.size(); i++){
+        dp_next[i] = dp_prev[table[i][0]];
+        for(int j = 1; j != table[i].size(); j++)
+          dp_next[i] += dp_prev[table[i][j]];
+        dp_next[i] %= mod;
+      }
+      swap(dp_prev, dp_next); 
+    }
+    
+    for(auto &x: dp_prev) ANS += x;
+     
+    return ANS % mod;
+  }
+};

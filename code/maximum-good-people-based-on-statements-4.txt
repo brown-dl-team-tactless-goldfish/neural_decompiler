@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int maximumGood(vector<vector<int>>& statements) {
+        int N = int(statements.size());
+        int mx = 0;
+        for (int i = 0; i <= (1 << N) - 1; i++) {            
+            bool valid = true;
+            for (int j = 0; j < N && valid; j++) {
+                for (int k = 0; k < N && valid; k++) {
+                    if (i & (1 << j)) {
+                        if (statements[j][k] == 0 && (i & (1 << k)))
+                            valid = false;
+                        if (statements[j][k] == 1 && !(i & (1 << k)))
+                            valid = false;
+                    }
+                }
+            }
+            if (valid)
+                mx = max(mx, __builtin_popcount(i));
+        }
+        return mx;
+    }
+};

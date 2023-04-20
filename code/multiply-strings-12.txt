@@ -1,0 +1,76 @@
+void swap(char *c1, char *c2) {
+    char t = *c1;
+    *c1 = *c2;
+    *c2 = t;
+}
+
+void reverse(char *start) {
+    char *end = start;
+    while (*end)
+        end++;
+    --end;
+    while (start < end)
+        swap(start++, end--);
+}
+
+char *multiply(char *num1, char *num2){
+    reverse(num1); 
+    reverse(num2);
+    
+    char *result = calloc(256, sizeof(char));
+    result[0] = '0';
+    
+    if (strcmp(num1, "0") == 0 || strcmp(num2, "0") == 0)
+        return result;
+    
+    int row_shift = 0;
+    while (*num2) {
+        char row[256] = {0};
+        int pos = 0;
+        while (pos < row_shift)
+            row[pos++] = '0';
+        
+        // Multiply the next digit
+        int n = *num2 - '0';
+        if (n == 0) {
+            goto row_end;
+        }
+        int carry = 0;
+        char *p = num1;
+        while (*p) {
+            int n2 = *p - '0';
+            int val = n * n2 + carry;
+            carry = val / 10;
+            val = val % 10;
+            row[pos++] = (char) (val + '0');
+            p++;            
+        }
+        if (carry)
+            row[pos++] = (char) (carry + '0');
+        
+        // Add the row to the result
+        char *p1 = result;
+        char *p2 = row;
+        carry = 0;
+        while (*p1 || *p2) {
+            int n1 = *p1 ? *p1 - '0' : 0;
+            int n2 = *p2 ? *p2 - '0' : 0;
+            int val = n1 + n2 + carry;
+            carry = val / 10;
+            val = val % 10;
+            *p1 = (char) (val + '0');
+            p1++;
+            if (*p2)
+                p2++;
+        }
+        if (carry)
+            *p1 = (char) (carry + '0');
+        
+row_end:
+        num2++;
+        row_shift++;
+    }
+    
+    reverse(result);
+    return result;
+}

@@ -1,0 +1,48 @@
+using VI = vector<int> ;
+using PIII = pair<int, pair<int, pair<int, int>>> ;
+
+class Solution {
+public:
+    vector<vector<int>> highestRankedKItems(vector<vector<int>>& grid, vector<int>& pricing, vector<int>& start, int k) {
+        int m = grid.size() ;
+        int n = grid[0].size() ;
+        auto visited = vector<vector<bool>>(m, vector<bool>(n, false)) ;
+        auto dir = vector<pair<int, int>>({{1, 0},{-1,0},{0,1},{0,-1}}) ;
+        priority_queue<PIII, vector<PIII>, greater<PIII>> pq ;
+        int x = start[0] ;
+        int y = start[1] ;
+        pq.push({0, {grid[x][y], {x, y}}}) ;
+        vector<vector<int>> ans ;
+        visited[x][y] = true ;
+        while(!pq.empty())
+        {
+            int level = pq.top().first;
+            int price = pq.top().second.first ;
+            int i = pq.top().second.second.first ;
+            int j = pq.top().second.second.second;
+
+            pq.pop() ;
+            if(price >= pricing[0] && price <= pricing[1])
+            {
+                ans.push_back({i, j}) ;
+                if(ans.size() == k)
+                    return ans ;
+            }
+            for(int z = 0; z < 4; z++)
+            {
+                int xx = i + dir[z].first ;
+                int yy = j + dir[z].second ;
+                if(xx < 0 || yy < 0 || xx >= m || yy >= n)
+                    continue ;
+                if(visited[xx][yy])
+                    continue ;
+                if(grid[xx][yy] == 0)
+                    continue ;
+                pq.push({level+1, {grid[xx][yy], {xx, yy}}}) ;
+                visited[xx][yy] = true ;
+            }
+        }
+
+        return ans ;
+    }
+};

@@ -1,0 +1,65 @@
+class Solution {
+public:
+    int minimumOperations(vector<int>& nums) {
+        //a b a b a b a b
+        
+        map<int,int>odd,even;
+        int n=nums.size();
+        if(n==1)
+            return 0;
+        if(n==2)
+            return nums[0]==nums[1]?1:0;
+        
+        int o=0,e=0,who,whe;
+        for(int i=0;i<n;i++)
+        {
+            if(i&1)
+            {
+                o++;
+                odd[nums[i]]++;
+            }
+            else
+            {
+                e++;
+                even[nums[i]]++;
+            }
+        }
+        int modd=0,meven=0;
+        for(auto &x:odd)
+        {
+            if(modd<x.second)
+            {who=x.first;
+             modd=x.second;
+            }
+        }
+        
+         for(auto &x:even)
+        {
+            if(meven<x.second)
+            {whe=x.first;
+             meven=x.second;
+            }
+        }
+        int soddm=0,sevenm=0;
+        for(auto &x:odd)
+        {
+            if(x.first==who)continue;
+            soddm=max(soddm,x.second);
+        }
+         for(auto &x:even)
+        {
+            if(x.first==whe)continue;
+            sevenm=max(sevenm,x.second);
+        }
+       // cout<<modd<<" "<<meven<<" "<<soddm<<" "<<sevenm<<" ";
+        if(who!=whe)
+        {
+           return (o-modd)+(e-meven);  
+        }
+       else
+       {
+          
+           return min((o-modd)+(e-sevenm),(e-meven)+(o-soddm));
+       }
+    }
+};

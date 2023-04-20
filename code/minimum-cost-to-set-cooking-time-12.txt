@@ -1,0 +1,41 @@
+class Solution {
+public:
+    pair<int,int> calCost(int& moveCost, int& pushCost, int startAt, string val) {
+        int cost = 0;
+        for(int i = 0 ; i<val.size(); i++) {
+            int num = val[i]-'0';
+            if (num != startAt) {
+                startAt = num;
+                cost += moveCost;
+            }
+            cost += pushCost;
+        }
+
+        while(val.size() != 4) {
+            val = "0" + val;
+        }
+        int seconds = (val[2] - '0') * 10 + (val[3] - '0')
+            + ((val[0]-'0')*10 + (val[1]-'0')) * 60;
+
+        return {seconds, cost};
+    }
+    void generate(string val, int& startAt, int& moveCost, int& pushCost, int& minCost, int& targetSeconds, int counter = 0) {
+        if(counter == 4) {
+            auto data = calCost(moveCost, pushCost, startAt, val);
+            if (data.first == targetSeconds) {
+                minCost = min(minCost, data.second);
+            }
+            return ;
+        }
+
+        generate(val, startAt, moveCost, pushCost, minCost, targetSeconds, counter + 1);
+        for (int i = 0; i<10; i++) {
+            generate(val + to_string(i), startAt, moveCost, pushCost, minCost, targetSeconds, counter + 1);
+        }
+    }
+    int minCostSetTime(int startAt, int moveCost, int pushCost, int targetSeconds) {
+        int minCost = 1e9 + 7;
+        generate("", startAt, moveCost, pushCost, minCost, targetSeconds);
+        return minCost;
+    }
+};

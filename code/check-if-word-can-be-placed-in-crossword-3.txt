@@ -1,0 +1,56 @@
+class Solution {
+public:
+    int m, n, l;
+    
+    bool placeWordInCrossword(vector<vector<char>>& board, string word) {
+        m = board.size();
+        n = board[0].size();
+        l = word.length();
+        
+        string reversed(word);
+        reverse(reversed.begin(), reversed.end());
+        
+        for(int r=0; r<m; r++)
+        {
+            for(int c=0; c<n; c++)
+            {
+				// this is a valid start point when searching from left to right
+                if(c-1<0 || board[r][c-1]=='#')
+                {
+                    if(dfs(board, word, 0, r, c, 0)
+                      || dfs(board, reversed, 0, r, c, 0))
+                        return true;
+                }
+                
+				// this is a valid start point when searching from top to bottom 
+                if(r-1<0 || board[r-1][c]=='#')
+                {
+                    if(dfs(board, word, 0, r, c, 1)
+                      || dfs(board, reversed, 0, r, c, 1))
+                        return true;
+                }
+            }
+        }
+        
+        return false;
+    }
+    
+    bool dfs(vector<vector<char>>& board, const string& word, int i, int r, int c, int dir)
+    {
+        // search from left to right
+        if(dir==0 && i==l) 
+            return (c==n || board[r][c]=='#');
+        
+        // search from top to bottom
+        if(dir==1 && i==l) 
+            return (r==m || board[r][c]=='#');
+        
+        if(r<0 || r==m || c<0 || c==n || (board[r][c] != ' ' && board[r][c] != word[i])) return false;
+        
+        int _r = r, _c = c;
+        if(dir == 0) _c++;
+        else _r++;
+    
+        return dfs(board, word, i + 1, _r, _c, dir);
+    }
+};

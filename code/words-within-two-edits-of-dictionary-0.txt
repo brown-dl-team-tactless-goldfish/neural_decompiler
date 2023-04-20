@@ -1,0 +1,40 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+#define MAX_LEN 101
+
+bool valid(const char *word1, const char * word2)
+{
+    int n = strlen(word1);
+    int diff = 0;
+
+    for (int i = 0; i < n; i++) {
+        if (word1[i] != word2[i]) {
+            diff++;
+        }
+    }
+    return diff <= 2;
+}
+
+char ** twoEditWords(char ** queries, int queriesSize, char ** dictionary, int dictionarySize, int* returnSize){
+    char **res = (char **)malloc(sizeof(char *) * queriesSize);
+    memset(res, 0, sizeof(char *) * queriesSize);
+    int index = 0;
+
+    for (int i = 0; i < queriesSize; i++) {
+        for (int j = 0; j < dictionarySize; j++) {
+            if (valid(queries[i], dictionary[j])) {
+
+                res[index] = (char *)malloc(sizeof(char) * MAX_LEN);
+                memset(res[index], 0, sizeof(char) * MAX_LEN);
+
+                //     res[index] = queries[i];
+                strcpy(res[index], queries[i]);
+                index++;
+                break;
+            }
+        }
+    }
+    *returnSize = index;
+    return res;
+}

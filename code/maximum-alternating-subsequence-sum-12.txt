@@ -1,0 +1,31 @@
+class Solution {
+public:
+    long long dp[100005][2];
+    
+    long long solve(vector<int>& nums, int idx, int sign){
+         if(idx >= nums.size()) return 0;
+         if(dp[idx][sign] != -1) return dp[idx][sign];
+        
+         long long op1 = LLONG_MIN, op2 = LLONG_MIN;
+         
+         // don't do anything
+        
+         op1 = solve(nums, idx + 1, sign);
+         
+         // include even sum
+         if(sign){
+             op2 = nums[idx] + solve(nums, idx + 1, 0);
+         }
+        // include odd sum
+        else{
+            op2 = -1 * 1LL* nums[idx] + solve(nums, idx + 1, 1);
+        }
+        
+        return dp[idx][sign] = max(op1, op2);
+    }
+    
+    long long maxAlternatingSum(vector<int>& nums) {
+          memset(dp, -1, sizeof(dp));
+          return solve(nums, 0, 1);       
+    }
+};

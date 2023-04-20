@@ -1,0 +1,53 @@
+int consume_hours(int *pile, int length, int k) {
+    int i = 0;
+    int h = 0;
+    while(true) {
+        int bananas = pile[i];
+        // be carefule about the rounding in integers
+        if (bananas % k == 0)
+            h += bananas/k;
+        else
+            h += (bananas/k + 1);
+
+        i++;
+        if (i >= length) break;
+    }
+
+    return h;
+}
+
+
+int min_eating_speed_help(int *piles, int pile_len, int h, int k_start, int k_end) {
+    int result = -1;
+    int k_mid = (k_start + k_end) / 2;
+
+    int consume_h = consume_hours(piles, pile_len, k_mid);
+    // printf("consume hours: %d, %d, {%d, %d}\n", k_mid, consume_h, k_start, k_end);
+
+    if(consume_h <= h) {
+        result = k_mid;
+        // go left
+        if(k_start < k_mid) {
+            int temp = min_eating_speed_help(piles, pile_len, h, k_start, k_mid-1);
+            if(temp != -1) {
+                result = temp;
+            }
+        }
+    }
+    else {
+        // go right
+        if(k_end > k_mid) {
+            int temp = min_eating_speed_help(piles, pile_len, h, k_mid+1, k_end);
+            if(temp != -1) {
+                result = temp;
+            }
+        }
+    }
+    
+
+    return result;
+}
+
+int minEatingSpeed(int *piles, int pilesSize, int h) {
+    return min_eating_speed_help(piles, pilesSize, h, 1, 1000000000);
+}

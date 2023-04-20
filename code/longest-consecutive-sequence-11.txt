@@ -1,0 +1,36 @@
+int longestConsecutive(int* nums, int numsSize) {
+    if(numsSize<=1) return numsSize;
+    int gap=0;
+    int i,j;
+    for(gap=numsSize/2;gap>=1;gap=gap/2){
+        for(i=gap;i<numsSize;i++){
+            for(j=i-gap;j>=0&&nums[j]>nums[j+gap];j=j-gap){
+                int temp=nums[j];
+                nums[j]=nums[j+gap];
+                nums[j+gap]=temp;
+            }
+        }
+    }
+    int temp;
+    int ret=1;
+    i=1;
+    while(i<numsSize){
+        temp=1;
+        if(nums[i]-nums[i-1]==1){
+        while((nums[i]-nums[i-1]==1||nums[i]-nums[i-1]==0)&&i<numsSize) 
+        {
+            if(nums[i]-nums[i-1]==1) temp++;
+            i++;
+        }
+        }else if(nums[i]-nums[i-1]==-1){
+        while((nums[i]-nums[i-1]==-1||nums[i]-nums[i-1]==0)&&i<numsSize)
+        {
+            if(nums[i]-nums[i-1]==-1) temp++;
+            i++;
+        }
+        }
+        if(temp>ret) ret=temp;
+        i++;
+    }
+    return ret;
+}

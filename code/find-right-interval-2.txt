@@ -1,0 +1,44 @@
+int cmp ( const void *pa, const void *pb ) {
+    const int *a = *(const int **)pa;
+    const int *b = *(const int **)pb;
+    if(a[0] == b[0])
+        return a[1] - b[1];
+    else
+        return a[0] - b[0];
+}
+
+int* findRightInterval(int** intervals, int intervalsSize, int* intervalsColSize, int* returnSize){
+    int** p = (int**)calloc(intervalsSize + 1, sizeof(int*));
+    int* ans = (int*)calloc(intervalsSize, sizeof(int));
+    *returnSize = intervalsSize;
+    for(int i = 0; i < intervalsSize; i++){
+        p[i] = (int*)calloc(3, sizeof(int));
+        memcpy(p[i], intervals[i], sizeof(int) * 2);
+        p[i][2] = i; /* for saving index */
+    }
+    p[intervalsSize] = (int*)calloc(3, sizeof(int));
+    p[intervalsSize][0] = INT_MAX;
+    qsort(p, intervalsSize, sizeof(int*), cmp);
+    
+    for(int i = 0; i < intervalsSize; i++){
+        if(p[i][0] == p[i][1]){
+            ans[p[i][2]] = p[i][2];
+            free(p[i]);
+            continue;
+        }
+        int l = i, r = intervalsSize, m;
+        while(l < r){
+            m = l + ((r - l) >> 1);
+            if(p[m][0] < p[i][1])
+                l = m + 1;
+            else
+                r = m;
+        }
+  
+        ans[p[i][2]] = (l == i || l == intervalsSize)? -1: p[l][2];
+        free(p[i]);
+    }
+    free(p[intervalsSize]);
+    free(p);
+    return ans;    
+}

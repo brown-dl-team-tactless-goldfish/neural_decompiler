@@ -1,0 +1,49 @@
+class Solution {
+public:
+    long long minSumSquareDiff(vector<int>& nums1, vector<int>& nums2, int k1, int k2) {
+        
+        long long a = 0;
+        map<long long, int> d;       
+        for(int i = 0; i < nums1.size(); i++){
+            int c = -1*abs(nums1[i] - nums2[i]);
+            d[c] = d[c] + 1;
+        }
+        pair<int,int> p = *(d.begin());
+        d.erase(d.begin());
+        int c = 0;
+        while(c < k1+k2 && d.size() > 0){
+            auto it = d.begin();
+            if((it->first - p.first)*p.second > k1+k2 - c){
+                int a = (k1+k2 - c)/p.second;
+                int b = (k1+k2 - c)%p.second;
+                d[p.first+a] = d[p.first+a] + p.second - b;
+                d[p.first+a+1] = d[p.first+a+1] + b;
+                p = *it;
+                d.erase(it);
+                c = k1+k2;
+                break;
+            }
+            c = c + (it->first - p.first)*p.second;
+            it->second = it->second + p.second;
+            p = *it;
+            d.erase(it);
+        }
+        
+        if(k1+k2 - c > 0){
+           if(-1*p.first*p.second > k1+k2-c){
+                int a = (k1+k2 - c)/p.second;
+                int b = (k1+k2 - c)%p.second;
+                d[p.first+a] = d[p.first+a] + p.second - b;
+                d[p.first+a+1] = d[p.first+a+1] + b;
+            }
+            p = make_pair(0,0);
+        }
+       
+        
+        for(auto it: d){
+            a = a + (long long) pow(it.first, 2) * (long long) it.second;
+        }
+        a = a + (long long) pow(p.first, 2) * (long long) p.second;
+        return a;
+    }
+};

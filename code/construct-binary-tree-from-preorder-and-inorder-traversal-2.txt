@@ -1,0 +1,17 @@
+struct TreeNode* dfs(int * preorder, int * inorder, int startPre, int startIn, int len)
+{
+    if(len <= 0) return NULL;
+    struct TreeNode* result = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    result->val = preorder[startPre];
+    int i = 0;
+    for(i = 0; i < startIn + len; i++)
+        if(inorder[i] == preorder[startPre])
+            break;
+    result->left = dfs(preorder, inorder, startPre + 1, startIn, i - startIn);
+    result->right = dfs(preorder, inorder, startPre + i - startIn + 1, i + 1, len - (i - startIn + 1));
+    return result;
+}
+
+struct TreeNode* buildTree(int* preorder, int preorderSize, int* inorder, int inorderSize){
+    return dfs(preorder, inorder, 0, 0, preorderSize);
+}

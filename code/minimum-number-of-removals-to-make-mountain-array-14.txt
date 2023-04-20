@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int minimumMountainRemovals(vector<int>& nums) {
+        vector<int> dp1(nums.size(),1),dp2(nums.size(),1);
+        
+        for(int i = 1; i < dp1.size(); ++i){
+            for(int j = i - 1; j >= 0; j--){
+                if(nums[i] > nums[j]){
+                    dp1[i] = max(dp1[i],dp1[j] + 1);
+                }
+            }
+        }
+        
+        for(int i = dp2.size() - 2; i >= 0; --i){
+            for(int j = i + 1; j < dp2.size(); j++){
+                if(nums[i] > nums[j]){
+                    dp2[i] = max(dp2[i],dp2[j] + 1);
+                }
+            }
+        }
+        
+        int maxToKeep = INT_MIN;
+        
+        for(int i = 0; i < dp1.size(); ++i){
+            if(dp1[i] > 1 && dp2[i] > 1){
+                maxToKeep = max(maxToKeep, dp1[i] + dp2[i] - 1);
+            }
+        }
+        
+        return nums.size() - maxToKeep;
+    }
+};

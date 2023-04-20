@@ -1,0 +1,50 @@
+class Solution {
+public:
+    
+    vector<int> coordinateCompression(const vector<int>& a){
+        int n = a.size();
+        vector<pair<int, int>> p;
+
+        for(int i=0; i<n; i++)
+            p.push_back({a[i], i});
+
+        sort(p.begin(), p.end());
+
+        vector<int> ret(n);
+        for(int i=1, r=0; i<n; i++)
+            ret[p[i].second] = p[i-1].first < p[i].first ? ++r : r;
+        return ret;
+    }
+    
+    vector<int> fallingSquares(vector<pair<int, int>>& a) {
+        int n = a.size();
+        
+        vector<int> f;
+        for(int i=0; i<n; i++)
+            f.push_back(a[i].first);
+        
+        vector<int> cc = coordinateCompression(f);
+
+        int uniq = *max_element(cc.begin(),cc.end());
+        
+        vector<int> rev(uniq+1);
+        for(int i=0; i<n; i++)
+            rev[cc[i]] = f[i];
+        
+        vector<int> hgt(uniq+1), ret;
+        
+        for(int i=0; i<n; i++){
+            int gain = a[i].second, excl = a[i].first + a[i].second, peak = 0;
+            
+            for(int x = cc[i]; x <= uniq && rev[x] < excl; x++)
+                peak = max(peak, hgt[x] + gain);
+            
+            for(int x = cc[i]; x <= uniq && rev[x] < excl; x++)
+                hgt[x] = peak;
+            
+            ret.push_back(ret.size() ? max(ret[ret.size()-1], peak) : peak);
+        }
+        
+        return ret;
+    }
+};

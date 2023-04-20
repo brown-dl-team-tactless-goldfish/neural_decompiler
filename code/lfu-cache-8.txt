@@ -1,0 +1,77 @@
+public class LFUCache {
+
+    Dictionary<int, int> dataDict = null;
+    Dictionary<int, int> dataCount = null;
+    Dictionary<int, HashSet<int>> dataLink = null;
+    Dictionary<int, long> dataRecent = null;
+    int _capacity = Int32.MinValue;
+    
+    public LFUCache(int capacity) {
+        _capacity = capacity;
+        dataDict = new Dictionary<int,int>();
+        dataCount = new Dictionary<int,int>();
+        dataLink = new Dictionary<int, HashSet<int>>();
+        dataRecent = new Dictionary<int, long>();
+    }
+    
+    public int Get(int key) {
+        
+        if(!dataDict.ContainsKey(key)){
+            return -1;
+        }
+        
+        var count = dataCount[key];
+        dataCount[key] = count +1;
+        dataRecent[key] = DateTime.UtcNow.Ticks;
+        if(dataLink.ContainsKey(count)){
+            dataLink[count].Remove(key);
+            if(dataLink[count].Count == 0)
+                dataLink.Remove(count);
+        }
+        
+        if(!dataLink.ContainsKey(count+1))
+            dataLink.Add(count+1, new HashSet<int>());
+        dataLink[count+1].Add(key);
+        
+        return dataDict[key];        
+    }
+    
+    public void Put(int key, int value) {
+        
+        if(_capacity == 0){
+            return;
+        }
+        
+        if(dataDict.ContainsKey(key)){
+            dataDict[key] = value;
+            Get(key);
+            return;
+        }
+        
+        if(dataDict.Count == _capacity){
+            var c = dataLink.Keys.Min();
+            var k = dataLink[c];
+            int keyToRemove = Int32.MinValue;
+            long recentUsed = long.MaxValue;
+            foreach(var item in k){
+                if(dataRecent[item] < recentUsed){
+                    keyToRemove = item;
+                    recentUsed = dataRecent[item];
+                }
+            }
+            dataDict.Remove(keyToRemove);
+            dataCount.Remove(keyToRemove);
+            dataLink[c].Remove(keyToRemove);
+            dataRecent.Remove(keyToRemove);
+            if(dataLink[c].Count==0)
+                dataLink.Remove(c);
+        }
+        dataDict.Add(key,value);
+        dataCount.Add(key,1);
+        dataRecent.Add(key, DateTime.UtcNow.Ticks);
+        if(!dataLink.ContainsKey(1))
+            dataLink.Add(1, new HashSet<int>());
+        
+        dataLink[1].Add(key);       
+    }
+}

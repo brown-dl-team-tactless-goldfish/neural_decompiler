@@ -1,0 +1,58 @@
+class Solution {
+public:
+    #define ll long long int 
+    bool solve(ll mid , vector<int>&s){
+        int n = s.size();
+        vector<bool>vis(n,false);
+        int prev =-1 ,    start = 0 ; 
+        for(int i = 1; i < n ; i++){
+           
+            if(s[i]-s[start] > mid){
+                if(prev != -1){
+                   
+                   start = prev ; 
+                    prev=-1;
+                    vis[start] = true;
+                    i--;
+                }
+                else return false;
+            }
+            else prev = i ; 
+        }
+     
+        prev=-1; start=n-1;
+        
+        for(int i = n-2; i >=0 ; i--){
+            if(vis[i] == false){
+            if(s[start]-s[i] > mid){
+                if(prev !=-1){
+                   
+                   start=prev ; 
+                    prev=-1;
+                    vis[start]=true;
+                    i++;
+                }
+                else return false;
+            }
+            else prev=i;
+        }
+        }
+        return true; 
+    }
+    int maxJump(vector<int>& s) {
+        int n = s.size();
+        ll l=0,h=s[n-1];
+        ll ans=-1 ; 
+       
+        while(l<=h){
+            ll mid = l +(h-l)/2 ; 
+            if(solve(mid,s)){
+                ans=mid;
+                h=mid-1;
+            }
+            else l=mid+1;
+        }
+        
+        return ans ; 
+    }
+};

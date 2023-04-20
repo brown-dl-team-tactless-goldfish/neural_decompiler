@@ -1,0 +1,31 @@
+static int c(const int *a , const int *b)
+{
+  return ( *a - *b);
+}
+
+int bin(int* p , int pS, double v )
+{
+    int x = 0, y = pS - 1;
+    if( v > p[y]){ return x;}
+    if( v <= p[x]){ return y+1;}
+    while( x < y)
+    {
+     int mid = x + ((y-x)>>1);
+     if ( p[mid] >= v ){ y = mid; }
+     else{ x = mid + 1; }
+    }
+    return ( pS - x );
+}
+
+int* successfulPairs(int* spells, int spellsSize, int* potions, int potionsSize, long long success, int* returnSize)
+{   
+    *returnSize = 0;
+    qsort( potions , potionsSize , sizeof(int) , c );
+    int * a = (int *)calloc( spellsSize, sizeof(int));
+        for( int j = 0 ; j < spellsSize ; j++ )
+        {   
+          double x = success / (double) spells[j];
+        a[(*returnSize)++] = bin( potions, potionsSize, x );
+        }
+  return a;
+}

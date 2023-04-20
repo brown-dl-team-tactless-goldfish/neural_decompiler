@@ -1,0 +1,39 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int find(int *pmap,int i)
+{
+ if (pmap[i] == 0)
+        return i;
+    return find(pmap, pmap[i]);
+
+}
+int* findRedundantConnection(int** edges, int edgesRowSize, int edgesColSize, int* returnSize) 
+{
+    int *pmap=(int *)calloc(edgesRowSize+1,sizeof(int));
+   
+    int *res=NULL;
+    *returnSize=0;
+    for(int i=0;i<edgesRowSize;i++)
+    {
+        for(int j=0;j<edgesColSize-1;j++)
+        {
+            int x=find(pmap,edges[i][j]);
+            int y=find(pmap,edges[i][j+1]);
+            if(x==y)
+            {
+                res=(int *)calloc(2,sizeof(int));
+                res[0]=edges[i][j];
+                res[1]=edges[i][j+1];
+                *returnSize=2;
+                return res;
+            }
+            else
+            {
+                pmap[x]=y;
+            }
+        }       
+    }
+    return res;
+}

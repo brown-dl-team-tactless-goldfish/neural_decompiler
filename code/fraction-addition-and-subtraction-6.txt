@@ -1,0 +1,47 @@
+class Solution {
+public:
+    
+    int gcd(int a,int b){return b == 0 ? a : gcd(b,a%b);}
+    
+    string fractionAddition(string expression) {
+        
+        vector<int> n,d;
+        int sgn = 1;
+        string s = "";
+        for(char c:expression){
+            if(c == '-' or c == '+'){
+                sgn = c == '-' ? -1:1;
+                if(s!=""){
+                    d.push_back(stoi(s));
+                    s = "";
+                }
+            }
+            else if(c=='/'){
+                int tmp = sgn*stoi(s);
+                s = "";
+                n.push_back(tmp);
+            }
+            else s += c;
+        }
+        if(s!="") d.push_back(stoi(s));
+        
+        
+        long long N = n[0],D = d[0];
+        for(int i=1;i<n.size();i++){
+            N = N*d[i] + D*n[i];
+            D = d[i]*D;
+            int G = gcd(N,D);
+            N /= G;
+            D /= G;
+        }
+        int s1 = N >= 0 ? 1 : -1;
+        int s2 = D >= 0 ? 1 : -1;
+        D = abs(D);
+        N = s1*s2*abs(N);
+        string nn = to_string(N);
+        string dd = to_string(D);
+        return nn + "/" + dd;
+    }
+};
+
+``

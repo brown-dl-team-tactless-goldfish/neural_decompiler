@@ -1,0 +1,92 @@
+public class Solution {
+    public IList<IList<int>> CriticalConnections(int n, IList<IList<int>> C) {
+        var res = new List<IList<int>>();
+        if (C == null || C.Count == 0 || n == 0) return res;
+        
+        var a_list = new Dictionary<int, HashSet<int>>();
+        for (int i = 0; i < n; i++) a_list[i] = new HashSet<int>();
+        foreach (var c in C) { a_list[c[0]].Add(c[1]); a_list[c[1]].Add(c[0]); }
+        
+        var val = new int[n];
+        void dfs(int node, int r, int parent) {
+            val[node] = r;
+            foreach (var adj in a_list[node]) {
+                if (adj == parent) continue; // shouldn't go back
+                if (val[adj] == 0) dfs(adj, r + 1, node);
+                val[node] = Math.Min(val[node], val[adj]);                
+                if (val[adj] > r) res.Add(new List<int> { adj, node });
+            }
+        }
+        
+        dfs(0, 1, -1); // assuming a fully connected graph
+        return res;
+    }
+    
+    public IList<IList<int>> CriticalConnectionsBFS(int n, IList<IList<int>> C) {
+        var res = new List<IList<int>>();
+        if (C == null || C.Count == 0 || n == 0) return res;
+        
+        var a_list = new Dictionary<int, HashSet<int>>();
+        for (int i = 0; i < n; i++) a_list[i] = new HashSet<int>();
+        foreach (var c in C) { a_list[c[0]].Add(c[1]); a_list[c[1]].Add(c[0]); }
+        
+        for (int i = 0; i < C.Count; i++) {
+            a_list[C[i][0]].Remove(C[i][1]);
+            a_list[C[i][1]].Remove(C[i][0]);
+            
+            bool disjointed = true;
+            var q = new Queue<int>();
+            var visited = new bool[n];
+
+            q.Enqueue(C[i][0]);
+            while (q.Count > 0) {
+                var node = q.Dequeue();
+                visited[node] = true;
+                foreach (var adj in a_list[node]) {
+                    if (adj == C[i][1]) { disjointed = false; break; }
+                    if (!visited[adj]) q.Enqueue(adj);
+                }
+            }
+            
+            if (disjointed) res.Add(new List<int> { C[i][0], C[i][1] });
+            else {
+                a_list[C[i][0]].Add(C[i][1]);
+                a_list[C[i][1]].Add(C[i][0]);
+            }
+        }
+        
+        return res;
+    }
+
+    
+    public IList<IList<int>> CriticalConnectionsDFS(int n, IList<IList<int>> C) {
+        var res = new List<IList<int>>();
+        if (C == null || C.Count == 0 || n == 0) return res;
+        
+        var a_list = new Dictionary<int, HashSet<int>>();
+        for (int i = 0; i < n; i++) a_list[i] = new HashSet<int>();
+        foreach (var c in C) { a_list[c[0]].Add(c[1]); a_list[c[1]].Add(c[0]); }
+        
+        bool[] visited;
+        bool search_for(int node, int target) {
+            visited[node] = true;
+            if (node == target) return true;
+            foreach (var adj in a_list[node]) if (!visited[adj] && search_for(adj, target)) return true;
+            return false;
+        }
+        
+        for (int i = 0; i < C.Count; i++) {
+            visited = new bool[n];
+            a_list[C[i][0]].Remove(C[i][1]);
+            a_list[C[i][1]].Remove(C[i][0]);
+            
+            if (!search_for(C[i][0], C[i][1])) res.Add(new List<int> { C[i][0], C[i][1] });
+            else {
+                a_list[C[i][0]].Add(C[i][1]);
+                a_list[C[i][1]].Add(C[i][0]);
+            }
+        }
+        
+        return res;
+    }
+}

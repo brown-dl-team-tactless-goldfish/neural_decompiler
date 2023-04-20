@@ -1,0 +1,68 @@
+
+inline int min(int a, int b) 
+{
+   return (a > b)?b:a;
+}
+
+void CharCounter(char* string, int* CounterArray)
+{
+    int index = 0;
+    
+    for(index=0; index<strlen(string); index++)
+        CounterArray[string[index]-'a']++;
+}
+
+void CharCounterClear(int* CounterArray, int ArraySize)
+{
+    int index = 0;
+    
+    for(index=0; index<ArraySize; index++)
+        CounterArray[index] = 0;
+}
+
+char** commonChars(char** A, int ASize, int* returnSize) {
+    
+    int CounterArraySize = 26;
+    int AIndex = 0, CharIndex = 0;
+    int returnArraySize = 0;
+    int Counter_A[26]={0}, Counter_B[26]={0};
+    
+    //CharCounter
+    CharCounter(A[0], Counter_A);
+    
+    //initial "returned array"
+    char **returnArr = (char**) calloc(100, sizeof(char*));
+    for ( int i = 0; i < 100; i++ )
+        returnArr[i] = (char*) calloc(2, sizeof(char));
+    
+    //
+    for(AIndex=1; AIndex<ASize; AIndex++)
+    {
+        CharCounterClear(Counter_B, CounterArraySize);
+        CharCounter(A[AIndex], Counter_B);    
+        
+        for(CharIndex=0; CharIndex<CounterArraySize; CharIndex++)
+            Counter_A[CharIndex]=min(Counter_A[CharIndex], Counter_B[CharIndex]);
+    }
+    
+    //caculate numbers and add char to returnArr
+    for(CharIndex=0; CharIndex<CounterArraySize; CharIndex++)
+    {
+        int nCounter=0;
+        
+        for(nCounter=0; nCounter<Counter_A[CharIndex]; nCounter++)
+        {
+            char c[2];
+            
+            c[0]= CharIndex+'a';
+            c[1]= '\0';
+            
+            strcpy(returnArr[returnArraySize], c);
+            returnArraySize++;
+        }
+    }
+    
+    *returnSize = returnArraySize;
+    
+    return returnArr;
+}

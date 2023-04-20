@@ -1,0 +1,83 @@
+int cmpfunc(const void* a, const void* b){
+    return *(int*)b - *(int*)a;
+}
+void swap(double* a, double* b){
+    double k = *a;
+    *a = *b;
+    *b = k;
+}
+double heakpPop(double* heap, int n){
+    double ans = heap[0];
+    heap[0] = heap[n-1];
+    int p = 0;
+    while((2*p+1) < n){
+        if(2*p + 2 < n){
+            if(heap[2*p + 1] >= heap[2*p + 2]){
+                if(heap[2*p + 1] > heap[p]){
+                    swap(&heap[2*p + 1] , &heap[p]);
+                    p = 2*p + 1;
+                }
+                else
+                    break;
+            }
+            else{
+                if(heap[2*p + 2] > heap[p]){
+                    swap(&heap[2*p + 2] , &heap[p]);
+                    p = 2*p + 2;
+                }
+                else
+                    break;
+            }
+        }
+        else if(2*p + 1 < n){
+            if(heap[2*p + 1] > heap[p]){
+                swap(&heap[2*p + 1] , &heap[p]);
+                p = 2*p + 1;                
+            } 
+            else
+                break;
+        }
+    }
+    return ans;
+}
+
+void heapInsert(double* heap, int n, double val){
+    heap[n-1] = val;
+    int p = n-1;
+    while(p > 0){
+        int ptr = (p-1)/2;
+        if(heap[ptr] < heap[p]){
+            swap(&heap[ptr] , &heap[p]);
+            p = ptr;
+        }
+        else
+            break;
+    }
+}
+int halveArray(int* nums, int numsSize){
+    int n = numsSize;
+    qsort(nums, n ,  sizeof(int), cmpfunc);
+    double* heap = malloc(n * sizeof(double));
+    for(int i = 0; i < n; i++){
+        heap[i] = nums[i];
+    }
+    long long sum = 0;
+    for(int i = 0; i < n; i++){
+        sum += nums[i];
+    }
+    double target = (double)sum/2;
+    int step = 0;
+    double val = 0;
+    while(val < target ){
+        double  a = heakpPop(heap, n);
+        double  b = heap[0];
+        while(a >= b && val < target){
+            val += a/2;
+            a /= 2;
+            step++;
+        }
+        heapInsert(heap, n, a);    
+    }
+
+    return step;
+}

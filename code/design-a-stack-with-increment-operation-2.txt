@@ -1,0 +1,33 @@
+typedef struct {
+    int* s;
+    int size;
+    int sIdx;
+} CustomStack;
+
+#define MIN(a,b) (a<b?a:b)
+CustomStack* customStackCreate(int maxSize) {
+    CustomStack* obj = (CustomStack*)calloc(1, sizeof(CustomStack));
+    obj->size = maxSize;
+    obj->sIdx = -1;
+    obj->s = (int*)calloc(maxSize, sizeof(int));
+    return obj;
+}
+
+void customStackPush(CustomStack* obj, int x) {
+    if(obj->sIdx < (obj->size - 1))
+        obj->s[++obj->sIdx] = x;
+}
+
+int customStackPop(CustomStack* obj) {
+    return (obj->sIdx == -1)? -1 : obj->s[obj->sIdx--];
+}
+
+void customStackIncrement(CustomStack* obj, int k, int val) {
+    for(int i = MIN(obj->sIdx, k-1); i >= 0; i--)
+        obj->s[i] += val;
+}
+
+void customStackFree(CustomStack* obj) {
+    free(obj->s);
+    free(obj);
+}

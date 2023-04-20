@@ -1,0 +1,65 @@
+class Solution:
+    def longestCommonSubpath(self, n, paths):
+        def merge(l):
+            ls = sorted(list(set(l)))
+            index = {v: i for i, v in enumerate(ls)}
+            return [index[v] for v in l]
+
+        def suffixArray(s):
+            line = merge(s)
+            n, k, ans = len(s), 1, [line]
+            while max(line) < n - 1:
+                line = merge([a * (n + 1) + b + 1 for (a, b) in
+                     zip_longest(line, islice(line, k, None), fillvalue = -1)])
+                ans, k = ans + [line], k << 1
+            return ans
+        
+        def compare(i, j, l, k):
+            k1 = min(k, len(c) - 1)
+            a = (c[k1][i], c[k1][(i+l-(1<<k))%n])
+            b = (c[k1][j], c[k1][(j+l-(1<<k))%n])
+            return 0 if a == b else 1 if a < b else -1
+        
+        nums, prs = [], []
+        for i, p in enumerate(paths):
+            nums.extend(p)
+            nums.append(-1-i)
+            prs.extend([i+1]*len(p))
+            prs.append(-1-i)
+        nums += [-float("inf")]
+        
+        n, m = len(nums), len(paths)
+        
+        c = suffixArray(nums)
+        sa = [0]*(n+1)
+        for i, k in enumerate(c[-1]):
+            sa[k] = i
+            
+        parts = {j:i for i,j in zip(prs, range(n-1))}
+                
+        beg, end = 0, min(len(p) for p in paths) + 1
+        
+        while beg + 1 < end:
+            mid = (beg + end)//2
+            mid_log, a = floor(log2(mid)), 0
+
+            groups = defaultdict(list)
+            for i in range(1, n):
+                q = compare(sa[i-1], sa[i], mid, mid_log)
+                a += q
+                groups[a].append(sa[i])
+
+            Found = False
+
+            for gr in groups.values():
+                if len(gr) < m: continue
+                if len(set(parts[ind] for ind in gr)) == m:
+                    Found = True
+                    break
+                    
+            if Found :
+                beg = mid
+            else:
+                end = mid
+
+        return beg

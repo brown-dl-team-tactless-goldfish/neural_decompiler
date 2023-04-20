@@ -1,0 +1,90 @@
+#define SSIZE 24
+
+static int *intStack;
+static int stackSize;
+static int stackTop;
+
+int createStack(void) {
+    stackTop = -1;
+    stackSize = SSIZE;
+    intStack = (int *)malloc(sizeof(int)*stackSize);
+    if(intStack == NULL) return 0;
+    
+    return 1;
+}
+
+inline int pushStack(int val) {
+    stackTop++;
+    if(stackTop >= stackSize) {
+        stackSize *= 2;
+        intStack = (int *)realloc(intStack, sizeof(int)*stackSize);
+        if(intStack == NULL) return 0;
+    }
+    intStack[stackTop] = val;
+    
+    return 1;
+}
+
+inline int popStack(void) {
+    int val;
+    
+    val = intStack[stackTop];
+    stackTop--;
+    return val;
+}
+
+inline int peekStack(void) {
+    return intStack[stackTop];
+}
+
+inline int isEmptyStack(void) {
+    if(stackTop == -1) return 1;
+    
+    return 0;
+}
+
+inline int countStack(void) {
+    return stackTop + 1;
+    
+    return 0;
+}
+
+char * convertToBase7(int num){
+    register int i, m, n;
+    char *ret;
+    int sign = 1;
+    int digit;
+    
+    createStack();
+
+    if(num < 0) {
+        sign = -1;
+        num = - num; // didn't consider INT_MIN
+    }
+
+    m = num;
+    while(m) {
+        digit = m%7;
+        m = m/7;
+
+        pushStack(digit + '0');
+    }
+    
+    if(num == 0) {
+        pushStack('0');   // if num is zero, push '0'
+    } else if(sign < 0) { // if there is sign, then it cannot be zero
+        pushStack('-');
+    }
+
+    n = countStack();
+    ret = (char *)malloc(sizeof(char)*(n+1));
+    ret[n] = '\0';
+    
+    i = 0;
+    while(isEmptyStack() == 0) {
+        digit = popStack();
+        ret[i++] = digit;
+    }
+    
+    return ret;
+}

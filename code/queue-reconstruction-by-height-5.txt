@@ -1,0 +1,31 @@
+int sortFunc(void * a, void * b) {
+    if ((*((int**)a))[0] == (*((int**)b))[0]) {
+        return (*((int**)a))[1] - (*((int**)b))[1];
+    }
+    return (*((int**)b))[0] - (*((int**)a))[0];
+}
+
+int** reconstructQueue(int** people, int peopleSize, int* peopleColSize, int* returnSize, int** returnColumnSizes){
+    
+	qsort(people, peopleSize, sizeof(int*), sortFunc);
+    
+    *returnSize = peopleSize;
+    *returnColumnSizes = (int*)malloc(peopleSize*sizeof(int));
+    
+    int ** ans = (int**)malloc(peopleSize * sizeof(int*));
+    
+    for (int i = 0; i < peopleSize; i++) {
+        (*returnColumnSizes)[i] = 2;
+        ans[i] = (int*)malloc(2 * sizeof(int));
+        
+        for (int j = i; j > people[i][1]; j--) {
+            ans[j][0] = ans[j-1][0];
+            ans[j][1] = ans[j-1][1];
+        }
+        ans[people[i][1]][0] = people[i][0];
+        ans[people[i][1]][1] = people[i][1];
+    }
+    
+    
+    return ans;
+}

@@ -1,0 +1,20 @@
+class Solution {
+    int dfs(int i, char last, int n, string &s, int k, vector<vector<int>> &dp) {
+        if(i == n) return 0;
+        if(last != '#' && dp[i][last - 'a'] != -1) return dp[i][last - 'a'];
+
+        int notPick = dfs(i + 1, last, n, s, k, dp), pick = 0;
+        if(last == '#') pick = 1 + dfs(i + 1, s[i], n, s, k, dp);
+        else pick = abs(last - s[i]) <= k ? 1 + dfs(i + 1, s[i], n, s, k, dp) : 0;
+        
+        if(last != '#') dp[i][last - 'a'] = max(pick, notPick);
+        return max(pick, notPick);
+    }
+public:
+    int longestIdealString(string s, int k) {
+        int n = s.size();
+        vector<vector<int>> dp(n, vector<int>(26, -1));
+
+        return dfs(0, '#', n, s, k, dp);
+    }
+};

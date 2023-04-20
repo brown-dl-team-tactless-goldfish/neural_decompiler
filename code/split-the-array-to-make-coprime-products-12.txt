@@ -1,0 +1,71 @@
+class Solution {
+public:
+    int findValidSplit(vector<int>& nums) {
+        const auto size = nums.size();
+        vector<unordered_map<int, int>> factors(size);
+        for (auto i = 0; i < size; ++i) {
+            factors[i] = factorize(nums[i]);
+        }
+        unordered_map<int, int> left = factors[0], right;
+        for (auto i = 1; i < size; ++i) {
+            add(right, factors[i]);
+        }
+        for (auto i = 1; i < size; ++i) {
+            if (!intersects(left, right)) return i - 1;
+            add(left, factors[i]);
+            subtract(right, factors[i]);
+        }
+        return -1;
+    }
+
+    bool intersects(const unordered_map<int, int>& left, const unordered_map<int, int>& right) {
+        for (const auto& pair : left) {
+            if (right.count(pair.first)) return true;
+        }
+        return false;
+    }
+
+    void subtract(unordered_map<int, int>& left, const unordered_map<int, int>& right) {
+        for (const auto& pair : right) {
+            if (left.count(pair.first)) {
+                left[pair.first] -= pair.second;
+                if (left[pair.first] <= 0) {
+                    left.erase(pair.first);
+                }
+            }
+        }
+    }
+
+    void add(unordered_map<int, int>& left, const unordered_map<int, int>& right) {
+        for (const auto& pair : right) {
+            left[pair.first] += pair.second;
+        }
+    }
+
+    unordered_map<int, int> factorize(int num) {
+        unordered_map<int, int> factors;
+        for (auto i = 0; num > 1 && i < sizeof(primes) / sizeof(primes[0]); ++i) {
+            while (num % primes[i] == 0) {
+                ++factors[primes[i]];
+                num /= primes[i];
+            }
+        }
+        if (num > 1) {
+            ++factors[num];
+        }
+        return factors;
+    }
+
+    static constexpr const int primes[] = {
+        2, 3, 5, 7, 11, 13, 17, 19, 23, 29, 31, 37, 41, 43, 47, 53, 59, 61, 67, 71, 73, 79, 83, 89, 97,
+        101, 103, 107, 109, 113, 127, 131, 137, 139, 149, 151, 157, 163, 167, 173, 179, 181, 191, 193, 197, 199,
+        211, 223, 227, 229, 233, 239, 241, 251, 257, 263, 269, 271, 277, 281, 283, 293,
+        307, 311, 313, 317, 331, 337, 347, 349, 353, 359, 367, 373, 379, 383, 389, 397,
+        401, 409, 419, 421, 431, 433, 439, 443, 449, 457, 461, 463, 467, 479, 487, 491, 499,
+        503, 509, 521, 523, 541, 547, 557, 563, 569, 571, 577, 587, 593, 599,
+        601, 607, 613, 617, 619, 631, 641, 643, 647, 653, 659, 661, 673, 677, 683, 691,
+        701, 709, 719, 727, 733, 739, 743, 751, 757, 761, 769, 773, 787, 797,
+        809, 811, 821, 823, 827, 829, 839, 853, 857, 859, 863, 877, 881, 883, 887,
+        907, 911, 919, 929, 937, 941, 947, 953, 967, 971, 977, 983, 991, 997
+    };
+};

@@ -1,0 +1,35 @@
+int compareInteger(const void *n1, const void *n2) {
+    // ascending order
+    return (*(int *)n1 - *(int *)n2);
+}
+int minimumRounds(int *tasks, int tasksSize) {
+    int retVal = 0;
+
+    qsort(tasks, tasksSize, sizeof(int), compareInteger);
+
+    int count = 1;
+    int i;
+    for (i = 1; i < tasksSize; ++i) {
+        if (tasks[i] == tasks[i - 1]) {
+            ++count;
+            continue;
+        }
+
+        if (count == 1) {
+            retVal = -1;
+            return retVal;
+        }
+        retVal += (count / 3);
+        retVal += (count % 3 == 0 ? 0 : 1);
+
+        count = 1;
+    }
+    if (count == 1) {
+        retVal = -1;
+        return retVal;
+    }
+    retVal += (count / 3);
+    retVal += (count % 3 == 0 ? 0 : 1);
+
+    return retVal;
+}

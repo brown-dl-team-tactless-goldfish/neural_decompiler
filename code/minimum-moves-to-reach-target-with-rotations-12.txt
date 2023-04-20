@@ -1,0 +1,80 @@
+class Solution {
+public:
+    int n;
+    bool valid(int i,int j)
+    {
+        if(i<0 || j<0 || i>=n || j>=n)
+            return false;
+        return true;
+    }
+    int minimumMoves(vector<vector<int>>& grid) 
+    {
+        int state=0;  //Horizontal-0    Vertical-1
+        n=grid.size();
+        queue<vector<int>>q;
+        vector<vector<bool>>vish(n,vector<bool>(n,false)),visv(n,vector<bool>(n,false));
+        
+        q.push({0,1,state});
+        vish[0][1]=true;
+        int res=0;
+        while(!q.empty())
+        {
+            int size=q.size();
+            while(size--)
+            {
+                int i=q.front()[0],j=q.front()[1],state=q.front()[2];
+                q.pop();
+                if(i==n-1 && j==n-1 && state==0)
+                    return res;
+                if(state==0)
+                {
+                    int x=i,y=j+1;
+                    if(valid(x,y) && grid[x][y]==0 && !vish[x][y])  //Right
+                    {
+                        q.push({x,y,0});
+                        vish[x][y]=true;
+                    }
+                    
+                    int x1=i+1,y1=j-1,x2=i+1,y2=j;
+                    if(valid(x1,y1) && valid(x2,y2) && grid[x1][y1]==0 && grid[x2][y2]==0 && !vish[x2][y2])  //Down
+                    {
+                        q.push({x2,y2,0});
+                        vish[x2][y2]=true;
+                    }
+                    
+                    x=i+1,y=j-1;
+                    if(valid(x,y) && valid(x,y+1) && grid[x][y]==0 && grid[x][y+1]==0 && !visv[x][y])  // Rotate clockwise
+                    {
+                        q.push({x,y,1});
+                        visv[x][y]=true;
+                    }
+                }
+                else
+                {
+                    int x1=i-1,y1=j+1,x2=i,y2=j+1;
+                    if(valid(x1,y1) && valid(x2,y2) && grid[x1][y1]==0 && grid[x2][y2]==0 && !visv[x2][y2])  //Right
+                    {
+                        q.push({x2,y2,1});
+                        visv[x2][y2]=true;
+                    }
+                    
+                    int x=i+1,y=j;
+                    if(valid(x,y) && grid[x][y]==0 && !visv[x][y])  //Down
+                    {
+                        visv[x][y]=true;
+                        q.push({x,y,1});
+                    }
+                    
+                    x=i-1,y=j+1;
+                    if(valid(x,y) && valid(x+1,y) && grid[x][y]==0 && grid[x+1][y]==0 && !vish[x][y])  // Rotate anticlockwise
+                    {
+                        q.push({x,y,0});
+                        vish[x][y]=true;
+                    }
+                }
+            }
+            res++;
+        }
+        return -1;
+    }
+};

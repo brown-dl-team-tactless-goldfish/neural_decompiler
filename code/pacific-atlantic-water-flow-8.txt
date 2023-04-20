@@ -1,0 +1,46 @@
+class Solution {
+public:
+    vector<vector<int>> matrix;
+    vector<vector<int>> out;
+    vector<vector<int>> label; //0 : not labeled 1: P 2 : A 3: PA
+    int w = 0;
+    int h = 0;
+    void dfs(int r, int c, int prevValue, int l)
+    {
+        if(r < 0 || r >= h || c < 0 || c >= w || (label[r][c] & l)) return;
+        int currValue = matrix[r][c];
+        if(currValue >= prevValue)
+        {
+            label[r][c] |= l;
+            dfs(r-1, c, currValue, l);
+            dfs(r+1, c, currValue, l);
+            dfs(r, c-1, currValue, l);
+            dfs(r, c+1, currValue, l);
+        }
+        
+    }
+    
+    vector<vector<int>> pacificAtlantic(vector<vector<int>>& matrix) {
+        if(matrix.size() == 0 || matrix[0].size() == 0) return out;
+        w = matrix[0].size();
+        h = matrix.size();
+        this->matrix = matrix;
+        label.resize(h, vector<int>(w, 0));
+        
+        for(int i = 0; i < w; i++)
+            dfs(0, i, INT_MIN, 1);
+        for(int i = 0; i < h; i++) 
+            dfs(i, 0, INT_MIN, 1);
+        for(int i = 0; i < w; i++)
+            dfs(h-1, i, INT_MIN, 2);
+        for(int i = 0; i < h; i++)
+            dfs(i, w-1, INT_MIN, 2);
+        
+        for(int r = 0; r < h; r++)
+            for(int c = 0; c < w; c++)
+                if(label[r][c] == 3) 
+                    out.push_back({r, c});
+        
+        return out;
+    }
+};

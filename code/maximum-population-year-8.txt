@@ -1,0 +1,16 @@
+// Runtime: 0 ms, faster than 100.00% of C++ online submissions for Maximum Population Year.
+// Memory Usage: 7.9 MB, less than 57.45% of C++ online submissions for Maximum Population Year.
+int maximumPopulation(vector<vector<int>>& logs) {
+	vector<int> years(101, 0);
+	for (const auto& l : logs) {
+		years[l[0] - 1950]++;
+		years[l[1] - 1950]--;
+	}
+	int res = 0;
+	for (int i = 1; i < years.size(); i++) {
+		years[i] += years[i - 1];
+		if (years[i] > years[res])
+			res = i;
+	}
+	return res + 1950;
+}

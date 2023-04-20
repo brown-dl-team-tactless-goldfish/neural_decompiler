@@ -1,0 +1,64 @@
+#define SWAP(a,b) do {\
+    if (a != b) {\
+        a ^= b; b ^= a; a ^= b;\
+    }\
+} while (0)
+int top2down_heap (int *pIArr, int start, int end)
+{
+    int l, r, t;
+
+    while (start < end) {
+        t = l = (start << 1) + 1;
+        r = l + 1;
+        if (r <= end && pIArr[r] < pIArr[l]) ++t;
+        if (t <= end && pIArr[t] < pIArr[start]) {
+            SWAP (pIArr[t], pIArr[start]);
+            start = t;
+        } else break;
+    }
+    return start;
+}
+int down2top_heap (int *pIArr, int start, int end)
+{
+    int p;
+
+    while (end > start) {
+        p = (end - 1) >> 1;
+        if (p >= start && pIArr[p] > pIArr[end]) {
+            SWAP (pIArr[p], pIArr[end]);
+            end = p;
+        } else break;
+    }
+
+    return end;
+}
+int nthUglyNumber(int n)
+{
+    int *pIArr, end;
+    int current = 0, i = 1;
+
+    pIArr = (int *) malloc (sizeof (int) * (n << 4));
+    pIArr[0] = 1;
+    end = 0;
+    while (n) {
+        if (current < pIArr[0]) {
+            current = pIArr[0];
+            pIArr[++end] = pIArr[0] << 1;
+            down2top_heap (pIArr, 0, end);
+
+            pIArr[++end] = (current << 1) + current;
+            down2top_heap (pIArr, 0, end);
+
+            pIArr[++end] = (current << 2) + current;
+            down2top_heap (pIArr, 0, end);
+            SWAP (pIArr[0], pIArr[end]);
+            top2down_heap (pIArr, 0, --end);
+            --n;
+        } else {
+            SWAP (pIArr[0], pIArr[end]);
+            top2down_heap (pIArr, 0, --end);
+        }
+    }
+    free (pIArr);
+    return current;
+}

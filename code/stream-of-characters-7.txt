@@ -1,0 +1,68 @@
+class TrieNode{
+  public:
+    vector<TrieNode*> child;
+    bool is_end;
+    TrieNode() {
+        is_end = false;
+        child = vector<TrieNode*>(26);
+    }
+};
+
+class Trie {
+    TrieNode* root;
+    public:
+    Trie(vector<string> words) {
+        root = new TrieNode();
+        for(string w : words) {
+            addWord(w);
+        }
+        
+    }
+    TrieNode* getRoot() {
+        return root;
+    }
+    
+    void addWord(string w) {
+       // reverse(w.begin(),w.end());
+        TrieNode *cur = root;
+        cout<<w<<endl;
+        for(char c : w) {
+            if(cur->child[c-'a'] == NULL) {
+                cur->child[c-'a'] = new TrieNode();
+            }
+            cur = cur->child[c-'a'];
+        }
+        cur->is_end = true;
+    }
+};
+
+class StreamChecker {
+public:
+    TrieNode* root;
+    vector<TrieNode*> paths;
+    StreamChecker(vector<string>& words) {
+        Trie *tr = new Trie(words);
+        root = tr->getRoot();
+    }
+    
+    bool query(char letter) {
+        bool result = false;
+        vector<TrieNode*> newpaths;
+        paths.push_back(root);
+        for(TrieNode* it : paths) {
+            TrieNode* node = it->child[letter - 'a'];
+            if(node) {
+                if(node->is_end)result = true;
+                newpaths.push_back(node);
+            }
+        }
+        paths = move(newpaths);
+        return result;
+    }
+};
+
+/**
+ * Your StreamChecker object will be instantiated and called as such:
+ * StreamChecker* obj = new StreamChecker(words);
+ * bool param_1 = obj->query(letter);
+ */

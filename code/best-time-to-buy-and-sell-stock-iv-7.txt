@@ -1,0 +1,34 @@
+#define MAX(a,b) (a>b?a:b)
+int maxProfit(int k, int* prices, int pricesSize){
+    
+    int*** dp=malloc(2*(k+1)*(pricesSize+1)*sizeof(int**));
+    for(int i=0;i<=pricesSize;i++)
+    {
+        dp[i]=calloc(2*k+1,sizeof(int*));
+        for(int h=0;h<2;h++)
+        {
+            dp[i][h]=calloc(k+1,sizeof(int));
+        }
+    }
+
+    // dp[day][holdingStock][remainingTrans]
+    for(int day=pricesSize-1;day>=0;day--)
+    {
+        for(int holdingStock=0;holdingStock<2;holdingStock++)
+        {
+            for(int remainingTrans=1;remainingTrans<=k;remainingTrans++)
+            {
+                int skip = dp[day+1][holdingStock][remainingTrans];
+                int ans = -INT_MAX;             
+                if(holdingStock == 1)
+                    ans = dp[day+1][0][remainingTrans-1] + prices[day]; //sell
+                else 
+                    ans = dp[day+1][1][remainingTrans] - prices[day]; //buy
+
+                dp[day][holdingStock][remainingTrans] = MAX(skip,ans);
+            }
+        }
+    }
+    //Return the dp at day=0, not holding an stocks and with k transactions remaining
+    return dp[0][0][k];
+}

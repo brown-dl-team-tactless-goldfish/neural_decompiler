@@ -1,0 +1,80 @@
+class Solution {
+public:
+    long long int mod;
+    int waysToBuildRooms(vector<int>& prevRoom) {
+        
+        int n=prevRoom.size();
+        mod=pow(10,9)+7;
+        vector<int> v[n];
+        
+        for(int i=1;i<n;i++)
+        {
+            int x=i,y=prevRoom[i];
+            v[x].push_back(y);
+            v[y].push_back(x);
+        }
+        
+        long long int dp[n],numNodes[n],fact[100006];
+        fact[0]=1;
+        for(long long int i=1;i<100006;i++)
+        {
+            fact[i]=(i*fact[i-1])%mod;
+        }
+        
+        dfs(v,dp,numNodes,fact,0,-1);
+        
+        return dp[0];
+    }
+    
+    void dfs(vector<int> v[],long long int dp[],long long int numNodes[],long long int fact[],int s,int p)
+    {
+        dp[s]=1,numNodes[s]=1;
+        
+        for(int i=0;i<(int)v[s].size();i++)
+        {
+            int curr=v[s][i];
+            if(curr!=p)
+            {
+                dfs(v,dp,numNodes,fact,curr,s);
+                numNodes[s]+=numNodes[curr];
+            }
+        }
+        
+        int tot=numNodes[s]-1;
+        for(int i=0;i<(int)v[s].size();i++)
+        {
+            int curr=v[s][i];
+            if(curr!=p)
+            {
+                dp[s]*=((dp[curr]*nCr(tot,numNodes[curr],fact))%mod);
+                dp[s]%=mod;
+                tot-=numNodes[curr];
+            }
+        }
+        
+    }
+    
+    long long int nCr(long long int n,long long int r,long long int fact[])
+    {
+        long long int denom=(fact[r]*fact[n-r])%mod;
+        return (fact[n]*modInv(denom,mod-2))%mod;
+    }
+    
+    long long int modInv(long long int n,long long int p)
+    {
+        long long int result=1;
+        while(p!=0)
+        {
+            if(p%2!=0)
+            {
+                result*=n;
+                result%=mod;
+            }
+            
+            p/=2;
+            n=(n*n)%mod;
+        }
+        
+        return result;
+    }
+};

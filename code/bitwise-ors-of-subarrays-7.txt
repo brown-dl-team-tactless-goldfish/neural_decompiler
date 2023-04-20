@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int subarrayBitwiseORs(vector<int>& A) {
+        unordered_set<int>s2,s3;
+        
+        unordered_map<int,int>mp;
+        mp[A[0]]++;
+        s2.insert(A[0]);
+        
+        int n = A.size();
+        
+        for(int i=1;i<n;i++){
+            mp[(A[i])]++;
+            s3.insert(A[i]);
+            
+            while(s2.size()){
+                auto it = s2.begin();
+                int v = *it;
+                int u = A[i];
+
+                s2.erase(v);
+                s3.insert(v|u );
+                mp[v|u]++;
+
+            }
+            while(s3.size()) {
+                auto it = s3.begin();
+                s2.insert(*it);
+                s3.erase(it);
+            }
+        }
+        
+        return mp.size();
+    }
+};

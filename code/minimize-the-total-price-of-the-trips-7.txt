@@ -1,0 +1,105 @@
+class Solution {
+public:
+  
+  // All the solution info.
+  int n = -1;
+  vector<int> price;
+  vector<unordered_set<int>> tree;
+  unordered_map<int, int> freq;
+  
+  
+  int minimumTotalPrice(int n, vector<vector<int>>& edges, vector<int>& prc, vector<vector<int>>& trips) {
+    // Record all info.
+    this->n = n;
+    tree.resize(n);
+    price = move(prc);
+    for (auto& edge : edges) {
+      tree[edge[0]].insert(edge[1]);
+      tree[edge[1]].insert(edge[0]);
+    }
+    
+    // Find how many times each node is visited
+    // for all the paths through DFS.
+    for (auto& trip : trips) {
+      // trip[0] can be the root of the tree with
+      // -1 as parent since it doesn't matter.
+      dfs(trip[0], trip[1], -1);
+    }
+    
+    // Get any leaf node with children <= 1 as root.
+    int root = getAnyLeaf();
+    
+    // Initialize the caches for DP.
+    withHalving = vector<int>(n, -1);
+    withoutHalving = vector<int>(n, -1);
+    
+    // Get the optimal halving strategy.
+    return min(getMin(root, true, -1),
+               getMin(root, false, -1));
+  }
+  
+  bool dfs(int idx, int dst, int parent) {
+    // We have reached the destination.
+    if (idx == dst) {
+      freq[idx]++;
+      return true;
+    }
+    
+    for (int child : tree[idx]) {
+      if (child == parent)
+        continue;
+      // Check if child is able to reach the destination.
+      if (dfs(child, dst, idx)) {
+        freq[idx]++;
+        return true;
+      }
+    }
+    return false;
+  }
+  
+  /*
+  Use DP to get the best halving strategy.
+  For each node, we can either halve it or not.
+  If we halve it, we cannot halve the child.
+  If we don't halve it, then we have a choice for
+  the child.
+  We can cache the result based on whether we halve
+  it or not.
+  */ 
+  vector<int> withHalving, withoutHalving;
+  int getMin(int idx, bool with, int parent) {
+    if (with && withHalving[idx] != -1) {
+      return withHalving[idx];
+    }
+    if (!with && withoutHalving[idx] != -1) {
+      return withoutHalving[idx];
+    }
+    int childCost = 0;
+    for (int child : tree[idx]) {
+      if (child == parent) continue;
+      if (with) {
+        childCost += getMin(child, false, idx);
+      } else {
+        childCost += min(getMin(child, true, idx),
+                         getMin(child, false, idx));
+      }
+    }
+    if (with) {
+      int cost = (0.5 * price[idx] * freq[idx]) + childCost;
+      withHalving[idx] = cost;
+      return cost;
+    } else {
+      int cost = (price[idx] * freq[idx]) + childCost;
+      withoutHalving[idx] = cost;
+      return cost;
+    }
+  }
+  
+  // Helper function for getting any leaf.
+  int getAnyLeaf() {
+    for (int i = 0; i < n; ++i) {
+      if (tree[i].size() <= 1) return i;
+    }
+    return -1;
+  }
+};

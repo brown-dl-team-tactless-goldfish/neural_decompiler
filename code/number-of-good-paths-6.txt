@@ -1,0 +1,64 @@
+
+class Solution {
+public:
+    
+    // unionize does the union of two components, where value of b is greater than value of a
+    void unionize(int a, int b, vector<int> &par){
+        int para = find(a, par);
+        int parb = find(b, par);
+        par[para] = par[parb];
+    }
+    
+    int find(int a, vector<int> &par) {
+        if(a == par[a])
+            return a;
+        par[a] = find(par[a], par);
+        return par[par[a]];
+    }
+    
+    int numberOfGoodPaths(vector<int>& vals, vector<vector<int>>& edges) {
+        
+        int n = vals.size();
+        
+        // valToNode represents map which stores corresponding nodes
+        map<int, vector<int> > valToNode;
+        
+        vector<vector<int> > adjList(n);
+        vector<int> par(n);
+        
+        for(int i=0; i < n; i++){
+            valToNode[vals[i]].push_back(i);
+            par[i] = i;
+            if(i < n - 1){
+                int a = edges[i][0];
+                int b = edges[i][1];
+                if(vals[a] > vals[b]){
+                    adjList[a].push_back(b);
+                } else {
+                    adjList[b].push_back(a);
+                }
+            }
+        }
+        int ans = 0;
+        map<int, vector<int> > :: iterator itr;
+        for(itr = valToNode.begin(); itr != valToNode.end(); itr++){
+            int val = itr -> first;
+            vector<int> nodes = itr -> second;
+            
+            for(int i=0; i < nodes.size(); i++){
+                int p = nodes[i];
+                for(int j=0; j < adjList[p].size(); j++){
+                    int c = adjList[p][j];
+                    unionize(c, p, par);
+                }
+            }
+            unordered_map<int, int> umap;
+            for(int i=0;i<nodes.size(); i++){
+                umap[find(nodes[i], par)] += 1;
+                ans += umap[find(nodes[i], par)];
+            }
+        }
+        
+        return ans;
+    }
+};

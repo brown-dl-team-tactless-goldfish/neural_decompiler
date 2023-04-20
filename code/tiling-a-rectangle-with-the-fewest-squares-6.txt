@@ -1,0 +1,25 @@
+    int tilingRectangle(int n, int m) {
+        if(n > m) return tilingRectangle(m, n);
+        int res = INT_MAX;
+        vector<int> h(n, 0);
+        
+        function<void(int)> dfs = [&](int count) {
+            if(count >= res) return;
+            auto it = min_element(h.begin(), h.end());
+            if(*it == m) {
+                res = count;
+                return;
+            }
+            
+            int idx = distance(h.begin(), it), end = idx;
+            while(end + 1 < n && h[end+1] == h[idx] && end - idx + 2 + h[idx] <= m) end++;
+            for(int w = end - idx + 1; w >= 1; w--) {
+                for(int i = idx; i < idx + w; i++) h[i] += w;
+                dfs(count + 1);
+                for(int i = idx; i < idx + w; i++) h[i] -= w;
+            }
+        };
+        
+        dfs(0);
+        return res;
+    }

@@ -1,0 +1,46 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+
+struct ListNode* getSum(struct ListNode* head){
+    struct ListNode *node = head;
+    int sum = 0;
+    while(node){
+        sum+=node->val;
+        if(sum == 0) return node;
+        node = node->next;
+    }
+    return node;
+}
+
+
+struct ListNode* removeZeroSumSublists(struct ListNode* head){
+    struct ListNode *tmpHead, *node,*prev, *ret;
+    tmpHead = (struct ListNode*)malloc(sizeof(struct ListNode));
+    tmpHead->val = -2000;
+    tmpHead->next = head;
+    while(1){
+        prev = tmpHead;
+        node = tmpHead->next;
+        int f = 0;
+        while(node){
+            ret = getSum(node);
+            if(ret){
+                prev->next = ret->next;
+                f = 1;
+                break;
+            } else{
+                prev = node;
+                node = node->next;
+            }
+        }
+        if(f ==  0) break;
+    }
+    
+    return tmpHead->next;
+}

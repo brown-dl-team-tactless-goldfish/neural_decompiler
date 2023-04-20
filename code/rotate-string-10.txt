@@ -1,0 +1,28 @@
+//796. Rotate String
+
+bool rotateString(char * A, char * B){
+    if(strlen(A)!=strlen(B)) return false; //長度不一樣就false
+    if(*A==NULL && *B==NULL) return true; //空的表示一樣
+    int len=strlen(A);//lenA=lenB
+    int i,j,x,y,count=0;
+    for(i=0,j=0;j<len;){ //A索引不動，B索引開始掃
+        if(A[i]==B[j]){//B索引掃到與A同，進一步掃描
+            for(x=i,y=j,count=0;count<len;){//A從頭開始，B從當前所引開始掃，AB同時
+                if(A[x]!=B[y]){//可能遇到疊字，跳回上一步B索引繼續掃
+                    break;
+                }
+                x++;
+                y++;
+                count++;
+                if(y==len)y-=len;//掃描到尾，設定下一次掃頭
+                if(x==len)x-=len;//掃描到尾，設定下一次掃頭
+                if(count==len)return true;//count與長度同，表示掃到底了，true
+            }
+            
+        }
+        j++;//B往下一位掃
+    }
+    
+    return false;
+    
+}

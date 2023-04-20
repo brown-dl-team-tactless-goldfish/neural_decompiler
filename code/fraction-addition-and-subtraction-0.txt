@@ -1,0 +1,78 @@
+void fractionsToInt(char* temp1,int *a){
+    char *temp=(char*)malloc(10*sizeof(char));
+    int count=0;
+    while(*temp1!='/'){
+        temp[count++]=*temp1;
+        temp1++;
+    }
+    temp[count++]='\0';
+    count=0;
+    a[0]=atoi(temp);
+    temp1++;
+    while(*temp1!='\0'){
+        temp[count++]=*temp1;
+        temp1++;
+    }
+    temp[count++]='\0';
+    a[1]=atoi(temp);
+}
+unsigned int Gcd(unsigned int M,unsigned int N){
+    unsigned int Rem;
+    while(N > 0)
+    {
+        Rem = M % N;
+        M = N;
+        N = Rem;
+    }
+    return M;
+}
+char* fractionAddition(char* expression) {
+    int len=strlen(expression);
+    int *a=(int*)calloc(2,sizeof(int));
+    int *b=(int*)calloc(2,sizeof(int));
+    int count=0;
+    int i=1;
+    char *temp1=(char*)malloc(10*sizeof(char));
+    temp1[count++]=expression[0];
+    for(;expression[i]!='+'&&expression[i]!='-';i++){
+        temp1[count++]=expression[i];
+        if(expression[i]=='\0'){
+            return temp1;
+        }
+    }
+    temp1[count++]='\0';
+    count=0;
+    fractionsToInt(temp1,a);
+    temp1[count++]=expression[i];
+    i++;
+    for(;i<len;i++){
+        if(expression[i]=='+'||expression[i]=='-'){
+            temp1[count++]='\0';
+            fractionsToInt(temp1,b);
+            if(a[0]==0){
+                a[0]=b[0];
+                a[1]=b[1];
+            }
+            else{
+                a[0]=a[0]*b[1]+b[0]*a[1];
+                a[1]=a[1]*b[1];
+            }
+            count=0;
+        }
+        temp1[count++]=expression[i];
+    }
+    temp1[count++]='\0';   
+    fractionsToInt(temp1,b);
+    if(a[0]==0){
+        a[0]=b[0];
+        a[1]=b[1];
+    }
+    else{
+        a[0]=a[0]*b[1]+b[0]*a[1];
+        a[1]=a[1]*b[1];
+    }
+    if(a[0]==0){return "0/1";}
+    int GreatCommonDivisor=Gcd(abs(a[0]),a[1]);
+    sprintf(temp1,"%d/%d",a[0]/GreatCommonDivisor,a[1]/GreatCommonDivisor);
+    return temp1;
+}

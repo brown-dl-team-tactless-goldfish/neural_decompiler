@@ -1,0 +1,36 @@
+class RandomizedCollection {
+    vector<pair<int, int>>v;
+    unordered_map<int, vector<int>>mp;
+public:
+    /** Initialize your data structure here. */
+    RandomizedCollection() {
+    }
+    
+    /** Inserts a value to the collection. Returns true if the collection did not already contain the specified element. */
+    bool insert(int val) {
+        auto res = mp.find(val) == mp.end();
+        mp[val].push_back(v.size());
+        v.push_back({val, mp[val].size()-1});
+        return res;
+    }
+    
+    /** Removes a value from the collection. Returns true if the collection contained the specified element. */
+    bool remove(int val) {
+        auto result = mp.find(val) != mp.end();
+        if (result) {
+            auto l = v.back();
+            mp[l.first][l.second] = mp[val].back();
+            v[mp[val].back()] = v.back();
+            v.pop_back();
+            mp[val].pop_back();
+            if (mp[val].empty())
+                mp.erase(val);
+        }
+        return result;
+    }
+    
+    /** Get a random element from the collection. */
+    int getRandom() {
+        return v[rand()%v.size()].first;
+    }
+};

@@ -1,0 +1,95 @@
+
+void clearAroundIslands(char** grid, int i, int j, int row_size, int col_size);
+int stack_row[256] = {0};
+int stack_col[256] = {0};
+
+
+int numIslands(char** grid, int gridSize, int* gridColSize){
+   int islandsCount = 0;
+    
+    if(grid == NULL || gridColSize == NULL || gridSize == 0 || *gridColSize == 0)
+    {
+        return islandsCount;
+    }
+    
+    for(int i = 0; i < gridSize; ++i)
+    {
+        for(int j = 0; j < *gridColSize; ++j)
+        {
+            if(*(*(grid + i) + j) == '1')
+            {
+                islandsCount++;
+                clearAroundIslands(grid, i, j, gridSize, *gridColSize);
+            }
+        }
+    }
+    
+    return islandsCount;
+}
+
+
+//Recursive
+void clearAroundIslands_tmp(char** grid, int index_row, int index_col, int row_size, int col_size)
+{
+    if(index_row < 0 || index_col < 0 || index_row >= row_size || index_col >= col_size || '1' != *(*(grid + index_row ) + index_col))
+    {
+        return;
+    }
+    *(*(grid + index_row ) + index_col) = '0';
+    clearAroundIslands(grid, index_row + 1, index_col, row_size, col_size);
+    clearAroundIslands(grid, index_row - 1, index_col, row_size, col_size);
+    clearAroundIslands(grid, index_row, index_col + 1, row_size, col_size);
+    clearAroundIslands(grid, index_row, index_col - 1, row_size, col_size);
+}
+
+
+//Non-recursive
+void clearAroundIslands(char** grid, int index_row, int index_col, int row_size, int col_size)
+{
+    if(index_row < 0 || index_col < 0 || index_row >= row_size || index_col >= col_size || '1' != *(*(grid + index_row ) + index_col))
+    {
+        return;
+    }
+    
+    int stack_size = 0;
+    
+    stack_row[stack_size] = index_row;
+    stack_col[stack_size] = index_col;
+    stack_size++;
+    while(stack_size > 0)
+    {
+        int last_item_row = stack_row[stack_size - 1];
+        int last_item_col = stack_col[stack_size - 1];
+        *(*(grid + last_item_row ) + last_item_col) = '0';
+        stack_size--;
+        
+        if(last_item_row + 1 >= 0 && last_item_col >= 0 && last_item_row + 1 < row_size && last_item_col < col_size && '1' == *(*(grid + last_item_row + 1 ) + last_item_col))
+        {
+            stack_row[stack_size] = last_item_row + 1;
+            stack_col[stack_size] = last_item_col;
+            stack_size++;
+        }
+        
+        if(last_item_row - 1 >= 0 && last_item_col >= 0 && last_item_row - 1 < row_size && last_item_col < col_size && '1' == *(*(grid + last_item_row - 1 ) + last_item_col))
+        {
+            stack_row[stack_size] = last_item_row - 1;
+            stack_col[stack_size] = last_item_col;
+            stack_size++;
+        } 
+        
+        if(last_item_row >= 0 && last_item_col + 1 >= 0 && last_item_row < row_size && last_item_col + 1 < col_size && '1' == *(*(grid + last_item_row ) + last_item_col + 1))
+        {
+            stack_row[stack_size] = last_item_row;
+            stack_col[stack_size] = last_item_col + 1;
+            stack_size++;
+        } 
+        
+        if(last_item_row >= 0 && last_item_col - 1 >= 0 && last_item_row < row_size && last_item_col - 1 < col_size && '1' == *(*(grid + last_item_row ) + last_item_col - 1))
+        {
+            stack_row[stack_size] = last_item_row;
+            stack_col[stack_size] = last_item_col - 1;
+            stack_size++;
+        } 
+    }
+}
+

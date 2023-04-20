@@ -1,0 +1,64 @@
+public class RangeFreqQuery {
+
+    Dictionary<int, List<int>> d = new Dictionary<int, List<int>>();
+    public RangeFreqQuery(int[] arr) {
+        for (int i = 0; i < arr.Length; ++i) {
+            if (!d.ContainsKey(arr[i])) {
+                d.Add(arr[i], new List<int>());
+                d[arr[i]].Add(i);
+            } else {
+                d[arr[i]].Add(i);
+            }
+        }
+    }
+    
+    public int Query(int left, int right, int v) {
+        if (!d.ContainsKey(v)) return 0;
+        
+        List<int> idxs = d[v];
+        if (idxs[0] > right || idxs[idxs.Count - 1] < left) return 0;
+        
+        int li = GetLeftIndex(idxs, left);
+        if (li == idxs.Count) return 0;
+        int ri = GetRightIndex(idxs, right);
+        if (ri == -1) return 0;
+        
+        if (li > ri) return 0;
+        
+        return ri - li + 1;
+    }
+    
+    public int GetLeftIndex(List<int> idxs, int left) {
+        int l = 0;
+        if (left <= idxs[l]) return l;
+        int r = idxs.Count - 1;
+        if (left > idxs[r]) return idxs.Count;
+        while (r - l > 1) {
+            int m = l + ((r - l) / 2);
+            if(left <= idxs[m]) { // if value's index m is greater than left bound move r to the left
+                r = m;
+            } else {
+                l = m;
+            }
+        }
+        
+        return r;
+    }
+    
+    public int GetRightIndex(List<int> idxs, int right) {
+        int l = 0;
+        if (right < idxs[l]) return -1;
+        int r = idxs.Count - 1;
+        if (right >= idxs[r]) return r;
+        while (r - l > 1) {
+            int m = l + ((r - l) / 2);
+            if(right >= idxs[m]) { // if the value's index m is lesser than right bound move l to the right
+                l = m;
+            } else {
+                r = m;
+            }
+        }
+        
+        return l;
+    }
+}

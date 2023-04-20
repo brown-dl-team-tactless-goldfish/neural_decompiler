@@ -1,0 +1,60 @@
+We maitain sum array for given 2D array where sum[i][j] is sum of all the elements upto ith row and jth column.
+    if(r1==0 && c1==0)
+        simply return sum of all the elements upto [r2][c2]
+    if(c1)
+       delete elements which are before column c1
+    if(r1)
+       delete elements which are above row r1
+    if(r1 && c1)
+       add elements which are before [r1][c1] because they may be deleted twice if r1 & c1 both are non zero 
+
+
+struct NumMatrix {
+	int **s;
+	int r;
+	int c;
+};
+#define Mat struct NumMatrix
+struct NumMatrix* NumMatrixCreate(int** m, int r, int c) {
+	Mat *p;
+	int i, j, t, *x;
+	p = malloc(sizeof(Mat));
+	p->s = malloc(sizeof(int *)*r);
+	p->r = r;
+	p->c = c;
+	for(i=0; i<r; i++)
+		p->s[i] = malloc(sizeof(int)*c);
+	for(i=0; i<r; i++)
+	{
+		t = 0;
+		for(j=0; j<c; t=p->s[i][j++])
+			p->s[i][j] = t + m[i][j];         // Summing all the row elements, s[i][j] means sum of ith row elements from m[i][0] to m[0][j]
+	}
+	for(j=0; j<c; j++)
+	{
+		t = 0;
+		for(i=0; i<r; t=p->s[i++][j])
+			p->s[i][j] += t;         // Summing the column values which means s[i][j] represent sum of all elements upto row i and column j
+	}
+	return p;
+}
+int sumRegion(struct NumMatrix* m, int r1, int c1, int r2, int c2) {
+	int sum, i;
+	sum = m->s[r2][c2];
+	if(r1==0 && c1==0)
+		return sum;         // if r1 & c1 are 0 then simply return sum of all the elements upto [r2][c2]
+	if(c1)
+		sum -= m->s[r2][c1-1];  // deleting elements which are before column c1
+	if(r1)
+		sum -= m->s[r1-1][c2];  // deleting elements which are above row r1
+	if(r1 && c1)
+		sum += m->s[r1-1][c1-1];   // add elements which are before [r1][c1] because they might be deleted twice if r1 & c1 both are non zero
+	return sum;
+}
+void NumMatrixFree(struct NumMatrix* p) {
+	int i;
+	for(i=0; i<p->r; i++)
+		free(p->s[i]);
+	free(p->s);
+	free(p);
+}

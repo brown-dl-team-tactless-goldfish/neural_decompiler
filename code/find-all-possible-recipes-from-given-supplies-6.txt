@@ -1,0 +1,44 @@
+class Solution {
+public:
+    vector<string> findAllRecipes(vector<string>& recipes, vector<vector<string>>& ingredients, vector<string>& supplies) {
+        unordered_set<string> sply(supplies.begin(), supplies.end());
+        unordered_set<string> canMake;
+        
+        bool change = true;
+        int c = 0;
+        int n = recipes.size();
+        
+        while (1)
+        {
+            bool add = false;
+            for (int i = 0; i < n; i++)
+            {
+                bool can = true;
+                if (canMake.find(recipes[i]) != canMake.end())
+                    continue;
+                
+                for(auto& ing: ingredients[i])
+                {
+                    if (sply.find(ing) == sply.end() && canMake.find(ing) == canMake.end())
+                    {
+                        
+                        can = false;
+                        break;
+                    }
+                }
+                if (can)
+                {
+                    canMake.insert(recipes[i]);
+                    add = true;
+                    ++c;
+                }
+            }
+            
+            if (!add || c == n)
+                break;
+        }
+        
+        vector<string> res(canMake.begin(), canMake.end());;
+        return res;
+    }
+};

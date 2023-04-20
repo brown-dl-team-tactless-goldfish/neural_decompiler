@@ -1,0 +1,58 @@
+class Solution {
+    string shrink(string str) {
+        if (str.size()<3) return str;
+        string res = str;
+        int i=1; int cnt=1;
+        while (res.size()>2 && i<res.size()) {
+            cnt = (res[i]==res[i-1])?cnt+1:1;
+            i++;
+            if ((i==res.size() || res[i]!=res[i-1]) && cnt>=3) {
+                res.erase(i-cnt, cnt);
+                i=1; cnt=1;
+            }
+        }
+        return res;
+    };
+    
+    void dfs(string board, string hand, int& len) {
+        if (board.empty() ) {
+            len = max(len, (int) hand.size());
+            return;
+        }
+        
+        if (hand.empty() ||  mem.count(board+"#"+hand)) return; 
+        
+        for(int i=0; i<hand.size(); i++) {
+            if (i>0 && hand[i]==hand[i-1]) continue; //skip duplicates
+            char c = hand[i];
+            string new_hnd = hand;
+            new_hnd.erase(i,1);
+            for (int j=0; j<board.size(); j++) {
+                if (j==0 && board[0]==c || board[j]==c && board[j-1]!=c) {
+                    board.insert(j, 1, c);
+                    string new_board = shrink(board);
+                    dfs( new_board, new_hnd, len );
+                    board.erase(j, 1);
+                }
+            }
+        }
+        mem.insert(board+"#"+hand); //memorization
+    }
+    
+    unordered_set<string> mem;
+    
+public:
+    int findMinStep(string board, string hand) {
+        //pre-process hand
+        unordered_set<char> brd_set(board.begin(), board.end());
+        string hnd="";
+        for (auto c: hand) 
+            if (brd_set.count(c)) hnd += c;
+            
+        sort(hnd.begin(), hnd.end() );
+        
+        int res=INT_MIN;
+        dfs(board, hnd, res);
+        return (res==INT_MIN)?-1:hnd.size()-res;
+    }
+};

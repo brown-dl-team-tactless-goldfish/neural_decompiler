@@ -1,0 +1,32 @@
+    int findPaths(int m, int n, int maxMove, int startRow, int startColumn) {
+        // memo means how many ways we can go out of boundary from startRow, startColumn with maxMove steps
+        vector<vector<vector<int>>> memo(m, vector<vector<int>>(n, vector<int>(maxMove + 1, -1)));
+        vector<pair<int, int>> dir{ {0, 1}, {0, -1}, {1, 0}, {-1, 0} };
+        return calculate(startRow, startColumn, maxMove, memo, dir);
+    }
+    
+    int calculate(int r, int c, int maxMove, vector<vector<vector<int>>>& memo, vector<pair<int, int>>& dir) {
+        // if we go out of the boundary, add 1 to the result
+        if (r < 0 || r >= memo.size() || c < 0 || c >= memo[0].size()) {
+            return 1;
+        }
+        // if we have no steps, we have no way to go outside
+        if (maxMove == 0) {
+            return 0;
+        }
+        if (memo[r][c][maxMove] != -1) {
+            return memo[r][c][maxMove];
+        }
+        int res = 0;
+        int remainingMove = maxMove - 1;
+        // if we want to get how many ways we can find to go outside from r, c with maxMove steps
+        // we can go in four directions from (r, c), 
+        // so memo[r][c][maxMove] = memo[r+1][c][maxMove-1] + memo[r-1][c][maxMove-1] + memo[r][c-1][maxMove-1] + memo[r][c+1][maxMove-1]
+        for (int i = 0; i < 4; i++) {
+            res += calculate(r + dir[i].first, c + dir[i].second, remainingMove, memo, dir);
+            int modValue = 1e9 + 7;
+            res %= modValue;
+        }
+        memo[r][c][maxMove] = res;
+        return res;
+    }

@@ -1,0 +1,48 @@
+class Solution {
+public:
+    long long kSum(vector<int>& nums, int k) {
+        long long sum = 0;
+        for (auto &n : nums) {
+            if (n >= 0)
+                sum += n;
+            else
+                n = abs(n);
+        }
+        // get sum of all possitive integers in variable sum
+        // later reverse all negative numbers to possitive as removing them can help 
+        
+        // sort helps all the smaller numbers to be tried first so as to reduce total sum
+        // as small as possible
+        sort(nums.begin(),nums.end()); 
+        priority_queue<pair<long long, int>> pq;
+        
+        pq.push({sum-nums[0],0});
+        vector<long long> result;
+        result.push_back(sum); // first largest sum we can enter
+        // if no possitive integer then inserting 0 is also fine as 
+        // empty sequence is also a subsequence
+       
+        int n = nums.size();
+        while(result.size() < k) {
+            auto [sum,index] = pq.top();
+            result.push_back(sum);
+            pq.pop();
+            // there are 2 possiblitity for current index
+            // extend the sequence with current index
+            // or all the sequence which earlier ended with index 
+            // remove than element and insert this index
+            // this cummunlative relation so it will have all cases
+            // for e.g combination of {a,b} with all sequence ending with b will
+            // be {b},{a,b}
+            // so now c will extenend sequence first so it will {b,c},{a,b,c}
+            // by remvoing b and extending sequence from it will be {c}, {a,c}  
+            // thus covering all sequences which ends with c
+            // i.e {b,c},{a,b,c},{c}, {a,c}  
+            if (index+1 < n) {
+                pq.push({sum-nums[index+1],index+1});  // extending the sequence
+                pq.push({sum+nums[index]-nums[index+1], index+1}); // removing the earlier number and adding the current number
+            }
+        }
+        return result[k-1];
+    }
+};

@@ -1,0 +1,79 @@
+#define all(x) x.begin(), x.end()
+#define sz(x) static_cast<int32_t>(x.size())
+#define pb push_back
+#define ll long long
+const int MOD = 1e9 + 7, N = 2000005;
+const ll INF = 2e18;
+typedef pair<int, int> pii;
+template <class T> inline void chmax(T &x,T y){ x = max((x), (y));}
+template <class T> inline void chmin(T &x,T y){ x = min((x), (y));}
+template <typename T> T powm(T a,T b, ll m){T cnt=1; while(b>0) { if(b%2==1) cnt=(cnt*a)%m; b/=2; a=(a*a)%m; }return cnt%m;}
+template <typename T> T gcd(T a,T b) {if(a==0) return b; return gcd(b%a,a);}
+
+class Solution {
+public:
+    vector<long long> kthPalindrome(vector<int>& Q, int len) {
+        vector <ll> ans;
+        if (len == 1) {
+            for (auto i : Q) {
+                if (i < 10) {
+                    ans.pb(i);
+                } else {
+                    ans.pb(-1);
+                }
+            }
+        } else {
+            int pairs = len / 2;
+            int odd = len % 2;
+            ll tot = odd * 10;
+            if (tot == 0) tot = 1;
+            tot *= 9;
+            for (int i = 1; i < pairs; ++i) {
+                tot *= 10;
+            }
+            if (odd == 1) odd = 10;
+            else odd = 1;
+            //cout << tot << " ";
+            for (auto form : Q) {
+                string cur = string(len + 1, '?');
+                int i = 1, j = len;
+                if (form > tot) {
+                    ans.pb(-1);
+                    continue;
+                }
+                while (i < j) {
+                    if (i == 1) {
+                        for (int use = 1; use < 10; ++use) {
+                            if (powm(10, (j - i + 1 - 2) / 2, INF) * odd < form) {
+                                form -= powm(10, (j - i + 1 - 2) / 2, INF) * odd;
+                            } else {
+                                cur[i] = cur[j] = use + '0';
+                                i++, j--;
+                                break;
+                            }
+                        }
+                    } else {
+                        for (int use = 0; use < 10; ++use) {
+                            if (powm(10, (j - i + 1 - 2) / 2, INF) * odd  < form) {
+                                form -= powm(10, (j - i + 1 - 2) / 2, INF) * odd;
+                            } else {
+                                cur[i] = cur[j] = use + '0';
+                                i++, j--;
+                                break;
+                            }
+                        }
+                    }
+                }
+                if (i == j) {
+                    cur[i] = (form - 1) + '0';
+                }
+                ll now = 0;
+                for (int i = 1; i <= len; ++i) {
+                    now = now * 10 + (cur[i] - '0');
+                }
+                ans.pb(now);
+            }
+        }
+        return ans;
+    }
+};

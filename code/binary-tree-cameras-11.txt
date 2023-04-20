@@ -1,0 +1,16 @@
+struct Cost{ int n_self, n_child, n_parent; };
+class Solution {
+    Cost cost(TreeNode* root){
+        if(!root) return Cost{INT_MAX / 2, 0, 0};
+        Cost cost, cl = cost(root -> left), cr = cost(root -> right);
+        cost.n_self = 1 + min({cl.n_self, cl.n_child, cl.n_parent}) + min({cr.n_self, cr.n_child, cr.n_parent});
+        cost.n_parent = min(cl.n_self, cl.n_child) + min(cr.n_self, cr.n_child);
+        cost.n_child = min(cl.n_self + min(cr.n_self, cr.n_child), cr.n_self + min(cl.n_self, cl.n_child));
+        return cost;
+    }
+public:
+    int minCameraCover(TreeNode* root) {
+        Cost c = cost(root);
+        return min(c.n_self, c.n_child);
+    }
+};

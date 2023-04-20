@@ -1,0 +1,26 @@
+    vector<vector<int>> reconstructMatrix(int upper, int lower, vector<int>& colsum) {
+        vector<vector<int>> res(2);
+        int sum = accumulate(colsum.begin(), colsum.end(), 0);
+        if(sum != upper + lower) return {};
+        
+        for(int i = 0; i < colsum.size(); i++){
+            if(colsum[i] == 0 || colsum[i] == 2){
+                upper -= (colsum[i] / 2);
+                lower -= (colsum[i] / 2);
+                res[0].push_back(colsum[i] / 2); res[1].push_back(colsum[i] / 2);
+                continue;
+            }
+            if(upper <= 0 && lower <= 0) return {};
+            if(upper > lower){
+                upper--;
+                res[0].push_back(1);
+                res[1].push_back(0);
+            }
+            else{
+                lower--;
+                res[0].push_back(0);
+                res[1].push_back(1);
+            }
+        }
+        return (upper > 0 || lower > 0) ? vector<vector<int>> () : res;
+    }

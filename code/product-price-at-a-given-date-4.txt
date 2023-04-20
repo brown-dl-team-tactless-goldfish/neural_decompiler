@@ -1,0 +1,21 @@
+
+WITH max_change_dates as (
+SELECT product_id, max(change_date) as max_change_date 
+FROM Products
+WHERE change_date <= '2019-08-16'
+group by product_id
+), products_with_min_dates as (
+SELECT product_id, min(change_date) as min_change_date 
+FROM Products
+WHERE change_date > '2019-08-16'
+group by product_id
+
+)
+
+SELECT coalesce(b.product_id, c.product_id) as product_id, coalesce(new_price, 10) as price
+FROM Products a right join max_change_dates b
+ON a.product_id = b.product_id 
+AND a.Change_date = b.max_change_date
+FULL JOIN products_with_min_dates c 
+ON a.product_id = c.product_id 
+order by price desc

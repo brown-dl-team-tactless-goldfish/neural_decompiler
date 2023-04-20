@@ -1,0 +1,49 @@
+class Solution {
+public:
+    string sswap(string& s, int a, int b, int c) {
+        int n = s.size();
+        string ns;
+        if (a > 0)
+            ns += s.substr(0, a);
+        ns += s.substr(b + 1, c - b) + s.substr(a, b - a + 1);
+        if (c + 1 < n)
+            ns += s.substr(c + 1, n - (c + 1));
+        return ns;
+    }
+
+    string rec(string& s, int start, int &n) {
+        vector<int> end_specials;
+        int end_first = -1;
+        int ones = 0;
+        int zeros = 0;
+        for (int i=start; i<n; i++) {
+            if (s[i] == '1') ones++;
+            else zeros++;
+            if (end_first == -1) {
+                if (ones == zeros)
+                    end_first = i;
+            } else if (end_first != -1) {
+                if (ones == zeros) {
+                    end_specials.push_back(i);
+                } else if (zeros > ones) break;
+            }
+        }
+
+        string ans(s);
+        for (int& endi : end_specials) {
+            string ns = sswap(s, start, end_first, endi);
+            if (ans.compare(ns) < 0) ans = ns;
+        }
+        return ans;
+    }
+
+    string makeLargestSpecial(string s) {
+        int n = s.size();
+        for (int i=n-1; i>=0; i--) {
+            if (s[i] == '1') {
+                s = rec(s, i, n);
+            }
+        }
+        return s;
+    }
+};

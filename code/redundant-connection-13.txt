@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        const int n = edges.size();        
+        for(int i = 0; i < n; i++) p_.push_back(i);
+        for(auto& e: edges){
+            int u = e[0]- 1, v = e[1] - 1;
+            if(!Union(u, v)) return e;
+        }
+        return {};
+    }
+    
+private:    
+    vector<int> p_;
+    bool Union(int u, int v){
+        int pu = Find(u), pv = Find(v);
+        if(pu == pv) return false;
+        p_[pv]=pu;
+        return true;
+    }
+    
+    int Find(int i){
+        if(i != p_[i])
+            p_[i] = Find(p_[i]);
+        return p_[i];
+    }
+};

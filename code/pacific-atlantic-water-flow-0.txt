@@ -1,0 +1,58 @@
+// time: O(r * c)
+// space: O(r * c)
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** pacificAtlantic(int** heights, int heightsSize, int* heightsColSize, int* returnSize, int** returnColumnSizes){
+  int rows = heightsSize;
+  int cols = *heightsColSize;
+  
+  char visitedPacific[201][201] = {}, visitedAtlantic[201][201] = {};
+  for (int r = 0; r < rows; r++) {
+    traverse(heights, rows, cols, r, 0, -1, visitedPacific);
+    traverse(heights, rows, cols, r, cols - 1, -1, visitedAtlantic);
+  }
+
+  for (int c = 0; c < cols; c++) {
+    traverse(heights, rows, cols, 0, c, -1, visitedPacific);
+    traverse(heights, rows, cols, rows - 1, c, -1, visitedAtlantic);
+  }
+  
+  int** result = (int**) malloc(rows * cols * sizeof(int*));
+  for (int i = 0; i < rows * cols; i++) {
+    result[i] = (int*) malloc(2 * sizeof(int));
+  }
+  
+  *returnSize = 0;
+  for (int r = 0; r < rows; r++) {
+    for (int c = 0; c < cols; c++) {
+      if (visitedPacific[r][c] && visitedAtlantic[r][c]) {
+        result[*returnSize][0] = r;
+        result[*returnSize][1] = c;
+        (*returnSize)++;
+      }
+    }
+  }
+  
+  *returnColumnSizes = (int*) malloc(*returnSize * sizeof(int));
+  for (int r = 0; r < *returnSize; r++) {
+    (*returnColumnSizes)[r] = 2;
+  }
+
+  return result;
+}
+
+void traverse(int** heights, int rows, int cols, int r, int c, int prev, char (*visited)[201]) {
+  if (r < 0 || r >= rows || c < 0 || c >= cols || prev > heights[r][c] || visited[r][c])
+    return;
+
+  visited[r][c] = 1;
+
+  traverse(heights, rows, cols, r+1, c, heights[r][c], visited);
+  traverse(heights, rows, cols, r-1, c, heights[r][c], visited);
+  traverse(heights, rows, cols, r, c+1, heights[r][c], visited);
+  traverse(heights, rows, cols, r, c-1, heights[r][c], visited);
+}

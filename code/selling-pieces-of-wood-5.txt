@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int p[201][201];
+    long long memo[201][201];
+    long long helper(int m, int n){
+        if(m==0 || n==0) return 0;
+        if(memo[m][n]!=-1) return memo[m][n]; 
+        long long curr = 0;
+        if(p[m][n]!=-1) curr = p[m][n];
+        for(int i=1; i<m; i++) curr = max(curr, helper(i, n) + helper(m-i, n));
+        for(int j=1; j<n; j++) curr = max(curr, helper(m, j) + helper(m, n-j));
+        return memo[m][n] = curr;
+    }
+    
+    long long sellingWood(int m, int n, vector<vector<int>>& prices) {
+        for(int i=0; i<=m; i++){
+            for(int j=0; j<=n; j++) p[i][j] = -1, memo[i][j]=-1;
+        }
+        for(vector<int> &i: prices){
+            p[i[0]][i[1]] = i[2];
+        }
+        return helper(m, n);
+    }
+};

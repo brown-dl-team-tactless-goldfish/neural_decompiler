@@ -1,0 +1,36 @@
+public class Solution {
+    public Node Construct(int[][] grid) {
+        if (grid == null || grid.Length == 0)
+            return null;
+        
+        return Helper(grid, (0, 0), (grid.Length - 1, grid[0].Length - 1));
+    }
+    
+    private Node Helper(int[][] grid, (int, int) i, (int, int) j)
+    {
+        Node node = new Node(grid[i.Item1][i.Item2] == 1, true);
+        
+        for (int k = i.Item1; k <= j.Item1; k++)
+        {
+            for (int l = i.Item2; l <= j.Item2; l++)
+                if (grid[i.Item1][i.Item2] != grid[k][l])
+                {
+                    node.isLeaf = false;
+                    break;
+                }
+            
+            if (!node.isLeaf)
+                break;
+        }
+                
+        if (!node.isLeaf)
+        {
+            node.topLeft = Helper(grid, i, (i.Item1 + (j.Item1 - i.Item1) / 2, i.Item2 + (j.Item2 - i.Item2) / 2));
+            node.topRight = Helper(grid, (i.Item1, i.Item2 + (j.Item2 - i.Item2) / 2 + 1), (i.Item1 + (j.Item1 - i.Item1) / 2, j.Item2));
+            node.bottomLeft = Helper(grid, (i.Item1 + (j.Item1 - i.Item1) / 2 + 1, i.Item2), (j.Item1, i.Item2 + (j.Item2 - i.Item2) / 2));
+            node.bottomRight = Helper(grid, (i.Item1 + (j.Item1 - i.Item1) / 2 + 1, i.Item2 + (j.Item2 - i.Item2) / 2 + 1), j);
+        }
+        
+        return node;
+    }
+}

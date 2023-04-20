@@ -1,0 +1,55 @@
+class Solution {
+public:
+    long long convert(string &s)
+    {
+        long long x = 1;
+        long long num = 0;
+        for(int i=s.size()-1;i>=0;i--)
+        {
+            if(s[i]=='1')
+            {
+                num+=x;
+            }
+            x*=2;
+        }
+        return num;
+    }
+    vector<vector<int>> substringXorQueries(string s, vector<vector<int>>& queries) {
+        unordered_map<long long,vector<int>>mp;
+        for(int i=0;i<s.size();i++)
+        {
+            string x;
+            for(int j=i;j<min(i+32,(int)s.size());j++)
+            {
+                x+=s[j];
+                long long a = convert(x);
+                if(mp.find(a)==mp.end())
+                {
+                    mp[a] = {i,j};
+                }
+                else 
+                {
+                    auto &m = mp[a];
+                    if((m[1]-m[0])>(j-i))
+                    {
+                        mp[a] = {i,j};
+                    }
+                }
+            }
+        }
+        vector<vector<int>>ans;
+        for(auto x:queries)
+        {
+            long long a = x[1]^x[0];
+            if(mp.find(a)!=mp.end())
+            {
+                ans.push_back(mp[a]);
+            }
+            else
+            {
+                ans.push_back({-1,-1});
+            }
+        }
+        return ans;
+    }
+};

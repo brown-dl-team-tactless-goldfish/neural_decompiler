@@ -1,0 +1,34 @@
+public class Solution {
+    public int MaxProfit(int k, int[] prices) {
+        if (prices == null || prices.Length == 0)
+            return 0;
+        
+        if (k >= prices.Length / 2)
+        {
+            int res = 0;
+            
+            for (int i = 0; i < prices.Length - 1; i++)
+                if (prices[i] < prices[i + 1])
+                    res += prices[i + 1] - prices[i];
+            
+            return res;
+        }
+        else
+        {
+            int[,] res = new int[k + 1, prices.Length];
+
+            for (int i = 1; i < k + 1; i++)
+            {
+                int diff = -prices[0];
+                
+                for (int j = 1; j < prices.Length; j++)
+                {
+                    res[i, j] = Math.Max(res[i, j - 1], prices[j] + diff);
+                    diff = Math.Max(diff, res[i - 1, j] - prices[j]);
+                }
+            }
+            
+            return res[k, prices.Length - 1];
+        }
+    }
+}

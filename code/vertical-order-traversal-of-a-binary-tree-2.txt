@@ -1,0 +1,42 @@
+int cmp(const void *a, const void *b){ return (*(int*)a - *(int*)b); }
+
+void DFS(struct TreeNode* root, int** visit, int* col, int idx, int* ansCnt, int level){
+    if(!root) return;
+    DFS(root->left, visit, col, idx-1, ansCnt, level+1);
+    if(!col[idx]) (*ansCnt)++;
+    /* insert level for qsort by value */
+    visit[idx][col[idx]++] = (level << 16) | root->val;
+    DFS(root->right, visit, col, idx+1, ansCnt, level+1);
+}
+
+int** verticalTraversal(struct TreeNode* root, int* returnSize, int** returnColumnSizes){
+    int** visit = (int**)calloc(2001, sizeof(int*));
+    int* col = (int*)calloc(2001, sizeof(int));
+    int ansCnt = 0;
+    int step = 10;
+    visit[1000] = (int*)calloc(pow(2, step--), sizeof(int));
+    for(int i = 1; i < 1000; i++)
+    {
+        visit[1000+i] = (int*)calloc(pow(2, step), sizeof(int));
+        visit[1000-i] = (int*)calloc(pow(2, step), sizeof(int));
+    }
+    DFS(root, visit, col, 1000, &ansCnt, 0);
+    int** ans = (int**)calloc(ansCnt, sizeof(int*));
+    int* ansCol = (int*)calloc(ansCnt, sizeof(int));
+    ansCnt = 0;
+    for(int i = 0; i < 2001; i++){
+        if(col[i])
+        {
+            qsort(visit[i], col[i], sizeof(int), cmp);
+            ans[ansCnt] = (int*)calloc(col[i], sizeof(int));
+            for(int j = 0; j < col[i]; j++)
+                ans[ansCnt][j] = visit[i][j] & 0xFFFF;
+            ansCol[ansCnt++] = col[i];
+        }
+        free(visit[i]);
+    }
+    free(col);
+    *returnSize= ansCnt;
+    *returnColumnSizes = ansCol;
+    return ans;
+}

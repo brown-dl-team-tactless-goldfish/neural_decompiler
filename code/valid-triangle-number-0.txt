@@ -1,0 +1,32 @@
+int cmpfunc(const void* a, const void* b){
+    return *(int*)b - *(int*)a;
+}
+
+int triangleNumber(int* nums, int numsSize){
+    
+    if(numsSize < 3)
+        return 0;
+    
+    int i, j;
+    
+    qsort(nums, numsSize, sizeof(int), cmpfunc);
+    
+    int idx;
+    int diff ;  //c - b
+    int ans = 0;
+    for(i = 0; i < numsSize -2; i++){
+        idx = numsSize -1;
+        for(j = i + 1; j < numsSize -1; j++){ 
+            diff = nums[i] - nums[j];
+            for(int k = idx; k > j; k--){
+                if(nums[k] > diff){
+                    idx = k;
+                    ans += (idx-j);
+                    break;
+                }
+            }           
+        }
+    }
+    
+    return ans;
+}

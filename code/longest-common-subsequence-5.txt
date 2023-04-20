@@ -1,0 +1,31 @@
+#include <string.h>
+
+int longestCommonSubsequence(char * text1, char * text2){
+int m  = strlen(text1) +1;
+int n  = strlen(text2) +1;
+
+int** matrix = calloc(m , sizeof(int* ));
+
+for(int i =0; i< m ; ++i){
+    matrix[i] = calloc(n, sizeof(int));
+}
+
+for(int i = 1; i< m; ++i){
+    for(int j =1; j<n ; ++j){
+        
+        if(text1[i-1] == text2[j-1]){
+            matrix[i][j] = matrix[i-1][j-1] +1;
+        
+        }else if(matrix[i-1][j] >= matrix[i][j-1]){
+            matrix[i][j] = matrix[i-1][j];
+        
+        }else{
+            matrix[i][j] = matrix[i][j-1];
+            
+        }
+    
+    }
+    
+}
+return matrix[m-1][n-1];
+}

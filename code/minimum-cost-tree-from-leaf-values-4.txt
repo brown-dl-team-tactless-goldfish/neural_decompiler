@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int mctFromLeafValues(const vector<int>& arr) {
+        int n = arr.size();
+        vector<vector<int>> dp(n + 1, vector<int>(n + 1, -1));
+        int res = help(arr, 0, n, dp);
+        return res;
+    }
+
+    int help(const vector<int>& arr, int b, int e, vector<vector<int>>& dp) {
+        int& v = dp[b][e];
+        if (v < 0) {
+            if (e - b < 2) v = 0;
+            else if (e - b == 2) v = arr[b] * arr[e - 1];
+            else {
+                v = INT32_MAX;
+                for (int i = b + 1; i < e; ++i) {
+                    int cur = *max_element(arr.begin() + b, arr.begin() + i) * *max_element(arr.begin() + i, arr.begin() + e);
+                    v = min(v, cur + help(arr, b, i, dp) + help(arr, i, e, dp));
+                }
+            }
+        }
+        return v;
+    }
+};

@@ -1,0 +1,43 @@
+    int result=0;
+    List<int> freq = new List<int>();
+      
+    foreach(char c in new String(s.Distinct().ToArray())){ //freq of each distinct char
+        freq.Add(c - 'a');
+    }
+        
+    int count=0;
+    int beforecount=0;
+    //will initiaze first and second char from position 1.
+    for(int i=0; i < 26; i++){ // first char
+        for(int j=0; j<26;j++){ //second char
+            if(i==j || (!freq.Contains(i) || !freq.Contains(j)) )   //only allow loop for strings that exist
+                continue; //if index on same char, continue
+            int highFreq =0  ,lowFreq= 0;
+            bool resetHappened=false; // if will happen when lowfreq> highfreq
+            
+            foreach(char ch in s){
+                
+                if(ch - 'a' == i){ // if char matches the char on index,
+                    highFreq++;
+                }else if(ch - 'a' == j){
+                    lowFreq++;
+                }
+                
+                if(lowFreq > 0){
+                    result = Math.Max(result, highFreq - lowFreq);
+                }else if (resetHappened){ //reset has happened
+                    result = Math.Max(result, highFreq - 1);
+                }
+                
+                if(highFreq < lowFreq){
+                    highFreq = 0;
+                    lowFreq = 0;
+                    resetHappened = true;
+                }
+                
+            }
+        }
+    }
+    return result;
+    
+}

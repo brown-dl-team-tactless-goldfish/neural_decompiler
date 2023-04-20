@@ -1,0 +1,22 @@
+int uf[26];
+
+int find(int x) {
+    if (x != uf[x]) 
+        uf[x] = find(uf[x]);
+    return uf[x];
+}
+
+bool equationsPossible(char ** equations, int equationsSize){
+    for (int i = 0; i < 26; ++i) 
+        uf[i] = i;
+		
+    for (int i=0;i<equationsSize;i++) {
+        if (equations[i][1] == '=')
+            uf[find(equations[i][0] - 'a')] = find(equations[i][3] - 'a');
+    } 
+	
+    for (int i=0;i<equationsSize;i++) 
+        if (equations[i][1] == '!' && find(equations[i][0] - 'a') == find(equations[i][3] - 'a'))
+            return false;
+    return true;
+}

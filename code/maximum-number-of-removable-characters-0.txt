@@ -1,0 +1,60 @@
+bool checkSubsequence(char* s, char *p){
+    int lenS = strlen(s);
+    int lenP = strlen(p);
+    int idxS = 0, idxP = 0;
+    while(idxS < lenS){
+        if(s[idxS] == p[idxP]){
+            idxS++;
+            idxP++;
+            if(idxP == lenP)
+                return true;
+        }
+        else
+            idxS++;
+    }
+    return false;
+}
+
+int maximumRemovals(char * s, char * p, int* removable, int removableSize){
+    int lenS = strlen(s);
+    char* tempS = malloc((lenS+1) * sizeof(char));
+    tempS[lenS] = '\0';  
+    int left = 0, right = removableSize-1;
+    int mid;
+    int i;
+    while(left + 1 < right){
+        strcpy(tempS, s);
+        mid = (left + right)/2;
+        for(i = 0; i <= mid; i++){
+            tempS[removable[i]] = 'A';  //change to non-lowercase 
+        }
+        if(checkSubsequence(tempS, p))
+            left = mid;
+        else
+            right = mid - 1;
+    }
+    //check right
+    int ans = 0;
+    strcpy(tempS, s);
+    for(i = 0; i <= right; i++){
+        tempS[removable[i]] = 'A';  //change to non-lowercase 
+    }
+    if(checkSubsequence(tempS, p)){
+        ans = right+1;
+        goto exit;
+    }
+    
+    //check left
+    strcpy(tempS, s);
+    for(i = 0; i <= left; i++){
+        tempS[removable[i]] = 'A';  //change to non-lowercase 
+    }
+    if(checkSubsequence(tempS, p))
+        ans = left+1;
+    
+    exit:
+        free(tempS);
+    
+    return ans;
+    
+}

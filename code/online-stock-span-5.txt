@@ -1,0 +1,105 @@
+typedef struct node {
+    int val;
+    int index_last;
+    struct node * next;
+} node_t;
+
+typedef struct {
+    int len;
+    struct node * head;
+} StockSpanner;
+
+
+StockSpanner* stockSpannerCreate() {
+    StockSpanner * object = NULL;
+    object = (StockSpanner *) malloc(sizeof(StockSpanner)); 
+    object->len = 0;
+    object->head = NULL;
+    return object;
+}
+
+int stockSpannerNext(StockSpanner* obj, int price) {
+    if (!(obj->len))
+    {
+        obj->len++;
+        node_t * header = NULL;
+        header = (node_t *) malloc(sizeof(node_t));
+        header->val = price;
+        header->index_last = 1;
+        header->next = NULL;
+        obj->head = header;
+        return 1;
+    }
+    
+    obj->len++;
+    node_t * current = obj->head;
+    
+    if (price >= current->val) {
+        if (price == current->val){
+            current->index_last = obj->len;
+            return obj->len;
+        }
+        node_t * new_node;
+        new_node = (node_t *) malloc(sizeof(node_t));
+        new_node->val = price;
+        new_node->index_last = obj->len;
+        new_node->next = obj->head;
+        obj->head = new_node;
+        return obj->len;
+    }
+    
+    int delta = current->index_last;
+    node_t * last = obj->head;
+    current=current->next;
+    
+    while (current != NULL && obj->len-1>delta) {
+        if (price >= current->val) {
+            if (price == current->val){
+                current->index_last = obj->len;
+                return obj->len-delta;
+            }
+            
+            node_t * new_node;
+            new_node = (node_t *) malloc(sizeof(node_t));
+            new_node->val = price;
+            new_node->index_last = obj->len;
+            new_node->next = current;
+            last->next = new_node;
+            return obj->len-delta;
+
+        }
+        else {
+            if (delta < current->index_last) delta = current->index_last;
+            last = last->next;
+            current = current->next;
+        }
+    }
+    last->next = (node_t *) malloc(sizeof(node_t));
+    last->next->val = price;
+    last->next->index_last = obj->len;
+    last->next->next = NULL;
+    return 1;
+}
+
+void stockSpannerFree(StockSpanner* obj) {
+    node_t * next_node = NULL;
+    node_t * remove_node = NULL;
+    next_node = obj->head;
+    remove_node = obj->head;
+    free(obj);
+     while (next_node != NULL){
+         next_node = next_node->next;
+         free(remove_node);
+         remove_node = next_node;
+    }
+    return 0;
+}
+    
+
+/**
+ * Your StockSpanner struct will be instantiated and called as such:
+ * StockSpanner* obj = stockSpannerCreate();
+ * int param_1 = stockSpannerNext(obj, price);
+ 
+ * stockSpannerFree(obj);
+*/

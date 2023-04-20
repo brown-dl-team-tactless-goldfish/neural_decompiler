@@ -1,0 +1,39 @@
+class Solution {
+    unordered_map<char, vector<int>> idxMap;
+    
+    int countInvList(char c, int l, int r) {
+        auto iter = idxMap.find(c);
+        if (iter == idxMap.end()) return 0;
+        auto up_iter = upper_bound(iter->second.begin(), iter->second.end(), r);
+        auto lo_iter = lower_bound(iter->second.begin(), iter->second.end(), l);
+        int cnt = up_iter - lo_iter;
+        return cnt;
+    }
+    
+public:
+    vector<bool> canMakePaliQueries(string s, vector<vector<int>>& queries) {
+        for (int i = 0; i < s.length(); i++)
+            idxMap[s[i]].push_back(i);
+        
+        vector<bool> ans;
+        
+        int oddCnt;
+        for (vector<int>& q: queries) {
+            int l = q[0], r = q[1], k = q[2];
+            
+            oddCnt = 0;
+            for (int i = 0; i < 26; i++) {
+                char c = (char) (i + 'a');
+                int cnt = countInvList(c, l, r);
+                if (cnt % 2 == 1)
+                    oddCnt++;
+            }
+            
+            bool a = false;
+            if (oddCnt <= k * 2 + 1) a = true;
+            ans.push_back(a);
+        }
+        
+        return ans;
+    }
+};

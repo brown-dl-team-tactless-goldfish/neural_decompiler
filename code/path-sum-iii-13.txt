@@ -1,0 +1,33 @@
+void checkNode(int rootVal, struct TreeNode* branch, int sum, int* count){
+    if (branch == NULL) return;
+    
+    if ((rootVal + branch->val) == sum) 
+        (*count) ++;
+    
+    if (branch->left != NULL)
+        checkNode((rootVal+ branch->val), branch->left, sum, count);
+    if (branch->right != NULL)
+        checkNode((rootVal+ branch->val), branch->right, sum, count);
+}
+
+void travChildren(struct TreeNode* root, int sum, int* count){
+    if (root == NULL) return;
+    
+    int rootVal = root->val;
+    
+    *count = (rootVal == sum)? *count + 1: *count;
+    
+    if (root->left != NULL)
+        checkNode(rootVal, root->left, sum, count);
+    if (root->right != NULL)
+        checkNode(rootVal, root->right, sum, count);
+    
+    travChildren(root->left, sum, count);
+    travChildren(root->right, sum, count);
+}
+
+int pathSum(struct TreeNode* root, int sum){
+    int count = 0;
+    travChildren(root, sum, &count);
+    return count;
+}

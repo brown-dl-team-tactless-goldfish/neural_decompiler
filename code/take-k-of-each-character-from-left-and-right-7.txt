@@ -1,0 +1,31 @@
+public class Solution {
+    public int TakeCharacters(string s, int k) {
+        int a = 0, b = 0, c = 0, left = 0, right = s.Length-1;
+        // increment 'left' pointer until we have a,b,c >= k
+        for(; left < s.Length; left++){
+            if(s[left] == 'a') a++;
+            if(s[left] == 'b') b++;
+            if(s[left] == 'c') c++;
+            if(a >= k && b >= k && c >= k) break;
+        }
+        if(a < k || b < k || c < k) return -1;
+        int res = left+1;
+        while(left >= 0){
+            // decrement 'left' pointer one step back
+            if(s[left] == 'a') a--;
+            if(s[left] == 'b') b--;
+            if(s[left] == 'c') c--;
+            left--;
+            // and increment 'right' pointer until we have a,b,c >= k
+            while(right >= 0 && (a < k || b < k || c < k)){
+                if(s[right] == 'a') a++;
+                if(s[right] == 'b') b++;
+                if(s[right] == 'c') c++;
+                right--;
+            }
+            // calculate minimun
+            res = Math.Min(res, left+s.Length-right);
+        }
+        return res;
+    }
+}

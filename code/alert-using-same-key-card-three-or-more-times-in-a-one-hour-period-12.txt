@@ -1,0 +1,25 @@
+class Solution {
+public:
+    vector<string> alertNames(vector<string>& keyName, vector<string>& keyTime) {
+        unordered_map<string, set<int>> m;
+        for (int i = 0; i < keyTime.size(); i++) {
+            int time = stoi(keyTime[i].substr(0, 2)) * 60 + 
+                stoi(keyTime[i].substr(3));
+            m[keyName[i]].insert(time);
+        }
+        for (auto p : m) {
+            if (p.second.size() < 3)
+                continue;
+            auto slow = p.second.begin();
+            auto fast = next(slow, 2);
+            for (; fast != p.second.end(); fast++, slow++) {
+                if (*fast - *slow <= 60) {
+                    s.insert(p.first);
+                    break;
+                }
+            }
+        }
+        
+        return {s.begin(), s.end()};
+    }
+};

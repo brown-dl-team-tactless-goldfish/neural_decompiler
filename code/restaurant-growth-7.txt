@@ -1,0 +1,21 @@
+with c as 
+(
+    with a
+as
+(
+    select distinct c1.visited_on as x  , c2.visited_on as y  from customer c1 
+    left join customer c2 
+    on datediff(c2.visited_on, c1.visited_on) = 6 
+)
+, b as 
+(
+    select * from customer 
+)
+select distinct y as visited_on  , sum(b.amount) over(partition by a.x , a.y ) as amount    from b 
+left join a
+on b.visited_on between a.x  and a.y 
+
+)
+select visited_on ,  round(amount,2) as amount , round(amount/7,2) as average_amount from c
+#group by visited_on 
+order by visited_on asc 

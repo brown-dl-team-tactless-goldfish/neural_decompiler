@@ -1,0 +1,36 @@
+long long minSumSquareDiff(int* a, int n, int* b, int useless, int k1, int k2)
+{
+    int *p=(int *)malloc(sizeof(int)*n);
+    int *map=(int *)malloc(sizeof(int)*(1e5+1));
+    memset(map,0,(1e5+1));
+    int m=INT_MIN;
+    for(int i=0;i<n;i++)
+    {
+        p[i]=abs(a[i]-b[i]);
+        map[p[i]]++;
+        if(p[i]>m)
+            m=p[i];
+    }
+    int k=k1+k2;
+    for(int i=m;i>0;i--)
+    {
+        if(map[i]>=k)
+        {
+            map[i]=map[i]-k;
+            map[i-1]+=k;
+            break;
+        }
+        else
+        {
+            k=k-map[i];
+            map[i-1]+=map[i];
+            map[i]=0;
+        }
+        if(k==0)break;
+        
+    }
+    long long s=0;
+    for(int i=m;i>0;i--)
+        s+=(long long)map[i]*((long long)i*i);
+    return s;
+}

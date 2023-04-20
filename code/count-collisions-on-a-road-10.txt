@@ -1,0 +1,31 @@
+    int countCollisions(string dirs) {  
+        stack<char> s;
+        int ret = 0;
+        int cnt = 0;
+        for(auto c : dirs){
+            if(c == 'L'){ // no need to push into stack for 'L'
+                if(!s.empty() && s.top() == 'S')
+                    ret++;
+                if(!s.empty() && s.top() == 'R'){
+                    ret += 2;
+                    s.pop();
+                    while(!s.empty() && s.top() =='R'){
+                        ret++;
+                        s.pop();
+                    }
+                    s.push('S');
+                }
+            }
+            else if(c == 'S'){ // only 'S' and 'R' need to go into stack.
+                while(!s.empty() && s.top() =='R'){
+                    ret++;
+                    s.pop();
+                }
+                s.push(c);
+            }
+            else
+                s.push(c);
+        }
+        return ret;
+    }
+};

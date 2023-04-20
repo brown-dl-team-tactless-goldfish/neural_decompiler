@@ -1,0 +1,54 @@
+void uni(int *, int, int, int *);
+
+int regionsBySlashes(char ** grid, int gridSize){
+    int num = gridSize * gridSize * 4;
+    int * parent = malloc(sizeof(int) * num);
+    for (int i = 0; i < num; i++){
+        parent[i] = i;
+    }
+    for (int i = 0; i < gridSize; i++){
+        for (int j = 0; j < gridSize; j++){
+            int base = i * gridSize * 4 + j * 4;
+            char cur = grid[i][j];
+            switch(cur){
+                case '/':
+                    uni(parent, base, base + 3, &num);
+                    uni(parent, base + 1, base + 2, &num);
+                    break;
+                case '\\':
+                    uni(parent, base, base + 1, &num);
+                    uni(parent, base + 2, base + 3, &num);
+                    break;
+                default:
+                    uni(parent, base, base + 1, &num);
+                    uni(parent, base, base + 2, &num);
+                    uni(parent, base, base + 3, &num);
+            }
+            if (i > 0){
+                uni(parent, base + 3, base - gridSize * 4 + 1, &num);
+            }
+            if (j > 0){
+                uni(parent, base, base - 2, &num);
+            }
+        }
+    }
+    return num;
+}
+
+int find(int * parent, int area){
+    int cur = area;
+    while (parent[cur] != cur){
+        cur = parent[parent[cur]];
+    }
+    return cur;
+}
+
+void uni(int * parent, int a0, int a1, int * num){
+    int p0 = find(parent, a0);
+    int p1 = find(parent, a1);
+    if (p0 != p1){
+        *num = *num - 1;
+        parent[p1] = p0;
+    }
+    return;
+}

@@ -1,0 +1,43 @@
+//upper,lower,left,right
+int walk(int **grid,int r,int c,int count,int *max,int RowSize,int ColSize){
+    
+    if(count>*max)
+        *max=count;
+    
+    if(r-1>=0&&grid[r-1][c]){//upper
+        grid[r-1][c]=0;
+        count=walk(grid,r-1,c,count+1,max,RowSize,ColSize);
+    }
+    
+    if(r+1<RowSize&&grid[r+1][c]){//down
+        grid[r+1][c]=0;
+        count=walk(grid,r+1,c,count+1,max,RowSize,ColSize);
+    }
+    
+    if(c-1>=0&&grid[r][c-1]){//left
+        grid[r][c-1]=0;
+        count=walk(grid,r,c-1,count+1,max,RowSize,ColSize);
+    }
+    
+     if(c+1<ColSize&&grid[r][c+1]){//right
+        grid[r][c+1]=0;
+        count=walk(grid,r,c+1,count+1,max,RowSize,ColSize);
+    }
+    
+    return count;
+}
+
+int maxAreaOfIsland(int** grid, int gridRowSize, int gridColSize) {
+    int i,j,max=0;
+    for(i=0;i<gridRowSize;i++){
+        for(j=0;j<gridColSize;j++){
+            if(grid[i][j]==1){
+                grid[i][j]=0;
+                walk(grid,i,j,1,&max,gridRowSize,gridColSize);
+            }     
+        }
+    }
+    
+    
+    return max;
+}

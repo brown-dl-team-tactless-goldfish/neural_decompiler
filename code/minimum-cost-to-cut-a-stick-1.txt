@@ -1,0 +1,47 @@
+static int compare(const void* v, const void* z)
+{
+    const int a = *(const int*)v;
+    const int b = *(const int*)z;
+    
+    if (a < b) return -1;
+    else if (a > b) return 1;
+    else return 0;
+}
+
+static int getMin(int* dp, int* cuts, int cStart, int cEnd, int cSize, int n)
+{
+    const int dpIdx = (cStart + 1) * cSize + (cEnd - 1);
+    
+    if ((cStart + 1) >= cEnd) {
+        return 0;
+    } else if (dp[dpIdx] == -1) {
+        const int curLogStart = (cStart == -1)  ? 0 : cuts[cStart];
+        const int curLogEnd   = (cEnd == cSize) ? n : cuts[cEnd];
+        int min = INT_MAX;
+        
+        for (int i = cStart + 1; i < cEnd; i++) {
+            int temp = 0;
+            
+            temp += getMin(dp, cuts, cStart, i,    cSize, n);
+            temp += getMin(dp, cuts, i,      cEnd, cSize, n);
+            
+            if (temp < min) {
+                min = temp;
+            }
+        }
+        min += curLogEnd - curLogStart;
+        
+        dp[dpIdx] = min;
+    }
+    
+    return dp[dpIdx];
+}
+
+int minCost(int n, int* cuts, int cutsSize){
+    int dp[cutsSize * cutsSize];
+    
+    qsort(cuts, cutsSize, sizeof(int), compare);
+    
+    memset(dp, 0xFF, sizeof(dp));
+    return getMin(dp, cuts, -1, cutsSize, cutsSize, n);
+}

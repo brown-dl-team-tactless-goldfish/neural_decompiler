@@ -1,0 +1,78 @@
+#define totalLetters 26
+
+int search(char letter, int currentCnt,  char ** A, int ASize)
+{
+    int count = 0;
+    int min = currentCnt;
+    
+    for (int i = 1; i < ASize; i++)
+    {
+        
+        count = 0;
+        
+        for (int j = 0; A[i][j] != '\0'; j++)
+        {
+            if (letter == A[i][j])
+            {
+                count++;
+            }
+        }
+        
+        if (count <= 0)
+        {
+            return 0;
+        }
+        
+        min = (min <= count) ? min : count;       
+    }
+        
+    return min;
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char ** commonChars(char ** A, int ASize, int* returnSize)
+{
+    int str1Hash[totalLetters];
+    memset(str1Hash, 0, sizeof(str1Hash));
+    
+    int str1Size = 0;
+    
+    for (int i = 0; A[0][i] != '\0'; i++)
+    {
+        int index = A[0][i] - 'a';
+        str1Hash[index]++;
+        str1Size++;
+    }
+    
+    char ** resultList = (char **)malloc(str1Size * sizeof(char *));
+    
+    for (int i = 0; i < str1Size; i++)
+    {
+        resultList[i] = malloc(2 * sizeof(char));
+    }
+
+    int resultListPtr   = 0;
+    int resultListSize  = 0;
+    int result;
+    
+    for (int i = 0; i < totalLetters; i++)
+    {
+        if (str1Hash[i] > 0)
+        {
+            result = search('a' + i, str1Hash[i], A, ASize);
+            
+            for (int j = 0; j < result; j++)
+            {
+                memset(resultList[resultListPtr], '\0', 2);
+                resultList[resultListPtr++][0] = 'a' + i;
+                resultListSize++;        
+            }
+            
+        }
+    }
+    
+    *returnSize = resultListSize;
+    return resultList;
+}

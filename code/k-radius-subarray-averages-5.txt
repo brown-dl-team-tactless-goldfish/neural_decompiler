@@ -1,0 +1,60 @@
+class Solution {
+public:
+    vector<int> getAverages(vector<int>& nums, int k) {
+        
+     // Variable Initialization  
+      int i=0;
+      int j=0;
+      vector<int>ans;
+      int ws=k*2+1;
+      long long prefix_sum=0;
+      int n=nums.size();
+        
+    // Edge Case condition
+   if(n<ws)
+   {
+       for(int i=0;i<n;i++)
+           ans.push_back(-1);
+       return ans;
+   }
+        
+    // Create A window of size 'k'
+        while(j-i+1<ws)
+        {
+            // Do pre-calculation
+             prefix_sum+=nums[j];
+			 
+			 // Store '-1' for index which can't be a center
+            if(j-i+1<=k)
+                ans.push_back(-1);
+            j++;
+        }
+    // Slide Window over whole array and update answer
+        while(j<n)
+        {
+            // Do pre-calculation
+            prefix_sum+=nums[j];
+            
+            // Store Result
+            ans.push_back(prefix_sum/(j-i+1));
+            
+            // Remove Calculation for i
+            prefix_sum-=nums[i];
+            
+            // Slide the window with maintaining the size
+            i++;
+            j++;
+        }
+        int index=(j-i)/2+i;
+        while(index<n)
+        {
+		// Store '-1' for index which can't be a center
+            ans.push_back(-1);
+            index++;
+        }
+        return ans;
+    }
+};
+
+Time Complexity: O(3*(n/2))
+Space Complexity: O(1)

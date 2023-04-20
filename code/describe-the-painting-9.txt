@@ -1,0 +1,29 @@
+class Solution {
+public:
+  vector<vector<long long>> splitPainting(vector<vector<int>>& segments) {
+    vector<vector<int>> table(100002);
+    vector<vector<long long>> answer;
+    unordered_set<int> colors;
+    for(auto &c: segments) 
+      table[c[0]].push_back(c[2]), table[c[1]].push_back(c[2]);
+    
+    long long sum = 0;
+    for(int i = 1; i != 100002; i++){
+      if(sum == 0 && table[i].empty()) continue;
+      
+      for(int j = 0; j != table[i].size();j++)
+        if(colors.count(table[i][j])) sum -= table[i][j], colors.erase(table[i][j]);
+        else sum += table[i][j], colors.insert(table[i][j]);
+      
+      if(sum == 0) continue;
+      int st = i;
+      for(++i; i != 100002; i++)
+        if(!table[i].empty()) break;
+      
+      answer.push_back({st, i, sum});
+      i--;
+    }
+    
+    return answer;
+  }
+};

@@ -1,0 +1,17 @@
+class Solution:
+    # At each if you assign 2 * c to the left and 2 * c + 1 to the right
+    # then at any level you can know what is the rightmost node in that level order traversal
+    # by subtracting the rightmost in level order with leftmost in level order
+    # The max for any level will be our answer
+    def widthOfBinaryTree(self, root: Optional[TreeNode]) -> int:
+        queue = deque([(root, 0)])
+        res = 0
+        while queue:
+            size = len(queue)
+            _, l = queue[0]
+            for _ in range(size):
+                node, c = queue.popleft()
+                if node.left: queue.append((node.left, 2 * c))
+                if node.right: queue.append((node.right, 2 * c + 1))
+            res = max(res, c - l + 1)
+        return res

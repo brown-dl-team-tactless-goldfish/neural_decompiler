@@ -1,0 +1,40 @@
+bool isValid(char * s){
+    size_t s_len = strlen(s);
+    size_t stack_size = 0;
+
+    char *stack = (char *)malloc(s_len * sizeof(char));
+    
+    for (int i = 0; i < s_len; i++) {
+        char c = s[i];
+        if (c == '(' || c == '[' || c == '{') {
+            // push onto the stack
+            stack[stack_size++] = c;
+            if (stack_size > s_len / 2) //没有必要全部算完当右侧符号>1/2时便是false
+                return false;
+        } else {
+            // pop from the stack
+            if (stack_size == 0) return false; // 印证的了说明一定有与之对应的消解，否则false
+            switch (c) {
+                case ')':
+                    if (stack[--stack_size] != '(') {
+                        return false;
+                    }
+                    break;
+                case ']':
+                    if (stack[--stack_size] != '[') {
+                        return false;
+                    }
+                    break;
+                default:
+                    if (stack[--stack_size] != '{') {
+                        return false;
+                    }
+                    break;
+            }
+        }
+    }
+    
+    free(stack);
+    
+    return (stack_size == 0);
+}

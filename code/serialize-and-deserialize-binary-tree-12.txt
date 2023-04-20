@@ -1,0 +1,83 @@
+class Codec {
+public:
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        if(!root)
+            return "";
+        string ans = to_string(root->val) + ",";
+        queue<TreeNode*> q;
+        q.push(root);
+        while(!q.empty()){
+            int size = q.size();
+            string temp;
+            string last;
+            while(size--){
+                root = q.front();
+            
+                q.pop();
+                if(root->left){q.push(root->left) ;
+                              temp+=to_string(root->left->val) + ",";
+                              }
+                else temp +="null,";
+                if(root->right){ q.push(root->right);
+                                temp+=to_string(root->right->val) + ",";
+                               }
+                else temp +="null,";
+                
+            }
+            ans += temp;
+            //cout<<temp<<" ";
+        }
+        ans.pop_back();
+        cout<<ans<<" ";
+        return ans;
+    }
+
+    vector<int> getdata(string s){
+        vector<int> v;
+        string temp = "";
+        for(auto & c : s){
+            if(c == ','){
+                v.push_back(temp != "null" ? stoi(temp) : INT_MAX);
+                
+                temp = "";
+                
+                continue;
+            }
+            temp+=c;
+        }
+        v.push_back(temp != "null" ? stoi(temp) : INT_MAX);
+
+        return v;
+    }
+    
+    TreeNode* deserialize(string s) {
+        if(s=="")
+            return nullptr;
+        vector<int> data = getdata(s);
+        int i = 0;
+        queue<TreeNode *> q;
+        TreeNode * root  = new TreeNode(data[i++]);
+        q.push(root);
+        while(!q.empty()){
+        
+  
+                TreeNode * temp = q.front();
+                q.pop();
+                if(i<data.size() and data[i] != INT_MAX){
+                    temp->left = new TreeNode(data[i]);
+                    q.push(temp->left);
+                }
+                i++;
+                if(i<data.size() and data[i] != INT_MAX){
+                    temp->right = new TreeNode(data[i]);
+                    q.push(temp->right);
+                }
+                i++;
+          
+            
+        }
+        return root;
+    }
+};

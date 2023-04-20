@@ -1,0 +1,37 @@
+typedef struct {
+    char** arr;
+    int start;
+    int arrSize;
+} OrderedStream;
+
+OrderedStream* orderedStreamCreate(int n) {
+    OrderedStream* obj = (OrderedStream*) calloc(1, sizeof(OrderedStream));
+    obj->arr = (char**) calloc(n + 1, sizeof(char*));
+    obj->start = 1;
+    obj->arrSize = n + 1;
+    return obj;
+}
+
+char** orderedStreamInsert(OrderedStream* obj, int idKey, char* value, int* retSize) {
+    (*retSize) = 0;
+    obj->arr[idKey] = value;
+    char** res = (char**) malloc(sizeof(char*));
+    if (obj->start == idKey) {
+        int len = 0, idx = idKey;
+        while (idx < obj->arrSize && obj->arr[idx]) {
+            len++;
+            idx++;
+        }
+        res = (char**) realloc(res, len * sizeof(char*));
+        while (idKey < obj->arrSize && obj->arr[idKey]) {
+            res[(*retSize)++] = obj->arr[idKey++];
+            (obj->start)++;
+        }
+    }
+    return res;
+}
+
+void orderedStreamFree(OrderedStream* obj) {
+    free(obj->arr);
+    free(obj);
+}

@@ -1,0 +1,65 @@
+int UnionFind(int* UNION, int val)
+{
+    if(UNION[val] == val)
+        return val;
+    return UnionFind(UNION, UNION[val] ) ;
+}
+
+bool UnionSet(int* UNION, int a, int b){
+    a = UnionFind(UNION, a);
+    b = UnionFind(UNION, b);
+    if(a == b)
+        return false;
+    UNION[b] = UNION[a];
+    return true;
+}
+int removeStones(int** stones, int stonesSize, int* stonesColSize){
+    int N = 100000;
+    int* UNION = malloc( stonesSize * sizeof(int) ) ;
+    int* hashRow = malloc(N * sizeof(int)) ;
+    int* hashCol = malloc(N * sizeof(int)) ;
+    //init hashRow, hashCol
+    for(int i = 0; i < N; i++){
+        hashRow[i] = -1;
+        hashCol[i] = -1;
+    }
+    for( int i = 0; i < stonesSize; i++ ){
+        UNION[i] = i;
+    }
+    //row union_set
+    for(int i = 0; i < stonesSize; i++){
+        if(hashRow[stones[i][0]] == -1){
+            hashRow[stones[i][0]] = i;    
+        }    
+        else{
+            UnionSet( UNION, i, hashRow[stones[i][0]]);
+        }
+    }
+    
+    //col union_set
+    for(int i = 0; i < stonesSize; i++){
+        if(hashCol[stones[i][1]] == -1){
+            hashCol[stones[i][1]] = i;    
+        }    
+        else{
+            UnionSet( UNION, i, hashCol[stones[i][1]]);
+        }
+    }
+    
+    //sort out UNION
+    for(int i = 0; i < stonesSize; i++){
+        UNION[i] = UnionFind(UNION, UNION[i]);
+    }
+    
+    //count group
+    int* map = calloc( stonesSize , sizeof(int)) ;
+    int group = 0;
+    for(int i = 0; i < stonesSize; i++){
+        if(map[ UNION[i] ] == 0){
+            group++;
+            map[ UNION[i] ]++;    
+        }
+    }
+    
+    return stonesSize - group;
+}

@@ -1,0 +1,36 @@
+static int Size, Targ, *Arr;
+void helper(int** ans, int* rSize, int** rColSize, int val, int in, bool use){ //rSize 是目前有幾個符合的
+    if(in == Size)  return;
+    helper(ans, rSize, rColSize, val, in+1, false);
+    if(in > 0 && Arr[in] == Arr[in-1] && !use)  return;
+    
+    val += Arr[in];
+    ans[*rSize][rColSize[0][*rSize]++] = Arr[in];
+    if(val == Targ){
+        (*rSize)++;
+        rColSize[0][*rSize] = rColSize[0][*rSize-1];
+        for(int j=0; j < rColSize[0][*rSize]; j++)
+            ans[*rSize][j] = ans[*rSize-1][j];
+    }
+    else if(val < Targ) 
+        helper(ans, rSize, rColSize, val, in+1, true);
+    rColSize[0][*rSize]--;
+}
+
+int cmp(const void * a, const void * b) {
+   return ( *(int*)a - *(int*)b );
+}
+
+int** combinationSum2(int* arr, int size, int targ, int* returnSize, int** returnColSizes){
+    int **ans = (int**)malloc(50 * sizeof(int*));
+    *returnColSizes = (int*)malloc(50 * sizeof(int));
+    for(int i=0; i<50; i++){
+        ans[i] = (int*)malloc(30 * sizeof(int));
+        returnColSizes[0][i] = 0;
+    }
+    qsort(arr, size, sizeof(int), cmp);
+    *returnSize = 0;
+    Size = size;  Targ = targ;  Arr = arr;
+    helper(ans, returnSize, returnColSizes, 0, 0, false);
+    return ans;
+}

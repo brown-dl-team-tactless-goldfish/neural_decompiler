@@ -1,0 +1,21 @@
+public class Solution {
+
+    public int DeleteString(string s) {
+      int[] dp = Enumerable.Repeat(1, s.Length).ToArray();
+
+      for (int start = s.Length - 2; start >= 0; --start) {
+        int max = 1;
+
+        for (int length = 1; length <= (s.Length - start) / 2; ++length) 
+          if (dp[start + length] + 1 < max)
+            continue;
+          else if (s.Substring(start, length) == s.Substring(start + length, length)) 
+            max = Math.Max(max, dp[start + length] + 1);
+
+        dp[start] = max;
+      }
+
+      return dp[0];
+    }
+
+}

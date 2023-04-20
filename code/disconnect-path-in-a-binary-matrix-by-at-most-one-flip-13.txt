@@ -1,0 +1,40 @@
+
+// just checking the number of nodes we can go through for each level of distance if it is <=1 then it's possible to make the grid disconnected.
+
+class Solution {
+public:
+    bool isPossibleToCutPath(vector<vector<int>>& grid) {
+        map<int,int>mp;
+        queue<pair<int,int>>q;
+        q.push({0,0});
+        mp[0]++;
+        int n=grid.size();
+        int m=grid[0].size();
+        vector<vector<int>>vis(n,vector<int>(m,0)),dist(n,vector<int>(m,0));
+        vis[0][0]=1;
+        int dx[]={1,0};
+        int dy[]={0,1};
+        while(!q.empty()){
+            int curx=q.front().first;
+            int cury=q.front().second;
+            q.pop();
+            for(int i=0;i<2;i++){
+                int newx=curx+dx[i];
+                int newy=cury+dy[i];
+                if(newx<n&&newy<m&&grid[newx][newy]==1&&!vis[newx][newy]){
+                    vis[newx][newy]=1;
+                    dist[newx][newy]=dist[curx][cury]+1;
+                    mp[dist[newx][newy]]++;
+                    q.push({newx,newy});
+                }
+            }
+        }
+        
+      
+        for(int i=1;i<(n+m-2);i++){
+            if(mp.find(i)==mp.end())return true;
+            if(mp[i]<=1)return true;
+        }
+        return false;
+    }
+};

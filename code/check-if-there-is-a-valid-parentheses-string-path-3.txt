@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int dp[102][102][204];
+    int f(int r, int c, int o1, int o2, int n, int m, vector<vector<char>>& g){
+        if(o1<o2){
+         return 0;
+        }
+        if(dp[r][c][o1-o2]!=-1)return dp[r][c][o1-o2];
+        int val = 0;
+        if(r<n-1){
+            val = val || f(r+1, c, o1 + (g[r][c] == '('), o2 + (g[r][c] == ')'), n, m, g);
+        }
+        if(c<m-1){
+            val = val || f(r, c+1, o1 + (g[r][c] == '('), o2 + (g[r][c] == ')'), n, m, g);
+        }
+        if(r==n-1 && c == m-1){
+            return o1 + (g[r][c] == '(') == o2 +( g[r][c] == ')');
+        }
+        return dp[r][c][o1-o2] = val;     
+    }
+    bool hasValidPath(vector<vector<char>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        memset(dp,-1,sizeof(dp));
+        return f(0,0,0,0,n,m, grid);
+        
+    }
+};

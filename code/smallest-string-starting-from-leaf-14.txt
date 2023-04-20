@@ -1,0 +1,44 @@
+class Solution {
+public:
+    void helper(TreeNode* root, string ans, string& res) {
+        if(root==NULL) return;
+		 //because roor->val is integer(0-25), we need to convert it to char in which 0 represents 'a'
+        char c = 'a'+root->val;
+		//adding char to the string, so we can directly compare the string eg. "adcbsd"
+        ans+=c; 
+		//only if we are at the leaf node, to understand better, look at the description diagram
+        if(root->left==NULL && root->right==NULL) {
+		//t_ans is our potential ans, we copied it with ans because we are reversing the string, this can be avoided but it's simpler
+            string t_ans = ans;
+            reverse(t_ans.begin(), t_ans.end());
+			//if it's the first time 
+            if(res.length()==0) res = t_ans;
+            else {
+			// rest of the logic is pretty simple, just like dictionary we'll solve this
+                int len = min(res.length(), t_ans.length());
+                int i=0;
+                for(; i<len; i++)
+                    if(res[i]==t_ans[i]) continue;
+                    else break;
+                // there are a lot of return statement here that too is avoidable but again i like it this way
+                if(i==len) {
+                    if(res.length()==t_ans.length()) return;
+                    if(res.length()>t_ans.length()) res = t_ans;
+                    return;
+                } else {
+                    if(res[i]>t_ans[i]) res = t_ans;
+                    return;
+                }
+            }
+            return;
+        }
+        helper(root->left, ans, res);
+        helper(root->right, ans, res);
+    }
+    string smallestFromLeaf(TreeNode* root) {
+        string ans = "";
+        string res = "";
+        helper(root, ans, res);
+        return res;
+    }
+};

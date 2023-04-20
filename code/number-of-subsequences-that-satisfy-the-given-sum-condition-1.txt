@@ -1,0 +1,24 @@
+int cmp(const void *a, const void *b)
+{
+    return *(int *)a - *(int *)b;
+}
+
+int numSubseq(int* nums, int numsSize, int target){
+    qsort(nums, numsSize, sizeof(int), cmp);
+    long temp[numsSize], result = 0;
+    temp[0] = 1;
+    for(int i = 1; i < numsSize; i++)
+        temp[i] = temp[i - 1] * 2 % 1000000007;
+    int left = 0, right = numsSize - 1;
+    while(left <= right)
+    {
+        if(nums[left] + nums[right] > target)
+            right--;
+        else
+        {
+            result += temp[right - left];
+            left++;
+        }
+    }
+    return (int)(result % 1000000007);
+}

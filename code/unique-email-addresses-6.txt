@@ -1,0 +1,57 @@
+
+
+int numUniqueEmails(char ** emails, int emailsSize){
+    int i = 0, recordNum = 0;
+    int result = 0;
+    char record[100][100] = {0};
+    while (i < emailsSize){
+        int flag_plus = 0, flag_at = 0;
+        int j = 0, k = 0;
+        int same = 0;
+        //record[i] = malloc(sizeof(char) * 100);
+        while (emails[i][j] != '\0'){
+            switch (emails[i][j]){
+                case '.':
+                    if (flag_at == 1){
+                        record[recordNum][k] = '.';
+                        k++;
+                    }
+                    break;
+                case '+':
+                    if (flag_at == 1){
+                        record[recordNum][k] = '+';
+                        k++;
+                    }
+                    else{
+                        flag_plus = 1;
+                    }
+                    break;
+                case '@':
+                    flag_at = 1;
+                    flag_plus = 0;
+                    record[recordNum][k] = '@';
+                    k++;
+                    break;
+                default:
+                    if (flag_at == 1 || flag_plus == 0){
+                        record[recordNum][k] = emails[i][j];
+                        k++;
+                    }
+            }
+            j++;
+        }
+        record[recordNum][k] = '\0';
+        for (int m = 0; m < recordNum; m++){
+            if(strcmp(record[m], record[recordNum]) == 0){
+                same = 1;
+                break;
+            }
+        }
+        if (same == 0){
+            result++;
+            recordNum++;
+        }
+        i++;
+    }
+    return result;
+}

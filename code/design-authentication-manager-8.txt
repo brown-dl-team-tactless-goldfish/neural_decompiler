@@ -1,0 +1,41 @@
+class AuthenticationManager {
+public:
+    int TTL;
+    unordered_map<string, vector<int>> map;
+    AuthenticationManager(int timeToLive) {
+        TTL = timeToLive;
+    }
+    
+    void generate(string tokenId, int currentTime) {
+        map[tokenId].push_back(currentTime);
+    }
+    
+    void renew(string tokenId, int currentTime) {
+        for(int& time : map[tokenId]) {
+            if(currentTime-time >= TTL)
+                continue;
+            time = currentTime;
+        }
+    }
+    
+    int countUnexpiredTokens(int currentTime) {
+        int output = 0;
+        for(auto it = map.begin(); it!= map.end(); it++) {
+            vector<int>& v = it->second;
+            for(int& time : v) {
+                if(currentTime-time < TTL)
+                    output++;
+            }
+        }
+        return output;
+    }
+};
+
+/*
+ 
+ Your AuthenticationManager object will be instantiated and called as such:
+ * AuthenticationManager* obj = new AuthenticationManager(timeToLive);
+ * obj->generate(tokenId,currentTime);
+ * obj->renew(tokenId,currentTime);
+ * int param_3 = obj->countUnexpiredTokens(currentTime);
+ */

@@ -1,0 +1,53 @@
+struct Node * makenode ( int val, int n){
+  struct Node * s =malloc(sizeof(struct Node));
+  s-> val = val;
+  s-> numNeighbors = n;
+  if (n>0){
+    s->neighbors = malloc(n*sizeof(struct Node *));
+  }
+  else {
+    s->neighbors =  NULL;
+  }
+  return s;
+}
+
+struct Node * cloneNode(struct Node *s, int * record, int  recorded, struct Node ** map)
+{
+    int v= s->val,n = s->numNeighbors;
+    struct Node * clone_s = makenode(v,n);
+   
+    if (recorded>0) {
+        map = realloc(map,(recorded+1)*sizeof(struct Node*));
+    }
+    map [recorded] = clone_s;
+    record[v] = recorded;
+    recorded++;
+    
+    if (n>0){
+        struct Node ** nbr = s->neighbors;
+        for ( int i = 0 ;i<n;i++){
+                struct Node * n = nbr[i];
+                int nv = n->val;
+                if (record[nv]!=-1){
+                    (clone_s->neighbors)[i] = map[record[nv]];
+                }
+                else {
+                    (clone_s->neighbors)[i] = cloneNode(n,record,recorded,map);
+                }
+            }
+    }
+    
+    return clone_s;
+}
+
+struct Node *cloneGraph(struct Node *s) { 
+    if (s!=NULL){
+        int * record = malloc(101*sizeof(int));
+        memset(record,-1,101*sizeof(int));
+        struct Node ** map = malloc(sizeof(struct Node*));
+        struct Node * clone_s = cloneNode(s,record,0,map);
+        return clone_s;        
+    }
+    
+    return s;
+}

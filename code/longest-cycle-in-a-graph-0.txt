@@ -1,0 +1,42 @@
+typedef struct _set{
+    int cycle;
+    int seq;
+}set;
+int longestCycle(int* edges, int edgesSize){
+    int n = edgesSize;
+    bool* visited = calloc(n, sizeof(bool));
+    int ans = -1;
+    set** hash = calloc(n, sizeof(set*) ) ;
+    int  run = 1;
+    for(int i = 0; i < n; i++){        
+        if(edges[i] == -1 || visited[i])
+            continue;
+        int idx = -1;
+        int p = i;
+        while(p != -1 ){
+            idx++;
+            if(visited[p] == false){
+                hash[p] = malloc(sizeof(set));
+                hash[p]->cycle = run;
+                hash[p]->seq = idx;
+                visited[p] = true;
+            }    
+            else{
+                if(hash[p]->cycle == run){
+                    ans = fmax(ans, idx - (hash[p]->seq) );
+                }
+                break;
+            }
+            p = edges[p];
+        }
+        run++;
+    }
+    
+    for(int i = 0; i < n; i++){
+        if(hash[i] != NULL)
+            free(hash[i]);
+    }
+    free(hash);
+    free(visited);
+    return ans;
+}

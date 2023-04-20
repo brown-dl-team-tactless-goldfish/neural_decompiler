@@ -1,0 +1,36 @@
+unsigned char CntSetbits(int x)
+{
+    unsigned char cnt = 0;
+    while (x > 0)
+    {
+        x &= (x - 1);
+        cnt++;
+    }
+    
+    return cnt;
+}
+
+int minFlips(int a, int b, int c)
+{
+    /* Get the value that represents the number of bit changes required for a|b == c */
+    int deltaBits = (a | b) ^ c;
+    int comBits = a & b;
+	
+	/* Check for common bits */
+	if (comBits)
+    {
+		/* Get the common bits that has to be changed in both a and b */
+        int commDeltaBits = (comBits & deltaBits);
+		
+		/* Get the unique bits that has to be changed in both a and b  */
+        int uniqDeltaBits = (deltaBits ^ commDeltaBits);
+		
+		/* Result = (No. of set bits in commDeltaBits * 2) + No. of set bits in uniqDeltaBits */
+        return (CntSetbits(commDeltaBits) << 1) + CntSetbits(uniqDeltaBits);
+    }
+    else
+    {
+		/* When no common bits are present Result = No. of set bits in deltaBits */
+        return CntSetbits(deltaBits);
+    }
+}

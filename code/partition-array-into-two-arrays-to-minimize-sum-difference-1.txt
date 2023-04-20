@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int minimumDifference(vector<int>& nums) {
+        const int n = nums.size() / 2; 
+        vector<vector<int>> a(n+1); 
+        vector<vector<int>> b(n+1);
+        int limit = (1<<n);
+        for(int i = 0;i<limit;i++) {
+            int count = 0; 
+            int sum = 0; 
+            int sum1 = 0;
+            for(int j = 0;j<n;j++) {
+                if(i&(1<<j)) {
+                    sum += nums[j];
+                    count++;
+                    sum1 += nums[j+n];
+                }
+            }
+            a[count].push_back(sum);
+            b[count].push_back(sum1);
+        }
+        const int sum = accumulate(nums.begin(),nums.end(),0);
+        int target = sum / 2; 
+        for(int i = 1;i<=n;i++) {
+            sort(a[i].begin(),a[i].end());
+            sort(b[i].begin(),b[i].end());
+        }
+        int ret = abs(a[n][0] - b[n][0]);
+        for(int i = 1;i<=n;i++) {
+            const int k = n - i; 
+            for(int j = 0;j<a[i].size();j++) {
+                auto ptr = lower_bound(b[k].begin(),b[k].end(),target - a[i][j]);
+                if(ptr != b[k].end()) {
+                    int t = a[i][j] + *ptr; 
+                    ret = min(ret,abs(sum - t - t));
+                }
+                if(ptr != b[k].begin()) {
+                    ptr--; 
+                    int t = a[i][j] + *ptr; 
+                    ret = min(ret,abs(sum - t - t));
+                }
+            }
+        }
+        return ret; 
+    }
+};

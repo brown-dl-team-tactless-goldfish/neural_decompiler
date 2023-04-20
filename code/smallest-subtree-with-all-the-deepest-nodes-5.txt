@@ -1,0 +1,20 @@
+int aux(struct TreeNode * node, int depth, struct TreeNode ** sol, int * solDepth){
+    int leftDepth, rightDepth;
+    if (node == NULL){
+        return depth-1;
+    }
+    leftDepth = aux(node->left, depth+1, sol, solDepth);
+    rightDepth = aux(node->right, depth+1, sol, solDepth);
+    if (leftDepth == rightDepth && (leftDepth) >= *solDepth ){
+        *sol = node;
+        *solDepth = leftDepth;
+    }
+    return (leftDepth > rightDepth ? leftDepth : rightDepth);
+}
+
+struct TreeNode* subtreeWithAllDeepest(struct TreeNode* root){
+    int depth, solDepth = 0;
+    struct TreeNode * sol = NULL;
+    aux(root, depth, &sol, &solDepth);
+    return sol;
+}

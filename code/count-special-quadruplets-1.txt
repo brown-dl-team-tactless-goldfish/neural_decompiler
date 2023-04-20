@@ -1,0 +1,30 @@
+class Solution:
+    def countQuadruplets(self, nums: List[int]) -> int:
+        n = len(nums)
+        if (n < 4):
+            return 0
+        
+        self.res = 0
+        
+        def helper(curIdx, curA):
+            if (curIdx == n):
+                return
+            
+            tmpN = len(curA)
+            
+            if (tmpN > 3):
+                return
+            elif (tmpN == 3):
+                tmpSum = sum(curA)
+                self.res += nums[curIdx:].count(tmpSum)
+                return
+            else:
+                #add curIdx to array
+                helper(curIdx + 1, curA + [nums[curIdx]])
+                
+                #don't add curIdx to array
+                helper(curIdx + 1, curA)
+                
+        helper(0, [])
+        
+        return self.res

@@ -1,0 +1,36 @@
+    class Solution {
+        vector<int> presum;
+    public:
+        // "11011000"
+        string auxA(string& S, int s, int e) {
+            if (s >= e) return "";
+            int len = (e - s) / 2, mid = s + len;
+            if (presum[mid] - presum[s] == len) return S.substr(s, e - s);
+            int sum = 0;
+            vector<string> v;
+            for (int i = s; i < e; i++) {
+                sum += S[i] == '1' ? 1 : -1;
+                if (sum == 0) {
+                    v.push_back(string());
+                    v.back().push_back('1');
+                    v.back().append(auxA(S, s + 1, i));
+                    v.back().push_back('0');
+                    s = i + 1;
+                }
+            }
+            string res;
+            std::sort(v.begin(), v.end(), [](string& a, string& b) {return a + b > b + a; });
+            for (string& t : v) {
+                res.append(t);
+            }
+            return res;
+        }
+
+        string makeLargestSpecial(string S) {
+            presum.assign(1, 0);
+            for (char c : S) {
+                presum.push_back(presum.empty() ? c - '0' : c - '0' + presum.back());
+            }
+            return auxA(S, 0, S.size());
+        }
+    };

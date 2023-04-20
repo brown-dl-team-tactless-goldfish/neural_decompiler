@@ -1,0 +1,118 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+// RS Hash Function
+unsigned int RSHash(char *str)
+{
+    unsigned int b = 378551;
+    unsigned int a = 63689;
+    unsigned int hash = 0;
+
+    while (*str)
+    {
+        hash = hash * a + (*str++);
+        a *= b;
+    }
+
+    return (hash & 0x7FFFFFFF);
+}
+int cmp(const void* a, const void* b){
+    int* A = *(int**)a;
+    int* B = *(int**)b;
+    if(B[1] == A[1])
+        return A[0] - B[0];
+    return B[1] - A[1];
+}
+
+int* topStudents(char ** positive_feedback, int positive_feedbackSize, char ** negative_feedback, int negative_feedbackSize, char ** report, int reportSize, int* student_id, int student_idSize, int k, int* returnSize){
+    int n1 = positive_feedbackSize;
+    int n2 = negative_feedbackSize;
+    int N1 = 100 * n1;
+    int N2 = 100 * n2;
+    int* posiHash = calloc(N1 , sizeof(unsigned int)) ;   
+    int* negiHash = calloc(N2 , sizeof(unsigned int)) ;   
+    unsigned int val;
+    unsigned int d ;
+    for(int i = 0; i < n1; i++){
+        val = RSHash(positive_feedback[i]);
+        d = val;
+        while(1){
+            if(posiHash[d%N1] == 0){
+                posiHash[d%N1] = val;
+                break;
+            }    
+            else
+                d++;
+        }
+    }
+    for(int i = 0; i < n2; i++){
+        val = RSHash(negative_feedback[i]);
+        d = val;
+        while(1){
+            if(negiHash[d%N2] == 0){
+                negiHash[d%N2] = val;
+                break;
+            }    
+            else
+                d++;
+        }
+    }
+    int n = student_idSize;
+    int** score = malloc(n * sizeof(int*));
+    for(int i = 0; i < n; i++){
+        score[i] = malloc(2 * sizeof(int));
+        score[i][0] = student_id[i];  
+        score[i][1] = 0;
+    }
+    
+    for(int i = 0; i < n; i++){
+        int begin = 0;
+        int Len = strlen( report[i]) ;
+        for(int j = 0; j < Len; j++){
+            
+            if(report[i][j] == ' ' || j == Len-1){
+             //   printf("begin = %d ", begin);
+                if(report[i][j] == ' ')
+                    report[i][j] = '\0';
+                val = RSHash( &report[i][begin]);
+                begin = j+1;
+                d = val;
+                bool flag = false;
+                while(1){
+                    if(posiHash[d%N1] == 0)
+                        break;
+                    else if(posiHash[d%N1] == val){
+                        flag = true;
+                        score[i][1] += 3;
+                        break;
+                    }
+                    else
+                        d++;
+                }
+                if(flag == false){
+                    d = val;
+                    while(1){
+                        if(negiHash[d%N2] == 0)
+                            break;
+                        else if(negiHash[d%N2] == val){
+                            flag = true;
+                            score[i][1] -= 1;
+                        break;
+                        }
+                        else
+                            d++;
+                    }                    
+                }
+                
+            }
+        }
+    }
+    qsort(score, n, sizeof(int*), cmp);
+
+    int* ans = malloc(k * sizeof(int));
+    *returnSize = k;
+    for(int i = 0; i < k; i++){
+        ans[i] = score[i][0];
+    }
+    return ans;
+}

@@ -1,0 +1,23 @@
+public class Solution {
+    public IList<int> CircularPermutation(int n, int start) {
+        var permutation = Permutation(n);
+        var count = permutation.Count;
+        var index = permutation.IndexOf(start);
+        var circular = new int[count];
+        for (var i = 0; i < count; i++) 
+            circular[i] = permutation[index++ % count];
+
+        return circular;
+    }
+
+    private IList<int> Permutation(int n) {
+        if (n == 1)
+            return new[] { 0, 1 };
+
+        var pow = (int)Math.Pow(2, n - 1);
+        var zeroes = Permutation(n - 1);
+        var ones = zeroes.Reverse().Select(x => x | pow).ToArray();
+
+        return zeroes.Concat(ones).ToArray();
+    }
+}

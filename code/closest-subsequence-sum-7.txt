@@ -1,0 +1,108 @@
+class Solution {
+public:
+    
+    // function for finding the sum of all possible subsequence 
+    
+    void helper(vector<int>& nums, int i, int n, int sum, vector<int>& arr)
+    {
+        // base case
+        
+        if(i == n)
+        {
+            arr.push_back(sum);
+            
+            return;
+        }
+        
+        // inclusion part
+        
+        helper(nums, i + 1, n, sum + nums[i], arr);
+        
+        // exclusion part
+        
+        helper(nums, i + 1, n, sum, arr);
+    }
+    
+    int minAbsDifference(vector<int>& nums, int goal) {
+        
+        int n = nums.size();
+        
+        // divide the nums array into two parts
+        
+        vector<int> arr1;
+        
+        vector<int> arr2;
+        
+        for(int i = 0; i < n; i++)
+        {
+            if(i < n / 2)
+            {
+                arr1.push_back(nums[i]);
+            }
+            else
+            {
+                arr2.push_back(nums[i]);
+            }
+        }
+        
+        // sum1 will store the sum of all the possible subsequence of first half array
+        
+        vector<int> sum1;
+        
+        // sum2 will store the sum of all the possible subsequence of second half array
+        
+        vector<int> sum2;
+        
+        // generate the sum of all possible subsequence
+        
+        helper(arr1, 0, arr1.size(), 0, sum1);
+        
+        helper(arr2, 0, arr2.size(), 0, sum2);
+        
+        // sort the sum2 array, so that we can apply binary search
+        
+        sort(sum2.begin(), sum2.end());
+        
+        int min_diff = INT_MAX;
+        
+        // for each sum in sum1, find the sum in sum2 close to goal
+        
+        for(int i = 0; i < sum1.size(); i++)
+        {
+            // apply binary search on sum2 array
+            
+            int low = 0;
+            
+            int high = sum2.size() - 1;
+            
+            while(low <= high)
+            {
+                int mid = low + (high - low) / 2;
+                
+                int sum = sum1[i] + sum2[mid];
+                
+                // in this case we can't get minimum than 0
+                
+                if(sum == goal)
+                    return 0;
+                
+                // update the min_diff
+                
+                min_diff = min(min_diff, abs(sum - goal));
+				
+				// update the low and high pointer accordingly
+                
+                if(sum < goal)
+                {
+                    low = mid + 1;
+                }
+                else
+                {
+                    high = mid - 1;
+                }
+            }
+        }
+        
+        return min_diff;
+    }
+};

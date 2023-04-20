@@ -1,0 +1,106 @@
+struct Point {
+    int y = 0;
+    int x = 0;
+};
+class Solution {
+public:
+    array<Point, 4> dirs={{
+        {-1,0},{0,1},{1,0},{0,-1}
+    }};
+    
+    int rows = 0;
+    int cols = 0;
+    
+    int dp[8][8][8][8][2];
+    int dsteps[8][8][8][8][2];
+    int vis[8][8][8][8][2];
+    
+    bool dfs(vector<string>& grid, int mj, int cj, Point mp, Point cp, int cat_turn, int steps) {
+        if (grid[cp.y][cp.x] == 'F' || (mp.y == cp.y && mp.x == cp.x)) {
+            return false;
+        }
+        if (grid[mp.y][mp.x] == 'F') {
+            return true;
+        }
+        if (vis[mp.y][mp.x][cp.y][cp.x][cat_turn]) {
+            return false;
+        }
+        if (dp[mp.y][mp.x][cp.y][cp.x][cat_turn] != 0x3f3f3f3f &&
+           steps >= dsteps[mp.y][mp.x][cp.y][cp.x][cat_turn]) {
+            return dp[mp.y][mp.x][cp.y][cp.x][cat_turn];
+        }
+        vis[mp.y][mp.x][cp.y][cp.x][cat_turn] = 1;
+
+        if (cat_turn) {
+            for (auto &dir : dirs) {
+                for (int i = 1; i <= cj; ++i) {
+                    Point np{cp.y + dir.y * i, cp.x + dir.x * i};
+                    if (np.y < 0 || np.x < 0 || np.y >= rows || np.x >= cols || grid[np.y][np.x] == '#') {
+                        break;
+                    }
+                    if (mp.y == np.y && mp.x == np.x) {
+                        vis[mp.y][mp.x][cp.y][cp.x][cat_turn] = 0;
+                        dsteps[mp.y][mp.x][cp.y][cp.x][cat_turn] = steps;
+                        return dp[mp.y][mp.x][cp.y][cp.x][cat_turn] = false;
+                    }
+                }
+            }
+            
+            for (auto &dir : dirs) {
+                for (int i = 1; i <= cj; ++i) {
+                    Point np{cp.y + dir.y * i, cp.x + dir.x * i};
+                    if (np.y < 0 || np.x < 0 || np.y >= rows || np.x >= cols || grid[np.y][np.x] == '#') {
+                        break;
+                    }
+                    if (!dfs(grid, mj, cj, mp, np, false, steps + 1)) {
+                        vis[mp.y][mp.x][cp.y][cp.x][cat_turn] = 0;
+                        dsteps[mp.y][mp.x][cp.y][cp.x][cat_turn] = steps;
+                        return dp[mp.y][mp.x][cp.y][cp.x][cat_turn] = false;
+                    }
+                }
+            }
+            vis[mp.y][mp.x][cp.y][cp.x][cat_turn] = 0;
+            dsteps[mp.y][mp.x][cp.y][cp.x][cat_turn] = steps;
+            return dp[mp.y][mp.x][cp.y][cp.x][cat_turn] = dfs(grid, mj, cj, mp, cp, false, steps + 1);
+        } else {
+            for (auto &dir : dirs) {
+                for (int i = 1; i <= mj; ++i) {
+                    Point np{mp.y + dir.y * i, mp.x + dir.x * i};
+                    if (np.y < 0 || np.x < 0 || np.y >= rows || np.x >= cols || grid[np.y][np.x] == '#') {
+                        break;
+                    }
+                    if (dfs(grid, mj, cj, np, cp, true, steps)) {
+                        vis[mp.y][mp.x][cp.y][cp.x][cat_turn] = 0;
+                        dsteps[mp.y][mp.x][cp.y][cp.x][cat_turn] = steps;
+                        return dp[mp.y][mp.x][cp.y][cp.x][cat_turn]= true;
+                    }
+                }
+            }
+        }
+        vis[mp.y][mp.x][cp.y][cp.x][cat_turn] = 0;
+        dsteps[mp.y][mp.x][cp.y][cp.x][cat_turn] = steps;
+        return dp[mp.y][mp.x][cp.y][cp.x][cat_turn] = false;
+    }
+    
+    bool canMouseWin(vector<string>& grid, int catJump, int mouseJump) {
+        memset(dp, 0x3f, sizeof(dp));
+        memset(vis, 0, sizeof(vis));
+        memset(dsteps, 0, sizeof(vis));
+        rows = grid.size();
+        cols = grid[0].size();
+        
+        Point mp;
+        Point cp;
+        for (int r = 0; r < rows; ++r) {
+            for (int c = 0; c < cols; ++c) {
+                if (grid[r][c] == 'C') {
+                    cp = {r, c};
+                }
+                if (grid[r][c] == 'M') {
+                    mp = {r, c};
+                }
+            }
+        }
+        return dfs(grid, mouseJump, catJump, mp, cp, false, 0);
+    }
+};

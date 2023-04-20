@@ -1,0 +1,58 @@
+class Solution {
+    vector<int> res;
+    private:
+    //used to toggle kth bit of num
+    int toggleKthBit(int num,int k)
+    {
+            return (num^(1<<k));
+    }
+    //return if num1 and num2 differs by one bit
+    bool oneBitDiffer(int num1,int num2)
+    {
+         return isPowerOfTwo(num1 ^ num2);
+    }
+    //returns if x is power of 2
+    bool isPowerOfTwo(int x)
+    {
+        return x && (!(x & (x - 1)));
+    }
+public:
+    vector<int> circularPermutation(int n, int start) {
+        int total=pow(2,n);
+        vector<bool> used(total+1,0);
+        vector<int> curr(total);
+        curr[0]=start;
+        used[start]=true;
+        dfs(start,total,1,used,curr);
+        return res;
+    }
+    bool dfs(int prev,int& total,int ind,vector<bool>& used,vector<int>& curr )
+    {
+        if(ind==total)
+        {
+            // cout<<curr[0]<<" "<<prev<<endl;
+            //check if first and last also differ by one bit
+            if(oneBitDiffer(curr[0],prev))
+            {
+                res=curr;
+                return true;
+            }
+            return false;
+        }
+        int dup=prev;
+        for(int k=0;k<31;k++){
+            int x=toggleKthBit(prev,k);
+            if(x<total &&  !used[x])
+            {
+                //use the num x
+                curr[ind]=x;
+                used[x]=true;
+                if(dfs(x,total,ind+1,used,curr))
+                    return true;
+                used[x]=false;
+            }
+        }
+        return false;
+    }
+    
+};

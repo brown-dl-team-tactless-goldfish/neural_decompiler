@@ -1,0 +1,41 @@
+typedef struct {
+    struct TreeNode **stack;
+    int index;
+} BSTIterator;
+
+void __leftNodeInorde(struct TreeNode *root, BSTIterator *iterator)
+{
+    while(root)
+    {
+        iterator->stack = (struct TreeNode **)realloc(iterator->stack, sizeof(struct TreeNode *) * (iterator->index + 1));
+        iterator->stack[iterator->index] = root;
+        iterator->index++;
+        root = root->left;
+    }
+}
+
+BSTIterator* bSTIteratorCreate(struct TreeNode* root) {
+    BSTIterator *iterator = (BSTIterator *)calloc(1, sizeof(BSTIterator));
+    __leftNodeInorde(root, iterator);
+    return iterator;
+}
+
+/** @return the next smallest number */
+int bSTIteratorNext(BSTIterator* obj) {
+    struct TreeNode *top = obj->stack[obj->index - 1];
+    obj->index--;
+    if(top->right)
+        __leftNodeInorde(top->right, obj);
+    return top->val;
+}
+
+/** @return whether we have a next smallest number */
+bool bSTIteratorHasNext(BSTIterator* obj) {
+    return obj->index ? true : false;
+}
+
+void bSTIteratorFree(BSTIterator* obj) {
+    free(obj->stack);
+    obj->stack = NULL;
+    free(obj);
+}

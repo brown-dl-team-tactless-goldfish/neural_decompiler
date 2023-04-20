@@ -1,0 +1,46 @@
+// time: O(m * n)
+// space: O(m * n)
+
+int solve(int* nums1, int nums1Size, int* nums2, int nums2Size, int p1, int p2, int** memo) {
+  if (p1 >= nums1Size || p2 >= nums2Size)
+    return INT_MIN;
+  
+  if (memo[p1][p2] != INT_MIN)
+    return memo[p1][p2];
+  
+  int result = INT_MIN;
+  int next = solve(nums1, nums1Size, nums2, nums2Size, p1+1, p2+1, memo);
+  int take = nums1[p1] * nums2[p2] + fmax(0, next);
+  int skip_p1 = solve(nums1, nums1Size, nums2, nums2Size, p1+1, p2, memo);
+  int skip_p2 = solve(nums1, nums1Size, nums2, nums2Size, p1, p2+1, memo);
+
+  result = fmax(result, take);
+  result = fmax(result, skip_p1);
+  result = fmax(result, skip_p2);
+
+  return memo[p1][p2] = result;
+}
+
+int maxDotProduct(int* nums1, int nums1Size, int* nums2, int nums2Size){
+  int i, j;
+  
+  int** memo = (int**) malloc(nums1Size * sizeof(int*));
+  for (i = 0; i < nums1Size; i++) {
+    memo[i] = (int*) malloc(nums2Size * sizeof(int));
+  }
+  
+  for (i = 0; i < nums1Size; i++) {
+    for (j = 0; j < nums2Size; j++) {
+      memo[i][j] = INT_MIN;
+    }
+  }
+  
+  int result = solve(nums1, nums1Size, nums2, nums2Size, 0, 0, memo);
+  
+  for (int i = 0; i < nums1Size; i++)
+    free(memo[i]);
+  
+  free(memo);
+  
+  return result;
+}

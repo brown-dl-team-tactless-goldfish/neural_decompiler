@@ -1,0 +1,27 @@
+int jobScheduling(vector<int>& startTime, vector<int>& endTime, vector<int>& profit) {
+        vector<vector<int>> vec;
+        int len=startTime.size();
+        for(int i=0;i<len;i++)
+            vec.push_back({startTime[i],endTime[i],profit[i]});
+        sort(vec.begin(),vec.end());
+        priority_queue<pair<int,int>> pq;
+        pq.push({vec[0][2],vec[0][1]}); 
+        int res=vec[0][2];
+        for(int i=1;i<len;i++){
+            vector<pair<int,int>> tmp;
+            int base=0;
+            while(!pq.empty()){
+                auto n=pq.top();
+                pq.pop();
+                tmp.push_back(n);
+                if(n.second<=vec[i][0]){
+                    base=n.first;
+                    break;
+                }
+            }
+            pq.push({vec[i][2]+base,vec[i][1]});
+            res=max(res,vec[i][2]+base);
+            for(const auto &v:tmp) pq.push(v);
+        }
+        return res;
+}

@@ -1,0 +1,28 @@
+int
+pathSumFind(struct TreeNode *root, int sum, int continous)
+{
+    if (!root) {
+        return 0;
+    }   
+    int num = 0;
+    if (sum == root->val) {
+        num += 1; // Path to current node is ok
+    }   
+    // Find the difference of sum and current value in children tree
+    // Note that we need set continous to true to avoid finding the difference
+    // without
+    num += pathSumFind(root->left, sum - root->val, true);
+    num += pathSumFind(root->right, sum - root->val, true);
+    if (!continous) {
+        // Find in children trees separately
+        num += pathSumFind(root->left, sum, false);
+        num += pathSumFind(root->right, sum, false);
+    }   
+    return num;
+}
+
+int
+pathSum(struct TreeNode *root, int sum)
+{
+    return pathSumFind(root, sum, false);
+}

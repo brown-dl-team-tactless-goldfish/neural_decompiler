@@ -1,0 +1,52 @@
+
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+
+int** ans;
+int ansTop;
+int* path;
+int pathTop;
+
+int* used;
+
+void backTracking(int* nums, int numsSize){
+        if(pathTop == numsSize){
+            int* tmp=malloc(sizeof(int)*numsSize);
+            for(int i=0; i<pathTop; i++){
+                tmp[i]=path[i];
+            }
+            ans[ansTop++]=tmp;
+        }
+        for(int i=0; i<numsSize; i++){
+            if(used[i] == true){
+                continue;
+            }
+            used[i]=true;
+            path[pathTop++]=nums[i];
+            backTracking(nums, numsSize);
+            used[i]=false;
+            pathTop--;
+        }
+        return;
+}
+int** permute(int* nums, int numsSize, int* returnSize, int** returnColumnSizes){
+    ans=malloc(sizeof(int*)*1000);
+    path=malloc(sizeof(int)*numsSize);
+    used=malloc(sizeof(int)*numsSize);
+    ansTop=pathTop=0;
+    
+    backTracking(nums, numsSize);
+    
+    *returnSize=ansTop;
+    *returnColumnSizes=malloc(sizeof(int*)*ansTop);
+    
+    for(int i=0; i<ansTop; i++){
+        (*returnColumnSizes)[i]=numsSize;
+    }
+    
+    return ans;
+}

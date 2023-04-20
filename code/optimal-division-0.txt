@@ -1,0 +1,47 @@
+char* intToStr(int val){
+    char* ret = malloc(5) ;
+    ret[4] = '\0' ;
+    int idx = 3 ;
+    while(val){
+        ret[idx] = val%10 +'0' ;
+        val /= 10 ;
+        idx-- ;
+    }
+    return &ret[++idx] ;
+}
+char * optimalDivision(int* nums, int numsSize){
+    int n = numsSize ;
+    if(n == 1)
+        return intToStr(nums[0]) ;
+    char* ans = malloc(50) ;
+    if(n == 2){
+        char* tmp = intToStr(nums[0]) ;
+        int l = strlen(tmp) ;
+        int index = l ;
+        strncpy(ans, tmp, l);
+        ans[index] = '/' ;
+        index++ ;
+        tmp = intToStr(nums[1]) ;
+        l = strlen(tmp) ;
+        strcpy(&ans[index], tmp) ;
+        return ans ;
+    }
+    char* tmp = intToStr(nums[0]) ;
+    int l = strlen(tmp) ;
+    strncpy(ans, tmp, l);
+    ans[l] = '/' ;
+    ans[l+1] = '(' ;
+    int index = l+2 ;
+    for(int i = 1; i < n; i++){
+        tmp = intToStr(nums[i]) ;
+        l = strlen(tmp) ;
+        strncpy(&ans[index], tmp, l) ;
+        index += l ;
+        ans[index] = '/' ;
+        index++ ;
+
+    }
+    ans[index-1] = ')' ;
+    ans[index] = '\0' ;
+    return ans ;
+}

@@ -1,0 +1,35 @@
+class Solution {
+public:
+    vector<int> minDifference(vector<int>& nums, vector<vector<int>>& queries) {
+        int preCntSums[nums.size()+1][101]; //count numbers of values as prefix sum; we use preCntSums[nums.size()+1][101] because of 1 <= nums[i] <= 100
+        memset(preCntSums, 0, sizeof(preCntSums));
+        bool hasVal[101] = {false}; //if values has already showed up
+
+        for (int i = 0; i < nums.size(); i++){
+            for (int v = 1; v <= 100; v++){ //record the number of v since v has already showed up
+                if (hasVal[v]) preCntSums[i+1][v] = preCntSums[i][v];
+            }
+            preCntSums[i+1][nums[i]]++;
+            hasVal[nums[i]] = true;
+        }
+
+        vector<int> ans;
+
+        for (auto& q : queries){
+            int res = 100;
+            int prev = 0;
+            for (int v = 1; v < 101; v++){
+                if (preCntSums[q[1]+1][v]-preCntSums[q[0]][v]){ //if v exists in the given range
+                    if (prev) //there is a value that less than v in the given range
+                        res = min(res, v-prev);
+                    
+                    prev = v;
+                }
+            }
+            
+            ans.push_back(res==100?-1:res);
+        }
+
+        return ans;
+    }
+};

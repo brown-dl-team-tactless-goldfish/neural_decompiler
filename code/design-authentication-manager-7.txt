@@ -1,0 +1,31 @@
+class AuthenticationManager {
+public:
+    AuthenticationManager(int timeToLive) {
+        liveTime = timeToLive;
+    }
+    
+    void generate(string tokenId, int currentTime) {
+        tokenExpiry[tokenId] = currentTime + liveTime;
+    }
+    
+    void renew(string tokenId, int currentTime) {
+        if (tokenExpiry[tokenId] > currentTime)
+        {
+            tokenExpiry[tokenId] = currentTime + liveTime;
+        } 
+    }
+    
+    int countUnexpiredTokens(int currentTime) {
+        int res = 0;
+        for (const auto& pair : tokenExpiry)
+        {
+            res += pair.second > currentTime ? 1 : 0;
+        }
+        
+        return res;
+    }
+    
+private:
+    int liveTime;
+    unordered_map<string, int> tokenExpiry;
+};

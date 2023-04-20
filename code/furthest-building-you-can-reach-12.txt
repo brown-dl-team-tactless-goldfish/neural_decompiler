@@ -1,0 +1,22 @@
+    int furthestBuilding(vector<int>& heights, int bricks, int ladders) {
+        // bascially the idea is to use bricks on the smallest height different builds
+        // we use priority queue to store bricks needed to climb buildings
+        // we have certain amount of ladders, so at least we can climb ladders amount of builds
+        // if we have more than ladders amount of building to climb, use bricks on the smallest height different build
+        // once bricks are used up, we need to stop
+        priority_queue<int> brickQueue;
+        for (int i = 1; i < heights.size(); i++) {
+            int heightDiff = heights[i] - heights[i - 1];
+            if (heightDiff > 0) {
+                brickQueue.push(-heightDiff);
+            }
+            if (brickQueue.size() > ladders) {
+                bricks += brickQueue.top();
+                brickQueue.pop();
+            }
+            if (bricks < 0) {
+                return i - 1;
+            }
+        }
+        return heights.size() - 1;
+    }

@@ -1,0 +1,40 @@
+#define maxn 100005
+class Solution {
+public:
+    vector<int> g[maxn];
+    void bfs(int s, vector<int> &vis, vector<int> &dis) {
+        vis[s] = 1;
+        dis[s] = 0;
+        queue<int> q;
+        q.push(s);
+        while(!q.empty()) {
+            int u = q.front();
+            q.pop();
+            for(auto v: g[u]) {
+                if(!vis[v]) {
+                    vis[v] = 1;
+                    dis[v] = dis[u] + 1;
+                    q.push(v);
+                }
+            }
+        }
+    }
+    int closestMeetingNode(vector<int>& edges, int node1, int node2) {
+        int n = edges.size();
+        vector<int> vis1(n), vis2(n), dis1(n, -1), dis2(n, -1);
+        for(int i=0; i<n; i++) if(edges[i] != -1) g[i].push_back(edges[i]);
+        bfs(node1, vis1, dis1);
+        bfs(node2, vis2, dis2);
+        int ans = -1, mn_dis = INT_MAX;
+        for(int i=0; i<n; i++) {
+            if(dis1[i] != -1 and dis2[i] != -1) {
+                int dis = max(dis1[i], dis2[i]);
+                if(dis < mn_dis) {
+                    mn_dis = dis;
+                    ans = i;
+                }
+            }
+        }
+        return ans;
+    }
+};

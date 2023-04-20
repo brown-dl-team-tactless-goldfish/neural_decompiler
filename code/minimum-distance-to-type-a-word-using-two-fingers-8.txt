@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int dp[301][270][270];
+    int helper(string &s, int i,char pre1, char pre2, unordered_map<char,pair<int,int>> &h){
+        if(i==s.length()){
+            
+            return 0;
+        }
+       if(dp[i][pre1][pre2]!=-1){
+           return dp[i][pre1][pre2];
+       }
+        pair<int,int> p1 = h[pre1];
+        pair<int,int> finals = h[s[i]];
+        int cost = abs(p1.first - finals.first) + abs(p1.second - finals.second) + helper(s,i+1,s[i],pre2,h);
+        if(pre2=='0'){
+            cost = min(cost,helper(s,i+1,pre1,s[i],h));
+        }
+        else{
+                pair<int,int> p2 = h[pre2];
+            int temp =  abs(p2.first -finals.first) + abs(p2.second - finals.second);
+            cost = min(cost,temp + helper(s,i+1,pre1,s[i],h));
+                
+        }
+        return dp[i][pre1][pre2] = cost;
+    }
+    
+    int minimumDistance(string word) {
+        unordered_map<char,pair<int,int>> h;
+        for(int i= 0; i < 26;i++){
+            char c = i+'A';
+            h[c] = {i/6,i%6};
+        }
+        memset(dp,-1,sizeof(dp));
+        return helper(word,1,word[0],'0',h);
+    }
+};

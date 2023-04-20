@@ -1,0 +1,42 @@
+class Solution {
+public:
+
+    
+    int dp[19][1025][1025];
+    
+    int  recurs(vector<int>& nums,int i,int place1,int place2,int slots)
+    {
+        if(i>=nums.size())
+            return 0;
+        
+        
+        if(dp[i][place1][place2]!=-1)
+            return dp[i][place1][place2];
+        
+        int a=0;
+        
+       for(int i1=1;i1<=slots;i1++)
+       {
+           if(((1<<i1)&place1)==0)
+           {
+               int temp=place1;
+               temp|=(1<<i1);
+               a=max(a,recurs(nums,i+1,temp,place2,slots)+(nums[i]&i1));
+           }
+           else if(((1<<i1)&place2)==0)
+           {
+               int temp=place2;
+               temp|=(1<<i1);
+               a=max(a,recurs(nums,i+1,place1,temp,slots)+(nums[i]&i1));
+           }
+       }
+        
+        return dp[i][place1][place2]=a;
+    }
+
+    
+    int maximumANDSum(vector<int>& nums, int slots) {
+        memset(dp,-1,sizeof(dp));
+        return recurs(nums,0,0,0,slots);
+    }
+};

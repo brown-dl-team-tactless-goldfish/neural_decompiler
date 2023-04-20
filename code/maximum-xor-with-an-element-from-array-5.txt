@@ -1,0 +1,49 @@
+struct node {
+    unique_ptr<node> d[2];
+};
+
+class Solution {
+public:
+    vector<int> maximizeXor(vector<int>& nums, vector<vector<int>>& queries) {
+        sort(nums.begin(), nums.end());
+        const int n = queries.size();
+        vector<int> ind(n);
+        for (int i = 0; i < n; ++i) {
+            ind[i] = i;
+        }
+        sort(ind.begin(), ind.end(), [&queries](const int &x, const int &y) {
+            return queries[x][1] < queries[y][1];
+        });
+        const auto root = make_unique<node>();
+        vector<int> r(n, -1);
+        for (int i = 0, j = 0; i < n; ++i) {
+            for (; j < nums.size() && nums[j] <= queries[ind[i]][1]; ++j) {
+                auto* temp = root.get();
+                for (int k = 29; k >= 0; --k) {
+                    const int t = (nums[j] >> k) & 1;
+                    if (temp->d[t] == nullptr) {
+                        temp->d[t] = make_unique<node>();
+                    }
+                    temp = temp->d[t].get();
+                } 
+            }
+            if (j) {
+                int& ans = r[ind[i]];
+                ans = 0;
+                auto* temp = root.get();
+                for (int k = 29; k >= 0; --k) {
+                    const int t = ((queries[ind[i]][0] >> k) & 1) ^ 1;
+                    if (temp->d[t] != nullptr) {
+                        temp = temp->d[t].get();
+                        ans |= 1 << k;
+                    } else {
+                        temp = temp->d[t ^ 1].get();
+                    }
+                }  
+            }
+
+        }
+        return r;
+        
+    }
+};

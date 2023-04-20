@@ -1,0 +1,42 @@
+int binaryGap(int n){
+
+    int bitcount = log2(n) + 1;
+    int maxDistance = 0;
+    int distance = 0;
+    bool oneFound = false;
+
+    if (n <= 0)
+        return 0;
+
+    while(n)
+    {
+        if (n & 0x01)
+        {
+            //Set bit found first time, now start incrementing distance
+            if (oneFound == false)
+            {
+                oneFound = true;
+                distance++;
+            }
+            else
+            {   //bit set is found reset distance
+                if (maxDistance < distance)
+                {
+                    maxDistance = distance;
+                }
+                distance = 0;
+                distance++;
+            }
+        }
+        else
+        {   //bit is set increment distance until next set bit is found
+            if (oneFound != false)
+            {
+                distance++;
+            }
+        }
+        n = n >> 1;
+    }
+
+    return maxDistance;
+}

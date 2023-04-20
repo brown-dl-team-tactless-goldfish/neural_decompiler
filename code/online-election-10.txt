@@ -1,0 +1,19 @@
+class TopVotedCandidate {
+public:
+    map<int, int> mostRecentCandidateWithVotes;
+    map<int, int> votesForCandidate;
+    map<int, int> winner;
+    
+    TopVotedCandidate(vector<int>& persons, vector<int>& times) {
+        for (int i = 0; i < persons.size(); i++) {
+            const int votes = votesForCandidate[persons[i]]++;
+            mostRecentCandidateWithVotes[votes + 1] = persons[i];
+            int bestCandidate = mostRecentCandidateWithVotes.rbegin()->second;
+            winner[times[i]] = bestCandidate;
+        }
+    }
+    
+    int q(int t) {
+        return (--winner.upper_bound(t))->second;
+    }
+};

@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int countPaths(int n, vector<vector<int>>& roads) {
+        vector<long long> minTimes(n, 1e16);
+        auto counts = vector(n, 0LL);
+        auto visited = vector(n, false);
+        vector<vector<pair<int,int>>> g(n);
+        const long long mod = 1e9+7;
+        for(auto& r:roads){
+            int i = r[0], j = r[1], t = r[2];
+            g[i].emplace_back(j, t);
+            g[j].emplace_back(i, t);
+        }
+        using Node = pair<long long, int>;
+        priority_queue<Node, vector<Node>, greater<>> q; //-t, i, cnt
+        q.emplace(0, 0);
+        counts[0] = 1;
+        minTimes[0] = 0;
+        while(!q.empty()){
+            auto [t, i] = q.top(); q.pop();
+            for(auto [j, t1] : g[i]){
+                auto t2 = t + t1;
+                if(t2 > minTimes[j]) continue;
+                if(t2 < minTimes[j]) {
+                    minTimes[j] = t2;
+                    counts[j] = counts[i];
+                    q.emplace(t2, j);
+                }
+                else{
+                    counts[j] = (counts[i] + counts[j]) % mod;
+                }
+            }
+        }
+        return counts[n-1];
+    }
+};

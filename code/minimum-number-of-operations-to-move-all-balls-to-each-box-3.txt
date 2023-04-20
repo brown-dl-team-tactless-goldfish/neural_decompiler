@@ -1,0 +1,29 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* minOperations(char* boxes, int* returnSize) {
+    int* pRetVal = NULL;
+
+    // malloc return array
+    (*returnSize) = strlen(boxes);
+    pRetVal = (int*)malloc((*returnSize)*sizeof(int));
+    if (pRetVal == NULL) {
+        perror("malloc");
+        (*returnSize) = 0;
+        return pRetVal;
+    }
+    memset(pRetVal, 0, ((*returnSize)*sizeof(int)));
+
+    // count moving steps
+    int i, j;
+    for (i = 0; i < (*returnSize); ++i) {
+        for (j = 0; j < (*returnSize); ++j) {
+            if ((i == j) || (boxes[j] == '0')) {
+                continue;
+            }
+            pRetVal[i] += (abs(j - i));
+        }
+    }
+
+    return pRetVal;
+}

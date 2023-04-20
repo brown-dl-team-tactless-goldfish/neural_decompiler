@@ -1,0 +1,38 @@
+public int[] GardenNoAdj(int N, int[][] paths) {                
+            var graph = new Dictionary<int, HashSet<int>>();
+
+            for (int i = 0; i < N; i++)
+            {
+                graph.Add(i, new HashSet<int>());
+            }
+
+            foreach (var path in paths) {
+                var p0 = path[0];
+                var p1 = path[1];
+
+                graph[p0 - 1].Add(p1 - 1);
+                graph[p1 - 1].Add(p0 - 1);
+            }
+
+            var result = new int[N];
+
+            for (int i = 0; i < N; i++) 
+            {
+                var colors = new int[5];
+
+                foreach (var item in graph[i])
+                {
+                    colors[result[item]] = 1;
+                }
+
+                for (int c = 4; c > 0; --c)
+                {
+                    if (colors[c] == 0)
+                    {
+                        result[i] = c;
+                    }
+                }
+            }
+
+            return result;       
+        }

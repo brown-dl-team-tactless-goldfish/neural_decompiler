@@ -1,0 +1,41 @@
+class Solution
+{
+public:
+    string subStrHash(string s, int power, int modulo, int k, int hashValue)
+    {
+        long long init = 0;
+        int w = s.size();
+        long long pw = 1;
+        int idx_res;
+        for (int i = w - 1; i != w - k - 1; --i)
+        {
+            init = init * power % modulo;
+            if (i != w - 1)
+            {
+                pw = pw * power % modulo;
+            }
+            init += s[i] - 'a' + 1;
+        }
+        init %= modulo;
+        if (init == hashValue)
+        {
+            idx_res = w - k;
+        }
+        for (int i = w - k - 1; i > -1; --i)
+        {
+            init -= (s[i + k] - 'a' + 1) * pw % modulo;
+            if (init < 0)
+            {
+                init += modulo;
+            }
+            init = init * power % modulo;
+            init += s[i] - 'a' + 1;
+            init %= modulo;
+            if (init == hashValue)
+            {
+                idx_res = i;
+            }
+        }
+        return s.substr(idx_res, k);
+    }
+};

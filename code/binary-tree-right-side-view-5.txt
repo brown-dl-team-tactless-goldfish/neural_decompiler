@@ -1,0 +1,17 @@
+void checkView(struct TreeNode * root, int * result, bool * view, int * idx, int height)
+{
+    if(root == NULL) return;
+    if(view[height] == false)
+        result[(*idx)++] = root->val;
+    view[height] = true;
+    checkView(root->right, result, view, idx, height + 1);
+    checkView(root->left, result, view, idx, height + 1);
+}
+int* rightSideView(struct TreeNode* root, int* returnSize){
+    bool * view = (bool *)calloc(100, sizeof(bool));
+    int * result = (int *)malloc(1000*sizeof(int));
+    int idx = 0;
+    checkView(root, result, view, &idx, 0);
+    *returnSize = idx;
+    return result;   
+}

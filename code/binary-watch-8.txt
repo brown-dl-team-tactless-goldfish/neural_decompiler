@@ -1,0 +1,35 @@
+// Count number of bits in a number
+int countBit(int n) {
+    int cnt = 0;
+    
+    while (n > 0) {
+        if (n % 2) {
+            cnt++;
+        }
+        n = n >> 1;
+    }
+    return cnt;
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char ** readBinaryWatch(int turnedOn, int* returnSize){
+    int h, m;
+    *returnSize = 0;
+	// Hardcoded. Got lazy. Ideally, use the loop below to figure out exact size to allocate
+    char **ret = (char **) malloc(1000 * sizeof(char*));
+	// iterate through all hours and minutes
+    for (h = 0; h < 12; h++) {
+        for (m = 0; m < 60; m++) {
+		    // combine hour and minute. Shift by 6 because minute is 6 bits.
+            if (countBit((h << 6) | m) == turnedOn) {
+                ret[*returnSize] = (char *) calloc(6,sizeof(char));
+                sprintf(ret[*returnSize], "%d:%02d", h, m);
+                (*returnSize)++;    
+            }
+        }
+    }
+    
+    return ret;
+}

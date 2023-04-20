@@ -1,0 +1,39 @@
+bool check(int* BitCn, int n){
+    for(int i = 0; i < n; i++){
+        if(BitCn[i] > 1)
+            return false;
+    }
+    return true;
+}
+
+int longestNiceSubarray(int* nums, int numsSize){
+    int* BitCn = calloc( 32 , sizeof(int));
+    int left = 0, right = 0;
+
+    while(right < numsSize){
+        int k = nums[right];
+        int pos = 0;
+        while(k){
+            if(k%2 == 1){
+                BitCn[pos]++;
+            }
+            k /=2;
+            pos++;
+        }
+        right++;
+        if(check(BitCn, 32) == false){
+            k = nums[left];
+            pos = 0;
+            while(k){
+                if(k%2 == 1){
+                    BitCn[pos]--;
+                }
+                k /=2;
+                pos++;
+            }            
+            left++;
+        }
+    }
+    
+    return right - left;
+}

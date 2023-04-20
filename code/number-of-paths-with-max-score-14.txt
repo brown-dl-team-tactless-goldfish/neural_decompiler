@@ -1,0 +1,30 @@
+class Solution {
+public:
+    using VI = vector<int>;
+    using VVI = vector<VI>;
+    using VS = vector<string>;
+    VI pathsWithMaxScore(VS& A, VVI dirs = {{-1,-1},{-1,0},{0,-1}}, int mod = 1e9 + 7) {
+        int N = A.size();
+        VVI S = VVI(N + 1, VI(N + 1)),
+            P = VVI(N + 1, VI(N + 1));
+        A[0][0] = A[N - 1][N - 1] = '0';
+        P[0][0] = 1;
+        for (auto i = 1; i <= N; ++i) {
+            for (auto j = 1; j <= N; ++j) {
+                if (A[i - 1][j - 1] == 'X')
+                    continue;
+                for (auto d: dirs) {
+                    auto u = i + d[0],
+                         v = j + d[1];
+                    auto sum = !P[u][v] ? 0 : S[u][v] + (A[i - 1][j - 1] - '0');
+                    if (S[i][j] == sum)
+                        P[i][j] = (P[i][j] + P[u][v]) % mod;
+                    if (S[i][j] < sum)
+                        S[i][j] = sum,
+                        P[i][j] = P[u][v];
+                }
+            }
+        }
+        return {S[N][N], P[N][N]};
+    }
+};

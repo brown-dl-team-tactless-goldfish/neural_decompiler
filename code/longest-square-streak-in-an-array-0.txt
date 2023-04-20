@@ -1,0 +1,35 @@
+#define UPPER 330
+int cmp(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+int longestSquareStreak(int* nums, int numsSize){
+    int n = numsSize ;
+    qsort(nums, n, sizeof(int), cmp);
+    bool* hash = calloc(100001, sizeof(bool));
+    for(int i = 0; i < n; i++){
+        hash[nums[i]] = true;
+    }
+    int ans = -1;
+    for(int i = 0; i < n-1; i++){
+        int k = 1;
+        int val = nums[i];
+        while(1){ 
+            if(val > UPPER )
+                break;
+            int tmp = val * val;
+            if(tmp > 100000)
+                break;
+            if(hash[val*val]){
+                val = val*val;
+                k++;
+            }
+            else
+                break;
+        }
+
+        if(k > 1)
+            ans = fmax(ans, k);
+    }
+    free(hash);
+    return ans;
+}

@@ -1,0 +1,82 @@
+    struct Node {
+        Node * nxt = NULL,  *pre = NULL, * down = NULL;
+        int val;
+        Node(int v) : val(v) {}
+    };
+    
+    Node* head = NULL;
+    int level = 0;
+    
+public:
+    Skiplist() {
+        srand(time(NULL));
+    }
+    
+    bool search(int target) {
+        Node* cur = head;
+        while(cur != NULL) {
+            while(cur->nxt != NULL && cur->nxt->val < target) cur = cur->nxt;
+            if(cur->nxt != NULL && cur->nxt->val == target) return true;
+            cur = cur->down;
+        }
+        return false;
+    }
+    
+    void add(int num) {
+        vector<Node*> path;
+        Node* cur = head;
+        
+        while(cur != NULL) {
+            while(cur->nxt != NULL && cur->nxt->val < num) cur = cur->nxt;
+            path.push_back(cur);
+            cur = cur->down;
+        }
+        
+        Node *tmp = NULL, *p = NULL;
+        int idx = path.size() -1;
+        while(true) {
+            tmp = new Node(num);
+            if(idx >= 0) {
+                insertAfter(path[idx--], tmp);
+            } else {
+                level++;
+                Node* h = new Node(-1);
+                insertAfter(h, tmp);
+                h->down = head;
+                head = h;
+            }
+            tmp->down = p;
+            p = tmp;
+            if(rand() % 2) break;
+        }
+    }
+    
+    void insertAfter(Node * cur, Node * nxt) {
+            nxt->nxt = cur->nxt;
+            if(cur->nxt != NULL) nxt->nxt->pre = nxt;
+            cur->nxt = nxt;
+            nxt->pre = cur;
+    }
+    
+    
+    bool erase(int num) {
+        Node* cur = head, *nxt = NULL;
+        bool found = false;
+        while(cur != NULL) {
+            while(cur->nxt != NULL && cur->nxt->val < num) cur = cur->nxt;
+            if(cur->nxt != NULL && cur->nxt->val == num) {
+                found = true;
+                cur = cur->nxt;
+                while(cur != NULL) {
+                    cur->pre->nxt = cur->nxt;
+                    if(cur->nxt) cur->nxt->pre = cur->pre;
+                    nxt = cur->down;
+                    delete cur;
+                    cur = nxt;
+                }
+                break;
+            }
+            cur = cur->down;
+        }
+        return found;
+    }

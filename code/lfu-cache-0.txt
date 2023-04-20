@@ -1,0 +1,158 @@
+// singly linked list
+struct Node {
+    int key;
+    int value;
+    int frequency;
+    int age;
+    struct Node *next;
+};
+
+typedef struct {
+    int capacity;
+    int amount;
+    struct Node *head;
+} LFUCache;
+
+
+// updates age and helps me find what's oldest if 
+// frequency of two or more nodes is the same.
+static int recent = 0;
+
+
+// creates a new node for my singly linked list and updates the
+// nodes data fields
+struct Node *newNode(int key, int value) {
+    struct Node *newN = (struct Node *) malloc(sizeof(struct Node));
+    
+    newN->key = key;
+    newN->value = value;
+    newN->next = NULL;
+    newN->frequency = 0;
+    newN->age = recent++;
+    
+    return newN;
+}
+
+LFUCache* lFUCacheCreate(int capacity) {
+    LFUCache *table = (LFUCache *) malloc(sizeof(LFUCache));
+    
+    table->capacity = capacity;
+    table->amount = 0;
+    table->head = NULL;
+    
+    return table;
+}
+
+int lFUCacheGet(LFUCache* obj, int key) {
+    // simply loops through list to find key,
+    // else returns -1
+    struct Node *temp = obj->head;
+    if(temp == NULL) return -1;
+    while(temp != NULL) {
+        if(temp->key == key) {
+            temp->frequency++;
+            temp->age = recent++;
+            return temp->value;
+        }
+        temp = temp->next;
+    }
+    return -1;
+}
+
+void lFUCachePut(LFUCache* obj, int key, int value) {
+    // if there is space to add a new node
+    if(obj->amount < obj->capacity) {
+        // check if list is empty, if so add to head,
+        // else append to end of list
+        if(obj->amount == 0) {
+            obj->head = newNode(key, value);
+        } else {
+            struct Node *temp = obj->head, *prev;
+            while(temp != NULL) {
+                if(temp->key == key) {
+                    temp->value = value;
+                    temp->frequency++;
+                    temp->age = recent++;
+                    return;
+                }
+                prev = temp;
+                temp = temp->next;
+            }
+            prev->next = newNode(key, value);
+        }
+        obj->amount++;
+        
+    } else {
+        
+        // out of space, can't add new node
+        // loop to find node with lowest frequency and overwrite entire node
+        // if we find a node that has the same key, overwrite and return
+        struct Node *temp = obj->head;
+        int minFreq = INT_MAX, specific_key = -1, flag = 0, minLife = INT_MAX;
+        while(temp != NULL) {
+            if(temp->key == key) {
+                temp->value = value;
+                temp->frequency++;
+                temp->age = recent++;
+                return;
+            }
+            
+            if(minFreq > temp->frequency) {
+                minFreq = temp->frequency;
+                specific_key = temp->key;
+            }
+            temp = temp->next;
+        }
+        
+        
+        // if there are more than 1 node with same frequency,
+        // find age so we can overwrite the correct node,
+        // else overwrite that node with lowest frequency
+        temp = obj->head;
+        int fCount = 0;
+        while(temp != NULL) {
+            if(minFreq == temp->frequency) {
+                fCount++;
+                if(minLife > temp->age) minLife = temp->age;
+            }
+            temp = temp->next;
+        }
+        
+        // if fCount is < 2 then we don't care about the age,
+        // if it's > 2, then we find lowest age and then overwrite
+        temp = obj->head;
+        if(fCount < 2) {
+            while(temp != NULL) {
+                if(temp->key == specific_key) {
+                    temp->key = key;
+                    temp->value = value;
+                    temp->frequency = 0;
+                    temp->age = recent++;
+                    return;
+                }
+                temp = temp->next;
+            }
+        } else {
+            while(temp != NULL) {
+                if(temp->age == minLife && minFreq == temp->frequency) {
+                    temp->key = key;
+                    temp->value = value;
+                    temp->frequency = 0;
+                    temp->age = recent++;
+                    return;
+                }
+                temp = temp->next;
+            }
+        }
+    }
+}
+
+void lFUCacheFree(LFUCache* obj) {
+    struct Node *temp;
+    while(obj->head != NULL) {
+        temp = obj->head;
+        obj->head = obj->head->next;
+        free(temp);
+    }
+    free(obj);
+}

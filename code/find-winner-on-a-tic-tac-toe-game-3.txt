@@ -1,0 +1,79 @@
+char * tictactoe(int** moves, int movesSize, int* movesColSize){
+    int sumRows[3] = {0, 0, 0};
+    int sumCols[3] = {0, 0, 0};
+    int sumDias[2] = {0, 0};
+    
+    /*
+    A: Define "X" = 1
+    B: Define "O" = 4 (= 1 * 3 + 1)
+    */
+    const int A = 1;
+    const int B = 4;
+    
+    for (int i = 0; i < movesSize; i++)
+    {
+        int r = moves[i][0];
+        int c = moves[i][1];
+        
+        if (i % 2 == 0)
+        {
+            sumRows[r] += A;
+            sumCols[c] += A;
+
+            // Check if either A wins
+            if (sumRows[r] == 3 * A || sumCols[c] == 3 * A)
+            {
+                return "A";
+            }
+            
+            if (r == c)
+            {
+                sumDias[0] += A;
+                if (sumDias[0] == 3 * A)
+                {
+                    return "A";
+                }                            
+            }
+            if (r + c == 2)
+            {
+                sumDias[1] += A;
+                if (sumDias[1] == 3 * A)
+                {
+                    return "A";
+                }                            
+            }
+            
+        }
+        else
+        {
+            sumRows[r] += B;
+            sumCols[c] += B;            
+
+            if (sumRows[r] == 3 * B || sumCols[c] == 3 * B)
+            {
+                return "B";
+            }
+
+            if (r == c)
+            {
+                sumDias[0] += B;
+                if (sumDias[0] == 3 * B)
+                {
+                    return "B";
+                }                                            
+            }
+            if (r + c == 2)
+            {
+                sumDias[1] += B;
+                if (sumDias[1] == 3 * B)
+                {
+                    return "B";
+                }                                                            
+            }            
+        }
+        
+        // printf("%d: sumDias[0] = %d, sumDias[1] = %d\n", i, sumDias[0], sumDias[1]);
+    }
+    
+    return movesSize == 3 * 3 ? "Draw" : "Pending";
+}

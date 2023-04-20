@@ -1,0 +1,32 @@
+void dfs(int** grid, int r, int c, int rSize, int cSize, int* res, int* returnSize) {
+    if (r == rSize) {
+        res[(*returnSize)++] = c;
+        return;
+    }
+    if (c < 0 || c > cSize - 1) {
+        res[(*returnSize)++] = -1;
+        return;
+    }
+    if (grid[r][c] == -1 && (c == 0 || grid[r][c - 1] == 1)) {
+        res[(*returnSize)++] = -1;
+        return;
+    }
+    if (grid[r][c] == 1 && (c == cSize - 1 || grid[r][c + 1] == -1)) {
+        res[(*returnSize)++] = -1;
+        return;
+    }
+    if (grid[r][c] == 1) {
+        dfs(grid, r + 1, c + 1, rSize, cSize, res, returnSize);
+    } else {
+        dfs(grid, r + 1, c - 1, rSize, cSize, res, returnSize);
+    }
+}
+
+int* findBall(int** grid, int gridSize, int* gridColSize, int* returnSize) {
+    *returnSize = 0;
+    int* res = (int*) malloc(gridColSize[0] * sizeof(int));
+    for (int c = 0; c < gridColSize[0]; c++) {
+        dfs(grid, 0, c, gridSize, gridColSize[0], res, returnSize);
+    }
+    return res;
+}

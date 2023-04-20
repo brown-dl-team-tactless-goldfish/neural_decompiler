@@ -1,0 +1,11 @@
+int dp[501][501][2] = {};
+int maxDotProduct(vector<int>& n1, vector<int>& n2, int p1 = 0, int p2 = 0, bool empty = true) {
+    if (p1 >= n1.size() || p2 >= n2.size())
+        return empty ? -1000000 : 0;
+    if (dp[p1][p2][empty] == 0)
+        dp[p1][p2][empty] = 1 + max({
+            maxDotProduct(n1, n2, p1 + 1, p2, empty), // skip from first
+            maxDotProduct(n1, n2, p1, p2 + 1, empty), // skip from second
+            maxDotProduct(n1, n2, p1 + 1, p2 + 1, false) + n1[p1] * n2[p2] }); // take
+    return dp[p1][p2][empty] - 1;
+}

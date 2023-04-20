@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int minTrioDegree(int n, vector<vector<int>>& edges) {
+        //we need to store the edges in a form of adjacency matrix with the help of vector
+        vector<vector<int>> adj(n+1,vector<int>(n+1,-1));
+        
+        //also store the number of edges for a current node
+        vector<int> freq(n+1,0);
+        for(int i=0;i<edges.size();i++)
+        {
+            //basically mapping a edge from a smaller node to larger node
+            adj[min(edges[i][0],edges[i][1])][max(edges[i][0],edges[i][1])]=1;
+            
+            freq[edges[i][0]]++;
+            freq[edges[i][1]]++;
+        }
+        
+        int res=INT_MAX;
+        //now for every two nodes in the graph 
+        //check if there is another node in which it has both the edges from the either of our two nodes
+        //then update the result
+        for(int i=1;i<=n;i++)
+        {
+            for(int j=i+1;j<=n;j++)
+            {
+                //check if there is an edge between i and j
+                if(adj[i][j]!=-1)
+                {
+                    //now check there can be a possible intermidiate node which makes trio
+                    for(int k=j+1;k<=n;k++)
+                    {
+                        if(adj[i][k]!=-1 && adj[j][k]!=-1)
+                        {
+                            //update the result
+                            
+                            //subtract 6 as every node will count the two edges in trio twice
+                            res=min(res,freq[i]+freq[j]+freq[k] - 6 );
+                        }
+                    }
+                }
+            }
+        }
+        return res==INT_MAX ? -1 : res;
+    }
+};

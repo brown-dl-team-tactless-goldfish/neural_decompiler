@@ -1,0 +1,74 @@
+class Solution {
+public:
+    struct Node {
+        int val; 
+        Node* l;
+        Node* r;
+        Node() : l(nullptr), r(nullptr) {}
+    };
+    
+    void f(Node* root, bitset<32>& num, const int& v, int i) {
+        if(i == 0) {
+            root->val = v; 
+            return; 
+        }
+        if(num[i-1] == 0) {
+            if(root->l == nullptr) {
+                root->l = new Node();
+            }
+            f(root->l,num,v,i-1);
+        } else {
+            if(root->r == nullptr) {
+                root->r = new Node();
+            }
+            f(root->r,num,v,i-1);
+        }
+    } 
+    
+    Node* g(Node* root, bitset<32>&x, bitset<32>& m, int cur, int m_v, int i) {
+        if(root == nullptr) {
+            return nullptr; 
+        }
+        if(cur > m_v) {
+            return nullptr; 
+        }
+        if(i == 0) {
+            return root;  
+        }
+        if(x[i-1] == 0) {
+            Node* ret = g(root->r,x,m, cur * 2 + 1, m_v*2 + m[i-1],i-1);
+            if(ret != nullptr) {
+                return ret; 
+            }
+            return g(root->l,x,m,cur*2,m_v*2+m[i-1],i-1);
+        }
+        Node* ret = g(root->l,x,m,cur*2,m_v*2+m[i-1],i-1);
+        if(ret != nullptr) {
+            return ret; 
+        }
+        return g(root->r,x,m, cur * 2 + 1, m_v*2 + m[i-1],i-1);
+        
+    }
+    
+    vector<int> maximizeXor(vector<int>& nums, vector<vector<int>>& qs) {
+        Node* root = new Node();
+        for(int x: nums) {
+            bitset<32> b(x);
+            f(root,b,x,32);
+        }
+        vector<int> ret; 
+        for(int i = 0;i<qs.size();i++){
+            int x = qs[i][0];
+            int m = qs[i][1];
+            bitset<32> x_b = bitset<32>(x);
+            bitset<32> m_b = bitset<32>(m);
+            Node* tmp = g(root,x_b,m_b,0,0,32);
+            if(tmp != nullptr) {
+                ret.push_back(tmp->val ^ x);
+            } else {
+                ret.push_back(-1);
+            }
+        }
+        return ret; 
+    }
+};

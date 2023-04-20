@@ -1,0 +1,46 @@
+#define MIN(a, b) ((a) > (b) ? (b) : (a))
+
+char * shortestCommonSupersequence(char * str1, char * str2){
+    int s1_len = strlen(str1);
+    int s2_len = strlen(str2);
+    
+    short dp[s1_len + 1][s2_len + 1];
+    for (int i1 = 0; i1 <= s1_len; i1++) {
+        dp[i1][0] = i1;
+    }
+    for (int i2 = 0; i2 <= s2_len; i2++) {
+        dp[0][i2] = i2;
+    }     
+    for (int i1 = 1; i1 <= s1_len; i1++) {
+        for (int i2 = 1; i2 <= s2_len; i2++) {
+            if (str1[i1 - 1] == str2[i2 - 1])
+                dp[i1][i2] = dp[i1-1][i2-1] + 1;
+            else
+                dp[i1][i2] = MIN(dp[i1][i2-1], dp[i1-1][i2]) + 1;
+        }
+    }
+    int i1 = s1_len;
+    int i2 = s2_len;
+    char *res = malloc(dp[i1][i2] + 1);
+    res[dp[i1][i2]] = '\0';
+    while (i1 != 0 || i2 != 0) {
+        if (i1 == 0) {
+            res[dp[i1][i2]-1] = str2[i2 - 1];
+            i2--;
+        } else if (i2 == 0) {
+            res[dp[i1][i2]-1] = str1[i1 - 1];
+            i1--;
+        } else if (str1[i1 - 1] == str2[i2 - 1]){
+            res[dp[i1][i2]-1] = str1[i1 - 1];
+            i1--;
+            i2--;
+        } else if (dp[i1-1][i2] > dp[i1][i2-1]) {
+            res[dp[i1][i2]-1] = str2[i2 - 1];
+            i2--;
+        } else {
+            res[dp[i1][i2]-1] = str1[i1 - 1];
+            i1--;
+        }
+    }
+    return res;
+}

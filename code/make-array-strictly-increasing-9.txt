@@ -1,0 +1,35 @@
+class Solution {
+public:
+    
+    vector<int> v1, v2;
+    int n;
+    vector<vector<int> > dp;
+    
+    int util(int i, int j){
+        if(i>=n) return 0;
+        if(dp[i][j]!=-1) return dp[i][j];
+        int ans=200000000;
+        if(j==0){
+            int idx=upper_bound(v2.begin(), v2.end(), v1[i-1])-v2.begin();
+            if(idx<v2.size()) ans=min(ans, 1+util(i+1, idx+1));
+            if(v1[i]>v1[i-1]) ans=min(ans, util(i+1, 0));
+        }
+        else{
+            int idx=upper_bound(v2.begin(), v2.end(), v2[j-1])-v2.begin();
+            if(idx<v2.size()) ans=min(ans, 1+util(i+1, idx+1));
+            if(v1[i]>v2[j-1]) ans=min(ans, util(i+1, 0));
+        }
+        return dp[i][j]=ans;
+    }
+    
+    int makeArrayIncreasing(vector<int>& arr1, vector<int>& arr2) {
+        set<int> s;
+        for(int i: arr2) s.insert(i);
+        for(int i: s) v2.push_back(i);
+        v1=arr1, n=v1.size();
+        dp=vector<vector<int> >(n, vector<int>(v2.size()+1, -1));
+        int res=min(1+util(1, 1), util(1, 0));
+        if(res>=200000000) return -1;
+        else return res;
+    }
+};

@@ -1,0 +1,82 @@
+void paser(char* log, int* newId, int*flag, int* timeStamp)
+{
+    int idx = 0;
+    
+    *newId = 0;
+    *flag = 0;
+    *timeStamp = 0;
+    
+    while(log[idx]!=':')
+    {
+        (*newId) = (*newId) * 10 + log[idx] - '0';
+        idx++;
+    }
+    idx++;
+    
+    if(log[idx] == 's')
+    {
+        *flag = 0;
+        idx += 6;
+    }
+    else
+    {
+        *flag = 1;
+        idx += 4;
+    }
+    
+    while(log[idx]!='\0')
+    {
+        (*timeStamp) = (*timeStamp) * 10 + log[idx] - '0';
+        idx++;
+    }
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* exclusiveTime(int n, char ** logs, int logsSize, int* returnSize){
+    int i;
+    int newId, flag, timeStamp, startTime;
+    int runningId = -1;
+    int* duration = (int*)calloc(n,sizeof(int));
+    int* stack = (int*)calloc(logsSize/2,sizeof(int));
+    int stackDepth = 0;
+    
+    for(i=0;i<logsSize;i++)
+    {
+        paser(logs[i],&newId, &flag, &timeStamp);
+        // check start/end, if start, pause running id, push into stack, update duration, update running id
+        if(flag == 0) // start
+        {
+            if(runningId >= 0)
+            {
+                stack[stackDepth] = runningId;
+                stackDepth++;
+                duration[runningId] += timeStamp - startTime;
+            }
+            
+            runningId = newId;
+            startTime = timeStamp;
+        }
+        // else if end, update duration, pop start next one from stack
+        else // end
+        {
+            duration[newId] += timeStamp - startTime + 1;
+            
+            if(stackDepth)
+            {
+                runningId = stack[stackDepth-1];
+                startTime = timeStamp + 1;
+                stackDepth--;
+            }
+            else
+            {
+                runningId = -1;
+            }
+        }
+    }
+
+    free(stack);
+    *returnSize = n;
+    return duration;
+}

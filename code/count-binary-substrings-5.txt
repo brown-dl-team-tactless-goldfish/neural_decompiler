@@ -1,0 +1,54 @@
+#include <stdbool.h>
+#include <stdlib.h>
+#include <stddef.h>
+#include <stdint.h>
+
+int countBinarySubstrings(char * s){
+    size_t len = strlen(s);
+    int count = 0;
+    int i = 0;
+    int j = 0;
+    
+    for (int i = 0; i < len && j < len;) {
+        char c1 = s[i];
+        int j = i + 1;
+        int lptr = 1; // Left counter (keep track of how many chars are on the lhs).
+        int rptr = 0; // Right counter (" " but for the rhs).
+        bool changeFlag = false;
+        int changeIndex = -1;
+        
+        while (rptr <= lptr) {
+            char c2 = s[j];
+            // Once we reach the end of the string, just break out.
+            if (c2 == '\0') {
+                return count;
+            } else if (c1 == c2) {
+                // If we have reverted back to the char we were before, break out.
+                if (changeFlag) {
+                    break;
+                } else {
+                    // Increment the # of chars that the left ptr currently tracks.
+                    lptr++;
+                }
+            } else {
+                // The first time we get here, keep track of where we need to come back to.
+                if (!changed) {
+                    changeIndex = j;
+                    changed = true;
+                }
+                
+                // Only if we haven't crossed over the boundary can we increment count.
+                rptr++;
+                if (rptr <= lptr) {
+                    count++;
+                }
+            }
+            j++;
+        }
+        
+        // Set i to be the index we need to reset to.
+        i = changeIndex;
+    }
+    
+    return count;
+}

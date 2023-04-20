@@ -1,0 +1,50 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+#include<stdio.h>
+int max(int a,int b){
+    if(a>b){
+        return a;
+    }
+    return b;
+}
+
+int heightTree(struct TreeNode* root){
+    if(root==NULL){
+        return 0;
+    }
+    return 1 + max(heightTree(root->left),heightTree(root->right));
+}
+void lastSumUtil(struct TreeNode* root, int curheight,int height,int* ans){
+    if(root==NULL){
+        return;
+    }
+    
+    printf("Curheigth=%d and height=%d\n",curheight,height);
+    
+    if(curheight==height){
+        *ans+=root->val;
+           
+    }
+
+    lastSumUtil(root->left,curheight+1,height,ans);
+    lastSumUtil(root->right,curheight+1,height,ans);
+    
+}
+int lastSum(struct TreeNode* root,int height){
+    int ans=0;
+    int curheight=0;
+    lastSumUtil(root,curheight,height-1,&ans);
+    printf("ans=%d\n",ans);
+    return ans;
+}
+int deepestLeavesSum(struct TreeNode* root){
+    int height=heightTree(root);
+    //printf("height= %d",height);
+    return lastSum(root,height);
+}

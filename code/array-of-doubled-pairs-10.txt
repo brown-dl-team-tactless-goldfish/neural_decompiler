@@ -1,0 +1,25 @@
+class Solution {
+public:
+    bool canReorderDoubled(vector<int>& A) {
+        map<int,int> positiveMap, nagtiveMap;
+        int count0 = 0;
+        for(auto x:A){
+            if(x>0) ++positiveMap[x];
+            else if(x<0) ++nagtiveMap[-x];
+            else count0++;
+        } 
+        return canReorderDoubled(positiveMap) && canReorderDoubled(nagtiveMap) && count0 % 2 == 0;
+    }
+    
+    bool canReorderDoubled(map<int,int>& m){
+        while(!m.empty()){
+            auto x = m.begin()->first;
+            auto it = m.find(2*x);
+            if(it == m.end() || it->second < m.begin()->second) return false;
+            it->second -= m.begin()->second;
+            if(it->second == 0) m.erase(it);
+            m.erase(m.begin());
+        }
+        return true;
+    }    
+};

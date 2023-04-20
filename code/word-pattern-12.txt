@@ -1,0 +1,31 @@
+bool wordPattern(char * pattern, char * s){
+    int count = 0, patternSize = strlen(pattern);
+    char** translate = calloc(26, sizeof(char*));
+    char* token;
+    
+    // use strtok to seperate the string and assign pointer of each word to the pattern associated table
+    token = strtok(s, " ");
+    while(token && count < patternSize){
+        
+        if (!translate[pattern[count] - 'a']){
+            translate[pattern[count] - 'a'] = token;
+        }
+        else if (strcmp(translate[pattern[count] - 'a'], token)){
+            return false;
+        }
+        token = strtok(NULL, " ");
+        count++;
+    }
+    
+    // check if pattern and word have same size
+    if (count < patternSize || token) return false;
+    
+    // check if two character have assigned to the same word
+    for(int i=0; i < 25; i++)
+        if(translate[i])
+            for(int j=i+1; j < 26; j++)
+                if(translate[j])
+                    if(!strcmp(translate[i], translate[j]))
+                        return false;
+    return true;
+}

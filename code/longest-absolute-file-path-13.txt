@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int lengthLongestPath(string input) {
+      if(input.empty()) { return 0;}
+      size_t maxPathLen = 0, currPathLen = 0;
+      stringstream ss{input};
+      string line;
+      stack<int> stk_dirlen;
+      while(getline(ss, line, '\n')) {
+        size_t tabCount = count_if(line.begin(), line.end(), [](char c){ return c == '\t';});
+        while(stk_dirlen.size() > tabCount) {
+          currPathLen -= stk_dirlen.top();
+          stk_dirlen.pop();
+        }
+        currPathLen += line.size();
+        if(line.rfind(".") != string::npos) {
+          maxPathLen = max(maxPathLen, currPathLen);
+        }
+        stk_dirlen.push(line.size() - tabCount);
+        currPathLen -= tabCount;
+    }
+    return maxPathLen;
+  }
+};

@@ -1,0 +1,26 @@
+struct TreeNode* sortedListToBST(struct ListNode* head){
+    if(!head) return NULL;
+    struct ListNode* savedHead = head;
+    struct ListNode* prev = NULL; /* for saving the list tail for the left node */
+    struct ListNode* slow = head;
+    struct ListNode* fast = head;
+    if(fast->next)
+        fast = fast->next;    
+    while(fast->next)
+    {
+        prev = slow;
+        fast = fast->next;
+        slow = slow->next;
+        if(fast->next)
+            fast = fast->next;
+    }
+    struct TreeNode* root = (struct TreeNode*)calloc(1, sizeof(struct TreeNode));
+    root->val = slow->val;
+    if(prev) 
+        prev->next = NULL; /* set next to NULL for the current list tail */
+    else /* head is the root of node */
+        savedHead = NULL;
+    root->left = sortedListToBST(savedHead);
+    root->right = sortedListToBST(slow->next);
+    return root;
+}

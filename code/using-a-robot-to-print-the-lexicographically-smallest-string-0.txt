@@ -1,0 +1,67 @@
+char * robotWithString(char * s){
+    int n = strlen(s);
+    char* ans = malloc((n+1) * sizeof(char));
+    ans[n] = '\0' ;
+    int a_idx = 0;
+    char* t = malloc(n * sizeof(char));
+    int t_idx = 0;
+    char lower = 'a';
+    int min_idx = 0;
+    int begin = 0;
+    while(begin < n){
+        char min = s[begin]; 
+        min_idx = begin;
+        //find minimum c in s, save it to lower
+        for(int i = begin ; i < n; i++){
+            if(s[i] == lower){
+                min_idx = i;
+                min = lower;
+                break;
+            }
+            else if(s[i] < min){
+                min = s[i];
+                min_idx = i;
+            }
+        }
+        lower = s[min_idx];
+        //if t stack is empty, print the lower
+        if(t_idx == 0){
+            ans[a_idx] = lower;
+            a_idx++;
+            for(int j = begin ; j < min_idx; j++){
+                t[t_idx] = s[j];
+                t_idx++;
+            }
+        }        
+        //t is not empty
+        //  1. check if top of t is <= lower
+        //  2. if yes, pop t out to ans
+        //  3. put lower to ans
+        //  4. push begin ~ min_idx  to t
+        else{
+            while(t_idx >= 0){
+                if(t_idx > 0 && t[t_idx-1] <= s[min_idx]){
+                    ans[a_idx] = t[t_idx-1];
+                    a_idx++;
+                    t_idx--;
+                }
+                else{
+                    ans[a_idx] = s[min_idx];
+                    a_idx++;
+                    for(int j = begin; j < min_idx; j++){
+                        t[t_idx] = s[j];
+                        t_idx++;
+                    }
+                    break;
+                }
+            }
+        }
+        begin = min_idx + 1;
+    }
+    //pop t to ans
+    for(int i = t_idx-1; i >=0; i--){
+        ans[a_idx] = t[i];
+        a_idx++;
+    }
+    return ans;
+}

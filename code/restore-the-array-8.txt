@@ -1,0 +1,26 @@
+class Solution {
+public:
+    string s ;
+    int MOD = 1e9 + 7 ,k, dp[100001] ;
+    
+    int solve(int pos){
+        if(pos >= s.size()) return 1;
+        if(dp[pos] != -1) return dp[pos] ;
+        
+        string temp = "" ;
+        int ans = 0 ;
+        for(int i = pos ; i < s.size() ; ++i ){
+            temp += s[i] ;
+            if(temp.size() > 9 || stoi(temp) < 1 || stoi(temp) > k) break ;
+            ans += solve(i + 1) ;
+            ans %= MOD ;
+        }
+        return dp[pos] = ans % MOD ;
+        
+    }
+    int numberOfArrays(string s, int k) {
+        memset(dp,-1,sizeof(dp)) ;
+        this->s = s ; this->k = k ;
+        return solve(0) ;
+    }
+};

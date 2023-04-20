@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int dieSimulator(int n, vector<int>& rollMax) {
+        long long dp[6][n];
+        for(int i=0; i<n; i++) {
+            for(int num=0; num<6; num++) { // for each number
+                dp[num][i] = 0;
+                for(int k=1; k<=rollMax[num]&&i-k>=-1; k++) { // allowed length
+                    if(i-k==-1) { // edge case all k rolls are the same number
+                        dp[num][i]++;  continue;
+                    }
+                    for(int num2=0; num2<6; num2++){ // add all dp[num2] where num2!=num
+                        if(num2==num) continue;
+                        dp[num][i] = (dp[num][i]+dp[num2][i-k])%1000000007;
+                    }
+                }
+            }
+        }
+        return (dp[0][n-1]+dp[1][n-1]
+                +dp[2][n-1]+dp[3][n-1]
+                +dp[4][n-1]+dp[5][n-1])%1000000007;
+    }
+};

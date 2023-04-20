@@ -1,0 +1,43 @@
+bool canReach(int* arr, int arrSize, int start) {
+    bool retVal = false;
+
+    // Breadth-First Search
+    int bfsQueueFront = 0;
+    int bfsQueueRear = 0;
+    int bfsQueue[arrSize * 2];
+    memset(bfsQueue, 0, sizeof(bfsQueue));
+    bfsQueue[0] = start;
+    ++bfsQueueRear;
+
+    int visit[arrSize];
+    memset(visit, 0, sizeof(visit));
+    visit[start] = 1;
+
+    int key;
+    int value;
+    while (bfsQueueFront < bfsQueueRear) {
+        value = bfsQueue[bfsQueueFront];
+        ++bfsQueueFront;
+
+        if (arr[value] == 0) {
+            retVal = true;
+            return retVal;
+        }
+
+        key = value + arr[value];
+        if ((key < arrSize) && (visit[key] == 0)) {
+            visit[key] = 1;
+            bfsQueue[bfsQueueRear] = key;
+            ++bfsQueueRear;
+        }
+
+        key = value - arr[value];
+        if ((key >= 0) && (visit[key] == 0)) {
+            visit[key] = 1;
+            bfsQueue[bfsQueueRear] = key;
+            ++bfsQueueRear;
+        }
+    }
+
+    return retVal;
+}

@@ -1,0 +1,130 @@
+/*
+
+Example: s = "aab"
+
+string idx  0   1   2
+            a   a   b   selection bit(Dec) represents Substring
+              ^   ^
+              0   0           0              => "aab"
+              1   0           1              => "a", "ab"
+              0   1           2              => "aa", "b"
+              1   1           3              => "a", "a", "b"
+            (LSB) (MSB)
+ith_bit       0    1
+
+
+Steps:
+1. Iterate through selection bit to check every possible combination fo sub string
+2. Check every substing satisfies Palindrome
+
+====================================================================
+
+Substring "aa", "b" for example
+
+          start idx
+            |
+            V
+string idx  0   1   2
+            a   a   b   selection bit(Dec) represents Substring
+              ^   ^
+              0   1           2              => "aa", "b"
+              ^
+              |
+ith_bit       0   1
+
+0th bit is 0
+
+====================================================================
+
+        start idx
+            |
+            V
+string idx  0   1   2
+            a   a   b   selection bit(Dec) represents Substring
+              ^   ^
+              0   1           2              => "aa", "b"
+                  ^
+                  |
+ith_bit       0   1
+
+1th bit is 1
+
+check string start = 0, end = 1 i.e. check "aa" is Palindrome
+
+End of loop
+
+====================================================================
+
+Check the last substring "b"
+
+         (start idx) (strlen - 1)
+                    |
+                    V
+string idx  0   1   2
+            a   a   b   selection bit(Dec) represents Substring
+
+check string start = 2, end = 2 i.e. check "b" is Palindrome
+
+*/
+
+int is_P(char *s, int start, int end){
+    while(start <= end){
+        if (s[start]!= s[end]){
+            return 0;
+        }
+        start++;
+        end--;
+    }
+    return 1;
+}
+
+char *** partition(char * s, int* returnSize, int** returnColumnSizes){
+    int str_len = strlen(s);
+    int all_pos_cnt = 1<<(str_len-1); //Count for all posiible substring
+    char *** ret = calloc(all_pos_cnt, sizeof(char**));
+    *returnSize = 0;
+
+    (*returnColumnSizes) = calloc(all_pos_cnt, sizeof(int));
+
+    for (int sel_bit = 0; sel_bit < all_pos_cnt; sel_bit++){
+        char **substr = calloc(str_len, sizeof(char*));
+        int start = 0;
+        int sub_idx = 0;
+        int valid = 1;
+
+        for(int ith_b = 0; ith_b < (str_len-1); ith_b++){
+            if ((  (1<<ith_b) &  sel_bit) > 0){
+                if(is_P(s, start, ith_b) == 1){
+                    substr[sub_idx] = calloc((ith_b-start+1+1), sizeof(char)); // + 1 for '\0'
+                    memcpy(&substr[sub_idx][0], &s[start], (ith_b-start+1) * sizeof(char));
+                    substr[sub_idx][ith_b-start+1] = '\0';
+                    start = ith_b + 1;
+                    sub_idx++;
+                } else {
+                    valid = 0;
+                    break;
+                }
+            }
+        }
+
+        if(is_P(s, start, str_len-1) == 1){ // Check the last part
+            substr[sub_idx] = calloc((str_len-1-start+1+1), sizeof(char));
+            memcpy(&substr[sub_idx][0], &s[start], (str_len-1-start+1) * sizeof(char));
+            substr[sub_idx][str_len-1-start+1] = '\0';
+            sub_idx++;
+        } else {
+            valid = 0;
+        }
+
+        if (valid == 1){
+            ret[*returnSize] = substr;
+            (*returnColumnSizes)[*returnSize] = sub_idx;
+            (*returnSize)++;
+        } else {
+            // TBD: should call "free()"
+        }
+    }
+    //printf("done\n");
+    return ret;
+}
+

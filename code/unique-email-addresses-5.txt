@@ -1,0 +1,48 @@
+int count = 0;
+char **emailHash;
+emailHash = (char**)calloc(emailsSize, sizeof(char*));
+int hashIndex = 0;
+
+for (int i = 0; i < emailsSize; i++) {
+
+	char * afterAtEmail = strchr(emails[i], '@');
+	char * src = emails[i];
+	char  *dstEmail = (char*) calloc(strlen(emails[i])+1, sizeof(char));
+	char *dst = dstEmail;
+	while (true) {
+
+		if (*src == '+' || *src == '@') {
+			break;
+		}
+		else if(*src !='.')
+		{
+			*dst = *src;
+			dst++;
+		}
+		src++;
+	}		
+	strcat(dstEmail, afterAtEmail);
+
+	int uniqueflag = 1;
+	for (int k = 0; k < hashIndex; k++) {
+		if (strcmp(emailHash[k], dstEmail) == 0) {
+			uniqueflag = 0;
+			break;
+		}
+	}
+	if (uniqueflag)
+	{
+		emailHash[hashIndex] = (char*) malloc((strlen(dstEmail)+1) * sizeof(char));
+		strcpy(emailHash[hashIndex], dstEmail);
+		count += uniqueflag;
+		hashIndex++;
+	}	
+	free(dstEmail);
+}
+
+for (int l = 0; l < hashIndex; l++)
+	free (emailHash[l]);
+
+free(emailHash);
+
+return count;

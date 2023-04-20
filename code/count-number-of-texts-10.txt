@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int countTexts(string str) {
+        #define ll long long 
+        ll n = str.length();
+        ll mod = 1e9+7;
+        ll three[100000+2]{0},four[100000+2]{0};
+        three[1] = four[1] = 1, three[2] = four[2] = 2, three[3] = four[3] = 4; 
+        four[4] = 8;
+        ll ans = 1;
+        char ch = ' ';
+        
+        for(ll i=4;i<=1e5;++i){
+            three[i] = ((three[i-1]%mod + three[i-2]%mod)%mod + three[i-3]%mod)%mod;
+            four[i+1] = (((four[i-1]%mod + four[i-2]%mod)%mod + four[i-3]%mod)%mod+four[i]%mod)%mod;
+        }
+       
+        ll freq=1;
+        str += "M";
+        
+        for(auto it : str){
+            if(it != ch){                
+                if(ch == '9' or ch == '7'){
+                    ans = (ans%mod * four[freq]%mod)%mod;
+                }
+                else{
+                    ans = (ans%mod * three[freq]%mod)%mod;
+                }                    
+                ch = it;
+                freq = 1;
+            }
+            else{
+                ++freq;
+            }            
+        }
+        
+        return ans%mod;
+    }
+};

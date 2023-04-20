@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int chalkReplacer(vector<int>& chalk, int k) {
+        vector<long> ps;
+        ps.reserve(chalk.size() + 1);
+        ps.push_back(0);
+        for (int c : chalk) {
+            ps.push_back(ps.back() + c);
+        }
+        k = k % ps.back();
+        for (int i = 0, j = chalk.size(); i <= j; ) {
+            int m = (i + j) / 2;
+            if (ps[m] == k || ps[m] < k && ps[m + 1] > k) {
+                return m;
+            }
+            if (ps[m] < k) {
+                i = m + 1;
+            } else {
+                j = m - 1;
+            }
+        }
+        return -1;
+    }
+};

@@ -1,0 +1,40 @@
+// Now we can apply this algo for every pair of two alphabets
+// by taking the max of all freq(alphabet 1) - freq(alphabet 2)
+// but only when both the frequencies are greater than 0
+// and one case ("abbb" will give 0, but "bbba" will give 2,
+// dry run you will get it why) is also there to deal with that
+// we will need to reverse the string and find the result for that 
+// the same way and take the max of both
+
+struct Solution {
+
+    int largestVariance(string &s) {
+        
+        unordered_set<char> chars(s.begin(), s.end());
+        int ans = 0;
+        
+        for (int i = 1; i < 3; i++) {
+            for (auto a : chars) {
+                for (auto b : chars) {
+                    if (a == b) continue;
+                    int fa = 0, fb = 0;
+                    for (auto c : s) {
+                        if (c == a) ++fa;
+                        else if (c == b) ++fb;
+                        else continue;
+                        if (fa < fb) {
+                            fa = fb = 0;
+                        } else if (fa > 0 && fb > 0) {
+                            ans = max(ans, fa-fb);
+                        }
+                    }
+                }
+            }
+            if (i&1) {
+                reverse(s.begin(), s.end());
+            }
+        }
+        
+        return ans;
+    }
+};

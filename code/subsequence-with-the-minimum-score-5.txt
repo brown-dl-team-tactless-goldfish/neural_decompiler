@@ -1,0 +1,15 @@
+class Solution {
+public:
+    int minimumScore(string s, string t) {
+        int s_sz = s.size(), t_sz = t.size(), suffix[100002]{}, res = t_sz;
+        for(int i = s_sz-1, j = t_sz-1; i >= 0; i--) {
+            if(j >= 0 && s[i] == t[j]) suffix[i] = t_sz - j--;
+            else suffix[i] = suffix[i+1];
+        }
+        for(int i = 0, j = 0; i <= s_sz; i++) {
+            res = min(res,  t_sz - min(t_sz, j + suffix[i]));
+            if(i < s_sz && s[i] == t[j]) j++;
+        }
+        return res;
+    }
+};

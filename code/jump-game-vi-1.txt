@@ -1,0 +1,32 @@
+
+
+int maxResult(int* nums, int numsSize, int k){
+    //result[i] means the maximum value we can get at index i
+    int *result = malloc(sizeof(int)*numsSize);
+    int i, b, idx, cur = 0, max = nums[0];
+    result[0] = nums[0];
+    for(i = 1; i < numsSize; i++){
+        //check if the last maximum result is out of the range i-k
+        //if yes, we need to find out the new maximum result
+        if(i - k > cur){
+            if(i - k < 0)b = 0;
+            else b = i - k;
+            max = result[b];
+            for(idx = b; idx < i; idx++){
+                if(result[idx] >= max){
+                max = result[idx];
+                cur = idx;
+                }
+            }
+        }
+
+        //update new result by maximum result + current number
+        result[i] = max + nums[i];
+        if(result[i] > max){
+            //update new maximum result value and its index
+            max = result[i];
+            cur = i;
+        }    
+    }
+    return result[numsSize-1];
+}

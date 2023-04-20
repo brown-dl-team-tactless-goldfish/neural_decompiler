@@ -1,0 +1,48 @@
+struct ListNode* reverseEvenLengthGroups(struct ListNode* head){
+    int totalNode = 0;
+    int groupCnt = 0;
+    struct ListNode* curr = head;
+    struct ListNode* prev = NULL;
+    
+    while(curr)
+    {
+        curr = curr->next;
+        totalNode++;
+    }
+    
+    curr = head;
+    while(totalNode && curr){
+        groupCnt++;
+        if(totalNode >= groupCnt)
+            totalNode -= groupCnt;
+        else {
+            groupCnt = totalNode;
+            totalNode = 0;
+        }
+        if(groupCnt & 1){
+            int cnt = groupCnt;
+            while(cnt && curr){
+                prev = curr;
+                curr = curr->next;
+                cnt--;
+            }
+        }
+        else{
+            struct ListNode* connTail = prev;
+            struct ListNode* tail = curr;
+            struct ListNode* tmp;
+            int cnt = groupCnt;
+            while(cnt && curr){
+                tmp = curr->next;
+                curr->next = prev;
+                prev = curr;
+                curr = tmp;
+                cnt--;
+            }
+            connTail->next = prev;
+            tail->next = curr;
+            prev = tail;
+        }
+    }
+    return head;
+}

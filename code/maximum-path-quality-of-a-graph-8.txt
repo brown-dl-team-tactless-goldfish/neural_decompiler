@@ -1,0 +1,36 @@
+class Solution {
+public:
+    #define p pair<int,int>
+    vector<int>vis;
+    vector<vector<p>>adj;
+    int res=0;
+    int dfs(int u,vector<int>& values,int ct,int t)
+    {
+        if(ct>t)
+            return INT_MIN;
+        int res=0,ans=INT_MIN;
+        if(vis[u]==0)
+            res+=values[u];
+        vis[u]++;
+        for(auto v:adj[u])
+        {
+            ans=max(ans,res+dfs(v.first,values,ct+v.second,t));
+        }
+        vis[u]--;
+        if(u!=0)
+            return ans;
+        return max(res,ans);
+    }
+    int maximalPathQuality(vector<int>& values, vector<vector<int>>& edges, int maxTime) 
+    {
+        int n=values.size();
+        adj.resize(n);
+        for(auto &v:edges)
+        {
+            adj[v[0]].push_back({v[1],v[2]});
+            adj[v[1]].push_back({v[0],v[2]});
+        }
+        vis.resize(n,0);
+        return dfs(0,values,0,maxTime);
+    }
+};

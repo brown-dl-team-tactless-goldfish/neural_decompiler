@@ -1,0 +1,69 @@
+class Solution {
+    int MOD = 1000000007;
+public:
+    int countPaths(vector<vector<int>>& grid) {
+    
+        int R = grid.size();
+        int C = grid[0].size();
+        
+        // Store the indegree of each of the cells
+        vector<vector<int>> indegree(R, vector<int>(C, 0));
+        
+        int dirX[] = {1, 0, -1, 0};
+        int dirY[] = {0, 1, 0, -1};
+        
+        for(int i=0; i<grid.size(); i++){
+            for(int j=0; j<grid[0].size(); j++){
+                
+                for(int k=0; k<4; k++){
+                    int newR = dirX[k] + i;
+                    int newC = dirY[k] + j;
+                    
+                    // Check if it is smaller than the neighbor
+                    if(newR < 0 || newR >= R || newC < 0 || newC >= C){ continue; }
+                    if(grid[newR][newC] > grid[i][j]) indegree[i][j]++;
+                }
+            }
+        }
+        
+        vector<vector<int>> dp(R, vector<int>(C, 1));
+        int ans = 0;
+        
+        queue<int> queue;
+        for(int i=0; i<R; i++){
+            for(int j=0; j<C; j++){
+                if(indegree[i][j] == 0){
+                    queue.push(i*C + j);
+                }
+            }
+        }
+        
+        while(!queue.empty()){
+            int r = queue.front()/C;
+            int c = queue.front()%C;
+            queue.pop();
+            
+            ans = (ans + dp[r][c])%MOD; // Add it here instead in the if to cover all the paths 
+            
+            // Check for all of the neighbors 
+            for(int k=0; k<4; k++){
+                    int newR = dirX[k] + r;
+                    int newC = dirY[k] + c;
+                    
+                    if(newR < 0 || newR >= R || newC < 0 || newC >= C){ continue; }
+                    
+                    // Check if current cell value is smaller
+                    if(grid[newR][newC] < grid[r][c]){ 
+                        --indegree[newR][newC];
+                        dp[newR][newC] = (dp[newR][newC] + dp[r][c])%MOD;
+                        
+                        if(indegree[newR][newC] == 0){
+                            queue.push(newR*C + newC);
+                        }
+                    }
+            }
+        }
+        
+        return ans;
+    }
+};

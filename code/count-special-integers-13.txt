@@ -1,0 +1,42 @@
+//code 
+class Solution {
+int dp[11][2][1024];
+
+int solve(string &st, int tight , int pos , int mask ) {
+if (pos == st.size()) return (mask!= 0);
+
+if (dp``[pos][tight][mask] != -1)   return dp[pos][tight][mask];
+
+int an = 0;
+if(tight == 1) {
+
+	for(int i = 0; i <=st[pos] - '0'; i++) {
+
+		if(mask & (1 << i)) continue;
+
+
+		int a = (mask == 0 && i == 0 ? mask : (mask | (1 << i)));
+
+		if(i == st[pos] - '0') {
+			an += solve(st, 1, pos + 1, a);
+		} else {
+			an += solve(st, 0, pos + 1, a);
+		}
+	}
+} else {
+	for(int i = 0; i < 10; i++) {
+		if(mask & (1 << i)) continue;
+
+		int a = (mask == 0 && i == 0 ? mask : (mask | (1 << i)));
+		an += solve(st, 0, pos + 1, a);
+	}
+}
+return dp[pos][tight][mask] = an;
+}
+public:
+int countSpecialNumbers(int n) {
+string st = to_string(n);
+memset(dp, -1, sizeof(dp));
+return solve(st,1,0,0);
+}
+};

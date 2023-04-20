@@ -1,0 +1,29 @@
+public int[] SumEvenAfterQueries(int[] A, int[][] queries)
+{
+	var result = new int[queries.Length];
+	var sum = A.Where(x => x % 2 == 0).Sum();
+
+	for (var i = 0; i < queries.Length; i++)
+	{
+		var value = queries[i][0];
+		var index = queries[i][1];
+
+		if (value % 2 == 0 && A[index] % 2 == 0)
+		{
+			sum += value;
+		}
+		else if (value % 2 != 0 && A[index] % 2 == 0)
+		{
+			sum -= A[index];
+		}
+		else if (value % 2 != 0 && A[index] % 2 != 0)
+		{
+			sum += A[index] + value;
+		}
+
+		A[index] += value;
+		result[i] = sum;
+	}
+
+	return result;
+}

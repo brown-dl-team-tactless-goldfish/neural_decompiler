@@ -1,0 +1,30 @@
+public int LongestSubarray(int[] nums) {
+	if (nums.Length == 1) return nums[0];
+
+	var count = 1;
+	var list = new List<int>();
+	for (var i = 1; i < nums.Length; i++) {
+		if (nums[i - 1] == nums[i]) {
+			count++;
+			continue;
+		}
+
+		list.Add((nums[i - 1] < nums[i] ? -1 : 1) * count);
+		count = 1;
+	}
+
+	if (count > 0) list.Add((nums[^1] == 0 ? -1 : 1) * count);
+	if (list.Count == 1 && list[0] < 0) return 0;
+
+	list.Insert(0, 0);
+	list.Add(0);
+	var parts = list.Select((x, i) => (x, i))
+		.Where(x => x.x == -1)
+		.Select(x => list[x.i - 1] + list[x.i + 1])
+		.ToArray();
+
+	var max1 = list.All(x => x >= 0) ? list.Max() - 1 : list.Max();
+	var max2 = parts.Any() ? parts.Max() : 0;
+
+	return max1 > max2 ? max1 : max2;
+}

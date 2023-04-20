@@ -1,0 +1,59 @@
+#define ll long long
+#define vb vector<bool>
+#define vi vector<int>
+#define vl vector<long long>
+#define vvb vector<vector<bool>>
+#define vvi vector<vector<int>>
+#define vvl vector<vector<long long>>
+#define pii pair<int,int>
+#define f(i,s,e) for(int i = s; i < e; i++)
+#define b(i,s,e) for(int i = s; i >= e; i--)
+#define vs vector<string>
+
+struct TrieNode {
+    unordered_map<char,TrieNode*> children;
+    bool isEOW;
+};
+
+class Solution {
+public:
+    TrieNode* root;
+
+    void insert(string &s) {
+        auto p = root;
+        f(i,0,s.length()) {
+            if(p->children.count(s[i]) == 0) p->children[s[i]] = new TrieNode();
+            p = p->children[s[i]]; 
+        }
+        p->isEOW = true;
+    }
+
+    void createTrie(vs &words) {
+        this->root = new TrieNode();
+        for(string &word:words) insert(word);
+    }
+
+    bool isConcatenated(string &s, int l = 0, int call = 0) {
+        if(l >= s.length()) return call > 1;
+
+        auto p = this->root;
+        int i = 0;
+        f(i,l,s.length()) {
+            char c = s[i];
+            if(p->children.count(c) == 0) return false;
+            p = p->children[c];
+            if(p->isEOW) {
+                if(isConcatenated(s,i+1,call+1)) return true;
+            }
+        }
+
+        return false;
+    }
+
+    vs findAllConcatenatedWordsInADict(vs& words) {
+        createTrie(words);
+        vs ans;
+        for(string &word:words) if(isConcatenated(word)) ans.push_back(word);
+        return ans;
+    }
+};

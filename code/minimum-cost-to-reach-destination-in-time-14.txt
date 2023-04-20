@@ -1,0 +1,37 @@
+int minCost(int maxTime, vector<vector<int>>& edges, vector<int>& passingFees) 
+{
+	vector<pair<int,int>> total[1001];
+	int times[1001];
+	memset(times,-1,sizeof(times));
+	int m=edges.size(),n=passingFees.size();
+
+	for(int i=0;i<m;i++)
+	{
+		total[edges[i][0]].push_back({edges[i][1],edges[i][2]});
+		total[edges[i][1]].push_back({edges[i][0],edges[i][2]});
+	}
+
+	priority_queue<pair<int,pair<int,int>>,vector<pair<int,pair<int,int>>>,greater<pair<int,pair<int,int>>>> q;
+	q.push({passingFees[0],{0,0}});
+	while(!q.empty())
+	{
+		pair<int,pair<int,int>> p=q.top();
+		q.pop();
+		int cost=p.first;
+		int index=p.second.first;
+		int t=p.second.second;
+		if(index==n-1)
+		{
+			return cost;
+		}
+		for(int i=0;i<total[index].size();i++)
+		{
+			if(maxTime>=t+total[index][i].second&&(times[total[index][i].first]==-1||t+total[index][i].second<times[total[index][i].first]))
+			{
+				q.push({cost+passingFees[total[index][i].first],{total[index][i].first,t+total[index][i].second}});
+				times[total[index][i].first]=t+total[index][i].second;
+			}
+		}
+	}
+	return -1;
+}

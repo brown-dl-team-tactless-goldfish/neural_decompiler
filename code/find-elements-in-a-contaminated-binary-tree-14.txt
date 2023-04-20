@@ -1,0 +1,36 @@
+class FindElements {
+public:
+    TreeNode* ROOT;bool found=false;
+    FindElements(TreeNode* root) {
+        if(!root) return;
+        root->val = 0;
+        ROOT=root;
+        transform(root);
+    }
+    
+    bool find(int target) {
+        preorder(ROOT, target);
+        bool t=found;
+        found=false;
+        return t;
+    }
+    
+    void preorder(TreeNode* root, int target){
+        if(!root) return;
+        if(root->val == target) {found=true;return;}
+        preorder(root->left, target);
+        preorder(root->right, target);
+    }
+    
+    void transform(TreeNode* root){
+        if(!root) return;
+        if(root->left){
+            root->left->val = root->val*2+1;
+            transform(root->left);
+        }
+        if(root->right){
+            root->right->val = root->val*2+2;
+            transform(root->right);
+        }
+    }
+};

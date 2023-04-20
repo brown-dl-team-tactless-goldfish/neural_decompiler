@@ -1,0 +1,81 @@
+class Solution {
+public:
+    int largestMagicSquare(vector<vector<int>>& grid) {
+        // 'ans' will store the answer
+        int ans=1;
+        
+        // rowSum[i][j] = grid[i][0]+grid[i][1]+ ... + grid[i][j]
+        vector<vector<int>>rowSum(grid.size(),vector<int>(grid[0].size()));
+        
+        // colSum[i][j] = grid[0][j]+grid[1][j]+ ... + grid[i][j]
+        vector<vector<int>>colSum(grid.size(),vector<int>(grid[0].size()));
+        
+        // populate the rowSum matrix
+        for(int i=0;i<grid.size();i++) {
+            for(int j=0;j<grid[i].size();j++) {
+                rowSum[i][j]=(j>0?rowSum[i][j-1]+grid[i][j]:grid[i][j]);
+            }
+        }
+        
+        // populate the colSum matrix
+        for(int j=0;j<grid[0].size();j++) {
+            for(int i=0;i<grid.size();i++) {
+                colSum[i][j]=(i>0?colSum[i-1][j]+grid[i][j]:grid[i][j]);
+            }
+        }
+        
+        // now make every cell as the top left corner of the square and check
+        for(int i=0;i<grid.size();i++) {
+            for(int j=0;j<grid[i].size();j++) {
+                // try out squares of every possible length
+                for(int len=0;len<min(grid.size(),grid[0].size());len++) {
+                    
+                    // here the top left cell of the square is (i,j) and length is 'len'
+                    // 'check' is to check wheather row sum, col sums are equal or not
+                    bool check=true;
+                    
+                    // if such square is impossible then continue
+                    if(i+len>=grid.size() || j+len>=grid[0].size()) {
+                        check=false;
+                        continue;
+                    }
+                    
+                    // check the row sum
+                    int rs=rowSum[i][j+len]-(j>0?rowSum[i][j-1]:0);
+                    for(int k=i+1;k<=i+len;k++) {
+                        if((rowSum[k][j+len]-(j>0?rowSum[k][j-1]:0))!=rs) {
+                            check=false;
+                            continue;
+                        }
+                    }
+                    
+                    // check the column sum
+                    int cs=colSum[i+len][j]-(i>0?colSum[i-1][j]:0);
+                    for(int k=j+1;k<=j+len;k++) {
+                        if((colSum[i+len][k]-(i>0?colSum[i-1][k]:0))!=cs) {
+                            check=false;
+                            continue;
+                        }
+                    }
+                    
+                    // check the diagonal sum
+                    int d1=0,d2=0;
+                    int row=i,col=j;
+                    while(row<=i+len && col<=j+len) {
+                        d1+=grid[row++][col++];
+                    }
+                    row=i,col=j+len;
+                    while(row<=i+len && col>=j) {
+                        d2+=grid[row++][col--];
+                    }
+                    
+                    // if the criteria of magic square is fulfilled then consider the current square length and update our answer
+                    if(d1==d2 && rs==cs && d2==rs && check) {
+                        ans=max(ans,len+1);
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+};

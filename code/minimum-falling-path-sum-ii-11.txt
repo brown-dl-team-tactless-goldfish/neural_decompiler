@@ -1,0 +1,65 @@
+// Ideas / Approaches: DP
+// Essentially for each row we will take either its min element or its second-min element.
+// Let dp[i][j] be the min-path-sum for the rows [0...i] where we choose cell[i][j] at the i-th row.
+// then we have the transfer functions:
+// dp[i][j] = G[i][j] + min(d[i-1][k]), k = 0...n-1 and k != j
+// Because the current dp row depends only on the previous row, we can use only two rolling rows to
+// save space.
+// time complexity: O(N^2),
+// space complexity: O(N)
+class Solution {
+public:
+    int minFallingPathSum(vector<vector<int>>& grid) {
+        //
+        int n = grid.size();
+        // note that the matrix is a square matrix, n x n
+        vector<int> prevDpRow = grid[0];
+        vector<int> currDpRow(n, 0);
+        for (int r = 1; r < n; ++r) {
+            // we most likely will pick the min val; but if there is a conflict with j's pos,
+            // we'll use the second min.
+            auto [minValPair, secondMinValPair] = findMinAndSecondMin(prevDpRow);
+            auto [minVal, posMin] = minValPair;
+            auto [secondMinVal, posSecondMin] = secondMinValPair;
+            currDpRow = grid[r];
+            for (int c = 0; c < n; ++c) {
+                currDpRow[c] += minVal;
+                // eliminate the if-branch inside a loop, because only one
+                // element would violate the condition.
+                //
+                // if (c != posMin) {
+                //     currDpRow[c] += minVal;
+                // } else {
+                //     currDpRow[c] += secondMinVal;
+                // }
+            }
+            // this allows us to avoid the if-branch inside the loop altogether. 
+            currDpRow[posMin] += secondMinVal - minVal;
+            prevDpRow.swap(currDpRow);
+        }
+        return *min_element(prevDpRow.begin(), prevDpRow.end());
+    }
+
+private:
+    // return the min val and the second min-val with their indexes in the vector
+    static inline tuple<pair<int, int>, pair<int, int>>
+    findMinAndSecondMin(const vector<int>& vec) { // O(N), at most 2*N comparisons.
+        // note that we cannot initialize minVal and secondMinVal with the first element,
+        // because if it's the min val, then the loop won't update the secondMinVal.
+        int minVal = INT_MAX, secondMinVal = INT_MAX;
+        int posMin = -1, posSecondMin = -1;
+        for (int i = 0; i < vec.size(); ++i) {
+            const auto curr = vec[i];
+            if (curr <= minVal) {
+                secondMinVal = minVal;
+                posSecondMin = posMin;
+                minVal = curr;
+                posMin = i;
+            } else if (curr < secondMinVal) {
+                secondMinVal = curr;
+                posSecondMin = i;
+            }
+        }
+        return {{minVal, posMin}, {secondMinVal, posSecondMin}};
+    }
+};

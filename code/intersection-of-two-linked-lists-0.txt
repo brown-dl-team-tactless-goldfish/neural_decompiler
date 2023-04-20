@@ -1,0 +1,49 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct ListNode *getIntersectionNode(struct ListNode *headA, struct ListNode *headB) {
+    
+    if (headA == NULL || headB == NULL)
+        return NULL;
+    int sizeA = 0, sizeB = 0;
+    struct ListNode *currA = headA;
+    struct ListNode *currB = headB;
+    
+    while (currA) {
+        sizeA++;
+        currA = currA->next;
+    }
+    while(currB) {
+        sizeB++;
+        currB = currB->next;
+    }
+    
+    currA = headA;
+    currB = headB;
+   int diff = sizeA - sizeB;
+    
+    if (sizeA < sizeB) {
+        for (int i = diff; i < 0; i++)
+            currB = currB->next;
+    } else {
+        for (int i = diff; i > 0; i--)
+            currA = currA->next;
+    }
+    /* find the intersection node */
+    while (currA) {
+        if (currA == currB)
+            return currA;
+        currA = currA->next;
+        currB = currB->next;
+    }
+    return NULL;
+}
+
+/*
+Runtime: 36 ms, faster than 75.00% of C online submissions for Intersection of Two Linked Lists.
+Memory Usage: 15.3 MB, less than 33.33% of C online submissions for Intersection of Two Linked Lists.
+*/

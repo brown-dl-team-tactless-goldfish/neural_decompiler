@@ -1,0 +1,48 @@
+typedef long long ll;
+
+class Solution {
+public:
+
+    void fillDPWithoutChange(vector<ll>& dp, int changeTime, vector<vector<int>>& tires)
+    {
+        for (vector<int>& currTyre : tires)
+        {
+            ll f = currTyre[0];
+            ll r = currTyre[1];
+            dp[1] = min(dp[1], f);
+            ll lastLapTime = f;
+            ll totalTime = f;
+            ll lapCount = 2;
+            while (lastLapTime * r < f + changeTime && lapCount < dp.size())
+			//we can prove that this loop will not run many times because we are
+			//moving in powers of r and even a small r like 2 will terminate this
+			//loop under 20 iterations.
+            {
+                ll currLapTime = lastLapTime * r;
+                totalTime += currLapTime;
+                dp[lapCount] = min(dp[lapCount], totalTime);
+                lastLapTime = currLapTime;
+                lapCount++;
+            }
+        }
+    }
+
+    void modifyDPforChange(vector<ll>& dp, int changeTime, vector<vector<int>>& tires)
+    {
+        for (ll i = 1; i < dp.size(); ++i)
+        {
+            for (ll j = 1; j <= i; ++j)
+            {
+                dp[i] = min(dp[i], changeTime + dp[j] + dp[i - j]);
+            }
+        }
+    }
+
+    int minimumFinishTime(vector<vector<int>>& tires, int changeTime, int numLaps) {
+        vector<ll> dp(numLaps + 1, LLONG_MAX);
+        dp[0] = 0;
+        fillDPWithoutChange(dp, changeTime, tires);
+        modifyDPforChange(dp, changeTime, tires);
+        return dp[numLaps];
+    }
+};

@@ -1,0 +1,94 @@
+class SummaryRanges {
+public:
+    map<int,int> map;
+    SummaryRanges() {
+        
+    }
+    
+    void addNum(int value) {
+        /*start values of prev and next intervals,
+        intially they are equal to -1*/
+        int prevEntry = -1,nextEntry = -1;
+        /*Finding the interval whose start value is greater than
+        the value.*/
+        auto it = map.upper_bound(value);
+       /*isMerged to check whether the value is merged into 
+        intervals or not*/
+        bool isMerged = false;
+        /*If the next interval exists,then take start of the
+        next Interval into nextEntry*/
+        if(it != map.end()) 
+           nextEntry = it->first;
+        //If the next Interval is not the first Interval in Map,
+        //then there exists Previous interval for the current value,
+        //so decrement the iterator and take the start value of
+        //previous interval
+        if(it != map.begin())
+        {
+            --it;
+            prevEntry = it->first;
+        }
+        /*If both intervals exists,then check whether the current
+         value merges bot the interval*/
+        if(prevEntry != -1 && nextEntry != -1 && !isMerged)
+        {   
+            /*Checking whether value merges both interval*/
+            if(map[prevEntry] == value-1 && nextEntry == value+1)
+            {   
+                /*Creating a new Merged Interval*/
+                map[prevEntry] = map[nextEntry];
+                /*Removing the existing interval*/
+                map.erase(nextEntry);
+                isMerged = true;
+            }
+        } 
+        /*If value does not merge the intervals,see whether value
+        can be added at last of the previous interval*/
+        if(prevEntry != -1 && !isMerged)
+        {  
+            /*Checking whether the value can be added at last of
+            previous interval*/
+            if(map[prevEntry] == value-1)
+            {  
+                /*updating the previous interval*/
+                map[prevEntry] = value;
+                isMerged = true;
+            } 
+            /*Checking whether the current value is present in
+              previous interval, if yes do nothing.*/
+            else if(prevEntry <= value && value <= map[prevEntry])
+              isMerged = true;
+        }
+        //If value cannot merge two intervals, and cannot be added
+        //to previous interval, then chekcing whether the value can
+        //be added to next interval
+        if(nextEntry != -1 && !isMerged)
+        {   
+
+            if(nextEntry == value + 1)
+            {   
+                /*Creating a new interval*/
+                map[value] = map[nextEntry];
+                /*Erasing existing interval*/
+                map.erase(nextEntry);
+                isMerged = true;
+            } 
+            /*Checking whether the current value is present in
+              Next interval, if yes do nothing.*/
+            else if(nextEntry <= value && value <= map[nextEntry])
+              isMerged = true;
+        }
+        /*If value is still not merged,then creating a new interval*/
+        if(!isMerged)
+          map[value] = value;
+    }
+
+
+    /*Iteraing over the map,collect all the intervals and return*/
+    vector<vector<int>> getIntervals() {
+        vector<vector<int>> intervals;
+        for(auto &[start,end] : map)
+            intervals.push_back({start,end});
+        return intervals;
+    }
+};

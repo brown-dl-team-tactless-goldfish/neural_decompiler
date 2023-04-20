@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int n; vector<int> t;
+    
+    void update(int x) {
+        for (; x <= n + 1; x += x&-x) t[x]++;
+    }
+    
+    int get(int x) {
+        int res = 0;
+        for (; x; x -= x&-x) res += t[x];
+        return res;
+    }
+    
+    int countRangeSum(vector<int>& num, int L, int R) {
+        n = num.size();
+        vector<long long> s(n+1); s[0] = 0;
+        for (int i=1; i<=n; ++i) s[i] = s[i-1] + num[i-1];
+        sort(s.begin(), s.end()); 
+        s.resize(unique(s.begin(), s.end()) - s.begin());
+        
+        t.clear(); t.resize(n+2);
+        long long sum = 0; int ans = 0;
+        int pos = lower_bound(s.begin(), s.end(), 0) - s.begin() + 1;
+        update(pos);
+        for (int i=0; i<n; ++i){
+            sum += num[i];
+            int pos1 = upper_bound(s.begin(), s.end(), sum - L) - s.begin();
+            int pos2 = lower_bound(s.begin(), s.end(), sum - R) - s.begin();
+            ans += get(pos1) - get(pos2);
+            pos = lower_bound(s.begin(), s.end(), sum) - s.begin() + 1;
+            update(pos);
+        }
+        return ans;
+    }
+};

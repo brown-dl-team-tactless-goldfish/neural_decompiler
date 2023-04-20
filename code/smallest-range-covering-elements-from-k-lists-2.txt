@@ -1,0 +1,58 @@
+
+typedef struct Node
+{
+    int val;
+    int i;
+    int j;
+} Node;
+
+static void swap(struct Node* a, struct Node* b)
+{
+    register struct Node t = *a;
+    *a = *b, *b = t;
+}
+
+static void min_heapify(register struct Node* s, register int i, register int N)
+{
+    register int m = 2*i+1 < N && s[i].val > s[2*i+1].val ? 2*i+1:i;
+    if (2*i+2 < N && s[m].val > s[2*i+2].val) m = 2*i+2;
+    if (i!=m) swap(&s[i], &s[m]), min_heapify(s, m, N);
+}
+
+static void min_heap(register struct Node** s, register int N)
+{
+    for (register int i=(N-1)/2;i>=0;--i) min_heapify(s, i, N);
+}
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* smallestRange(int** a, register short K, register int* ColN, register int* returnSize)
+{
+    register short i=0;
+    register int range=INT_MAX, min=INT_MAX, max=INT_MIN;
+    *returnSize=2;
+    int* res= (int*) malloc(3*sizeof(int));
+    struct Node* ptrs = (struct Node*) malloc((K+1)*sizeof(struct Node));
+    for (;i<K;++i)
+    {
+        ptrs[i].val=a[i][0];
+        ptrs[i].i=i; // current array index
+        ptrs[i].j=1; // next element of current array
+        
+        if (max < ptrs[i].val) max=ptrs[i].val;
+    }
+    
+    min_heap(ptrs, K);
+    
+    while (true)
+    {
+        min=(*ptrs).val;        
+        if (range > max-min+1) range=max-min+1, res[0]=min, res[1]=max;
+        if ((*ptrs).j == ColN[(*ptrs).i]) break;
+        (*ptrs).val=a[(*ptrs).i][(*ptrs).j++];
+        if (max<(*ptrs).val)max=(*ptrs).val;
+        min_heapify(ptrs, 0, K);
+    }    
+    return res;
+}

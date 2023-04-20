@@ -1,0 +1,37 @@
+public int MaximumRequests(int n, int[][] requests)
+{
+	int length = 1 << requests.Length;
+	int maxRequests = 0;
+
+	for (int i = 1; i <= length; i++)
+	{
+		int[] vacancy = new int[n];
+		int count = 0;
+
+		for (int j = 0; j < requests.Length; j++)
+		{
+			if ((i & (1 << j)) != 0)
+			{
+				vacancy[requests[j][0]]++;
+				vacancy[requests[j][1]]--;
+				count++;
+			}
+		}
+
+		bool isValid = true;
+		for (int j = 0; j < vacancy.Length; j++)
+		{
+			if (vacancy[j] != 0)
+			{
+				isValid = false;
+			}
+		}
+
+		if (isValid)
+		{
+			maxRequests = Math.Max(maxRequests, count);
+		}
+	}
+
+	return maxRequests;
+}

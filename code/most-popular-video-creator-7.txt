@@ -1,0 +1,41 @@
+class Solution {
+public:
+    vector<vector<string>> mostPopularCreator(vector<string>& creators, vector<string>& ids, vector<int>& views) {
+        unordered_map<string, vector<pair<string, int>>> my_map;
+        unordered_map<string, long long> views_count;
+        for(int i=0;i<ids.size();i++)
+        {   
+            my_map[creators[i]].push_back({ids[i], views[i]});
+            views_count[creators[i]] += views[i];
+        }
+
+        long long m_popularity = 0;
+        for(auto& ele: views_count){
+            m_popularity = max(m_popularity, ele.second);
+        }
+
+        vector<string> res_strings;
+        for(auto& ele: views_count){
+            if(ele.second == m_popularity){
+                res_strings.push_back(ele.first);
+            }
+        }
+
+
+        vector<vector<string>> res;
+        for(auto& name: res_strings){
+            auto& extract_info = my_map[name];
+            sort(extract_info.begin(), extract_info.end(), [&](pair<string, int>& a, pair<string, int>& b){
+                if(a.second != b.second){
+                    return a.second > b.second;
+                }else{
+                    return (a.first).compare(b.first) < 0;
+                }
+            });
+
+            res.push_back({name, extract_info[0].first});
+        }
+
+        return res;
+    }
+};

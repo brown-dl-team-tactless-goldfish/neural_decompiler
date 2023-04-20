@@ -1,0 +1,62 @@
+public class Solution {
+    public int MinStickers(string[] stickers, string target) {
+        var minSticker = dfs(stickers, target, new Dictionary<string, int>());
+
+        if (minSticker == Int32.MaxValue)
+        {
+            return -1;
+        }
+
+        return minSticker;
+    }
+
+    private int dfs(string[] stickers, string target, IDictionary<string, int> dict)
+    {
+        if (dict.ContainsKey(target))
+        {
+            return dict[target];
+        }
+
+        var minSticker = Int32.MaxValue;
+        foreach(var sticker in stickers)
+        {
+            var counter = new int[26];
+            for (var i = 0; i < sticker.Length; i++)
+            {
+                var c = sticker[i] - 'a';
+                counter[c]++;
+            }
+
+            var remain = new StringBuilder();
+            for (var i = 0; i < target.Length; i++)
+            {
+                var c = target[i] - 'a';
+                if (counter[c] > 0)
+                {
+                    counter[c]--;
+                }
+                else
+                {
+                    remain.Append(target[i]);
+                }
+            }
+
+            if (remain.Length == target.Length) { continue; }
+            if (remain.Length == 0)
+            {
+                minSticker = 1;
+            }
+
+            var remainStickerCount = dfs(stickers, remain.ToString(), dict);
+            if (remainStickerCount == Int32.MaxValue)
+            {
+                continue;
+            }
+
+            minSticker = Math.Min(minSticker, 1 + remainStickerCount);
+        }
+
+        dict[target] = minSticker;
+        return minSticker;
+    }
+}

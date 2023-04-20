@@ -1,0 +1,20 @@
+int compare(const void *a, const void *b) {
+    return *(int*) a - *(int*) b;
+}
+
+int maxSatisfaction(int* satisfaction, int satisfactionSize){
+    int i, j, level, totalLevel;
+    qsort(satisfaction, satisfactionSize, sizeof(int), compare);
+    totalLevel = 0;
+    level = 0;
+    for (i = satisfactionSize-1; i >= 0; --i) {
+        for (j = satisfactionSize-1; j >= i; --j) {
+            level += satisfaction[j];
+        }
+        if (level < totalLevel) {
+            break;
+        }
+        totalLevel = level;
+    }
+    return totalLevel;
+}

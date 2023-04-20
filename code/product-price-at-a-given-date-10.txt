@@ -1,0 +1,13 @@
+with cte as (
+    select
+        *,
+        max(change_date) over(partition by product_id) as max_change_date
+    from Products
+    where change_date <= '2019-08-16'
+)
+select 
+   p.product_id,
+   coalesce(new_price, 10) as price
+from (select distinct product_id from Products) as p
+left join cte c on p.product_id = c.product_id
+where change_date = max_change_date or max_change_date is null

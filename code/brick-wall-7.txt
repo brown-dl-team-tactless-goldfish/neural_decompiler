@@ -1,0 +1,18 @@
+class Solution {
+public:
+    int leastBricks(vector<vector<int>>& wall) {
+        int width = 0;
+        unordered_map<int, int> freqs;
+        for(auto& row: wall)
+            for(int j = 0, tot = 0; j < row.size(); j++){
+                tot += row[j];
+                ++freqs[tot];
+                if(width == 0 && j == row.size() - 1) width = tot; // assign tot to width only when it's 0
+            }
+        
+        int maxV = 0;
+        for(auto [k,v]:freqs)
+            if(k != width) maxV = max(maxV, v);
+        return wall.size() - maxV;
+    }
+};

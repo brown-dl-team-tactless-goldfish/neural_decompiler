@@ -1,0 +1,37 @@
+public IList<int> FindKDistantIndices(int[] nums, int key, int k) 
+{        
+	int start = 0, end = k;
+	IList<int> result = new List<int>();
+	List<(int Start, int End)> intervals = new();
+
+	for (int i = 0; i < nums.Length; i++)
+	{
+		if(nums[i] == key)
+		{
+			int s = Math.Max(i - k, 0);
+			int e = Math.Min(i + k, nums.Length - 1);
+			intervals.Add((s, e));
+		}
+	}
+
+	int j = 0;
+	while(j < intervals.Count)
+	{
+		start = intervals[j].Start;
+		end = intervals[j].End;
+		j++;
+
+		while(j < intervals.Count && intervals[j].Start <= end)
+		{
+			end = Math.Max(end, intervals[j].End);   
+			j++;
+		}    
+
+		for(int i = start; i <= end; i++)
+		{
+			result.Add(i);
+		}
+	}
+	
+	return result;
+}

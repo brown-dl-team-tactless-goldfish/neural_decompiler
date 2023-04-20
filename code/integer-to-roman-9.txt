@@ -1,0 +1,37 @@
+class Solution {
+public:
+    string intToRoman(int num) {
+        vector<string> tens = {"", "I", "X", "C", "M"};
+        vector<string> fives = {"", "V", "L", "D"};
+        vector<vector<int>> encodings = {
+            {}, {1}, {1, 1}, {1, 1, 1}, {1, 5}, {5}, {5, 1}, {5, 1, 1}, {5, 1, 1, 1}, {1, 10}, {10}
+        };
+        
+        vector<vector<int>> numEncoding;
+        while (num) {
+            numEncoding.push_back(encodings[num % 10]);
+            num /= 10;
+        }
+        
+        string res;
+        int index = 1;
+        for (vector<int>& n : numEncoding) {
+            string str;
+            for (int i : n) {
+                if (i == 1) {
+                    str += tens[index];
+                } else if (i == 5) {
+                    str += fives[index];
+                } else {
+                    str += tens[index+1];
+                }
+            }
+            
+            ++index;
+            
+            res = str + res;
+        }
+        
+        return res;
+    }
+};

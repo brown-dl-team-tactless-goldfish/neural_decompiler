@@ -1,0 +1,55 @@
+class Solution:
+    def canPlaceFlowers(self, flowerbed: List[int], n: int) -> bool:
+        s = ""
+        for c in flowerbed:
+            s += str(c)
+        print ("s = ", s)
+        
+        len_bed = len(flowerbed)
+        if (len_bed == 1):
+            if (flowerbed[0] == 0 and n == 1):
+                return True
+        
+        def helper(curS, remainN):
+            # print ("curS = ", curS)
+            # print ("remainN = ", remainN)
+            
+            if (remainN <= 0):
+                return True
+            
+            if ("00" not in curS):
+                return False
+            
+            idx = curS.index("00")
+            print ("idx = ", idx)
+            if (idx < 0):
+                return False
+            
+            #0
+            if (idx == 0 and len_bed > 2):
+                # print("put to 1st")
+                return helper("10"+curS[2:], remainN-1)
+            elif (idx == len_bed-1 and idx > 0 and curS[idx-1] == "1"):
+                return False
+            elif (curS[idx-1] == "1" and idx+2< len_bed and curS[idx+2] == "1"):
+                # return False
+                return helper(curS[:idx] + "11" + curS[idx+2:], remainN)
+            
+            prv_s = curS[:idx]
+            
+            mid_s = "01"
+            after_s = curS[idx+2:]
+            
+            # print ("prv_s = ", prv_s)
+            # print ("mid_s = ", mid_s)
+            # print ("after_s = ", after_s)
+            
+            curS = prv_s + mid_s + after_s
+            # print ("curS = ", curS)
+            # print ("remainN-1 = ", remainN-1)
+            return helper(curS, remainN-1)
+        res = helper(s, n)
+        
+        print ("res = ", res)
+        
+        return res

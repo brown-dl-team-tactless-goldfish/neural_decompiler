@@ -1,0 +1,53 @@
+class node{
+public:
+    int c,v;
+    node(){c=0,v=0;}
+    node(int x,int y) {v=x,c=y;}
+};
+class Solution {
+public:
+    long long inf = LLONG_MAX;
+    long long ans = inf;
+    void dijkstra(int n, vector<vector<node>> &nums,vector<long long> &dp,int root){
+        priority_queue<pair<long long,int>,vector<pair<long long,int>>,greater<pair<long long,int>>> q;
+        q.push({0,root}); dp[root] = 0;
+        while(!q.empty()){
+            auto p = q.top(); q.pop();
+            long long d = p.first;
+            int in = p.second;
+            if(dp[in]<d) continue;
+            for(int i=0; i<nums[in].size();++i){
+                int j = nums[in][i].v, c = nums[in][i].c;
+                if(dp[j]>d+c){
+                    dp[j] = (long long)d+c;
+                    q.push({dp[j],j});
+                }
+            }
+        }
+    }
+    long long minimumWeight(int n, vector<vector<int>>& arr, int src1, int src2, int d) {
+        vector<vector<node>> nums(n),nums2(n);
+        for(int i = 0; i<arr.size();++i){
+            nums[arr[i][0]].push_back(node(arr[i][1],arr[i][2]));
+        }
+         for(int i = 0; i<arr.size();++i){
+            nums2[arr[i][1]].push_back(node(arr[i][0],arr[i][2]));
+        }
+        vector<long long> dp(n,inf);
+        vector<long long> dp1(n,inf);
+        vector<long long> dp2(n,inf);
+        dijkstra (n,nums2,dp,d);
+        dijkstra (n,nums,dp1,src1);
+        dijkstra (n,nums,dp2,src2);
+        long long re = inf;
+        for(int i = 0; i<n;++i){
+            long long k1 = dp[i];
+            long long k2 = dp1[i];
+            long long k3 = dp2[i];
+            if(k1==inf ||k2==inf|| k3==inf) continue;
+            else re=min(re,k1+k2+k3);
+        }
+        if(re==inf) re = -1;
+        return re;
+    }
+};

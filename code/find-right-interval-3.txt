@@ -1,0 +1,29 @@
+class Solution {
+public:
+    vector<int> findRightInterval(vector<vector<int>>& intervals) {
+        vector<pair<int, pair<int, int>>> v;
+        int n = intervals.size();
+        for(int i = 0; i<n; i++) {
+            auto& interval = intervals[i];
+            v.push_back({i, {interval[0], interval[1]}});
+        }
+        
+        sort(v.begin(), v.end(), [](const pair<int, pair<int, int>>& a, const pair<int, pair<int, int>>& b){
+            return a.second.first < b.second.first;
+        });
+        vector<int> output(n);
+        for(int i = 0; i < n; i++) {
+            int lo = -1, hi = n-1;
+            while(hi - lo > 1) {
+                int mid = lo + (hi-lo)/2;
+                if(v[mid].second.first >= intervals[i][1])
+                    hi = mid;
+                else
+                    lo = mid;
+            }
+            int idx = lo+1;
+            output[i] = v[idx].second.first >= intervals[i][1] ? v[idx].first : -1;
+        }
+        return output;
+    }
+};

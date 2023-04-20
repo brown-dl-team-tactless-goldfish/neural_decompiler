@@ -1,0 +1,18 @@
+int minStoneSum(int* piles, int pilesSize, int k){
+    int* pilesCnt = (int*)calloc(1e4+1, sizeof(int));
+    int sum = 0;
+    for(int i = 0; i < pilesSize; i++) {
+        sum += piles[i];
+        pilesCnt[piles[i]]++;
+    }
+    int idx = 1e4, removeStone;
+    while(k){
+        while(!pilesCnt[idx]){ idx--; }
+        removeStone = idx/2;
+        pilesCnt[idx]--;
+        pilesCnt[idx - removeStone]++;
+        sum -= removeStone;
+        k--;
+    }
+    return sum;
+}

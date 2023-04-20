@@ -1,0 +1,40 @@
+public class Solution {
+    public int MaxProfit(int[] inventory, int orders) {
+        
+        // sort the colored balles by inventory in descending order
+        Array.Sort(inventory, (a,b) => b-a);
+        int idx = 0; 
+        long currPrice = inventory[0], nextPrice = 0, sell = 0, res = 0;
+        
+        while(orders > 0)
+        {
+            // count the number of colors that can be sold together
+            while(idx < inventory.Length && inventory[idx] == currPrice)
+                idx++;
+            
+            // next price when new colors can be sold together with current colors
+            nextPrice = idx == inventory.Length? 0 : inventory[idx];
+            
+            // actual number of balls will be sold in this round
+            sell = Math.Min(orders, idx * (currPrice - nextPrice));
+            
+            // profit when all the balls of a specific color can be sold in this round
+            long priceDiff = currPrice - nextPrice;            
+            int remainder = 0;
+            
+            // don't need to sell all the saleable balls to satisfy orders
+            if(orders < idx * (currPrice - nextPrice))
+            {
+                priceDiff = orders / idx;
+                remainder = orders % idx;
+                nextPrice = currPrice - priceDiff;
+            }              
+            
+            res = (res + (currPrice + nextPrice + 1) * priceDiff / 2 * idx + nextPrice * remainder) % 1000000007;
+            orders -= (int)sell;
+            currPrice = nextPrice;
+        }
+        
+        return (int)res;
+    }
+}

@@ -1,0 +1,149 @@
+/*
+需要一個陣列 subsequences[numsSize]  代表每一堆 subsequences[2] = 3 代表說 第2堆 目前有3個數字
+需有三個指標 l_point = 指向可以填入數字的地方 
+            uf_point = 指向還沒有滿三個 只要他後面的都還沒滿三個
+            r_point = 目前總共有幾堆
+              
+              
+那我們填入的方法是 1.優先填入的是 目前堆數小於3的  就是 uf_point 到 r_point
+                    在填入的過程中 也一併檢查滿3個了沒 如果滿了 uf_point++
+                    
+                  2.因為完成上一個步驟了 所以下次可以填數字的地方  l_point  變成 ""原本的uf_point""
+                    再來要填的順序是 從""原本的uf_point"" 開始往回填 直到填到 l_point 或是這次的數字用完了
+                    且停下時的數字 就是新的 l_point
+                    
+                  3.如果還有剩 那就增加堆數 r_point++
+                  
+例如來說 [1,2,3,3,3,4,4,5,5]  =>
+
+i = 0 只找到一個 1
+last = 1       這是填的數字是 1           subsequences[0] = 1  (第0堆 放了1個數字)   (1)
+l_point = 0    下次 1+1 可以填的地方      subsequences[1]...
+uf_point = 0   第0堆還沒完成              
+r_point = 1    目前有1堆
+
+i = 1 只找到一個 2
+last = 2       這是填的數字是 2            subsequences[0] = 2  (第0堆 放了2個數字)   (1,2)
+l_point = 0    下次 2+1 可以填的地方       subsequences[1]...
+uf_point = 0   第0堆還沒完成               
+r_point = 1    目前有1堆
+
+i = 2 找到 3 個 3 ((所以下次的 i = 5))
+
+我們優先填入 uf_point 指向的位置   subsequences[0]  這時我們可以發現已經放入3個數字了 所以這堆完成了 uf_point++
+但是我們找到3個3 還剩下2個
+再來我們試著往前看有沒有辦法填入其他地方 從""原本的uf_point"" 開始往回填 但是已往回推就超過 l_point 了 所以沒辦法
+還是剩下2個3
+再來我們只能增加堆數  r_point++ subsequences[1] = 1
+所以下次能填入 3+1 的地方 就是從 l_point 到 r_point 就是 0 1 2 的位置
+
+所以得到下面的狀況
+last = 3       這是填的數字是 3                             subsequences[0] = 3  (第0堆 放了3個數字)  (1,2,3)
+l_point = 0    從這邊開始向後 都是下次 3+1 可以填的地方       subsequences[1] = 1  (3)
+uf_point = 1   第1堆還沒完成                                subsequences[2] = 1  (3)
+r_point = 3    目前有3堆                                    subsequences[3]...
+
+
+i = 5 找到 2 個 4 ((所以下次的 i = 7))
+
+我們優先填入 uf_point 指向的位置   subsequences[1]++  => subsequences[1] = 2
+還沒有到 r_point 繼續放           subsequences[2]++  => subsequences[2] = 2
+用完了
+
+所以下次開始可以放 4+1 的地方就是 ""原本的uf_point""  l_point = 1
+
+所以得到下面的狀況
+last = 4       這是填的數字是 4                             subsequences[0] = 3  (第0堆 放了3個數字)  (1,2,3) (下次不能放5)
+l_point = 1    從這邊開始向後 都是下次 4+1 可以填的地方       subsequences[1] = 2  (3,4)
+uf_point = 1   第1堆還沒完成                                subsequences[2] = 2  (3,4)
+r_point = 3    目前有3堆                                    subsequences[3]...
+
+i = 7 找到 2 個 5 ((所以下次的 i = 7))
+ 
+我們優先填入 uf_point 指向的位置   subsequences[1]++  => subsequences[1] = 3  滿了 uf_point++
+還沒有到 r_point 繼續放           subsequences[2]++  => subsequences[2] = 3  滿了 uf_point++
+用完了
+
+所以下次開始可以放 4+1 的地方就是 ""原本的uf_point""  l_point = 1
+
+所以得到下面的狀況
+last = 5       這是填的數字是 5                             subsequences[0] = 3  (第0堆 放了3個數字)  (1,2,3) (下次不能放6)
+l_point = 1    從這邊開始向後 都是下次 5+1 可以填的地方       subsequences[1] = 3  (3,4,5)
+uf_point = 3   第3堆還沒完成                                subsequences[2] = 3  (3,4,5)
+r_point = 3    目前有3堆                                    subsequences[3]...
+
+得到答案 完成的堆數 等於 我們有的堆數 回傳 true
+*/
+
+bool isPossible(int* nums, int numsSize){  //優先填入的是 小於3的 在來是連續的 都沒有才選擇創造新的
+    int last = nums[0];
+    
+    int subsequences[numsSize];
+    subsequences[0] = 1;
+    
+    int r_point = 1;
+    int uf_point = 0;
+    int l_point = 0;
+    int i = 1;
+    
+    
+    while (i < numsSize && nums[i] == nums[i-1]){  //看一樣的有幾個
+        subsequences[r_point] = 1;
+        r_point++;
+        i++;
+    }
+
+    while (i < numsSize){
+        
+        if (last+1 == nums[i]){
+            last = nums[i];
+            int same = 1;
+            i++;
+            while (i < numsSize && nums[i] == nums[i-1]){  //先看一樣的有幾個
+                same++;
+                i++;
+            }
+            
+            if (same < r_point-uf_point){
+                return false;
+            }
+            
+            int copy_l_point = l_point;
+            l_point = uf_point;
+            
+            same -= (r_point-uf_point);
+            
+            for (int j = uf_point ; j < r_point ; j++){
+                subsequences[j]++;
+                if (subsequences[j] == 3){
+                    uf_point++;
+                }
+            }
+            while(same > 0 && l_point > copy_l_point){
+                l_point--;
+                same--;
+            }
+            while (same > 0){
+                subsequences[r_point] = 1;
+                r_point++;
+                same--;
+            }
+        } else {
+            if (uf_point != r_point){
+                return false;
+            } else {
+                last = nums[i];
+                i++;
+                subsequences[r_point] = 1;
+                r_point++;
+                while (i < numsSize && nums[i] == nums[i-1]){  //先看一樣的有幾個
+                    subsequences[r_point] = 1;
+                    r_point++;
+                    i++;
+                }
+                l_point = uf_point;
+            }
+        }
+    }
+    return uf_point < r_point ? false : true;
+}

@@ -1,0 +1,27 @@
+NestedInteger deserialize(string s) {
+    if(s[0] != '[') return NestedInteger(stoi(s)); // if string contains single number ex: "123".
+    
+    vector<NestedInteger> v; // using vector to simulate stack
+    string num = ""; // num will store the number, number can be negative or positive.
+    
+    for(auto c: s){
+        if(c == '['){
+            v.push_back(NestedInteger());
+        }
+        else if(c == ']' or c == ','){
+            if(num != ""){
+                v.back().add(NestedInteger(stoi(num)));
+                num = "";
+            }
+            
+            if(c == ']' and v.size() >= 2){
+                NestedInteger ni = v.back();
+                v.pop_back();
+                v.back().add(ni);
+            }
+        }
+        else num.push_back(c); // if c is a digit just add to num.
+    }
+    
+    return v.back();
+}

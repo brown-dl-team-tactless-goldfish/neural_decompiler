@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int numWays(vector<string>& words, string target) {
+        if (words.empty()) return 0;
+        int m = words[0].size(), n = target.size();
+        vector<vector<int>> char_count(m, vector<int>(26));
+        for (const string& word : words) {
+            for (int i = 0; i < m; i++) {
+                int c = word[i] - 'a';
+                char_count[i][c]++;
+            }
+        }
+        vector<vector<int>> ways(m+1, vector<int>(n+1));
+        ways[0][0] = 1;
+        for (int i = 1; i <= m; i++) {
+            ways[i][0] = 1;
+            for (int j = 1; j <= n; j++) {
+                long long num_ways = ways[i-1][j-1];
+                num_ways *= char_count[i-1][target[j-1]-'a'];
+                num_ways += ways[i-1][j];
+                ways[i][j] = static_cast<int>(num_ways % kMod);
+            }
+        }
+        return ways[m][n];
+    }
+    const int kMod = 1'000'000'007;
+};

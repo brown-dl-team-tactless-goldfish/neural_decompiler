@@ -1,0 +1,43 @@
+typedef long long LL;
+
+class Solution {
+    int mod = 1e9 + 7;
+public:
+    int waysToSplit(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> psum(n + 1);
+        
+        for (int i = 0; i < n; ++ i)
+        {
+            psum[i + 1] = psum[i] + nums[i];            
+        }
+        
+        int ans = 0;
+        for (int i = 1; i <= n - 2; ++ i)
+        {
+            int left = psum[i];
+            int l = i + 1, r = n - 1; // 注意non-empty的条件
+            while (l < r)
+            {
+                int mid = l + r >> 1;
+                if (psum[mid] - psum[i] < left) l = mid + 1;
+                else r = mid;
+            }
+            int ll = r;
+            if (psum[ll] - psum[i] < left) continue;
+           
+            l = i + 1, r = n - 1; // 注意non-empty的条件
+            while (l < r)
+            {
+                int mid = l + r + 1 >> 1;
+                if (psum[n] - psum[mid] < psum[mid] - psum[i]) r = mid - 1;
+                else l = mid;
+            }
+            int rr = r;
+            if (psum[n] - psum[rr] < psum[rr] - psum[i]) continue;
+            
+            ans = ((LL)ans + max(0, rr - ll + 1)) % mod;
+        }
+        return ans;
+    }
+};

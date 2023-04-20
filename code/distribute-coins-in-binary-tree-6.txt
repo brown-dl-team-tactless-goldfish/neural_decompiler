@@ -1,0 +1,33 @@
+public class Solution {
+    public int DistributeCoins(TreeNode root) {
+        
+        if(root == null)
+            return 0;
+        
+        int move = 0;
+        DFS(root, ref move);
+        return move;
+    }
+    
+    private int DFS(TreeNode root, ref int move)
+    {
+        if(root == null)
+            return 0;
+        
+        // # of coins needed from left subtree
+        // +: left subtree can give away x coins
+        // -: left subtree needs x more coins
+        int left = DFS(root.left, ref move);
+        
+        // # of coins needed from right subtree
+        // +: right subtree can give away x coins
+        // -: right subtree needs x more coins             
+        int right = DFS(root.right, ref move);
+        
+        // # of movements to keep current root and each of the descendants has one coin
+        move += Math.Abs(left) + Math.Abs(right);
+        
+        // # of coins current root can give away to or need from its parent node
+        return root.val + left + right - 1;
+    }
+}

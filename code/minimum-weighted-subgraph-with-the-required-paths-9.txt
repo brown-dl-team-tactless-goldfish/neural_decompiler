@@ -1,0 +1,94 @@
+// Time Complexity: 3*O(V+E)
+// Space Complexity: 5*O(V+E)
+#define ll long long int
+#define pi pair<ll,ll>
+#define vp vector<pi>
+
+class Solution {
+    private:
+    
+    int N;
+     void minDistance(vector<vp>&adjList, int src,vector<ll>&dist)
+     {
+         // Using dijkstra's algo
+         priority_queue<pi,vp,greater<pi>>pq;
+        
+
+         // updation for source
+         pq.push({0,src});
+         dist[src]=0;
+ 
+         while(!pq.empty())
+         {
+             auto it=pq.top();
+             pq.pop();
+             int node=it.second;
+             ll wgt=it.first;
+               if(wgt>dist[node]) continue;
+             // traverse over neighbor nodes
+             for(auto it: adjList[node])
+             {   int adjNode=it.first;
+                 ll new_wgt=wgt+it.second;
+                 // yet not visited
+                  if(dist[adjNode]>new_wgt)
+                  {  
+                      // update dist array
+                       dist[adjNode]=new_wgt;
+                       pq.push({new_wgt,adjNode});
+                  }
+             }
+         }
+             
+
+     }
+public:
+    long long minimumWeight(int n, vector<vector<int>>& edges, int src1, int src2, int dest) {
+        // Situation:1 -> src1->src2->dest
+        // Situation:2 -> src2->src1->dest
+        // Situation:3 -> src1->dest AND src2->dest
+           N=n;
+         // create an adjacency list
+         vector<vp>adjList(n,vp());
+
+         for(auto it: edges)
+          {
+              int u=it[0];
+              int v=it[1];
+              int wgt=it[2];
+              adjList[u].push_back({v,wgt});
+          }
+
+
+         vector<ll>dist1(n,LONG_MAX);
+         vector<ll>dist2(n,LONG_MAX);
+        
+        // Dijkstra for src1 
+        minDistance(adjList,src1,dist1);
+        // Dijkstra for src2 
+        minDistance(adjList,src2,dist2);
+          
+        // now use
+        // Dijkstra for dest 
+          // for this reverse the edges
+          vector<vp>adjT(n,vp());
+          for(auto it: edges)
+          {
+              int u=it[0];
+              int v=it[1];
+              int wgt=it[2];
+              adjT[v].push_back({u,wgt});
+          }
+
+       vector<ll>dist(n,LONG_MAX);
+        minDistance(adjT,dest,dist);
+
+        // what are the common vertices where you can reach from both source nodes
+       long long ans = LONG_MAX;
+        for (int i = 0; i < n; ++i) {
+            if (dist1[i] == LONG_MAX || dist2[i] == LONG_MAX || dist[i] == LONG_MAX) continue;
+            ans = min(ans, dist1[i] + dist2[i] + dist[i]);
+        }
+        return ans == LONG_MAX ? -1 : ans;
+
+    }
+};

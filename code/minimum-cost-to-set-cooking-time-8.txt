@@ -1,0 +1,53 @@
+class Solution {
+private:
+    int getCost(char currNumC, int moveCost, int pushCost, int tarMin, int tarSec) {
+        int cost = 0;
+        string minStr = to_string(tarMin);
+        string secStr = to_string(tarSec);
+        
+        if (minStr != "0") {
+            for (char &minC : minStr) {
+                if (currNumC != minC) {
+                    currNumC = minC;
+                    cost += moveCost;
+                }
+                cost += pushCost;
+            }
+            if (secStr.size() < 2) {
+                secStr += '0';
+                swap(secStr[0], secStr[1]);
+            }
+        }
+
+        for (char &secC : secStr) {
+            if (currNumC != secC) {
+                currNumC = secC;
+                cost += moveCost;
+            }
+            cost += pushCost;
+        }
+        return cost;
+    }
+public:
+    int minCostSetTime(int currNum, int moveCost, int pushCost, int targetSeconds) {
+        int minutes = targetSeconds / 60;
+        int seconds = targetSeconds % 60;
+        
+        while (minutes >= 100) {
+            if (seconds >= 40) {
+                return -1;
+            }
+            minutes -= 1;
+            seconds += 60;
+        }
+        
+        int res = INT_MAX;
+        char startNumC = '0' + currNum;
+        while (minutes < 100 && seconds < 100) {
+            res = min(res, getCost(startNumC, moveCost, pushCost, minutes, seconds));
+            minutes -= 1;
+            seconds += 60;
+        }
+        return res;
+    }
+};

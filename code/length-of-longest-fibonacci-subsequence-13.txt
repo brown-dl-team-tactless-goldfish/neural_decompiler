@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int lenLongestFibSubseq(vector<int>& A) {
+        
+        int N = A.size();
+        
+        vector<vector<int>> dp (N, vector<int> (N, 2));
+        
+        unordered_map<int, int> m;
+        
+        int ans = 0;
+        
+        for (int i = 0; i < N; i++)
+        {
+            m[A[i]] = i;
+        }
+        
+        for (int i = 0; i < N; i++)
+        {
+            for (int j = i+1; j < N; j++)
+            {
+                int a_i = A[j] - A[i];
+                
+                if (a_i >= A[i]) break;
+                
+                auto it = m.find(a_i);
+                
+                if (it == m.end()) continue;
+                
+                int k = it->second;
+                
+                dp[i][j] = dp[k][i] + 1;
+                
+                ans = max(ans, dp[i][j]);
+            }
+        }
+        
+        return ans;
+    }
+};

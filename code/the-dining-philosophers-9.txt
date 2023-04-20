@@ -1,0 +1,48 @@
+class DiningPhilosophers
+{
+    bool[] forksOccupied = new bool[5];
+    private readonly object locker = new object();
+    int numberOfMeals;
+    public DiningPhilosophers(int numberOfMeals)
+    {
+        this.numberOfMeals = numberOfMeals;
+        for (int i = 0; i < 5; i++)
+            forksOccupied[i] = false;
+    }
+
+    public void wantsToEat(int philosopher,
+                    Action<int> pickLeftFork,
+                    Action<int> pickRightFork,
+                    Action<int> eat,
+                    Action<int> putLeftFork,
+                    Action<int> putRightFork)
+    {
+        int i = 0;
+        while (i < numberOfMeals)
+        {
+            lock (locker)
+            {
+                if (forksOccupied[philosopher] || forksOccupied[(philosopher + 1) % 5])
+                {
+                    continue;
+                }
+                else
+                {
+                    forksOccupied[philosopher] = forksOccupied[(philosopher + 1) % 5] = true;
+                    pickLeftFork(philosopher);
+                    pickRightFork(philosopher);
+                }
+            }
+
+            eat(philosopher);
+            i++;
+
+            lock (locker)
+            {
+                putLeftFork(philosopher);
+                putRightFork(philosopher);
+                forksOccupied[philosopher] = forksOccupied[(philosopher + 1) % 5] = false;
+            }
+        }
+    }
+};

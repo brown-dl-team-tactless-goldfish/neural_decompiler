@@ -1,0 +1,33 @@
+char* sortSentence(char* s) {
+    int len = strlen(s), cnt = 0;
+    for (int i = 0; i < len; i++) {
+        if (s[i] <= 57 && s[i] >= 48) cnt++;
+    }
+    struct pair* arr = (struct pair*) calloc(cnt + 1, sizeof(struct pair));
+    int nums = 0, tmp = 0;
+    for (int i = len - 1; i >= 0; i--) {
+        if (s[i] <= 57 && s[i] >= 48) {
+            tmp = s[i] - 48;
+            arr[tmp].idx = i - 1;
+            continue;
+        }
+        nums++;
+        if (s[i] == ' ') {
+            arr[tmp].len = nums - 1;
+            nums = 0;
+        }
+    }
+    arr[tmp].len = nums;
+    int ansidx = 0;
+    char* ans = (char*) malloc((len - cnt + 1) * sizeof(char));
+    for (int i = 1; i < cnt + 1; i++) {
+        int start = arr[i].idx - arr[i].len + 1;
+        for (int j = start; j < start + arr[i].len; j++) {
+            ans[ansidx++] = s[j];
+        }
+        ans[ansidx++] = ' ';
+    }
+    ans[--ansidx] = '\0';
+    free(arr);
+    return ans;
+}

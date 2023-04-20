@@ -1,0 +1,136 @@
+struct Node{
+int key;
+int value;
+struct Node* hashFormer;
+struct Node* hashNext;
+struct Node* queueFormer;
+struct Node* queueNext;
+};
+struct Node **hashTable;
+struct Node* head;
+struct Node* tail;
+int size, hashKey, cacheCapacity;
+void lruCacheInit(int capacity) {
+	size = 0;
+	cacheCapacity = capacity;
+	hashKey = capacity * 3;
+	hashTable = (struct Node**)malloc(sizeof(struct Node*)*capacity * 3);
+	head = tail = NULL;
+	for (int i = 0; i<capacity * 3; i++){
+		hashTable[i] = (struct Node*)malloc(sizeof(struct Node));;
+		hashTable[i]->key = hashTable[i]->value = -1;
+		hashTable[i]->hashFormer = hashTable[i]->hashNext = hashTable[i]->queueFormer = hashTable[i]->queueNext = NULL;
+	}
+}
+
+void lruCacheFree() {
+while(head){
+    tail=head;
+    head=head->queueNext;
+    free(tail);
+    
+}
+for (int i = 0; i<cacheCapacity * 3; i++){
+	free(hashTable[i]);
+}
+free(hashTable);
+return;
+
+}
+
+int lruCacheGet(int key) {
+	struct Node* p = hashTable[key%hashKey]->hashNext;
+	while (p)
+	{
+		if (p->key == key)
+			break;
+		p = p->hashNext;
+	}
+	if (p == NULL)
+		return -1;
+	else{
+		if (p->queueFormer){
+			if (p->queueNext == NULL){
+				tail = p->queueFormer;
+				tail->queueNext = NULL;
+				p->queueNext = head;
+				p->queueFormer = NULL;
+				head->queueFormer = p;
+				head = p;
+			}
+			else{
+				p->queueFormer->queueNext = p->queueNext;
+				p->queueNext->queueFormer = p->queueFormer;
+				p->queueFormer = NULL;
+				p->queueNext = head;
+				head->queueFormer = p;
+				head = p;
+			}
+		}
+		return p->value;
+	}
+
+}
+
+void lruCacheSet(int key, int value) {
+	struct Node* p = hashTable[key%hashKey]->hashNext;
+	while (p)
+	{
+		if (p->key == key)
+			break;
+		p = p->hashNext;
+	}
+	if (p == NULL){
+		size++;
+		p = (struct Node*)malloc(sizeof(struct Node));
+		p->key = key;
+		p->value = value;
+		if (hashTable[key%hashKey]->hashNext){
+			hashTable[key%hashKey]->hashNext->hashFormer = p;
+		}
+		p->hashFormer = hashTable[key%hashKey];
+		p->hashNext = hashTable[key%hashKey]->hashNext;
+		hashTable[key%hashKey]->hashNext = p;
+		if (head != NULL)
+			head->queueFormer = p;
+		p->queueFormer = NULL;
+		p->queueNext = head;
+		head = p;
+		if (tail == NULL)
+			tail = head;
+
+		if (size>cacheCapacity){
+			size--;
+			tail->hashFormer->hashNext = tail->hashNext;
+			if (tail->hashNext)
+				tail->hashNext->hashFormer = tail->hashFormer;
+			p = tail;
+			tail = tail->queueFormer;
+			tail->queueNext = NULL;
+			free(p);
+		}
+
+	}
+	else{
+		if (p->queueFormer){
+			if (p->queueNext == NULL){
+				tail = p->queueFormer;
+				tail->queueNext = NULL;
+				p->queueNext = head;
+				p->queueFormer = NULL;
+				head->queueFormer = p;
+				head = p;
+			}
+			else{
+				p->queueFormer->queueNext = p->queueNext;
+				p->queueNext->queueFormer = p->queueFormer;
+				p->queueFormer = NULL;
+				p->queueNext = head;
+				head->queueFormer = p;
+				head = p;
+			}
+		}
+		p->value = value;
+	}
+	return;    
+}

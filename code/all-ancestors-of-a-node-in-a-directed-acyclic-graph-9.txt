@@ -1,0 +1,54 @@
+class Solution {
+public:
+    vector<vector<int>> getAncestors(int n, vector<vector<int>>& edges) {
+        map<int,set<int>>mp;
+        vector<int>adj[n+1];
+        vector<int>indeg(n+1,0);
+        for(auto xt : edges)
+        {
+            adj[xt[0]].push_back(xt[1]);
+            indeg[xt[1]]++;
+        }
+        queue<int>q;
+        for(int i=0;i<n;i++)
+        {
+            if(indeg[i]==0)
+            {
+                q.push(i);
+            }
+        }
+        while(!q.empty())
+        {
+            int parent = q.front();q.pop();
+            for(auto child : adj[parent])
+            {
+                mp[child].insert(parent);
+                
+                for(auto xt : mp[parent])
+                {
+                    mp[child].insert(xt);
+                }
+                if(--indeg[child]==0)
+                {
+                    q.push(child);
+                }
+            }
+        }
+        
+        vector<vector<int>>ans;
+        for(int i=0;i<n;i++)
+        {
+            if(mp.find(i)==mp.end())
+            {
+                ans.push_back({});
+            }
+            else
+            {
+                vector<int> nodes(mp[i].begin(),mp[i].end());
+                ans.push_back(nodes);
+            }
+        }
+        return ans;
+        
+    }
+};

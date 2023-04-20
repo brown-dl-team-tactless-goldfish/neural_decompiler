@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int countPyramids(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size(); 
+        vector<vector<int>> vals(m, vector<int>(n, INT_MAX)); 
+        for (int i = 0; i < m; ++i) 
+            for (int j = 0; j < n; ++j) {
+                if (grid[i][j] == 0) vals[i][j] = 0; 
+                else if (j == 0) vals[i][j] = 1; 
+                else vals[i][j] = min(vals[i][j], 1 + vals[i][j-1]); 
+
+                if (grid[i][n-1-j] == 0) vals[i][n-1-j] = 0; 
+                else if (j == 0) vals[i][n-1-j] = 1; 
+                else vals[i][n-1-j] = min(vals[i][n-1-j], 1 + vals[i][n-j]); 
+            }
+        
+        auto fn = [&](vector<vector<int>>& vals) {
+            int ans = 0; 
+            for (int j = 0; j < n; ++j) {
+                int width = 0; 
+                for (int i = 0; i < m; ++i) {
+                    if (vals[i][j]) width = min(1+width, vals[i][j]); 
+                    else width = 0; 
+                    ans += max(0, width-1); 
+                }
+            }
+            return ans; 
+        }; 
+        
+        int ans = fn(vals); 
+        reverse(vals.begin(), vals.end()); 
+        ans += fn(vals); 
+        return ans; 
+    }
+};

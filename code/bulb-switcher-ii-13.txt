@@ -1,0 +1,60 @@
+class Solution {
+public:
+    
+    string rec( string temp , int k ){
+        
+        for( int i = 0 ; k == 1 && i < temp.length() ; i++ ){
+            if( temp[i] ){ temp[i] = 0; }
+            else{ temp[i] = 1;}
+        }
+        
+        for( int i = 0 ; k == 2 && i < temp.length(); i += 2 ){
+            if( temp[i] ){ temp[i] = 0; }
+            else{ temp[i] = 1 ; }
+        }
+
+        for( int i = 1 ; k == 3 && i < temp.length() ; i += 2 ){
+            if( temp[i] ){ temp[i] = 0; }
+            else{ temp[i] = 1 ; }
+        }
+
+        for( int i =0 ; k == 4 && 3*i < temp.length() ; i++ ){
+            if( temp[3*i] ){ temp[3*i] = 0; }
+            else{ temp[3*i] = 1 ; }
+        }
+ 
+        return temp;
+    }
+    
+    int flipLights(int n, int presses) {
+        string r(n,1);
+        unordered_map<string,int> umap;
+        queue<string> q;
+        q.push(r);
+        int depth = 0;
+        int prev_size = 0;
+        while( depth < presses  ){
+            int size = q.size();
+            umap.clear();
+            while( size-- ){
+                string s = q.front(); q.pop();
+                for( int k = 1 ; k <= 4 ; k++ ){
+                    string a = rec(s , k );
+                    umap[a] = 1;
+                    q.push(a);
+                }
+            }
+            if( umap.size() == prev_size ){
+                break;
+            }
+            prev_size = umap.size();
+            
+            depth++;
+               
+        }
+        
+        
+        
+        return umap.size();
+    }
+};

@@ -1,0 +1,63 @@
+class Solution {
+public:
+    /*
+        Hint:
+            PLEASE AS A PREREQUISITE DO SOLVE: https://leetcode.com/problems/find-original-array-from-doubled-array/ 
+            1. There are basically 2 types of elements (X + k) or (X - k), and the problem is you don't know which is which or do you?
+            2. You can atleast say the smallest element in the array is a (X - k) type and the biggest element is a (X + k) type
+            3. And if you do know that the smallest element is (smallest - k) how can you use that?
+            4. If there is a (smallest - k) in the array that means there must be a (smallest + k) as well.
+            5. (smallest + k) - (smallest - k) = 2 * k
+            6. You can try with all other elements assuming that it is the (smallest + k) element, and guess a [possible_k]
+            7. Then you need to check if enough freq of [arr_val + possilbe_k] and [arr_val - possible_k] exists or not.
+            8. If you have already solved the prerequisite problem then the last part would be a piece of cake.
+        
+        Complexity:
+            Time: O(N * logN + N * N)
+            Space: O(N)
+    */
+    
+    
+    #define inf             0x3f3f3f3f
+    #define all(a)          a.begin(),a.end()
+    #define Unique(a)       sort(all(a)),a.erase(unique(all(a)),a.end())
+    int org_frq[2001], frq[2001];
+    unordered_map <int, int> val_to_id;
+    vector<int> recoverArray(vector<int>& nums) {
+        vector <int> compressed; compressed.push_back(-inf);
+        for (int &val: nums) compressed.push_back(val); Unique(compressed);
+        
+        for (int i = 0; i < nums.size(); i++) {
+            int index = lower_bound(compressed.begin(), compressed.end(), nums[i]) - compressed.begin();
+            val_to_id[ nums[i] ] = index;
+            nums[i] = index;
+            org_frq[ index ]++;
+        }
+        
+        vector <int> result;
+        for (int arr_plus_k_id = 2; arr_plus_k_id < compressed.size(); arr_plus_k_id++) {
+            int possible_k = (compressed[arr_plus_k_id] - compressed[1]);
+            if (possible_k & 1) continue;
+            possible_k /= 2;
+            
+            memcpy(frq, org_frq, sizeof org_frq);
+            
+            for (int plus_k_id = compressed.size() - 1; plus_k_id > 0; plus_k_id--) {
+                if (frq[ plus_k_id ] == 0) continue;
+                int minus_k_id = val_to_id[ compressed[plus_k_id] - 2 * possible_k ];
+                if (minus_k_id == 0 || frq[ minus_k_id ] < frq[ plus_k_id ]) {
+                    result.clear();
+                    break;
+                } 
+                
+                frq[minus_k_id] -= frq[ plus_k_id ];
+                for (int time = 0; time < frq[ plus_k_id ]; time++) result.push_back(compressed[plus_k_id] - possible_k);
+                if (result.size() * 2 == nums.size()) break;
+            }
+            
+            if (result.size()) break;
+        }
+        
+        return result;
+    }
+};

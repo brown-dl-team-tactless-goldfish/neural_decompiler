@@ -1,0 +1,307 @@
+public int MovesToChessboard(int[][] board) {
+	if (IsBadChessboard(board)) return -1;
+	if (IsBadChessboard2(board)) return -1;
+	var shiftsHor = 0;
+	for (int i = 0; i < board.Length; i++)
+	{
+		var shiftsHor2 = GetShiftsHor(i, board);
+		if (shiftsHor < shiftsHor2) shiftsHor = shiftsHor2;
+	}
+	var shiftsVer = 0;
+	for (int i = 0; i < board[0].Length; i++)
+	{
+		var shiftsVer2 = GetShiftsVer(i, board);
+		if (shiftsVer < shiftsVer2) shiftsVer = shiftsVer2;
+	}
+	var rs = shiftsHor / 2 + shiftsVer / 2;
+	return rs;
+}
+private int GetShiftsVer(int col, int[][] board)
+{
+	if (board.Length % 2 == 0)
+	{
+		var errors0 = 0;
+		var errors1 = 0;
+		for (int i = 0; i < board.Length; i++)
+		{
+			if (i % 2 == 0)
+			{
+				if (board[i][col] == 0)
+				{
+					errors1++;
+				}
+				else
+				{
+					errors0++;
+				}
+			}
+			else
+			{
+				if (board[i][col] == 0)
+				{
+					errors0++;
+				}
+				else
+				{
+					errors1++;
+				}
+			}
+		}
+		var rs = Math.Min(errors0, errors1);
+		return rs;
+	}
+	else
+	{
+		var countOne = 0;
+		for (int i = 0; i < board.Length; i++)
+		{
+			countOne += board[i][col];
+		}
+		var onesIsMore = countOne == (board.Length + 1) / 2;
+		var errors = 0;
+		for (int i = 0; i < board.Length; i++)
+		{
+			if (i % 2 == 0)
+			{
+				if (!onesIsMore)
+				{
+					if (board[i][col] == 1) errors++;
+				}
+				else
+				{
+					if (board[i][col] == 0) errors++;
+				}
+			}
+			else
+			{
+				if (!onesIsMore)
+				{
+					if (board[i][col] == 0) errors++;
+				}
+				else
+				{
+					if (board[i][col] == 1) errors++;
+				}
+			}
+		}
+		return errors;
+	}
+}
+private int GetShiftsHor(int row, int[][] board)
+{
+	if (board[row].Length % 2 == 0)
+	{
+		var errors0 = 0;
+		var errors1 = 0;
+		for (int i = 0; i < board[row].Length; i++)
+		{
+			if (i % 2 == 0)
+			{
+				if (board[row][i] == 0)
+				{
+					errors1++;
+				}
+				else
+				{
+					errors0++;
+				}
+			}
+			else
+			{
+				if (board[row][i] == 0)
+				{
+					errors0++;
+				}
+				else
+				{
+					errors1++;
+				}
+			}
+		}
+		var rs = Math.Min(errors0, errors1);
+		return rs;
+	}
+	else
+	{
+		var countOne = board[row].Sum();
+		var onesIsMore = countOne == (board[row].Length + 1) / 2;
+		var errors = 0;
+		for (int i = 0; i < board[row].Length; i++)
+		{
+			if (i % 2 == 0)
+			{
+				if (!onesIsMore)
+				{
+					if (board[row][i] == 1) errors++;
+				}
+				else
+				{
+					if (board[row][i] == 0) errors++;
+				}
+			}
+			else
+			{
+				if (!onesIsMore)
+				{
+					if (board[row][i] == 0) errors++;
+				}
+				else
+				{
+					if (board[row][i] == 1) errors++;
+				}
+			}
+		}
+		return errors;
+	}
+}
+private bool IsBadChessboard2(int[][] board)
+{
+	var rows = new[] { -1, -1 };
+	for (int i = 0; i < board.Length; i++)
+	{
+		if (board[i][0] == 0)
+		{
+			if (rows[0] == -1)
+			{
+				rows[0] = i;
+			}
+			else
+			{
+				for (int j = 0; j < board[i].Length; j++)
+				{
+					if (board[rows[0]][j] != board[i][j]) return true;
+				}
+			}
+		}
+		else
+		{
+			if (rows[1] == -1)
+			{
+				rows[1] = i;
+			}
+			else
+			{
+				for (int j = 0; j < board[i].Length; j++)
+				{
+					if (board[rows[1]][j] != board[i][j]) return true;
+				}
+			}
+		}
+	}
+	var cols = new[] { -1, -1 };
+	for (int i = 0; i < board[0].Length; i++)
+	{
+		if (board[0][i] == 0)
+		{
+			if (cols[0] == -1)
+			{
+				cols[0] = i;
+			}
+			else
+			{
+				for (int j = 0; j < board.Length; j++)
+				{
+					if (board[j][cols[0]] != board[j][i]) return true;
+				}
+			}
+		}
+		else
+		{
+			if (cols[1] == -1)
+			{
+				cols[1] = i;
+			}
+			else
+			{
+				for (int j = 0; j < board.Length; j++)
+				{
+					if (board[j][cols[1]] != board[j][i]) return true;
+				}
+			}
+		}
+	}
+	return false;
+}
+private bool IsBadChessboard(int[][] board)
+{
+	if (board.Length % 2 == 0)
+	{
+		for (int i = 0; i < board.Length; i++)
+		{
+			var countZero = 0;
+			for (int j = 0; j < board[i].Length; j++)
+			{
+				if (board[i][j] == 0) countZero++;
+			}
+			if (countZero != board[i].Length / 2) return true;
+		}
+		for (int j = 0; j < board[0].Length; j++)
+		{
+			var countZero = 0;
+			for (int i = 0; i < board.Length; i++)
+			{
+				if (board[i][j] == 0) countZero++;
+			}
+			if (countZero != board.Length / 2) return true;
+		}
+		return false;
+	}
+	else
+	{
+		var diff = 0;
+		for (int i = 0; i < board.Length; i++)
+		{
+			var countZero = 0;
+			var countOne = 0;
+			for (int j = 0; j < board[i].Length; j++)
+			{
+				if (board[i][j] == 0)
+				{
+					countZero++;
+				}
+				else
+				{
+					countOne++;
+				}
+			}
+			if (Math.Abs(countZero - countOne) != 1) return true;
+			if (countZero > countOne)
+			{
+				diff++;
+			}
+			else
+			{
+				diff--;
+			}
+		}
+		if (Math.Abs(diff) != 1) return true;
+		diff = 0;
+		for (int j = 0; j < board[0].Length; j++)
+		{
+			var countZero = 0;
+			var countOne = 0;
+			for (int i = 0; i < board.Length; i++)
+			{
+				if (board[i][j] == 0)
+				{
+					countZero++;
+				}
+				else
+				{
+					countOne++;
+				}
+			}
+			if (Math.Abs(countZero - countOne) != 1) return true;
+			if (countZero > countOne)
+			{
+				diff++;
+			}
+			else
+			{
+				diff--;
+			}
+		}
+		if (Math.Abs(diff) != 1) return true;
+		return false;
+	}
+}

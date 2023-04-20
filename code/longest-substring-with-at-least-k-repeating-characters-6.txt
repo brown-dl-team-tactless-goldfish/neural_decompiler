@@ -1,0 +1,40 @@
+int max(int x, int y) { return x > y ? x : y; }
+
+int longestSubstring(char *s, int k)
+{
+    int counts[26];
+    int h, i, j, idx, res = 0, unique, noLessThanK;
+    size_t len = strlen(s);
+
+    for (h = 1; h <= 26; h++) {
+        memset(counts, 0x0, sizeof(counts));
+        i = j = unique = noLessThanK = 0;
+
+        while (j < len) {
+            if (unique <= h) {
+                idx = s[j] - 'a';
+
+                if (counts[idx] == 0)
+                    unique++;
+                counts[idx]++;
+                if (counts[idx] == k)
+                    noLessThanK++;
+                j++;
+            } else {
+                idx = s[i] - 'a';
+
+                if (counts[idx] == k)
+                    noLessThanK--;
+                counts[idx]--;
+                if (counts[idx] == 0)
+                    unique--;
+                i++;
+            }
+
+            if (unique == h && unique == noLessThanK)
+                res = max(res, j - i);
+        }
+    }
+
+    return res;
+}

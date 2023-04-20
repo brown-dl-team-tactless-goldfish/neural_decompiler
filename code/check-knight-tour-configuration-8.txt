@@ -1,0 +1,27 @@
+class Solution {
+    vector<vector<int>>dir{{1,2},{-1,-2},{-1,2},{1, -2},\
+                                {2,1},{-2,-1},{-2,1},{2,-1}} ;
+    int N ;
+    int n ;
+    bool dfs(vector<vector<int>>& grid, int i, int j, int cur){
+        if(cur == N-1)
+            return true ;
+        for(int k = 0; k < 8; k++){
+            int xx = i + dir[k][0] ;
+            int yy = j + dir[k][1] ;
+            if(xx < 0 || yy < 0 || xx >= n || yy >= n)
+                continue ;
+            if(grid[xx][yy] == (cur+1)){
+                return dfs(grid, xx, yy, cur+1) ;
+            }
+        }
+        return false ;
+    }
+public:
+    bool checkValidGrid(vector<vector<int>>& grid) {
+        int n = grid.size() ;
+        this->n = n ;
+        this->N = n*n ;
+        return  dfs(grid, 0, 0, 0) ;        
+    }
+};

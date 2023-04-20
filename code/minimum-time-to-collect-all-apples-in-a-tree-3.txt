@@ -1,0 +1,43 @@
+#define MAX_NEI 100
+typedef struct{
+    int nei[MAX_NEI];
+    int neiSize;
+    int visited;
+}AdjList;
+
+int getApplesTimeDfs(AdjList* adjList , int src,bool* hasApple)
+{
+    adjList[src].visited = true;
+    
+    int time=0;
+    int numberOfNeighbours = adjList[src].neiSize;
+    int childTime = 0;
+    for(int i=0;i<numberOfNeighbours;i++)
+    {
+        int neighbour =adjList[src].nei[i];
+        if(!adjList[neighbour].visited)
+        {
+            childTime = getApplesTimeDfs(adjList,neighbour,hasApple);
+            if(childTime>0 ||hasApple[neighbour]) time+=childTime+2;
+        }
+    }
+    return time;
+}
+
+static inline void addNei(AdjList* adjList , int src, int dest)
+{
+    adjList[src].nei[adjList[src].neiSize++] = dest;
+    adjList[dest].nei[adjList[dest].neiSize++] = src;
+}
+int minTime(int n, int** edges, int edgesSize, int* edgesColSize, bool* hasApple, int hasAppleSize){
+
+    AdjList* adjList = calloc(n,sizeof(AdjList));
+    //Build the adjacency list
+    for(int i=0;i<edgesSize;i++)
+    {
+        int src = edges[i][0];
+        int dest = edges[i][1];
+        addNei(adjList,src,dest);
+    }    
+    return getApplesTimeDfs(adjList,0,hasApple);
+}

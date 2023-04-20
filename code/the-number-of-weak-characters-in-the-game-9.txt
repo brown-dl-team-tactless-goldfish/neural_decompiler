@@ -1,0 +1,22 @@
+int numberOfWeakCharacters(vector<vector<int>>& properties) {
+        vector<pair<int, int>> v;
+        vector<int> rmax(properties.size());
+        for(int i = 0; i<properties.size(); i++) {
+            v.push_back({properties[i][0], properties[i][1]});
+        }
+        sort(begin(v), end(v));
+        rmax[properties.size() - 1] = v[properties.size() - 1].second;
+        for(int i = properties.size() - 2; i>=0; i--) {
+            rmax[i] = max(rmax[i+1], v[i].second);
+        }
+        int ans = 0;
+        for(int i = 0; i<v.size(); i++) {
+            auto it = lower_bound(begin(v), end(v), make_pair(v[i].first+1, -1000000000));
+            if(it == end(v)) continue;
+            int idx = it - begin(v);
+            if(rmax[idx] > v[i].second) {
+                ans++;
+            }
+        }
+        return ans;
+}

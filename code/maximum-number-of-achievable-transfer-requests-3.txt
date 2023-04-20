@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int ans = 0;
+    void solve(int n , int m,vector<vector<int>>&requests , vector<int>&temp,int i,int achievable)
+    {
+        //  base case
+        if(i > m)return ;
+        // if you reach the end of the requests then check eather all net transactions are  
+        // 0 or not 
+        // if the net is 0 take max of ans and achievable requests
+        if(i == m)
+        {    
+            for(int j = 0 ; j < temp.size();j++){
+                if(temp[j]!= 0)
+                return ;}
+             ans = max(ans , achievable);
+         return;
+        }
+        // either you do not process the current request
+        solve(n,m,requests,temp,i+1,achievable);
+        // you process the current request and increase achievable request by 1
+        temp[requests[i][0]]--;
+        temp[requests[i][1]]++;
+        solve(n,m,requests,temp,i+1,achievable + 1);
+        // make sure after taking that request in account update the temp 
+        temp[requests[i][0]]++;
+        temp[requests[i][1]]--;             
+    }
+    int maximumRequests(int n, vector<vector<int>>& requests) {
+        int m = requests.size();
+        vector<int>temp(n , 0);
+        solve(n,m,requests,temp,0,0);
+        return ans;
+        
+    }
+};

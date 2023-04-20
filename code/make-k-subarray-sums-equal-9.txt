@@ -1,0 +1,33 @@
+class Solution {
+public:
+    #define ll long long int
+    long long makeSubKSumEqual(vector<int>& a, int k) {
+        int n=a.size();
+        if(n==1)return 0;
+        ll ans=0;
+        map<int,vector<int>> h;
+        for(int i=0;i<k;i++)
+        {
+            int j=i;
+            while(1)
+            {
+              if(a[j]==0)break;
+              h[i].push_back(a[j]);
+              a[j]=0;
+              j=(j+k)%n;
+            }
+        }
+        for(auto it:h)
+        {
+            vector<int> temp=it.second;  
+            sort(temp.begin(),temp.end());
+            int size=temp.size();
+            int curr=temp[size/2];
+            for(auto ele:it.second)
+            {
+                ans+=abs(ele-curr);
+            }
+        }
+        return ans;
+    }
+};

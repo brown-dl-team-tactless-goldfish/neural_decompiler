@@ -1,0 +1,92 @@
+	typedef struct stack{
+		int top;
+		int capacity;
+		int *arr;
+	}stack;
+
+	stack *create_stack(int capacity){
+		stack *st=(stack*)(calloc(sizeof(stack),1));
+		st->capacity=capacity;
+		st->top=-1;
+		st->arr=(int*)(calloc(sizeof(int), capacity));
+		return st;
+	}
+
+	int is_full(stack *st){
+		return (st->top==st->capacity-1);
+	}
+
+	int is_empty(stack *st){
+		return (st->top==-1);
+	}
+
+	void push(stack *st, int item){
+		if(is_full(st))
+			return;
+
+		st->arr[++(st->top)]=item;
+	}
+
+	int pop(stack *st){
+
+		if(is_empty(st))
+			return -1;
+		return st->arr[(st->top)--];
+	}
+
+
+
+	bool canCross(int* stones, int stonesSize){
+		int i=0;
+
+		if(stonesSize==2 && stones[1]>1) //test case 
+			return false;
+
+		if(stonesSize==3 && stones[2]>stones[1]*2) //test case
+			return false;
+
+		for(i=3;i<stonesSize;i++)
+			if(stones[i]>stones[i-1]*2)
+				return false;
+
+		stack *positions=create_stack(stonesSize*3+1);
+		stack *jumps=create_stack(stonesSize+1);
+
+		int last_pos=stones[stonesSize-1];
+
+		int *hash_map=(int*)(calloc(sizeof(int),5199094));
+
+		for(i=0;i<stonesSize;i++)
+			hash_map[stones[i]]++;
+
+
+		push(positions,0);
+		push(jumps,0);
+
+		while(!is_empty(positions)){
+			int curr_pos=pop(positions);
+			int curr_jump=pop(jumps);
+			for(i=curr_jump-1;i<=curr_jump+1;i++){
+				if(i<=0){
+					continue;
+				}
+				int next_position=curr_pos+i;
+				if(next_position==last_pos){
+					 free(hash_map);
+					 free(positions);
+					 free(jumps);
+					 return true;
+				}
+
+				else if(hash_map[next_position]==1){
+					push(positions,next_position);
+					push(jumps, i);
+				}
+			}
+		}
+
+		free(hash_map);
+		free(positions);
+		free(jumps);
+		return false;
+	}

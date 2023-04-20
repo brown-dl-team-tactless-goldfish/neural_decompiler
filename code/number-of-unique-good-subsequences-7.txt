@@ -1,0 +1,53 @@
+// Check if any Zero
+// Find the first 1, start count after the first 1 (The first 1 will be in all the combination other than "0")
+// for every digit multiple the number - duplications
+// Duplication - In the case where we remove all the character between identical characters
+//                        The remove of either produce identical string.
+//                        Example:   "1010---0"  => "101----0" identical to "1010----"
+//                        In this case we have to dedact the count of "1010" (the combinations of "101")
+// add 1 if any 0 for the single "0" case
+class Solution {
+public:
+    int numberOfUniqueGoodSubsequences(string binary) {
+        int n = binary.length();
+        bool any_zero = (binary.find('0') < n); 
+        long long count = 0;
+        int zeros = 0;
+        int ones  = 0;
+        int i = 0;
+		// Search the first '1' - The first '1' will be part of all the combination other than single '0'
+        for (; i<n; i++)
+        {
+            if (binary[i] == '1')
+            {
+			   // count the first '1'
+                count++;
+                i++; 
+                break;
+            }
+        }
+       // After the first '1' treat '1' and '0' the same way
+        for (; i<n; i++)
+        {
+            char c = binary[i];
+            int prev = count;
+            if (c == '0')
+            {
+                count = (count*2-zeros) %1000000007;
+                zeros = prev;
+            }
+            else
+            {
+                count = (count*2-ones) %1000000007;
+                ones = prev;
+            }
+            if (count < 0) count += 1000000007;
+        }
+		// add the case of single '0'
+        if (any_zero)
+            count = (count+1) %1000000007;
+
+        return count;
+  
+    }
+};

@@ -1,0 +1,20 @@
+int* partitionLabels(char* s, int* returnSize)
+{
+    int len = strlen(s), start = 0, end = 0, curr, size_tmp = 0;
+    int* ret = (int*)calloc(len, sizeof(int));
+    int htable[26] = { [0 ... 25] = 0 };
+    for (int i = 0; i < len; i++)
+        htable[s[i] - 97] = i;
+    for (int i = 0; i < len; i++)
+    {
+        curr = htable[s[i] - 97];//variable only exists for the sake of not resolving-subtracting-resolving twice on next line
+        end = (end > curr) ? end : curr;//max()
+        if (end == i)
+        {
+            ret[size_tmp++] = end - start + 1;
+            start = end + 1;
+        }
+    }
+    *returnSize = size_tmp;//using local size_tmp instead of dereferencing-decrement
+    return ret;
+}

@@ -1,0 +1,25 @@
+#define MAX(a,b) ((a>b)?a:b)
+int DFS(struct TreeNode* root, int start, int* maxDepth)
+{
+    if(!root) return 0;
+    int left = DFS(root->left, start, maxDepth);
+    int right = DFS(root->right, start, maxDepth);
+    if(root->val == start)
+    {
+        *maxDepth = MAX(left, right);
+        return -1; /* indicate there is a start node on the path */
+    }
+    if(left < 0 || right < 0){
+		/* check the start node of parent to get max depth 
+		 * return negative with depth info for the current node of parent */
+        int currDepth = abs(left)+abs(right);
+        *maxDepth = MAX(currDepth, *maxDepth);
+        return (left<0)? left-1 : right-1;
+    }
+    return MAX(left, right) + 1;
+}
+int amountOfTime(struct TreeNode* root, int start){
+    int maxDepth = -1;
+    DFS(root, start, &maxDepth);
+    return maxDepth;
+}

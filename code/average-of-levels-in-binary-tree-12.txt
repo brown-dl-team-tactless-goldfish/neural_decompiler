@@ -1,0 +1,19 @@
+int depth = 0;
+void checkTree(struct TreeNode * root, double * temp, int * count, int idx)
+{
+    if(root == NULL) return;
+    if(depth < idx) depth = idx;
+    temp[idx] += (double)root->val;
+    count[idx]++;
+    checkTree(root->left, temp, count, idx+1);
+    checkTree(root->right, temp, count, idx+1);
+}
+double* averageOfLevels(struct TreeNode* root, int* returnSize){
+    double * result = calloc(1000, sizeof(double));
+    int * count = calloc(1000, sizeof(int));
+    depth = 0;
+    checkTree(root, result, count, 0);
+    for(int i=0; i<=depth; i++) result[i] /= count[i];
+    *returnSize = depth + 1;
+    return result;
+}

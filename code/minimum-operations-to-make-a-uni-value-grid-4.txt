@@ -1,0 +1,49 @@
+class Solution
+{
+public:
+    int minOperations(vector<vector<int>> &grid, int x)
+    {
+        int n = grid.size();
+        int m = grid[0].size();
+
+        vector<int> arr(n * m, 0);
+        int mod = grid[0][0] % x;
+
+        // if it is -1;
+        for (int i = 0; i < n; i++)
+        {
+            for (int j = 0; j < m; j++)
+            {
+                arr[i * m + j] = grid[i][j];
+
+                if (grid[i][j] % x != mod)
+                {
+                    return -1;
+                }
+            }
+        }
+
+        sort(arr.begin(), arr.end());
+        int cont_1 = arr[(n * m) / 2];
+
+        int min_1 = 0;
+        for (int i = 0; i < m * n; i++)
+        {
+            min_1 += abs(arr[i] - cont_1) / x;
+        }
+
+        if ((n * m) % 2 == 0)
+        {
+            int cont_2 = arr[((n * m) / 2) - 1];
+            int min_2 = 0;
+            for (int i = 0; i < n * m; i++)
+            {
+                min_2 += abs(arr[i] - cont_2) / x;
+            }
+
+            min_1 = min(min_1, min_2);
+        }
+
+        return min_1;
+    }
+};

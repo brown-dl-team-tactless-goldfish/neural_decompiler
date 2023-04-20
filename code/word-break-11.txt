@@ -1,0 +1,51 @@
+bool wordBreak(char * s, char ** wordDict, int wordDictSize){
+    int i,j;
+    int lenS;
+    short *lenW;
+    char *dp;
+    
+    if((s == NULL) || (wordDictSize == 0))
+        return false;
+    
+    lenS = strlen(s);
+    lenW = (short*)malloc(wordDictSize*sizeof(short));
+    for(i=0;i<wordDictSize;i++)
+    {
+        lenW[i] = strlen(wordDict[i]);
+    }
+    
+    // init dp table to all 0 except [0] which is 1
+    dp = (char*)calloc((lenS+1),sizeof(char));
+    dp[0] = 1;
+    
+    for(i=0;i<lenS;i++)
+    {
+        // skip NO match position, we can't move forward without match
+        if(dp[i] == false)
+            continue;
+        
+        for(j=0;j<wordDictSize;j++)
+        {
+            if((i+lenW[j]) <= lenS)
+            {
+                if(memcmp(s+i,wordDict[j],lenW[j]) == 0)
+                {
+                    dp[i+lenW[j]] = 1;
+                }
+            }
+        }
+    }
+    
+    free(lenW);
+    // when dp[lenS] == 1, that means there must be a path can be found which reach the end of the string.
+    if(dp[lenS] == 1)
+    {
+        free(dp);
+        return true;
+    }
+    else
+    {
+        free(dp);
+        return false;
+    }
+}

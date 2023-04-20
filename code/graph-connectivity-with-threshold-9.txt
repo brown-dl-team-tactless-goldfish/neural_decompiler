@@ -1,0 +1,41 @@
+class DSU{
+        public:
+    vector<int> parent;
+    vector<int> size;
+    DSU(int n){
+        size.clear();
+        parent.clear();
+        size.resize(n,1);
+        for (int i=0;i<n;i++) parent.push_back(i);
+    }
+    
+    int find(int n){
+        if (parent[n]==n) return n;
+        return parent[n] = find(parent[n]);
+    }
+    void unionn(int a, int b){
+        a = find(a);
+        b = find(b);
+        if (a!=b){
+            if (size[a]<size[b]) swap(a,b);
+            parent[b] = a;
+            size[b] += size[a];
+        }
+    }
+};
+class Solution {
+public:
+    vector<bool> areConnected(int n, int threshold, vector<vector<int>>& queries) {
+        DSU dsu(n+1);
+        for (int t=threshold+1; t<=n;t++){
+            for (int j=t;j<=n;j+=t){
+                dsu.unionn(t,j);
+            }
+        }
+        vector<bool> res;
+        for (auto q:queries){
+            res.push_back(dsu.find(q[0])==dsu.find(q[1]));
+        }
+        return res;
+    }
+};

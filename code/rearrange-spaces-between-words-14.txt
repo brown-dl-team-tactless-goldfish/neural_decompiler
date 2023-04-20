@@ -1,0 +1,35 @@
+string reorderSpaces(string text) {
+        int scnt = 0, wcnt = 0;
+       
+        if(text[0]!=' ') wcnt++;
+        else scnt++;
+        
+        for(int i=1; i<text.size(); i++) {
+            if(text[i] == ' ') scnt++;
+            if(text[i-1] == ' ' && text[i] != ' ') wcnt++;
+        }
+        
+        int req = 0;
+        int rem = scnt;
+        if(wcnt!=1) {
+            req = scnt/(wcnt-1);
+            rem = scnt%(wcnt-1);
+        }
+        string evenspace; while(req--) { evenspace += ' ';}
+        
+        bool isSpace = true;
+        string ans;
+        while(text[text.size()-1] == ' ') {text.pop_back();}
+        for(char c: text) {
+            if(isSpace == false && c == ' ')
+                ans += evenspace, isSpace = true;
+            else if(c == ' ')
+                continue;
+            else
+                ans += c, isSpace =  false;
+        }
+        
+        while(rem--) {ans += ' ';}
+        
+        return ans;
+    }

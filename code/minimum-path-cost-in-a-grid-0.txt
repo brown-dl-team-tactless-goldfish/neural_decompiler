@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int minPathCost(vector<vector<int>>& grid, vector<vector<int>>& moveCost) {
+        int r = grid.size();
+        int c = grid[0].size();
+        
+        vector<int> dp(c, INT_MAX);
+        
+        for(int i=0;i<c;i++){
+            dp[i] = grid[0][i];
+        }
+        
+        for(int i=1;i<r;i++){
+            vector<int> temp(c, INT_MAX);
+            
+            for(int j=0;j<c;j++){    
+                for(int k=0;k<c;k++){
+                    temp[j] = min(temp[j], dp[k] + moveCost[grid[i-1][k]][j]); 
+                }
+                
+                temp[j] += grid[i][j];
+            }
+            
+            dp = temp; 
+        }
+        return *min_element(dp.begin(), dp.end());
+    }
+};

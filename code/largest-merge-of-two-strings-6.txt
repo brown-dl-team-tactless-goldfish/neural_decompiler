@@ -1,0 +1,33 @@
+class Solution {
+public:
+    string largestMerge(string word1, string word2) {
+        string res;
+        int i = 0, j = 0, size1 = word1.size(), size2 = word2.size();
+        while (i < size1 && j < size2)
+        {
+            if (word1[i] != word2[j])
+            {
+                res += word1[i] > word2[j] ? word1[i++] : word2[j++];
+            }
+            else
+            {
+                int ii = i, jj = j;
+                while (ii < size1 && jj < size2 && word1[ii] == word2[jj])
+                {
+                    ++ii, ++jj;
+                }
+                
+                if (jj >= size2 || (ii < size1 && word1[ii] > word2[jj]))
+                {
+                    res += word1[i++];
+                }
+                else
+                {
+                    res += word2[j++];
+                }
+            }
+        }
+        
+        return res + (i < size1 ? word1.substr(i) : word2.substr(j));
+    }
+};

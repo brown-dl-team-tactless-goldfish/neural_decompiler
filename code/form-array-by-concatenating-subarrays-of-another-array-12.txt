@@ -1,0 +1,22 @@
+class Solution {
+public:
+    bool canChoose(vector<vector<int>>& groups, vector<int>& nums) {
+        size_t size{groups.size()};
+        std::vector<string> gs(size, "");
+        for(int i{0}; i < size; ++i) {
+            for(const auto &c: groups[i]) {
+                gs[i] += std::to_string(c);
+            }
+        }
+        
+        std::string match;
+        for(const auto &c: nums) match += std::to_string(c);
+        size_t j{match.find(gs[0], 0)};
+        for(size_t i{0}, j{0}, last{0}; i < size; ++i) {
+            j = match.find(gs[i], last);
+            if(j == std::string::npos) return false;
+            last = j+gs[i].size();
+        }
+        return true;
+    }
+};

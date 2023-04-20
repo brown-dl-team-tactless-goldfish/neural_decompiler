@@ -1,0 +1,33 @@
+int FindRoot(int* pnRoot, int nIndex)
+{
+    if(nIndex == pnRoot[nIndex]) return nIndex;
+
+    pnRoot[nIndex] = FindRoot(pnRoot, pnRoot[nIndex]);
+    return pnRoot[nIndex];
+}
+
+bool validPath(int n, int** edges, int edgesSize, int* edgesColSize, int source, int destination){
+    if(source == destination) return true;
+    if(edgesSize == 0) return false;
+
+    int anRoot[n];
+    for(int i=0; i<n; i++) anRoot[i] = i;
+
+    while(edgesSize-- > 0)
+    {
+        int nRootU = FindRoot(anRoot, (*edges)[0]), nRootV = FindRoot(anRoot, (*edges)[1]);
+
+        if(nRootU < nRootV)
+        {
+            anRoot[nRootV] = nRootU;
+        }
+        else
+        {
+            anRoot[nRootU] = nRootV;
+        }
+
+        edges++;
+    }
+
+    return FindRoot(anRoot, source) == FindRoot(anRoot, destination);
+}

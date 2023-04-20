@@ -1,0 +1,33 @@
+#define ARR_MAX 100000
+
+int* nodesBetweenCriticalPoints(struct ListNode* head, int* returnSize){
+    struct ListNode* dummy = head, *previous = dummy, *after = dummy->next->next;
+    dummy = dummy->next;
+    
+    int index = 0, map[ARR_MAX] = {0}, *res = malloc(sizeof(int) * 2), count = 1, i;
+    while (after != NULL)
+    {
+        if ((dummy->val < previous->val && dummy->val < after->val) ||
+            (dummy->val > previous->val && dummy->val > after->val)) {
+            map[index++] = count;
+        }
+        previous = dummy;
+        dummy = dummy->next;
+        after = dummy->next;
+        count++;
+    }
+    
+    if (map[0] == 0 || map[1] == 0) {
+        res[0] = res[1] = -1;
+    } else {
+        int min = ARR_MAX;
+        for (i = 1; i < index; ++i) {
+            min = map[i] - map[i - 1] < min ? map[i] - map[i - 1] : min;
+        }
+        res[0] = min;
+        res[1] = map[index - 1] - map[0];
+    }
+    
+    *returnSize = 2;
+    return res;
+}

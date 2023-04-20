@@ -1,0 +1,59 @@
+typedef long long ll;
+class Solution {
+public:
+    vector<vector<int>>G;
+    vector<pair<ll,ll>>mx;
+    vector<pair<int,int>>mxIdx;
+    vector<int>price;
+    ll ans;
+    ll dfs(int cur,int pre)
+    {
+        for(auto &x:G[cur])
+        {
+            if(x==pre)continue;
+            ll child=dfs(x,cur);
+            if(mx[cur].first<child)
+            {
+                mx[cur].second=mx[cur].first;
+                mx[cur].first=child;
+                mxIdx[cur].second=mxIdx[cur].first;
+                mxIdx[cur].first=x;
+            }else if(mx[cur].second<child)
+            {
+                mx[cur].second=child;
+                mxIdx[cur].second=x;
+            }
+        }
+        return mx[cur].first+price[cur];
+    }
+    void dfs2(int cur,int pre,ll up)
+    {
+        ans=max({ans,up,mx[cur].first});
+        for(auto &x:G[cur])
+        {
+            if(x==pre)continue;
+            ll nxUp=up;
+            if(x==mxIdx[cur].first)nxUp=max(up+price[cur],mx[cur].second+price[cur]);
+            else nxUp=max(up+price[cur],mx[cur].first+price[cur]);
+            dfs2(x,cur,nxUp);
+        }
+        return;
+    }
+    long long maxOutput(int n, vector<vector<int>>& edges, vector<int>& price) 
+    {
+        ans=0;
+        G.resize(n);
+        mx.resize(n,{0,0});
+        mxIdx.resize(n,{-1,-1});
+        this->price=price;
+        for(auto &x:edges)
+        {
+            G[x[0]].push_back(x[1]);
+            G[x[1]].push_back(x[0]);
+        }
+        dfs(0,-1);
+        ans=mx[0].first;
+        dfs2(0,-1,0);
+        return ans;
+    }
+};

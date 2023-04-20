@@ -1,0 +1,27 @@
+public class Solution {
+    public bool IsCovered(int[][] ranges, int left, int right) {
+        
+        if(ranges == null || ranges.Length == 0)
+            return false;
+        
+        int[] arr = new int[51];
+        foreach(var range in ranges)
+        {
+            int start = range[0];
+            int end = range[1];
+            
+            arr[start]++;
+            if(end + 1 <= 50)
+                arr[end+1]--;
+        }
+        
+        for(int i = 1; i < arr.Length; i++)
+        {
+            arr[i] += arr[i-1];
+            if(i >= left && i <= right && arr[i] <= 0)
+                return false;
+        }
+
+        return true;
+    }
+}

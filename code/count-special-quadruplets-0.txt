@@ -1,0 +1,21 @@
+int countQuadruplets(int* nums, int numsSize){
+    int* hashCnt = (int*)calloc(101, sizeof(int));
+    int sum = 0, ansCnt = 0;
+    
+    hashCnt[nums[numsSize-1]]++;
+    for(int i = numsSize-2; i >= 2; i--){
+        sum = nums[i];
+        for(int j = i-1; j >= 1; j--){
+            sum += nums[j];
+            for(int k = j-1; k >= 0 ; k--){
+                sum += nums[k];
+                if(sum <= 100 && hashCnt[sum])
+                    ansCnt += hashCnt[sum];
+                sum -= nums[k];
+            }
+            sum -= nums[j];
+        }
+        hashCnt[nums[i]]++;
+    }
+    return ansCnt;
+}

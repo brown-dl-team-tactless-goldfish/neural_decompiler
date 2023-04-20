@@ -1,0 +1,24 @@
+public bool IsPossibleDivide(int[] nums, int k) {
+	if (nums.Length % k != 0)
+		return false;
+	Array.Sort(nums);
+	var map = new Dictionary<int, Stack<int>>();
+	foreach (int n in nums) {
+		Stack<int> s, t = null;
+		int c = 0;
+		if (map.TryGetValue(n, out s)) {
+			c = s.Pop();
+			if (s.Count == 0) {
+				map.Remove(n);
+				t = s;
+			}
+		}
+		if (++c < k) {
+			if (!map.TryGetValue(n + 1, out s)) {
+				map.Add(n + 1, s = t ?? new Stack<int>());
+			}
+			s.Push(c);
+		}
+	}
+	return map.Count == 0;
+}

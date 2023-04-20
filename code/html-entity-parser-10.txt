@@ -1,0 +1,31 @@
+class Solution {
+public:
+    string entityParser(string text) {
+        string ans;
+        unordered_map<string, string> dict{{"&quot;", "\""}, 
+                                           {"&apos;", "'"},
+                                           {"&amp;",  "&"},
+                                           {"&gt;",   ">"},
+                                           {"&lt;",   "<"},
+                                           {"&frasl;","/"}
+                                          };
+                                           
+        for(int i = 0; i<text.size();){
+            if(text[i] != '&'){
+                ans += text[i++]; 
+                continue;
+            }
+            auto sBeg = text.find('&', i);
+            auto sEnd = text.find(';', sBeg);
+            string key = text.substr(sBeg, sEnd-sBeg+1);
+            if(dict.count(key)){
+                ans += dict[key];
+                i =  sEnd + 1;
+            }else{
+                if(sBeg != string::npos) ans += "&";
+                i++;
+            }            
+        }
+        return ans;
+    }
+};

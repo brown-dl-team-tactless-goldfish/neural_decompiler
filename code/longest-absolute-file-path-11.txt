@@ -1,0 +1,62 @@
+int lengthLongestPath(char* input) {
+    int stack[256] = {0}; // assume maximal 256 level
+    int stack_idx = 0;    // stack top index
+    
+    char *p = input;
+    int max_length = 0;
+    int current_base_length = 0;
+    int current_indent_level = 0;
+    int last_length = 0;
+    
+    int iter = 0;
+    
+    while(*p != '\0')
+    {
+        
+        // parse indent level
+        int indent_level = 0;
+        for(; *p == '\t'; p++, indent_level++);
+       
+        if(indent_level == current_indent_level)
+        {
+            // do nothing   
+        }
+        else if (indent_level < current_indent_level)
+        {
+            // pop
+            while(indent_level < current_indent_level)
+            {
+                current_indent_level--;
+                current_base_length = stack[--stack_idx]; 
+            }
+        }
+        else
+        {
+            // push
+            stack[stack_idx++] = current_base_length;
+            current_base_length = last_length;
+            current_indent_level++;
+            
+        }
+        
+        
+        // parse file/folder name
+        bool is_file = false;
+        int filename_len = 0;
+        for(; *p != '\n' && *p != '\0'; p++, filename_len++)
+        {
+            if (*p == '.') is_file = true;
+        }
+        
+        if(*p == '\n') p++;
+        
+        last_length = filename_len + current_base_length + 1;
+        if(is_file && last_length > max_length)
+        {
+            max_length = last_length;
+        }
+        
+    }
+    
+    return max_length == 0 ? 0 : (max_length - 1);  // remove leading slash
+}

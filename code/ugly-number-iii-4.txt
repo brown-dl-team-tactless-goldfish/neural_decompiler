@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int nthUglyNumber(int n, int a, int b, int c) {
+        if(a>b) swap(a, b); //make a<b<c
+        if(a>c) swap(a, c);
+        if(b>c) swap(b, c);
+        long long upper_a = n*a; // upper limit
+        long long upper_b = 0;
+        long long upper_c = 0;
+        int bc = 0; // b count
+        int cc = 0; // c bount
+        if(a==b&&b==c) return upper_a;
+        while((long long)b*bc<upper_a) {
+            upper_b = b*bc;
+            if(upper_b%a!=0) // upper_b not listed yet
+                upper_a -= a; // upper_a fall back 
+            bc++;
+        }
+        if(b==c) return max(upper_a, upper_b);
+        while((long long)c*cc<max(upper_a, upper_b)) {
+            upper_c = c*cc;
+            if(upper_c%a!=0&&upper_c%b!=0) { // upper_c not listed yet 
+                if(upper_a>upper_b) {
+                    upper_a -=a;
+                }
+                else if(upper_a<upper_b){
+                    upper_b -=b;
+                }
+                else{
+                    upper_a -=a;
+                    upper_b -=b;
+                } 
+            }
+            cc++;
+        }
+        return max(upper_a, max(upper_b, upper_c));
+    }
+};

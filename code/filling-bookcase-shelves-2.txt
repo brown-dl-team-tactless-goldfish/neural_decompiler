@@ -1,0 +1,41 @@
+#define MAX 0xFFFFFFF
+
+int dfs(int curr, int w, int** books, int booksSize, int shelfWidth, int currh, int*memo){
+    int res1 = MAX;
+    int res2 = MAX;
+    int prev = currh;
+
+    if(curr >= booksSize)
+        return currh;
+//    printf("curr %d %d %d ----1\n", curr, w, currh);
+
+    //stuck on this shelf
+    if(w + books[curr][0] <= shelfWidth){
+        currh = (currh > books[curr][1])? currh: books[curr][1];
+        res1 = dfs(curr + 1, w + books[curr][0], books, booksSize, shelfWidth, currh, memo);
+    //    printf("res1 %d %d %d\n", res1, curr, currh);
+    }
+    currh = prev;
+ //   printf("curr %d %d %d ----2\n", curr, w, currh);
+    // add new shelves
+    if(memo[curr]) {
+      //  printf("memo %d %d\n", curr, memo[curr]);
+        res2 = currh + memo[curr]; // new height from this book
+    } else {
+        res2 = dfs(curr + 1, books[curr][0], books, booksSize, shelfWidth, books[curr][1], memo);
+     //   printf("res2 %d %d %d\n", res2, curr, currh);
+        memo[curr] = res2;
+        res2 += currh;
+    }
+    
+    return (res1 < res2)? res1: res2;
+}
+
+int minHeightShelves(int** books, int booksSize, int* booksColSize, int shelfWidth){
+    int * memo;
+    int res;
+    memo = calloc(booksSize, sizeof(int));
+    
+    res = dfs(1, books[0][0], books, booksSize, shelfWidth, books[0][1], memo);
+    return res;
+}

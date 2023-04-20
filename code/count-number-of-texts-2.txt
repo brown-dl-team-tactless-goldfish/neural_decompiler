@@ -1,0 +1,72 @@
+class Solution {
+public:
+    long dp3[100001] = {}, dp4[100001] = {};
+    
+    int countTexts(string pressedKeys) {
+        int n = pressedKeys.size();
+        unordered_map<char, vector<int>> freq;
+        int c = 1;
+        char v = pressedKeys[0];
+        for (int i = 1; i < n; i++)
+        {
+            if (pressedKeys[i] == pressedKeys[i - 1])
+                c++;
+            else
+            {
+                freq[v].push_back(c);
+                v = pressedKeys[i];
+                c = 1;
+            }
+        }
+        freq[v].push_back(c);
+        long ans = 1, mod = 1e9 + 7;
+        for (auto& p : freq)
+        {
+            int q = p.first - '0';
+            for (auto& c : p.second)
+                ans = (ans * cnt(q, c, mod)) % mod;
+        }
+        return ans;
+    }
+    
+private: 
+    long cnt(int q, int p, long mod)
+    {
+        if (q == 7 || q == 9)
+        {
+            if (dp4[p] != 0)
+                return dp4[p];
+            if (p == 1)
+                dp4[p] = 1;
+            else if (p == 2)
+                dp4[p] = 2;
+            else if (p == 3)
+                dp4[p] = 4;
+            else if (p == 4)
+                dp4[p] = 8;
+            else
+            {
+                dp4[p] = cnt(q, p - 1, mod) + cnt(q, p - 2, mod) + cnt(q, p - 3, mod) + cnt(q, p - 4, mod);
+                dp4[p] %= mod;
+            }
+            return dp4[p];
+        }
+        else
+        {
+            if (dp3[p] != 0)
+                return dp3[p];
+            if (p == 1)
+                dp3[p] = 1;
+            else if (p == 2)
+                dp3[p] = 2;
+            else if (p == 3)
+                dp3[p] = 4;
+            else
+            {
+                dp3[p] = cnt(q, p - 1, mod) + cnt(q, p - 2, mod) + cnt(q, p - 3, mod);
+                dp3[p] %= mod;
+            }
+            return dp3[p];
+        }
+    }
+};

@@ -1,0 +1,28 @@
+int largestSumAfterKNegations(int* nums, int numsSize, int k){
+    int pos[101]={0};
+    int neg[101]={0};
+    bool hasCero=false;
+    for(int x=0;x<numsSize;x++){
+        if(nums[x]==0)hasCero=true;
+        if(nums[x]<0){
+            neg[nums[x]*-1]++;
+        }else{
+            pos[nums[x]]++;
+        }
+    }
+   while(k>0){
+        for(int x=100;x>0;x--){
+            while(k>0&&neg[x]>0){neg[x]--;pos[x]++;k--;}
+        }
+        if(hasCero)break;
+        for(int x=1;x<101;x++){
+            if(k>0&&pos[x]>0){neg[x]++;pos[x]--;k--;break;}
+        }
+    }
+	int tot=0;
+    for(int x=1;x<101;x++){
+        while(neg[x]>0){tot-=x;neg[x]--;}
+        while(pos[x]>0){tot+=x;pos[x]--;}
+    }
+    return tot;
+}

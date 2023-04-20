@@ -1,0 +1,44 @@
+    public class Solution
+    {
+        public int GetMaxRepetitions(string s1, int n1, string s2, int n2)
+        {
+            int i = 0;
+            int j = 0;
+            int fullS1Length = n1 * s1.Length;
+            IDictionary<(int i, int j), (int i, int j)> repeatingMap = new Dictionary<(int i, int j), (int i, int j)>();
+            while (i < fullS1Length)
+            {
+                var modI = i % s1.Length;
+                var modJ = j % s2.Length;
+
+                if (s1[modI] == s2[modJ])
+                {
+
+                    if (repeatingMap.ContainsKey((modI, modJ)))
+                    {
+                        (int i, int j) prevMatch = repeatingMap[(modI, modJ)];
+                        var l1 = i - prevMatch.i;
+                        var l2 = j - prevMatch.j;
+                        var remains = (fullS1Length - i) / l1;
+                        i += l1 * remains;
+                        j += l2 * remains;
+
+                        if (i >= fullS1Length)
+                        {
+                             return j / s2.Length / n2;
+                        }
+                    }
+                    else
+                    {
+                        repeatingMap[(modI, modJ)] = (i,j);
+                    }
+
+                    j++;
+                }
+
+                i++;
+            }
+
+            return j / s2.Length / n2;
+        }
+    }

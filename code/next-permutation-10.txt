@@ -1,0 +1,39 @@
+
+void swap (int *x, int *y) {
+    int tmp = *x;
+    *x = *y;
+    *y = tmp;
+}
+
+void descendingToAscending (int *nums, int numsSize) {
+    int l = 0, r = numsSize - 1;
+    while (l <= r) {
+        swap(&nums[l++], &nums[r--]);
+    }
+}
+
+void nextPermutation(int* nums, int numsSize){
+    bool notSorted = false;
+    int i = 0;
+    /* Scan from right side of array checking to see if values are in
+    ascending order from right to left. */
+    for (i = numsSize - 1; i > 0; i--) {
+        if (nums[i - 1] < nums[i]) {
+            notSorted = true;
+            break;
+        }
+    }
+    /* nums[i - 1] is to be swapped with the smallest value greater than itself
+    found in the right side of the array. */
+    if (notSorted) {
+        int j = i;
+        while (nums[i - 1] < nums[j]) {
+            if (j + 1 == numsSize) break;
+            if (nums[i - 1] >= nums[j + 1]) break;
+            j++;
+        }
+        swap (&nums[i - 1], &nums[j]);
+    }
+    /* Sort the remaining values in ascending order from left to right. */
+    descendingToAscending (&nums[i], numsSize - i);
+}

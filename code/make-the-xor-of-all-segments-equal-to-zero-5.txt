@@ -1,0 +1,59 @@
+// naming is bad :(
+class Solution {
+public:
+    int minChanges(vector<int>& nums, int k) {
+        const int kSize = Size(nums);
+        vector<int> minops(kSize, INT_MAX);
+        int br = 0;
+        int min_max_c;
+        {
+            auto [count, temp] = Count(nums, 0, k);
+            int max_c = 0;
+            for (const auto [n, c] : temp) {
+                minops[n] = count - c;
+                max_c = max(max_c, c);
+            }
+            br += count - max_c;
+            min_max_c = max_c;
+        }
+        for (int i = 1; i < k; i++) {
+            auto [tc, temp] = Count(nums, i, k);
+            vector<int> nm(kSize, INT_MAX);
+            int max_c = 0;
+            for (const auto [t, to] : temp) {
+                max_c = max(max_c, to);
+                for (int r = 0; r < kSize; r++) {
+                    int ro;
+                    if (minops[r] == INT_MAX) {
+                        continue;
+                    }
+                    ro = minops[r];
+                    nm[r ^ t] = min(nm[r ^ t], ro + (tc - to));
+                }
+            }
+            br += tc - max_c;
+            min_max_c = min(min_max_c, max_c);
+            swap(nm, minops);
+        }
+        return min(minops[0], br + min_max_c);
+    }
+private:
+    int Size(const vector<int>& nums) {
+        int s = 1;
+        for (int n : nums) {
+            while (s <= n) {
+                s <<= 1;
+            }
+        }
+        return s;
+    }
+    pair<int, unordered_map<int, int>> Count(const vector<int>& nums, int idx, int k) {
+        unordered_map<int, int> minops;
+        int c = 0;
+        for (int i = idx; i < nums.size(); i += k) {
+            c++;
+            minops[nums[i]]++;
+        }
+        return {c, minops};
+    }
+};

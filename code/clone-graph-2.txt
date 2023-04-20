@@ -1,0 +1,49 @@
+/**
+ * Definition for a Node.
+ * struct Node {
+ *     int val;
+ *     int numNeighbors;
+ *     struct Node** neighbors;
+ * };
+ */
+
+struct Node *copy_node(struct Node *node,struct Node ***list, int* _len)
+{
+    int len = *_len;
+    int i;
+    if (!node) return 0;
+     while (node->val >= len)
+     {
+        struct Node** t = (*list); 
+        (*list)=malloc(len*sizeof(struct Node*)*2);
+        for (i=0; i<len; i++)
+            (*list)[i] = t[i];
+        len *= 2;
+        *_len = len;
+        free(t);
+        for (; i<len; i++)
+            (*list)[i] = 0;
+     }
+    if ((*list)[node->val])
+        return (*list)[node->val];
+    
+    struct Node *new_node=malloc(len*sizeof(struct Node*));
+    (*list)[node->val] = new_node;
+    new_node->val= node->val;
+    new_node->numNeighbors= node->numNeighbors;
+    new_node->neighbors = malloc(sizeof(struct Node*)*new_node->numNeighbors);
+    for (i=0; i<new_node->numNeighbors; i++ )
+        new_node->neighbors[i] = copy_node(node->neighbors[i],list, _len);
+    
+    return new_node;
+}
+
+struct Node *cloneGraph(struct Node *s) 
+{
+    int  len = 100;
+    struct Node** list=malloc(len*sizeof(struct Node*));
+    for (int i; i<len; i++)
+        list[i] = 0;
+    
+    return(copy_node(s,&list,&len));
+}

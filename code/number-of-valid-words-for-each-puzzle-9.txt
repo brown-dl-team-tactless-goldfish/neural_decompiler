@@ -1,0 +1,25 @@
+class Solution {
+public:
+    vector<int> findNumOfValidWords(vector<string>& words, vector<string>& puzzles) {
+        unordered_map<int, int> maskCnt;
+        for(const auto& w: words){
+            int mask=0;
+            for(char c: w) mask |= 1 << (c -'a');
+            ++maskCnt[mask];
+        }
+        
+        vector<int> ans;
+        for(const auto& p: puzzles){
+            int mask = 0;
+            for(char c: p) mask |= 1 << (c -'a');
+            int subMask = mask, first = 1 << (p[0] -'a'), cnt = 0;
+            while(subMask){
+                //if( (first & subMask == first)  && maskCnt.count(subMask)) cnt += maskCnt[subMask]; // WRONG. 
+                if(   (first & subMask) == first  && maskCnt.count(subMask)) cnt += maskCnt[subMask]; //ok
+                subMask = (subMask - 1) & mask;
+            }
+            ans.push_back(cnt);
+        }
+        return ans;        
+    }
+};

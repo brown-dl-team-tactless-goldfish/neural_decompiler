@@ -1,0 +1,59 @@
+/* uthash  related code - START */
+struct strhash {
+    char str[11];
+    int cnt;
+    UT_hash_handle hh;
+};
+
+void hash_find_and_add(struct strhash **shash, char *s) {
+    struct strhash *el;
+    HASH_FIND_STR(*shash, s, el);
+    if(el != NULL) {
+        el->cnt++;
+    }else {
+        el = calloc(1, sizeof(struct strhash));
+        strncpy(el->str, s, 10);
+        el->cnt = 1;
+        HASH_ADD_STR(*shash, str, el);
+    }
+    
+}
+/* uthash  related code - END*/
+
+void add_back(char ***r, int *rS, char *s){
+    *r = realloc(*r, sizeof(char*) * (*rS + 1));
+    (*r)[*rS] = calloc(sizeof(char), 11);
+    strncpy((*r)[*rS], s, 10);
+    *rS = *rS + 1;
+    return;
+}
+
+char ** findRepeatedDnaSequences(char * s, int* returnSize){
+    if(s == NULL || strlen(s) < 11) {
+        *returnSize = 0;
+        return NULL;
+    }
+    
+    char pres_seq[11] = {0};
+    struct strhash *shash = NULL;
+    int i = 0;
+    while(s[i + 10] != '\0') {
+        strncpy(pres_seq, s + i, 10);
+        hash_find_and_add(&shash, pres_seq);
+        i++;
+    }
+    strncpy(pres_seq, s + i, 10);
+    hash_find_and_add(&shash, pres_seq);
+    
+    char **ret = NULL;
+    *returnSize = 0;
+    struct strhash *el, *temp;
+    HASH_ITER(hh, shash, el, temp) {
+        if(el->cnt > 1){
+            add_back(&ret, returnSize, el->str);
+        }
+        HASH_DEL(shash, el);
+        free(el);
+    }
+    return ret;
+}

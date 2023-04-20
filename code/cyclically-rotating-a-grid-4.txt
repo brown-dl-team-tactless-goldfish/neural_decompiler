@@ -1,0 +1,49 @@
+class Solution {
+public:
+    vector<vector<int>> rotateGrid(vector<vector<int>>& mat, int R) {
+        int M=mat.size();
+        int N=mat[0].size();
+    	int sti=0, stj=0;
+	vector<int> temp;
+	//cout << endl << endl;
+	for(int x=M-1, y=N-1; x>0 && y>0; x-=2, y-=2,sti++,stj++)
+	{	int rot = R%(2*(x+y));
+		int sz = 2*(x+y);
+		int i=sti, j=stj;
+		//cout << "x,y : " << x << "," << y << "<< rot << endl;
+		//cout << "A : " ;
+		for(int cnt=0; cnt<sz; cnt++)
+		{	//cout << mat[i][j] << "  ";
+			temp.push_back(mat[i][j]);
+			if(j==sti && i<sti+x)
+			{	i++;	}
+			else if(i==sti+x && j<stj+y)
+			{	j++;	}
+			else if(j==stj+y && i>sti)
+			{	i--;	}
+			else if(i==sti && j>stj)
+			{	j--;	}
+		}
+		
+		i=sti, j=stj;
+		int npos;
+		//cout << "\nRotated : ";
+		for(int cnt=0; cnt<sz; cnt++)
+		{	npos = (cnt-rot)%sz;
+			npos = (npos<0)? npos+sz : npos;
+			mat[i][j] = temp[npos];
+			if(j==sti && i<sti+x)
+			{	i++;	}
+			else if(i==sti+x && j<stj+y)
+			{	j++;	}
+			else if(j==stj+y && i>sti)
+			{	i--;	}
+			else if(i==sti && j>stj)
+			{	j--;	}
+		}
+		temp.clear();
+		//cout << endl;
+	}
+	return mat;
+    }
+};

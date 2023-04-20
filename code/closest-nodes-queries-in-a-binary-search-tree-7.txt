@@ -1,0 +1,34 @@
+ void inorder(TreeNode* root, vector<int>&in){
+        if(!root) return;
+        
+        inorder(root->left,in);
+        in.push_back(root->val);
+        inorder(root->right,in);
+    }
+
+    vector<vector<int>> closestNodes(TreeNode* root, vector<int>& queries) {
+        vector<vector<int>>ans;
+		
+		//store inorder traversal in a vector -> gives values in a sorted order
+          vector<int>in;
+         inorder(root,in);
+        
+        //now we can apply binary search to find ceil and floor for each query
+        for(auto q : queries){
+           
+            auto it = lower_bound(begin(in),end(in),q);
+			//if q exists in tree then ceil=floor=q
+            if(it!=in.end() && *it==q) 
+                ans.push_back(vector<int>{q,q});
+            
+			//else *it gives ceil and *prev(it) gives floor if they are in bounds
+            else{
+                int c = (it==in.end()) ? -1 : *it;
+                int f = (it==in.begin()) ? -1 : *prev(it);
+                ans.push_back(vector<int>{f,c});
+            }
+        }
+        
+        return ans;
+
+//TC- O(NlogN) , SC- O(N)

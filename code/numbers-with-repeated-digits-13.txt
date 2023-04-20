@@ -1,0 +1,42 @@
+class Solution {
+	public:
+	void fillDigits(int n, vector<int> &x) {
+		int c = x.size()-1;
+		while(n!=0) {
+			int r = n%10;
+			x[c] = r;
+			n = n/10;
+			c--;
+		}
+	}
+
+	int f(vector<int> &l, vector<int> &h, bitset<10> used, int x = 0, bool isG = false, bool isS = false)
+	{
+		if(x==l.size()) return 1;
+		int bithash = (int)(used.to_ulong());
+		if(cache[x][bithash][isG][isS] != -1) return cache[x][bithash][isG][isS];
+		int ans = 0;
+		int a = !isG ? l[x] : 0;
+		int b = !isS ? h[x] : 9;
+		for (int i = a; i <= b; ++i) {
+			if(used[i]) continue;
+			if(i!=0 || bithash!=0) used[i] = 1;
+			ans += f(l,h,used,x+1,isG||i!=a,isS||i!=b);
+			used[i] = 0;
+		}
+		return cache[x][bithash][isG][isS] = ans;
+	}
+
+	int numDupDigitsAtMostN(int n) {
+		int length = floor(log10(n))+1;
+	  	l = vector<int>(length,0);
+	  	h = vector<int>(length,0);
+	  	memset(cache, -1, sizeof cache);
+	  	fillDigits(n, h);
+	  	return (n - f(l,h, bitset<10>(0)) + 1);
+  }
+
+  vector<int> l;
+  vector<int> h;
+  int cache[10][1025][2][2];
+};

@@ -1,0 +1,58 @@
+#include <pthread.h>
+
+/*
+  1.we need two thread do not interrupt with each other
+    means when one thread is outputing, the other one don't do that
+  2.we have the preference in 1's basis, one need to do first 
+  ====> for mutual exclusive, need a mutex,also a condition variable
+             to save cpu cycles
+			 because this mutual exclusive has some kind of "preference",
+			 so setup a global variable to tell two thread,who can print now
+
+*/
+pthread_mutex_t mutex = PTHREAD_MUTEX_INITIALIZER;
+pthread_cond_t cond = PTHREAD_COND_INITIALIZER;
+int who=1;
+typedef struct {
+    int n;
+} FooBar;
+
+FooBar* fooBarCreate(int n) {
+    FooBar* obj = (FooBar*) malloc(sizeof(FooBar));
+    obj->n = n;
+    return obj;
+}
+
+void foo(FooBar* obj) {
+    
+    for (int i = 0; i < obj->n; i++) {
+        pthread_mutex_lock(&mutex);
+        // printFoo() outputs "foo". Do not change or remove this line.
+        while(who==2){
+            pthread_cond_wait(&cond,&mutex);
+        }
+        printFoo();
+        who=2;
+        pthread_cond_broadcast(&cond);
+        pthread_mutex_unlock(&mutex);
+    }
+}
+
+void bar(FooBar* obj) {
+    
+    for (int i = 0; i < obj->n; i++) {
+        pthread_mutex_lock(&mutex);
+        // printBar() outputs "bar". Do not change or remove this line.
+        while(who==1){
+            pthread_cond_wait(&cond,&mutex);
+        }
+        printBar();
+        who=1;
+        pthread_cond_broadcast(&cond);
+        pthread_mutex_unlock(&mutex);
+    }
+}
+
+void fooBarFree(FooBar* obj) {
+    
+}

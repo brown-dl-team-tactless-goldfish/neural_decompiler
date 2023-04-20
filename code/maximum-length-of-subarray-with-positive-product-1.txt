@@ -1,0 +1,37 @@
+int max(int a, int b) {
+  if (a>b)
+    return a;
+  else
+    return b;
+}
+
+int getMaxLen(int* nums, int numsSize){
+    int i=0;
+    int negcount = 0;
+    int firstneg = -1;
+    int lastneg = -1;
+    if(numsSize==0)
+        return 0;
+    if(nums==0)
+        return getMaxLen(nums[1],numsSize-1);
+    if(nums+numsSize-1==0)
+        return getMaxLen(nums,numsSize-1);
+    for(i=0;i<numsSize;i++)
+    {
+        if(nums[i]==0)
+            return max(getMaxLen(nums,i),getMaxLen(nums+i+1,numsSize-i-1));
+        else if(nums[i]<0)
+        {
+            negcount++;
+            if(firstneg==-1)
+                firstneg = i;
+            else
+                lastneg = i;
+        }
+    }
+    if(negcount%2==0)
+        return numsSize;
+    if(negcount>=2)
+        return max(getMaxLen(nums+firstneg+1,numsSize-firstneg-1),getMaxLen(nums,lastneg));
+    return max(firstneg,numsSize-firstneg-1);
+}

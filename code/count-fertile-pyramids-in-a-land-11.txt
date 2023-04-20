@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int countPyramids(vector<vector<int>>& grid) {
+        int n = grid.size();
+        int m = grid[0].size();
+        vector<vector<int>> dpPy(n, vector<int>(m,0)); // to store the number of pyramid
+        vector<vector<int>> dpinvPy(n, vector<int>(m,0)); // to store the number of inverse pyramid
+        //since for i = n - 1, j = 0 and j = m - 1 pyramid is not possible, i and j are taken accordingly
+        for(int i = n-2; i>=0; i--){
+            for(int j = 1; j<m-1; j++){
+                if(grid[i][j] && grid[i+1][j] && grid[i+1][j-1] && grid[i+1][j+1] ) //checking for the smallest pyramid
+                    dpPy[i][j] = 1 + min(dpPy[i+1][j-1],dpPy[i+1][j+1]);
+            }
+        }
+        //since for i = 0, j = 0 and j = m - 1 inverse pyramid is not possible, i and j are taken accordingly
+        for(int i = 1; i<n; i++){
+            for(int j = 1; j<m-1; j++){
+                if(grid[i][j] && grid[i-1][j] && grid[i-1][j-1] && grid[i-1][j+1] ) //checking for the smallest inverse pyramid
+                    dpinvPy[i][j] = 1 + min(dpinvPy[i-1][j-1],dpinvPy[i-1][j+1]);
+            }
+        }
+       //count the total number
+        int count = 0;
+        for(int i = 0 ; i<n ; i++){
+            for(int j = 0; j<m; j++){
+                count += (dpPy[i][j]+dpinvPy[i][j]);
+            }
+        }
+        return count;
+    }
+};

@@ -1,0 +1,35 @@
+char *
+addStrings(const char *const num1, const char *const num2)
+{
+	size_t end1, end2, end3, siz3;
+	char *num3;
+	int digit, carry;
+
+	end1 = strlen(num1);
+	end2 = strlen(num2);
+	end3 = end1 > end2 ? end1 : end2;
+	if (end1 == end2 && num1[0] + num2[0] > '0' + '0' + 9)
+		++end3;
+	num3 = malloc((siz3 = end3 + 1) * sizeof(char));
+	carry = 0;
+	while(end1 != 0 || end2 != 0) {
+		digit = (end1 == 0 ? 0 : num1[--end1] - '0')
+		      + (end2 == 0 ? 0 : num2[--end2] - '0');
+		if (carry)
+			++digit;
+		carry = digit > 9;
+		if (carry)
+			digit -= 10;
+		num3[--end3] = (char)('0' + digit);
+	}
+	if (carry) {
+		if (end3 == 0) {
+			num3 = realloc(num3, ++siz3);
+			(void)memmove(num3 + 1, num3, (siz3 - 2) * sizeof(char));
+		}
+		num3[0] = '1';
+	}
+
+	num3[siz3 - 1] = '\0';
+	return num3;
+}

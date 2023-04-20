@@ -1,0 +1,77 @@
+/*
+In this code :-
+
+zeros stores the number of zeros in the bitset
+one stores the number of ones in the bitset
+flipCount is the number of times the bitset in flipped
+arr[i] is the number of times the ith bit is changed 
+
+Note all bits are 0 by default.
+
+Now let's consider a bit 0, 
+(Total times changed = 1) After the bit is changed once, the bit will become 1
+(Total times changed = 2) The bit will become 0
+(Total times changed = 3) The bit will become 1
+(Total times changed = 4) The bit will become 0
+
+So if the number of times bit is changed is even, then the final bit is 0 else 1
+
+flipCount idicates nothing but the number of times every bit needs to changed.
+So the number of times the ith bit of a bitset is changed = arr[i]+flipCount and this is what we need to do the question.
+
+Rest of the code is easy to understand, if u have any doubts do ask.
+Also please upvote if u liked the Solution :D
+*/
+
+
+class Bitset {
+public:
+    
+    int zeros,ones,flipCount,size;
+    vector<int> arr;
+    
+    Bitset(int len) {
+        
+        zeros = len; size = len;
+        ones = 0; flipCount = 0;
+        
+        while(len--) arr.push_back(0);
+    }
+    
+    void fix(int idx) {
+        if((arr[idx]+flipCount)%2 == 0) { //checking if i need to change the bit from 0 to 1
+            ++arr[idx]; --zeros; ++ones;
+        }
+    }
+    
+    void unfix(int idx) {
+        if((arr[idx]+flipCount)%2 == 1) { //checking if i need to change the bit from 1 to 0
+            ++arr[idx]; ++zeros; --ones;
+        }
+    }
+    
+    void flip() {
+        ++flipCount;
+        swap(ones,zeros);
+    }
+    
+    bool all() {
+        return (ones == size);
+    }
+    
+    bool one() {
+        return (ones != 0);
+    }
+    
+    int count() {
+        return ones;
+    }
+    
+    string toString() {
+        string ans = "";
+        for(int x:arr) {
+            ans += ((x+flipCount)%2 + '0');
+        }
+        return ans;
+    }
+};

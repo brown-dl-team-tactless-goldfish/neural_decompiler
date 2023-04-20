@@ -1,0 +1,25 @@
+class Solution {
+public:
+    vector<int> countRectangles(vector<vector<int>>& rectangles, vector<vector<int>>& points) {
+        map<int, vector<int>> rs;
+        for (auto& r : rectangles)
+            rs[r[1]].push_back(r[0]);
+        for (auto& r : rs)
+            sort(r.second.begin(), r.second.end());
+        int n = points.size(), m = rectangles.size();
+        vector<int> ans(n, 0);
+        for (int p = 0; p < n; p++)
+        {
+            int x = points[p][0], y = points[p][1];
+            auto h_iter = rs.lower_bound(y);
+            while (h_iter != rs.end())
+            {
+                int k = h_iter->second.size();
+                auto l_iter = lower_bound(h_iter->second.begin(), h_iter->second.end(), x) - h_iter->second.begin();
+                ans[p] += (k - l_iter);
+                h_iter++;
+            }
+        }
+        return ans;
+    }
+};

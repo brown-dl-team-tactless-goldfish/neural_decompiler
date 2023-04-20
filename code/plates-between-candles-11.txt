@@ -1,0 +1,59 @@
+public static int[] PlatesBetweenCandles(string s, int[][] queries)
+{
+		int n = s.Length;
+
+		int[] nearestLeftCandle = new int[n];
+		int[] nearestRightCandle = new int[n];
+		int[] candleCount = new int[n];
+		int[] result = new int[queries.Length];
+
+		int candle = -1;
+		for (int i = 0; i < n; ++i)
+		{
+			if (s[i] == '|')
+				candle = i;
+			nearestLeftCandle[i] = candle;
+		}
+
+		candle = -1;
+		for (int i = n - 1; i >= 0; --i)
+		{
+			if (s[i] == '|')
+				candle = i;
+			nearestRightCandle[i] = candle;
+		}
+
+		int count = 0;
+		for (int i = 0; i < n; ++i)
+		{
+			if (s[i] == '|')
+				++count;
+			candleCount[i] = count;
+		}
+
+		int index = 0;
+		foreach(var query in queries)
+		{ 
+			int left = query[0];
+			int right = query[1];
+
+			int leftCandle = nearestRightCandle[left];
+			int rightCandle = nearestLeftCandle[right];
+
+			int d = 0;
+			if (leftCandle == -1 || rightCandle == -1)
+			{
+				result[index] = 0;
+			}
+			else
+			{
+				d = rightCandle - leftCandle;
+				if (d > 1)
+					result[index] = rightCandle - leftCandle + 1 - (candleCount[rightCandle] - candleCount[leftCandle] + 1);
+				else
+					result[index] = 0;
+			}
+			++index;
+		}
+		return result;
+}

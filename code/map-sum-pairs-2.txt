@@ -1,0 +1,72 @@
+int strcompare(char* a,char *b){
+    int alen=strlen(a);
+    int blen=strlen(b);
+    if(alen!=blen){return 0;}
+    while(*a!='\0'){
+        if((*a)!=(*b)){return 0;}
+        a++;
+        b++;
+    }
+    return 1;
+}
+int strcomparesum(char* a,char *b){
+    int alen=strlen(a);
+    int blen=strlen(b);
+    if(alen<blen){return 0;}
+    while(*b!='\0'){
+        if((*a)!=(*b)){return 0;}
+        a++;
+        b++;
+    }
+    return 1;
+}
+typedef struct {
+    char **strings;
+    int *key;
+    int count;
+} MapSum;
+/** Initialize your data structure here. */
+MapSum* mapSumCreate() {
+    MapSum* obj=(MapSum*)malloc(sizeof(MapSum));
+    obj->count=0;
+    obj->strings=NULL;
+    obj->key=NULL;
+    return obj;
+}
+void mapSumInsert(MapSum* obj, char* key, int val) {
+    int i=0;
+    while(i<obj->count){
+        if(strcompare(obj->strings[i],key)){
+            obj->key[i]=val;
+            return ;
+        }
+        i++;
+    }
+    obj->count++;
+    obj->strings=(char**)realloc(obj->strings,sizeof(char*)*(obj->count));
+    obj->key=(int*)realloc(obj->key,sizeof(int)*(obj->count));
+    obj->strings[obj->count-1]=key;
+    obj->key[obj->count-1]=val;
+}
+
+int mapSumSum(MapSum* obj, char* prefix) {
+    int sum=0;
+    int i=0;
+    while(i<obj->count){
+        if(strcomparesum(obj->strings[i],prefix)){
+            sum=sum+obj->key[i];
+        }
+        i++;
+    }
+    return sum;
+}
+void mapSumFree(MapSum* obj) {
+    free(obj);
+}
+/**
+ * Your MapSum struct will be instantiated and called as such:
+ * struct MapSum* obj = mapSumCreate();
+ * mapSumInsert(obj, key, val);
+ * int param_2 = mapSumSum(obj, prefix);
+ * mapSumFree(obj);
+ */

@@ -1,0 +1,37 @@
+public int MaxDistance(int[][] grid) {
+    if (grid.Length == 0 || grid[0].Length == 0) return -1;
+
+    var dist = new int[grid.Length,grid[0].Length];
+    for(var i = 0; i < grid.Length; ++i)
+        for(var j = 0; j < grid[0].Length; ++j)
+            if (grid[i][j] == 1) fill(grid, i, j, dist);
+    var max = 0;
+    for(var i = 0; i < grid.Length; ++i)
+        for(var j = 0; j < grid[0].Length; ++j)
+            max = Math.Max(max, dist[i,j]);
+    return max == 0 ? -1 : max;
+}
+int[][] dirs = new int[][]{new[]{1, 0}, new[]{-1, 0},new[]{0, 1},new[]{0, -1}};
+
+void fill(int[][] grid, int i, int j, int[,] dist) {
+    var q = new Queue<int[]>();
+    q.Enqueue(new[]{i,j});
+    var visited = new bool[grid.Length,grid[0].Length];
+    var level = 0;
+    while(q.Count > 0) {
+        var c = q.Count;
+        while(c-- > 0) {
+            var cur = q.Dequeue();
+            foreach(var dir in dirs) {
+                var x = cur[0] + dir[0];
+                var y = cur[1] + dir[1];
+                if (x < grid.Length && y < grid[0].Length && x >= 0 && y >= 0 && grid[x][y] == 0 && !visited[x,y]) {
+                    visited[x,y] = true;
+                    dist[x,y] = dist[x,y] == 0 ? level + 1 : Math.Min(dist[x,y], level + 1);
+                    q.Enqueue(new[] { x, y });
+                }
+            }
+        }
+        level++;
+    }
+}

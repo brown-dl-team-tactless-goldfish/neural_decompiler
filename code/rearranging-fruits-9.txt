@@ -1,0 +1,40 @@
+long long minCost(vector<int>& b1, vector<int>& b2) {
+            sort(b1.begin(), b1.end());
+            sort(b2.begin(), b2.end());
+            map<int, int> m;
+            int mini = INT_MAX;
+            for(int i = 0 ; i < b1.size(); i++) {
+                mini = min(mini, b1[i]);
+                mini = min(mini, b2[i]);
+                m[b1[i]]++;
+                m[b2[i]]--;
+            }
+
+            vector<int>s1,s2;
+            for(int i=0; i<b1.size(); i++) {
+                if(m[b1[i]] %2 != 0) return -1;
+                if(m[b1[i]] >  0) {
+                    for(int j = 0; j < m[b1[i]]; j++) {
+                        s1.push_back(b1[i]);
+                    }
+                    m[b1[i]]=0;
+                }
+            }
+
+            for(int i=0; i<b2.size(); i++) {
+                if(m[b2[i]] %2 != 0) return -1;
+                if(m[b2[i]] < 0) {
+                    for(int j = 0; j < (m[b2[i]]*-1); j++) {
+                        s2.push_back(b2[i]);
+                    }
+                    m[b2[i]]=0;
+                }
+            }
+            if (s1.size() != s2.size()) return -1;
+
+            long long int ans = 0;
+            for(int i = 0 ; i < s1.size(); i=i+2) {
+                ans = ans + min(min(s1[i], s2[s2.size()-1-i]), 2 *mini);
+            }
+            return ans;
+    }

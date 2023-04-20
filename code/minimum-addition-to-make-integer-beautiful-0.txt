@@ -1,0 +1,33 @@
+long long makeIntegerBeautiful(long long n, int target){
+    int* data = malloc(64 * sizeof(int));
+    int digit = 0;
+    long long val = n;
+    int idx = 0;
+    long long ans;
+    while(val){
+        data[idx] = val%10 ;
+        digit += data[idx] ;
+        idx++;
+        val /= 10;
+    }
+    if(digit <= target){
+        ans = 0;
+        goto exit;
+    }
+    digit = 0;
+
+    for(int i = idx-1; i >=0; i--){
+        digit += data[i];
+        if(digit >= target){
+            long long tmp = 0;
+            for(int j = i; j >=0; j--){
+                tmp = tmp *10 + data[j];
+            }
+            ans = pow(10, i+1) - tmp;
+            break;
+        }
+    }
+    exit: 
+    free(data);
+    return ans;
+}

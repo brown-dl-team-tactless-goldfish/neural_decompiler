@@ -1,0 +1,67 @@
+class Solution {
+public:
+    int mostBooked(int n, vector<vector<int>>& meetings) {
+        
+        auto cmp = [](tuple<long,int,int>& a, tuple<long,int,int>& b){
+            if(get<0>(a) == get<0>(b)) return get<1>(a) > get<1>(b);
+            return get<0>(a) > get<0>(b);
+        };
+
+        /*tuple<a,b,c>
+          a --> when the meeting room becomes free
+          b --> index of the meeting romm [0, n-1]
+          c --> no of meetings scheduled so far in this room
+          cmp --> operator that maintains top of the queue to be the FREE meeting room with smallest index*/
+        priority_queue<
+                       tuple<long,int,int>,
+                       vector<tuple<long,int,int>>,
+                       decltype(cmp)
+                      >pq(cmp);
+
+        sort(
+            meetings.begin(),
+            meetings.end(),
+            [](vector<int>&a, vector<int>&b){return a[0] < b[0];}
+        );
+
+        int res = n, max_cnt = 0, first_avail_room_idx = 0;
+        for(auto& se: meetings) {
+            /* If the end time for any rooms is before the start
+               of the current meeting, then all those rooms are 
+               potential candidates for the current meeting, hence
+               mark them as free by changing their available time
+               to the current meeting's start time*/
+            while(!pq.empty() && get<0>(pq.top()) < se[0]) {
+                tuple<long,int,int> t = pq.top();pq.pop();
+                pq.push({se[0], get<1>(t), get<2>(t)});
+            }
+
+            int new_cnt, idx;
+
+            /* if the queue is empty or no free meeting rooms at this time,
+               get a new meeting room which is < (n-1) */
+            if(pq.empty() || (get<0>(pq.top()) > se[0] && first_avail_room_idx < n)) {
+                new_cnt = 1;
+                idx = first_avail_room_idx;
+                pq.push({se[1], first_avail_room_idx, 1});
+                first_avail_room_idx++;
+            }
+            /* meeting room at the top of the queue is free at this time, take it */
+            else {
+                tuple<long,int,int> t = pq.top();pq.pop();
+                new_cnt = 1 + get<2>(t);
+                idx = get<1>(t);
+
+                pq.push({max((long)se[0], get<0>(t)) + (se[1]-se[0]), idx, new_cnt});
+            }
+            // keep track of meeting room with most meetings scheduled
+            if (new_cnt > max_cnt) {
+                max_cnt = new_cnt;
+                res = idx;
+            }
+            else if (new_cnt == max_cnt && idx < res) res = idx;
+        }
+
+        return res;
+    }
+};

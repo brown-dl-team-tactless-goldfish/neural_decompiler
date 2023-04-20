@@ -1,0 +1,45 @@
+class Solution {
+public:
+    ListNode* removeZeroSumSublists(ListNode* head) {
+        vector<int> v;
+		/* step1 deconstruct the link list in a vector */
+        while(head){
+            v.push_back(head->val);
+            head = head->next;
+        }
+		/* erase all the zero sum sub-array*/
+        erase_zero_sum(v);
+		
+		/* reconstruct the answer */
+        ListNode *res = new ListNode(0);
+        ListNode *cur = res;
+        for(int i : v){
+            cur->next = new ListNode(i);
+            cur = cur->next;
+        }
+        return res->next;
+    }
+    void erase_zero_sum(vector<int>& v){
+        if(v.size() == 0) return;
+        while(v.size()!=0 && v[0] == 0) 
+            v.erase(v.begin());
+        unordered_map<int,int> m;
+        m[v[0]] = 1;
+        int sum = v[0];
+        for(int i = 1 ; i < v.size() ; i++){
+            sum += v[i];
+            if(sum == 0){
+                v.erase(v.begin(),v.begin()+i+1);
+                erase_zero_sum(v);
+                break;
+            }
+            else if(m[sum]!=0){
+                v.erase(v.begin()+m[sum],v.begin()+i+1);
+                erase_zero_sum(v);
+                break;
+            }
+            else
+                m[sum] = i+1;
+        }
+    }
+};

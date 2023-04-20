@@ -1,0 +1,33 @@
+int cmpLetters(const void* a, const void* b);
+
+int times[256];
+
+char* frequencySort(char* s)
+{
+    char letters[256];
+    int i, j, k, lnum;
+
+    // Init occurrences as 0
+    memset(times, 0, sizeof(times));
+
+    for (i = lnum = 0; s[i] != '\0'; i++)
+        if (times[s[i]]++ == 0)
+            letters[lnum++] = s[i];
+
+    // Sort letters by number of occurrences
+    qsort(letters, lnum, sizeof(char), cmpLetters);
+
+    char* new = malloc(sizeof(char) * (i + 1));
+
+    for (j = k = 0; j < lnum; j++)
+        for (i = 0; i < times[letters[j]]; i++)
+            new[k++] = letters[j];
+    new[k] = '\0';
+
+    return new;
+}
+
+int cmpLetters(const void* a, const void* b)
+{
+    return times[*(char*)b] - times[*(char*)a];
+}

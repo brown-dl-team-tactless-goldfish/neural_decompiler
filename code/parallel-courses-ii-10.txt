@@ -1,0 +1,39 @@
+class Solution:
+    def minNumberOfSemesters(self, n: int, dependencies: List[List[int]], k: int) -> int:
+        backward = {i: set() for i in range(n)}
+        forward = {i: set() for i in range(n)}
+        avail = set(range(n))
+        for pre, post in dependencies:
+            pre -= 1
+            post -= 1
+            backward[post].add(pre)
+            forward[pre].add(post)
+            avail.discard(post)
+        masks = [0] * n
+        while avail:
+            new_avail = set()
+            for i in avail:
+                for f in forward[i]:
+                    masks[f] |= masks[i]
+                    masks[f] |= 2 ** i
+                    backward[f].remove(i)
+                    if not backward[f]:
+                        new_avail.add(f)
+            avail = new_avail
+
+        @functools.lru_cache(None)
+        def dp(mask):
+            if mask == 2 ** n - 1:
+                return 0
+            avail = {i for i in range(n) if (not 2 ** i & mask) and masks[i] & mask == masks[i]}
+            if len(avail) <= k:
+                for i in avail:
+                    mask |= 2 ** i
+                return 1 + dp(mask)
+            ans = math.inf
+            for comb in itertools.combinations(avail, k):
+                diff = sum(2 ** i for i in comb)
+                ans = min(ans, 1 + dp(mask | diff))
+            return ans
+            
+        return dp(0)

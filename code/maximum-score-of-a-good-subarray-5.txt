@@ -1,0 +1,49 @@
+class Solution {
+public:
+    int maximumScore(vector<int>& nums, int k) {
+        int n = nums.size();
+        stack<int> st;
+        vector<int> nextSmaller(n, 0), prevSmaller(n, 0);
+        
+        // FIND THE INDEX OF NEXT SMALLER ELEMENT FOR EACH ELEMENT
+        for(int i=0; i<n; i++) {
+            while(!st.empty() && nums[st.top()] > nums[i]) {
+                nextSmaller[st.top()] = i;
+                st.pop();
+            }
+            st.push(i);
+        }
+        // FOR ALL THE ELEMENTS THAT DON'T HAVE A NEXT SMALLER WE ASSIGN INDEX n
+        while(!st.empty()) {
+            nextSmaller[st.top()] = n;
+            st.pop();
+        }
+				
+        // FIND THE INDEX OF PREVIOUS SMALLER ELEMENT FOR EACH ELEMENT
+        for(int i=n-1; i>=0; i--) {
+            while(!st.empty() && nums[st.top()] > nums[i]) {
+                prevSmaller[st.top()] = i;
+                st.pop();
+            }
+            st.push(i);
+        }
+        // FOR ALL THE ELEMENTS THAT DON'T HAVE A PREVIOUS SMALLER WE ASSIGN INDEX -1
+        while(!st.empty()) {
+            prevSmaller[st.top()] = -1;
+            st.pop();
+        }
+        
+        int ans = 0;
+        for(int i=0; i<n; i++) {
+            int pr = prevSmaller[i];
+            int nx = nextSmaller[i];
+            //  min(nums[pr+1], nums[pr+2], .......nums[nx-1]) = nums[i]
+            if(pr < k && k < nx) {
+                // IF INDEX K OCCURS IN BETWEEN THE WINDOW THEN IT IS A GOOD SUBARRAY
+                ans = max(ans, nums[i] * (nx-pr-1));
+            }
+        }
+
+        return ans;
+    }
+};

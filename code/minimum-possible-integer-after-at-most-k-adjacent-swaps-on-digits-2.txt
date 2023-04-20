@@ -1,0 +1,39 @@
+public class Solution 
+{
+    public string MinInteger(string num, int k) 
+    {
+        int start = 0, n = num.Length;
+        var charArray = num.ToCharArray();
+        if(k >=(n * (n - 1))/ 2)
+        {
+            Array.Sort(charArray);
+            return new string(charArray);
+        }
+        
+        while(start < charArray.Length)
+        {
+            int minIndex = start;
+            int length = Math.Min(k, charArray.Length - start - 1);
+            for(int len = length; len > 0; len--)
+            {
+                if(charArray[start + len] <= charArray[minIndex])
+                    minIndex = start + len;
+            }
+                
+            char val = charArray[minIndex];
+            if(charArray[minIndex] != charArray[start])
+            {
+                for(int i = minIndex; i > start; i--)
+                {
+                    charArray[i] = charArray[i - 1];
+                    k--;
+                }
+            }
+            
+            charArray[start] = val;
+            start++;
+        }
+        
+        return new string(charArray);
+    }
+}

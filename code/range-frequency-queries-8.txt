@@ -1,0 +1,85 @@
+class SegmentTree {
+private:
+    struct Range {
+        int start;
+        int end;
+        int index;
+        bool empty;
+        
+        Range(int s, int e, int i, bool empty): start(s), end(e), index(i), empty(empty) {}
+        Range(int s, int e, int i): start(s), end(e), index(i), empty(false) {}
+        Range(bool empty): Range(0, 0, 0, empty) {}
+        
+        int mid() {
+            return start + (end - start) / 2;
+        }
+        
+        Range leftChild() {
+            return start == end ? Range(true) : Range(start, mid(), 2 * index + 1);
+        }
+        
+        Range rightChild() {
+            return start == end ? Range(true) : Range(mid() + 1, end, 2 * index + 2);
+        }
+    };
+    
+    void insert(int value, int i, Range range) {
+        if (range.end < i || range.start > i || range.empty) {
+            return;
+        }
+
+        tree[range.index][value]++;
+        
+        insert(value, i, range.leftChild());
+        insert(value, i, range.rightChild());
+    }
+    
+    int query(int value, int queryLeft, int queryRight, Range range) {
+        if (range.end < queryLeft || range.start > queryRight || range.empty) {
+            return 0;
+        }
+        
+        if (range.end <= queryRight && range.start >= queryLeft) {
+            return tree[range.index][value];
+        }
+        
+        auto left = query(value, queryLeft, queryRight, range.leftChild());
+        auto right = query(value, queryLeft, queryRight, range.rightChild());
+        
+        return left + right;
+    }
+    
+    Range getFullRange() {
+        return Range(0, (int)array.size()-1, 0, false);
+    }
+    
+    vector<unordered_map<int, int>> tree;
+    const vector<int>& array;
+
+public:
+    SegmentTree(const vector<int>& arr): tree(4 * arr.size()), array(arr) {
+        for (int i = 0; i < arr.size(); ++i) {
+            insert(arr[i], i);
+        }
+    }
+    
+    void insert(int value, int i) {
+        insert(value, i, getFullRange());
+    }
+    
+    int query(int value, int queryLeft, int queryRight) {
+        return query(value, queryLeft, queryRight, getFullRange());
+    }
+};
+
+class RangeFreqQuery {
+    SegmentTree st;
+    vector<int>& array;
+    
+public:
+    RangeFreqQuery(vector<int>& arr): st(arr), array(arr) {}
+    
+    int query(int left, int right, int value) {
+        return st.query(value, left, right);
+    }
+};

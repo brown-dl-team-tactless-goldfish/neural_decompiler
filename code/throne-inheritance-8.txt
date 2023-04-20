@@ -1,0 +1,33 @@
+class ThroneInheritance {
+private: unordered_map<string, vector<string>> map;
+         unordered_set<string> dead;
+         string king;
+public:     
+    ThroneInheritance(string kingName) {
+        king = kingName;
+    }
+    
+    void birth(string parentName, string childName) {
+        map[parentName].push_back(childName);
+    }
+    
+    void death(string name) {
+        dead.insert(name);
+    }
+    
+    void dfs(string parent, unordered_map<string, vector<string>>& map, vector<string>& result){
+        if(dead.count(parent) == 0){
+            result.push_back(parent);
+        }
+        vector<string> vec = map[parent];
+        for(string s : vec){
+            dfs(s, map, result);
+        }
+    }
+    
+    vector<string> getInheritanceOrder() {
+        vector<string> result;
+        dfs(king, map, result);
+        return result;
+    }
+};

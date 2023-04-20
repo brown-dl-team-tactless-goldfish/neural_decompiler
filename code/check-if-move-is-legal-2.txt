@@ -1,0 +1,42 @@
+class Solution {
+public:
+	bool checkGoodLine(vector<vector<char>>& board, const int& r, const int &c, const int& newr, const int& newc, bool FindOpposite,
+					   const char& color, const int& xdirection, const int& ydirection)
+	{
+		if (newr<0||newc<0||newr==r||newc==c||board[newr][newc]=='.')
+			return false;
+
+		if (FindOpposite==false)
+		{
+			if (board[newr][newc]==color)
+			{   
+				return false;
+			}
+			else
+			{
+				FindOpposite = true;
+				return checkGoodLine(board, r, c, newr+xdirection, newc+ydirection, FindOpposite, color, xdirection, ydirection);         
+			}
+		}
+		else
+		{
+			if (board[newr][newc]==color)
+				return true;
+			else
+				return checkGoodLine(board, r, c, newr+xdirection, newc+ydirection, FindOpposite, color, xdirection, ydirection);   
+		}
+	}
+	bool checkMove(vector<vector<char>>& board, int rMove, int cMove, char color) {
+		size_t r = board.size();
+		size_t c = board[0].size();
+		return (    checkGoodLine(board, r, c, rMove+1, cMove+1, false, color, 1, 1)
+				 || checkGoodLine(board, r, c, rMove-1, cMove-1, false, color, -1, -1)
+				 || checkGoodLine(board, r, c, rMove-1, cMove+1, false, color, -1, 1)
+				 || checkGoodLine(board, r, c, rMove+1, cMove-1, false, color, 1, -1)
+				 || checkGoodLine(board, r, c, rMove+1, cMove, false, color, 1, 0)
+				 || checkGoodLine(board, r, c, rMove,  cMove+1, false, color, 0, 1)
+				 || checkGoodLine(board, r, c, rMove-1, cMove, false, color, -1, 0)
+				 || checkGoodLine(board, r, c, rMove,  cMove-1, false, color, 0, -1));
+
+	}
+};

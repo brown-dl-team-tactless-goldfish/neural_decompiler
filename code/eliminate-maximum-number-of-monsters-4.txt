@@ -1,0 +1,37 @@
+class compare
+{
+    public:
+        bool operator()(pair<int,int>&a,pair<int,int>&b)
+        {
+            double diff1 = (double)a.first / a.second;
+            double diff2 = (double)b.first / b.second;
+            if(diff1 == diff2)
+                return (a.first > b.first);
+            return (diff1 > diff2);
+            
+        }
+};
+class Solution {
+public:
+    int eliminateMaximum(vector<int>&D, vector<int>&S) {
+        int n = D.size();
+        priority_queue<pair<int,int>,vector<pair<int,int>>,compare>pq;
+        int count = 0;
+        for(int i = 0; i < n; i++)
+        {
+            pq.push({D[i],S[i]});
+        }
+        while(!pq.empty())
+        {
+            pair<int,int>cur = pq.top();
+            pq.pop();
+            int check = cur.first - (cur.second * count);
+            if(check <= 0)
+                break;
+            count++;
+        }
+        return count;
+        
+        
+    }
+};

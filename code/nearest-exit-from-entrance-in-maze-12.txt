@@ -1,0 +1,62 @@
+class Solution {
+private:
+    bool inBounds(vector<vector<char>> &maze, int i, int j){
+        return i >= 0 && i < maze.size() && j >= 0 && j < maze.at(i).size();    
+    }
+    
+    void findExits(vector<vector<char>> &maze) {
+        int r = maze.size() - 1, c = maze.at(0).size() - 1;
+        
+        // traverse first and last columns
+        for(int i = 0; i <= r; i++){
+            if(maze.at(i).at(0) == '.') maze.at(i).at(0) = 'e';
+            
+            if(maze.at(i).at(c) == '.') maze.at(i).at(c) = 'e';
+        }
+        
+        // traverse first and last rows
+        for(int j = 0; j <= c; j++){
+            if(maze.at(0).at(j) == '.') maze.at(0).at(j) = 'e';
+            
+            if(maze.at(r).at(j) == '.') maze.at(r).at(j) = 'e';
+        }
+    }
+    
+public:
+    int nearestExit(vector<vector<char>>& maze, vector<int>& entrance) {        
+        queue<pair<int, int>> coords;
+        coords.push({entrance.at(0), entrance.at(1)});
+        maze.at(entrance.at(0)).at(entrance.at(1)) = 'v';  // where v stands for visited
+
+        findExits(maze); // find all exists and denote them as 'e'
+        
+        vector<vector<int>> dirs = {{-1, 0}, {1, 0}, {0, -1}, {0, 1}};
+        int steps = 0;
+        while(!coords.empty()){
+            steps++;
+            
+            int size = coords.size();
+            for(int i = 0; i < size; i++){
+                pair<int, int> coord = coords.front();
+                coords.pop();
+                
+                int x = coord.first, y = coord.second;
+                for(vector<int> &dir : dirs){
+                    int newX = x + dir.at(0), newY = y + dir.at(1);
+                    
+                    if(!inBounds(maze, newX, newY) || 
+                       maze.at(newX).at(newY) == 'v' || 
+                       maze.at(newX).at(newY) == '+')
+                        continue;
+                    
+                    if(maze.at(newX).at(newY) == 'e') return steps;
+                    
+                    maze.at(newX).at(newY) = 'v';
+                    coords.push({newX, newY});
+                }
+            }
+        }
+        
+        return -1;
+    }
+};

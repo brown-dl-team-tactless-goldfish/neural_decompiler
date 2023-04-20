@@ -1,0 +1,33 @@
+int minimumXORSum(vector<int>& nums1, vector<int>& nums2) {
+    int n = nums1.size();
+    int m = nums2.size();
+    
+    if(n == 0 || m == 0){
+        return 0;
+    }
+    
+    int mask = 0;
+    vector<int> dp(16384,INT_MAX);
+    
+    return solve(nums1, nums2, 0, mask, dp);
+}
+
+int solve(vector<int> &nums1, vector<int> &nums2, int i, int mask, vector<int> &dp){
+    if(dp[mask] != INT_MAX){
+        return dp[mask];
+    }
+    
+    if(i >= nums1.size()){
+        return 0;
+    }
+    
+    for(int j=0; j<nums2.size(); j++){
+	//if we haven't process the element at index j in our previous calls of this chain
+        if(!(mask & (1 << j))){
+		//add the xor of the current i and j to the minimum ppossible xor of the subsequent arrays in the furthur calls nad mask the current index for furthur processes as we have used it
+            dp[mask] = min(dp[mask], (nums1[i] ^ nums2[j]) + solve(nums1, nums2, i+1, mask + (1 << j), dp));
+        }
+    }
+    
+    return dp[mask];
+}

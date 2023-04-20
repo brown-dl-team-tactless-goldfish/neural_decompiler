@@ -1,0 +1,46 @@
+public class Solution 
+{
+    List<int[]> directions = new List<int[]>()
+    {
+        new int[]{1,0},
+        new int[]{0,1},
+        new int[]{-1,0},
+        new int[]{0,-1}
+    };
+    
+    int res = 0;
+    public int GetMaximumGold(int[][] grid) 
+    {
+        int m = grid.Length;
+        int n = grid[0].Length;
+        for(int r = 0; r < m; r++)
+        {
+            for(int c = 0; c < n; c++)
+            {
+                Backtrack(grid, r, c, 0);
+            }
+        }
+        return res;
+    }
+    private void Backtrack(int[][] grid, int r, int c, int sum)
+    {
+        if(grid[r][c] == 0) return;
+        
+        int val = grid[r][c];
+        sum += val;
+        
+        grid[r][c] = 0;
+        foreach(var dir in directions)
+        {
+            int row = r + dir[0];
+            int col = c + dir[1];
+            if(row >= 0 && row < grid.Length && col >= 0 && col < grid[0].Length)
+            {
+                Backtrack(grid, row, col, sum);
+            }
+        }
+        grid[r][c] = val;
+
+        res = Math.Max(res, sum);
+    }
+}

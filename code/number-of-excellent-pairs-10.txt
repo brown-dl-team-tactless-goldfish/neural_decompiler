@@ -1,0 +1,38 @@
+long long sch(int c,int r,vector<int> &b){
+    int l=0;
+    int ans=-1;
+    while(l<=r){
+        int m=(l+((r-l)>>1));
+        if(b[m]>=c){
+            ans=m;
+            r=m-1;
+        }
+        else l=m+1;
+    }
+    return ans;
+}
+long long countExcellentPairs(vector<int>& a, int k) {
+    int n=a.size();
+    map<int,int> m;
+    for(int i=0;i<n;i++){
+        m[a[i]]=__builtin_popcount(a[i]);
+    }
+    vector<int> b;
+    for(auto i:m){
+        b.push_back(i.second);
+    }
+    sort(b.begin(),b.end());
+    long long c=0;
+    for(long long i=0;i<b.size();i++){
+        if(b[i]>=k){
+            c+=(i*2)+1;
+        }
+        else{
+            long long idx=sch(k-b[i],i,b);
+            if(idx!=-1){
+                c+=(i-idx)*2+1;
+            }
+        }
+    }
+    return c;
+}

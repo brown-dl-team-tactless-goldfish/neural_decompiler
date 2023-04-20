@@ -1,0 +1,47 @@
+public class BSTIterator
+{
+    private readonly Stack<TreeNode> stn;
+
+    public BSTIterator(TreeNode root)
+    {
+        stn = new Stack<TreeNode>();
+
+        if (root == null)
+        {
+            return;
+        }
+
+        stn.Push(root);
+        while (stn.Peek().left != null)
+        {
+            stn.Push(stn.Peek().left);
+        }
+    }
+
+    /** @return the next smallest number */
+    public int Next()
+    {
+        if (stn.Peek() == null)
+        {
+            throw new InvalidOperationException("No more nodes.");
+        }
+
+        TreeNode r = stn.Pop();
+        if (r.right != null)
+        {
+            stn.Push(r.right);
+            while (stn.Peek().left != null)
+            {
+                stn.Push(stn.Peek().left);
+            }
+        }
+
+        return r.val;
+    }
+
+    /** @return whether we have a next smallest number */
+    public bool HasNext()
+    {
+        return stn.Count > 0;
+    }
+}

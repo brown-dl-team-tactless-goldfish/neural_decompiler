@@ -1,0 +1,57 @@
+
+/*Better O(n) Linear time solution
+        eg-[2,4,6]
+        
+        we have 2 in binary as 010
+        4 in binary 100
+        and 6 in binary is 110
+        
+        We can observe that to count pairs of different bits at a particular position we just need 
+        bits of that position like comapring ones digit of each number with ones digit of other.
+        
+        So we have in above example 1st bit[0,0,0]-0 pair of distinct digits.
+        2nd bit [1,0,1] - 2 pairs of different digits.
+        3rd bit [0,1,1] - 2 pairs of different digits.
+        
+        This shows that we count the number of different pairs of digit for each position and add them up 
+        to get the the expected answer.
+        
+        To find pairs of distinct digits we just need count of set bits(1) and count of unsetbit(0)
+        The total number of possible distinct pairs will be count of 0 * countof 1.
+*/        
+
+
+
+int totalHammingDistance(int* nums, int numsSize) {
+    int ret=0;int temp=0;
+    
+    for(int i=0;i<32;i++){
+        temp=0;
+        for(int j=0;j<numsSize;j++){
+            if((nums[j]&1)==1)temp++;
+            nums[j]=nums[j]>>1;
+        }
+        ret=ret+temp*(numsSize-temp);
+    }
+    return ret;
+}
+/*Time Limit Exceeded Solution : */
+/*
+int hammingDistance(int x, int y){
+   int count=0; int val = x ^ y; 
+    for(int i=0;i<32;i++)if(val &(UINT32_C(1) << i))count ++;
+    return count;
+}
+
+
+int totalHammingDistance(int* nums, int numsSize){
+    int ret=0;int j=0;
+     for(int i=0;i<numsSize;i++){
+         
+         for(j= i+1;j < numsSize;j++){
+          ret += hammingDistance(nums[i],nums[j]);
+          }
+       }
+return ret;
+}
+*/ 

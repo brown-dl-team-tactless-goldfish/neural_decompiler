@@ -1,0 +1,68 @@
+class Solution {
+public:
+    //
+    int mod=1e9+7;
+    char arr[3]={'R','B','G'};
+    vector<string>v;
+    unordered_map<string,int>ans;
+    void get_v(int m, string s)
+    {
+        if(m==0)
+        {
+            v.push_back(s);
+            return;
+        }
+        char ch='$';
+        if(s.size()>=1)
+        ch=s[s.size()-1];
+        for(int i=0;i<3;i++)
+        {
+            if(arr[i]!=ch)
+                get_v(m-1,s+arr[i]);
+        }
+        
+    }
+    void recur(int curr,int n)
+    {
+        if(curr==n+1)
+            return;
+        unordered_map<string,int>newans;
+        for(int i=0;i<v.size();i++) // our current ending
+        {
+            for(int j=0;j<v.size();j++) // checking wiht all prev endings
+            {
+                int fl=1;
+                for(int l=0;l<v[i].size();l++)
+                {
+                    if(v[i][l]==v[j][l])
+                    {
+                        fl=0;
+                        break;
+                    }
+                }
+                if(fl)
+                {
+                    newans[v[i]]+=ans[v[j]];
+                    newans[v[i]]%=mod;
+                    // cout<<v[i]<<" "<<v[j]
+                }
+            }
+        }
+        ans=newans;
+        recur(curr+1,n);
+    }
+    int colorTheGrid(int m, int n) {
+        get_v(m,"");
+        cout<<v.size()<<"\n";
+        for(auto it:v)
+            ans[it]=1;
+        recur(2,n);
+        int myans=0;
+        for(auto it:v)
+        {
+            myans+=ans[it];
+            myans%=mod;
+        } 
+        return myans;
+    }
+};

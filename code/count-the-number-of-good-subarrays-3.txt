@@ -1,0 +1,45 @@
+class Solution {
+public:
+    long long countGood(vector<int>& nums, int k) {
+        long long count = 0;
+        long long c = 0;
+        int i = 0;
+        int j = 0;
+        unordered_map<long long,long long>mp;
+        int n = nums.size();
+        int prev = -1;
+        while(j<nums.size())
+        {
+            long long temp = mp[nums[j]];
+            if(prev==-1)
+            {
+                mp[nums[j]]++;
+                temp = temp*(temp-1)/2;// subract prev pairs of same value
+                c-=temp;
+                temp = mp[nums[j]];
+                temp = (long long)temp*(temp-1)/2;// Add new pairs of value
+                c+=(long long)temp;
+            }
+            if(c>=k and i<j)
+            {
+                // Here if at point j the the count of pairs >=k then at all indexes after it the count will >=k so add all remaining indexs at once and move i from i to i++
+               count+=(long long)(n-j);
+               temp = mp[nums[i]];
+                temp = temp*(temp-1)/2;
+                c-=temp;
+                mp[nums[i]]--;
+                temp = mp[nums[i]];
+                temp = (long long)temp*(temp-1)/2;
+                c+=(long long)temp;
+               prev = 1;
+               i++;
+            }
+            else
+            {
+                prev = -1;
+                j++;
+            }
+        }
+        return count;
+    }
+};

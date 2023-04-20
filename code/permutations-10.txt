@@ -1,0 +1,37 @@
+int genp(int *a, int len, int poffst, int **arr, int *aoff)
+{
+    int i = poffst;
+
+    /* Finished generation of one sequence */
+    if (poffst == len)
+    {
+        /* Copy permutation array */
+        if (copy_arr(&arr[*aoff], a, len))
+            return -1;
+
+        /* Increment the array offset and return */
+        (*aoff) += 1;
+        return 0;
+    }
+
+    /* Loop generating the sequence for this offset location */
+    while (i < len)
+    {
+        /* Pick a new value for the location. */
+        swap_int(&a[poffst], &a[i]);
+
+        /* Recursively generate permutations for the remaining
+           locations. If the generation fails then return */
+        if (genp(a, len, poffst + 1, arr, aoff))
+           return -1;
+
+        /* Reverse the change at that index */
+        swap_int(&a[poffst], &a[i]);
+
+        /* Assign the new offset */
+        i++;
+    }
+
+    /* Return success */
+    return 0;
+}

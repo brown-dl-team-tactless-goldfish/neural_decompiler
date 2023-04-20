@@ -1,0 +1,34 @@
+int searchInterval(int* nums, int numsSize, int target, int l, int r);
+int findMinInterval(int* nums, int numsSize, int l, int r);
+
+int search(int* nums, int numsSize, int target) {
+    if (numsSize == 0) return -1;
+    if (target == nums[0]) return 0;
+    int min = findMinInterval(nums, numsSize, 0, numsSize - 1);
+    if (min == 0) return searchInterval(nums, numsSize, target, 0, numsSize - 1);
+    if (target < nums[0]) return searchInterval(nums, numsSize, target, min, numsSize - 1);
+    else return searchInterval(nums, numsSize, target, 0, min - 1);
+}
+
+int searchInterval(int* nums, int numsSize, int target, int l, int r) {
+    if (r - l <= 1) {
+        if (nums[l] == target) return l;
+        if (nums[r] == target) return r;
+        return -1;
+    }
+    int mid = (l + r) / 2;
+    if (nums[mid] == target) return mid;
+    if (nums[mid] > target) return searchInterval(nums, numsSize, target, l, mid - 1);
+    else return searchInterval(nums, numsSize, target, mid + 1, r);
+}
+
+int findMinInterval(int* nums, int numsSize, int l, int r) {
+    if (r - l <= 1) {
+        return nums[l] < nums[r] ? l : r;
+    }
+    if (nums[l] < nums[r]) return l;
+    int mid = (l + r) / 2;
+    if (nums[mid] > nums[l]) return findMinInterval(nums, numsSize, mid, r);
+    if (nums[mid] < nums[r]) return findMinInterval(nums, numsSize, l, mid);
+    return 0;
+}

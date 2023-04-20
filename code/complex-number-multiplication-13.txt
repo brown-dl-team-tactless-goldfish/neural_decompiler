@@ -1,0 +1,131 @@
+#define LEN 2
+#define MAX_LEN 15
+/*IMPORTANT: I rely on the fact that there are no spaces in the string*/
+
+
+int numToPower(int base, int power)
+{
+	int num = 1;
+	while (power)
+	{
+		num *= base;
+		power--;
+	}
+	return num;
+}
+
+
+
+int convertToNum(char* str, int len)
+{
+	int pow = len - 1;
+	int num = 0;
+	bool negative = false;
+	if (*str == '-')
+	{
+		negative = true;
+		pow--;
+		len -= 1;
+		str++;
+	}
+	for (int i = 0; i < len; i++)
+	{
+		num += (str[i] - '0') * numToPower(10, pow);
+		pow--;
+
+	}
+	if (negative)
+	{
+		num *= -1;
+	}
+	return num;
+}
+
+
+
+int getNumLen(char* num)
+{
+	int num_len = 0;
+	if (*num == '-')
+	{
+		num++;
+		num_len++;
+	}
+	while (*num >= '0' && *num <= '9')
+	{
+		num_len++;
+		num++;
+	}
+	return num_len;
+}
+
+
+
+int fillString(char* result, int num)
+{
+	int tmp_len = 0, orig_len = 0;
+	if (num == 0)
+	{
+		*result = '0';
+		orig_len++;
+		return orig_len;
+	}
+	if (num < 0)
+	{
+		*result = '-';
+		result++;
+		num *= -1;
+		orig_len++;
+	}
+	int tmp = num;
+	while (tmp)
+	{
+		tmp = tmp / 10;
+		tmp_len++;
+	}
+	orig_len += tmp_len;
+	while (num)
+	{
+		result[tmp_len-1] = '0'+num % 10;
+		num = num / 10;
+		tmp_len--;
+	}
+	return orig_len;
+}
+
+
+
+char * complexNumberMultiply(char * num1, char * num2)
+{
+   	int num_1[LEN];
+	int num_2[LEN];
+	int res[LEN];
+	int real_len_1 = getNumLen(num1);
+	int im_len_1 = getNumLen(num1 + real_len_1 + 1);
+	int real_len_2 = getNumLen(num2);
+	int im_len_2 = getNumLen(num2 + real_len_2 + 1);
+	num_1[0] = convertToNum(num1, real_len_1);
+	num_1[1] = convertToNum(num1 + real_len_1 + 1, im_len_1);
+	num_2[0] = convertToNum(num2, real_len_2);
+	num_2[1] = convertToNum(num2 + real_len_2 + 1, im_len_2);
+	res[0] = num_1[0] * num_2[0] + num_1[1] * num_2[1] * (-1);
+	res[1] = num_1[0] * num_2[1] + num_1[1] * num_2[0];
+    char S[MAX_LEN];
+    int real_len_res=fillString(S,res[0]);
+    S[real_len_res]='+';
+    int im_len_res=fillString(S+real_len_res+1,res[1]);
+    S[real_len_res+im_len_res+1]='i';
+    S[real_len_res+im_len_res+2]='\0';
+    int str_len = real_len_res + im_len_res + 3;
+	char* str = malloc(sizeof(char) * str_len);
+	if (str == NULL)
+	{
+		return NULL;
+	}
+	for (int i = 0; i < str_len; i++)
+	{
+		str[i] = S[i];
+
+	}
+    return str;
+}

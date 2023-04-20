@@ -1,0 +1,96 @@
+class Solution {
+public:
+    int len;
+    string in_s;
+    int max_s;
+    int rec[14][14];
+
+    bool isPalin(string s) {
+        if (s.length() == 0) {
+            return false;
+        }
+        if (s.length() == 1)
+            return true;
+        if (s.length() == 2) {
+            return s[0] == s[1];
+        }
+        int l = 0;
+        int r = s.length() - 1;
+        while (l < r) {
+            if (s[l++] != s[r--])
+                return false;
+        }
+        return true;
+    }
+    
+    int palin_max(int i, int j, string ori_i, string rev_j) {
+        if (i >= ori_i.length() || j >= rev_j.length()) {
+            return 0;
+        }
+        if (rec[i][j] != -1) {
+            return rec[i][j];
+        }
+        if (ori_i[i] == rev_j[j]) {
+            rec[i][j] = 1 + palin_max(i + 1, j + 1, ori_i, rev_j);
+            return rec[i][j];
+        }
+        else {
+            rec[i][j] = max(palin_max(i + 1, j, ori_i, rev_j), palin_max(i, j + 1, ori_i, rev_j));
+            return rec[i][j];
+        }
+        return rec[i][j];
+    }
+    
+    void init_rec() {
+        for (int i = 0; i < 14; i++) {
+            for (int j = 0; j < 14; j++) {
+                rec[i][j] = -1;
+            }
+        }
+    }
+    int get_max_len(string str) {
+        init_rec();
+        string str_rev = str;
+        std::reverse(str_rev.begin(), str_rev.end());
+        return palin_max(0, 0, str, str_rev);
+    }
+	
+    void opt_sec(int idx, string a, string b) {
+        if (idx >= len)
+            return;
+        string tmp;
+        tmp = a + in_s[idx];
+        max_s = max(max_s, get_max_len(tmp) * get_max_len(b));
+        opt_sec(idx + 1, tmp, b);
+        tmp = b + in_s[idx];
+        max_s = max(max_s, get_max_len(tmp) * get_max_len(a));   
+        opt_sec(idx + 1, a, tmp);
+    }
+    
+    void opt(int idx, string a, string b) {
+        if (idx >= len)
+            return;
+        int tmp_l = 0;
+        string tmp = a + in_s[idx];
+        if (isPalin(tmp) && isPalin(b)) {
+            tmp_l = tmp.length() * b.length();
+            max_s = max(max_s, tmp_l);
+        }
+        opt(idx + 1, tmp, b);
+        tmp = b + in_s[idx];
+        if (isPalin(tmp) && isPalin(a)) {
+            tmp_l = tmp.length() * a.length();
+            max_s = max(max_s, tmp_l);
+        }
+        opt(idx + 1, a, tmp);
+        opt(idx + 1, a, b);
+    }
+    int maxProduct(string s) {
+        in_s = s;
+        len = s.length();
+        max_s = 0;
+        // opt(0, "", "");
+        opt_sec(0, "", "");
+        return max_s;
+    }
+};

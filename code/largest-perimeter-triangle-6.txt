@@ -1,0 +1,17 @@
+int cmp(const void *a, const void *b){
+    return *(int*)a < *(int*)b;
+}
+
+int largestPerimeter(int* nums, int numsSize){
+    qsort(nums, numsSize, sizeof(int), cmp);
+    int i;
+    for(i = 0; i < numsSize - 2; i++){
+        // Concept: Because nums is sorted from largest to smallest, if nums[i] > nums[i + 1] + nums[i + 2], any other combination of 
+		// nums[i + j] + nums[i + k] after nums[i + 1] + nums[i + 2] is not possible to make nums[i] < nums[i + j] + nums[i + k]. 
+        // Therefore, including nums[i] does not make a valid triangle. We try the next element. 
+        if(nums[i] < nums[i + 1] + nums[i + 2])
+            return nums[i] + nums[i + 1] + nums[i + 2];
+    }
+    
+    return 0;
+}

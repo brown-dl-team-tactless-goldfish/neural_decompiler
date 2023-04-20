@@ -1,0 +1,93 @@
+char* extractString(char* input, int start, int end)
+{
+    char* output = malloc(sizeof(char)*10000);
+    int j = 0;
+    for (int i = start; i <= end; i++)
+    {
+        output[j] = input[i];
+        j++;
+    }
+    output[j] = '\0';
+    return output;
+}
+bool hasBrackets(char* input)
+{
+    int ptr = 0;
+    while (input[ptr] != '\0')
+    {
+        if (input[ptr] == '[')
+        {
+            return true;
+        }
+        ptr++;
+    }
+    return false;
+}
+// no stack, just expand everything in bracket and place into new string
+// when reaching the end of the string
+// check to see if there are [], if so then expand into a new string, keep going until no more []
+char* decodeString(char * s){
+
+    char* output = calloc(10000, sizeof(char));
+    int outputPtr = 0;
+    int mainPtr = 0;
+    while (hasBrackets(s))
+    {
+        while (s[mainPtr] != '\0')
+        {
+            if ('a' <= s[mainPtr] && s[mainPtr] <= 'z')
+            {
+                output[outputPtr] = s[mainPtr];
+                outputPtr++;
+                mainPtr++;
+            }
+            else if ('0' <= s[mainPtr] && s[mainPtr] <= '9')
+            {   
+                // this finds number
+                char temp[4] = "";
+                int tempPtr = 0;
+                while ('0' <= s[mainPtr] && s[mainPtr] <= '9')
+                {
+                    temp[tempPtr] = s[mainPtr];
+                    mainPtr++;
+                    tempPtr++;
+                }
+                int number = atoi(temp); // this will tell me how many times to loop
+                // find the end of these brackets
+                int openingBracket = mainPtr;  // for clarity
+                int brackets = 1;
+                while (brackets != 0)
+                {
+                    mainPtr++;
+                    printf("looking at %c\n", s[mainPtr]);
+                    if (s[mainPtr] == '[')
+                        brackets++;
+                    if (s[mainPtr] == ']')
+                        brackets--;
+                    
+                }
+                // at this point, ptr should have the location of the correct closing bracket
+                int closingBracket = mainPtr;
+                char* extracted;
+                extracted = extractString(s, openingBracket+1, closingBracket-1);
+                for (int i = 0; i < number; i++)
+                {
+                    strcat(output, extracted); // append input to output # of times
+                    printf("output: %s\n", output);
+                }
+                outputPtr += (number * ((closingBracket - 1) - (openingBracket + 1) + 1));
+                mainPtr++;
+                // output string should have the expanded version
+            }
+        }
+        // now we need to check if output string still has brackets, if it does, need to change output to input
+        // and redo the process if unrolling
+
+        s = output;
+        output = calloc(10000, sizeof(char));
+        mainPtr = 0;
+        outputPtr = 0;
+
+    }
+    return s;
+}

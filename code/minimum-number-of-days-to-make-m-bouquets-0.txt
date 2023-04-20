@@ -1,0 +1,68 @@
+int min(int a, int b);
+int max(int a, int b);
+int Bouquets(int* bloomDay, int bloomDaySize, int day, int k);
+
+int minDays(int* bloomDay, int bloomDaySize, int m, int k){
+    int i, j;
+    int minDay = INT_MAX;
+    int maxDay = INT_MIN;
+    for(i = 0; i < bloomDaySize; i++){
+        minDay = min(minDay, bloomDay[i]);
+        maxDay = max(maxDay, bloomDay[i]);
+    }     
+    int left = minDay;
+    int right = maxDay;
+    int mid;
+    int numBloom;
+    
+    while(left+1 < right){  //剩兩個
+        mid = (left + right)/2;
+        numBloom = Bouquets(bloomDay, bloomDaySize, mid, k);
+        if(numBloom >= m)
+            right = mid;
+        else
+            left = mid + 1;
+    }
+    
+    numBloom = Bouquets(bloomDay, bloomDaySize, left, k);
+    if(numBloom >= m)
+        return left;
+    
+    numBloom = Bouquets(bloomDay, bloomDaySize, right, k);
+    if(numBloom >= m)
+        return right;
+    
+    return -1;
+}
+
+int Bouquets(int* bloomDay, int bloomDaySize, int day, int k){
+    int cnBloom = 0;
+    int cn = 0;
+    for(int i = 0; i < bloomDaySize; i++){
+        if(bloomDay[i] <= day){
+            cn++;
+            if(cn == k){
+                cnBloom++;
+                cn = 0;
+            }
+        }
+        else{
+            cn = 0;
+        }
+    }
+    return cnBloom;
+}
+
+int min(int a, int b){
+    if(a < b)
+        return a;
+    else
+        return b;
+}
+
+int max(int a, int b){
+    if(a > b)
+        return a;
+    else
+        return b;
+}

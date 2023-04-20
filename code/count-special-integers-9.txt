@@ -1,0 +1,30 @@
+long long helper(string s , int index , bool tight, int mask = 0) {
+    if (index == s.size()) {
+        return 1;
+    }
+
+    if (dp[index][tight][mask] != -1) return dp[index][tight][mask];
+
+    int ub = (tight) ? s[index] - '0' : 9; // decied the upperbound based on tight constraint
+    long long ans = 0;
+
+    for (int dig = 0; dig <= ub; dig++) {
+        if ((mask >> dig) & 1) continue; //if dig is already used
+        if (dig == 0) {
+		// only mark used if some other dig is already used
+            if (mask) ans += helper(s, index + 1 , tight & (dig == ub) ,  mask | 1);  
+            else ans += helper(s, index + 1, tight & (dig == ub) , mask);  // else don't
+        } else {
+            ans += helper(s, index + 1 , tight & (dig == ub) , mask | (1 << dig)); / mark visited and fill for next
+        }
+    }
+
+    return dp[index][tight][mask] = ans ;
+}
+
+int countSpecialNumbers(int n) {
+    string s = to_string(n);
+    memset(dp, -1, sizeof(dp));
+    return helper(s, 0, 1) - 1; // - for removing zero as ques want from [1,n];
+}
+};

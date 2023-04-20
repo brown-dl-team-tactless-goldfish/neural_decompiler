@@ -1,0 +1,35 @@
+/*  Intution -> 
+    If we write the binary representation of the nums, we can observe that 
+    if we manage to find atleast one setbit at that position across nums, 
+	then we can simply take its contribution bcoz on changing a number 
+	by the given AND operation, we won't end up with a setbit.
+	( 0&0=1  1&1=1  0&1=1   1&0=1).
+	
+	Summary -> 
+	So, at a particular position, if you find a setbit, just take its contribution
+*/
+int maximumXOR(vector<int>& nums) {
+        // Border case -> [0] (as log function won't work for it) 
+        int n = nums.size();
+        if(n==1) return nums[0];
+		
+        // Taking out the max. bits to which we need to check
+        int x = *max_element(nums.begin(),nums.end());
+        int bits = log(x)/log(2) + 1;
+        int j = 0, ans = 0;
+        
+        while(bits--) {
+            int c = 0;
+            for(auto i:nums) {
+			//If that particular bit is found to be set, then take its contribution
+                if(i&(1<<j)) {
+                    c = 1; 
+                    ans += (pow(2,j));
+                    break;
+                }
+            }
+            j++;
+        }
+        
+        return ans;
+    }

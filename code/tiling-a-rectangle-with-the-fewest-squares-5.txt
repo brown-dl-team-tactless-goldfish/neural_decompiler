@@ -1,0 +1,87 @@
+public class Solution {
+    int INF = 10000007;
+    int _n;
+    int _m;
+    
+    // for zobrist hashing
+    long[,] _hash_table;
+    
+    public int TilingRectangle(int n, int m) {
+        _hash_table = new long[n, m];
+        
+        var rnd = new Random();
+        for(int i=0; i<n; i++)
+            for(int j=0; j<m; j++)
+                _hash_table[i, j] = rnd.Next() << 32 | rnd.Next();
+                
+        _n = n;
+        _m = m;        
+        var map = new bool[n, m];
+        return Dfs(map, 0L, 0);
+    }
+    
+    Dictionary<long, int> _memo = new Dictionary<long, int>();
+    
+    int Dfs(bool[,] map, long state, int cnt)
+    {
+        if(cnt == _n * _m) return 0;        
+        if(_memo.ContainsKey(state)) return _memo[state];
+                
+        var ret = INF;
+        
+        // find the top left
+        var r = -1;
+        var c = -1;
+        for(int i=0; r==-1 && i<_n; i++)
+        {
+            for(int j=0; r==-1 && j<_m; j++)
+            {
+                if(!map[i, j])
+                {
+                    r = i;
+                    c = j;
+                }
+            }
+        }
+        
+        // try all width
+        for(int w=1; w<=Math.Min(_n-r+1, _m-c+1); w++)
+        {
+            if(!Possible(r, c, w, map)) continue;
+            
+            state = Place(r, c, w, map, true, state);
+            ret = Math.Min(ret, 1 + Dfs(map, state, cnt+w*w));
+            state = Place(r, c, w, map, false, state);
+        }
+        
+        return _memo[state] = ret;
+    }
+    
+    bool Possible(int i, int j, int w, bool[,] map)
+    {
+        for(var r=i; r<i+w; r++)
+        {
+            if(r == _n) return false;
+            for(var c=j; c<j+w; c++)
+            {
+                if(c == _m) return false;
+                if(map[r, c]) return false;
+            }
+        }
+        return true;
+    }
+    
+    long Place(int i, int j, int w, bool[,] map, bool val, long state)
+    {
+        for(var r=i; r<i+w; r++)
+        {
+            for(var c=j; c<j+w; c++)
+            {
+                map[r, c] = val;
+                state ^= _hash_table[r, c];
+            }
+        }
+        
+        return state;
+    }
+}

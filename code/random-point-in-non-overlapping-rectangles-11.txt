@@ -1,0 +1,55 @@
+public class Solution {
+
+    public Random random;
+    public int[][] rects;
+    
+    public int[] areasPrefixSum;
+    public int areaSum;
+    
+    public Solution(int[][] rects) {
+        
+        random = new Random();
+        this.rects = rects;      
+        areasPrefixSum = new int[rects.Length];
+        
+        for(int i = 0; i < rects.Length; i++)
+        {           
+            // area: total points can be picked from current rectangle
+            int area= (rects[i][2] - rects[i][0] + 1) * (rects[i][3] - rects[i][1] + 1);
+            
+            // areasPrefixSum[i]: total number of points can be picked from 0-th retangle to i-th retangle
+            areasPrefixSum[i] = i == 0 ? area: areasPrefixSum[i - 1] + area;
+        }        
+        
+        areaSum = areasPrefixSum[rects.Length - 1];        
+    }
+    
+    public int[] Pick() {
+        
+        int target = random.Next(0, areaSum) + 1;         
+        int rectIndex = BinarySearch(areasPrefixSum, target);
+
+        int x = random.Next(rects[rectIndex][0], rects[rectIndex][2] + 1);
+        int y = random.Next(rects[rectIndex][1], rects[rectIndex][3] + 1);
+        
+        return new int[]{x, y};
+    }
+    
+    public int BinarySearch(int[] arr, int target)
+    {
+        int left = 0, right = arr.Length - 1;
+        
+        while(left <= right)
+        {
+            int mid = (right - left) + left / 2;
+            if(arr[mid] == target)
+                return mid;
+            if(arr[mid] > target)
+                right = mid - 1;
+            else
+                left = mid + 1;
+        }
+        
+        return left;
+    }
+}

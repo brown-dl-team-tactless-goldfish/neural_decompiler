@@ -1,0 +1,27 @@
+#include<numeric>
+class Solution {
+public:
+    int maxScore(vector<int>& arr, int k) {
+        ios_base::sync_with_stdio(false);
+        cin.tie(0);
+        int n  = arr.size();
+        long long accum = accumulate(arr.begin(), arr.end(), 0);
+        int size = n - k;
+        long long sum = 0;
+        long long mx = INT_MAX;
+        for(int i = 0; i<=n-size; i++){
+            if(i == 0){
+                int j = 0;
+                while(j<i+size){
+                    sum += arr[j];
+                    ++j;
+                }
+                mx = min(mx, sum);
+            }else{
+                sum = sum + arr[i+size-1] - arr[i-1];
+                mx = min(mx, sum);
+            }
+        }
+        return accum - mx;
+    }
+};

@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int minimumScore(string s, string t) {
+        int st = t.length();
+        vector<int> r, l;
+        for(int i=0, j = 0;i<t.length() && j < s.length();j++){
+            if(s[j] == t[i]){ l.push_back(j); i++;}
+        }
+        for(int i=t.length()-1, j = s.length()-1;i>=0 && j>=0;j--){
+            if(s[j] == t[i]){ r.push_back(j); i--;}
+        }
+        reverse(r.begin(),r.end());
+        int ans = t.length();
+        // if we do not have any prefix subseq then we have left = 0 and right equal to t len - rsize
+        // see cdeaaaa , bzxcaaaa
+        // aaaa is common so r size is 5 right here is 3 
+        // so 8 - 4 = 4;
+        int l0 =  t.length() - r.size(); // if left size is 0
+        int r0 =  t.length() - l.size(); // if right size is 0
+        // similarly
+        // aaaabzxc
+        // aaaa is common so l size is 4 and left is 4 and right is t.len - 1
+        if(l.size() == t.length() || r.size() == t.length()) return 0;
+        // if we have both side s = acdfgaaaa , t = cfghghgaaaa
+        // l = cfg , r = gaaaa , here we can see we have used same g 2 times
+        ans = min({ans,l0,r0});
+        for(int i=0;i<l.size();i++){
+            // Now we have to see for this index
+            int ind = upper_bound(r.begin(),r.end(),l[i]) - r.begin();
+            ind = r.size()-ind; // we got right side longest length
+            ind = t.length()-ind-1; // now we need right value so we need to subtract t len to ind
+            ans = min(ans,ind - i);
+        }
+        return ans;
+    }
+};

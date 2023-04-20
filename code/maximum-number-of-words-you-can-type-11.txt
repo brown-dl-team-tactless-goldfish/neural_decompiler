@@ -1,0 +1,26 @@
+class Solution
+{
+    static bitset<26> histogram(string::const_iterator it, string::const_iterator end)
+    {
+        bitset<26> bs;
+        while (it != end)
+            bs.set(*it++ - 'a');
+        return bs;
+    }
+    
+public:
+    int canBeTypedWords(const string& text, const string& bl)
+    {
+        auto x = histogram(bl.begin(), bl.end());
+        
+        int count = 0;
+        for (auto it = text.begin(); it != text.end(); )
+        {
+            auto end = find(it, text.end(), ' ');
+            if ((x & histogram(it, end)).none())
+                ++count;
+            it = find_if(end, text.end(), [](char c) { return c != ' '; });
+        }
+        return count;
+    }
+};

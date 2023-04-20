@@ -1,0 +1,51 @@
+char* intToRoman(int num) {
+char *result = NULL;
+char albo[] = {'I', 'V', 'X', 'L', 'C', 'D', 'M'}; // 'I': 1; 'V': 5; 'X': 10; 'L': 50; 'C': 100; 'D': 500; 'M': 1000;
+int mod = 100, length = 0, digit = 4; // start with 'C', so digit is the index of 'C', which is 4, and the corresponding mod is 100;
+    
+int cur = num/1000;
+if (cur>0) {
+    result = (char *)realloc(result, sizeof(char)*cur);
+    while (cur>0) {
+        result[length++] = 'M';
+        cur--;
+    }
+    num %= 1000;
+}
+
+while (num>0 && mod>0) {
+    int cur = num/mod;
+    
+    if (cur == 9) {
+        result = (char *)realloc(result, sizeof(char)*(length+2));
+        result[length++] = albo[digit];
+        result[length++] = albo[digit+2];
+    }
+    else if (cur == 4) {
+        result = (char *)realloc(result, sizeof(char)*(length+2));
+        result[length++] = albo[digit];
+        result[length++] = albo[digit+1];
+    }
+    else if (cur>=5) {
+        result = (char *)realloc(result, sizeof(char)*(length+cur-4));
+        result[length++] = albo[digit+1];
+        while (cur>5) {
+            result[length++] = albo[digit];
+            cur--;
+        }
+    }
+    else if (cur>0) {
+        result = (char *)realloc(result, sizeof(char)*(length+cur));
+        while (cur>0) {
+            result[length++] = albo[digit];
+            cur--;
+        }
+    }
+    digit -= 2;
+    num %= mod;
+    mod /= 10;
+}
+result = (char *)realloc(result, sizeof(char)*(length+1));
+result[length] = '\0';
+
+return result; 

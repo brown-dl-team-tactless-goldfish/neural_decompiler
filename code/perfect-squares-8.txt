@@ -1,0 +1,26 @@
+int numSquares(int n){
+	int dp[n + 1]; // dp[a] returns the least number of squares for an integer a
+	int i, j, k;
+	
+	// Initialization of dp array with 4 or 1 excpet for dp[0]
+	// Here I use the fact that dp elements are always less than 5 
+	// Check out Lagrange’s four-square theorem for more details
+	dp[0] = 0;
+	for (i = 1; i <= n; i++)
+		dp[i] = 4;
+	for (i = j = 1; j <= n; j = i*i){
+		dp[j] = 1;
+		i++;}
+    
+	// Memoization of dp array. First loop is to assign index i for dp[i]
+	// Second loop is to construct dp[i]. Notice that unless i itself is a perfect square
+	// we have 1 < dp[i] < 5 and there exists a perfect square a such that dp[a + b] = dp[a] + dp[b] 
+	// Thus in the second loop j is chosen to be a perfect square to use the above relation.
+	// We simply choose the minimum of the second loop result for dp[i]
+	for (i = 1; i <= n; i++){
+		for (j = k = 1; j < i; j = k*k){
+			if (dp[i - j] + dp[j] < dp[i])
+				dp[i] = dp[i - j] + dp[j];
+			k++;}}
+    
+	return dp[n];}

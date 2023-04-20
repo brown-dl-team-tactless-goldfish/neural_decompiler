@@ -1,0 +1,60 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode() : val(0), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x) : val(x), left(nullptr), right(nullptr) {}
+ *     TreeNode(int x, TreeNode *left, TreeNode *right) : val(x), left(left), right(right) {}
+ * };
+ */
+class Solution {
+    unordered_map<int, unordered_map<TreeNode *, int>> data;
+    unordered_map<int, int> level_sum;
+    unordered_map<TreeNode *, TreeNode *> parents;
+    
+    void dfs(TreeNode *node, TreeNode *parent, int depth) {
+        if(!node)
+            return;
+        
+        parents[node] = parent;
+        
+        data[depth][parent] += node->val;
+        level_sum[depth] += node->val;
+        
+        for(auto *child : {node->left, node->right}) {
+            if(child) {
+                dfs(child, node, depth + 1);
+            }
+        }
+    }
+    
+    void update_tree(TreeNode *node, int depth) {
+        if(!node)
+            return;
+        
+        const auto full_current_level_sum = level_sum[depth];
+        auto &entry = data[depth];
+        
+        if(entry.size() <= 1U) {
+            node->val = 0;
+        } else {
+            auto *parent = parents[node];
+            const auto sum_with_same_parent = data[depth][parent];
+            node->val = full_current_level_sum - sum_with_same_parent;
+        }
+        
+        for(auto *child : {node->left, node->right}) {
+            if(child) {
+                update_tree(child, depth + 1);
+            }
+        }
+    }
+public:
+    TreeNode* replaceValueInTree(TreeNode* root) {
+        dfs(root, nullptr, 0);
+        update_tree(root, 0);
+        return root;
+    }
+};

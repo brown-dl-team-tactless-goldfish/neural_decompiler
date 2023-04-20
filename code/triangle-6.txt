@@ -1,0 +1,26 @@
+int dp[200][200];
+
+int min(int n1, int n2) {
+    return n1 < n2 ? n1 : n2;
+}
+
+int solve(int**triangle, int triangleSize, int *triangleColSize, int row, int col) {
+    if (row == triangleSize) {
+        return 0;
+    }
+    
+    if (dp[row][col] != -1) {
+        return dp[row][col];
+    }
+    
+    int child_l = solve(triangle, triangleSize, triangleColSize, row + 1, col); 
+    int child_r = solve(triangle, triangleSize, triangleColSize, row + 1, col + 1);
+    int min_val = min(child_l, child_r) + triangle[row][col];
+    dp[row][col] = min_val;
+    return min_val;
+}
+
+int minimumTotal(int** triangle, int triangleSize, int* triangleColSize){
+    memset(dp, -1, sizeof(dp));
+    return solve(triangle, triangleSize, triangleColSize, 0, 0);
+}

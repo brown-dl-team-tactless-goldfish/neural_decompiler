@@ -1,0 +1,143 @@
+/**
+ * #define NEIGHBORS_MAX_SIZE 100
+ * struct UndirectedGraphNode {
+ *     int label;
+ *     struct UndirectedGraphNode *neighbors[NEIGHBORS_MAX_SIZE];
+ *     int neighborsCount;
+ * };
+ */
+#define printf(...)
+typedef struct NodeRecord_t
+{
+    int label;
+    int handled ;
+    void *addr;    
+} NodeRecord_t;
+
+struct UndirectedGraphNode *allNewNodes ;
+NodeRecord_t nodeRecords[2000];
+int createdCount = 0;
+
+//fifo
+int fifoTail = 0;
+int fifoHead = 0;
+struct UndirectedGraphNode *fifoEntries[2000];
+
+void FifoPush(struct UndirectedGraphNode *curr)
+{
+    fifoEntries[fifoTail] = curr;
+    printf("tail %d\n", fifoTail);
+    fifoTail = (fifoTail + 1) % 2000;
+}
+
+int FifoNotEmpty()
+{
+    return fifoHead != fifoTail;
+}
+
+
+
+struct UndirectedGraphNode *FifoPop(void)
+{
+    if (FifoNotEmpty()) {
+        struct UndirectedGraphNode *curr =  fifoEntries[fifoHead];
+        printf("head %d\n", fifoHead);
+        fifoHead = (fifoHead + 1) % 2000;
+        return curr;
+    }
+    return NULL;
+}
+
+struct UndirectedGraphNode * CreateOrFoundCurrentNode(int label, NodeRecord_t **record)
+{
+    printf("1 create node label %d id createdCount %d\n", label, createdCount);
+    for (int i = 0; i < createdCount; i++) {
+        if (nodeRecords[i].label == label) {
+            *record = &nodeRecords[i];
+            printf("3 create node label %d id in req %d\n", label, createdCount);
+            return (struct UndirectedGraphNode *)nodeRecords[i].addr;
+        }
+    }    
+    printf("2 create node label %d id in req %d\n", label, createdCount);
+    nodeRecords[createdCount].label = label;
+    nodeRecords[createdCount].addr  = malloc(sizeof(struct UndirectedGraphNode));
+    nodeRecords[createdCount].handled = 0;
+    *record = &nodeRecords[createdCount];
+    printf("create4 node label %d id in req %d\n", label, createdCount);
+    createdCount++;
+    return  (struct UndirectedGraphNode *) nodeRecords[createdCount - 1].addr ;
+}
+
+int CloneCurrentNode(struct UndirectedGraphNode *currNode)
+{
+    // create or found copy of current node.
+     NodeRecord_t *record;
+     struct UndirectedGraphNode * newCurr =  CreateOrFoundCurrentNode(currNode->label, &record);
+     printf("start clone currNode label %d neighcount %d\n", currNode->label, currNode->neighborsCount);
+      //assert(newCurr);
+     if (record->handled == 0)
+     {
+            // setup
+            newCurr->neighborsCount = currNode->neighborsCount;
+            newCurr->label = currNode->label;
+            record->handled = 1;
+            // create copy of child node.
+            for (int j = 0; j < currNode->neighborsCount; j++)
+            {
+                struct UndirectedGraphNode * newChildNode =  CreateOrFoundCurrentNode(currNode->neighbors[j]->label, &record);
+                newCurr->neighbors[j] = newChildNode;
+                
+                if (record->handled == 0) {
+                    FifoPush(currNode->neighbors[j]);
+                }
+                printf("copy child j %d clone label %d cnt %d\n",  j, currNode->label, currNode->neighborsCount);
+            }
+          
+            printf("complete clone label %d\n", currNode->label);
+            return 0;
+    }
+    else {
+        printf("previous already complete clone label %d\n", currNode->label);
+        return 1;    
+    }
+}
+
+
+struct UndirectedGraphNode *cloneGraph(struct UndirectedGraphNode *graph) 
+{
+    createdCount = 0;
+    fifoTail = 0;
+    fifoHead = 0;
+    
+    struct UndirectedGraphNode *currNode = graph;
+    
+    if (currNode == NULL ) {
+        return NULL;
+    }
+  
+    FifoPush(currNode);
+    
+    printf("cur1 node %x label %d\n", currNode, currNode->label);
+    
+    while(FifoNotEmpty())
+    {
+        currNode = FifoPop();
+        printf("cur2 node %x label %d\n", currNode, currNode->label);
+        // create node for currNode.
+        int handled = CloneCurrentNode(currNode);
+        
+
+    }
+    printf("nodeRecords[0].label %d\n", nodeRecords[0].label);
+    return nodeRecords[0].addr;
+     
+}
+
+/*
+ * struct UndirectedGraphNode {
+ *     int label;
+ *     struct UndirectedGraphNode *neighbors[NEIGHBORS_MAX_SIZE];
+ *     int neighborsCount;
+ * };
+ 
+ */

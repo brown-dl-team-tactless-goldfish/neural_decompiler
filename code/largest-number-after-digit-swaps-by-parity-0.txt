@@ -1,0 +1,42 @@
+int cmpfunc(const void* a, const void* b){
+    return *(int*)b - *(int*)a;
+}
+
+int largestInteger(int num){
+    int* even = malloc(10 * sizeof(int));
+    int* odd = malloc(10 * sizeof(int));
+    int* data = malloc(10 *sizeof(int));
+    int e_idx = 0, o_idx = 0, idx = 0;
+    int val = num;
+    while(val){
+        if(val%10%2){
+            odd[o_idx] = val%10;
+            o_idx++;
+        }
+        else{
+            even[e_idx] = val%10;
+            e_idx++;
+        }
+        data[idx] = val%10;
+        idx++;
+        val /= 10;
+    }
+    qsort(even, e_idx, sizeof(int), cmpfunc);
+    qsort(odd, o_idx, sizeof(int), cmpfunc);
+    e_idx = 0;
+    o_idx = 0;
+    int ans = 0;
+    for(int i = idx - 1; i >= 0; i--){
+        if(data[i] % 2){
+            data[i] = odd[o_idx];
+            o_idx++;
+        }
+        else{
+            data[i] = even[e_idx];
+            e_idx++;
+        }
+        ans = ans*10 + data[i];
+    }
+
+    return ans;
+}

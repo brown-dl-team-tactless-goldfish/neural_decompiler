@@ -1,0 +1,27 @@
+class Solution {
+public:
+    struct State{
+        long long val;
+        long long len;
+        long long accumulate;
+    };    
+    
+    int sumSubarrayMins(vector<int>& A) {
+        const long long mod = 1e9 + 7;
+        long long sum = 0;
+        vector<State> v;
+        for(auto x : A){
+            State s{x, 1, 0};
+            while(!v.empty() && v.back().val > x){
+                s.len += v.back().len;
+                v.pop_back();
+            }
+            s.accumulate = s.val * s.len;
+            if(!v.empty()) s.accumulate += v.back().accumulate;
+            s.accumulate %= mod;
+            v.push_back(s);
+            sum += s.accumulate;
+        }
+        return sum % mod;
+    }
+};

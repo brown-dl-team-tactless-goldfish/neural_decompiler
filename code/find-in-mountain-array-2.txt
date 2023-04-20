@@ -1,0 +1,85 @@
+/**
+ * *********************************************************************
+ * // This is the MountainArray's API interface.
+ * // You should not implement it, or speculate about its implementation
+ * *********************************************************************
+ *
+ * int get(MountainArray *, int index);
+ * int length(MountainArray *);
+ */
+
+// Performs a binary search of a number within a range
+// direction = 1 means the array is increasing, -1 means that the array is decreasing
+int binarySearch(MountainArray* arr, int target, int start, int end, int direction) {
+    // Array is empty or has invalid range
+    if (start > end) {
+        return -1;
+    }
+
+    int left = start;
+    int right = end;
+    while (left <= right) {
+        int middle = left + (right - left) / 2;
+        int middleValue = get(arr, middle);
+        // Middle value is too large, move to the left if the array is increasing
+        // Move to the right if the array is decreasing
+        if (middleValue > target) {
+            if (direction == 1) {
+                right = middle - 1;
+            } else {
+                left = middle + 1;
+            }
+        // Similar to the logic above when the middle value is too small
+        } else if (middleValue < target) {
+            if (direction == 1) {
+                left = middle + 1;
+            } else {
+                right = middle - 1;
+            }
+        // Value is found, just return its index
+        } else {
+            return middle;
+        }
+    }
+
+    // No match is found from the range
+    return -1;
+}
+
+int findPeakPosition(MountainArray* arr) {
+    int left = 0;
+    int right = length(arr) - 1;
+    while (left < right) {
+        int middle = left + (right - left) / 2;
+        int middleValue = get(arr, middle);
+        int middleNextValue = get(arr, middle + 1);
+        // The peak must be on the left (or potentially the middle index)
+        // If the elements are decreasing
+        if (middleValue > middleNextValue) {
+            right = middle;
+        // Otherwise, the peak must be on the right (but not the middle element)
+        // because arr[middle] is already smaller than arr[middle + 1]
+        // arr[middle] cannot be the peak
+        } else {
+            left = middle + 1;
+        }
+    }
+    return left;
+}
+
+int findInMountainArray(int target, MountainArray* mountainArr) {
+	// Find the peak first
+    int peakIndex = findPeakPosition(mountainArr);
+
+    // Then split into two parts for binary search
+    // Right hand side should perform a reverse binary search
+    int leftIndexFound = binarySearch(mountainArr, target, 0, peakIndex, 1);
+    int rightIndexFound = binarySearch(mountainArr, target, peakIndex + 1, length(mountainArr) - 1, -1);
+    if (leftIndexFound != -1) {
+        return leftIndexFound;
+    } else if (rightIndexFound != -1) {
+        return rightIndexFound;
+    } else {
+        return -1;
+    }
+}

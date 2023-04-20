@@ -1,0 +1,28 @@
+class Solution {
+public:
+    bool checkPartitioning(string s) {
+       int n=s.length();
+       vector<vector<bool>>ispal(n,vector<bool>(n,false));
+       //ispal[i][j] is true if string i->j is palindrome, else false
+        for(int i=n-1;i>=0;i--){
+            for(int j=i;j<n;j++){
+                if(s[i]==s[j]){
+                    if(i+1>=j || ispal[i+1][j-1]==true)
+                        ispal[i][j]=true;
+                }
+            }
+        }
+        
+        
+        for(int i=2;i<n;i++){
+            if(ispal[i][n-1]==true){
+                for(int j=1;j<i;j++){
+                    if(ispal[j][i-1] && ispal[0][j-1])
+                        return true;
+                }
+            }
+        }
+        return false;
+        
+    }
+};

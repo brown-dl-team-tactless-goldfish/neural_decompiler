@@ -1,0 +1,37 @@
+const char chs[3] = {'a', 'b', 'c'};
+
+void dfs(int n, int k, int idx, int* cnt, int* len, char* res) {
+    if (idx == n) {
+        *cnt += 1;
+        return;
+    }
+    
+    for (int i = 0; i < 3; i++) {
+        if (*cnt == k) {
+            *len = n;
+            return;
+        }
+        if (idx > 0 && chs[i] == res[idx - 1])
+            continue;
+        res[idx] = chs[i];
+        dfs(n, k, idx + 1, cnt, len, res);
+    }
+    
+    if (*cnt == k) 
+        *len = n;
+}
+
+char * getHappyString(int n, int k){
+    int len, cnt;
+    char* res;
+    
+    len = cnt = 0;
+    res = malloc(sizeof(char) * (n + 1));
+    dfs(n, k, 0, &cnt, &len, res);
+    
+    if (len != n) 
+        res[0] = 0;
+    else
+        res[len] = 0;
+    return res;
+}

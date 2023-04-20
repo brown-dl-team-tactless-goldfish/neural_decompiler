@@ -1,0 +1,36 @@
+int cmp(const void* a, const void* b)
+{
+	return *(int*) b - *(int*) a;
+} 
+
+int minDeletions(char * s){
+	int tmp[256];
+	memset(tmp, 0, sizeof(tmp));
+
+	while(*s){
+		tmp[*s]++;
+		s++;
+	}
+	int ans = 0;
+	qsort(tmp, 256, sizeof(int), cmp);
+	// for(int i = 0; i < 256; i++)
+	// {
+	//     printf("%d ", tmp[i]);
+	// }
+
+	for(int i = 1; i < 256; i++)
+	{
+		if(tmp[i] == 0) break;
+		if(tmp[i - 1] <= tmp[i]){
+			if(tmp[i - 1] == 0){
+				ans += tmp[i] - tmp[i - 1];
+			}
+			else{
+				ans += tmp[i] - tmp[i - 1] + 1;
+			}
+			tmp[i] = tmp[i - 1] - 1 < 0 ? 0 : tmp[i - 1] - 1;
+		}
+	}
+
+	return ans;
+}

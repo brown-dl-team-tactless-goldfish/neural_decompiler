@@ -1,0 +1,48 @@
+typedef struct Region {
+    int r1;
+    int c1;
+    int r2;
+    int c2;
+    int v;
+    struct Region *p;
+} Region;
+
+typedef struct {
+    int** bg;
+    Region* last;
+} SubrectangleQueries;
+
+SubrectangleQueries* subrectangleQueriesCreate(int** r, int rs, int* cs) {
+    
+    SubrectangleQueries *s = malloc(sizeof(SubrectangleQueries));
+    *s = (SubrectangleQueries) { .bg = r, .last = NULL };
+
+    return s; 
+}
+
+void subrectangleQueriesUpdateSubrectangle(SubrectangleQueries* o, int r1, int c1, int r2, int c2, int v) 
+{
+    Region *r = malloc(sizeof(Region));
+    *r = (Region) { .r1 = r1, .r2 = r2, .c1 = c1, .c2 = c2, .v = v, .p = o->last };
+    o->last = r;
+}
+
+int subrectangleQueriesGetValue(SubrectangleQueries* o, int i, int j) 
+{
+    for(Region *r = o->last; r; r = r->p) if(i >= r->r1 && i <= r->r2 && j >= r->c1 && j <= r->c2) return r->v;
+    return o->bg[i][j];
+}
+
+void subrectangleQueriesFree(SubrectangleQueries* o) 
+{
+    Region *r = o->last;
+
+    while(r)
+    {
+        Region *n = r->p;
+        free(r);
+        r = n;
+    }
+
+    free(o);
+}

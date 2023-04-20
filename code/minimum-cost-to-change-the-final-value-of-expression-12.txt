@@ -1,0 +1,119 @@
+class Solution {
+public:
+    
+    int fun(vector<pair<char , int> > &t)
+    {
+        int len = t.size() , prev = (*t.rbegin()).second , curr;  //1d dp compressed to 2 pointers
+        for(int i = len-2 ; i>0 ; i-=2)
+        {
+                if(t[i].first == '&')
+                    curr = min(prev , t[i-1].second);
+                else
+                    curr = min(min(prev , t[i-1].second) + 1 , prev + t[i-1].second);
+            
+                prev = curr;
+        }
+        return prev;
+        
+    }
+    int for0(string s) // returns minimum number of opeartions for our final value as 0
+    {
+        stack<pair<char,int>> stk;
+        
+        int len = s.length();
+    
+        for(int i = 0 ; i<len ; i++)
+        {
+            if(s[i] == ')')
+            {
+                vector<pair<char , int> > t;
+                while((stk.top()).first!='(')
+                {
+                    t.push_back(stk.top());
+                    stk.pop();
+                }
+                if(t.size() == 0) continue;
+                int val = fun(t); // calls fun for expression with '1' , '0' , '& and '|' , in order to get number of minimum operations for this expression.
+                stk.pop(); //pops '('
+                stk.push({'0' , val});  // inserts val for further use
+            }
+            
+            else{
+                if(s[i] == '0') stk.push({s[i] , 0});  // '0' needs 0 change in order to convert to 0
+                else if(s[i] == '1')(stk.push({s[i] , 1}));  // '1' needs 1 change in order to convert to 0
+                else stk.push({s[i] , -1});
+            }
+        }
+        
+        vector<pair<char , int> > t;
+        while(!stk.empty()) 
+        {
+            t.push_back(stk.top());
+            stk.pop();
+        }
+        
+        return fun(t);
+    }
+    
+    int fun1(vector<pair<char , int> > &t)
+    {
+        int len = t.size() , prev = (*t.rbegin()).second , curr; //1d dp compressed to 2 pointers
+        for(int i = len-2 ; i>0 ; i-=2)
+        {
+                if(t[i].first == '|')
+                    curr = min(prev , t[i-1].second);   
+                else
+                    curr = min(min(prev , t[i-1].second) + 1 , prev + t[i-1].second);
+            
+                prev = curr;
+        }
+        return prev;
+        
+    }
+    
+    int for1(string s) // returns minimum number of opeartions for our final value as 1
+    {
+        stack<pair<char,int>> stk;
+        
+        int len = s.length();
+    
+        for(int i = 0 ; i<len ; i++)
+        {
+            if(s[i] == ')')
+            {
+                vector<pair<char , int> > t;
+                while((stk.top()).first!='(')
+                {
+                    t.push_back(stk.top());
+                    stk.pop();
+                }
+                if(t.size() == 0) continue;
+                int val = fun1(t);  // calls fun1 for expression with '1' , '0' , '& and '|' , in order to get number of minimum operations for this expression.
+                stk.pop(); //pops '('
+                stk.push({'1' , val});  // inserts the value for further use
+            }
+            
+            else
+            {
+                if(s[i] == '0') stk.push({s[i] , 1});      // '0' needs 1 change in order to convert to 1
+                else if(s[i] == '1')(stk.push({s[i] , 0})); // '1' needs 0 change in order to convert to 1
+                else stk.push({s[i] , -1});
+            }
+        }
+        
+        vector<pair<char , int> > t;
+        while(!stk.empty()) 
+        {
+            t.push_back(stk.top());
+            stk.pop();
+        }
+        
+        return fun1(t);
+    }
+    
+    int minOperationsToFlip(string s) {
+        
+        return max(for1(s) , for0(s));  // either we need to convert it to 0 or convert it to 1.
+        
+    }
+};

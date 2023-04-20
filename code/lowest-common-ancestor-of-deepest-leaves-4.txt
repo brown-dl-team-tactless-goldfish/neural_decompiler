@@ -1,0 +1,32 @@
+struct TreeNode* lcaDeepestLeavesRecur(struct TreeNode* root, int* currentDepth) {
+    
+    if(!root->left && !root->right)
+        return root;
+    
+    int lDepth = *currentDepth;
+    int rDepth = *currentDepth;
+    struct TreeNode* lDeepestNode = root;
+    struct TreeNode* rDeepestNode = root;
+    
+    if(root->left) {
+        ++lDepth;
+        lDeepestNode = lcaDeepestLeavesRecur(root->left, &lDepth);
+    }
+    
+    if(root->right) {
+        ++rDepth;
+        rDeepestNode = lcaDeepestLeavesRecur(root->right, &rDepth);
+    }
+    
+    *currentDepth = lDepth > rDepth ? lDepth : rDepth;
+    
+    if(lDepth == rDepth)
+        return root;
+    
+    return lDepth > rDepth ? lDeepestNode : rDeepestNode;
+}
+
+struct TreeNode* lcaDeepestLeaves(struct TreeNode* root) {
+    int currentDepth = 0;
+    return lcaDeepestLeavesRecur(root, &currentDepth);
+}

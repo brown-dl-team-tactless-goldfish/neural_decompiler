@@ -1,0 +1,44 @@
+
+
+
+
+class Solution {
+public:
+    int largestVariance(string s) {
+        int n = s.size();
+        int ret = 0;
+        //hfc - higher freq char lfc - lower freq char
+        
+        for (char hfc = 'a'; hfc <= 'z'; hfc++) {
+            for (char lfc = 'a' ; lfc <= 'z'; lfc++) {
+                if (lfc == hfc) continue;
+                int hfc_count = 0;
+                int lfc_count = 0;
+                
+                bool extend = false;
+                for (auto& c : s) {
+                    if (c == lfc) lfc_count++;
+                    if (c == hfc) hfc_count++;
+                    
+                    //CASE 1
+                    if (lfc_count > 0) 
+                        ret = max(ret, hfc_count - lfc_count);
+                    
+                    //CASE 2
+                    if (lfc_count > hfc_count) {
+                        lfc_count = 0;
+                        hfc_count = 0;
+                        extend = true;
+                    }
+
+                    //CASE 3
+                    if (extend && lfc_count == 0) {
+                        ret = max (ret , hfc_count - 1);
+                    }
+                }
+            }
+        }
+
+        return ret;
+    }
+};

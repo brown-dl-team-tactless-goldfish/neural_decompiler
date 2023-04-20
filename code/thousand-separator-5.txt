@@ -1,0 +1,21 @@
+char *recur(int n, int depth, int *count)
+{
+    char *ret;
+    if(n<1000)
+    {
+        ret = calloc(2+(n>10)+(n>100)+4*depth,sizeof(char));
+        *count += sprintf(ret,"%d",n);
+    }
+    else
+    {
+        ret = recur(n/1000,depth+1,count);
+        *count += sprintf(ret+*count,".%03d",n%1000);
+    }
+    return ret;
+}
+
+char *thousandSeparator(int n)
+{
+    int count=0;
+    return recur(n,0,&count);
+}

@@ -1,0 +1,22 @@
+int max(int a, int b){
+    return a>b ? a : b;
+}
+
+int dfs(struct TreeNode* r, int* m){
+    if(!r)
+        return 0;
+    *m = max(*m, r->val);
+    int right = dfs(r->right, m);
+    int left = dfs(r->left, m);
+    int line = max(0, max(left, right));
+    int bend = right + left + r->val;
+    *m = max(*m, max(line+r->val, bend));
+    return line + r -> val;
+}
+
+int maxPathSum(struct TreeNode* root){
+    int* temp = malloc(sizeof(int));
+    *temp = INT_MIN;
+    dfs(root, temp);
+    return *temp;
+}

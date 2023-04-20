@@ -1,0 +1,47 @@
+class Allocator {
+public:
+    vector<int> nums;
+    unordered_map<int, int> container;
+    int n;
+    Allocator(int n) {
+        this->n=n;
+        nums.resize(n);
+    }
+    
+    int allocate(int size, int mID) {
+        for(int i=0; i<n; i++){
+            if(nums[i]==0){
+                int temp=i, p=0;
+                while(i<n and nums[i]==0){
+                    i++, p++;
+                    if(p==size) break;
+                }
+                if(p>=size){
+                    for(int j=temp; j<temp+size; j++)
+                        nums[j]=mID;
+                    container[mID]=temp;
+                    
+                    return temp;
+                }
+            }
+        }
+        return -1;
+    }
+    
+    int free(int mID) {
+        int val=container[mID], temp=0;
+        for(int i=0; i<n; i++){
+            if(nums[i]==mID)
+                temp++, nums[i]=0;
+        }
+        container.erase(mID);
+        return temp;
+    }
+};
+
+/**
+ * Your Allocator object will be instantiated and called as such:
+ * Allocator* obj = new Allocator(n);
+ * int param_1 = obj->allocate(size,mID);
+ * int param_2 = obj->free(mID);
+ */

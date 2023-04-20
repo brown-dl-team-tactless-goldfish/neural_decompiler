@@ -1,0 +1,29 @@
+class Solution {
+public:
+    vector<vector<int>> allCellsDistOrder(int R, int C, int r0, int c0) {
+        vector<vector<int>> res;
+        queue<pair<int, int>> q;
+        vector<vector<bool>> visited(R, vector<bool>(C, false));
+        vector<vector<int>> dirs = {{1,0},{-1,0},{0,1},{0,-1}};
+        visited[r0][c0] = true;
+        res.push_back({r0, c0});
+        q.push({r0,c0});
+        while(!q.empty())
+        {
+            int r_cur = q.front().first;
+            int c_cur = q.front().second;
+            q.pop();
+            for(auto dir: dirs)
+            {
+                int r_new = r_cur + dir[0];
+                int c_new = c_cur + dir[1];
+                if(r_new < 0 || r_new >= R || c_new < 0 || c_new >= C || visited[r_new][c_new])
+                    continue;
+                res.push_back({r_new,c_new});
+                visited[r_new][c_new] = true;
+                q.push({r_new, c_new});
+            }
+        }
+        return res;
+    }
+};

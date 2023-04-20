@@ -1,0 +1,26 @@
+class Solution {
+public:
+    void dfs(int curr , int par , set<int> &s, int &cnt,vector<int> gr[]){
+        cnt++;
+        
+        for(auto x:  gr[curr]){
+            if(x!=par and s.count(x)==0){
+                dfs(x,curr,s,cnt,gr);
+            }
+        }
+        return;
+    }
+    int reachableNodes(int n, vector<vector<int>>& edges, vector<int>& restricted) {
+        vector<int> gr[n];
+        
+        for(auto x :edges){
+            gr[x[0]].push_back(x[1]);
+            gr[x[1]].push_back(x[0]);
+        }
+        int cnt= 0;
+        set<int> s;
+        for(auto x : restricted) s.insert(x);
+        dfs(0,-1,s,cnt,gr);
+        return cnt;
+    }
+};

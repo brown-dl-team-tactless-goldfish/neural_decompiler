@@ -1,0 +1,61 @@
+int oddCells(int n, int m, int** indices, int indicesSize, int* indicesColSize){
+    int A[n][m];
+    int B[indicesSize*(*indicesColSize)];
+    int c=0;
+    
+    //initiate the matrix
+    for (int i=0; i<n; i++)
+    {
+        for (int j=0; j<m; j++)
+        {
+            A[i][j]=0;
+        }
+    }
+    
+    //initiate the array
+    for (int i=0; i<indicesSize*(*indicesColSize); i++)
+        B[i]=0;
+    
+    //copy the indices values to to B
+    for (int i=0; i<indicesSize; i++)
+    {
+        for (int j=0; j<(*indicesColSize); j++)
+        {
+            B[c]=indices[i][j];
+            c++;
+        }  
+    }
+    
+    //add values to array
+    for (int i=0; i<indicesSize*(*indicesColSize); i++)
+    {
+        //add colums
+        if (i%2 != 0 && i != 0)
+        {
+           for (int p=0; p<n; p++)
+            {
+                A[p][B[i]]++;
+            } 
+        }
+        //add row
+        else if (i%2 == 0 || i==0)
+        {
+            for (int k=0; k<m; k++)
+            {
+                A[B[i]][k]++;
+            }
+        }
+    }
+    
+    //count odd
+    c=0;
+    for (int i=0; i<n; i++)
+    {
+        for (int j=0; j<m; j++)
+        {
+            if (A[i][j]%2 != 0)
+                c++;
+        }
+    }
+    return c;
+}

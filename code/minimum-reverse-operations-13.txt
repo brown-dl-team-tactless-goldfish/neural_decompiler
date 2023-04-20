@@ -1,0 +1,50 @@
+class Solution {
+public:
+    set<int> mp[2];
+    vector<int> dp;
+
+    void insert(int i) {
+        if (dp[i] != INT_MAX) return;
+        mp[(i % 2)].insert(i);
+    }
+
+    void mark(int l, int r, int i, int k, deque<int>& q) {
+        if (r < l) return;
+        int b = i % 2;
+        set<int>& se = (k % 2) ? mp[b] : mp[1 - b];
+        auto iter = se.lower_bound(l);
+        while (iter != se.end()) {
+            int cur = *iter;
+            if ((cur) > r) break;
+            dp[cur] = dp[i] + 1;
+            q.push_back(cur);
+            iter = se.erase(iter);
+        }
+    }
+   
+    vector<int> minReverseOperations(int n, int p, vector<int>& banned, int k) {       
+        dp = vector<int>(n, INT_MAX);
+        dp[p] = 0;
+        for (auto b : banned) dp[b] = -1;
+        for (int i = 0; i < n; i++) insert(i);
+
+        deque<int> q;
+        q.push_back(p);
+        while (!q.empty()) {
+            int len = q.size();
+            for (int i = 0; i < len; i++) {
+                int cur = q.front();
+                q.pop_front();
+
+                int l = (cur - k + 1) >= 0 ? 
+                           cur - k + 1 : k - 1 - cur ;
+                int r = (cur + k -1) <= n ? 
+                            cur + k - 1 : n + n - k - 1 - cur;
+                mark(l, r, cur, k, q);
+            }
+        }
+
+        for (auto& c : dp) if (c == INT_MAX) c = -1;
+        return dp;
+    }
+};

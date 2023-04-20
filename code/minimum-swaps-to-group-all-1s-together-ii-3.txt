@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int minSwaps(vector<int>& nums) {
+        
+		//count the number of ones -- they need to be grouped together, so that becomes the window size
+		//slide the window along and find out how many 0s still need to be swapped out in the best
+		//window (the window position that has the most 1s already filled in)
+        int ones = 0;
+        for(int i = 0; i < nums.size(); i++)
+            if(nums[i] == 1) ones++;
+        
+		//a few easy cases where the answer is known right away
+        if(ones == nums.size()) return 0;
+        if(ones == nums.size()-1) return 0;
+        if(ones < 2) return 0;
+        
+		//w keeps track of the number of ones in the window. find initial window count, and slide along
+        int w = 0;
+        for(int i = 0; i < ones; i++){
+            if(nums[i] == 1) w++;
+        }
+        if(w == ones) return 0;
+        int min = ones - w;
+        for(int i = 1; i < nums.size(); i++){
+            w -= nums[i-1];
+            w += nums[(i+ones-1) % nums.size()]; //check windows that wrap around the end b/c the array is circular
+            if(ones - w < min) min = ones - w; //if the number of 0s in the window is less than min, update (0s require swaps)
+        }
+        return min; //return ~The Answer~
+    }
+};

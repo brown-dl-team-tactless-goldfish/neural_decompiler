@@ -1,0 +1,46 @@
+
+bool canChoose(int** groups, int groupsSize, int* groupsColSize, int* nums, int numsSize){
+    int *table = (int*)calloc(numsSize,sizeof(int));
+    
+    int flag = 0;
+    int counter = 0;
+    
+    for(int x = 0; x<groupsSize; x++){
+        flag=0;
+
+        for(int z=counter; z<numsSize; z++){
+            if(flag == 1){
+                if(x== (groupsSize-1))
+                    return true;        
+                break;
+            }
+                 
+            if(z+groupsColSize[x] == numsSize+1){
+                return false;       
+            }
+                
+            for(int y=0; y<(groupsColSize[x]); y++){
+                if(groups[x][y] != nums[z+y]){
+                    if(z==numsSize-1)
+                        return false;
+                    break;
+                }
+                         
+                if(table[z+y] == 1)
+                    break;
+
+                if(y==(groupsColSize[x] - 1)){
+                    for(int u=0; u<(groupsColSize[x]); u++)
+                        table[z+u]=1;
+                         
+                    counter=z+(groupsColSize[x])-1;
+                    flag = 1;
+                    if(x== (groupsSize-1))
+                        return true;
+                }
+            }
+        }
+        
+    }
+    return false;
+}

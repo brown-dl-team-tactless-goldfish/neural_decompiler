@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int validSubarraySize(vector<int>& nums, int threshold) {
+        const int n = nums.size();
+        auto leftLens = leftLen(nums), rightLens = rightLen(nums);
+        vector<int> vlen(n);
+        for(int i=0;i<n;i++) vlen[i] = leftLens[i] + 1 + rightLens[i];
+        for(int i=0;i<n;i++){
+            int k = vlen[i];
+            if(nums[i] > threshold/k) return k;
+        }
+        return -1;
+    }
+
+    vector<int> leftLen(vector<int>& v){
+        vector<int> leftLens;
+        stack<int> st;
+        for(int i=0;i<v.size();i++){
+            while(!st.empty() && v[st.top()] >= v[i]) st.pop();
+            int leftLen = i;
+            if(!st.empty()) leftLen -= 1+st.top();
+            leftLens.push_back(leftLen); 
+            st.push(i);
+        }
+        return leftLens;
+    }
+
+    vector<int> rightLen(vector<int>& v){
+        reverse(v.begin(), v.end());
+        auto res = leftLen(v);
+        reverse(v.begin(), v.end());
+        reverse(res.begin(), res.end());
+        return res;
+    }
+};

@@ -1,0 +1,40 @@
+public int NumSubseq(int[] nums, int target)
+{
+	Array.Sort(nums);
+	long result = 0;
+	const int MOD = (int)1E9 + 7;
+	int[] count = new int[nums.Length + 1];
+	count[0] = 1;
+
+	for (int i = 1; i <= nums.Length; i++)
+	{
+		count[i] = (count[i - 1] * 2) % MOD;
+	}
+
+	int end = nums.Length - 1;
+	for (int start = 0; start < nums.Length; start++)
+	{
+		while (end >= 0 && nums[start] + nums[end] > target)
+		{
+			end--;
+		}
+
+		if (end >= start)
+		{
+			result += count[start];
+		}
+
+		else
+		{
+			result += count[start] - count[start - end - 1];
+		}
+	}
+
+	result %= MOD;
+	if (result < 0)
+	{
+		result += MOD;
+	}
+
+	return (int)result;
+}

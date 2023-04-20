@@ -1,0 +1,35 @@
+typedef long long ll;
+class Solution {
+public:
+    long long minSumSquareDiff(vector<int>& nums1, vector<int>& nums2, int k1, int k2) 
+    {
+        ll tot=k1+k2;
+        int n=nums1.size();
+        vector<ll>dif(n);
+        for(int i=0;i<n;i++)dif[i]=abs(nums1[i]-nums2[i]);
+        dif.push_back(0);
+        sort(dif.begin(),dif.end());
+        ll idx=n,cnt=1,ans=0;
+        while(idx>0&&tot)
+        {
+            if(cnt*(dif[idx]-dif[idx-1])<=tot)
+            {
+                tot-=cnt*(dif[idx]-dif[idx-1]);
+                cnt++;
+            }else
+            {
+                ll avg=tot/cnt;
+                tot-=avg*cnt;
+                ans=(cnt-tot)*(dif[idx]-avg)*(dif[idx]-avg)+tot*(dif[idx]-avg-1)*(dif[idx]-avg-1);
+                tot=0;
+            }
+            idx--;
+        }
+        while(idx)
+        {
+            ans+=dif[idx]*dif[idx];
+            idx--;
+        }
+        return ans;
+    }
+};

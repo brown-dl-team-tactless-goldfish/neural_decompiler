@@ -1,0 +1,37 @@
+class Solution {
+private:
+    int sumOfN(int num){
+        long long ans = ((long long)num * ((long long)num - 1))/2;
+        return ans;
+    }
+public:
+    long long countGood(vector<int>& nums, int k) {
+        int i=0,j=0;
+        long long ans=0;
+        long long n = nums.size();
+        unordered_map<int,int> hm;
+        int countPairs = 0;
+        bool shoulddo = true;
+        while(j<n){
+            if(shoulddo){
+                hm[nums[j]]++;
+                if(hm[nums[j]] >= 2){
+                    countPairs += hm[nums[j]] -1;
+                }
+            }
+            shoulddo = true;
+            if(countPairs>=k){
+                ans += n - (long long)j;
+                hm[nums[i]]--;
+                if(hm[nums[i]] >= 1){
+                    countPairs -= (hm[nums[i]]);
+                }
+                i++;
+                j--;
+                shoulddo = false;
+            }
+            j++;
+        }
+        return ans;
+    }
+};

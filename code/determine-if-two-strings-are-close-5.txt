@@ -1,0 +1,35 @@
+// comparison function for qsort
+int cmpfunc (const void * a, const void * b) {
+   return ( *(int*)b - *(int*)a );
+}
+
+bool closeStrings(char * word1, char * word2){
+	// frequency tables
+    int t1[26] = {0};
+    int t2[26] = {0};
+	
+	// lengths
+    int l1=0, l2=0;
+    
+    // populate the frequency tables
+    while(word1[l1]) t1[word1[l1++] - 'a']++;
+    while(word2[l2]) t2[word2[l2++] - 'a']++;
+    
+	// if the lengths differ, we return false because of (3)
+    if (l1!=l2) return false;
+    
+	// if either string has a unique character, we return false because of (2)
+    for(int i=0; i<26; i++) 
+        if((t1[i]==0 && t2[i]!=0) || (t2[i]==0 && t1[i]!=0)) return false;
+    
+	// sort the frequency tables
+    qsort(t1, 26, sizeof(int), cmpfunc);
+    qsort(t2, 26, sizeof(int), cmpfunc);
+    
+	// if any frequency is different, return false
+    for(int i=0; i<26; i++)
+        if(t1[i] != t2[i]) return false;
+    
+	// otherwise return true
+    return true;
+}

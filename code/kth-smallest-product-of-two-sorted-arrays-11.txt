@@ -1,0 +1,34 @@
+typedef long long int ll;
+
+class Solution {
+public:
+    long long kthSmallestProduct(vector<int>& nums1, vector<int>& nums2, long long k) {
+        ll left = -(ll)(1e10) - 1;
+        ll right = (ll)(1e10) + 1;;
+        while(right - left > 1){
+            ll c = (left + right)/2;
+            ll num = 0;
+            for(int n : nums1){
+                if(n == 0){
+                    if(c >= 0){
+                        num += nums2.size();
+                    }
+                }else if(n > 0){
+                    ll f = floor(c/(double)n);
+                    auto iter = upper_bound(nums2.begin(), nums2.end(), f);
+                    num += iter - nums2.begin();
+                }else{
+                    ll f = ceil(c / (double)n);
+                    auto iter = lower_bound(nums2.begin(), nums2.end(), f);
+                    num += nums2.size() - (iter - nums2.begin());             
+                }
+            }
+            if(num >= k){
+                right = c;
+            }else{
+                left = c;
+            }
+        }
+        return right;
+    }
+}

@@ -1,0 +1,31 @@
+    public long MakeIntegerBeautiful(long n, int target) 
+    {
+        string nString = n.ToString();
+        int currSum = nString.Sum(c => c - '0');
+        if (currSum <= target)
+            return 0;
+
+        long result = 0;
+        int power = 0;
+        int carry = 0;
+        int prevCarry = 0;
+        for (int i = nString.Length -1; i >= 0; i--)
+        {
+            if ((nString[i] - '0') + carry == 0)
+            {
+                power++;
+                continue;
+            }
+            prevCarry = carry;
+            int toAdd = 10 - (nString[i] - '0') - carry;
+            if ((nString[i] - '0') != 0)
+                carry = 1;
+            currSum -= (nString[i] - '0') + prevCarry - carry;
+            result += toAdd * ((long)Math.Pow(10, power));
+            power++;
+            if (currSum <= target)
+                return result;
+        }
+
+        return result;
+    }

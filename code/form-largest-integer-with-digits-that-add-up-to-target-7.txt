@@ -1,0 +1,20 @@
+class Solution {
+public:
+    static constexpr auto N{ 9 };
+    using VI = vector<int>;
+    string largestNumber(VI& A, int T, string path = {}) {
+        VI dp(T + 1, -1);
+        dp[0] = 0; // target sum 0 is reached with 0 digits ✅
+        for (auto t{ 1 }; t <= T; ++t)
+            for (auto i{ 0 }; i < N; ++i)
+                if (0 <= t - A[i] && dp[t - A[i]] > -1)
+                    dp[t] = max(dp[t], 1 + dp[t - A[i]]);
+        if (dp[T] == -1) // target sum not reached ❌
+            return "0";
+        for (auto i{ N - 1 }, t{ T }; 0 <= i; --i)
+            while (0 <= t - A[i] && dp[t] == 1 + dp[t - A[i]])
+                path.push_back('0' + i + 1), // +1 for 1-based indexing
+                t -= A[i];
+        return path; // reconstructed path 🎯
+    }
+};

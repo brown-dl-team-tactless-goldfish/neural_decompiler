@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int bestClosingTime(string customers) {
+        vector<int> l(customers.size(), 0);
+        vector<int> r(customers.size(), 0);
+        if(customers[0] == 'N') l[0] = 1;
+        if(customers[customers.size()-1] == 'Y') r[customers.size()-1] = 1;
+        for(int i = 1; i < customers.size(); i++){
+            l[i] += l[i-1];
+            if(customers[i] == 'N') l[i]++;
+        }
+        for(int i = customers.size()-2; i >= 0; i--){
+            r[i] += r[i+1];
+            if(customers[i] == 'Y') r[i]++;
+        }
+        int m = r[0];
+        int t= 0;
+        for(int i = 1; i < customers.size(); i++){
+            if(r[i] + l[i-1] < m){
+                m = r[i] + l[i-1];
+                t = i;
+            }
+        }
+        if(l[customers.size()-1] < m) return customers.size();
+        return t;
+    }
+};

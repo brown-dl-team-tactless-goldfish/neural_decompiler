@@ -1,0 +1,38 @@
+static int gcd(int a, int b) {
+	while (b != 0) {
+		const int c = a % b;
+		a = b;
+		b = c;
+	}
+	return a;
+}
+
+static int cmp_int_asc(const void * const p1, const void * const p2) {
+	return *(const int *)p1 - *(const int *)p2;
+}
+
+static int64_t minOperToMakeAllEqual(int * const nums, const int numsLen) {
+	qsort(nums, numsLen, sizeof (int), &cmp_int_asc);
+	int64_t result = 0;
+	for (int left = 0, right = numsLen - 1; left < right; left += 1, right -= 1) {
+		result += (nums[right] - nums[left]);
+	}
+	return result;
+}
+
+int64_t makeSubKSumEqual(const int * const arr, const int arrLen, const int k) {
+	int64_t result = 0;
+
+	const int colLen = gcd(arrLen, k);
+	const int rowLen = arrLen / colLen;
+
+	for (int col = 0; col < colLen; col += 1) {
+		int curColBuf[rowLen];
+		for (int row = 0; row < rowLen; row += 1) {
+			curColBuf[row] = arr[colLen * row + col];
+		}
+		result += minOperToMakeAllEqual(curColBuf, rowLen);
+	}
+
+	return result;
+}

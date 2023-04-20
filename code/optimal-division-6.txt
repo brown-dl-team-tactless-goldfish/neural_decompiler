@@ -1,0 +1,65 @@
+class Solution {
+public:
+    string optimalDivision(vector<int>& nums) {
+        size = nums.size();
+        if(size == 1) return to_string(nums[0]);
+        if(size == 2) return to_string(nums[0]) + "/" + to_string(nums[1]);
+        opt.resize(size, vector<double>(2, -1));
+        optOutput.resize(size, vector<string>(2, ""));
+        string output;
+        double ret = dfs(nums, 0, 0, output);
+        return output;
+    }
+private:
+    int size;
+    vector<vector<double>> opt;
+    vector<vector<string>> optOutput;
+    double dfs(vector<int>& nums, int idx, int mode, string& output) {
+        if(idx == size) {output=""; return 1;}
+        if(opt[idx][mode] != -1) {output = optOutput[idx][mode]; return opt[idx][mode];}
+        if(idx == size-1) {output = to_string(nums[idx]); return nums[idx];}
+        else if(idx == size-2) {output = to_string(nums[idx]) + "/" + to_string(nums[idx+1]); return (double)nums[idx]/nums[idx+1];}
+        if(mode == 0){
+            double maxD = -1; int candPos = -1; string candStr = "";
+            double accu = nums[idx]*nums[idx];
+            for(int i=idx; i<size; i++) {
+                accu /= nums[i];
+                string tmp;
+                double t = accu/dfs(nums, i+1, 1, tmp);
+                if(t > maxD) {
+                    maxD = t;
+                    candPos = i;
+                    candStr = tmp;
+                }
+            }
+            opt[idx][0] = maxD;
+            for(int i=idx; i<=candPos; i++) {output += to_string(nums[i]) + "/";}
+            if(candPos < size-2) output += "(";
+            output += candStr;
+            if(candPos < size-2) output += ")";
+            optOutput[idx][0] = output;
+            return maxD;
+        } else {
+            double minD = 10000; int candPos = -1; string candStr = "";
+            double accu = nums[idx]*nums[idx];
+            for(int i=idx; i<size; i++) {
+                accu /= nums[i];
+                string tmp;
+                double t = accu/dfs(nums, i+1, 1, tmp);
+                if(t < minD) {
+                    minD = t;
+                    candPos = i;
+                    candStr = tmp;
+                }
+            }
+            opt[idx][1] = minD;
+            for(int i=idx; i<=candPos; i++) {output += to_string(nums[i]) + "/";}
+            if(candPos < size-2) output += "(";
+            output += candStr;
+            if(candPos < size-2) output += ")";
+            optOutput[idx][1] = output;
+            return minD;
+        }
+        return 0.0;       
+    }
+};

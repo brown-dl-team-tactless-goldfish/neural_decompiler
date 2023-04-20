@@ -1,0 +1,50 @@
+class Solution {
+public:
+    
+    int findTheCity(int n, vector<vector<int>>& edges, int dt) {
+        
+        vector<vector<int>>dis(n, vector<int>(n  , INT_MAX/2)) ; 
+      
+        int len = edges.size() ;
+        for(int i= 0; i <len; i++ )
+        {
+            int u = edges[i][0 ]; 
+            int v = edges[i][1]; 
+            int wt = edges[i][2]  ;
+           dis[u][v] = wt ;
+            dis[v][u]= wt ; 
+            dis[u][u] = 0 ;
+            dis[v][v]= 0 ;
+        }
+        
+        for(int k =0 ; k<n ;k++ )
+        {
+            for(int i =0 ; i<n ;i++ )
+            {
+                for(int j =0 ; j<n ;j++ )
+                {
+                    if(i!=j)
+                    dis[i][j] = min(dis[i][j] , dis[i][k]+dis[k][j]); 
+                }
+            }
+        }
+        int ans= -1  , mini = INT_MAX ; 
+          for(int i = n-1 ; i>= 0 ;i-- )
+          {
+              int c=0 ; 
+              for(int j = 0 ;j<n ;j++ )
+              {
+                  if(dis[i][j] <=dt)
+                      c++  ; 
+              }
+                  if(c<mini)
+                  {
+                      ans =i ; 
+                      mini=  c ; 
+                      
+                  }
+              
+          }
+        return ans ; 
+    }
+};

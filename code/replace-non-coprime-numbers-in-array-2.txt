@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int gcd(int x, int y)
+    {
+        if (x == 0) return y;
+        if (y == 0) return x;
+        else 
+            return gcd(y %x, x);
+    } 
+    vector<int> replaceNonCoprimes(vector<int>& nums) {
+        vector<int> res;
+        res.push_back(nums[0]);
+        if (nums.size() == 1) return res;
+        int i = 0;
+        for (int j = 1; j < nums.size(); j++) {
+            int c = gcd(nums[j], res[i]);
+            if (c > 1) {
+                long long d = (long long) (nums[j]) * (res[i]) / c;
+                res.pop_back();
+                res.push_back(d);
+            } else {
+                res.push_back(nums[j]);
+                i++;
+            }
+
+            while (i > 0) {
+                int c; long long d;
+                
+                c = gcd(res[i-1], res[i]);
+                if (c > 1) {
+                    d = (long long) (res[i-1]) * (res[i]) / c;
+                    res.pop_back(); res.pop_back();
+                    res.push_back(d);
+                    i--;
+                } else {
+                    break;
+                }
+            }
+        }
+        return res;
+    }
+};

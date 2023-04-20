@@ -1,0 +1,187 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+/******** Stack Helper **********/
+struct TreeNode** createStack(int* top)
+{
+    *top = 0;
+    
+    return ((struct TreeNode**)malloc(10000*sizeof(struct TreeNode*)));
+}
+
+void push(struct TreeNode* node, struct TreeNode** stack, int* top)
+{
+    stack[*top] = node;
+    (*top)++;
+}
+
+struct TreeNode* pop(struct TreeNode** stack, int* top)
+{
+    struct TreeNode* node = stack[*top - 1];
+
+    (*top)--;
+
+    return node;
+}
+
+int stackSize(struct TreeNode** stack, int* top)
+{
+    return (*top);
+}
+
+bool isStackEmpty(struct TreeNode** stack, int* top)
+{
+    if (*top == 0)
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+/******** Queue Helper **********/
+struct TreeNode** createQueue(int* front, int* rear)
+{
+    *front = 0;
+    *rear = 0;
+    
+    return ((struct TreeNode**)malloc(10000*sizeof(struct TreeNode*)));
+}
+
+void enqueue(int* rear, struct TreeNode **queue, struct TreeNode* node)
+{
+    queue[*rear] = node;
+    (*rear)++;
+}
+
+struct TreeNode* dequeue(int* front, struct TreeNode **queue)
+{
+    struct TreeNode* node = queue[*front];
+    (*front)++;
+
+    return node;
+}
+
+int queueSize(struct TreeNode** queue, int* front, int* rear)
+{
+    return (*rear - *front);
+}
+
+bool isQueueEmpty(struct TreeNode** queue, int* front, int* rear)
+{
+    if (*front == *rear)
+    {
+        return true;
+    }
+    
+    return false;
+}
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** zigzagLevelOrder(struct TreeNode* root, int* returnSize, int** returnColumnSizes){
+    
+    *returnSize = 0;
+    
+    if (root == NULL)
+    {
+        return NULL;
+    }
+    
+    int a, b, c;
+    int* front = &a;
+    int* rear = &b;
+    int* top = &c;
+    bool fromQueue = true;
+    
+    
+    struct TreeNode** queue = createQueue(front, rear);
+    struct TreeNode** stack = createStack(top);
+    
+    int** arr = (int**)malloc(sizeof(int*)*10000);
+    *returnColumnSizes = (int*)malloc(sizeof(int)*10000);
+    int arrIndex = 0;
+    
+    enqueue(rear, queue, root);
+    
+    while (!isQueueEmpty(queue, front, rear) || !isStackEmpty(stack, top)) 
+    {
+        if (fromQueue)
+        {
+            int size = queueSize(queue, front, rear);
+            arr[arrIndex] = (int*)malloc(size*sizeof(int));
+            (*returnColumnSizes)[arrIndex] = size;
+            
+            for (int i = 0; i < size; i++)
+            {
+                struct TreeNode* node = dequeue(front, queue);
+                printf("%d ", node->val);
+                arr[arrIndex][i] = node->val;
+
+                if (node->left != NULL)
+                {
+                    push(node->left, stack, top);
+                    enqueue(rear, queue, node->left);
+                }
+            
+                if (node->right != NULL)
+                {
+                    push(node->right, stack, top);
+                    enqueue(rear, queue, node->right);
+                }
+            }
+            
+        }
+        else
+        {
+            int size = stackSize(stack, top);
+            arr[arrIndex] = (int*)malloc(size*sizeof(int));
+            (*returnColumnSizes)[arrIndex] = size;
+            
+            for (int i = 0; i < size; i++)
+            {
+                struct TreeNode* node = pop(stack, top);
+                printf("%d ", node->val);
+                arr[arrIndex][i] = node->val;
+
+                node = dequeue(front, queue);
+                
+                if (node->left != NULL)
+                {
+                    enqueue(rear, queue, node->left);
+                }
+            
+                if (node->right != NULL)
+                {
+                    enqueue(rear, queue, node->right);
+                }
+            }
+        }  
+        
+        printf("\n");
+        fromQueue = !fromQueue;
+        arrIndex++;
+        (*returnSize)++;
+    }
+    
+    /*for (int i = 0; i < (*returnSize); i++)
+    {
+        for (int j = 0; j < (*returnColumnSizes)[i]; j++)
+        {
+            printf("%d ", arr[i][j]);
+        }
+        
+        printf("\n");
+    }*/
+
+    return arr;
+}

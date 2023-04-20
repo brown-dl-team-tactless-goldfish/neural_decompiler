@@ -1,0 +1,52 @@
+class DSU{
+private:
+    vector<int>parent,rank ;
+public:
+    DSU(int n){
+        parent.resize(n);
+        iota(begin(parent),end(parent),0) ;
+        rank.resize(n,1) ;
+    }
+    int find_parent(int node){
+        if(node == parent[node]) return node ;
+        return parent[node] = find_parent(parent[node]) ;
+    }
+    void Union(int u , int v){
+        int U = find_parent(u) , V = find_parent(v) ;
+        if(U == V) return ;
+        if(rank[U] < rank[V]) swap(U,V) ;
+        rank[U] += rank[V] ; 
+        parent[V] = U ;
+    }
+    
+};
+class Solution {
+public:
+    #define arr array<int,3>
+    int n ;
+    int minCostConnectPoints(vector<vector<int>>& points) {
+        priority_queue<arr,vector<arr>,greater<arr>> pq ;
+        DSU dsu(points.size() + 1) ;
+        n = points.size() ;
+		
+		//make graph with indices as vertices an manhattan distance as weighted edges
+        for(int i = 0 ; i < n ; ++i ){
+            for(int j = i + 1 ; j < n ; ++j ){
+                int a = points[i][0] , b = points[i][1] ;
+                int c = points[j][0] , d = points[j][1] ;
+                pq.push({abs(a-c) + abs(b-d) , i , j}) ;
+            }
+        }
+        int minCost = 0 ;
+        while(pq.size()){
+            auto[cost,u,v] = pq.top() ; pq.pop() ;
+            //take minimum weight first and joint the two nodes only if they are not already joined
+            if(dsu.find_parent(u) == dsu.find_parent(v)) continue ;
+            minCost += cost ;
+            dsu.Union(u,v); 
+        }
+        
+        return minCost; 
+        
+    }
+};

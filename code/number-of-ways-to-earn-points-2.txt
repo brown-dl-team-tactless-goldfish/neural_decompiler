@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int mod = 1e9 + 7 ; 
+    int dp[1001][61];
+    long long int  solve(int i , int n ,vector<vector<int>>&a,int t){
+        if(t == 0)
+            return 1;
+        if(i >= n || t < 0)
+            return 0;
+        if(dp[t][i] != -1)
+            return dp[t][i];
+        long long int ans=0;
+        ans=solve(i+1,n,a,t);
+        for(int j = 1 ; j <= a[i][0];j++){
+            ans = (ans +  solve(i+1,n,a,t-(j*a[i][1])))%mod ; 
+        }
+        return dp[t][i] = ans%mod;
+    }
+    int waysToReachTarget(int target, vector<vector<int>>& a) {
+        int n = a.size();
+        memset(dp,-1,sizeof(dp));
+        return solve(0,n,a,target);
+    }
+};

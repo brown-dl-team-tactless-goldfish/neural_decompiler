@@ -1,0 +1,121 @@
+int dp[14][14];
+class Solution {
+public:
+    int tilingRectangle(int n, int m) {
+        for(int i = 0; i <= n; i++) for(int j = 0; j <=m; j++) {
+            if(i == 0 or j == 0) dp[i][j] = 0;
+            else dp[i][j] = 987654321;
+        }
+        for(int i = 1; i <= n; i++) {
+            for(int j = 1; j <= m; j++) {
+                int& best = dp[i][j];
+                for(int s = 1; s <= min(i, j); s++) {
+                    for(int r = s; r <= i; r++) {
+                        for(int c = s; c <= j; c++) {
+                            // place a square of size s x s
+                            // whose end point is at (r, c)
+                            /*
+                              ____________________________
+                             |                            |
+                             |         ____               |
+                             |        |    |              |
+                             |        |____|              |
+                             |     (r-s,c)  (r,c)         |
+                             |                            |
+                             |____________________________|
+                             Note: coordinates are of the form (y, x)
+                            */ 
+
+                            vector<int> possibilities;
+                            /* Possibility 0:
+                                  _____________________________    _
+                                 |              |              |  | r - s
+                                 |______________|              |  |_
+                                 |        |     |              |  | s
+                                 |        |_____|______________|  |_
+                                 |        |                    |  |
+                                 |        |                    |  | i - r
+                                 |________|____________________|  |_
+                                 <-(c-s)-><--s--><----(j-c)---->
+                                 Note: coordinates are of the form (y, x)
+                                */
+                            possibilities.push_back(dp[r-s][c] + dp[s+i-r][c-s] + dp[i-r][j+s-c] + dp[r][j-c] + 1);
+                            
+                            /* Possibility 1:
+                                  _____________________________    _
+                                 |        |     |              |  | r - s
+                                 |        |_____|              |  |_
+                                 |        |     |              |  | s
+                                 |        |_____|              |  |_
+                                 |        |     |              |  |
+                                 |        |     |              |  | i - r
+                                 |________|_____|______________|  |_
+                                 <-(c-s)-><--s--><----(j-c)---->
+                                 Note: coordinates are of the form (y, x)
+                                */
+                            possibilities.push_back(dp[i][c-s] + dp[i][j-c] + dp[r-s][s] + dp[i-r][s] + 1);
+
+                            /* Possibility 2:
+                                  _____________________________    _
+                                 |                             |  | r - s
+                                 |_____________________________|  |_
+                                 |        |     |              |  | s
+                                 |________|_____|______________|  |_
+                                 |                             |  |
+                                 |                             |  | i - r
+                                 |_____________________________|  |_
+                                 <-(c-s)-><--s--><----(j-c)---->
+                                 Note: coordinates are of the form (y, x)
+                                */
+                            possibilities.push_back(dp[r-s][j] + dp[i-r][j] + dp[s][c-s] + dp[s][j-c] + 1);
+
+                            /* Possibility 3:
+                                  _____________________________    _
+                                 |              |              |  | r - s
+                                 |______________|              |  |_
+                                 |        |     |              |  | s
+                                 |________|_____|______________|  |_
+                                 |                             |  |
+                                 |                             |  | i - r
+                                 |_____________________________|  |_
+                                 <-(c-s)-><--s--><----(j-c)---->
+                                 Note: coordinates are of the form (y, x)
+                                */
+                            possibilities.push_back(dp[r-s][c] + dp[i-r][j] + dp[s][c-s] + dp[r][j-c] + 1);
+
+                            /* Possibility 4:
+                                  _____________________________    _
+                                 |        |                    |  | r - s
+                                 |        |____________________|  |_
+                                 |        |     |              |  | s
+                                 |________|_____|______________|  |_
+                                 |                             |  |
+                                 |                             |  | i - r
+                                 |_____________________________|  |_
+                                 <-(c-s)-><--s--><----(j-c)---->
+                                 Note: coordinates are of the form (y, x)
+                                */
+                            possibilities.push_back(dp[r-s][j-c+s] + dp[i-r][j] + dp[r][c-s] + dp[s][j-c] + 1);
+
+                            /* Possibility 5:
+                                  _____________________________    _
+                                 |        |     |              |  | r - s
+                                 |        |_____|              |  |_
+                                 |        |     |              |  | s
+                                 |________|_____|______________|  |_
+                                 |                             |  |
+                                 |                             |  | i - r
+                                 |_____________________________|  |_
+                                 <-(c-s)-><--s--><----(j-c)---->
+                                 Note: coordinates are of the form (y, x)
+                                */
+                            possibilities.push_back(dp[r-s][s] + dp[i-r][j] + dp[r][c] + dp[r][j-c] + 1);
+                            best = min(best, *min_element(possibilities.begin(), possibilities.end()));
+                        }
+                    }
+                }
+            }
+        }
+        return dp[n][m];
+    }
+};

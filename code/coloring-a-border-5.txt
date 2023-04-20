@@ -1,0 +1,42 @@
+int direction[][4] = {{1,-1,0,0}, {0,0,1,-1}};
+class Solution {
+public:
+    vector<vector<int>> colorBorder(vector<vector<int>>& grid, int row, int col, int color) {
+        int colour = grid[row][col];
+        if (colour == color) {
+            return grid;
+        }
+        queue<pair<int,int>> q;
+        q.push({row, col});
+
+       
+        while (!q.empty()) {
+            int row = q.front().first, col = q.front().second;
+            int cnt = 0;
+            for (int d = 0; d < 4; ++d) {
+                int r = row + direction[0][d], c = col + direction[1][d];
+                
+                if (0 <= r && r < grid.size() && 
+                    0 <= c && c < grid[r].size()) {
+                    cnt += grid[r][c] == colour || grid[r][c] < 0;
+                    if (grid[r][c] == colour) {
+                        q.push({r, c});
+                    }
+                }
+            }
+            if (cnt < 4) {
+                grid[row][col] = -color;
+            } else {
+                grid[row][col] *= -1;
+            }
+            q.pop();
+        }
+
+        for (int i = 0; i < grid.size(); ++i) {
+            for (int j = 0; j < grid[i].size(); ++j) {
+                grid[i][j] = abs(grid[i][j]);
+            }
+        }
+        return grid;
+    }
+};

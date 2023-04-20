@@ -1,0 +1,30 @@
+int firstMissingPositive(int* a, int N){
+  // Assume all numbers are present.
+  int m = N;
+  int i, n;
+  for(i = 0; i < N; ++i)
+    // If we find a non-positive number or a numver too big, decrement the largest possible number.
+    if(a[i] <= 0 || m < a[i]) --m;
+    // Else, check to see if the number is in its slot.
+    else if(a[i] != i+1) {
+      // Cache the number we are going to replace.
+      n = a[a[i]-1];
+      // If the number is already in this slot, then we have a duplicate and need to shrink the max.
+      if(a[i] == n) --m;
+      // If the number is one we have not seen, then modify appropriately.
+      else if(a[i] > i+1) {
+        // Swap the values and step back if we need to evaluate the swapped number.
+        a[a[i]-1] = a[i];
+        a[i] = n;
+        // Note that stepping back will only happen at most once per number. Therein, this loop can only be 2N.
+        if(0 < n && n <= m) --i;
+      } else {
+        // Since we will see it, just complete the swap.
+        a[a[i]-1] = a[i];
+        a[i] = n;
+      }
+    }
+  for(i = 0; i < m; ++i)
+    if(a[i] != i+1) return i+1;
+  return m+1;
+}

@@ -1,0 +1,30 @@
+class Solution {
+    int dp[101][101];
+    const int mod = 1e9+7;
+    void self_add(int& a,int& b){
+        a = (a+b)%mod;
+    }
+public:
+    int profitableSchemes(int G, int P, vector<int>& group, vector<int>& profit) {
+        
+        memset(dp,0,sizeof(dp));
+        dp[0][0] = 1;
+        
+        int n = group.size();
+        
+        for (int i =0;i<n;i++){
+            int people = group[i];
+            int money = profit[i];
+            for (int j = P;j>=0;j--){
+                for (int k=G-people;k>=0;k--){
+                    self_add(dp[min(P,money+j)][k+people],dp[j][k]);
+                }
+            }
+        }
+        int answer= 0 ;
+        for (int i =1;i<=G;i++){
+            self_add(answer,dp[P][i]);
+        }
+        return answer;
+    }
+};

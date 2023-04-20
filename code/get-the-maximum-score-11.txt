@@ -1,0 +1,30 @@
+#define ll long long int
+class Solution {
+public:
+    int maxSum(vector<int>& nums1, vector<int>& nums2) {
+        int m = nums1.size(), n = nums2.size();
+        vector<ll> sum1(m), sum2(n);
+        sum1[m-1] = nums1[m-1], sum2[n-1] = nums2[n-1];
+        for(int i=m-2;i>=0;i--) sum1[i] += sum1[i+1] + nums1[i];
+        for(int i=n-2;i>=0;i--) sum2[i] += sum2[i+1] + nums2[i];
+        vector<vector<int>> hash; int ptr1 = 0, ptr2 = 0;
+        while(ptr1 < m and ptr2 < n) {
+            if(nums1[ptr1] == nums2[ptr2]) {
+                hash.push_back({ptr1, ptr2}); ptr1++, ptr2++;
+            }
+            else if(nums1[ptr1] < nums2[ptr2]) ptr1++;
+            else ptr2++;
+        }
+        int len = hash.size();
+        if(!len) return max(sum1[0], sum2[0]);
+        ll res = max(sum1[hash[len-1][0]], sum2[hash[len-1][1]]);
+        // for(ll i : sum1) cout<<i<<" ";
+        // cout<<res<<" ";
+        for(int i=len-2;i>=0;i--) {
+            res += max(sum1[hash[i][0]] - sum1[hash[i+1][0]], sum2[hash[i][1]] - sum2[hash[i+1][1]]);
+        }
+        res += max(sum1[0] - sum1[hash[0][0]], sum2[0] - sum2[hash[0][1]]);
+        int val = 1e9 + 7;
+        return (int)(res%val);
+    }
+};

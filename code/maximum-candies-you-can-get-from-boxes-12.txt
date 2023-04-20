@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int n, result = 0;
+    vector<bool> haveKey;
+    vector<bool> vis;
+    queue<int> q;
+    vector<bool> available;
+    int maxCandies(vector<int>& open, vector<int>& candies, vector<vector<int>>& keys, vector<vector<int>>& boxes, vector<int>& curBoxes) {
+        n = open.size();
+        haveKey.resize(n); available.resize(n); vis.resize(n);
+        for(int i: curBoxes){
+            q.push(i);
+            available[i] = true;
+        }
+        while(!q.empty()){
+            int box = q.front();
+            q.pop();
+            if(vis[box] || !open[box] && !haveKey[box]) continue;
+            vis[box] = true;
+            haveKey[box] = false;
+            open[box] = 0;
+            available[box] = false;
+            result += candies[box];
+            for(int b: boxes[box]){
+                q.push(b);
+                available[b] = true;
+            }
+            for(int k: keys[box])
+                haveKey[k] = true;
+            for(int i = 0; i < n; i++)
+                if(!vis[i] && available[i] && (open[i] || haveKey[i]))
+                    q.push(i);
+        }
+        return result;
+    }
+};

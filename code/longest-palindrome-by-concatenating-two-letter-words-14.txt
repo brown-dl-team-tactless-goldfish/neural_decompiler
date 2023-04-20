@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int longestPalindrome(vector<string>& words) {
+        unordered_map<string, int> m;
+        for(string s : words) m[s]++;
+
+        int ans = 0, mx = 0;
+        for(string s : words) {
+            string t = s; swap(t[0], t[1]);
+            if(s != t && m.find(t) != m.end() && m[s] && m[t]) {
+                m[s]--;
+                m[t]--;
+                if(!m[s]) m.erase(s);
+                if(!m[t]) m.erase(t);
+                ans += 4;
+            }
+        }
+        
+        string mxstr;
+        for(auto i : m) {
+            string s = i.first, t = s; swap(t[0], t[1]);
+            if(s == t && i.second % 2) {
+                if(mx < i.second * 2) mx = i.second * 2, mxstr = s;
+            }
+        }
+        for(auto i : m) {
+            string s = i.first, t = s; swap(t[0], t[1]);
+            if(t == s && s != mxstr) {
+                if(i.second % 2) ans += (i.second - 1) * 2;
+                else ans += i.second * 2;
+            }
+        }
+        return ans + mx;
+    }
+};

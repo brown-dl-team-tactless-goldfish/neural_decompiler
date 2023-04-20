@@ -1,0 +1,38 @@
+int minSwaps(vector<vector<int>>& grid) {
+        
+        int m = grid.size();
+        if(!m)
+            return 0;
+        vector<int> arr(m, INT_MIN);
+        for(int i=0;i<m;i++){
+            int index = -1;
+            for(int j=0;j<m;j++){
+                if(grid[i][j] == 1)
+                    index = j;
+            }
+            if(index!=-1)
+                arr[i] = index;
+                
+        }
+        vector<int> temp(arr.begin(), arr.end());
+        sort(temp.begin(), temp.end());
+        for(int i=0;i<m;i++){
+            if(temp[i] > i)
+                return -1;
+        }
+        int count = 0;
+        for(int i=0;i<arr.size();i++){
+            int j=i;
+            while(arr[j] > i)
+                j++;
+            count+= j -i;
+            if(j < arr.size()){
+                int k = j;
+                while(k > i){
+                    swap(arr[k], arr[k-1]);
+                    k--;
+                }
+            }
+        }
+        return count;
+    }

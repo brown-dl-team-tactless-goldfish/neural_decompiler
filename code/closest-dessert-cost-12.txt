@@ -1,0 +1,40 @@
+class Solution {
+public:
+    // convert a number to a vector of 0, 1, 2s.
+    vector<int> convert(int a, int m) {
+        vector<int> res;
+        while(a) {
+            int r = a % 3;
+            res.push_back(r);
+            a = a / 3;
+        }
+        while(res.size() < m) {
+            res.push_back(0);
+        }
+        return res;
+    }
+    
+    int closestCost(vector<int>& baseCosts, vector<int>& toppingCosts, int target) {
+        int m = toppingCosts.size();
+        int limit = pow(3, m);
+        int ans = -1;
+        
+        int minDiff = INT_MAX;
+        for(int i=0; i<limit; i++) {
+            int topping = 0;
+            auto v = convert(i, m);
+            for(int t=0; t<m; t++) topping += v[t] * toppingCosts[t];
+            
+            for(auto b : baseCosts) {
+                if(abs(b + topping - target) < minDiff) {
+                    minDiff = abs(b + topping - target);
+                    ans = b + topping;
+                } else if(abs(b + topping - target) == minDiff && b + topping < target) {
+                    ans = b + topping;
+                }
+            }
+        }
+        
+        return ans;
+    }
+};

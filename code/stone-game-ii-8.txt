@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int n;
+    int dp[101][101];
+    int get(int i,int m,vector<int>& piles)
+    {
+        if(i>=n)
+            return 0;
+        if(dp[i][m]!=-1)
+            return dp[i][m];
+        int res=INT_MIN,sum=0;
+        for(int j=1;j<=2*m;j++)
+        {
+            if(i+j-1<n)
+            {
+                sum+=piles[i+j-1];
+                int curr=sum-get(i+j,max(m,j),piles);
+                res=max(res,curr);
+            }
+            else
+                break;
+        }
+        return dp[i][m]=res;
+    }
+    int stoneGameII(vector<int>& piles) 
+    {
+        int sum=0;
+        for(auto x:piles)
+            sum+=x;
+        n=piles.size();
+        memset(dp,-1,sizeof(dp));
+        int diff=get(0,1,piles);
+        int res=(sum+diff)/2;
+        return res;
+    }
+};

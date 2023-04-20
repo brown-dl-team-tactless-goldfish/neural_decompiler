@@ -1,0 +1,32 @@
+bool solve(int b,int m,vector<int>&v){
+    int x=0; 
+    int cnt=1;
+    while(1){
+        auto pos=upper_bound(v.begin()+x,v.end(),v[x]+m);
+        int idx=pos-v.begin();
+        if(v[idx-1]==v[x]+m) idx--;
+        if(idx>=v.size()) break;
+        cnt++; x=idx;
+        if(cnt==b) return true;
+    }
+    return false;
+}
+
+class Solution {
+public:
+    int maxDistance(vector<int>&v,int b) {
+        sort(v.begin(),v.end());
+        int i=1,j=v[v.size()-1]-v[0];
+        int ans;
+        while(i<=j){
+            int m=i+((j-i)>>1);
+            if(solve(b,m,v)){
+                ans=m;
+                i=m+1;
+            }else{
+                j=m-1;
+            }
+        }
+        return ans;
+    }
+};

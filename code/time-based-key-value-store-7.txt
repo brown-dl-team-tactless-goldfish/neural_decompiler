@@ -1,0 +1,94 @@
+#define NUM_TVALS   100000
+typedef struct {
+    int t;      // timestamp of this value
+    char *v;
+} TimedVal;
+
+typedef struct {
+    char *k;    // key
+    TimedVal *a[NUM_TVALS];   // array of values for this keys with associated timestamp;
+    int n;      //  current number of values
+    UT_hash_handle hh;
+} hElem;        //hash map element Key <--> list of values with timestamps
+
+typedef struct {
+    hElem *map;
+} TimeMap;
+
+/** Initialize your data structure here. */
+
+TimeMap* timeMapCreate() {
+    TimeMap *ret = calloc(sizeof(TimeMap), 1);
+    ret->map = NULL;
+    return ret;
+}
+
+void timeMapSet(TimeMap* obj, char * key, char * value, int timestamp) {
+    hElem *tmp;
+    
+    // new timestamped value
+    TimedVal *val = calloc(sizeof(TimedVal), 1);
+    val->t = timestamp; val->v = value;
+        
+    HASH_FIND_STR(obj->map, key, tmp);
+    if(tmp) {   // key already added, add new value and timestamp        
+        tmp->a[tmp->n++] = val;
+    } else {    // add new key to map
+        tmp = calloc(sizeof(hElem), 1);
+        tmp->n = 0;
+        val->t = timestamp; val->v = value;
+        tmp->k = key; tmp->a[tmp->n++] = val;
+        HASH_ADD_STR(obj->map, k, tmp);
+    }    
+}
+
+char * timeMapGet(TimeMap* obj, char * key, int timestamp) {
+    hElem *tmp;
+    char *res = "";
+    // get the valyur for key
+    HASH_FIND_STR(obj->map, key, tmp);
+    if(!tmp) {
+        return "";
+    } else {
+        // check if the timestamp we are looking for is saved
+        // since timestamp is always increasing checking last is enough
+        TimedVal *val = tmp->a[tmp->n-1];
+        if(val->t <= timestamp) {
+            return val->v;
+        } else {
+            // binary search for timestamp
+            int l = 0, r = tmp->n;
+            while(l <= r) {
+                int mid = l + (r - l) / 2;
+                if(tmp->a[mid]->t > timestamp) {
+                    // given timestamp is greater. try to get most recent timestamped value
+                    r = mid - 1;
+                } else {
+                    res = tmp->a[mid]->v;
+                    l = mid + 1;
+                }              
+            }
+        }
+    }
+    return res;
+}
+
+void timeMapFree(TimeMap* obj) {
+    hElem *t, *s;
+    HASH_ITER(hh, obj->map, s, t) {
+        for(int i = 0; i < s->n; i++)
+            free(s->a[i]);
+        HASH_DEL(obj->map, s);
+        free(s);
+    }
+}
+
+/**
+ * Your TimeMap struct will be instantiated and called as such:
+ * TimeMap* obj = timeMapCreate();
+ * timeMapSet(obj, key, value, timestamp);
+ 
+ * char * param_2 = timeMapGet(obj, key, timestamp);
+ 
+ * timeMapFree(obj);
+*/

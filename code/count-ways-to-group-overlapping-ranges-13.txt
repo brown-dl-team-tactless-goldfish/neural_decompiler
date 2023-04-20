@@ -1,0 +1,35 @@
+#define ll long long
+class Solution {
+public:
+    
+    const int M = 1e9 + 7;
+    long long int powxy(long long int x, long long int y) {
+        if (y == 0) return 1;
+        if (y%2 == 1) return (x*powxy(x, y-1))%M;
+        long long int t = powxy(x, y/2);
+        return (t*t)%M;
+    }
+    
+    int countWays(vector<vector<int>>& ranges) 
+    {
+        int n=ranges.size();
+        auto mycmp=[&]( vector<int>&a,  vector<int>&b){
+           if(a[0]!=b[0])
+               return a[0]<b[0];
+            return a[1]<b[1];
+        };
+        sort(begin(ranges),end(ranges),mycmp);  
+        
+        int groups=0,maxi=-1;
+        for(int i=0;i<n;i++)
+        {
+            if(maxi<ranges[i][0])
+            {
+                groups++;
+            }
+            maxi=max(maxi,ranges[i][1]);
+        }
+        
+        return powxy(1LL*2,1LL*groups);
+    }
+};

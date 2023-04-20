@@ -1,0 +1,34 @@
+class Solution {
+public:
+    int minimumHammingDistance(vector<int>& S, vector<int>& T, vector<vector<int>>& allowedSwaps) {
+        int res = 0, root[100001]{};
+        for(int i = 0; i < S.size(); i++) root[i] = i;
+
+        auto findP = [&](int t)->int {
+            while(root[t] != t) {
+                root[t] = root[root[t]];
+                t = root[t];
+            }
+            return t;
+        };
+
+        for(auto & e: allowedSwaps) root[findP(e[0])] = findP(e[1]);
+
+        unordered_map<int, array<unordered_map<int, int>, 2>> mp;
+        for(int i = 0; i < S.size(); i++) {
+            int p = findP(i);
+            mp[p][0][S[i]]++;
+            mp[p][1][T[i]]++;
+        }
+
+        for(auto & [k, v] : mp) {
+            int total = 0, same = 0;
+            for(auto & [k1, v1] : v[0]) {
+                total += v1;
+                same += min(v1, v[1][k1]);
+            }
+            res += total - same;
+        }
+        return res;
+    }
+};

@@ -1,0 +1,50 @@
+//Compute frequencies using Hash table
+int min=s[0], max=s[0];
+for(i=0;s[i]!='\0'; i++)
+    if(s[i]<min)
+        min=s[i];
+    else if(s[i]>max)
+        max=s[i];
+
+int n=max-min+1;
+int ht[n];
+
+for(i=0;i<n;i++)
+    ht[i]=0;
+
+for(i=0;s[i]!='\0'; i++) {
+    ht[s[i]-min]++;
+}
+
+//Push Uninitialized/0 valued Hash table entrees to the end and calculate number of valid //frequencies i.e n
+for(i=0;i<n;i++) {
+    if(ht[i]==0)
+    {
+        n--;
+        for(int j=i;j<n;j++) 
+            ht[j]=ht[j+1];
+    }
+}
+
+//max heapify ht
+for(i=n/2-1; i>=0;i--)
+    heapify(ht, n, i);
+
+for(i=n-1; i>0; i--)
+{
+    swap(&ht[i], &ht[0]);
+    
+    heapify(ht, i, 0);
+    if(ht[0]==0)
+        continue;
+    
+    while (ht[0]==ht[i])
+    {
+        ans++;
+        ht[0]-=1;
+        heapify(ht, i, 0);
+        
+    }
+}
+
+return ans;

@@ -1,0 +1,57 @@
+class Solution {
+public:
+    #define tii tuple<int, int, int, int>
+    int shortestPathAllKeys(vector<string>& grid) {
+        
+        vector<int> x = {1,0,-1,0};
+        vector<int> y = {0,1,0,-1};
+        
+        int n = grid.size();
+        int m = grid[0].size();
+        int k = 0;
+        
+        int r0, c0;
+        
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < m; j++){
+                if(grid[i][j] >= 'a' && grid[i][j] <= 'z') k++;
+                if(grid[i][j] == '@') r0 = i, c0 = j;
+            }
+        }
+        
+        int dp[n][m][(1<<k)];
+        memset(dp, -1, sizeof(dp));
+        
+        
+        queue<tii> q;
+        q.push({r0, c0, 0, 0});
+        
+        while(!q.empty()){
+            auto [r, c, d, mask] = q.front();
+            q.pop();
+            
+            if(mask == (1 << k)-1) return d;
+            
+            for(int i = 0; i < 4; i++){
+                int xx = r + x[i];
+                int yy = c + y[i];
+                
+                if(xx >= 0 && xx < n && yy >= 0 && yy < m && dp[xx][yy][mask] == -1){
+                    if(grid[xx][yy] == '.' || grid[xx][yy] == '@'){
+                        dp[xx][yy][mask] = d + 1;
+                        q.push({xx, yy, d+1, mask});
+                    }
+                    else if(grid[xx][yy] >= 'a' && grid[xx][yy] <= 'f'){
+                        dp[xx][yy][mask | (1 << (grid[xx][yy] - 'a'))] = d + 1;
+                        q.push({xx, yy, d + 1, mask | (1 << (grid[xx][yy] - 'a'))});
+                    }
+                    else if(grid[xx][yy] >= 'A' && grid[xx][yy] <= 'F' && (mask & (1 << (grid[xx][yy] - 'A')))){
+                        dp[xx][yy][mask] = d + 1;
+                        q.push({xx, yy, d+1, mask});
+                    }
+                }
+            }
+        }
+        return -1;
+    }
+};

@@ -1,0 +1,75 @@
+
+class MaxStudents {
+public:
+    MaxStudents(vector<vector<char>>& seats) 
+        :   rows(seats.size()), 
+            cols(seats[0].size()), 
+            seats(seats), 
+            colMasks(cols, 0) {
+        for (int i = 0, mask = 1; i < cols; ++i, mask <<= 1) {
+            colMasks[i] = mask;   
+        }
+    }
+    
+    int compute() {
+        return compute(0, 0, 0);    
+    }
+    
+private:
+    int compute(int loc, int prevRow, int currRow) {
+        // Base condition
+        if (loc >= rows * cols) {
+            return 0;
+        }    
+        
+        // Convert to 2-D coordinate
+        int r = loc / cols;
+        int c = loc % cols;
+        
+        // Set state
+        if (c == 0) {
+            prevRow = currRow;
+            currRow = 0;
+        }
+        
+        // Check in cache
+        int hashVal = (loc << 16) + (prevRow << 8) + currRow;
+        auto it = memo.find(hashVal);
+        
+        if (it != memo.end()) {
+            return it->second;
+        }
+        
+        // Do not sit here
+        int count = compute(loc + 1, prevRow, currRow);
+        
+        // Sit here
+        if (seats[r][c] == '.') {                
+            if (!(r && (c > 0) && (prevRow & colMasks[c - 1])) /* upper left */ && 
+                !(r && (c < cols - 1) && (prevRow & colMasks[c + 1])) /* upper right */ && 
+                !(c && (currRow & colMasks[c - 1])) /* left */  ) {
+                count = max(count, 1 + compute(loc + 1, prevRow, currRow | colMasks[c]));
+            } 
+        }
+        
+        // Update cache
+        memo[hashVal] = count;
+        
+        return count;
+    }
+    
+    int rows;
+    int cols;
+    vector<vector<char>>& seats;
+    vector<int> colMasks;
+    unordered_map<int, int> memo;
+};
+
+class Solution {
+public:
+    int maxStudents(vector<vector<char>>& seats) {
+        MaxStudents maxStudentsWrap(seats);
+        
+        return maxStudentsWrap.compute();
+    }
+};

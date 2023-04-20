@@ -1,0 +1,28 @@
+//Longest Path that included Root
+int LongestPathIncludeRoot(struct TreeNode* root, int* max){
+    
+    if(root == NULL){
+        return 0;
+    }
+    
+    int leftLPIR = LongestPathIncludeRoot(root->left, max);
+    int rightLPIR = LongestPathIncludeRoot(root->right, max);
+    int curL = 0, curR = 0;  //init to 0
+    if(root->left && root->val == root->left->val)
+        curL = 1 + leftLPIR;
+    if(root->right && root->val == root->right->val)
+        curR = 1 + rightLPIR;
+    *max = fmax(*max , curL + curR);
+    
+    return fmax(curL, curR);
+}
+
+int longestUnivaluePath(struct TreeNode* root){
+    if(root == NULL)
+        return 0;
+    
+    int max = 0;
+    LongestPathIncludeRoot(root, &max);
+    
+    return max;
+}

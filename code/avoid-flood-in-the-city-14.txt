@@ -1,0 +1,54 @@
+// Intuition: if 0 is between two same elements like 3 X X 0 3, then 0 between 3 can be used to dry first 3
+// However, if 0 appears before the first 3, for example: 0 3 X X 3, where X is not 0, then there will be flood
+// So we can use a set to store indices of 0s, whenever we got another element that appeared before 
+// and not been dried, we greedily use the first 0 between these two same elements. 
+// After using the index of 0, we can erase it from set
+// To avoid TLE, we can use binary search to improve speed, since set in C++ is ordered container
+class Solution {
+public:
+	vector<int> avoidFlood(vector<int>& A) {
+		int count=0;
+		unordered_map<int,int> Map; // key is A[i], value is index. To record last rain day's index. 
+		set<int> Set; // store indices of zeros that have not been used
+		int n=A.size();
+		vector<int> ans(n);
+		for(int i=0;i<A.size();i++)// initialize ans array
+		{
+			if(A[i]>0) 
+				ans[i]=-1;
+			else
+			{
+				ans[i]=1; // just put a random value , update latter
+			}
+		}
+		vector<int> temp;
+		for(int i=0;i<A.size();i++)
+		{
+			if(A[i]!=0)
+			{
+				if(Map.count(A[i])) // appeared before 
+				{
+					int start=Map[A[i]];
+					auto it=Set.upper_bound(start); // use greedy method
+					if(it!=Set.end())
+					{
+						ans[*it]=A[i];
+						Set.erase(it); // after using 0, delete its index, not available anymore
+					} 
+					else // there are no 0 between two same elements
+						return {};
+
+					Map[A[i]]=i; // update the last-appeared element's index
+				}
+				else // never appeared before
+					Map[A[i]]=i;
+			}
+			else
+			{
+				Set.insert(i); // insert index of zero for future use
+
+			}
+		}
+		return ans;
+	}
+};

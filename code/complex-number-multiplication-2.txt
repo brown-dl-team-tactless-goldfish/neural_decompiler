@@ -1,0 +1,39 @@
+long
+readLong(char *s, char **next)
+{
+    int sign = 1;
+    if (*s == '-') {
+        sign = -1;
+        s++;
+    } else if (*s == '+') {
+        s++;
+    }
+    return strtol(s, next, 10) * sign;
+}
+
+char *
+complexNumberMultiply(char *a, char *b)
+{
+    char *next = NULL;
+    long ai    = readLong(a, &next);
+    a = next + 1;
+    long ac = readLong(a, &next);
+    long bi = readLong(b, &next);
+    b = next + 1;
+    long bc   = readLong(b, &next);
+    long xi   = ai * bi - ac * bc;
+    long xc   = ai * bc + bi * ac; 
+    int cap   = 5; // a+bi + '\0'
+    char *buf = malloc(sizeof(char) * cap);
+    int len   = snprintf(buf, cap, "%ld+%ldi", xi, xc);
+    if (len < 0) {
+        return NULL;
+    }   
+    if (len + 1 > cap) {
+        cap = len + 1;
+        buf = realloc(buf, sizeof(char) * cap);
+        len = snprintf(buf, cap, "%ld+%ldi", xi, xc);
+        assert(len + 1 == cap);
+    }   
+    return buf;
+}

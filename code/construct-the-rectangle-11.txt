@@ -1,0 +1,34 @@
+class Solution:
+    def constructRectangle(self, area: int) -> List[int]:
+        
+        def isqrt(x):
+            if x < 0:
+                raise ValueError('square root not defined for negative numbers')
+            n = int(x)
+            if n == 0:
+                return 0
+            a, b = divmod(n.bit_length(), 2)
+            x = 2**(a+b)
+            while True:
+                y = (x + n//x)//2
+                if y >= x:
+                    return x
+                x = y
+        
+        square_root = isqrt(area)
+        # print ("square_root = ",square_root)
+
+        if (square_root * square_root == area):
+            return [square_root, square_root]
+        
+        
+        l = square_root + 1
+        while (True):
+            if (area % l == 0):
+                break
+            l -= 1
+            
+        w = area // l
+        # print ("l = ", l, " w = ", w)
+        return [max(l, w), min(l, w)]
+        

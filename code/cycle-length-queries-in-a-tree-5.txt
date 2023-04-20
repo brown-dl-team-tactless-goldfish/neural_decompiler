@@ -1,0 +1,40 @@
+class Solution {
+public:
+	int getLength(int a, int b) {
+		// Get the height
+		int aHeight = log2(a);
+		int bHeight = log2(b);
+
+		// cout << aHeight << " " << bHeight << endl;
+
+		// Find the common ancestor
+		int tempA = a, tempB = b;
+		while (tempA != tempB) {
+			if (tempA > tempB) tempA = tempA / 2;
+			else tempB = tempB / 2;
+		}
+
+		// cout << tempA << endl;
+		int tempHeight = log2(tempA);
+
+		int distanceA = aHeight - tempHeight;
+		int distanceB = bHeight - tempHeight;
+
+		// cout << "distance: " << distanceA << " " << distanceB << endl;
+
+		int result = distanceA + distanceB + 1;
+
+		return result;
+	}
+
+	vector<int> cycleLengthQueries(int n, vector<vector<int>>& queries) {
+		vector<int> result;
+
+		for (auto query : queries) {
+			int length = getLength(query[0], query[1]);
+			result.push_back(length);
+		}
+
+		return result;
+	}
+};

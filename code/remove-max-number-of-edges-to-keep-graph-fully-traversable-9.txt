@@ -1,0 +1,73 @@
+class Solution {
+public:
+    vector<int> adj[100005];
+    set<int> adj_1[100005] , adj_2[100005];
+    int components[100005];
+    bool visited[100005];
+    int ans=0;
+    
+    void dfs(int node, int comp){
+        components[node]=comp;    
+        ans++;
+        for(auto to:adj[node]){
+            if(components[to]!=-1) continue;
+            dfs(to,comp);
+        }
+    }
+    
+    void dfs2(int comp){
+        visited[comp]=1;
+        for(auto to:adj_1[comp]){
+            if(visited[to]) continue;
+            if(adj_2[comp].find(to)!=adj_2[comp].end()){
+             dfs2(to);   
+            }
+        }
+    }
+    
+    int maxNumEdgesToRemove(int n, vector<vector<int>>& edges) {
+        
+        for(auto &edge:edges){
+            if(edge[0]!=3) continue;
+            int u=edge[1] , v=edge[2];
+            adj[u].push_back(v);
+            adj[v].push_back(u);
+        }
+        
+        memset(components,-1,sizeof(components));
+        
+        int cnt=1;
+        for(int i=1;i<=n;i++){
+            if(components[i]==-1){
+                dfs(i,cnt++);
+                ans--;
+            }
+        }
+
+        
+        for(auto &edge:edges){
+            if(edge[0]==3) continue;
+            int u = edge[1] , v=edge[2];
+            u=components[u] , v=components[v];
+            
+            if(edge[0]==1){
+                adj_1[v].insert(u);
+                adj_1[u].insert(v);
+            }else{
+                adj_2[u].insert(v);
+                adj_2[v].insert(u);
+            }
+        }
+        
+        memset(visited,0,sizeof(visited));
+        dfs2(1);
+        for(int i=1;i<cnt;i++){
+            if(!visited[i]) return -1;
+            ans+=2;
+        }
+        ans-=2;
+        
+        return edges.size()-ans;
+        
+    }
+};

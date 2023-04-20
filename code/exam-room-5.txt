@@ -1,0 +1,44 @@
+class ExamRoom {
+private: 
+    int N ;
+    set<int>postions ;
+public:
+    ExamRoom(int n) {
+        N = n ;
+    }
+    
+    int seat() {
+        int start = 0, max = 0, ret = 0;
+        for(int i : postions){
+            if(start == 0){
+                max = i ;
+                ret = 0 ;
+            }
+            else{
+                if((i-start+1)/2 > max){
+                    max = (i-start+1)/2 ;
+                    ret = start-1 + max ;
+                }
+            }
+            start = i + 1 ;
+        }
+        if(start > 0 && (N-start) > max){
+            max = N - start ;
+            ret = N - 1 ;
+        }    
+        
+        postions.insert(ret) ;
+        return ret ;
+    }
+    
+    void leave(int p) {
+        postions.erase(p) ;    
+    }
+};
+
+/**
+ * Your ExamRoom object will be instantiated and called as such:
+ * ExamRoom* obj = new ExamRoom(n);
+ * int param_1 = obj->seat();
+ * obj->leave(p);
+ */

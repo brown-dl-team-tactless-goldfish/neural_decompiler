@@ -1,0 +1,23 @@
+ int leastInterval(vector<char>& tasks, int n) {
+        
+        int sz = tasks.size();
+        
+        unordered_map<char, int> mp;
+        
+        int hf = -1; // highest freq
+        
+        for(int i=0; i<sz; i++){
+            mp[tasks[i]]++;
+            hf = max(hf, mp[tasks[i]]);
+        }
+        
+        int twhf=0; //total task with highest freq
+        
+        for(auto it : mp){
+            if(it.second == hf) twhf++;
+        }
+        
+        return max(sz, hf + (hf-1)*n + twhf - 1);
+    }
+};
+// A _ _ A _ _ A => 3 + (3-1)*N + twhf-1 [hf + num of cooldown bw them + following               tasks with same freq]

@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int minDays(vector<vector<int>>& grid) {
+        int m = grid.size(), n = grid[0].size();
+        vector<vector<int>> idx(m, vector<int>(n, -1));
+        vector<vector<int>> low(m, vector<int>(n, INT_MAX));
+        vector<vector<int>> dr({{0,1},{1,0},{0,-1},{-1,0}});
+        int index = 0;
+        bool foundCut = false;
+        function<void(int,int,int,int)> dfs = [&](int i, int j, int fi, int fj) {
+            idx[i][j] = index++;
+            low[i][j] = idx[i][j];
+            int count = 0;
+            for (const auto &d : dr) {
+                int ni = i + d[0], nj = j + d[1];
+                if (ni == fi && nj == fj) continue;
+                if (ni >= 0 && ni < m && nj >= 0 && nj < n && grid[ni][nj] == 1) {
+                    if (idx[ni][nj] == -1) {
+                        dfs(ni, nj, i, j);
+                        if (low[ni][nj] < low[i][j])
+                            low[i][j] = low[ni][nj];
+                        if (fi != -1 && low[ni][nj] >= idx[i][j]) foundCut = true;
+                        count++;
+                    } else if (idx[ni][nj] < low[i][j]) 
+                        low[i][j] = idx[ni][nj];
+                }
+            }
+            if (fi == -1 && count >= 2) foundCut = true;
+        };
+        bool first = true;
+        for (int i = 0; i < m; i++) {
+            for (int j = 0; j < n; j++) {
+                if (grid[i][j] == 1 && idx[i][j] == -1) {
+                    if (!first) return 0;
+                    dfs(i, j, -1, -1);
+                    first = false;
+                }
+            }
+        }
+        return foundCut ? 1 : 2;
+    }
+};

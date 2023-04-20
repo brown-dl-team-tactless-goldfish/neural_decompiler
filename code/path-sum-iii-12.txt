@@ -1,0 +1,23 @@
+int pathSumHelper(struct TreeNode* root, int sum, int cur, int inc){
+    int ret = 0;
+    
+    if (root == NULL)
+        return 0;
+
+    if ((cur + root->val) == sum)
+        ret = 1;
+
+    ret += pathSumHelper(root->left, sum, cur + root->val, inc + 1);
+    ret += pathSumHelper(root->right, sum, cur + root->val, inc + 1);
+    
+    if (inc == 0) {
+        ret += pathSumHelper(root->left, sum, 0, 0);
+        ret += pathSumHelper(root->right, sum, 0, 0);
+    }
+    
+    return ret;
+}
+
+int pathSum(struct TreeNode* root, int sum){
+    return pathSumHelper(root, sum, 0, 0);
+}

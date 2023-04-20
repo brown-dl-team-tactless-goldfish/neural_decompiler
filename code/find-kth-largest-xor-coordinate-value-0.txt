@@ -1,0 +1,44 @@
+int cmp(const void* a, const void* b){
+    return *(int*)b - *(int*)a;
+}
+int kthLargestValue(int** matrix, int matrixSize, int* matrixColSize, int k){
+    int m = matrixSize;
+    int n = *matrixColSize;
+    int* data = malloc(m*n*sizeof(int));
+    int idx = 0;
+    int** dp  = malloc(m * sizeof(int*));
+    for(int i = 0; i < m; i++){
+        dp[i] = malloc(n * sizeof(int));
+    }
+    dp[0][0] = matrix[0][0];
+    data[idx] = dp[0][0];
+    idx++;
+    //row 0
+    for(int i = 1; i < n; i++){
+        dp[0][i] = dp[0][i-1] ^ matrix[0][i];
+        data[idx] = dp[0][i];
+        idx++;
+    }
+    //col 0
+    for(int i = 1; i < m; i++){
+        dp[i][0] = dp[i-1][0] ^ matrix[i][0];
+        data[idx] = dp[i][0];
+        idx++;
+    }
+    for(int i = 1; i < m; i++){
+        for(int j = 1; j < n; j++){
+            dp[i][j] = matrix[i][j] ^ dp[i-1][j] ^ dp[i][j-1] ^ dp[i-1][j-1];
+            data[idx] = dp[i][j];
+            idx++;
+        }
+    }
+
+    qsort(data, idx, sizeof(int), cmp);
+    int ans = data[k-1];
+    free(data);
+    for(int i = 0; i < m; i++){
+        free(dp[i]);
+    }
+    free(dp);
+    return ans;
+}

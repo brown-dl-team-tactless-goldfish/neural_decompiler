@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int ans = 0;
+    void dfs (vector<int>& vs, vector<array<int, 2>> adj[], int mT, int t, int cnt[], int cur, int val) {
+        if (t > mT) return;
+        if (++cnt[cur] <= 5) {
+            int tmp = cnt[cur] == 1 ? vs[cur] : 0;
+            if (!cur) ans = max(ans, val + tmp);
+            for (auto &a : adj[cur]) {
+                dfs(vs, adj, mT, t + a[1], cnt, a[0], val + tmp);
+            }
+        }
+        cnt[cur]--;
+    }
+    int maximalPathQuality(vector<int>& vs, vector<vector<int>>& es, int mT) {
+        int n = vs.size(), cnt[1000]{};
+        vector<array<int, 2>> adj[n];
+        for (auto &e : es) {
+            adj[e[0]].push_back({e[1], e[2]});
+            adj[e[1]].push_back({e[0], e[2]});
+        }
+        return dfs(vs, adj, mT, 0, cnt, 0, 0), ans;
+    }
+};

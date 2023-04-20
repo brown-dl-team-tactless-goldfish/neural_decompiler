@@ -1,0 +1,67 @@
+public string RepeatLimitedString(string s, int repeatLimit)
+{
+	PriorityQueue<char, char> queue = new PriorityQueue<char, char>(Comparer<char>.Create((x,y) => y.CompareTo(x)));
+	foreach (char c in s)
+	{
+		queue.Enqueue(c, c);
+	}
+
+	StringBuilder sb = new StringBuilder();
+	int streak = 0;
+	char currProcChar = queue.Peek();
+	Stack<char> itemsMovedAside = new Stack<char>();
+	while (queue.Count > 0 || itemsMovedAside.Count > 0) 
+	{
+		if (queue.Count > 0 && queue.Peek() == currProcChar)
+		{
+			streak++;
+		}
+		else if (itemsMovedAside.Count > 0 && itemsMovedAside.Peek() == currProcChar)
+			streak++;
+		else
+		{
+			streak = 1;
+			currProcChar = queue.Peek();
+		}
+		if (itemsMovedAside.Count > 0)
+		{
+			if (streak > repeatLimit)
+			{
+				if (queue.Count > 0)
+				{
+					sb.Append(queue.Dequeue());
+					streak = 0;
+				}
+				else
+				{
+					break;
+				}
+			}
+			else
+			{
+				sb.Append(itemsMovedAside.Pop());
+			}
+		}
+		// remove all of the same char till we find the next largest one. Stick them in a separate container.
+		else
+		{
+			if (streak > repeatLimit)
+			{
+				while (queue.Count > 0 && queue.Peek() == currProcChar)
+				{
+					itemsMovedAside.Push(queue.Dequeue());
+				}
+				if (queue.Count > 0)
+				{
+					sb.Append(queue.Dequeue());
+					streak = 0;
+				}
+			}
+			else
+			{
+				sb.Append(queue.Dequeue());
+			}
+		}
+	}
+	return sb.ToString();
+}

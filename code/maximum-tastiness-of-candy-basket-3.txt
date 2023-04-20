@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int maximumTastiness(vector<int>& price, int k) {
+        sort(price.begin(), price.end());
+        int left = 0;
+        int right = price[price.size()-1] - price[0]+1;
+
+
+        while(left < right){
+            int mid = left + (right - left)/2;
+
+            bool check = binarySearch(price, k, mid);
+            if(check) {
+                left = mid+1;
+            }else{
+                right = mid;
+            }
+        }
+        
+        if(left == 0){
+            return left;
+        }
+        left--;
+        return left;
+
+    }
+
+    bool binarySearch(vector<int>& prices, int k, int price){
+        if(prices[prices.size()-1] - prices[0] < price){
+            return false;
+        }
+        int count = 2;
+        if(count>=k){
+            return true;
+        }
+        int pre = 0;
+        for(int i=1;i<prices.size()-1;i++){
+            if(prices[i] - prices[pre]>=price && prices[prices.size()-1] - prices[i]>=price){
+                count++;
+                pre = i;
+            }
+
+            if(count >= k){
+                return true;
+            }
+        }
+
+        return false;
+    }
+};

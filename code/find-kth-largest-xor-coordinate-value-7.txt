@@ -1,0 +1,35 @@
+class Solution {
+public:
+    int kthLargestValue(vector<vector<int>>& matrix, int k) {
+        // min heap will store the top k large XOR values
+        priority_queue<int,vector<int>,greater<int>>q;
+        
+        // 'pre' is a 2D matrix where pre[i][j] = XOR of all elements from 0 to jth column in ith row. It stores the XOR values row wise
+        vector<vector<int>>pre(matrix.size(),vector<int>(matrix[0].size()));
+        
+        // populate the 'pre' matrix
+        for(int i=0;i<matrix.size();i++) {
+            for(int j=0;j<matrix[0].size();j++) {
+                pre[i][j]=j>0?pre[i][j-1]^matrix[i][j]:matrix[i][j];
+            }
+        }
+        
+        // Now we'll modify the matrix such that each cell will contain value of the corresponding coordinate
+        for(int i=0;i<matrix.size();i++) {
+            for(int j=0;j<matrix[0].size();j++) {
+                matrix[i][j]=i>0?pre[i][j]^matrix[i-1][j]:pre[i][j];
+                
+                // push the value in heap
+                q.push(matrix[i][j]);
+                
+                // remove the top if size > k
+                if(q.size()>k) {
+                    q.pop();
+                }
+            }
+        }
+        
+        // the top element will be the kth largest value
+        return q.top();
+    }
+};

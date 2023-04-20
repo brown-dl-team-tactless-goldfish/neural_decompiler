@@ -1,0 +1,31 @@
+class Solution {
+public:
+    
+void dfs(string& s, int curr, unordered_set<string>& seen, int cnt, int &res)
+{
+	if (curr == s.size()) 
+	{
+		res = max(cnt, res);
+		return;
+	}
+
+	for (int len = 1; curr + len <= s.size(); len++)
+	{
+		string str = s.substr(curr, len);
+		if (!seen.count(str))
+		{
+			seen.insert(str);
+			dfs(s, curr + len, seen, cnt + 1, res);
+			seen.erase(seen.find(str));
+		}
+	}
+}
+
+int maxUniqueSplit(string s)
+{
+	int res = 0;
+	unordered_set<string> seen;
+	dfs(s, 0, seen, 0, res);
+	return res;
+}
+};

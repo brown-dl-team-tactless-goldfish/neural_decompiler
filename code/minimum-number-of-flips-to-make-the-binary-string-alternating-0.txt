@@ -1,0 +1,41 @@
+int minFlips(char * s){
+    int len = strlen(s), idx = 0;
+    int minOpers = INT_MAX, diff1 = 0, diff2 = 0, l = 0, r = 0;
+    char *gStr = calloc(1, 2 * len + 1);        // given string
+    // alternating target string starting with zero
+    char *zTar = calloc(1, 2 * len + 1);     
+    // alternating target string starting with one
+    char *oTar = calloc(1, 2 * len + 1);
+    
+    // concatenate all strings to itself
+    strcat(gStr, s);    strcat(gStr, s);
+    
+    for(int i = 0; i < 2 * len; i++) {
+        zTar[idx] = i % 2 ? '1' : '0';
+        oTar[idx++] = i % 2 ? '0' : '1';
+    }
+    
+    while(r < 2 * len) {
+        // include character differce at right index position
+        diff1 += gStr[r] != zTar[r] ;
+        diff2 += gStr[r] != oTar[r] ;
+        
+        // decrement left side of window if window len is greater then string length
+        if (r - l + 1 > len) {      
+            // exclude character difference if we had considered at left index
+            if(gStr[l] != zTar[l]) diff1--;
+            if(gStr[l] != oTar[l]) diff2--;
+            l++;
+        }
+        
+        // update the result if window size of len
+        if(r - l + 1 == len) {
+            // update result with minimum of differences for either of targets
+            minOpers = fmin(minOpers, fmin(diff1, diff2));
+        }
+        
+        // increment right side of window after every iteration
+        r++;
+    }
+    return minOpers;
+}

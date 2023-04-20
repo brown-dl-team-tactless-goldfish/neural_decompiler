@@ -1,0 +1,38 @@
+class Solution 
+{
+private:
+	//Checks if the elements between two indices can make Arithmetic Progression
+    bool m_canMakeArithmeticProgression(vector<int> arr, int &l, int &r)
+    {
+      int size = (r - l) + 1;
+
+      if (size <= 2)
+        return true;
+
+      sort(arr.begin() + l, arr.begin() + r + 1);
+
+      int diff = arr[l + 1] - arr[l];
+
+      for (int i = l + 2; i <= r; i++)
+      {
+        if ((arr[i] - arr[i - 1]) != diff)
+          return false;
+      }
+      return true;
+    }
+    
+public:
+    vector<bool> checkArithmeticSubarrays(vector<int> &nums, vector<int> &l, vector<int> &r)
+    {
+      int query_size = l.size(), query_idx = 0;
+      vector<bool> response(query_size, false);
+
+	//Handle all the queries
+      while (query_idx < query_size)
+      {
+        response[query_idx] = m_canMakeArithmeticProgression(nums, l[query_idx], r[query_idx]);
+        query_idx++;
+      }
+      return response;
+    }
+};

@@ -1,0 +1,30 @@
+#define LEN   1001
+int** mergeSimilarItems(int** items1, int items1Size, int* items1ColSize, int** items2, int items2Size, int* items2ColSize, int* returnSize, int** returnColumnSizes){
+    int cnt = 0;
+    int* itemCnt = (int*)calloc(LEN, sizeof(int));
+    for(int i = 0; i < items1Size; i++){
+        if(!itemCnt[items1[i][0]])
+            cnt++;
+        itemCnt[items1[i][0]] += items1[i][1];
+    }
+    
+    for(int i = 0; i < items2Size; i++){
+        if(!itemCnt[items2[i][0]])
+            cnt++;
+        itemCnt[items2[i][0]] += items2[i][1];
+    }
+    int** ans = (int**)calloc(cnt, sizeof(int*));
+    int* col = (int*)calloc(cnt, sizeof(int));
+    int ansIdx = 0;
+    for(int i = 0; i < LEN; i++){
+        if(itemCnt[i]){
+            col[ansIdx] = 2;
+            ans[ansIdx] = (int*)calloc(2, sizeof(int));
+            ans[ansIdx][0] = i;
+            ans[ansIdx++][1] = itemCnt[i];
+        }
+    }
+    *returnSize = ansIdx;  
+    *returnColumnSizes = col;
+    return ans;
+}

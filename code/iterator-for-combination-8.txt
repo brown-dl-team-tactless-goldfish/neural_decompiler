@@ -1,0 +1,36 @@
+class CombinationIterator {
+public:
+    string c;
+    vector<string> combinations;
+    int index = 0;
+    
+    void helper(string path, int start, int k){
+        
+        if(path.size() == k){
+            combinations.push_back(path);
+            return;
+        }
+        
+        for(int i = start; i < c.size(); i++){
+            path.push_back(c[i]);
+            helper(path, i + 1, k);
+            path.pop_back();
+        }
+    }
+    
+    
+    CombinationIterator(string characters, int combinationLength) {
+        c = characters;
+        helper("", 0, combinationLength);
+    }
+    
+    string next() {
+        string val = combinations[index];
+        index++;
+        return val;
+    }
+    
+    bool hasNext() {
+        return index != combinations.size();
+    }
+};

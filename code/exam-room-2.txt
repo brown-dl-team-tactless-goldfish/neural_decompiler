@@ -1,0 +1,41 @@
+class ExamRoom {
+public:
+    ExamRoom(int N) {
+        size = N;
+    }
+    
+    int seat() {
+        if (occSeats.empty())
+        {
+            occSeats.insert(0);
+            return 0;
+        }
+        
+        int res = 0, begin = *occSeats.begin(), dist = begin > 0 ? begin : 0;
+        for (auto it = occSeats.begin(); it != --occSeats.end();)
+        {
+            int s1 = *it, s2 = *(++it);
+            if ((s2 - s1) / 2 > dist)
+            {
+                dist = (s2 - s1) / 2;
+                res = s1 + dist;
+            }
+        }
+        
+        if (size - 1 - *(--occSeats.end()) > dist)
+        {
+            res = size - 1;
+        }
+        
+        occSeats.insert(res);
+        return res;
+    }
+    
+    void leave(int p) {
+        occSeats.erase(p);
+    }
+    
+private:
+    int size;
+    set<int> occSeats;
+};

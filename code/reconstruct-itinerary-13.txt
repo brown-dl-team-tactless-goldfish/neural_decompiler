@@ -1,0 +1,109 @@
+class Solution {
+public:
+    vector<string> findItinerary(vector<vector<string>>& tickets) {
+        if(tickets.empty()) return {};
+        if(tickets.size() == 1) return tickets[0];
+		
+	    /// I decided to build an adjacency list using map and multiset
+		/// multiset uses an rb tree so all elements will be stored lexographically
+        std::unordered_map<std::string, std::multiset<std::string>> adj;
+        
+        for(auto & t : tickets){
+            adj[t[0]].insert(t[1]);
+        }
+        
+        std::string c = "JFK";
+		
+        /// so my thinking here is for dfs we need the following
+		///
+		/// the airport (pointer to string). the neat thing about using a pointer is that
+		/// the address will come from a multiset (except the first one) so that way
+		/// we can visit the same airport multiple times as long as it's from a different multiset (i.e. list of edges)
+		///
+		/// a pointer to the edges of that airport
+		/// the iterator of the next airport to visit from here. that's what this funny looking struct is
+        struct dfs_node{
+            dfs_node(const std::string * p,
+                    std::multiset<std::string>* e,
+                    std::multiset<std::string>::iterator i) : port(p), edges(e), iter(i) {};
+            
+            const std::string * port;
+            std::multiset<std::string> * edges;
+            std::multiset<std::string>::iterator iter;
+        };
+		
+        /// using a vector as a stack. 
+		/// to build an itinerary just iterate over the stack found
+		/// via dfs
+        std::vector<dfs_node> stack;
+        
+		/// initialize the stack
+        stack.emplace_back(
+            &c,
+            &adj[c],
+            adj[c].begin()
+        );
+        
+		/// keep track of the unique airport pointers we visited
+		/// what this means is that we won't traverse the same edge twice in the dfs
+        std::unordered_set<const std::string *> visited;
+        visited.insert(&c);
+        
+	    /// termination condition is we failed to find an itinerary (empty stack)
+		/// or we found a stack of size t+1 meaning we have a complete itinerary
+        while(!stack.empty() && stack.size() != tickets.size() + 1 ){
+		    /// first check if there is nothing else to traverse for this node (we exhausted all the multiset edges)
+			/// oh yeah... forgot to say if edges is nullptr that means this node is a dead-end (had no fanout)
+            if(stack.back().edges == nullptr || stack.back().iter == (*stack.back().edges).end()){
+                visited.erase(stack.back().port); /// clear the visited edge so that further dfs iterations can explore it from a different traversal
+                stack.pop_back();
+				/// iterate the edges of the last stack node so that the dfs doesn't attempt the same traversal again
+                if(!stack.empty()){
+                    stack.back().iter++;
+                }
+            }else{
+                /// find next non-visited port / edge
+                while(stack.back().iter != (*stack.back().edges).end() && visited.find(&(*stack.back().iter)) != visited.end()){
+                    stack.back().iter++;
+                }
+
+                /// if none found add pop the current airport (backtrack)
+                if(stack.back().iter == (*stack.back().edges).end()){
+				    /// nothing found :'( pop this dfs entry from the stack
+                    visited.erase(stack.back().port);
+                    stack.pop_back();
+                    if(!stack.empty()){
+                        stack.back().iter++;
+                    }  
+                }else{
+                    /// add the port
+                    if(adj.find(*(stack.back().iter)) != adj.end()){
+					    /// we found an unexplored edge to traverse in this dfs. add it to the stack
+                        visited.insert( &(*(stack.back().iter)));
+                        stack.emplace_back(
+                            &(*(stack.back().iter)),
+                            &adj.at(*(stack.back().iter)),
+                            adj.at(*(stack.back().iter)).begin()
+                        );
+                    }else{
+					    /// the edge is to a dead end so just add the airport with no edges
+                        visited.insert( &(*(stack.back().iter)));
+                        stack.emplace_back(
+                            &(*(stack.back().iter)),
+                            nullptr,
+                            stack.back().iter
+                        );
+                    }
+                }  
+            }
+        }
+		
+        /// finally reconstruct the itinerary from the stack
+        std::vector<std::string> itinerary;
+        for(auto & p : stack){
+            itinerary.push_back(*(p.port));
+        }
+        
+        return itinerary;
+    }
+};

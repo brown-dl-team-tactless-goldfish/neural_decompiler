@@ -1,0 +1,78 @@
+/* Structure for keeping stats about a point's minimum distance.  */
+struct pointStatMin {
+    bool added;
+    int  minDist;
+};
+
+int minCostConnectPoints(int** points, int pointsSize, int* pointsColSize) {
+    if ( pointsSize == 0 || points == NULL || pointsColSize == NULL )
+        return -1;
+    
+    /* Allocate space to keep stats on all points.  Extra stat at the end to
+     * facilitate loop logic.
+     */
+    struct pointStatMin *psm = (struct pointStatMin *)malloc( ( pointsSize + 1) \
+                                   * sizeof(struct pointStatMin) );
+    
+    int distTotal = 0;
+
+    /* We can ignore the first point, since we're using it as the staring point,
+     * and you need two points to have a distance.
+     */
+
+    /* Initialize the rest of the stats.  */
+    for ( int i=1; i<=pointsSize; i++ ) {
+        psm[i].added   = false;
+        psm[i].minDist = INT_MAX;
+    }
+    
+	/* We will refer to the point we calculate the distance to all other points
+	 * as the "anchor."  In this case, the first anchor point is the first point
+	 * in the list.
+	 */
+    for ( int anchor=0, i=1; i<pointsSize; i++ ) {
+
+        /* Set the minIdx to the extra stat we allocated at the end, which we 
+         * never change from the INT_MAX we initialized it to.  I.e. it will 
+         * always be the largest distance possible, so it will be replaced by
+         * the first real distance we encounter.  
+         */
+        int minIdx = pointsSize;
+
+        /* Update any distances that are shorter to the anchor point than any
+		 * other point we've already added to the total distance.
+         */
+        for ( int j=1; j<pointsSize; j++ ) {
+
+            /* Part of the Prim's Algorithm (Optimized), which lets us skip
+             * any point we've already added to the total.
+             */
+            if ( psm[j].added == false ) {
+                int tmpDist = abs( points[anchor][0] - points[j][0] )
+                              + abs( points[anchor][1] - points[j][1] );
+
+                if ( psm[j].minDist > tmpDist ) {
+                    psm[j].minDist = tmpDist;
+                }
+                
+                /* Keep track of the shortest distance we haven't yet added to
+                 * the total.
+                 */
+                if ( psm[j].minDist < psm[minIdx].minDist ) {
+                    minIdx = j;
+                }
+            }
+        }
+        
+        /* The minIdx should now be the shortest remaining distance.  We add 
+         * this distance to the total, and mark it as added.
+         */
+        distTotal += psm[minIdx].minDist;
+        psm[minIdx].added = true;
+
+        /* Update the anchor to use the point we just added.  */
+        anchor = minIdx;
+    }
+    
+    return distTotal;
+}

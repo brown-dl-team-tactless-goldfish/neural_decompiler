@@ -1,0 +1,35 @@
+#define maxn 10005
+class Solution {
+public:
+	int minimumJumps(vector<int>& forbidden, int a, int b, int x) {
+        map<int, int> mp;
+        for(auto x: forbidden) mp[x] = 1;
+		int vis[maxn][2] = {};
+		vis[0][0] = 1;
+		vis[0][1] = 1;
+        queue<pair<int, int>> q; 
+		q.push({0, 0});
+		int ans = 0;
+		while(!q.empty()) {
+            int len = q.size();
+            while(len--) {
+                int u = q.front().first;
+                int fl = q.front().second;
+                q.pop();
+                if(u == x) return ans;
+                int vf = u + a;
+                int vb = u - b;
+                if(vf < maxn and !vis[vf][0] and !mp[vf]) {
+                    vis[vf][0] = 1;
+                    q.push({vf, 0});
+                }
+                if(vb >= 0 and !vis[vb][1] and !mp[vb] and !fl) {
+                    vis[vb][1] = 1;
+                    q.push({vb, 1});
+                }
+            }
+            ans++;
+		}
+		return -1;
+	}
+};

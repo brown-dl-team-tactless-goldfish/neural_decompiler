@@ -1,0 +1,33 @@
+int table[256];
+
+void makeTable(){
+	table[0] = 0;
+	for(int i = 1; i < 256; i++)
+		table[i] = table[i/2] + i%2;
+}
+
+int calcBits(int m){
+	return table[0xFF & m] + table[(0xFF00 & m) >> 8] + table[(0xFF0000 & m) >> 16] + table[(0xFF000000 & m) >> 24];
+}
+
+int countPrimeSetBits(int L, int R){
+	int count = 0, iCount;
+	makeTable();
+
+	// Found this solution in the discssion.
+	// int primes[] = {0, 0, 1, 1, 0, 1, 0, 1, 0, 0, 
+	//             0, 1, 0, 1, 0, 0, 0, 1, 0, 1};
+	// for(int i = L; i <= R; i++){
+	//     iCount = calcBits(i);
+	//     count += primes[iCount];        
+	// }
+
+	for(int i = L; i <= R; i++){
+		iCount = calcBits(i);
+		if(iCount == 2 || iCount == 3 || iCount == 5 || iCount == 7 || iCount == 11 ||            iCount == 13 || iCount == 17 || iCount == 19){
+			count++;
+			//printf("i = %d    iCount = %d    count = %d\n", i, iCount, count);
+		}        
+	}
+	return count;    
+}

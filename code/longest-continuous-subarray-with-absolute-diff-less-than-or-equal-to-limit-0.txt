@@ -1,0 +1,24 @@
+int longestSubarray(int* nums, int numsSize, int limit){
+    int n = numsSize;
+    int* MQueue = malloc(n * sizeof(int));
+    int* mQueue = malloc(n * sizeof(int));
+    int Mfront = 0, Mend = 0;
+    int mfront = 0, mend = 0;
+    int ans = 0;
+    int l = 0, r = 0;
+    for(r = 0; r < n; r++){
+        while(mend > mfront && nums[r] < mQueue[mend-1])
+            mend--;  
+        while(Mend > Mfront && nums[r] > MQueue[Mend-1])
+            Mend--;
+        mQueue[mend++] = nums[r];
+        MQueue[Mend++] = nums[r];
+        while((MQueue[Mfront] - mQueue[mfront]) > limit){
+            if(MQueue[Mfront] == nums[l]) Mfront++;
+            if(mQueue[mfront] == nums[l]) mfront++;
+            l++;
+        }
+        ans = fmax(ans, r - l + 1);
+    }
+    return ans;
+}

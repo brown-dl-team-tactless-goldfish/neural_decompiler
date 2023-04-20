@@ -1,0 +1,55 @@
+class Solution {
+public:
+    #define pii pair<int,int>
+
+    string ans;
+    vector<bool> visited;
+
+    void dfs(vector<vector<int>>& adj, int i=0, int val=0)
+    {
+        visited[i]=true;
+        ans[i]= 'a'+ val;
+        for(auto it: adj[i])
+        {
+            if(!visited[it]) dfs(adj, it, val);
+        }
+    }
+    string findTheString(vector<vector<int>>& lcp) {
+        
+        // i want to know the equalities
+        int n= lcp.size();
+        vector<vector<int>> v(n);
+        set<pii> st;
+        for(int i=0;i<n;i++)
+        {
+            int dist;
+            for(int j=0;j<n;j++)
+            {
+                if(lcp[i][i] != n-i) return "";
+                if(lcp[i][j] != lcp[j][i]) return "";
+                if(i-1 >=0 && j-1 >=0 && lcp[i-1][j-1] > 0 && lcp[i][j] + 1 != lcp[i-1][j-1]) return "";
+                dist= min(n-i, n-j);
+               
+                if(lcp[i][j] > dist) return "";
+
+                if(st.find({i, j})== st.end() && st.find({j,i})== st.end() && lcp[i][j] !=0) 
+                {
+                    v[i].push_back(j);
+                    v[j].push_back(i);
+                }
+                st.insert({i,j});
+            
+            }
+        }
+        ans.resize(n);
+        visited.resize(n, false);
+        int val=0;
+        for(int i=0;i<n;i++)
+        {
+            if(!visited[i]) {if(val>25) return ""; dfs(v, i, val); val++;}
+        
+        }
+
+        return ans;
+    }
+};

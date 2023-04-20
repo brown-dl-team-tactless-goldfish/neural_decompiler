@@ -1,0 +1,16 @@
+int unequalTriplets(int* nums, int numsSize) {
+    int map[1001] = {0}, cnt = 0, max = nums[0];
+    for (int i = 0; i < numsSize; i++) {
+        if (map[nums[i]] == 0) cnt++;
+        map[nums[i]]++;
+        max = fmax(max, nums[i]);
+    }
+    if (cnt < 3) return 0;
+    int res = numsSize * (numsSize - 1) * (numsSize - 2) / 6;
+    for (int i = 0; i < max + 1; i++) {
+         if (map[i] > 1) {
+			 res -= (((numsSize - map[i]) * map[i] * (map[i] - 1) / 2) + (map[i] * (map[i] - 1) * (map[i] - 2)) / 6);
+		 }
+    }
+    return res;
+}

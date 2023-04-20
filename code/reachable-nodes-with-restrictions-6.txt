@@ -1,0 +1,27 @@
+class Solution {
+public:
+    void dfs(int node, vector<int> adj[], vector<int> &vis, set<int> &s) {
+        vis[node] = 1;
+        for(auto i: adj[node]) {
+            if(!vis[i] and !s.count(i))
+                dfs(i, adj, vis, s);
+        }
+    }
+    int reachableNodes(int n, vector<vector<int>>& edges, vector<int>& restricted) {
+        vector<int> vis(n);
+        set<int> s{restricted.begin(), restricted.end()};
+        
+        vector<int> adj[n];
+        for(auto i: edges) {
+            adj[i[0]].push_back(i[1]);
+            adj[i[1]].push_back(i[0]);
+        }
+
+        dfs(0, adj, vis, s);
+
+        int c = 0;
+        for(auto i: vis) if(i) c++;
+
+        return c;
+    }
+};

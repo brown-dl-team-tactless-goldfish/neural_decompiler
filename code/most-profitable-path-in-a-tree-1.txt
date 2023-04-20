@@ -1,0 +1,58 @@
+class Solution {
+    vector<vector<int>>graph ;
+    vector<int>b ;
+    int ret = INT_MIN/2 ;    
+    int bob ;
+public:
+    int mostProfitablePath(vector<vector<int>>& edges, int bob, vector<int>& amount) {
+        int n = amount.size() ;
+        this->bob = bob; 
+        graph.resize(n) ;
+        b.resize(n, INT_MAX/2) ;
+        for(auto& e : edges){
+            graph[e[0]].push_back(e[1]) ;
+            graph[e[1]].push_back(e[0]) ;
+        }
+        
+        //build bob to root path ;
+        dfs(0, -1, 0) ;
+        
+        //evaluate maximum score
+        dfs2(0, -1, 0, 0, amount) ;
+        return ret ;
+    }
+    
+    void dfs(int cur, int prev, int step){
+        if(cur == bob){
+            b[cur] = 0 ;
+            return  ;
+        }
+        int toBob = INT_MAX/2 ;
+        for(auto& next : graph[cur]){
+            if(next == prev)
+                continue ;
+            dfs(next, cur, step+1) ;
+            toBob = min(toBob, b[next] + 1) ;
+        }
+        b[cur] = toBob ;
+    }
+    
+    void dfs2(int cur, int prev, int step, int score, vector<int>& amount){
+        if(step == b[cur]){
+            score += amount[cur]/2 ;
+        }
+        else if(step < b[cur])
+            score += amount[cur] ;
+ 
+        if(graph[cur].size() == 1 && graph[cur][0] == prev){  // make sure is leaf not root
+            ret = max(ret, score) ;
+            return ;
+        }
+        for(auto& next : graph[cur]){
+            if(next == prev)
+                continue ;
+            dfs2(next, cur, step+1, score, amount) ;
+        }
+    }
+
+};

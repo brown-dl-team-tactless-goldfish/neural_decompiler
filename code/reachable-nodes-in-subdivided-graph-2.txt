@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int reachableNodes(vector<vector<int>>& edges, int maxMoves, int n) {
+        unordered_map<int, unordered_map<int, int> > g;
+        for(const auto& e: edges) g[e[0]][e[1]] = g[e[1]][e[0]] = e[2];
+        vector<bool> seen(n, false);
+        priority_queue<pair<int, int> > pq;
+        pq.push({maxMoves, 0});
+        int res = 0;
+        while(!pq.empty()){
+            auto [move, cur] =pq.top(); pq.pop();
+            if(seen[cur]) continue;
+            seen[cur] = true;
+            ++res;
+            for(const auto& [nxt, cnt]: g[cur]){
+                //if(move >= cnt && !seen[nxt])//WRONG, in corner case, move==cnt, the neighbor node 'nxt' is unreachable
+                if(move > cnt && !seen[nxt]) // RIGHT
+                    pq.push({move - cnt - 1, nxt});
+                g[nxt][cur] -= min(move, cnt);
+                res += min(move, cnt);
+            }
+        }
+        return res;
+    }
+};

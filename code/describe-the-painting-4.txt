@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<vector<long long>> splitPainting(vector<vector<int>>& seg) {
+        
+        int n = seg.size();
+        vector<vector<long long>>result;
+        map<int,long long>track;
+        
+        // update map with start and end 
+        for(auto &x : seg)
+        {
+            track[x[0]] += x[2];    // add color incase of start
+            track[x[1]] -= x[2];    // sub color incase of end
+        }
+        
+        // go through all start and end values and udpate result
+        int curr = 0;
+        for(auto &t : track)
+        {
+            if(track[curr]>0)result.push_back({curr,t.first,track[curr]});
+            track[t.first]+=track[curr];    // update next segment with current value
+            curr = t.first; // move to next segment
+        }
+        
+        return result;
+    }
+};

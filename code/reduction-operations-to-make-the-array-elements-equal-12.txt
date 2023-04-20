@@ -1,0 +1,27 @@
+class Solution {
+public:
+    int reductionOperations(std::vector<int>& nums) {
+        std::unordered_map<int, int> counts;
+        for ( auto n : nums )
+            counts[n]++;
+
+        std::vector<int> uniques;
+        uniques.reserve( counts.size() );
+
+        for ( const auto& [ val, count ] : counts ) {
+            uniques.push_back( val );
+        }
+
+        std::sort( uniques.begin(), uniques.end() );
+
+        int count = counts[uniques.back()];
+        int ops = 0;
+
+        for ( int i = uniques.size() - 2; i >= 0; --i ) {
+            ops += count;
+            count += counts[uniques[i]];
+        }
+
+        return ops;
+    }
+};

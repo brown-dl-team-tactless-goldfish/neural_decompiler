@@ -1,0 +1,66 @@
+class Solution {
+public:
+    int mergeStones(vector<int>& stones, int k) {
+        int n = stones.size();
+        if (!IsEligibleForMergeToOne(n, k)) return -1;
+        vector<int> partial_sum(n+1, 0);
+        for (int i = 0; i < stones.size(); ++i) {
+            partial_sum[i+1] = stones[i] + partial_sum[i];
+        }
+        vector<pair<int,int>> break_intervals;
+        vector<vector<pair<int,int>>> memo(n, vector<pair<int,int>>(n, {0, -1}));
+        pair<int, int> result = DFS_break(stones, k, 0, n-1, partial_sum, break_intervals, memo);
+        return result.second;
+    }
+    bool IsEligibleForMergeToOne(int size, int k) {
+        return (k == 2) || (size % (k-1) == 1);
+    }
+    pair<int, int> DFS_break(vector<int>& stones, int k, int istart, int iend, vector<int>& partial_sum, vector<pair<int,int>>& break_intervals, vector<vector<pair<int,int>>>& memo) {
+        if (break_intervals.size() == k && istart <= iend) return {0, -1};
+        if (break_intervals.size() < k && istart > iend) return {0, -1};
+        int size = iend-istart+1;
+        if (break_intervals.empty() && (size == 1)) {
+            return {stones[istart], 0};
+        }
+        if (break_intervals.empty() && (size == k)) {
+            int total_stones = partial_sum[iend+1] - partial_sum[istart];
+            return {total_stones, total_stones};
+        }
+        if (break_intervals.empty() && memo[istart][iend].second != -1) {
+            return memo[istart][iend];
+        }
+        if (break_intervals.size() == k && istart > iend) {
+            int total_cost = 0;
+            int total_stones = 0;
+            for (int j = 0; j < k; ++j) {
+                vector<pair<int, int>> sub_break_intervals;
+                if (memo[break_intervals[j].first][break_intervals[j].second].second == -1) {
+                    memo[break_intervals[j].first][break_intervals[j].second] = DFS_break(stones, k, break_intervals[j].first, break_intervals[j].second, partial_sum, sub_break_intervals, memo);
+                }
+                total_stones += memo[break_intervals[j].first][break_intervals[j].second].first;
+                total_cost += memo[break_intervals[j].first][break_intervals[j].second].second;
+            }
+			// total cost includes two parts: 1. cost from previous merge 2. cost from current merge.
+            total_cost += total_stones;
+            return {total_stones, total_cost};
+        }
+        
+        int min_cost = INT_MAX, total_stones;
+		// try all partitions into K parts, make sure each part is able to merge into one pile. 
+        for (int i = istart; i <= iend; ++i) {
+            int len = i-istart+1;
+            if (!IsEligibleForMergeToOne(len, k)) continue;
+            break_intervals.push_back({istart, i});
+            int min_required_for_rest = k - break_intervals.size();
+            if (iend-i < min_required_for_rest) break;
+            pair<int, int> result = DFS_break(stones, k, i+1, iend, partial_sum, break_intervals, memo);
+            break_intervals.pop_back();
+            if (result.second == -1) continue;
+            if (min_cost > result.second) {
+                min_cost = result.second;
+                total_stones = result.first;
+            }
+        }
+        return {total_stones, min_cost};
+    }
+};

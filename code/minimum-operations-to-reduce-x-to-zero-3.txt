@@ -1,0 +1,23 @@
+int minOperations(int* nums, int numsSize, int x){
+    int left, right, maxLen, sum=0, currSum=0;
+    bool found = false;
+    for (left = 0; left < numsSize; left++)
+    {
+        sum=sum+nums[left];
+    }
+    for (left = 0, right = 0; right < numsSize; right++)
+    {    
+        currSum = currSum + nums[right];
+        while (left <= right && currSum > sum - x)
+        {
+            currSum = currSum - nums[left];
+            left++;
+        }
+        if ((currSum == sum - x) && ((right-left)+1)>maxLen)
+        {
+            found=true;
+            maxLen=(right-left)+1;
+        }
+    }
+    return found ? numsSize-maxLen : -1;
+}

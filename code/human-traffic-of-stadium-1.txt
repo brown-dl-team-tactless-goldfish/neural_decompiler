@@ -1,0 +1,13 @@
+select
+* from stadium where id in(
+select distinct id from (
+select
+ a.id as aid, b.id as bid, c.id as cid
+from stadium a
+left join stadium b on a.id + 1 = b.id
+left join stadium c on a.id + 2 = c.id
+where a.people >= 100 and b.people >= 100 and c.people >= 100
+    ) g
+unpivot(id for i in ([aid], [bid], [cid])) as p
+)
+order by visit_date asc

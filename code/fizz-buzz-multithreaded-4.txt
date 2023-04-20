@@ -1,0 +1,110 @@
+typedef enum Status_s{NUM, THR, FIV, THRFIV} Status;
+typedef struct {
+    int n;
+    int cur;
+    Status s;
+    pthread_mutex_t m;
+    pthread_cond_t th;
+    pthread_cond_t fv;
+    pthread_cond_t thfv;
+    pthread_cond_t num;
+} FizzBuzz;
+
+FizzBuzz* fizzBuzzCreate(int n) {
+    FizzBuzz* obj = (FizzBuzz*) malloc(sizeof(FizzBuzz));
+    pthread_mutex_init(&obj->m, NULL);
+    pthread_cond_init(&obj->th, NULL);
+    pthread_cond_init(&obj->fv, NULL);
+    pthread_cond_init(&obj->thfv, NULL);
+    pthread_cond_init(&obj->num, NULL);
+    
+    obj->s = NUM;
+    obj->cur = 1;
+    obj->n = n;
+    return obj;
+}
+// printFizz() outputs "fizz".
+void fizz(FizzBuzz* obj) {
+    int i = 3;
+    pthread_mutex_lock(&obj->m);
+    while(i <= obj->n){
+        while(obj->s != THR)
+            pthread_cond_wait(&obj->th, &obj->m);
+        printFizz();
+        obj->s = NUM;
+        pthread_cond_signal(&obj->num);
+        i += 3;
+        if(i % 5 == 0)
+            i += 3;
+    }
+    pthread_mutex_unlock(&obj->m);
+}
+
+// printBuzz() outputs "buzz".
+void buzz(FizzBuzz* obj) {
+    int i = 5;
+    pthread_mutex_lock(&obj->m);
+    while(i <= obj->n){
+        while(obj->s != FIV)
+            pthread_cond_wait(&obj->fv, &obj->m);
+        printBuzz();
+        obj->s = NUM;
+        pthread_cond_signal(&obj->num);
+        i += 5;
+        if(i % 3 == 0)
+            i += 5;    
+    }
+    pthread_mutex_unlock(&obj->m);
+}
+
+// printFizzBuzz() outputs "fizzbuzz".
+void fizzbuzz(FizzBuzz* obj) {
+    int i = 15;
+    pthread_mutex_lock(&obj->m);
+    while(i <= obj->n){
+        while(obj->s != THRFIV)
+            pthread_cond_wait(&obj->thfv, &obj->m);
+        printFizzBuzz();
+        obj->s = NUM;
+        pthread_cond_signal(&obj->num);
+        i += 15;
+    }
+    pthread_mutex_unlock(&obj->m);
+}
+
+// You may call global function `void printNumber(int x)`
+// to output "x", where x is an integer.
+void number(FizzBuzz* obj) {
+    int i;
+    pthread_mutex_lock(&obj->m);
+    while(obj->cur <= obj->n){
+        while(obj->s != NUM)
+            pthread_cond_wait(&obj->num, &obj->m);
+        if (obj->cur % 3 == 0 && obj->cur % 5 != 0) {
+            obj->s = THR;
+            pthread_cond_signal(&obj->th);
+        }
+        else if (obj->cur % 5 == 0 && obj->cur % 3 != 0) {
+            obj->s = FIV;
+            pthread_cond_signal(&obj->fv);
+        }
+        else if (obj->cur % 3 == 0 && obj->cur % 5 == 0) {
+            obj->s = THRFIV;
+            pthread_cond_signal(&obj->thfv);
+        }
+        else {
+            printNumber(obj->cur);
+        }
+        obj->cur++;
+    }
+    pthread_mutex_unlock(&obj->m);   
+}
+
+void fizzBuzzFree(FizzBuzz* obj) {
+    pthread_mutex_destroy(&obj->m);
+    pthread_cond_destroy(&obj->th);
+    pthread_cond_destroy(&obj->fv);
+    pthread_cond_destroy(&obj->thfv);
+    pthread_cond_destroy(&obj->num);
+    free(obj);
+}

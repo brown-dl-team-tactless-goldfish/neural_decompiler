@@ -1,0 +1,29 @@
+    int wordCount(vector<string>& startWords, vector<string>& targetWords) {
+        unordered_set<string> start;
+        for(auto t : startWords){
+            sort(t.begin(), t.end()); // This is O(1) because we know at most we only have 26 letters
+            start.insert(t);
+        }
+        
+        int ret = 0;
+        unordered_map<string, int> targetMap;
+        for(auto t : targetWords){
+            sort(t.begin(), t.end()); // This is O(1) because we know at most we only have 26 letters
+            targetMap[t]++;
+        }
+        
+        for(auto target : targetMap){
+            string str = target.first;
+            for(int i=0; i<str.size(); ++i){
+                char c = str[i];
+                str.erase(str.begin()+i);
+                if(start.count(str)){
+                    ret += target.second;
+                    break;
+                }
+                str.insert(str.begin()+i, c);
+            }
+        }
+        
+        return ret;
+    }

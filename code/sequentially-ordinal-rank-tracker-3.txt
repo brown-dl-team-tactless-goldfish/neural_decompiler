@@ -1,0 +1,63 @@
+class SORTracker {
+public:
+    #define p pair<string,int>
+    int l;
+    struct cmp1
+    {
+        bool operator()(p &a,p &b)
+        {
+            if(a.second==b.second)
+                return a.first<b.first;
+            return a.second>b.second;
+        }
+    };
+    struct cmp2
+    {
+        bool operator()(p &a,p &b)
+        {
+            if(a.second==b.second)
+                return a.first>b.first;
+            return a.second<b.second;
+        }
+    };
+    bool cmp(p a,p b)
+    {
+        if(a.second==b.second)
+            return a.first<b.first;
+        return a.second>b.second;
+    }
+    priority_queue<p,vector<p>,cmp1>left;
+    priority_queue<p,vector<p>,cmp2>right;
+    SORTracker() 
+    {
+        l=1;
+    }
+    
+    void add(string name, int score) 
+    {
+        if(left.size()<l)
+            left.push({name,score});
+        else
+        {
+            if(cmp({name,score},left.top()))
+            {
+                right.push(left.top());
+                left.pop();
+                left.push({name,score});
+            }
+            else
+                right.push({name,score});
+        }
+    }
+    string get() 
+    {
+        string res=left.top().first;
+        l++;
+        if(!right.empty())
+        {
+            left.push(right.top());
+            right.pop();
+        }
+        return res;
+    }
+};

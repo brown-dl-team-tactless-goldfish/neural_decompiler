@@ -1,0 +1,39 @@
+#define MAXN 4096
+char buff[MAXN];
+long long rest[MAXN], result[MAXN];
+
+char *fractionToDecimal(int num, int den)
+{
+    long long d = den;
+    int md = 0, cnt = -1, ptr = 0;
+    long long n = num;
+    if(n < 0) n = -n;
+    if(d < 0) d = -d;
+    bool dot = n%d;
+    bool flag = true;
+    result[0] = 0;
+    while(flag && n)
+    {
+        result[++cnt] = n / d;
+        n %= d;
+        for(int i = 1; i < 10 && i < cnt && flag; i++)
+            flag = !(rest[md=i] == n);
+        rest[cnt] = n;
+        n *= 10;
+    }
+    if(result[1] == result[cnt] && cnt != 1) cnt--,md--;
+    if((num^den)&INT_MIN && num)
+        buff[ptr++] = '-';
+    sprintf(buff+ptr, "%lld", result[0]);
+    while (buff[ptr]) ptr++;
+    if (dot)
+        buff[ptr++] = '.';
+    for (int i = 1; i <= md; i++)
+        buff[ptr++] = '0' + result[i];
+    if (n) buff[ptr++] = '(';
+    for(int i = md+1; i <= cnt; i++)
+        buff[ptr++] = '0' + result[i];
+    if (n) buff[ptr++] = ')';
+    buff[ptr] = 0;
+    return buff;
+}

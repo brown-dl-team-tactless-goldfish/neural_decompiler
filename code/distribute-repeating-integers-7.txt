@@ -1,0 +1,36 @@
+class Solution {
+public:
+    unordered_map<int, int> cnt;
+    vector<unordered_map<string, int>> memo;
+    
+    bool dfs(vector<int> &quantity, string &mem, int index) {
+        if (index == quantity.size())
+            return true;
+        
+        bool pos = false;
+        if (memo[index].count(mem))
+            return memo[index][mem];
+        
+        for (auto &[k, v]: cnt) {
+            if (v >= quantity[index]) {
+                cnt[k] -= quantity[index];
+                mem += cnt[k] + '0';
+                pos = pos || dfs(quantity, mem, index + 1);
+                mem.pop_back();
+                if (pos) return true;
+                cnt[k] += quantity[index];
+            }
+        }
+        return memo[index][mem] = pos;
+    }
+    bool canDistribute(vector<int>& nums, vector<int>& quantity) {
+        int n = quantity.size();
+        string mem = "";
+        memo = vector<unordered_map<string, int>>(n);
+
+        for (int i: nums)
+            cnt[i]++;
+
+        return dfs(quantity, mem, 0);
+    }
+};

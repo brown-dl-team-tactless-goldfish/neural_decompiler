@@ -1,0 +1,55 @@
+#define MAXN 100001
+class Solution {
+public:
+    int parent[MAXN];
+    int ranking[MAXN];
+    
+    int find(int a) {
+        if(a == parent[a])
+            return a;
+        
+        return parent[a] = find(parent[a]);
+    }
+    
+    void set_union(int a, int b) {
+        a = find(a);
+        b = find(b);
+        
+        if(ranking[a] < ranking[b])
+            swap(a, b);
+        
+        ranking[a]++;
+        
+        parent[b] = a;
+    }
+    
+    int minimumHammingDistance(vector<int>& S, vector<int>& T, vector<vector<int>>& Swaps) {
+        
+        for(int i = 0; i < MAXN; i++) {
+            parent[i] = i;
+            ranking[i] = 0;
+        }
+        
+        for(auto a: Swaps) 
+            set_union(a[0], a[1]);
+        
+        map<int, map<int, int>> freq_diff;
+        
+        for(int i = 0; i < S.size(); i++)
+            freq_diff[find(i)][S[i]]++;
+        
+        for(int i = 0; i < T.size(); i++)
+            freq_diff[find(i)][T[i]]--;
+        
+        int answer = 0;
+        
+        for(auto a : freq_diff) {
+            auto b = a.second;
+            
+            for(auto c : b) 
+                answer += abs(c.second);
+        }
+        
+        return answer/2;
+    }
+};

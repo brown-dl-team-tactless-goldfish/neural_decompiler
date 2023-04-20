@@ -1,0 +1,17 @@
+public class Solution {
+    public IList<int> GoodDaysToRobBank(int[] s, int t) {
+        List<int> res = new List<int>();
+        
+        int[] lr = new int[s.Length];
+        for (int i = 1; i < s.Length; ++i) lr[i] = s[i] <= s[i - 1] ? lr[i - 1] + 1 : 0;
+        int[] rl = new int[s.Length];
+        for (int i = s.Length - 2; i >= 0; --i) rl[i] = s[i + 1] >= s[i] ? rl[i + 1] + 1 : 0;
+        
+        for (int i = 0; i < s.Length; ++i) {
+            if (i - t < 0 || i + t >= s.Length || lr[i] < t || rl[i] < t) continue;
+            else res.Add(i);
+        }
+        
+        return res;
+    }
+}

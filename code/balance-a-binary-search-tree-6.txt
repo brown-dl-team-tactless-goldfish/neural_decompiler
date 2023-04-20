@@ -1,0 +1,53 @@
+
+class Solution:
+    def balanceBST(self, root: TreeNode) -> TreeNode:
+        
+        self.data = []
+        def inOrder(curNode):
+            if (curNode == None):
+                return
+            
+            inOrder(curNode.left)
+            self.data.append(curNode.val)
+            inOrder(curNode.right)
+            
+        inOrder(root)
+        
+        print ("self.data = ", self.data)
+        
+        n = len(self.data)
+        
+        def buildTree(array):
+            n = len(array)
+            # print ("array = ", array)
+            # print ("n = ", n)
+            if (n == 0):
+                return None
+            elif (n == 1):
+                newNode = TreeNode(array[0])
+                return newNode
+            elif (n == 2):
+                root = TreeNode(array[1])
+                left = TreeNode(array[0])
+                root.left = left
+                return root
+            elif (n == 3):
+                root = TreeNode(array[1])
+                left = TreeNode(array[0])
+                right = TreeNode(array[2])
+                root.left = left
+                root.right = right
+                return root
+            else:
+                midIdx = n // 2
+                root = TreeNode(array[midIdx])
+                left = buildTree(array[:midIdx])
+                right = buildTree(array[midIdx+1:])
+                
+                root.left = left
+                root.right = right
+                return root
+            
+        newRoot = buildTree(self.data)
+        # print ("newRoot.val = ", newRoot.val)
+        return newRoot

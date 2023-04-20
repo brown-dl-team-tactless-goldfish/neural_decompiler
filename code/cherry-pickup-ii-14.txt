@@ -1,0 +1,54 @@
+int m, n;
+
+int dp[72][72][72];
+
+int help(vector<vector<int>>& grid, int c1, int c2, int r)
+{
+    if(r == m)
+    {
+        return 0;
+    }
+    
+    if(dp[c1][c2][r] != -1)
+    {
+        return dp[c1][c2][r];
+    }
+    
+    int ans = 0;
+    
+    for(int i= -1; i<= 1; i++)
+    {
+        for(int j = -1; j<= 1; j++)
+        {
+            int nc1 = c1+i;
+            int nc2 = c2+j;
+            
+            if(nc1 >= 0 && nc2 >= 0 && nc1 < n && nc2 < n)
+            {
+                ans = max(ans, help(grid,nc1,nc2,r+1));
+            }
+        }
+    }
+    
+    if(c1 == c2)
+    {
+        ans += grid[r][c1];
+    }
+    else
+    {
+        ans += grid[r][c1] + grid[r][c2];
+    }
+    
+    return dp[c1][c2][r] = ans;
+}
+
+int cherryPickup(vector<vector<int>>& grid)
+{
+    m = grid.size(), n = grid[0].size();
+    
+    memset(dp,-1,sizeof(dp));
+    
+    return help(grid, 0, n-1, 0);
+    
+    
+}

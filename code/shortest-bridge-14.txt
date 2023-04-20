@@ -1,0 +1,74 @@
+int shortestBridge(vector<vector<int>>& A) {
+    int m = A.size();
+    int n = A[0].size();
+    
+    std::set<int> firstIsland;
+    for(int i = 0; i < m; ++i) {
+        for(int j = 0; j < n; ++j) {
+            if (A[i][j] > 0) {
+                dfs(A, i, j, m, n, firstIsland);
+                break;
+            }                
+        }
+        
+        if (firstIsland.size() > 0) {
+            break;
+        }
+    }
+    
+    
+    std::queue<int> q;
+    for(auto& c : firstIsland) {
+        q.push(c);
+    }
+    int step = 0;
+    while(!q.empty()) {
+        
+        int cnt = q.size();
+        
+        while(cnt-- > 0) {
+            int current = q.front();
+            q.pop();
+            
+            int i = current / 1000;
+            int j = current % 1000;
+            vector<vector<int>> dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+            for(auto& d : dirs) {
+                int x = i + d[0];
+                int y = j + d[1];
+                
+                if (x < 0 || x >= m || y < 0 || y >= n || firstIsland.count(x * 1000 + y) > 0) continue;
+                
+                if (A[x][y] == 1) {
+                    return step;
+                } else {
+                    q.push(x * 1000 + y);
+                    firstIsland.insert(x * 1000 + y);
+                }
+                
+                
+            }
+            
+            
+        }
+        
+        ++step;
+        
+    }
+    
+    
+    
+    return -1;
+}
+
+void dfs(vector<vector<int>>& A, int i, int j, int m, int n, std::set<int>& visited) {
+    if (i < 0 || i >= m || j < 0 || j >= n || A[i][j] == 0) return;
+    
+    if (visited.count(i*1000 + j) > 0)  return;
+    visited.insert(i * 1000 + j);
+    
+    vector<vector<int>> dirs = {{0, 1}, {1, 0}, {0, -1}, {-1, 0}};
+    for(auto& d : dirs) {
+        dfs(A, i + d[0], j + d[1], m, n, visited);
+    }        
+}

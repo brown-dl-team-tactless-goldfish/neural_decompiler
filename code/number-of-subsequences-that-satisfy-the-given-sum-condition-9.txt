@@ -1,0 +1,28 @@
+class Solution {
+public:
+    #define ll long long 
+    int MOD = 1e9 + 7 ;
+    ll binaryExp(ll a , ll b){
+        ll ans = 1 ;
+        while(b){
+            if(b&1) ans = (ans*a) % MOD ;
+            a = (a*a) % MOD;
+            b >>= 1 ;
+        }
+        return ans % MOD ;
+    }
+    int numSubseq(vector<int>& nums, int target) {
+        ll res = 0 , single = 0 ;
+        for(auto &x : nums) single += (2*x <= target) ? 1 : 0 ;
+        sort(begin(nums),end(nums)) ;
+        
+        for(int i = 0 ; i < nums.size() ; ++i ){
+            int idx = upper_bound(begin(nums) + i + 1,end(nums),target-nums[i]) - begin(nums) - 1;
+            if(idx == -1) continue ;
+            ll n = idx - i ;
+            res += binaryExp(2,n) - 1; res %= MOD ;
+            
+        }
+        return res + single ;
+    }
+};

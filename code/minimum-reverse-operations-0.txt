@@ -1,0 +1,127 @@
+class Solution {
+public:        
+    vector<int> minReverseOperations(int n, int p, vector<int>& banned, int k) {        
+        vector<int> ans(n, -1);        
+        ans[p] = 0;
+        if(k == 1) return ans;
+
+        vector<char>visit(n, 0);
+        vector<char>ban(n, 0);        
+        queue<int> Q;
+
+        for(int num : banned) ban[num] = 1;
+        visit[p] = 1;
+        Q.push(p);
+        int cur;
+        int s, e, loc;
+        while(!Q.empty()) {            
+            cur = Q.front();
+            Q.pop();
+
+            // right, outside -> inside
+            s = cur;
+            e = cur + k - 1;
+            if(e >= n) {
+                s -= e - n + 1;
+                e = n - 1;                
+            }
+          
+            while(s >= 0 && cur - s < e - cur) {
+                loc = e + s - cur;                
+                if(ban[loc]) {
+                    --s, --e;
+                    continue;
+                }                
+                if(visit[loc]) break;                
+                visit[loc] = 1;
+                ans[loc] = ans[cur] + 1;
+                Q.push(loc);
+                --s, --e;
+            }
+
+            // left, outside -> inside
+            s = cur - k + 1;
+            e = cur;
+            if(s < 0) {
+                e -= s;
+                s = 0;
+            }
+
+            while(e < n && cur - s > e - cur) {
+                loc = e + s - cur;
+                if(ban[loc]) {
+                    ++s, ++e;
+                    continue;
+                }            
+                if(visit[loc]) break;
+                visit[loc] = 1;
+                ans[loc] = ans[cur] + 1;
+                Q.push(loc);
+                ++s, ++e;
+            }
+
+            // right, inside -> outside
+            s = cur - (k - 1) / 2;
+            e = cur + k / 2;
+            if(k&1) {
+                ++s, ++e;
+            }
+            
+            if(e >= n) {
+                s -= e - n + 1;
+                e = n - 1;                
+            }
+            if(s < 0) {
+                e -= s;
+                s = 0;
+            }
+
+           
+            while(s <= cur && e < n && cur - s < e - cur) {
+                loc = e + s - cur;                
+                if(ban[loc]) {
+                    ++s, ++e;
+                    continue;
+                }                
+                if(visit[loc]) break;                
+                visit[loc] = 1;
+                ans[loc] = ans[cur] + 1;
+                Q.push(loc);
+                ++s, ++e;
+            }
+
+            // left, inside -> outside
+            s = cur - (k - 1) / 2 - 1;
+            e = cur + k / 2 - 1;
+            if(e >= n) {
+                s -= e - n + 1;
+                e = n - 1;                
+            }
+            if(s < 0) {
+                e -= s;
+                s = 0;
+            }
+
+            while(e >= cur && s >= 0 && cur - s > e - cur) {
+                loc = e + s - cur;
+                if(ban[loc]) {
+                    --s, --e;
+                    continue;
+                }            
+                if(visit[loc]) break;
+                visit[loc] = 1;
+                ans[loc] = ans[cur] + 1;
+                Q.push(loc);
+                --s, --e;
+            }
+        }
+
+        return ans;
+    }       
+};
+
+
+
+
+
+

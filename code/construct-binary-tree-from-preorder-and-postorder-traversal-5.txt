@@ -1,0 +1,45 @@
+public class Solution {
+    public TreeNode ConstructFromPrePost(int[] pre, int[] post) {
+        
+        if(pre == null || pre.Length == 0 || pre.Length == 0 || post.Length == 0)
+            return null;
+        
+        // key: root; value: left
+        Dictionary<int,int> preDic = new Dictionary<int,int>();
+        for(int i = 0; i < pre.Length - 1; i++)
+            preDic.Add(pre[i], pre[i+1]);
+        
+        // key: root; value: right
+        Dictionary<int,int> posDic = new Dictionary<int,int>();
+        for(int j = post.Length - 1; j > 0; j--)
+            posDic.Add(post[j], post[j-1]);
+        
+        TreeNode root = new TreeNode(pre[0]);
+        Queue<TreeNode> queue = new Queue<TreeNode>();
+        queue.Enqueue(root);
+        HashSet<int> seen = new HashSet<int>();
+        seen.Add(pre[0]);
+        
+        while(queue.Count > 0)
+        {     
+            var curr = queue.Dequeue();      
+            if(preDic.ContainsKey(curr.val) && !seen.Contains(preDic[curr.val]))
+            {
+                var leftNode = new TreeNode(preDic[curr.val]);
+                curr.left = leftNode;
+                queue.Enqueue(leftNode);
+                seen.Add(preDic[curr.val]); 
+            }
+            
+            if(posDic.ContainsKey(curr.val) && !seen.Contains(posDic[curr.val]))
+            {
+                var rightNode = new TreeNode(posDic[curr.val]);
+                curr.right = rightNode;
+                queue.Enqueue(rightNode);
+                seen.Add(posDic[curr.val]);  
+            }       
+        }
+                    
+        return root;
+    }
+}

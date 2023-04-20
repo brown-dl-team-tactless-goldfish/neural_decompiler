@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<int> g[100005];
+    long long fuel;
+    int seat;
+
+    long long dfs(int u, int par) {
+        int rep = 1;
+        for(auto v: g[u]) {
+            if(v != par) {
+                rep += dfs(v, u);
+            }
+        }
+        if(u != 0) {
+            fuel += ceil((double) rep / seat);
+        }
+        return rep;
+    }
+
+    long long minimumFuelCost(vector<vector<int>>& roads, int seats) {
+        int n = roads.size() + 1;
+        seat = seats;
+        for(auto x: roads) {
+            g[x[0]].push_back(x[1]);
+            g[x[1]].push_back(x[0]);
+        }
+        dfs(0, -1);
+        return fuel;
+    }
+};
+

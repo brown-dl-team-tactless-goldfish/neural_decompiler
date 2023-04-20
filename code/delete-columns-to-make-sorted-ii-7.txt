@@ -1,0 +1,56 @@
+class Solution {
+public:
+    int minDeletionSize(vector<string>& A) {
+        if(A.empty()){
+            return 0;
+        }
+        int n = A[0].size();
+        int an = A.size();
+        queue<vector<int>> q;
+        vector<int> all;
+        for(int i=0; i < an; i++){
+            all.push_back(i);
+        }
+        q.push(all);
+        int step = 0, total = 0;
+        while(!q.empty() && step < n){
+            int sz = q.size();
+            bool del = false;
+            vector<vector<int>> pre;
+            for(int k=0; k < sz; k++){
+                unordered_map<char, vector<int>> m;
+                auto idxs = q.front();
+                q.pop();
+                if(del){
+                    q.push(idxs);
+                    continue;
+                }
+                pre.push_back(idxs);
+                int ii = idxs[0];
+                m[A[ii][step]].push_back(ii);
+                for(int idx=1; idx < idxs.size(); idx++){
+                    int i = idxs[idx];
+                    int j = idxs[idx - 1];
+                    if(A[i][step] < A[j][step]){
+                        total++;
+                        del = true;
+                        for(auto ids : pre){
+                            q.push(ids);
+                        }
+                        pre.clear();
+                        break;
+                    }else{
+                        m[A[i][step]].push_back(i);
+                    }
+                }
+            for(auto pa : m){
+                if(pa.second.size() > 1){
+                    q.push(pa.second);
+                }
+            }
+            }
+            step++;
+        }
+        return total;
+    }
+};

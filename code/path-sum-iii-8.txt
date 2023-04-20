@@ -1,0 +1,40 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+// my try
+void preTraversal(struct TreeNode* root, long targetSum, int* count){
+    if (root == NULL) return;
+ 
+    targetSum -= root->val;
+    if (targetSum == 0 && root->left == NULL && root->right == NULL){
+        *count += 1;
+        return;
+    }
+
+    if (targetSum == 0){
+        *count += 1; 
+    }
+
+    preTraversal(root->left, targetSum, count);
+    preTraversal(root->right, targetSum, count); 
+}
+
+void subTree(struct TreeNode* root, int targetSum, int* count){
+    if (root == NULL) return;
+
+    preTraversal(root, targetSum, count);
+    subTree(root->left, targetSum, count);
+    subTree(root->right, targetSum, count);
+}
+
+int pathSum(struct TreeNode* root, int targetSum){
+    int count = 0;
+    subTree(root, targetSum, &count);
+    return count;
+}

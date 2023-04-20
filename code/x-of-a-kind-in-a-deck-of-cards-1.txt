@@ -1,0 +1,34 @@
+bool hasGroupsSizeX(int* deck, int deckSize){
+    int*record=calloc(10000,sizeof(int));
+    int*reduced=malloc(sizeof(int));
+    int count=0;
+    int i,j;
+    int min=-1;
+    bool flag=0;
+    for(i=0;i<deckSize;i++)
+        record[deck[i]]++; //create a tally
+    for(i=0;i<10000;i++){ //abridge the tally, removing any entries of 0.
+        if(record[i]>1){
+            reduced=realloc(reduced,sizeof(int)*(++count));
+            reduced[count-1]=record[i];
+            if(record[i]<min || min==-1)
+                min=record[i];
+        }  
+        else if(record[i]==1)
+            return 0;
+    }
+    free(record);
+    for(i=0;i<count;i++)
+        if(reduced[i]%min!=0){
+            flag=0;
+            for(j=2;j<min;j++)
+                if (min%j==0 && reduced[i]%j==0){
+                    min=j;
+                    flag=1;
+                    break;
+                }
+            if(flag==0)
+                return 0;
+            }         
+    return 1;
+}

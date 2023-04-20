@@ -1,0 +1,17 @@
+// OJ: https://leetcode.com/problems/find-subsequence-of-length-k-with-the-largest-sum/
+// Author: github.com/lzl124631x
+// Time: O(N) on average, O(N^2) in the worst case
+// Space: O(N)
+class Solution {
+public:
+    vector<int> maxSubsequence(vector<int>& A, int k) {
+        if (k == A.size()) return A;
+        vector<int> v(begin(A), end(A)), ans;
+        nth_element(begin(v), begin(v) + k - 1, end(v), greater<>());
+        int cnt = count(begin(v), begin(v) + k, v[k - 1]);
+        for (int i = 0; i < A.size(); ++i) {
+            if (A[i] > v[k - 1] || (A[i] == v[k - 1] && --cnt >= 0)) ans.push_back(A[i]);
+        }
+        return ans;
+    }
+};

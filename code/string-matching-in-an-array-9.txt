@@ -1,0 +1,63 @@
+// 1. sort words big to small: ie., you want "hero" to be a substring so put "superhero" first
+// 2. check if the current word is in the Trie. 
+// 2a. if it is, add it to substring list.
+// 2b. if it isn't, store all possible suffixes of the current word words in the tree - eg., superhero uperhero perhero erhero .. so that if there were any substring like "rh", it would be found to be a substring as soon a we started searching the trie, because "rhero" would have been in there
+
+class TrieNode {
+private:
+    unordered_map<char, TrieNode*> children;
+public:
+    void printTrie() {
+        deque<TrieNode*> q;
+        TrieNode* current = this;
+        q.push_back(current);
+        
+        while(!q.empty()) {            
+            current = q.front(); q.pop_front();
+            for(auto& c : current->children) {
+                q.push_back(c.second);
+            }
+        }
+    }
+    
+    void put(const string& s) {
+        TrieNode* current = this;
+        for(auto c : s) {
+            if (!current->children.count(c)) { // does not exist here. create.
+                current->children[c] = new TrieNode();
+            }
+            current = current->children[c]; // whether it exists or not, update current to the new subtree
+        }
+    }
+
+    bool get(const string& s) {
+        TrieNode* current = this;
+        for (auto c : s) {
+            if (!current->children.count(c)) return false;
+            current = current->children[c]; // if exists, try the next char
+        }
+        return true;
+    }
+};
+
+class Solution {
+public:
+    vector<string> stringMatching(vector<string>& words) {
+        vector<string> substrings;
+        sort(words.begin(),words.end(),[](string& word1, string& word2){
+            return word2.size() < word1.size();
+        });
+        TrieNode* trie = new TrieNode();
+        for (auto& w : words) {
+            if (trie->get(w)) {
+                substrings.push_back(w);
+            } else {
+                for (int i = 0; i < w.size(); ++i) {
+                    trie->put(w.substr(i));
+                    trie->printTrie();
+                }
+            }            
+        }
+        return substrings;
+    }
+};

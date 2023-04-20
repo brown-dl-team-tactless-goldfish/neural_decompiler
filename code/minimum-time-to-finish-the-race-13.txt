@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int minimumFinishTime(vector<vector<int>>& tires, int changeTime, int numLaps) {
+        vector<long> nonstop(20, INT_MAX); 
+        for (auto& tire : tires) {
+            long prefix = tire[0], term = tire[0]; 
+            for (int i = 1; i < 20; ++i) {
+                nonstop[i] = min(nonstop[i], prefix); 
+                term *= tire[1]; 
+                if (term >= tire[0] + changeTime) break; 
+                prefix += term; 
+            }
+        }
+        vector<int> dp(numLaps+1, INT_MAX); 
+        dp[1] = nonstop[1]; 
+        for (int x = 2; x <= numLaps; ++x) {
+            if (x < 20) dp[x] = nonstop[x]; 
+            for (int xx = 1; xx < min(20, x/2+1); ++xx) 
+                dp[x] = min(dp[x], dp[xx] + dp[x-xx] + changeTime); 
+        }
+        return dp.back(); 
+    }
+};

@@ -1,0 +1,84 @@
+    if(!root)
+    {
+        return{};
+    }
+    
+    map<int,vector<int>> m;
+    
+    queue<TreeNode*> q;
+    
+    set<int> v;
+    
+    q.push(root);
+    
+    while(!q.empty( ))
+    {
+        
+        auto cur = q.front();
+        
+        q.pop();
+        
+        if(cur->left)
+        {
+            m[cur->val].push_back(cur->left->val);
+            m[cur->left->val].push_back(cur->val);
+            q.push(cur->left);
+        }
+               
+        if(cur->right)
+        {
+            m[cur->val].push_back(cur->right->val);
+            m[cur->right->val].push_back(cur->val);
+            q.push(cur->right);
+        }
+    }
+    
+    queue<int> nq;
+    
+    vector<int> res;
+    
+    nq.push(target->val);
+    
+    int level = 0;
+    
+    while(!nq.empty() && level<= k)
+    {
+        int count = nq.size();
+        
+        while(count--)
+        {
+            
+            int cur = nq.front();
+            
+            nq.pop();
+            
+            if(level == k)
+            {
+                res.push_back(cur);
+            }
+            
+            for(auto x: m[cur])
+            {
+                if(v.find(x) == v.end())
+                {
+                    nq.push(x);
+                }
+            }
+            
+            v.insert(cur);
+            
+        }
+        
+        level++;
+        
+    }
+     
+    if(level < k )
+    {
+        return {};
+    }
+    
+    return res;
+    
+}
+};

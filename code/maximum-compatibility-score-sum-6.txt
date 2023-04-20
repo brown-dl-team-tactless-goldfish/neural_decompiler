@@ -1,0 +1,31 @@
+class Solution {
+    int dfs(vector<vector<int>> &dp, vector<vector<int>>& students, vector<vector<int>>& mentors, int is, int bits, int n, int m)
+    {
+        if(is < 0 || bits==0)
+            return 0;
+        if(dp[is][bits] != -1)
+            return dp[is][bits];
+        int val = 0;
+        for(int i = 0; i < n; i++)
+        {
+            if(bits&(1 << i))
+            {
+                int t = bits^(1 << i);
+                int count = 0;
+                for(int j = 0; j < m; j++)
+                {
+                    if(students[is][j] == mentors[i][j])
+                        count++;
+                }
+                val = max(val, count + dfs(dp, students, mentors, is-1, t, n, m));
+            }
+        }
+        return dp[is][bits] = val;
+    }
+public:
+    int maxCompatibilitySum(vector<vector<int>>& students, vector<vector<int>>& mentors) {
+        int n = students.size(), m = students[0].size();
+        vector<vector<int>> dp(n, vector<int> ((1 << n)+10, -1));
+        return dfs(dp, students, mentors, n-1, (1<<n)-1, n, m);
+    }
+};

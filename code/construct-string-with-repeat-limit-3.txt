@@ -1,0 +1,57 @@
+#define pii pair<int,int>
+class Solution {
+public:
+    string repeatLimitedString(string s, int repeatLimit) {
+        priority_queue<pii> p;
+        vector<int> v(26, 0);
+        
+        for(char c : s) v[c-'a']++;
+        
+        for(int i=0; i<26; i++)
+            if(v[i] != 0)
+                p.push({i, v[i]});
+            
+        string repeatLimitedString;
+        while(!p.empty())
+        {
+            pii top = p.top();
+            p.pop();
+            
+            if(top.second > repeatLimit)
+            {
+                while(top.second)
+                {
+                    int times = min(top.second, repeatLimit);
+                    while(times--)
+                    {
+                        repeatLimitedString += (char)(top.first + 'a');
+                    }
+                    top.second -= min(top.second, repeatLimit);
+                    if(top.second)
+                    {
+                        if(p.empty()) return repeatLimitedString;
+                        
+                        pii secondTop = p.top();
+                        p.pop();
+                        
+                        repeatLimitedString += (char)(secondTop.first + 'a');
+                        
+                        if(secondTop.second > 1) 
+                        {
+                            p.push({secondTop.first, secondTop.second-1});
+                        }
+                    }
+                }
+            }
+            else
+            {
+                int times = top.second;
+                while(times--)
+                {
+                    repeatLimitedString += (char)(top.first + 'a');
+                }
+            }
+        }
+        return repeatLimitedString;
+    }
+};

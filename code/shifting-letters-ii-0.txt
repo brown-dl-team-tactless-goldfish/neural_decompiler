@@ -1,0 +1,32 @@
+char * shiftingLetters(char * s, int** shifts, int shiftsSize, int* shiftsColSize){
+    int n = strlen(s);
+    int* prefixSum = calloc( (n + 1) , sizeof(int));
+    prefixSum[n] = 0;
+    for(int i = 0; i < shiftsSize; i++){
+        if(shifts[i][2] == 1 ){
+            prefixSum[shifts[i][0]]++;
+            prefixSum[shifts[i][1] + 1]--;
+        }
+        else{
+            prefixSum[shifts[i][0]]--;
+            prefixSum[shifts[i][1] + 1]++;
+        }
+    }
+    for(int i= 1; i < n; i++){
+        prefixSum[i] += prefixSum[i-1]; 
+    }
+    char* ans = malloc((n+1) * sizeof(char));
+    ans[n] = '\0';
+    for(int i = 0; i < n; i++){
+        prefixSum[i] += s[i] - 'a';
+        if(prefixSum[i] >= 0){
+            prefixSum[i] %= 26;
+        }
+        else{
+            prefixSum[i] = (prefixSum[i]%26 + 26) %26;
+        }
+        ans[i] = 'a' + prefixSum[i] ;
+    }
+    free(prefixSum);
+    return ans;   
+}

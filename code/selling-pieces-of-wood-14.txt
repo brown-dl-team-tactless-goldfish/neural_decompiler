@@ -1,0 +1,34 @@
+class Solution {
+public:
+    long dp[201][201], p[201][201];
+    long long sellingWood(int m, int n, vector<vector<int>>& prices) {
+        memset(dp,-1,sizeof(dp));
+        memset(p,0,sizeof(p));
+        for(auto & i:prices)
+            p[i[0]][i[1]]=i[2];
+        return helper(m,n); 
+    }
+  long helper(int height,int width){
+        if(dp[height][width]!=-1)
+            return dp[height][width];
+      // sell this whole piece  and get money
+        long maxAmnt=p[height][width];
+      // or cut into pieces and then sell
+      // cut till half of height and width because of symmetry
+      // cut along height
+        for(int lowerHeight=1;lowerHeight<=height/2;lowerHeight++){
+            int upperHeight=height-lowerHeight;
+            long temp=helper(upperHeight,width) + helper(lowerHeight,width);
+            maxAmnt=max(maxAmnt,temp);
+        }
+      
+      //cut along width
+        for(int leftWidth=1;leftWidth<=width/2;leftWidth++){
+            int rightWidth=width-leftWidth;
+            long temp=helper(height,rightWidth)+helper(height,leftWidth);
+            maxAmnt=max(maxAmnt,temp);
+        }   
+        dp[height][width]=maxAmnt;
+        return maxAmnt;
+    }
+};

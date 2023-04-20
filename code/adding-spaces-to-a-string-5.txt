@@ -1,0 +1,29 @@
+char * addSpaces(char * s, int* spaces, int spacesSize){
+    const int sLen = strlen(s);
+    const int retSize = sLen + spacesSize + 1;
+    char* ret = malloc(retSize*sizeof(char));
+    
+    if (spaces[0] > 0) {
+        memcpy(ret, s, spaces[0]);
+    }
+    ret[spaces[0]] = ' ';
+    
+    for (int i = 1; i < spacesSize; i++) {
+        const int numCopy = spaces[i] - spaces[i-1];
+        if (numCopy > 0) {
+            const int retIdx = spaces[i - 1] + i;
+            memcpy(&ret[retIdx], &s[spaces[i - 1]], numCopy*sizeof(char));
+        }
+        ret[spaces[i] + i] = ' ';
+    }
+    
+    {
+        const int retIdx = spaces[spacesSize - 1] + spacesSize;
+        const int sIdx = spaces[spacesSize - 1];
+        const int numCopy = sLen - sIdx;
+        memcpy(&ret[retIdx], &s[sIdx], numCopy*sizeof(char));
+    }
+    
+    ret[retSize - 1] = '\0';
+    return ret;
+}

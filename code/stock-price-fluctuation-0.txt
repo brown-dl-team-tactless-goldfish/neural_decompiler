@@ -1,0 +1,56 @@
+typedef pair<int,int> pii;
+
+class StockPrice {
+    
+    //Min Heap to store the prices, timestamp pair to facilitate finding the lowest price
+    priority_queue< pii, vector<pii>, greater<pii> > minHeap;
+    
+    //Max Heap to store the prices, timestamp pair to facilitate finding the highest price
+    priority_queue< pii > maxHeap;
+    
+    // For latest timestamp
+    int latest=0;
+    unordered_map<int,int> sp;
+public:
+    
+    StockPrice() {
+        
+    }
+    
+    void update(int timestamp, int price) {
+        sp[timestamp] = price;
+        latest = max(timestamp, latest);
+        minHeap.push({price, timestamp});
+        maxHeap.push({price, timestamp});
+    }
+    
+    int current() {
+        return sp[latest];
+    }
+    
+    int maximum() {
+        
+        // if the value not matched then it means its the old value .. so just discard it
+        while(maxHeap.top().first != sp[maxHeap.top().second])
+            maxHeap.pop();
+        
+        return maxHeap.top().first;
+    }
+    
+    int minimum() {
+        // if the value not matched then it means its the old value .. so just discard it
+        while(minHeap.top().first != sp[minHeap.top().second])
+            minHeap.pop();
+        
+        return minHeap.top().first;
+    }
+};
+
+/**
+ * Your StockPrice object will be instantiated and called as such:
+ * StockPrice* obj = new StockPrice();
+ * obj->update(timestamp,price);
+ * int param_2 = obj->current();
+ * int param_3 = obj->maximum();
+ * int param_4 = obj->minimum();
+ */

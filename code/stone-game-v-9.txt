@@ -1,0 +1,21 @@
+    int &ans = dp[l][r];
+    if(ans!=-1)
+        return ans;
+	ans = INT_MIN;
+    for (int i = l; i < r; ++i)
+    {
+        int result;
+        int left = psum[i] - (l==0?0: psum[l-1]);
+        int right = psum[r] - psum[i];
+        result = min(left, right);
+        if(left==right)
+            result += max(solve(l, i), solve(i+1, r));
+        else if(left < right)
+            result += solve(l, i);
+        else
+            result += solve(i+1, r);
+        
+        ans = max(ans, result);
+    }
+    return ans;
+	`

@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int findCenter(vector<vector<int>>& edges) {
+        int n = edges.size() + 1;
+        vector<int> Graph[n+1];
+        
+        int indegree[n+1];
+        for(int i = 1; i <= n; i++)
+            indegree[i] = 0;
+        for(auto it: edges) {
+            Graph[it[0]].push_back(it[1]);
+            Graph[it[1]].push_back(it[0]);
+            
+            indegree[it[0]]++;
+            indegree[it[1]]++;
+        }
+        queue<int> q;
+        for(int i = 1; i <= n; i++) {
+            if(indegree[i] == 1) q.push(i);
+        }
+        int edge;
+        while(! q.empty()) {
+            edge = q.front();
+            q.pop();
+            for(int v : Graph[edge]) {
+                if(--indegree[v] == 1) q.push(v);
+            }
+        }
+        return edge;
+    }
+};

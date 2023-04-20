@@ -1,0 +1,21 @@
+int kInversePairs(int n, int k){
+    if(!k)return 1;
+    unsigned sum[2][1001]={0};
+    int curr=0;
+    for(int kk=0;kk<=k;kk++){
+        sum[0][kk]=1;
+    }
+    sum[1][0]=1;
+    for(int nn=1;nn<=n;nn++){
+        curr=!curr;
+        for(int kk=1;kk<=k;kk++){
+            int klow=kk-nn+1;
+            if(klow>0){
+                sum[curr][kk]=(sum[!curr][kk]-sum[!curr][klow-1]+1000000007u+sum[curr][kk-1])%1000000007u;
+            }else{
+                sum[curr][kk]=(sum[!curr][kk]+sum[curr][kk-1])%1000000007u;
+            }
+        }
+    }
+    return (sum[curr][k]-sum[curr][k-1]+1000000007u)%1000000007u;
+}

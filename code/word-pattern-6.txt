@@ -1,0 +1,54 @@
+
+int word_count_in_string(char* str)
+{
+    int count = 0, i =0;
+    char* tok = strtok(str, " ");
+    while(tok)
+    {
+        count++;
+        tok = strtok(NULL, " ");
+    }
+    return count;
+}
+
+bool wordPattern(char * pattern, char * str){
+    char *temp = malloc((strlen(str)+1));
+    temp[0] = '\0'; 
+    strcpy(temp, str);
+    char* map[256] ={NULL};
+    int i =0, word_count_in_str = word_count_in_string(temp);
+    
+    if(strlen(pattern) != word_count_in_str)
+        return false;
+    
+    char **dict = malloc(sizeof(char*) * word_count_in_str);
+    char* tok = strtok(str, " ");
+    while(tok)
+    {
+        dict[i] = malloc((strlen(tok)+1)*sizeof(char));
+        dict[i][0] = '\0';
+        strcpy(dict[i], tok);
+        i++;
+        tok = strtok(NULL, " ");
+    }
+    
+    for(int i=0; i< word_count_in_str; i++)
+    {
+        int index = pattern[i] -'a';
+        if(map[index] == NULL)
+        {
+             map[index] = &dict[i][0];
+        }      
+    }
+    for(int i =0; pattern[i]; i++)
+    {
+        int index = pattern[i] -'a';
+        if( ( strcmp(map[index], dict[i]) ) !=0 )
+            return false;
+        for(int j = i; pattern[j]; j++)
+            if(strcmp(map[index],map[pattern[j] - 'a']) == 0 && pattern[i] != pattern[j] )
+                return false;    
+    }
+    return true;
+}
+

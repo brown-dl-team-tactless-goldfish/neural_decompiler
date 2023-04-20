@@ -1,0 +1,67 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+//int compare ( const void *, const void * );
+
+typedef struct {
+        int dup_index;
+        int dup_value;
+     }dup_t;
+        
+int* arrayRankTransform(int* arr, int arrSize, int* returnSize){
+ 
+    if (arrSize == 0) {*returnSize=0; return NULL;} //cover empty array
+    
+    //Memory alloc to output array
+    int *out = malloc(arrSize*sizeof(int));
+    //Initialize rank
+    int rank = 0;
+    
+    //Store duplicates for a specific value to put them at the same rank
+    dup_t dup[arrSize];
+        
+    //initialize output array to zeros. Wish there was an easier way in C!
+    for(int i=0; i <arrSize; i++) {
+        out[i] = 0;
+    }
+    
+    
+    for(int x=0 ; x < arrSize; x++) {
+        
+        //store index/val/# of duplicates in a given iteration to later store in output
+        int index;
+        int val = 10e9;
+        int dupli = 0;
+        //printf("Val of x: %d\n", x);
+        
+        for(int i=0; i < arrSize; i++) {
+            
+            if( (arr[i] <= val) && (out[i]==0)) {
+                if (arr[i] == val) {
+                    dup[dupli].dup_index=i;
+                    dup[dupli].dup_value=val;
+                    dupli++;
+                    //printf("getting duplicates at: %d val: %d\n",i,val);
+                }
+                else {
+                    val = arr[i];
+                    index = i;
+                    dupli=0;
+                }
+                //printf("index: %d ; val: %d\n", index, val);
+            }
+        }
+        //at the end of the iteration store output value only if its not previously set
+        if(out[index]==0) {out[index]=++rank;}
+                //printf("index: %d ; rank: %d val:%d \n", index, rank, val);
+        
+        if (dupli && dup[0].dup_value==val) { //if duplicate minimum values were found then they all get the same rank
+            for(int i=0; i<dupli; i++) {
+                out[dup[i].dup_index] = rank;
+                x++; //skip next forloop iteration
+            }
+        }
+    }
+    *returnSize = arrSize;
+    return out;
+}

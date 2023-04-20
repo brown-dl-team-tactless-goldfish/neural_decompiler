@@ -1,0 +1,39 @@
+class Solution {
+public:
+    
+    int n, m, mn = INT_MAX;
+    vector<int> g;
+    
+    void dfs(int c=0) // c: nb of squares already used
+    {
+        
+        if (c>=mn) return; // if c geq than so-far best solution, skip
+        int mxid = 0;
+        bool finish = true;
+        for (int i=0;i<n;i++) // look for the highest not-yet-tiled tile and check if tiling is finished
+        {
+            if (g[i]) finish = false;
+            if (g[i]>g[mxid])
+            {
+                mxid = i;
+            }
+        }
+        if (finish) {mn = min(mn, c); return;} // if tiling is finished
+        int l = 1;
+        while (mxid+l<g.size() && g[mxid+l]==g[mxid] && l<g[mxid]) 
+            l++; // look for the largest possible length of square
+        while (l) // search recursively
+        {
+            for (int i=0;i<l;i++) g[mxid+i]-=l;
+            dfs(c+1);
+            for (int i=0;i<l;i++) g[mxid+i]+=l;
+            l--;
+        }
+    }
+    
+    int tilingRectangle(int _n, int _m) {
+        n = _n; m = _m;
+        g = vector<int>(n, m);
+        dfs(); return mn;
+    }
+};

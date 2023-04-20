@@ -1,0 +1,131 @@
+typedef struct block{
+    int val;
+    struct block* next;
+    struct block* prev;
+}block;
+
+typedef struct MyCircularDeque{
+    int size;
+    int full;
+    block* head;
+    block* end;
+} MyCircularDeque;
+
+/** Initialize your data structure here. Set the size of the deque to be k. */
+
+MyCircularDeque* myCircularDequeCreate(int k) {
+    MyCircularDeque* d=malloc(sizeof(MyCircularDeque));
+    d->size=0;
+    d->full=k;
+    d->head=NULL;
+    d->end=NULL;
+    return d;
+}
+
+/** Adds an item at the front of Deque. Return true if the operation is successful. */
+bool myCircularDequeInsertFront(MyCircularDeque* obj, int value) {
+    if(obj->size == obj->full){
+        return false;
+    }
+    block* b=malloc(sizeof(block));
+    if(!b){
+        return false;
+    }
+    b->val=value;
+    if(obj->size==0){
+        obj->head=b;
+        obj->end=b;
+    }else{
+        obj->head->prev=b;
+    }
+    b->next=obj->head;
+    obj->head=b;
+    (obj->size)++;
+    return true;
+}
+
+/** Adds an item at the rear of Deque. Return true if the operation is successful. */
+bool myCircularDequeInsertLast(MyCircularDeque* obj, int value) {
+    if(obj->size == obj->full){
+        return false;
+    }
+    block* b=malloc(sizeof(block));
+    if(!b){
+        return false;
+    }
+    b->val=value;
+    if(obj->size==0){
+        obj->head=b;
+        obj->end=b;
+    }else{
+        obj->end->next=b;
+    }
+    b->prev=obj->end;
+    obj->end=b;
+    (obj->size)++;
+    return true;
+}
+
+/** Deletes an item from the front of Deque. Return true if the operation is successful. */
+bool myCircularDequeDeleteFront(MyCircularDeque* obj) {
+    if(obj->size == 0){
+        return false;
+    }
+    block* tmp=obj->head;
+    if(obj->size!=1){
+        tmp->next->prev=NULL;
+    }
+    obj->head=tmp->next;
+    free(tmp);
+    (obj->size)--;
+    return true;
+}
+
+/** Deletes an item from the rear of Deque. Return true if the operation is successful. */
+bool myCircularDequeDeleteLast(MyCircularDeque* obj) {
+    if(obj->size == 0){
+        return false;
+    }
+    block* tmp=obj->end;
+    if(obj->size!=1){
+        tmp->prev->next=NULL;
+    }
+    obj->end=tmp->prev;
+    free(tmp);
+    (obj->size)--;
+    return true;
+}
+
+/** Get the front item from the deque. */
+int myCircularDequeGetFront(MyCircularDeque* obj) {
+    if(obj->size==0){
+        return -1;
+    }else{
+        return obj->head->val;
+    }
+}
+
+/** Get the last item from the deque. */
+int myCircularDequeGetRear(MyCircularDeque* obj) {
+    if(obj->size==0){
+        return -1;
+    }else{
+        return obj->end->val;
+    }
+}
+
+/** Checks whether the circular deque is empty or not. */
+bool myCircularDequeIsEmpty(MyCircularDeque* obj) {
+    return obj->size==0 ? true:false;
+}
+
+/** Checks whether the circular deque is full or not. */
+bool myCircularDequeIsFull(MyCircularDeque* obj) {
+    return obj->size==obj->full ? true:false;
+}
+
+void myCircularDequeFree(MyCircularDeque* obj) {
+    while(myCircularDequeIsEmpty(obj)){
+        myCircularDequeDeleteFront(obj);
+    }
+}

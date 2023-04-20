@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int findIntegers(int n) {
+        
+        // populate fib numbers 
+        int fib[32] = {0};
+        fib[0] = 1;
+        fib[1] = 2;
+        for(int i=2;i<=31;i++)fib[i] = fib[i-1] + fib[i-2];
+        
+        int c = 0;
+        int i = 1;
+        int prev_bit = 0;   // track if prev digit is 1
+        for(int i=30;i>=0;i--)
+        {
+            // check MSB digit if 1 
+            if((n&(1<<i)))
+            {
+                c+=fib[i];
+                if(prev_bit) return c;  // return result when occurs a consecutive 1
+                prev_bit = 1;
+            }
+            else prev_bit = 0;
+        }
+        
+        return c+1;// include n iteself
+    }
+};

@@ -1,0 +1,103 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+typedef struct l_node {
+    int data;
+    struct l_node* next;
+} ListNode;
+
+typedef struct list {
+    ListNode* head;
+    ListNode* tail;
+} List;
+
+typedef struct {
+    List iterator;
+} BSTIterator;
+
+bool isEmpty(List lst)
+{
+    return !lst.head && !lst.tail;
+}
+
+ListNode* makeNewNode(int data)
+{
+    ListNode* new = (ListNode*) malloc(sizeof(ListNode));
+    
+    new->next = NULL;
+    new->data = data;
+    return new;
+}
+
+void makeEmptyList(List* lst)
+{
+    lst->head = lst->tail = NULL;
+}
+
+void insertToTail(List* lst, ListNode* new)
+{
+    if (isEmpty(*lst)) {
+        lst->head = lst->tail = new;
+    } else {
+        lst->tail->next = new;
+        lst->tail = new;
+    }
+}
+
+void helper(struct TreeNode* root, ListNode* lst)
+{
+    if (!root)
+        return;
+    
+    helper(root->left, lst);
+    insertToTail(lst, makeNewNode(root->val));
+    helper(root->right, lst);
+}
+
+BSTIterator* bSTIteratorCreate(struct TreeNode* root) {
+    BSTIterator* newIterator = (BSTIterator*) malloc(sizeof(BSTIterator));
+    makeEmptyList(&newIterator->iterator);
+    
+    helper(root, &newIterator->iterator);
+    return newIterator;
+}
+
+int bSTIteratorNext(BSTIterator* obj) {
+    ListNode* toFree = obj->iterator.head;
+    int val = obj->iterator.head->data;
+    
+    obj->iterator.head = obj->iterator.head->next;
+    free(toFree);
+    return val;
+}
+
+bool bSTIteratorHasNext(BSTIterator* obj) {
+    return obj->iterator.head;
+}
+
+void bSTIteratorFree(BSTIterator* obj) {
+    ListNode* head = obj->iterator.head;
+    
+    while (head) {
+        ListNode* next = head->next;
+        free(head);
+        head = next;
+    }
+	free(obj);
+}
+
+/**
+ * Your BSTIterator struct will be instantiated and called as such:
+ * BSTIterator* obj = bSTIteratorCreate(root);
+ * int param_1 = bSTIteratorNext(obj);
+ 
+ * bool param_2 = bSTIteratorHasNext(obj);
+ 
+ * bSTIteratorFree(obj);
+*/

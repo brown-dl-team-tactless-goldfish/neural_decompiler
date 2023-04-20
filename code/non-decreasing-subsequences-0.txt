@@ -1,0 +1,84 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+void insert(int** hash, int N, int* data, int d_idx, int* a_idx, int** ans, int** returnColumnSizes){
+    int val = 0 ;
+    for(int i = 0; i < d_idx; i++){
+        val = val*2 + (data[i] * (i+7)) ;
+    }
+   // printf("%d ", val) ;
+    int d = abs(val) ;
+    while(1){
+        if(hash[d % N] == NULL){
+            hash[d % N] = malloc(2 * sizeof(int) ) ;
+            hash[d % N][0] = val;
+            hash[d % N][1] = *a_idx;
+            ans[*a_idx] = malloc(d_idx * sizeof(int)) ;
+            memcpy(ans[*a_idx] , data , d_idx * sizeof(int) ) ;
+            returnColumnSizes[0][*a_idx] = d_idx ;
+            *a_idx += 1 ;
+            return  ;
+        }
+        else if(hash[d % N][0] == val){             
+            int p = hash[d % N][1] ;
+            if(d_idx !=returnColumnSizes[0][p]){
+                d++;
+                continue ;
+            }    
+            int i ;
+            for(i = 0; i < d_idx; i++){
+                if(data[i] != ans[p][i])
+                    break ;
+            }
+            if(i == d_idx)
+                return ;  //相同 
+            else
+                d++;
+        }
+        else
+            d++;
+    }
+}
+
+
+void DFS(int** hash, int N, int* nums, int n, int cur , int* data, int d_idx, int* a_idx, int** ans, int** returnColumnSizes){
+
+    if(cur == n)
+        return ;
+    if(d_idx == 0){
+        data[d_idx] = nums[cur] ;
+        DFS(hash, N, nums, n, cur+1, data, d_idx+1, a_idx, ans, returnColumnSizes) ;
+    }
+    else{
+        int ptr_d_idx = d_idx ;
+        if(nums[cur] >= data[d_idx-1] ){
+            data[d_idx] = nums[cur] ; 
+            d_idx++;
+            if(d_idx >= 2){
+                insert(hash, N, data, d_idx, a_idx, ans, returnColumnSizes) ;
+            }
+            DFS(hash, N, nums, n,  cur+1 , data, d_idx, a_idx, ans, returnColumnSizes) ;
+        }
+        DFS(hash, N, nums, n, cur+ 1, data, ptr_d_idx, a_idx, ans, returnColumnSizes) ;
+    }     
+}
+int** findSubsequences(int* nums, int numsSize, int* returnSize, int** returnColumnSizes){
+    int n = numsSize ;
+    int N = pow(2, n)*100 ;
+    int** ans = malloc( pow(2, n) * sizeof(int*)) ;
+    *returnColumnSizes = malloc(pow(2, n)* sizeof(int)) ;
+    int* data = malloc(n * sizeof(int) ) ;
+    int a_idx = 0 ;
+    int**hash = calloc(N, sizeof(int*) ) ;
+    for(int i = 0; i < n-1; i++){
+        DFS(hash, N, nums, n, i, data, 0, &a_idx, ans, returnColumnSizes) ;
+    }
+    *returnSize = a_idx ;
+    ans = realloc(ans, a_idx * sizeof(int*)) ;
+    *returnColumnSizes = realloc(*returnColumnSizes, a_idx * sizeof(int)) ;
+    free(data) ;
+    return ans ;
+    
+}

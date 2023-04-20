@@ -1,0 +1,30 @@
+for (ii=0; ii<strsSize; ii++){
+    jj = strlen(strs[ii]);
+    memcpy(tmp, strs[ii], jj);
+    qsort(tmp, jj, 1, compare_fn);
+    /* check if the sorted string is already exist in hash table */
+    if(check4Dup(tmp, jj, ht, ht_len, res_len, &ind)) {
+        hentries[ind] ++;
+        mark[ii] = ind;
+    }else {
+        /* add a sorted string entry in hash table */
+        ht[res_len]= (char *)malloc(sizeof(char)*(jj+1));
+        ht_len[res_len] = jj;
+        hentries[res_len] = 1;
+        memcpy(ht[res_len], tmp, jj);
+        mark[ii] = res_len++;
+    }
+}
+res = (char ***)calloc(sizeof(char **) , res_len);
+*returnColumnSizes =  (int *)calloc(sizeof(int),res_len);
+for (ii=0;ii<strsSize;ii++){
+    ind = mark[ii];
+    if (!res[ind]){
+        res[ind] = (char **)calloc(sizeof(char*), hentries[ind]);
+        (*returnColumnSizes)[ind] = hentries[ind];}
+    for (jj=0;jj<hentries[ind];jj++) {
+        if (!res[ind][jj]) { res[ind][jj] = strs[ii]; break;}}
+}
+*returnSize = res_len;
+
+return res;

@@ -1,0 +1,61 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int partition(int* array,int low,int high)
+{
+    int temp_1=array[low];
+    while(low<high)
+    {
+        while(low<high&&array[high]>=temp_1)
+            high--;
+        if(low<high) 
+        {
+            array[low]=array[high];
+            low++;
+        }
+        while(low<high&&array[low]<temp_1)
+            low++;
+        if(low<high)
+        {
+            array[high]=array[low];
+            high--;
+        }
+    }
+    array[low]=temp_1;
+    return low;
+}
+void quick_sort(int* array,int s,int t)
+{   
+    int i=0;
+    if(s<t)
+    {
+        i=partition(array,s,t);
+        quick_sort(array,s,i-1);
+        quick_sort(array,i+1,t);
+    }
+}
+int* singleNumber(int* nums, int numsSize, int* returnSize) {
+    quick_sort(nums,0,numsSize-1);
+    int *ret=(int*)malloc(sizeof(int)*2);
+    *returnSize=2;
+    int count=0;
+    if(nums[0]!=nums[1]){
+        ret[count++]=nums[0];
+    }
+    if(nums[numsSize-1]!=nums[numsSize-2]){
+        ret[count++]=nums[numsSize-1];
+    }
+    if(count==2){
+        return ret;
+    }
+    for(int i=1;i<numsSize-1;i++){
+        if(nums[i]!=nums[i-1]&&nums[i]!=nums[i+1]){
+            ret[count++]=nums[i];
+            if(count==2){
+                return ret;
+            }
+        }
+    }
+    return ret;
+}

@@ -1,0 +1,89 @@
+public class Solution {
+    public class TrieNode
+    {
+        public TrieNode[] Children;
+        public string Word;
+        public TrieNode()
+        {
+            this.Children = new TrieNode[26];
+            this.Word = null;
+        }
+    }
+    
+    public class Trie
+    {
+        private TrieNode root;
+        
+        public Trie()
+        {
+            root = new TrieNode();
+        }
+        
+        public void Insert(string word)
+        {
+            if (word.Length > 0)
+            {
+                TrieNode iterator = root;
+                foreach (char c in word)
+                {
+                    int cIndex = c - 'a';
+                    if (iterator.Children[cIndex] == null)
+                    {
+                        iterator.Children[cIndex] = new TrieNode();
+                    }
+                    iterator = iterator.Children[cIndex];
+                }
+
+                iterator.Word = word;
+            }
+        }
+        
+        public bool SearchConcatenatedWords(string word)
+        {
+            return SearchConcatenatedWords(word, 0, 0);
+        }
+        
+        private bool SearchConcatenatedWords(string word, int start, int count)
+        {
+            TrieNode iterator = root;
+            for (int i = start; i < word.Length; i++)
+            {
+                int cIndex = word[i] - 'a';
+                if (iterator.Children[cIndex] != null)
+                {
+                    iterator = iterator.Children[cIndex];
+                }
+                else
+                {
+                    return false;
+                }
+                
+                if (iterator.Word != null)
+                {
+                    if (SearchConcatenatedWords(word, i+1, count + 1))
+                    {
+                        return true;
+                    }
+                }
+            }
+            
+            return iterator.Word != null && count > 0 ? true : false;
+        }
+    }
+    
+    public IList<string> FindAllConcatenatedWordsInADict(string[] words) {
+        Array.Sort(words, delegate(string s1, string s2) { return s1.Length - s2.Length; });
+        Trie trie = new Trie();
+        IList<string> result = new List<string>();
+        foreach (string s in words)
+        {
+            if (trie.SearchConcatenatedWords(s))
+            {
+                result.Add(s);
+            }
+            trie.Insert(s);
+        }
+        
+        return result;
+    }
+}

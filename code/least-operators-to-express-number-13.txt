@@ -1,0 +1,54 @@
+class Solution {
+public:
+    void helper(int x, int target, int op_count, int &min_op_count) {
+        if (target == 0) {
+            if (op_count < min_op_count)
+                min_op_count = op_count;
+            return ;
+        }
+        if (op_count >= min_op_count) //Then there's no point in continuing since it won't contain less than min_op_count operations.
+            return ;
+        if (target < 0) //The min operator count is the same for target and -target since just use -'s instead of +'s.
+            target = -target;
+        if (target == 1) {
+            op_count += 2; //Then we can express target as + x/x, which has 2 operations.
+            helper(x, 0, op_count, min_op_count);
+            return ;
+        }
+        if (target < x) {
+            helper(x, 0, op_count + 2 * target, min_op_count); //We can write target as + x/x + x/x + ... + x/x (or maybe -'s instead of +'s).
+        }
+        int power = 1;
+        int power_of_x = x;
+        while (power_of_x <= target / x) {
+            power_of_x *= x;
+            power++;
+        }
+        op_count += power;
+        if (abs(target - power_of_x) < target)
+            helper(x, target - power_of_x, op_count, min_op_count);
+        op_count++;
+        if (power_of_x <= numeric_limits<int>::max() / x && power_of_x != target) { //Make sure that x * power_of_x doesn't overflow.
+            power_of_x *= x;
+            if (abs(target - power_of_x) < target) //If power_of_x - target < target since otherwise an infinite recursive loop is possible.
+                helper(x, target - power_of_x, op_count, min_op_count);
+        }
+        return ;
+    }
+    int leastOpsExpressTarget(int x, int target) {
+        int min_op_count = numeric_limits<int>::max();
+        if (x == 1) { //Consider the special case of x == 1.
+            if (target == 1) // target == 1
+                return 0;
+            else if (target == 0) // 1 - 1
+                return 1;
+            else if (target == -1) // 1 - 1 - 1
+                return 2;
+            if (target < 0)
+                target = -target;
+            return target - 1; // 1 + 1 + ... + 1 (target many one's)
+        }
+        helper(x, target, 0, min_op_count);
+        return min_op_count - 1; //Subtract 1 because the first term doesn't start with a +
+    }
+};

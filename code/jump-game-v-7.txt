@@ -1,0 +1,43 @@
+vector<int> dp;
+
+int n;
+
+int help(vector<int>& arr, int d, int i)
+{
+    if(dp[i] != -1)
+    {
+        return dp[i];
+    }
+    
+    int ans = 1;
+    
+    for(int j=i+1; j<=min(i+d,n-1) && arr[i] > arr[j]; j++)
+    {
+        ans = max(ans, 1+help(arr,d,j));
+    }
+    
+    for(int j=i-1; j>= max(i-d,0) && arr[i] > arr[j]; j--)
+    {
+         ans = max(ans, 1+help(arr,d,j));
+    }
+    
+    return dp[i] = ans;
+}
+
+int maxJumps(vector<int>& arr, int d) 
+{
+    
+    int ans = 1;
+    
+    n = arr.size();
+    
+    dp.resize(n,-1);
+    
+    
+    for(int i=0; i<n; i++)
+    {
+        ans = max(ans, help(arr,d, i));
+    }
+    
+    return ans;
+}

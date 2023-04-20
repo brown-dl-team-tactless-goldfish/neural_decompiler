@@ -1,0 +1,31 @@
+class Solution {
+public:
+    bool ok(int i, int j, int side, vector<vector<long> > &sum, int threshold) {
+        long long val = sum[i][j]-sum[i+side][j]-sum[i][j+side]+sum[i+side][j+side];
+        return val <= threshold;
+    }
+    int maxSideLength(vector<vector<int>>& mat, int threshold) {
+        int n = mat.size(), m = mat[0].size();
+        vector<vector<long> > dp(n+1, vector<long>(m+1, 0));
+        for(int i = n-1; i >= 0; i--) {
+            for(int j = m-1; j >= 0; j--) {
+                dp[i][j] = mat[i][j]+dp[i+1][j]+dp[i][j+1]-dp[i+1][j+1];
+            }
+        }
+        int side = 0;
+        for(int i = 0; i < n; i++) {
+            for(int j = 0; j < m; j++) {
+                int lo = 1, hi = min(n-i, m-j);
+                while(lo < hi) {
+                    int mid = lo + (hi-lo+1)/2;
+                    if(ok(i, j, mid, dp, threshold)) lo = mid;
+                    else hi = mid-1;
+                }
+                if(ok(i, j, lo, dp, threshold)) {
+                    side = max(side, lo);
+                }
+            }
+        }
+        return side;
+    }
+};

@@ -1,0 +1,25 @@
+class Solution {
+    pair<TreeNode*, int> ans;
+    int helper (TreeNode* root, int myHeight) {
+        if (!root) return 0;
+        
+        int l = helper(root->left, myHeight+1);
+        int r = helper(root->right, myHeight+1);
+        
+        if (l == r) {
+            if (l+myHeight >= ans.second) {
+                ans.first = root;
+                ans.second = l+myHeight;
+            }
+        }
+        
+        return (max(l,r)+1);
+    }
+public:
+    TreeNode* lcaDeepestLeaves(TreeNode* root) {
+        ans.first = NULL;
+        ans.second = INT_MIN;
+        helper(root, 0);
+        return ans.first;
+    }
+};

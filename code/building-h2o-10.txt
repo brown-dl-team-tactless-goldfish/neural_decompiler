@@ -1,0 +1,103 @@
+class Semaphore
+{
+public:
+    Semaphore(int n) :
+        n(n)
+    {
+    }
+    
+    void acquire()
+    {
+        unique_lock l(m);
+        cv.wait(l, [this] { return n > 0; });
+        
+        --n;
+    }
+    
+    void release()
+    {
+        unique_lock l(m);
+        
+        if(++n == 1)
+        {
+            cv.notify_all();
+        }
+    }
+    
+private:
+    int n;
+    mutex m;
+    condition_variable cv;
+};
+
+class Barrier
+{
+public:
+    Barrier(int n) :
+        n(n),
+        c(0),
+        g(0)
+    {
+    }
+    
+    void wait()
+    {
+        unique_lock l(m);
+        
+        if(++c == n)
+        {
+            c = 0;
+            ++g;
+            
+            l.unlock();
+            cv.notify_all();
+        }
+        else
+        {
+            auto cg = g;
+            
+            cv.wait(l, [this, cg] { return g != cg; });
+        }
+    }
+    
+private:
+    int n, c, g;
+    mutex m;
+    condition_variable cv;
+};
+
+class H2O
+{
+public:
+    H2O() :
+        sH(2),
+        sO(1),
+        b(3)
+    {
+        
+    }
+
+    void hydrogen(function<void()> releaseHydrogen)
+    {
+        sH.acquire();
+        b.wait();
+        
+        releaseHydrogen();
+        
+        sH.release();
+    }
+
+    void oxygen(function<void()> releaseOxygen) 
+    {
+        sO.acquire();
+        b.wait();
+        
+        releaseOxygen();
+        
+        sO.release();
+    }
+    
+private:
+    Semaphore sH, sO;
+    Barrier b;
+};

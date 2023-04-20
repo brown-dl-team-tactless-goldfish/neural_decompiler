@@ -1,0 +1,50 @@
+
+int getBiggestDiff(struct TreeNode* root, int curr_min, int curr_max, int best_diff) {
+
+    if (root == NULL) {
+        return 0;
+    }
+
+    // Update the new min and max value.
+
+    if (root->val < curr_min) {
+        curr_min = root->val;
+    }
+
+    if (root->val > curr_max) {
+        curr_max = root->val;
+    }
+
+    // Check if this difference is the best.
+
+    int diff = abs(curr_max - curr_min);
+
+    if (diff > best_diff) {
+        best_diff = diff;
+    }
+
+    // Check if the left difference is the best.
+
+    int left_diff = getBiggestDiff(root->left, curr_min, curr_max, best_diff);
+
+    if (left_diff > best_diff) {
+        best_diff = left_diff;
+    }
+
+    // Check if the right difference is the best.
+
+    int right_diff = getBiggestDiff(root->right, curr_min, curr_max, best_diff);
+
+    if (right_diff > best_diff) {
+        best_diff = right_diff;
+    }
+
+    return best_diff;
+
+}
+
+int maxAncestorDiff(struct TreeNode* root){
+
+    return getBiggestDiff(root, root->val, root->val, 0);
+
+}

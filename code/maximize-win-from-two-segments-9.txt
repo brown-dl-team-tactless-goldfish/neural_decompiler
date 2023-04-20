@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int maximizeWin(vector<int>& prizePositions, int k) {
+        //It is meaningless to let the two interval to overlap
+        int l = prizePositions.size();
+        if(prizePositions[l-1] - prizePositions[0] <= 2*k+1) return l;
+        //now we can assume they don't overlap. 
+        //so we search the interval through [m,m+k] to [M-k,M]
+        //and use Mi,Mj to mark the first interval that we can get most prizes from prizePisitions[Mi] to prizePositions[Mj-1], where prizePositions[Mj-1]+k <= curi, and curi to curj is the second interval
+        //if we find more prizes in the second interval, we will renew the Mi and Mj to the new ones as soon as they don't overlap
+        int Mi=0,Mj=0;//mark our first interval
+        queue<pair<int, int>> previousIntervals;//stores possible larger intervals for our first interval
+        int ans = 0;
+        int curi=0,curj=Mj;
+        for(;curi<l;curi++)
+        {
+            //find interval
+            while(curj < l && prizePositions[curj] - prizePositions[curi] <= k)
+            {
+                curj++;
+            }
+            //If there are no overlap we can replace the old first interval with the new first interval.
+            while(!previousIntervals.empty() && previousIntervals.front().second <= curi)
+            {
+                if(previousIntervals.front().second - previousIntervals.front().first > Mj - Mi)
+                {
+                    Mj = previousIntervals.front().second;
+                    Mi = previousIntervals.front().first;
+                }
+                previousIntervals.pop();
+            }
+            if(curj-curi > Mj - Mi)//If we find a larger interval
+            {
+                previousIntervals.push(make_pair(curi,curj));
+            }
+            if(curj - curi + Mj - Mi > ans) ans = curj-curi+Mj-Mi;
+        }
+        return ans;
+    }
+};

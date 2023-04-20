@@ -1,0 +1,48 @@
+int str2int (char* str)
+{
+    int ans = 0;
+    int neg = 1;
+    if (*str == '-')
+    {
+        neg = -1;
+        str++;
+    }
+    while (*str)
+    {
+        ans = ans*10 + *str - '0';
+        str++;
+    }
+    return ans*neg;
+}
+
+int calPoints(char** ops, int opsSize) {
+    int* stack = calloc(opsSize, sizeof(int));
+    int sfp = 0;
+    int sum = 0;
+    for(int i = 0; i < opsSize; i++)
+    {
+        switch(ops[i][0])
+        {
+            case '+':
+                stack[sfp] = stack[sfp-1] + stack[sfp-2];
+                sum += stack[sfp];
+                sfp++;
+                break;
+            case 'C':
+                sfp--;
+                sum -= stack[sfp];
+                break;
+            case 'D':
+                stack[sfp] = stack[sfp-1]*2;
+                sum += stack[sfp];
+                sfp++;
+                break;
+            default:
+                stack[sfp] = str2int(ops[i]);
+                sum += stack[sfp];
+                sfp++;
+                break;   
+        }
+    }
+    return sum;
+}

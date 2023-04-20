@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int palindromePartition(string s, int k) {
+        vector<vector<int>> memo(s.size()+1,vector<int>(k+1,-1));
+        return helper(s,0,0,k,memo);
+    }
+    
+    int helper(string s,int idx,int part,int k,vector<vector<int>> &memo){
+        if(idx==s.size()){
+            if(part==k){
+                return 0;
+            }
+            return INT_MAX;
+        }
+        if(part>=k) return INT_MAX;
+        
+        if(memo[idx][part]!=-1) return memo[idx][part];
+        int modi=INT_MAX;
+        for(int i=idx;i<s.size();i++){
+            int count=getCount(s,idx,i);
+            int next=helper(s,i+1,part+1,k,memo);
+            if(next==INT_MAX) continue;
+            modi=min(modi,count+next);
+        }
+        memo[idx][part]=modi;
+        return modi;
+        
+    }
+    
+    int getCount(string &s,int left,int right){
+        if(left==right) return 0;
+        int res=0;
+        while(left<right){
+            if(s[left]!=s[right]){
+                ++res;
+            }
+            left++;
+            right--;
+        }
+        return res;
+    }
+};

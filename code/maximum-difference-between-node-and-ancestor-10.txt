@@ -1,0 +1,76 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int max(int a,int b){
+    return a>b?a:b;
+}
+void traversal(struct TreeNode*t,int*diff,int*fudiff,int*result){
+    if(t!=NULL){
+        traversal(t->left,diff,fudiff,result);
+        traversal(t->right,diff,fudiff,result);
+        if(t->right==NULL&&t->left==NULL){
+            diff[t->val]=0;
+            fudiff[t->val]=0;
+        }
+        else if(t->right==NULL){
+            int temp=t->val-t->left->val+diff[t->left->val];
+            int futemp=t->val-t->left->val+fudiff[t->left->val];
+            if(temp>0)
+                diff[t->val]=temp;
+            else
+                diff[t->val]=0;
+            if(futemp<0)
+                fudiff[t->val]=futemp;
+            else
+                fudiff[t->val]=0;
+        }
+        else if(t->left==NULL){
+            int temp=t->val-t->right->val+diff[t->right->val];
+             int futemp=t->val-t->right->val+fudiff[t->right->val];
+            if(temp>0)
+                diff[t->val]=temp;
+            else
+                diff[t->val]=0;
+            if(futemp<0)
+                fudiff[t->val]=futemp;
+            else
+                fudiff[t->val]=0;
+        }
+        else{
+            int futemp,temp;
+            if(t->val-t->left->val+diff[t->left->val]>t->val-t->right->val+diff[t->right->val])
+                temp=t->val-t->left->val+diff[t->left->val];
+            else
+                temp=t->val-t->right->val+diff[t->right->val];
+            if(t->val-t->left->val+fudiff[t->left->val]<t->val-t->right->val+fudiff[t->right->val])
+                futemp=t->val-t->left->val+fudiff[t->left->val];
+            else
+                futemp=t->val-t->right->val+fudiff[t->right->val];
+            if(temp>0)
+                 diff[t->val]=temp;
+            else
+                 diff[t->val]=0;
+            if(futemp<0)
+                fudiff[t->val]=futemp;
+            else
+                 fudiff[t->val]=0;
+        }
+        if(diff[t->val]>(*result))
+            (*result)=diff[t->val];
+        if((-fudiff[t->val])>(*result))
+            (*result)=-fudiff[t->val];
+    }
+}
+int maxAncestorDiff(struct TreeNode* root){
+    int*diff=(int*)calloc(100001,sizeof(int));
+    int*fudiff=(int*)calloc(100001,sizeof(int));
+    int maxx=0;
+    traversal(root,diff,fudiff,&maxx);
+    return maxx;
+}
+

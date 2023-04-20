@@ -1,0 +1,32 @@
+class Solution {
+public:
+    double knightProbability(int n, int k, int row, int column) {
+        vector<vector<double>>dp(n, vector<double>(n)) ;
+        dp[row][column] = 1.0 ;
+        vector<vector<int>>dir{{1,2},{-1,-2},{-1,2},{1, -2},\
+                                {2,1},{-2,-1},{-2,1},{2,-1}} ;
+        for(int step = 0; step < k; step++){
+            vector<vector<double>>tmp(n, vector<double>(n)) ;
+            for(int i = 0; i < n; i++){
+                for(int j = 0; j < n; j++){
+                    if(dp[i][j] == 0.0)
+                        continue ;
+                    for(auto& d : dir){
+                        int r = i + d[0] ;
+                        int c = j + d[1] ;
+                        if(r < 0 || c < 0 || r >= n || c >= n)
+                            continue ;
+                        tmp[r][c] += dp[i][j]/8 ;
+                    }
+                }
+            }
+            dp = tmp ;
+        }
+        double ret = 0.0 ;
+        for(int i = 0; i < n; i++){
+            for(int j = 0; j < n; j++)
+                ret += dp[i][j] ;
+        }
+        return ret ;
+    }
+};

@@ -1,0 +1,24 @@
+class Solution {
+    public:
+    vector<vector<int>>dir = {{1,0},{-1,0},{0,1},{0,-1}};
+    int m, n;
+    bool countSubIslands_dfs(vector<vector<int>>& grid1, vector<vector<int>>& grid2, int i, int j){
+        grid2[i][j] = 0;
+        bool res = true;
+        for(vector<int>&d : dir){
+            int r = i + d[0], c = j + d[1];
+            if(r >= 0 && c >= 0 && r < m && c < n && grid2[r][c] == 1)
+                res = countSubIslands_dfs(grid1, grid2, r, c) && res;
+        }
+        return res && (grid1[i][j] == 1);
+    }
+    int countSubIslands(vector<vector<int>>& grid1, vector<vector<int>>& grid2) {
+        m = grid1.size(), n = grid1[0].size();
+        int ans = 0;
+        for(int i = 0; i < m; i++)
+            for(int j = 0; j < n; j++)
+                if(grid2[i][j] == 1)
+                    ans += countSubIslands_dfs(grid1,grid2,i,j) ? 1 : 0;
+        return ans;
+    }
+};

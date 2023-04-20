@@ -1,0 +1,28 @@
+int maxDiff(int num) {
+        string number = to_string(num);
+        // make it big :) 
+        string big = number;
+        char dig = '*';
+        for(char& c: big){
+            if(c < '9' && (dig == '*' || c == dig)){
+                dig = c;
+                c = '9';
+            }
+        }
+        // make it small :(
+        string small = number;
+        dig = '*';
+        bool used_first = false;
+        for(int i = 0; i < small.size(); i++){
+            if(i > 0 && (dig == '*' || small[i] == dig) && small[0] != small[i] && !used_first && small[i] > '0'){
+                dig = small[i];
+                small[i] = '0';
+            }
+            if(small[i] > '1' && (small[i] == dig || dig == '*')){
+                dig = small[i];
+                small[i] = '1';
+                used_first = true;
+            }
+        }
+        return stoi(big) - stoi(small);
+    }

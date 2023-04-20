@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int repeatedStringMatch(string A, string B) {
+        vector<int> t(B.size(), -1);
+        
+        // Build match table
+        for (int i = 1, c = 0; i < B.size(); ++i, ++c) {
+            if (B[i] == B[c]) {
+                t[i] = t[c];
+            }
+            else {
+                t[i] = c;
+                c    = t[c];
+            }
+        }
+        
+
+        // Search B
+        int l = B.size()*2;
+        int k = 0;
+
+        for (int i = 0; i < l;) {
+            int j = i%A.size();
+            
+            if (A[j] == B[k]) {
+                ++i;
+                ++k;
+                
+                if (k == B.size()) {
+                    return (i + A.size() - 1)/A.size();
+                }
+            }
+            else {
+                if (t[k] == -1) {
+                    k = 0;
+                    ++i;
+                }
+                else {
+                    k = t[k];
+                }
+            }
+        }
+        
+        return -1;
+    }
+};

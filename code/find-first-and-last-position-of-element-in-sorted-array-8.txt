@@ -1,0 +1,39 @@
+int* searchRange(int* nums, int numsSize, int target, int* returnSize) {
+	*returnSize=2;
+	int* res=(int *)malloc(2*sizeof(int));
+	res[0]=-1;
+	res[1]=-1;
+	if(0==numsSize) {
+		return res;
+	}
+
+	int p1=0;
+	int p2=numsSize-1;
+	bool bfound=false;
+	int cur;
+
+	while(p1<=p2){
+		cur=(p1+p2)/2;
+		if(target==nums[cur]){
+			bfound=true;
+			break;
+		}
+		if(target<nums[cur]){
+			p2=cur-1;
+		}else{
+			p1=cur+1;
+		}
+	}
+
+	if(bfound){
+		int k=nums[cur];
+		int p=cur;
+		while(p>=0 && k==nums[p]) --p;
+		res[0]=p+1;
+		p=cur;
+		while(p<numsSize && k==nums[p]) ++p;
+		res[1]=p-1;
+	}
+
+	return res;
+}

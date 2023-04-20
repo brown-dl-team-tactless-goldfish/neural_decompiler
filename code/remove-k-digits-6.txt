@@ -1,0 +1,124 @@
+typedef struct Stack {
+    int length;
+    int top;
+    char *array;
+} Stack;
+char ** stack(int len) {
+    if (len <= 0) {
+        return NULL;
+    }
+    Stack *s = (Stack *) malloc(sizeof(Stack));
+    s->array = (char *)calloc((len+1), sizeof(char));  
+    s->length = len;
+    s->top = -1;
+    
+    return &s->array;  
+}
+char pop(char **array) {
+    if (!array || !*array) {
+        return '\0';
+    }
+    int *top = (int *)((char *)array - sizeof(int));
+    int length = *(int *)((char *)array - 2*sizeof(int));
+    
+    if (*top <= -1) {
+        return '\0';
+    } else {
+        return *(*array+(*top)--);
+    }
+}
+
+void push(char ** array, char val) {
+    if (!array || !*array) {
+        return;
+    }
+    
+    int *top = (int *)((char *)array - sizeof(int));
+    int length = *(int *)((char *)array - 2*sizeof(int));
+
+    if (*top == length) {
+        return;
+    } else {
+        *(*array+(++*top)) = val;
+        return;
+    }
+    
+}
+
+int isempty(char **array) {
+    if (!array || !*array) {
+        return 1;
+    } else {
+        int top = *(int *)((char *)array - sizeof(int));
+        if (top < 0) {
+            return 1;
+        } else {
+            return 0;
+        }
+    }
+}
+
+char peek(char **array) {
+    if (!array || !*array) {
+        return '\0';
+    } else {
+        int top = *(int *)((char *)array - sizeof(int));
+        return *(*array+top);
+    }
+}
+char* removeKdigits(char* num, int k) {
+    if (!num || k <= 0) {
+        return num;
+    }
+    
+    int length = 0;
+    char *temp = num;
+    
+    while (*temp != '\0') {
+        length += 1;
+        temp++;
+    }
+    if (length == k) {
+        return "0";
+    }
+    char **stack_t = stack(length);
+    int stack_len = 0;
+    int i = 0;
+    
+    for (i = 0; i < length; i++) {
+        while (k > 0 && !isempty(stack_t) && peek(stack_t) > num[i]) {
+            char e = pop(stack_t);
+            k--;
+            stack_len--;
+        }
+        push(stack_t, num[i]);
+        stack_len++;
+        
+    }
+   
+    while (k > 0) {
+        pop(stack_t);
+        k--;
+        stack_len--;
+    }
+    
+    char *s = calloc(stack_len+1, sizeof(char));
+    int curr_len = stack_len;
+    s[curr_len--] = '\0';
+    
+    while (!isempty(stack_t)  && curr_len >= 0) {
+        s[curr_len--] = pop(stack_t);
+    }
+   
+    int temp_len = stack_len;
+    while (temp_len > 1 && *s=='0') {
+        temp_len--;
+        s++;
+    }
+    char *p = (char *)stack_t - 2*sizeof(int);
+    free(*stack_t);
+    free(p);
+    return s;
+    
+    
+}

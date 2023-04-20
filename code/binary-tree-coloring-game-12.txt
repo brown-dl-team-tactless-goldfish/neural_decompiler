@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int parent = 0;
+    int left = 0;
+    int right = 0;
+    
+    int traverse(TreeNode* root, int x)
+    {
+        if(root)
+        {
+            int l = traverse(root->left, x);
+            int r = traverse(root->right, x);
+            
+            if(root->val == x)
+                left = l, right = r;
+            
+            return 1 + l + r;
+        }
+        return 0;
+    }
+    
+    bool btreeGameWinningMove(TreeNode* root, int n, int x) 
+    {
+        traverse(root, x);
+        parent = n - left - right - 1;
+        return left > (parent + right) || right > (parent + left)  || parent > (left + right);
+    }
+};

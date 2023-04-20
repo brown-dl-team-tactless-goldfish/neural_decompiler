@@ -1,0 +1,52 @@
+#define MAX_NUMBER  100001
+
+struct win_lose {
+    int win;
+    int lose;
+};
+
+int comp (const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+
+int** findWinners(int** matches, int matchesSize, int* matchesColSize, int* returnSize, int** returnColumnSizes){
+    bool player_contest[MAX_NUMBER] = {0};
+    int player_number[MAX_NUMBER];
+    int count = 0; 
+    struct win_lose list[MAX_NUMBER] = {0}; 
+    
+    for (int i = 0 ; i < matchesSize ; i++){
+        if (player_contest[matches[i][0]] == 0) { 
+            player_contest[matches[i][0]]++;
+            player_number[count] = matches[i][0]; 
+            count++; 
+        }
+        if (player_contest[matches[i][1]] == 0) {
+            player_contest[matches[i][1]]++;
+            player_number[count] = matches[i][1];
+            count++;
+        }
+        list[matches[i][0]].win++;
+        list[matches[i][1]].lose++;
+    }
+    
+    qsort(player_number,count,sizeof(int),comp);
+    
+    int** ans = malloc(sizeof(int*)*2);
+    ans[0] = malloc(sizeof(int)*matchesSize);
+    ans[1] = malloc(sizeof(int)*matchesSize);
+    (*returnColumnSizes) = calloc(2,sizeof(int));
+    *returnSize = 2;
+    for (int i = 0 ; i < count ; i++){
+        if (list[player_number[i]].win > 0 && list[player_number[i]].lose == 0){
+            ans[0][(*returnColumnSizes)[0]] = player_number[i];
+            (*returnColumnSizes)[0]++;
+        } else if (list[player_number[i]].lose == 1){
+            ans[1][(*returnColumnSizes)[1]] = player_number[i];
+            (*returnColumnSizes)[1]++;
+        }
+    }
+    ans[0] = realloc(ans[0], (*returnColumnSizes)[0]*sizeof(int));
+    ans[1] = realloc(ans[1], (*returnColumnSizes)[1]*sizeof(int));
+    return ans;
+}

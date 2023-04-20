@@ -1,0 +1,13 @@
+class Solution {
+public:
+    using VI = vector<int>;
+    int INF = 1e9 + 7;
+    string stoneGameIII(VI& A) {
+        int N = A.size();
+        VI dp(N, -INF); // 🤔 max score beginning at each i-th stone
+        for (auto i{ N - 1 }; 0 <= i; --i) // beginning at each i-th stone from N-1..0 inclusive
+            for (auto j{ i }, take{ 0 }; j < min(i + 3, N); ++j) // take each j-th stone
+                dp[i] = max(dp[i], (take += A[j]) - (j + 1 < N ? dp[j + 1] : 0)); // 🎯 max my score minus max your score
+        return 0 < dp[0] ? "Alice" : dp[0] < 0 ? "Bob" : "Tie"; // ⭐️ max my score minus max your score, beginning with the first stone at i = 0
+    }
+};

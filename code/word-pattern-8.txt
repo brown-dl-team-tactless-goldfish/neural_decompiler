@@ -1,0 +1,36 @@
+bool wordPattern(char * pattern, char * s){
+    char *words[26] = {NULL};// Store the tokens.
+    int count_space = 0;
+
+    // Count spaces in s.
+    for (char *p = s; *p; ++p) {
+        if (*p == ' ') count_space++;
+    }
+    
+    if (count_space != (strlen(pattern) - 1)) return false;
+
+    if (strlen(pattern) == 1) return true;
+
+    for (char *token = strtok(s, " "); token; token = strtok(NULL, " ")) {
+        // First time *pattern is encountered.
+        if (words[*pattern - 'a'] == NULL) {
+            // Check if that token has been already associated with another letter.
+            for (int i = 0; i < 26; ++i) {
+                if (words[i] != NULL && strcmp(words[i], token) == 0) {
+                    return false;
+                }
+            }
+            // If that token does not belong to any other character put it in the array.
+            words[*pattern - 'a'] = token;
+        }
+        else {// *pattern has been encountered before (words[*pattern - 'a'] != NULL)
+            if (strcmp(words[*pattern - 'a'], token) != 0) {
+                return false;
+            }
+        }
+
+        pattern++;
+    }
+
+    return true;
+}

@@ -1,0 +1,39 @@
+class Solution {
+    unordered_map<int,int> cache;
+public:
+    bool isPalindrome(string &s, int start, int end){
+        while(start <= end){
+            if(s[start] != s[end]){
+                return false;
+            }
+            ++start, --end;
+        }
+        return true;
+    }
+    int solve(string s, int start, int k){
+        if(start >= s.length()){
+            return 0;
+        }
+        if(cache.find(start) != cache.end()){
+            return cache[start];
+        }
+        int ans1 = solve(s, start+1, k);
+        int ans2 = 0;
+        for(int end = start+k-1; end < s.length(); end++){
+            if(isPalindrome(s, start, end)){
+                ++ans2;
+                ans2 += solve(s,end+1, k);
+                break;
+            }
+        }
+        
+        return cache[start] = max(ans1, ans2);
+    }
+    int maxPalindromes(string s, int k) {
+        int n = s.length();
+        int ans = 0;
+        ans = solve(s, 0, k);
+        return ans;
+    }
+};
+

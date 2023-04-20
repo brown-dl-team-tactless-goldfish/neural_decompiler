@@ -1,0 +1,21 @@
+public class Solution 
+{
+    public int MinAbsDifference(int[] nums, int goal) 
+    {
+        var first = AllSums(new ArraySegment<int>(nums, 0, nums.Length / 2)).OrderBy(x => x).ToArray();
+		int best = Math.Abs(goal);
+        foreach (int x in AllSums(new ArraySegment<int>(nums, nums.Length / 2, nums.Length - nums.Length / 2))) 
+        {
+            int index = Array.BinarySearch(first, goal - x);
+            if (index >= 0) return 0;
+            int l = Math.Max(0, (~index) - 1);
+            int r = Math.Min(first.Length - 1, ~index);
+            best = Math.Min(best, Math.Min(Math.Abs(goal - x - first[l]), Math.Abs(goal - x - first[r])));
+        }
+        return best;
+        
+        static IEnumerable<int> AllSums(ArraySegment<int> segment) 
+            => Enumerable.Range(0, 1 << segment.Count)
+                         .Select(mask => segment.Select((x, i) => (mask & (1 << i)) == 0 ? 0 : x).Sum());
+    }
+}

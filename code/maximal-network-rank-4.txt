@@ -1,0 +1,39 @@
+public class Solution {
+    public int MaximalNetworkRank(int n, int[][] roads) {
+        if (n == 0)
+            return 0;
+        
+        int res = 0;
+        Dictionary<int, int> indegree = new Dictionary<int, int>();
+        Dictionary<int, HashSet<int>> dict = new Dictionary<int, HashSet<int>>();
+        
+        for (int i = 0; i < roads.Length; i++)
+        {
+            if (!indegree.ContainsKey(roads[i][0]))
+                indegree.Add(roads[i][0], 0);
+            
+            if (!indegree.ContainsKey(roads[i][1]))
+                indegree.Add(roads[i][1], 0);
+            
+            indegree[roads[i][0]] += 1;
+            indegree[roads[i][1]] += 1;
+            
+            if (!dict.ContainsKey(roads[i][0]))
+                dict.Add(roads[i][0], new HashSet<int>());
+                
+            if (!dict.ContainsKey(roads[i][1]))
+                dict.Add(roads[i][1], new HashSet<int>());
+            
+            dict[roads[i][0]].Add(roads[i][1]);            
+            dict[roads[i][1]].Add(roads[i][0]);
+        }
+        
+        int[][] ranks = indegree.OrderByDescending(x => x.Value).Select(x => new int[] { x.Key, x.Value }).ToArray();
+        
+        for (int i = 0; i < ranks.Length - 1; i++)
+            for (int j = i + 1; j < ranks.Length; j++)
+                res = Math.Max(res, ranks[i][1] + (dict[ranks[i][0]].Contains(ranks[j][0]) ? ranks[j][1] - 1 : ranks[j][1]));
+        
+        return res;
+    }
+}

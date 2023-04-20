@@ -1,0 +1,35 @@
+Idea: using first charactor in every word
++ Biuld a map[c], c is first charactor and map[c] contain the rest of word
++ Like map['c'] contain { "offee", ..} or map['t'] = {"ime", "offee",...}
++ Consider every pair of first charactor of word => 26 * 25 cases
++ for each pair find the rest is not same.
+
++ Time: O(26 * 25 * n) = O(n)
++ Space: O(n)
+
+class Solution {
+public:
+	long long distinctNames(vector<string>& ideas) {
+		vector<unordered_set<string>> map(26);
+		for(auto& word : ideas) 
+			map[word[0] - 'a'].insert(word.substr(1));
+
+		long long ans = 0;
+		for(int i = 0; i < 26; i++) {
+			for(int j = i + 1; j < 26; j++) {
+				int numA = map[i].size();
+				int numB = map[j].size();
+
+				for(auto& str : map[i]) {
+					if(map[j].find(str) == map[j].end())
+						continue;
+					numA--; numB--;
+				}
+
+				ans += (long long)numA * numB * 2;
+			}
+		}
+
+		return ans;
+	}
+};

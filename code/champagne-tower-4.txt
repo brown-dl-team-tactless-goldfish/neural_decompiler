@@ -1,0 +1,76 @@
+double fin[100][100];
+double champagneTowerrec(int poured, int query_row, int query_glass){
+    if(fin[query_row][query_glass]!=-1){
+        return fin[query_row][query_glass];
+    }
+    if(query_row==0){
+        return poured-1;
+    }
+    double check;
+    if(query_glass==0){
+        check=(champagneTowerrec(poured,query_row-1,0))/2-1;
+        if(check<0){
+            fin[query_row][query_glass]=0;
+            return 0;
+        }
+        fin[query_row][query_glass]=check;
+        return check;
+    }
+    if(query_glass==query_row){
+        check=(champagneTowerrec(poured,query_row-1,query_glass-1))/2-1;
+        if(check<0){
+            fin[query_row][query_glass]=0;
+            return 0;
+        }
+        fin[query_row][query_glass]=check;
+        return check;
+    }
+    check=champagneTowerrec(poured,query_row-1,query_glass-1)/2-1+champagneTowerrec(poured,query_row-1,query_glass)/2;
+    if(check<0){
+            fin[query_row][query_glass]=0;
+            return 0;
+        }
+    fin[query_row][query_glass]=check;
+    return check;
+}
+double champagneTower(int poured, int query_row, int query_glass){
+    if(poured==0){
+        return 0;
+    }
+    int x=0;
+    int y;
+    while(x<100){
+        y=0;
+        while(y<100){
+            fin[x][y]=-1;
+            y++;
+        }
+        x++;
+    }
+    if(query_row==0){
+        if(poured!=0){
+            return 1;
+        }
+        return 0;
+    }
+    double check;
+    if(query_glass==0){
+        check=(champagneTowerrec(poured,query_row-1,0))/2;
+        if(check>1){
+            return 1;
+        }
+        return check;
+    }
+    if(query_glass==query_row){
+        check=(champagneTowerrec(poured,query_row-1,query_glass-1))/2;
+        if(check>1){
+            return 1;
+        }
+        return check;
+    }
+    check=champagneTowerrec(poured,query_row-1,query_glass-1)/2+champagneTowerrec(poured,query_row-1,query_glass)/2;
+    if(check>1){
+            return 1;
+        }
+    return check;
+}

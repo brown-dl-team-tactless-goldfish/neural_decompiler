@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<int> exclusiveTime(int n, vector<string>& logs) {
+        vector<int> res(n,0);
+        stack<pair<int,int>> st;
+        int cnt = 0;
+        for(auto str : logs) {
+            auto first = str.find(":");
+            int id = stoi(str.substr(0,first));
+            auto second = str.find(":", first+1);
+            string event = str.substr(first+1, second-first-1);
+            int eventTime = stoi(str.substr(second+1));
+            if(event == "end") {
+                auto last = st.top();
+                st.pop();
+                auto diff = eventTime - cnt - last.second + 1;
+                res[last.first] += diff;
+                if(st.empty())
+                    cnt = 0;
+                else
+                    cnt += diff;
+            }
+            else 
+                st.push({id, eventTime-cnt});
+        }
+        return res;
+    }
+};

@@ -1,0 +1,53 @@
+#define N 100002
+class Solution {
+public:
+    void dfs(int u, vector<vector<int>>& adj_list, vector<bool>& subtree) {
+        if (subtree[u]) {
+            return;
+        }
+        subtree.at(u) = true;
+        for (int v: adj_list[u]) {
+            dfs(v, adj_list, subtree);
+        }
+    }
+    
+    vector<int> smallestMissingValueSubtree(vector<int>& parents, vector<int>& nums) {
+        int n = parents.size();
+        
+        // Finding adjacency list
+        vector<vector<int>> adj_list(n);
+        for (int i=0; i<n; i++) {
+            int u = parents[i];
+            if (u != -1) {
+                adj_list[u].push_back(i);
+            }
+        }
+        
+        // Gives index_with_val[v] = index of a node with value = v
+        vector<int> index_with_val = vector<int>(N, -1);
+        for (int i=0; i<n; i++) {
+            index_with_val[nums[i]] = i;
+        }
+        
+        vector<int> ans(n, 1);
+        int m = 1;
+        vector<bool> subtree(n, false);
+        // Move from node with value 1 towards node with value 0.
+        for (int u = index_with_val[1]; u != -1; u = parents.at(u)) {
+            dfs(u, adj_list, subtree);
+            // Invarient: subtree = subtree at node u
+            
+            // Find the node with value m and check if that node is in the subtree. While it is in the subtree you keep increasing m
+            int x = index_with_val[m];
+            while (x != -1 && subtree.at(x)) {
+                m += 1;
+                x = index_with_val[m];
+            }
+            
+            // m = Minimum value not present in the subtree rooted at u
+            ans[u] = m;
+        }
+        
+        return ans;
+    }
+};

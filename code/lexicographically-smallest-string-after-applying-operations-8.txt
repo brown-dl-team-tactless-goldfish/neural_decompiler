@@ -1,0 +1,48 @@
+string addString(string s, int a)
+{
+    for(int i=1; i<s.length(); i += 2)
+    {
+        int x = s[i] - '0';
+        x = (x + a) % 10;
+        s[i] = x + '0';
+    }
+    return s;
+}
+
+string rotateString(string s, int b)
+{
+    for(int i=0; i<b; i++)
+    {
+        char c = s[s.length()-1];
+        s.pop_back();
+        s.insert(s.begin(), c);
+    }
+    return s;
+}
+
+string findLexSmallestString(string s, int a, int b) {
+    unordered_set<string> stringSet;        //to store visited strings
+    queue<string> q;
+    q.push(s);
+    stringSet.insert(s);
+    string ans = s;
+    while(!q.empty())
+    {
+        string temp = q.front();
+        q.pop();
+        ans = min(ans, temp);
+        string rotate = rotateString(temp, b);
+        string add = addString(temp, a);
+        if(stringSet.find(rotate) == stringSet.end())
+        {
+            q.push(rotate);
+            stringSet.insert(rotate);
+        }
+        if(stringSet.find(add) == stringSet.end())
+        {
+            q.push(add);
+            stringSet.insert(add);
+        }
+    }
+    return ans;
+}

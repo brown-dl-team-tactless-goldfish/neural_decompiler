@@ -1,0 +1,92 @@
+public class AllOne {
+
+    LinkedList<Node> list;
+    Dictionary<string, int> dict;
+    Dictionary<string, LinkedListNode<Node>> linkDict;
+    
+    public AllOne() {
+        list = new LinkedList<Node>();
+        dict = new Dictionary<string, int>();
+        linkDict = new Dictionary<string, LinkedListNode<Node>>();
+    }
+    
+    public void Inc(string key) {
+        if (!dict.ContainsKey(key))
+        {
+            dict[key] = 1;
+            list.AddFirst(new Node(key, 1));
+            linkDict[key] = list.First;
+            return;
+        }
+        
+        var prevCount = dict[key];
+        dict[key]++;
+        var node = linkDict[key];
+        var cur = node;
+        while(cur.Next != null && prevCount + 1 > cur.Next.Value.Count)
+        {            
+            cur = cur.Next;
+        }
+        
+        node.Value.Count++;
+
+        if (node != cur)
+        {
+            list.Remove(node);
+            list.AddAfter(cur, node);
+        }        
+    }
+    
+    public void Dec(string key) {
+        LinkedListNode<Node> node = null;
+        
+        if (dict[key] == 1)
+        {
+            node = linkDict[key];
+            dict.Remove(key);
+            linkDict.Remove(key);
+            list.Remove(node);
+            return;
+        }
+        
+        dict[key]--;
+        node = linkDict[key];
+        var cur = node;
+        while(cur.Previous != null && dict[key] < cur.Previous.Value.Count)
+        {            
+            cur = cur.Previous;
+        }
+        
+        node.Value.Count--;
+        
+        if (node != cur)
+        {
+            list.Remove(node);
+            list.AddBefore(cur, node);
+        }        
+    }
+    
+    public string GetMaxKey() {
+        if (list.Count > 0)
+            return list.Last.Value.Key;
+        return "";
+    }
+    
+    public string GetMinKey() {
+        if (list.Count > 0)
+            return list.First.Value.Key;
+        return "";
+    }
+}
+
+class Node
+{
+    public Node(string key, int count)
+    {
+        Key = key;
+        Count = count;
+    }
+    
+    public string Key { get; set; }
+    public int Count { get; set; }
+}

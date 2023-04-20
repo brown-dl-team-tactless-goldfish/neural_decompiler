@@ -1,0 +1,59 @@
+class Solution {
+public:
+    int bagOfTokensScore(vector<int>& tokens, int power) {
+        
+        int n = tokens.size();
+        
+        // sort the array
+        
+        sort(tokens.begin(), tokens.end());
+        
+        int max_score = 0;
+        
+        int curr_score = 0;
+        
+        // apply two pointer approach 
+        
+        int i = 0;
+        
+        int j = n - 1;
+        
+        while(i <= j)
+        {
+            // in this case we are gaining score then try to lose less power
+            
+            // lose power from left side, b/c array is sorted in ascending order
+            
+            if(power >= tokens[i])
+            {
+                curr_score++;
+                
+                max_score = max(max_score, curr_score);
+                
+                power -= tokens[i];
+                
+                i++;
+            }
+            
+            // in this case we are losing score then try to gain more power
+            
+            // take power from right side, b/c array is sorted in ascending order
+            
+            else if(curr_score > 0)
+            {
+                curr_score--;
+                
+                power += tokens[j];
+                
+                j--;
+            }
+            
+            // in this case we don't have any way to increase or decrease the power and score
+            
+            else
+                break;
+        }  
+        
+        return max_score;
+    }
+};

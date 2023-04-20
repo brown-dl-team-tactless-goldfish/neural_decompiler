@@ -1,0 +1,65 @@
+class DSU
+{
+public:
+	int parent[26];
+	DSU()
+	{
+		for (int i = 0; i < 26; ++i)
+		{
+			parent[i] = i; // setting the parent of 'a' to 'a'
+		}
+	}
+
+	int find(int n)
+	{
+		if (parent[n] == n)
+		{
+			return n;
+		}
+       
+		return parent[n] = find(parent[n]);
+	}
+
+	void unite(int x, int y)
+	{
+        
+        int par_x = find(x);
+        int par_y = find(y);
+        
+        if(par_x == par_y){
+            return;
+        }
+
+		if (par_x < par_y)
+		{
+			parent[par_y] = par_x;
+          
+		}else{
+            parent[par_x] = par_y;
+	    }
+    }
+		
+};
+class Solution {
+public:
+   
+    string smallestEquivalentString(string s1, string s2, string baseStr) {
+
+        int n = s1.size();
+        DSU wed = DSU(); 
+        for(int i=0;i<n;++i)
+        {
+            wed.unite(s1[i]-'a',s2[i]-'a');
+            
+        }
+        string res = "";
+
+        for(char p:baseStr)
+        {
+            res += char (wed.find(p-'a') + 'a');
+        }
+
+        return res;
+        
+    }
+};

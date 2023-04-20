@@ -1,0 +1,41 @@
+class Solution {
+public:
+    int eatenApples(vector<int>& apples, vector<int>& days) {
+        int res = 0;
+        priority_queue<pair<int,int>,vector<pair<int,int> >,greater<pair<int,int> > > q;
+        int len = apples.size();
+        int i = 0;
+        for(; i < len ; ++i){
+            if(days[i]!=0)
+                q.push(make_pair(i+days[i],apples[i]));
+            while(!q.empty()&&q.top().first <= i)
+                q.pop();
+            if(!q.empty()){
+                int day = q.top().first;
+                int apple = q.top().second;
+                //cout << i << "," << day<< endl;
+                q.pop();
+                ++res;
+                if(apple>1){
+                    q.push(make_pair(day,apple-1));
+                }
+            }
+        }
+        //Rest food 
+        while(!q.empty()&&q.top().first >= i){
+            if(q.top().first <= i){
+                q.pop();
+                continue;
+            }
+            int day = q.top().first;
+            int apple = q.top().second;
+            q.pop();
+            ++res;
+            if(apple>1){
+                q.push(make_pair(day,apple-1));
+            }
+            ++i;
+        }
+        return res;
+    }
+};

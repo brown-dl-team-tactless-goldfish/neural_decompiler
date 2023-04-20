@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int minNumberOfFrogs(string croakOfFrogs) {
+        vector<vector<int>> mx(5, vector<int>());
+        int n = croakOfFrogs.size();
+        for(int i=0; i < n; ++i) {
+            char c = croakOfFrogs[i];
+            if(c == 'c') mx[0].push_back(i);
+            if(c == 'r') {
+                mx[1].push_back(i);
+                if(mx[1].size() > mx[0].size()) return -1;
+            }
+            if(c == 'o') {
+                mx[2].push_back(i);
+                if(mx[2].size() > mx[1].size()) return -1;
+            }
+            if(c == 'a') {
+                mx[3].push_back(i);
+                if(mx[3].size() > mx[2].size()) return -1;
+            }
+            if(c == 'k') {
+                mx[4].push_back(i);
+                if(mx[4].size() > mx[3].size()) return -1;
+            }
+        }
+        
+        if(mx[0].size() > mx[1].size()) return -1;
+        if(mx[1].size() > mx[2].size()) return -1;
+        if(mx[2].size() > mx[3].size()) return -1;
+        if(mx[3].size() > mx[4].size()) return -1;
+        
+        int ans = 0;
+        deque<int> end;
+        for(int i=0; i<mx[0].size(); ++i) {
+            while(!end.empty() && end.front() < mx[0][i]) {
+                end.pop_front();
+            }
+            end.push_back(mx[4][i]);
+            
+            int s = end.size();
+            ans = max(ans, s);
+        }
+        return ans;
+    }
+};

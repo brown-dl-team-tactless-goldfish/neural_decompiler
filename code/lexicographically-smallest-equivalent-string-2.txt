@@ -1,0 +1,51 @@
+char * smallestEquivalentString(char * s1, char * s2, char * baseStr){
+    char *output = baseStr;
+    char table[26];
+    int i;
+    char toReplace;
+    char replaceWith;
+
+    //Create an alphabet table
+    for(i = 0; i < 26; i++)
+    {
+        table[i] = 'a' + i;
+    }
+
+    //Set the smaller alphabet
+    while(*s1)
+    {
+        if(table[*s2 - 'a'] < table[*s1 - 'a'])
+        {
+            toReplace = table[*s1 - 'a'];
+            replaceWith = table[*s2 - 'a'];
+            for(i = 0; i < 26; i++)
+            {
+                if(table[i] == toReplace)
+                    table[i] = replaceWith;
+            }
+        }
+        else if(table[*s1 - 'a'] < table[*s2 - 'a'])
+        {
+            toReplace = table[*s2 - 'a'];
+            replaceWith = table[*s1 - 'a'];
+            for(i = 0; i < 26; i++)
+            {
+                if(table[i] == toReplace)
+                    table[i] = replaceWith;
+            }
+        }
+
+        s1++;
+        s2++;
+    }
+
+    //Replace the baseStr alphabet
+    while(*baseStr)
+    {
+        *baseStr = table[*baseStr - 'a'];
+
+        baseStr++;
+    }
+
+    return output;
+}

@@ -1,0 +1,40 @@
+class TweetCounts {
+public:
+    unordered_map<string,multiset<int>> mp;
+    TweetCounts() {
+        
+    }
+    
+    void recordTweet(string tweetName, int time) {
+        mp[tweetName].insert(time);
+    }
+    
+    vector<int> getTweetCountsPerFrequency(string freq, string tweetName, int startTime, int endTime) {
+        multiset<int> temp=mp[tweetName];
+        
+        int diff=0;
+        if(freq=="day"){
+            diff=24*60*60;
+        }else if(freq=="hour"){
+            diff=60*60;
+        }else{
+            diff=60;
+        }
+        vector<int> ans((endTime-startTime)/diff+1);
+        
+        for(auto it=temp.begin();it!=temp.end();it++){
+            if((*it)>=startTime&&(*it)<=endTime){
+                ans[((*it)-startTime)/diff]++;
+            }
+        }
+        
+        return ans;
+    }
+};
+
+/**
+ * Your TweetCounts object will be instantiated and called as such:
+ * TweetCounts* obj = new TweetCounts();
+ * obj->recordTweet(tweetName,time);
+ * vector<int> param_2 = obj->getTweetCountsPerFrequency(freq,tweetName,startTime,endTime);
+ */

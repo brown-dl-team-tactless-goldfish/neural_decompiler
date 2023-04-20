@@ -1,0 +1,76 @@
+public class Solution 
+{
+    Dictionary<int, List<int>> graph;
+    Dictionary<int, int> parent;
+    int[] count;
+    int[] ans;
+    bool[] visited;
+    
+    private int[] Dfs(int node, string labels)
+    {
+        if (visited[node])
+        {
+            return new int[26];
+        }
+        visited[node] = true;
+        int[] currCount = new int[26];
+        currCount[labels[node] - 'a']++;
+        
+        
+        foreach (int next in graph[node])
+        {
+            if (parent[next] != node)
+            {
+                continue;
+            }
+            int[] currRes = Dfs(next, labels);
+            for (int c = 0; c < 26; c++)
+            {
+                currCount[c] += currRes[c];
+            }
+        }
+        
+        ans[node] = currCount[labels[node] - 'a'];
+        
+        return currCount;
+    }
+    
+    private void BuildParent(int source)
+    {
+        var stack = new Stack<int>();
+        stack.Push(source);
+        while (stack.Count > 0)
+        {
+            int curr = stack.Pop();
+            foreach (var next in graph[curr])
+            {
+                if (!parent.ContainsKey(next))
+                {
+                    stack.Push(next);
+                    parent.Add(next, curr);
+                }
+            }
+        }
+    }
+        
+    public int[] CountSubTrees(int n, int[][] edges, string labels) 
+    {
+        count = new int[26];
+        ans = new int[n];
+        graph = new Dictionary<int, List<int>>();
+        parent = new Dictionary<int, int>() {{0, Int32.MaxValue}};
+        visited = new bool[n];
+        for (int i = 0; i < n; i++)
+        {
+            graph.Add(i, new List<int>());
+        }
+        foreach (var edge in edges)
+        {
+            graph[edge[0]].Add(edge[1]);
+            graph[edge[1]].Add(edge[0]);
+        }
+        BuildParent(0);
+        Dfs(0, labels);
+        return ans;
+    }
+}

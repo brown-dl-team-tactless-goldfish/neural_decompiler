@@ -1,0 +1,56 @@
+class Solution {
+    
+    Set<String> wordMatch = new HashSet<>();
+    Map<String, String> capitalization = new HashMap<>();
+    Map<String, String> vowel = new HashMap<>();
+    Set<Character> vowels = new HashSet<>();
+        
+    public String[] spellchecker(String[] wordlist, String[] queries) {
+        vowels.add('a');
+        vowels.add('e');
+        vowels.add('i');
+        vowels.add('o');
+        vowels.add('u');
+        for (String s : wordlist)
+        {
+            wordMatch.add(s);
+            
+            String lower = s.toLowerCase();
+            capitalization.putIfAbsent(lower, s);
+            
+            vowel.putIfAbsent(getVowel(lower), s);
+        }
+        
+        String[] ans = new String[queries.length];
+        for (int i = 0; i < queries.length; i++)
+        {
+            ans[i] = "";
+            
+            if (wordMatch.contains(queries[i]))
+            {
+                ans[i] = queries[i];
+                continue;
+            }
+            
+            String lower = queries[i].toLowerCase();
+            if (capitalization.containsKey(lower))
+            {
+                ans[i] = capitalization.get(lower);
+                continue;
+            }
+            
+            String newWord = getVowel(lower);
+            if (vowel.containsKey(newWord))
+                ans[i] = vowel.get(newWord);
+        }
+        
+        return ans;
+    }
+    
+    private String getVowel(String word) {
+        StringBuilder newWord = new StringBuilder();
+        for (Character c : word.toCharArray())
+            newWord.append(vowels.contains(c) ? "*" : c);    
+        return newWord.toString();
+    }
+}

@@ -1,0 +1,89 @@
+struct NestedIterator {
+    struct  NestedInteger   **nestedList;
+    int                     nestedListSize; 
+    int                     curridx;
+    struct NestedIterator   *child;
+    int                     retval;
+};
+
+struct NestedIterator *
+nestedIterCreate(struct NestedInteger** nestedList, int nestedListSize) 
+{
+    struct NestedIterator *ni;
+
+    if(nestedListSize <= 0) return NULL;
+    ni = (struct NestedIterator *)malloc(sizeof(struct NestedIterator));
+    if(!ni) return NULL;
+
+    ni->nestedList = nestedList;
+    ni->nestedListSize = nestedListSize;
+    ni->curridx = 0;
+    ni->child = NULL;
+
+    return ni;
+}
+
+bool 
+nestedIterHasNext(struct NestedIterator *iter) 
+{
+    struct NestedIterator   *child_iter, *parent_iter, *new_iter;
+    struct NestedInteger    *nestedElem;
+    struct NestedInteger    **nestedList;
+    int                     nestedListSize;
+    bool                    ret = false;
+
+__begin:
+    parent_iter = NULL;
+    child_iter = iter;
+    while(child_iter->child) {
+        parent_iter = child_iter;
+        child_iter = child_iter->child;
+    }
+    
+__again:
+    if(child_iter->curridx < child_iter->nestedListSize) {
+        
+        nestedElem = child_iter->nestedList[child_iter->curridx];
+        child_iter->curridx++;
+        if(!NestedIntegerIsInteger(nestedElem)) {
+            nestedList = NestedIntegerGetList(nestedElem);
+            nestedListSize = NestedIntegerGetListSize(nestedElem);
+            if(nestedListSize <= 0) goto __again;
+            new_iter = nestedIterCreate(nestedList, nestedListSize);
+            child_iter->child = new_iter;
+            if(!(ret = nestedIterHasNext(child_iter))) goto __again;
+        } else {
+            
+            child_iter->retval = NestedIntegerGetInteger(nestedElem);
+            ret = true;
+        }
+    }
+    iter->retval = child_iter->retval;
+
+    if(child_iter->curridx >= child_iter->nestedListSize && 
+       child_iter->child == NULL && parent_iter) {
+        parent_iter->child = NULL;
+        free(child_iter);
+    }
+    if(!ret && parent_iter) goto __begin;
+    return ret;
+}
+
+int 
+nestedIterNext(struct NestedIterator *iter) 
+{
+    return iter->retval;
+}
+
+void 
+__do_freelist(struct NestedIterator *iter)
+{
+    if(iter->child) __do_freelist(iter->child);
+    free(iter);
+}
+/** Deallocates memory previously allocated for the iterator */
+void 
+nestedIterFree(struct NestedIterator *iter) 
+{
+    __do_freelist(iter);
+}

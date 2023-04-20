@@ -1,0 +1,42 @@
+bool isRowMatched(char*, int);
+char** findWords(char**, int, int*);
+
+char** findWords(char** words, int wordsSize, int* returnSize) {
+    char** ret = (char**)malloc(sizeof(char*)*wordsSize);
+	int i,j;
+	
+	//printf("%s","E findWords\n");
+    for(i=0;i<wordsSize;i++){
+    	for(j=0;j<3;j++){
+    		if(isRowMatched(words[i], j)){
+    			//printf("Word: %s matches row: %d\n",words[i],j);
+    			ret[*returnSize] = words[i];
+    			(*returnSize)++;
+    			break;
+			}
+    	}
+	}
+	return ret;
+}
+
+bool isRowMatched(char* str, int i){
+	char* key[3] = {"QqWwEeRrTtYyUuIiOoPp", "AaSsDdFfGgHhJjKkLl", "ZzXxCcVvBbNnMm"};
+    int j = 0;
+    
+    //printf("E isRowMatched, str=%s, row=%d\n", str, i);
+    while(*str != '\0'){
+        while(key[i][j] != '\0'){
+            if(*str == key[i][j]){
+            	str++;
+            	j = 0;
+            	if(*str == '\0'){
+            		return true;
+            	}
+        	}else{
+        		j++;
+			}
+        }
+        return false;
+    }
+    return false;
+}

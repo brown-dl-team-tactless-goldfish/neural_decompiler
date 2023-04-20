@@ -1,0 +1,37 @@
+class Solution {
+public:
+    int minimumTeachings(int n, vector<vector<int>>& languages, vector<vector<int>>& friendships) {
+        int m = languages.size();
+        vector<vector<bool>> speak(m + 1, vector<bool>(n + 1, false));
+        for (int i = 0; i < m; ++i) {
+            for (int lan : languages[i])
+                speak[i + 1][lan] = true;
+        }
+        vector<int> cnt(n + 1, 0);
+        unordered_set<int> people;
+        for (const auto& f : friendships) {
+            int u = f[0];
+            int v = f[1];
+            bool can = false;
+            for (int i = 1; !can && i <= n; ++i) {
+                can |= speak[u][i] && speak[v][i];
+            }
+            if (!can) {
+                if (!people.count(u)) {
+                    for (int lan : languages[u - 1])
+                        ++cnt[lan];
+                    people.insert(u);
+                }
+                if (!people.count(v)) {
+                    for (int lan : languages[v - 1])
+                        ++cnt[lan];
+                    people.insert(v);
+                }
+            }
+        }
+        int res = INT_MAX;
+        for (int i = 1; i <= n; ++i)
+            res = min(res, int(people.size()) - cnt[i]);
+        return res;
+    }
+};

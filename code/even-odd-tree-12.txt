@@ -1,0 +1,57 @@
+public bool IsEvenOddTree(TreeNode root)
+{
+	if (root == null)
+	{
+		return true;
+	}
+
+	Queue<TreeNode> q = new Queue<TreeNode>();
+	q.Enqueue(root);
+
+	int level = 0;
+
+	while (q.Count > 0)
+	{
+		int count = q.Count;
+		bool isEven = level % 2 == 0;
+		int previous = isEven ? 0 : int.MaxValue;
+
+		for (int i = 0; i < count; i++)
+		{
+			var node = q.Dequeue();
+			if (isEven)
+			{
+				if (node.val % 2 == 0 || node.val <= previous)
+				{
+					return false;
+				}
+
+				previous = node.val;
+			}
+
+			else
+			{
+				if (node.val % 2 == 1 || node.val >= previous)
+				{
+					return false;
+				}
+
+				previous = node.val;
+			}
+
+			if (node.left != null)
+			{
+				q.Enqueue(node.left);
+			}
+
+			if (node.right != null)
+			{
+				q.Enqueue(node.right);
+			}
+		}
+
+		level++;
+	}
+
+	return true;
+}

@@ -1,0 +1,43 @@
+class StockPrice {
+    private:
+        map<int,int> timestampToPrice ;  //{timestamp, price}
+        map<int,int> priceToCount ;      //{price, count}
+public:
+    StockPrice() {
+    }
+    
+    void update(int timestamp, int price) {
+    
+        if( timestampToPrice.count(timestamp) )
+        {
+            int prePrice = timestampToPrice[timestamp] ;
+            priceToCount[prePrice]-- ;
+            if(priceToCount[prePrice] == 0)   // must erase, or return maximum or minmum will be wrong
+                priceToCount.erase(prePrice) ;                
+        }
+        timestampToPrice[timestamp] = price ;
+        priceToCount[price]++ ;
+    
+    }
+    
+    int current() {
+        return rbegin(timestampToPrice)->second ;
+    }
+    
+    int maximum() {
+        return rbegin(priceToCount)->first ;
+    }
+    
+    int minimum() {
+        return begin(priceToCount)->first ;
+    }
+};
+
+/**
+ * Your StockPrice object will be instantiated and called as such:
+ * StockPrice* obj = new StockPrice();
+ * obj->update(timestamp,price);
+ * int param_2 = obj->current();
+ * int param_3 = obj->maximum();
+ * int param_4 = obj->minimum();
+ */

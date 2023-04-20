@@ -1,0 +1,31 @@
+int findTargetSumWays(int* nums, int numsSize, int S){
+    int i, j, tgt, cnt, sum = 0;
+    int *dp = NULL;
+    
+    for (i = 0; i < numsSize; i++) {
+        sum += nums[i];
+    }
+    
+    tgt = sum - S;
+    if (S < -sum || sum < S || tgt & 0x1) {
+        return 0;
+    }
+    
+    tgt >>= 1;
+    if (tgt > sum - tgt) {
+        tgt = sum - tgt;
+    }
+    
+    dp = calloc(tgt + 1, sizeof(int));
+    dp[0] = 1;
+    
+    for (i = 0; i < numsSize; i++) {
+        for (j = tgt - nums[i]; j >= 0; j--) {
+            dp[j + nums[i]] += dp[j];
+        }
+    }
+    
+    cnt = dp[tgt];
+    free(dp);
+    return cnt;
+}

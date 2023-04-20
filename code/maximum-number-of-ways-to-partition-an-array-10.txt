@@ -1,0 +1,55 @@
+public class Solution
+{
+    public int WaysToPartition(int[] nums, int k)
+    {
+        var prefixSum = new long[nums.Length];
+        var suffixSum = new long[nums.Length];
+        int n = nums.Length;
+        for (int i = 0; i < n; i++)
+        {
+            prefixSum[i] = (i == 0 ? 0 : prefixSum[i - 1]) + nums[i];
+            suffixSum[n - 1 - i] = nums[n - 1 - i] + (i == 0 ? 0 : suffixSum[n - i]);
+        }
+
+        var diff = new Dictionary<long, List<Info>>();
+        for (int i = 0; i < nums.Length - 1; i++)
+        {
+            var difference = prefixSum[i] - suffixSum[i + 1];
+            var list = diff.GetValueOrDefault(Math.Abs(difference), new List<Info>());
+            list.Add(new Info() { diff = difference, index = i, count = 0 });
+            diff[Math.Abs(difference)] = list;
+        }
+
+        int max = 0;
+        for (int i = 0; i < nums.Length; i++)
+        {
+            long change = k - nums[i];
+            var list = diff.GetValueOrDefault(Math.Abs(change), new List<Info>());
+            int sum = 0;
+            foreach (var info in list)
+            {
+                if (info.index >= i && info.diff == -change ||
+                    info.index < i && info.diff == change)
+                {
+                    sum++;
+                }
+            }
+            max = Math.Max(max, sum);
+        }
+
+        int sum0 = 0;
+        if (diff.ContainsKey(0))
+        {
+            sum0 = diff[0].Count;
+        }
+
+        return Math.Max(max, sum0);
+    }
+
+    private class Info
+    {
+        public long diff;
+        public int index;
+        public int count;
+    }
+}

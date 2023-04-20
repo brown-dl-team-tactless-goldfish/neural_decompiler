@@ -1,0 +1,66 @@
+    vector <pair<int,int>>  v;
+    
+    for(int i=0; i<nums.size(); i++)
+    {
+        for(auto x: nums[i])
+        {
+            v.push_back({x, i});
+        }
+    }
+    
+    sort(v.begin(), v.end());
+    
+    int dif = nums.size(), total = 0;
+    
+    unordered_map<int,int> mp;
+    
+    int mini = INT_MAX, j = 0;
+    
+    vector<int> res;
+    
+    for(int i=0; i<v.size(); i++)
+    {
+        mp[v[i].second]++;
+        
+        if(mp[v[i].second] == 1)
+        {
+            total++;
+        }
+        
+        if(total == dif)
+        {
+            if(v[i].first - v[j].first+1 < mini)
+            {
+                mini = v[i].first - v[j].first+1;
+                
+                res = {v[j].first, v[i].first};
+                
+                
+            }
+        }
+        
+        if(total == dif)
+        {
+            
+            while(j < i && mp[v[j].second] != 1)
+            {
+               mp[v[j].second]--;
+               j++;
+            }
+            
+              if(v[i].first - v[j].first+1 < mini)
+            {
+                mini = v[i].first - v[j].first+1;
+                
+                res = {v[j].first, v[i].first};
+                
+                
+            }
+        }
+         
+        
+    }
+    
+    return res;
+    
+}

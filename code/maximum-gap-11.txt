@@ -1,0 +1,43 @@
+int maximumGap(int* nums, int size)
+{
+    if(size < 2) return 0;
+    int min=INT_MAX, max=0;
+    for(int i = 0; i < size; i++)
+    {
+        if(nums[i] < min) min = nums[i];
+        if(nums[i] > max) max = nums[i];
+    }
+    if(min == max) return 0; //some corner cases;
+    if(min+1 == max) return 1;
+    if(size == 2) return max-min;
+    int gap = (max-min)/(size-1)+1; //make later index searching process easier but actually there will be also (max-min)/(size-1) numbers in each bucket;
+    int** buckets = (int**)malloc(sizeof(int*)*size); //only store the min and max in the bucket;
+    for(int i = 0; i < size; i++)
+    {
+        buckets[i] = (int*)malloc(sizeof(int)*2);
+        buckets[i][0] = -1;
+        buckets[i][1] = 0;
+    }
+    for(int i = 0; i < size; i++) //[min+k*gap, min+(k+1)*gap);
+    {
+        int k = (nums[i]-min)/gap; //get the index of the bucket;
+        if(nums[i] > buckets[k][1]) //the greatest in the bucket;
+            buckets[k][1] = nums[i];
+        if(buckets[k][0]==-1 || nums[i]<buckets[k][0]) //store the minimal in the kth gap;
+            buckets[k][0] = nums[i];
+    }
+    int start = buckets[0][1];
+    int end = buckets[0][0];
+    int maxGap = 1;
+    for(int i = 0; i < size; i++)
+    {
+        if(buckets[i][0] > end) //move to the next bucket that has numbers since we initialize bucket with -1 and 0;
+        {
+            end = buckets[i][0]; //the end of the gap;
+            if(end-start > maxGap)
+                maxGap = end-start;
+            start = buckets[i][1]; //move to the next start;
+        }
+    }
+    return maxGap;
+}

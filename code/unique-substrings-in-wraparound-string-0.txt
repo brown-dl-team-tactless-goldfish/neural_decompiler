@@ -1,0 +1,26 @@
+int findSubstringInWraproundString(char * p){
+    int len=strlen(p);
+    if(len==0){
+        return 0;
+    }
+    int* map=(int*)calloc(len,sizeof(int));
+    map[0]=1;
+    for(int i=1;i<len;i++){
+        if(p[i]-1==p[i-1]||(p[i]=='a'&&p[i-1]=='z')){
+            map[i]=map[i-1]+1;
+        }else{
+            map[i]=1;
+        }
+    }
+    int* array=(int*)calloc(26,sizeof(int));
+    for(int i=0;i<len;i++){
+        if(array[p[i]-'a']<map[i]){
+            array[p[i]-'a']=map[i];
+        }
+    }
+    int ret=0;
+    for(int i=0;i<26;i++){
+        ret+=array[i];
+    }
+    return ret;
+}

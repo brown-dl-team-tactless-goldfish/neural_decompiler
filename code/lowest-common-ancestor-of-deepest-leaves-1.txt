@@ -1,0 +1,20 @@
+int recursive_depth(struct TreeNode* node, int depth){
+    if(node == NULL){
+        return depth;
+    }
+    int left = recursive_depth(node->left, depth);
+    int right = recursive_depth(node->right, depth);
+    return left > right ? left + 1 : right + 1;
+}
+
+struct TreeNode* recursive_node(struct TreeNode* node, int depth){
+    int left = recursive_depth(node->left, depth);
+    int right = recursive_depth(node->right, depth);
+    if(left == right){
+        return node;
+    }
+    return left > right ? recursive_node(node->left, depth + 1) : recursive_node(node->right, depth + 1);
+}
+struct TreeNode* lcaDeepestLeaves(struct TreeNode* root){
+    return recursive_node(root, 0);
+}

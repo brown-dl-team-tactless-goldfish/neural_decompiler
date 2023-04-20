@@ -1,0 +1,47 @@
+    // DFS
+    int getImportance1(vector<Employee*> employees, int id) {
+        auto it = std::find_if(employees.begin(), employees.end(), [&id](const auto& e) { return e->id == id; });
+        int ret = (*it)->importance;
+        for (const auto& sub : (*it)->subordinates)
+        {
+            ret += getImportance(employees, sub);
+        }
+        return ret;
+    }
+    
+    // DFS + Hash table
+    int getImportance2(vector<Employee*> employees, int id) {
+        std::unordered_map<int, std::pair<int, std::vector<int>>> map;
+        std::for_each(employees.begin(), employees.end(), [&map](const auto& e) { map[e->id] = std::make_pair(e->importance, e->subordinates); });
+        return dfs(map, id);
+    }
+    
+    int dfs(std::unordered_map<int, std::pair<int, std::vector<int>>>& map, int id)
+    {
+        int ret = map[id].first;
+        for (const auto& sub : map[id].second)
+        {
+            ret += dfs(map, sub);
+        }
+        return ret;
+    }
+    
+    // BFS
+    int getImportance(vector<Employee*> employees, int id) {
+        std::unordered_map<int, std::pair<int, std::vector<int>>> map;
+        std::for_each(employees.begin(), employees.end(), [&map](const auto& e) { map[e->id] = std::make_pair(e->importance, e->subordinates); });
+        std::queue<int> queue;
+        queue.push(id);
+        int ret = 0;
+        while (!queue.empty())
+        {
+            int node = queue.front();
+            ret += map[node].first;
+            queue.pop();
+            for (const auto& sub : map[node].second)
+            {
+                queue.push(sub);
+            }
+        }
+        return ret;
+    }

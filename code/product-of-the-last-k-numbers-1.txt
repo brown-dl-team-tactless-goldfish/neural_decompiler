@@ -1,0 +1,65 @@
+class ProductOfNumbers:
+
+    def __init__(self):
+        self.data = []
+        self.product = []
+        self.idx_zeros = []
+        
+        self.n = 0
+
+    def add(self, num: int) -> None:
+        self.data.append(num)
+
+        
+        if (num != 0):
+        
+            if (len(self.product) == 0):
+                self.product.append(num)
+            else:
+                if (self.product[-1]!= 0):
+                    self.product.append(num*self.product[-1])
+                else:
+                    self.product.append(num)
+        else:
+            self.idx_zeros.append(self.n)
+            self.product.append(0)
+            
+
+        self.n += 1
+
+    def getProduct(self, k: int) -> int:
+#         print ("self.data = ", self.data)
+#         print ("self.product = ", self.product)
+#         print ("self.idx_zeros = ", self.idx_zeros)
+#         print ("self.n = ", self.n)
+        
+#         print ("k = ", k)
+        
+        
+        pre_idx = self.n - k
+        # print ("pre_idx = ", pre_idx)
+
+        res = 0
+        if (self.idx_zeros != [] and self.idx_zeros[-1] >= pre_idx):
+            # print ("there is a zero included to calculate product")
+            # print ("")
+            return 0
+
+        if (k == self.n):
+            # print ("k == self.n")
+            if (self.idx_zeros != []):
+                return 0
+            else:
+                return self.product[-1]
+        else:
+
+            if (self.product[-k-1] == 0):
+                res = self.product[-1]
+            else:
+                res = self.product[-1] // self.product[-k-1]
+
+            # print ("res = ", res)
+            # print ("")
+            return res
+        # return (self.product[-1] / self.product[-k-1])
+        

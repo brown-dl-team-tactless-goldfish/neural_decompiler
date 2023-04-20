@@ -1,0 +1,38 @@
+typedef struct {
+    int n;
+    uint8_t mutex;
+    char buf[1000];
+} FooBar;
+
+FooBar* fooBarCreate(int n) {
+    FooBar* obj = (FooBar*) malloc(sizeof(FooBar));
+    obj->n = n;
+    obj->mutex = 0;
+    setvbuf ( stdout , obj->buf , _IOFBF , 1000 );
+    return obj;
+}
+
+void foo(FooBar* obj) {
+    
+    for (int i = 0; i < obj->n; i++) {
+        while(obj->mutex) usleep(1);
+        // printFoo() outputs "foo". Do not change or remove this line.
+        printFoo();
+        obj->mutex = !obj->mutex;
+    }
+}
+
+void bar(FooBar* obj) {
+    
+    for (int i = 0; i < obj->n; i++) {
+        while(!obj->mutex) usleep(1);
+        // printBar() outputs "bar". Do not change or remove this line.
+        printBar();
+        obj->mutex = !obj->mutex;
+    }
+}
+
+void fooBarFree(FooBar* obj) {
+    fflush(stdout);
+    free(obj);
+}

@@ -1,0 +1,43 @@
+int UnionFind(int* UNION, int val){
+    if(UNION[val] == val)
+        return val;
+    
+    return UnionFind(UNION, UNION[val]);
+}
+
+bool UnionSet(int* UNION, int* USize, int a, int b){
+    int Find_a = UnionFind(UNION , a);
+    int Find_b = UnionFind(UNION , b);
+    if(Find_a == Find_b)
+        return false;
+    if(USize[Find_a] > USize[Find_b]){
+        UNION[Find_b] = UNION[Find_a] ;
+        USize[Find_a] += USize[Find_b];
+    }
+    else{
+        UNION[Find_a] = UNION[Find_b] ;
+        USize[Find_b] += USize[Find_a];        
+    }
+    return true;
+}
+
+int* findRedundantConnection(int** edges, int edgesSize, int* edgesColSize, int* returnSize){
+    int* ans = malloc(2 * sizeof(int));
+    int* UNION = malloc((edgesSize+1) * sizeof(int));
+    int* USize = malloc((edgesSize+1) * sizeof(int));
+    for(int i = 1; i <= edgesSize; i++){
+        UNION[i] = i;
+        USize[i] = 1;
+    }
+    
+    for(int i = 0; i < edgesSize; i++){
+        if(UnionSet(UNION, USize, edges[i][0], edges[i][1]) == false){
+            ans[0] = edges[i][0];
+            ans[1] = edges[i][1];
+            break;
+        }
+            
+    }
+    * returnSize = 2;
+    return ans;    
+}

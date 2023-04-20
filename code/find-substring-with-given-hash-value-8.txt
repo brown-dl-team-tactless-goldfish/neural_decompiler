@@ -1,0 +1,36 @@
+class Solution {
+public:
+    string subStrHash(string s, int power, int modulo, int k, int hashValue) {
+        
+        int len = s.size(), startIdx = 0;
+        
+        long long int prime = 1, hash = 0;
+        
+        // we need to traverse from right to left
+        // because, if we traverse from left to right, we may need to take divison modulo, that might return wrong answer, so we need to traverse from right to left
+        
+        for(int i = len-1; i >= 0; i--)
+        {
+            // calculate hash value for current character
+            hash = (hash * power + (s[i] - 'a' + 1)) % modulo;
+            
+            // i+k < len means we are outside of the window of size k
+            // so we need to remove the i+k th character
+            if(i+k < len)
+            {
+                hash = (hash - (s[i+k] - 'a' + 1) * prime % modulo + modulo) % modulo;
+            }
+            
+            // else, we are inside current window, so calculate prime of current window
+            else{
+                prime = (prime * power) % modulo;
+            }
+            
+            // at any index, we reach same hashvalue, then mark the current index
+            if(hash == hashValue)
+                startIdx = i;
+        }
+        
+        return s.substr(startIdx, k);
+    }
+};

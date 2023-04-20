@@ -1,0 +1,35 @@
+bool buddyStrings(char * s, char * goal){
+	//check length of 2 strings
+	int len;
+	if(strlen(s) == strlen(goal)) len = strlen(s);
+	else return false;
+
+	//compare two strings
+	int a = -1; // -1 just indicate that they haven't been set
+	int b = -1; 
+	for(int i = 0; i<len; i++)
+		//make note of where they are diff with a & b
+		if(*(s+i) != *(goal+i))
+			if(a == -1) a = i;
+			else b = i;
+
+	//when 2 strings are the same, swap the same char at diff location
+	if(b == -1)
+		if(a != -1) return false;//only 'a' location is different
+		else{ // both a & b are -1 (haven't been set)
+			for(int i=0; i<len; i++)
+				for(int j = i+1; j<len; j++)
+					if(s[i] == s[j])
+						return true;//can swap location i with j and the string will be the same
+			return false;// after looping and we can't find 2 locations with the same char
+		}
+
+	//when 2 strings are different, swap a and b locations then check to see if s == goal
+	char temp = s[a];
+	s[a] = s[b];
+	s[b] = temp;
+	for(int i = 0; i<len; i++)
+		if(*(s+i) != *(goal+i)) return false;
+
+	return true;
+}

@@ -1,0 +1,46 @@
+class Solution {
+public:
+    typedef long long ll;
+    vector<vector<int>> highestRankedKItems(vector<vector<int>>& grid, vector<int>& p, vector<int>& start, int k) {
+        vector<vector<int>> ans;
+        queue<vector<int>> q;
+        int c = 0;
+        q.push({grid[start[0]][start[1]], start[0], start[1]});
+        int len = grid.size();
+        vector<vector<bool>> vis(len, vector<bool>(grid[0].size(), false));
+        
+        vis[start[0]][start[1]] = true;
+        
+        vector<vector<int>> pp = {{0,-1}, {-1, 0}, {0, 1}, {1, 0}};
+        
+        while(!q.empty() && c<k){
+            int n = q.size();
+            vector<vector<int>> v;
+            while(n--){
+                vector<int> vv = q.front();
+                q.pop();
+                v.push_back(vv);
+            }
+            sort(v.begin(),v.end());
+            for(auto x:v){
+                if(c==k) break;
+                if(x[0]!=0 && x[0]!=1 && p[0]<=x[0] && p[1]>=x[0]){
+                    ans.push_back({x[1], x[2]});
+                    c++;
+                }
+                if(x[0]!=0){
+                    int i = x[1], j = x[2];
+                    for(auto y:pp){
+                        i+=y[0];j+=y[1];
+                        if(i>=0 && j>=0 && i<grid.size() && j<grid[i].size() && grid[i][j]!=0 && !vis[i][j]){
+                            q.push({grid[i][j], i, j});
+                            vis[i][j] = true;
+                        }
+                        i-=y[0];j-=y[1];
+                    }
+                }
+            }
+        }
+        return ans;
+    }
+};

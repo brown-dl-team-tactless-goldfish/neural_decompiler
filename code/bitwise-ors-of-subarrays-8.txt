@@ -1,0 +1,42 @@
+class Solution {
+public:
+    int subarrayBitwiseORs(vector<int>& arr) {
+        
+        vector<int>track;
+        unordered_set<int>result;
+        
+        int val;
+        int start = 0;
+        int end = 0;
+        int size = arr.size();
+        
+        for(int i=0;i<size;i++)
+        {
+            // loop till the result of k-1th operation
+            end = track.size();
+            
+            // add the current value
+            track.push_back(arr[i]);
+            result.insert(arr[i]);
+            
+            // get OR results for k-1th operation result | current value
+            for(int j=start;j<end;j++)
+            {
+                val = track[j] | arr[i];
+                
+                // OR operation result is increasing and so ignore duplicate values
+                if(track.back()!=val)
+                {
+                    track.push_back(val);
+                    result.insert(val);
+                }
+            }
+            
+            // set the end of k-1 th operation as start for next operation 
+            start = end;
+        }
+        
+        // return the set size as unique OR results
+        return result.size();
+    }
+};

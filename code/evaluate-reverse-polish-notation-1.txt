@@ -1,0 +1,48 @@
+typedef struct stack{
+    long int val;
+    struct stack *next;
+}stack;
+
+stack *sol(stack *head,char *t){
+   stack *p=malloc(sizeof(stack));
+    if(t[1]){
+        p->val=atoi(t);
+        p->next=head;
+        head=p;
+    }
+    else
+    {
+        switch(t[0]){
+            case '+':
+                head->next->val=head->next->val+head->val;
+                head=head->next;
+            break;
+            case '-':
+                head->next->val=head->next->val-head->val;
+                head=head->next;
+            break;
+            case '*':
+                head->next->val=head->next->val*head->val;
+                head=head->next;
+            break;
+            case '/':
+                head->next->val=head->next->val/head->val;
+                head=head->next;
+            break;
+            default:
+                p->val=atoi(t);
+                p->next=head;
+                head=p;
+            break;
+        }
+    }
+    return head;
+}
+int evalRPN(char ** tokens, int tokensSize){
+    int idx=0;
+    stack *head=NULL;
+    while(tokensSize--){
+        head=sol(head,tokens[idx++]);
+    }
+    return head->val;
+}

@@ -1,0 +1,33 @@
+ public int MinSwapsCouples(int[] row)
+        {
+            var seat = new int[row.Length / 2, 2];
+            var couch = new int[row.Length];
+            for (int i = 0; i < row.Length; i++)
+            {
+                couch[row[i]] = i / 2;
+            }
+            for (int i = 0; i < row.Length / 2; i++)
+            {
+                seat[i, 0] = row[2 * i]; seat[i, 1] = row[2 * i + 1];
+            }
+						
+            int count = 0;
+            for (int i = 0; i < row.Length / 2; i++)
+            {
+                int min = Math.Min(seat[i, 0], seat[i, 1]);
+                int max = Math.Max(seat[i, 0], seat[i, 1]);
+
+                if (min % 2 == 0 && max - min == 1) continue;
+                int partner = min % 2 == 1 ? min - 1 : min + 1;
+                int couch_id = couch[partner];
+
+                if (seat[couch_id, 0] == partner)
+                    seat[couch_id, 0] = max;
+                else seat[couch_id, 1] = max;
+
+                couch[max] = couch_id;
+                count++;
+            }
+
+            return count;
+        }

@@ -1,0 +1,45 @@
+int trap(int* height, int heightSize) {
+    int *waterstart;
+    int *waterend;
+    waterstart = malloc(heightSize*sizeof(int));
+    waterend = malloc(heightSize*sizeof(int));
+    int tempmax = height[0];
+    waterstart[0] = height[0];
+    for(int i=1;i<heightSize;i++)
+    {
+        if(height[i]<tempmax)
+            waterstart[i] = tempmax;
+        else
+        {
+            waterstart[i] = height[i];
+            tempmax = waterstart[i];
+        }
+            
+    }
+    
+    tempmax = height[heightSize-1];
+    waterend[heightSize-1] = height[heightSize-1];
+    for(int i=heightSize-2;i>=0;i--)
+    {
+        if(height[i]<tempmax)
+            waterend[i] = tempmax;
+        else
+        {
+            waterend[i] = height[i];
+            tempmax = waterend[i];
+        }
+    }
+    int ret = 0;
+    for(int i=0;i<heightSize;i++)
+    {
+        // if(waterstart[i]<waterend[i])
+        //     waterstart[i] = waterstart[i];
+        // else
+        //     waterstart[i] = waterend[i];
+        if(waterend[i]<waterstart[i])
+            waterstart[i] = waterend[i];
+        
+        ret+=waterstart[i]-height[i];
+    }
+    return ret;
+}

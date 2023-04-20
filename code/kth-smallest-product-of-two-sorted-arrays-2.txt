@@ -1,0 +1,53 @@
+typedef long long int ll;
+
+class Solution 
+{
+public:
+    long long kthSmallestProduct(vector<int>& nums1, vector<int>& nums2, long long k) 
+    {
+        ll left = -(ll)(1e10) - 1;
+        ll right = (ll)(1e10) + 1;
+        
+        while(right - left > 1)
+        {
+            ll mid = (left + right) / 2;
+            ll num = 0;
+            
+            for(int number : nums1)
+            {
+                if(number == 0)
+                {
+                    if(mid >= 0)
+                    {
+                        num += nums2.size();
+                    }
+                }
+                else if(number > 0)
+                {
+                    ll roundedNumber = floor(mid / (double)number); // round down
+                    auto iter = upper_bound(nums2.begin(), nums2.end(), roundedNumber);
+                    num += iter - nums2.begin();
+                }
+                else
+                {
+                    ll roundedNumber = ceil(mid / (double)number); // round up
+                    auto iter = lower_bound(nums2.begin(), nums2.end(), roundedNumber);
+                    num += nums2.size() - (iter - nums2.begin());             
+                }
+            }
+            
+            if(num >= k)
+            {
+                right = mid;
+            }
+            else
+            {
+                left = mid;
+            }
+        }
+        
+        return right;
+    }
+};
+
+// The complexity is O(NlogNlogA), where N denotes max(nums1.size(), nums2.size()) and A denotes the size of the range

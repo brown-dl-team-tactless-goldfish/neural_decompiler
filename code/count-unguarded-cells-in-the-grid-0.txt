@@ -1,0 +1,49 @@
+
+
+int countUnguarded(int m, int n, int** guards, int guardsSize, int* guardsColSize, int** walls, int wallsSize, int* wallsColSize){
+    int i, j, k;
+    int** data = (int**)malloc(m * sizeof(int*));
+    for(i = 0; i < m ; i++){
+        data[i] = calloc(n , sizeof(int));
+    }
+    int dir[4][2] = {{0,1},{0,-1},{1,0},{-1,0}} ;
+
+    for(int i = 0 ; i < guardsSize; i++){
+        int r = guards[i][0] ;
+        int c = guards[i][1] ;
+        data[r][c] = 1 ;
+    }
+    
+    for(int i = 0 ; i < wallsSize; i++){
+        int r = walls[i][0] ;
+        int c = walls[i][1] ;
+        data[r][c] = 2 ;
+    }
+    
+    for(int i = 0; i < guardsSize; i++){
+        int r = guards[i][0] ;
+        int c = guards[i][1] ;
+        for(int k = 0; k < 4; k++){
+            for(int j = 1; ; j++){
+                int rr = r + dir[k][0]* j ;
+                int cc = c + dir[k][1]* j ;
+                if(rr < 0 || cc < 0 || rr >= m || cc >= n)
+                    break ;
+                if(data[rr][cc] == 2 || data[rr][cc] == 1)
+                    break ;
+                data[rr][cc] = 3 ;
+            }
+        }
+    }
+    
+    int ans = 0 ;
+    for(int i = 0; i < m ;i++){
+        for(int j = 0; j < n; j++){
+            if(data[i][j] == 0)
+                ans++ ;
+        }
+        free(data[i]) ;
+    }
+    free(data) ;
+    return ans;
+}

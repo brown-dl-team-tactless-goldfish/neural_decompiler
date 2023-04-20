@@ -1,0 +1,65 @@
+class Node{
+    public:
+    Node* next;
+    int val;
+    Node(int val){
+        this->val=val;
+        next=NULL;
+    }
+};
+class Skiplist {
+public:
+    Node* head=new Node(0);
+    int size=0;
+    Skiplist() {
+        
+    }
+    
+    bool search(int target) {
+        if(size==0)return false;
+        Node* temp=head->next;
+        while(temp!=NULL)
+        {//cout<<temp->val<<endl;
+            if(temp->val==target)
+                return true;
+            
+            temp=temp->next;
+        }
+        return false;
+    }
+    
+    void add(int num) {
+         Node* temp = head->next;
+        head->next = new Node(num);
+        head->next->next = temp;
+        size++;
+    }
+    
+    bool erase(int num) { 
+        int c=0;
+        Node* temp = head;
+        while(temp->next!= NULL){
+            if(temp->next->val==num){
+                c=1; 
+                break;}
+            temp = temp->next;}
+        if(c==1){
+        size--;
+       temp->next= temp->next->next;
+        
+            return true;
+        }
+        
+        return false;
+            
+        
+    }
+};
+
+/**
+ * Your Skiplist object will be instantiated and called as such:
+ * Skiplist* obj = new Skiplist();
+ * bool param_1 = obj->search(target);
+ * obj->add(num);
+ * bool param_3 = obj->erase(num);
+ */

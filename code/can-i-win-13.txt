@@ -1,0 +1,37 @@
+class Solution {
+public:
+    vector<int>bitMask;
+    bool dfs(int m, int t, int k){
+        if(bitMask[k]!=0)
+            return bitMask[k]>0;
+        if(t <= 0)return false;
+        for(int i=0;i<m;i++){
+            if(!(k&(1<<i)) && !dfs(m,t-i-1,k|(1<<i)))
+            {
+                bitMask[k] = 1;
+                return true;
+            }
+        }
+        bitMask[k] = -1;
+        return false;
+    }
+    bool canIWin(int maxChoosableInteger, int desiredTotal) {
+        int t = pow(2, maxChoosableInteger+1);
+        int sum = (maxChoosableInteger*(maxChoosableInteger+1))/2;
+		
+		//if target is less than equal to 1 then player 1 will win
+        if(desiredTotal <= 1 )return true;
+		
+		//if by choosing all the numbers we can't reach target no one will win
+        if(sum < desiredTotal)
+            return false;
+			
+		// if sum of all numbers equal to target then whosever choose last number will win
+        if(sum == desiredTotal)
+            return maxChoosableInteger%2;
+       
+	   // If none of the above case then recursively find the solution for each state
+        bitMask.resize(t, 0);
+        return dfs(maxChoosableInteger, desiredTotal, 0);
+    }
+};

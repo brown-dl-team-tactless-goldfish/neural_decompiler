@@ -1,0 +1,40 @@
+
+template <typename T> using vec = std::vector<T>;
+typedef long long ll;
+typedef vec<int> ivec; typedef vec<ll> llvec;
+typedef vec<ivec> ivec2d;
+using namespace std;
+#define FOR(i, N) for (int i = 0; i < N; i++)
+
+// Solution /////////////////////////////////////////////////////
+
+class Solution {
+	
+	double f(string& s) {
+		
+		bool dpoint = false, bracket = false;
+		ll n = 0, cd = 0;
+		ll nd = 0, dd = 0;
+		for (char c : s) {
+			if (c == '.') dpoint = true;
+			else if (c == '(') bracket = true;
+
+			else if ('0' <= c && c <= '9') {
+				n = n * 10 + c - '0';
+				if (!bracket) nd = nd * 10 + c - '0';	
+				if (dpoint) {
+					cd++;
+					if (!bracket) dd++;
+				}
+			}
+		}
+
+		if (cd == dd) return n / pow(10, cd);
+		return (n - nd) / (pow(10, cd) - pow(10, dd));
+	}
+	
+public:
+    bool isRationalEqual(string S, string T) {
+        return f(S) == f(T);
+    }
+};

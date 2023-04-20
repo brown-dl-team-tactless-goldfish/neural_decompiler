@@ -1,0 +1,38 @@
+public class Solution 
+{
+    public int[] ConstructDistancedSequence(int n) 
+    {
+        if (n == 1) return new int[1]{1};
+        
+        int length = 2*(n-1)+1;
+        int[] curr = new int[length];
+        Construct(curr, n, n, 0, new HashSet<int>());
+        return curr;
+    }
+    
+    private bool Construct(int[] curr, int val, int nodes, int pos, HashSet<int> visited)
+    {
+        if (visited.Count() == nodes) return true;
+        
+        for (int i=val; i>0; i--)
+        {
+            if (visited.Contains(i)) continue;
+            
+            if (i != 1 && (pos+i >= curr.Length || curr[pos+i] != 0)) continue;
+            
+            visited.Add(i);
+            curr[pos] = i;
+            if (i != 1) curr[pos+i] = i;
+            
+            int newPos = pos+1;
+            while (newPos < curr.Length && curr[newPos] != 0) newPos++;
+            
+            if (Construct(curr, val, nodes, newPos, visited)) return true;
+            
+            curr[pos] = 0;
+            if (i != 1) curr[pos+i] = 0;
+            visited.Remove(i);
+        }
+        return false;
+    }
+}

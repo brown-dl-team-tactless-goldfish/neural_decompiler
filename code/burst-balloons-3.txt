@@ -1,0 +1,31 @@
+int **dp;
+int Find_Max(int *nums,int numsSize,int L,int R);  //Return the maxium value we can get in area[i,j]
+
+int maxCoins(int* nums, int numsSize){
+    dp = malloc(numsSize*sizeof(int*));       //Initialize global array
+    for(int i=0;i<numsSize;i++) dp[i] = calloc(numsSize,sizeof(int));
+
+    return Find_Max(nums,numsSize,0,numsSize-1);
+}
+
+int Find_Max(int *nums,int numsSize,int L,int R){
+    if(L>R||L<0||R>=numsSize) return 0;      //Return 0 if range [L,R] is illegal
+    if(dp[L][R]>0) return dp[L][R];                //Return the recorded value of dp
+    
+    int edge=1;   //edge represent the value nums[L-1]*nums[R+1],which would be multiply by the picked value later
+    if(L>0) edge*=nums[L-1];
+    if(R<numsSize-1) edge*=nums[R+1];
+    
+    if(L==R) {
+		dp[L][R]=nums[L]*edge;
+		return dp[L][R];
+	} //If the area only contain one element, return the coin we can get after we burst that balloon. Record it in dp as well
+    
+    int tmp,max=0;
+    for(int i=L;i<=R;i++){  //Pick an element as the last ballon to burst
+        tmp = edge*nums[i]+Find_Max(nums,numsSize,L,i-1)+Find_Max(nums,numsSize,i+1,R); //Picked element * edge + dp of leftside + dp of rightside
+        if(tmp>max) max = tmp;  //Record the maxium value
+    }
+    dp[L][R] = max; // Record the value in dp
+    return dp[L][R];
+}

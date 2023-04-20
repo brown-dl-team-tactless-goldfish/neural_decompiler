@@ -1,0 +1,57 @@
+bool wordPattern(char * pattern, char * s){
+    bool retVal = false;
+
+    int i, j;
+
+    // pattern contains only lower-case English letters.
+#define HASHTABLE_SIZE      (26)
+    char* HASH_TABLE[HASHTABLE_SIZE];
+    for (i=0; i<HASHTABLE_SIZE; ++i)
+    {
+        HASH_TABLE[i] = NULL;
+    }
+
+    // All the words in s are separated by a single space.
+#define SEPARATED   " "
+    char* pStr = strtok (s, SEPARATED);
+    while ((pStr != NULL) && (*pattern))
+    {
+        if (HASH_TABLE[(unsigned char)(*pattern)-'a'] == NULL)
+        {
+            HASH_TABLE[(unsigned char)(*pattern)-'a'] = pStr;
+        }
+        else if (strcmp(HASH_TABLE[(unsigned char)(*pattern)-'a'], pStr) != 0)
+        {
+            return retVal;
+        }
+
+        ++pattern;
+        pStr = strtok (NULL, SEPARATED);
+    }
+    if ((pStr != NULL) || (*pattern))
+    {
+        return retVal;
+    }
+
+    for (i=0; i<HASHTABLE_SIZE; ++i)
+    {
+        if (HASH_TABLE[i] == NULL)
+        {
+            continue;
+        }
+        for (j=i+1; j<HASHTABLE_SIZE; ++j)
+        {
+            if (HASH_TABLE[j] == NULL)
+            {
+                continue;
+            }
+            if (strcmp(HASH_TABLE[i], HASH_TABLE[j]) == 0)
+            {
+                return retVal;
+            }
+        }
+    }
+    retVal = true;
+
+    return retVal;
+}

@@ -1,0 +1,134 @@
+    public class Solution
+    {
+        public static readonly (int dx, int dy)[] _directions =
+        {
+            (0,0),
+            (0,1),
+            (0,-1),
+            (1,0),
+            (-1,0),
+            (1,1),
+            (1,-1),
+            (-1,1),
+            (-1,-1)
+        };
+
+        public int[] GridIllumination(int n, int[][] lamps, int[][] queries)
+        {
+            checked
+            {
+                int[] res = new int[queries.Length];
+
+                ISet<long> lamspSet = new HashSet<long>(lamps.Length);
+
+                IDictionary<long, int> row2LampsAffected = new Dictionary<long, int>();
+                IDictionary<long, int> column2LampsAffected = new Dictionary<long, int>();
+                IDictionary<(long x, long y), int> diagonal1LampsAffected = new Dictionary<(long x, long y), int>();
+                IDictionary<(long x, long y), int> diagonal2LampsAffected = new Dictionary<(long x, long y), int>();
+
+                foreach (var l in lamps)
+                {
+                    long r = l[0];
+                    long c = l[1];
+
+                    lamspSet.Add( r * n + c);
+
+                    if (!row2LampsAffected.ContainsKey(r))
+                    {
+                        row2LampsAffected[r] = 0;
+                    }
+                    row2LampsAffected[r]++;
+
+                    if (!column2LampsAffected.ContainsKey(c))
+                    {
+                        column2LampsAffected[c] = 0;
+                    }
+                    column2LampsAffected[c]++;
+
+                    var m = Math.Min(r, c);
+                    (long x, long y) diagonal1 = (r - m, c - m);
+
+                    if (!diagonal1LampsAffected.ContainsKey(diagonal1))
+                    {
+                        diagonal1LampsAffected[diagonal1] = 0;
+                    }
+                    diagonal1LampsAffected[diagonal1]++;
+
+
+                    m = Math.Min(r, n - 1 - c);
+                    (long x, long y) diagonal2 = (r - m, c + m);
+                    if (!diagonal2LampsAffected.ContainsKey(diagonal2))
+                    {
+                        diagonal2LampsAffected[diagonal2] = 0;
+                    }
+                    diagonal2LampsAffected[diagonal2]++;
+
+                }
+
+                for (int i = 0; i < queries.Length; i++)
+                {
+                    var q = queries[i];
+                    long r = q[0];
+                    long c = q[1];
+
+                    bool illuminated = row2LampsAffected.ContainsKey(r);
+                    illuminated |= column2LampsAffected.ContainsKey(c);
+                    var m = Math.Min(r, c);
+                    (long x, long y) diagonal1 = (r - m, c - m);
+                    illuminated |= diagonal1LampsAffected.ContainsKey(diagonal1);
+
+                    m = Math.Min(r, n - 1 - c);
+                    (long x, long y) diagonal2 = (r - m, c + m);
+                    illuminated |= diagonal2LampsAffected.ContainsKey(diagonal2);
+
+                    res[i] = (illuminated ? 1 : 0);
+
+                    foreach (var dir in _directions)
+                    {
+                        long newI = r + dir.dx;
+                        long newJ = c + dir.dy;
+
+                        if (newI >= 0 && newJ >= 0 && newI < n && newJ < n)
+                        {
+                            long lin = newI * n + newJ;
+
+                            if (lamspSet.Remove(lin))
+                            {
+
+                                row2LampsAffected[newI]--;
+                                if (row2LampsAffected[newI] == 0)
+                                {
+                                    row2LampsAffected.Remove(newI);
+                                }
+
+                                column2LampsAffected[newJ]--;
+                                if (column2LampsAffected[newJ] == 0)
+                                {
+                                    column2LampsAffected.Remove(newJ);
+                                }
+
+                                m = Math.Min(newI, newJ);
+                                diagonal1 = (newI - m, newJ - m);
+
+                                diagonal1LampsAffected[diagonal1]--;
+                                if (diagonal1LampsAffected[diagonal1] == 0)
+                                {
+                                    diagonal1LampsAffected.Remove(diagonal1);
+                                }
+
+                                m = Math.Min(newI, n - 1 - newJ);
+                                diagonal2 = (newI - m, newJ + m);
+                                diagonal2LampsAffected[diagonal2]--;
+                                if (diagonal2LampsAffected[diagonal2] == 0)
+                                {
+                                    diagonal2LampsAffected.Remove(diagonal2);
+                                }
+                            }
+                        }
+                    }
+                }
+
+                return res;
+            }
+        }
+    }

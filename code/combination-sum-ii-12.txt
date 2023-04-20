@@ -1,0 +1,51 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+
+int compare(const void* p, const void* q)
+{
+  int x = *((int*)p);
+  int y = *((int*)q);
+  return (x > y) - (x < y);
+}
+
+void builder(int* candidates, int candidatesSize, int curr_index, int target, int** ans, int* ansSize, int* info, int* data, int datasize)
+{
+  if(!target)
+  {
+    ans[(*ansSize)] = (int*)malloc(datasize * sizeof(int));
+    memcpy(ans[(*ansSize)], data, datasize * sizeof(int));
+    info[(*ansSize)] = datasize;
+    (*ansSize)++;
+    return;
+  }
+  if(target < 0 || curr_index >= candidatesSize)
+    return;
+  int curr_val = candidates[curr_index];
+  data[datasize] = curr_val;
+  int new_size = datasize + 1;
+  int new_target = target - curr_val;
+  int next_index1 = curr_index + 1;
+  int next_index2 = curr_index;
+  builder(candidates, candidatesSize, next_index1, new_target, ans, ansSize, info, data, new_size);
+  while(next_index2 < candidatesSize && candidates[next_index2] == curr_val)
+    next_index2++;
+  builder(candidates, candidatesSize, next_index2, target, ans, ansSize, info, data, datasize);
+  return;
+}
+
+int** combinationSum2(int* candidates, int candidatesSize, int target, int* returnSize, int** returnColumnSizes)
+{
+  qsort(candidates, candidatesSize, sizeof(int), compare);
+  int** ans = (int**)malloc(10000 * sizeof(int*));
+  int* info = (int*)malloc(10000 * sizeof(int));
+  int* data = (int*)malloc(101 * sizeof(int));
+  int size = 0;
+  int* p_to_size = &size;
+  builder(candidates, candidatesSize, 0, target, ans, p_to_size, info, data, 0);
+  *returnSize = size;
+  *returnColumnSizes = info;
+  return ans;
+}

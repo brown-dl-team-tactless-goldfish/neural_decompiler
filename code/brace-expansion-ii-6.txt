@@ -1,0 +1,81 @@
+public class Solution
+{    
+    public IList<string> BraceExpansionII(string expression)
+    {
+        var currList = new List<String>() { "" };
+        var stack = new Stack<List<String>>();
+        var opStack = new Stack<char>();
+        char sign = '*';
+        foreach (char c in expression)
+        {
+            stack.Push(new List<String>(currList));
+            currList.Clear();
+            currList.Add("");
+            
+            if (c == '{' )
+            {
+                while (opStack.Count > 0 && opStack.Peek() != ','  && opStack.Peek() != '{')
+                    doOp(stack, opStack);
+                opStack.Push(sign);
+                opStack.Push('{');
+                sign = '*';
+            }
+            else if (c == '}') 
+            {
+                while (opStack.Peek() != '{')
+                    doOp(stack, opStack);
+                opStack.Pop();
+                opStack.Push(sign);
+                sign = '*';
+            }
+            else if (c == ',')
+            {
+                while (opStack.Count > 0 && opStack.Peek() != '{')
+                    doOp(stack, opStack);
+                opStack.Push(sign);
+                sign = ',';
+            }
+            else {
+                currList[0] = "" + c;
+                while (opStack.Count > 0 && opStack.Peek() != ','  && opStack.Peek() != '{')
+                    doOp(stack, opStack);
+                opStack.Push(sign);
+                sign = '*';
+            }
+        }
+        
+        stack.Push(currList);
+        while (opStack.Count > 0)
+            doOp(stack, opStack);
+        
+        List<String> res = stack.Pop();
+        res.Sort((a, b) => a.CompareTo(b));
+        return res;
+    }
+    
+
+    private List<String> multi(List<String> list1, List<String> list2) {
+        var res = new List<String>();
+        foreach (String s1 in list1) 
+            foreach (String s2 in list2)
+                res.Add(s1 + s2);
+        return res;
+    }
+    
+    private List<String> plus(List<String> list1, List<String> list2) {
+        var set = new HashSet<String>(list1);
+        set.UnionWith(list2);
+        return new List<String>(set);
+    }
+    
+    private void doOp(Stack<List<String>> stack, Stack<char> opStack) {
+        List<String> list2 = stack.Pop();
+        List<String> list1 = stack.Pop();
+        char c = opStack.Pop();
+        
+        if (c == ',') 
+            stack.Push(plus(list1, list2));
+        else 
+            stack.Push(multi(list1, list2));
+    }    
+}

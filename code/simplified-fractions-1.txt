@@ -1,0 +1,48 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+char* num_to_str(int num)
+{
+    char* ans = (char*)malloc(8*sizeof(char));
+    sprintf(ans, "%d", num);
+    return ans;
+}
+
+int get_gcd(int a, int b)
+{
+    int gcd = 1;
+
+    for (int i=1; i<=a && i<=b; i++)
+    {
+        if (a%i==0 && b%i==0)
+        {
+            gcd = i;
+        }
+    }
+    return gcd;
+}
+
+char ** simplifiedFractions(int n, int* returnSize){
+    char** result = (char**)malloc((n*(n+1)/2)*sizeof(char*));
+
+    int index = 0;
+    for (int den=2; den<=n; den++)
+    {
+        for (int num=1; num<den; num++)
+        {
+            if (num == den) {continue;}
+            char* x = (char* )malloc(8*sizeof(char));
+
+            if (get_gcd(num,den) != 1) {continue;}
+
+            strcpy(x,num_to_str(num));
+            strcat(x,"/");
+            strcat(x, num_to_str(den));
+            strcat(x, "\0");
+            result[index++] = x;
+        }
+    }
+    *returnSize = index;
+    return result;
+}

@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int findTheLongestSubstring(string s) {
+        unordered_map<int, int> dp, dp2;
+        vector<int> m(256, 0);
+        m['a'] = 0;
+        m['e'] = 1;
+        m['i'] = 2;
+        m['o'] = 3;
+        m['u'] = 4;
+        
+        dp[0] = 0;
+        int ans = 0;
+        int cnt = 0;
+        for (const auto c: s) {
+            if (c == 'a'|| c == 'e'|| c == 'i'|| c == 'o'|| c == 'u') {
+                dp2.clear();
+                for (const auto& kv: dp) {
+                    int mask = 1<<m[c];
+                    dp2[kv.first^mask] = kv.second+1+cnt;
+                }
+                dp = dp2;
+                cnt = 0;
+            } else {
+                cnt++;
+            }
+
+            ans = max(dp[0]+cnt, ans);
+        }
+        
+        return ans;
+    }
+};

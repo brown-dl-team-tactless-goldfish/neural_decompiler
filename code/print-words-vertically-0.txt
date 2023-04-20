@@ -1,0 +1,60 @@
+
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+// idx : how many words
+// max : the longest length of word
+
+char ** printVertically(char * s, int* returnSize){
+    int n = strlen(s);
+    int* word = malloc(n/2 * sizeof(int));
+    int idx = 0;
+    word[idx] = 0;
+    idx++;
+    int max = 0;
+    //find max and idx
+    for(int i = 0; i < n; i++){
+        if(s[i] == ' '){
+            word[idx] = i+1;
+            max = fmax(max, i - word[idx-1]) ;
+            idx++;
+        }
+    }
+    max = fmax(max, n - word[idx-1]);
+    
+    //build ans, default is ' '
+    char** ans = malloc(max * sizeof(char*)) ;
+    for(int i = 0 ;i < max; i++){
+        ans[i] = calloc((idx + 1) , sizeof(char)) ;  
+        memset(ans[i],' ', idx);
+        ans[i][idx] = '\0' ;
+    }
+    
+    //set each word
+    for(int i = 0; i < idx; i++){        
+        int p = word[i];
+        int row = 0;
+        while(s[p] != ' ' && p < n){
+            ans[row][i] = s[p];
+            row++;
+            p++;
+        }
+    }
+    
+    //for each row, from back to find the tail
+    for(int i = 0; i < max; i++){
+        int p = idx-1 ;
+        while(1){
+            if(ans[i][p] >= 'A' && ans[i][p] <= 'Z'){
+                ans[i][p+1] = '\0';
+                break;
+            }   
+            else
+                p--;
+        }
+    }
+    
+    *returnSize = max;
+    return ans;
+}

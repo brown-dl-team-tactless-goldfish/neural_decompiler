@@ -1,0 +1,33 @@
+int GetLength(struct ListNode* list)
+{
+	if (list->next == NULL) return 1;
+	return 1 + GetLength(list->next);
+}
+
+int* nextLargerNodes(struct ListNode* head, int* returnSize) {
+
+	struct ListNode* travel = head;
+	int len = GetLength(travel);
+	int index = 0;
+	int* arr = (int*)malloc(sizeof(int) * len);
+	while (travel != NULL)
+	{
+		struct ListNode* temp = travel->next;
+		while (temp != NULL)
+		{
+			if (temp->val > travel->val)
+			{
+				arr[index++] = temp->val;
+				break;
+			}
+			temp = temp->next;
+		}
+		if (temp == NULL)
+			arr[index++] = 0;
+
+		travel = travel->next;
+	}
+	*returnSize = index;
+	return arr;
+
+}

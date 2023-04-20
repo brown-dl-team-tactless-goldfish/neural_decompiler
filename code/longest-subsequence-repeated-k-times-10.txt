@@ -1,0 +1,46 @@
+class Solution {
+public:
+    
+    bool possible(vector<char>& valid, string &s, int k, int len){
+        int at = 0, cnt = 0;
+        for(auto &el : s){
+            if(el == valid[at]){
+                at++;
+                if(at==len) {cnt++; at=0;}
+                if(cnt==k) return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    
+    string longestSubsequenceRepeatedK(string s, int k) {
+        vector<char> valid;
+        unordered_map<char, int> count;
+        for(auto &ch : s) count[ch]++;
+        for(auto [ch, freq] : count) 
+            for(int times = k; times<=freq; times+=k) 
+                valid.push_back(ch);
+        
+        
+        if(valid.size()==0) return "";
+        
+        int MaxLen = valid.size();
+        for(int len=MaxLen; len>=1; --len){
+            sort(valid.begin(), valid.end(), greater<char>());
+            do{
+                if(possible(valid, s, k, len)){
+                    string ans = "";
+                    for(int i=0; i<len; ++i)
+                        ans += valid[i];
+                    return ans;
+                }
+            }while(prev_permutation(valid.begin(), valid.end()));
+        }
+        
+        
+        return "";
+    }
+};
+``

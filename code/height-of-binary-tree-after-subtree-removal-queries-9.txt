@@ -1,0 +1,29 @@
+class Solution {
+    unordered_map<int, int>height;
+    unordered_map<int, int>ans;
+    int dfs(TreeNode* root){
+        if(!root)return -1;
+        int val = root->val;
+        return height[val] = 1+max(dfs(root->left), dfs(root->right));
+    }
+    void dfs2(TreeNode* root, int up, int cur){
+        if(!root)return;
+        int val = root->val;
+        ans[val] = up;
+        int rig = cur+(root->right? height[root->right->val]+1 : 0);
+        int lef = cur+(root->left? height[root->left->val]+1 : 0);
+        dfs2(root->left, max(up, rig), cur+1);
+        dfs2(root->right, max(up, lef), cur+1);
+    }
+    
+public:
+    vector<int> treeQueries(TreeNode* root, vector<int>& queries) {
+        dfs(root);
+        dfs2(root, 0, 0);
+        vector<int>anss;
+        for(auto &q:queries){
+            anss.push_back(ans[q]);
+        }
+        return anss;
+    }
+};

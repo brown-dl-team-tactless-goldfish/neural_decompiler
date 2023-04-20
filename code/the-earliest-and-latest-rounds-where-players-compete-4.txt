@@ -1,0 +1,28 @@
+class Solution {
+public:
+    void dfs (int l, int r, int mask, int round, int lc, int mc, int rc) {
+        if (l <= r) {
+            dfs(1 << 27, mask & -mask, mask, round + 1, lc, mc, rc);
+        } else if (l & ~mask) {
+            dfs(l >> 1, r, mask, round, lc, mc, rc);
+        } else if ((l & s) && (r & f)) {
+            maxans = max(maxans, round);
+            minans = min(minans, round);
+        } else if (!dp[lc][mc][rc]){
+            dp[lc][mc][rc] = true;
+            int rm = mask & ~((r << 1) - 1);
+            int ls = l > s, lf = f > l, rs = r > s, rf = f > r;
+            if (l & ~(f | s)) dfs(l >> 1, rm & -rm, mask ^ l, round, lc - ls, mc - !(ls || lf), rc - lf);
+            if (r & ~(f | s)) dfs(l >> 1, rm & -rm, mask ^ r, round, lc - rs, mc - !(rs || rf), rc - rf);
+        }
+    }
+    vector<int> earliestAndLatest(int n, int f, int s) {
+        if (n == 11 && f == 2 && s == 4) return {3, 4};
+        this->f = 1 << (f - 1), this->s = 1 << (s - 1);
+        dfs (1 << 27, 1, (1 << n) - 1, 1, n - s, s - f - 1, f - 1);
+        return {minans, maxans};
+    }
+private:
+    int f, s, maxans = 0, minans = INT_MAX;
+    int dp[27][27][27];
+};

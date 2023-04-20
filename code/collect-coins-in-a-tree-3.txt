@@ -1,0 +1,38 @@
+class Solution {
+public:
+    int collectTheCoins(vector<int>& coins, vector<vector<int>>& edges) {
+        const int n = coins.size();
+        vector<set<int>> g(n);
+        for(auto& e:edges){
+            g[e[0]].insert(e[1]);
+            g[e[1]].insert(e[0]);           
+        }
+        bfsTrim(g, coins);
+        trimOnce(g);
+        trimOnce(g);
+        return max<int>(0, 2* count_if(g.begin(), g.end(), [](auto& st){return !st.empty();}) - 2);    
+    }
+
+    void bfsTrim(vector<set<int>>& g, const vector<int>& coin){
+        auto isLeaf = [&](int i){return g[i].size() == 1 && coin[i] == 0;};
+        queue<int> q;
+        for(int i=0;i<g.size();i++) if (isLeaf(i)) q.push(i);
+        while(!q.empty()){
+            auto i = q.front(); q.pop();
+            for(auto j:g[i]){
+                g[j].erase(i);
+                if(isLeaf(j)) q.push(j);
+            }
+            g[i].clear();
+        }
+    }
+
+    void trimOnce(vector<set<int>>& g){
+        vector<int> toTrim;
+        for(int i=0;i<g.size();i++) if(g[i].size() == 1) toTrim.push_back(i);
+        for(auto i : toTrim){
+            for(auto j:g[i]) g[j].erase(i);
+            g[i].clear();
+        }
+    }
+};

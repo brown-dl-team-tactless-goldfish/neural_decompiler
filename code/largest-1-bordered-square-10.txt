@@ -1,0 +1,66 @@
+class Solution {
+public:
+    int largest1BorderedSquare(vector<vector<int>>& grid) {
+        if (grid.empty())
+            return 0;
+        int m = grid.size(), n = grid.front().size();
+        vector<vector<int> > area(m, vector<int>(n,0));
+        for (int i = 0; i < m; ++i) { 
+            for (int j = 0; j < n; ++j) {
+                area[i][j] = grid[i][j];
+                if (i > 0) {
+                    area[i][j] += area[i-1][j];
+                }
+                if (j > 0) {
+                    area[i][j] += area[i][j-1];
+                }
+                if (i > 0 && j > 0) {
+                    area[i][j] -= area[i-1][j-1];
+                }
+            }
+        }
+        int res = -1;
+        for (int len = 0; len < min(m,n); ++len) {
+            for (int i = 0; i + len < m; ++i) {
+                for (int j = 0; j + len < n; ++j) {
+                    if (borderedSquare(grid, area, i, j, len)) {
+                        if (res < len) {
+                            res = len;
+                        }
+                    }                    
+                    
+                }
+            }
+            
+        } 
+        return res==-1? 0 : (res+1)*(res+1);
+    }
+    bool borderedSquare(vector<vector<int>>& grid, vector<vector<int>>& area, int i, int j, int len) {
+        if (len == 0) {
+            return grid[i][j];
+        } else if (len == 1) {
+            int area = grid[i][j]+grid[i+1][j]+grid[i][j+1]+grid[i+1][j+1];
+            return area == 4;            
+        }
+        else {
+            int aout = computeArea(area, i, j, i+len, j+len);
+            int ain  = computeArea(area, i+1, j+1, i+len-1, j+len-1);
+            int da   = aout - ain;
+            return da == 4 * len;
+        }                
+    }
+    int computeArea(vector<vector<int> >& area, int i0, int j0, int i1, int j1) {
+        int a1 = area[i1][j1];
+        int m = area.size(), n = area.front().size();
+        if (i0 > 0) {
+            a1 -= area[i0-1][j1];
+        }        
+        if (j0 > 0) {
+            a1 -= area[i1][j0-1];
+        }
+        if (i0 > 0 && j0 > 0) {
+            a1 += area[i0-1][j0-1];
+        }
+        return a1;
+    }    
+};

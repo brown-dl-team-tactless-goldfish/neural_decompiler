@@ -1,0 +1,131 @@
+/*
+
+Data structure Format
+ -- keylist[50] ---
+key0 : {values0-1, timestamps0-1} ->{values0-2, timestamps0-2} -> {values0-3, timestamps0-3} -> ...
+key1 : {values1-1, timestamps1-1} ->{values1-2, timestamps1-2} -> {values1-3, timestamps1-3} -> ... 
+key2 : {values2-1, timestamps2-1} ->{values2-2, timestamps2-2} -> {values2-3, timestamps2-3} -> ... 
+:
+:
+key49 : {values49-1, timestamps49-1} ->{values49-2, timestamps49-2} -> {values49-3, timestamps49-3} -> ... 
+
+int numofkey;
+
+*/
+typedef struct  Values{
+    char * values;
+    int timestamp;
+    struct Values * next;
+}Values;
+
+typedef struct Sets{
+    char* key;
+    Values* val;
+}Sets;
+
+typedef struct TimeMap{
+    Sets * keylist[50]; //roughly, set num of keys to 50  
+    int numofkey;
+} TimeMap;
+
+/** Initialize your data structure here. */
+
+TimeMap* timeMapCreate() {
+    TimeMap * obj = (TimeMap *)malloc(sizeof(TimeMap));
+    // memory initialize;
+    memset(obj->keylist,0,sizeof(struct Sets*)*50);
+    obj->numofkey=0;
+    return obj;
+}
+
+void timeMapSet(TimeMap* obj, char * key, char * value, int timestamp) {
+    bool found=false;
+    int i=0;
+    while(obj->keylist[i]){
+        if(strcmp(obj->keylist[i]->key,key)==0){
+            found=true;   
+            // there is same "key"
+            // add new value node if  value is different with last node's node
+            while (obj->keylist[i]->val->timestamp < timestamp){
+                if(obj->keylist[i]->val->next==NULL ){
+                    if(strcmp(obj->keylist[i]->val->values, value)!=0){
+                        obj->keylist[i]->val->next = (Values *)malloc(sizeof(Values));
+                        obj->keylist[i]->val->next->values = (Values *)calloc(strlen(value)+1,sizeof(char));           
+                        strcpy(obj->keylist[i]->val->next->values, value);               
+                        obj->keylist[i]->val->next->timestamp = timestamp;
+                        obj->keylist[i]->val->next->next=NULL;
+                    }
+                    break;
+                }
+                obj->keylist[i]->val = obj->keylist[i]->val->next;
+            }
+        }
+        if(found)break;
+        i++;
+    }
+    
+    // create new key node;
+    if(!found){
+        //key value
+        obj->keylist[i] = (Sets*)malloc(sizeof(Sets));
+        obj->keylist[i]->key=(char*)calloc(strlen(key)+1,sizeof(char));
+        strcpy(obj->keylist[i]->key, key); 
+        
+        //value& timestamp
+        obj->keylist[i]->val = (Values*)malloc(sizeof(Values));
+        obj->keylist[i]->val->values = (char*)calloc(strlen(value)+1,sizeof(char));
+        strcpy(obj->keylist[i]->val->values, value); 
+        obj->keylist[i]->val->timestamp = timestamp;
+        obj->keylist[i]->val->next = NULL;
+        
+        //increase total number of key node 
+        obj->numofkey +=1;
+    }
+}
+
+char * timeMapGet(TimeMap* obj, char * key, int timestamp) {
+  int i=0;
+    while(i<obj->numofkey){
+        if(strcmp(obj->keylist[i]->key,key)==0){
+            if(obj->keylist[i]->val->timestamp > timestamp)return "";
+            char * prev = obj->keylist[i]->val->values;
+            while(obj->keylist[i]->val->timestamp < timestamp && obj->keylist[i]->val->next != NULL ){
+                prev=obj->keylist[i]->val->values;
+                obj->keylist[i]->val = obj->keylist[i]->val->next;
+            }
+            if(obj->keylist[i]->val->timestamp == timestamp ||  obj->keylist[i]->val->next==NULL&&obj->keylist[i]->val->timestamp < timestamp )
+				return obj->keylist[i]->val->values;
+            return prev;
+            
+        }
+        i++;
+    }
+    return "";
+}
+
+void timeMapFree(TimeMap* obj) {
+    int i=0;
+    while(i<obj->numofkey){
+        Values* temp = obj->keylist[i]->val;
+        Values* temp1 = obj->keylist[i]->val->next;
+        while(temp){
+            free(temp->values);  // free allocated value's name memory
+            free(temp);          // free allocated linked list node  
+            temp=temp1;
+            if(temp=NULL)  temp1=temp->next;
+        }
+        free(obj->keylist[i]->key); // free allocated key's name memory
+        i++;
+    }
+    free(obj);
+}
+
+/**
+ * Your TimeMap struct will be instantiated and called as such:
+ * TimeMap* obj = timeMapCreate();
+ * timeMapSet(obj, key, value, timestamp);
+ 
+ * char * param_2 = timeMapGet(obj, key, timestamp);
+ 
+ * timeMapFree(obj);
+*/

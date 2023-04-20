@@ -1,0 +1,34 @@
+int min(int a, int b) {
+	return a < b ? a : b;
+}
+//dp[i][j]+min(d[i][j-1],d[i+1][j])=sum[i][j]
+bool stoneGame(int* piles, int pilesSize) {
+    int **d = (int **)malloc(sizeof(int *)*pilesSize);
+    int **sum = (int **)malloc(sizeof(int *)*pilesSize);
+    for(int i=0;i<pilesSize;++i){
+        d[i] = (int *)malloc(sizeof(int)*pilesSize);
+        sum[i] = (int *)malloc(sizeof(int)*pilesSize);
+        for(int j=0;j<pilesSize;++j){
+            if(i==j){
+                d[i][j]=piles[i];
+                sum[i][j]=piles[i];
+            }
+        }
+    }
+    int j;
+    for(int l=2;l<=pilesSize;++l){
+        for(int i=0;i<=pilesSize-l;++i){
+            j=i+l-1;
+            sum[i][j] = sum[i][j-1]+piles[j];
+            d[i][j] = sum[i][j]-min(d[i][j-1],d[i+1][j]);
+        }
+    }
+    bool result = (d[0][pilesSize - 1]*2 > sum[0][pilesSize-1]);
+    for(int i=0;i<pilesSize;++i){
+        free(d[i]);
+        free(sum[i]);
+    }
+    free(d);
+    free(sum);
+    return result;
+}

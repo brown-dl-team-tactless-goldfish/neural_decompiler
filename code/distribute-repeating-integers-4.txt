@@ -1,0 +1,26 @@
+class Solution {
+public:
+    bool canDistribute(vector<int>& A, vector<int>& Q) {
+        int cnt[1001]{}, m = Q.size();
+        unordered_set<int> keys;
+        for(auto e : A) {
+            cnt[e]++;
+            keys.insert(e);
+        }
+
+        sort(rbegin(Q), rend(Q));
+
+        function<bool(int)> dfs = [&](int t) {
+            if(t >= m) return true;
+            for(auto k : keys) {
+                if(cnt[k] >= Q[t]) {
+                    cnt[k] -= Q[t];
+                    if(dfs(t+1)) return true;
+                    cnt[k] += Q[t];
+                }
+            }
+            return false;
+        };
+        return dfs(0);
+    }
+};

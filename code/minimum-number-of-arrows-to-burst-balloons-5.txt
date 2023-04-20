@@ -1,0 +1,35 @@
+//sorting 2snd element is asscending order
+int second_element_asscend(const void** nums1, const void** nums2){
+    //copying the input 2d array elements to 1d array variable
+    int* array1 = *(int**)nums1;
+    int* array2 = *(int**)nums2;
+    //sorintg the 2nd elements 
+    if(array1[1] == array2[1]){
+        //sort based on the fist elemnt when 2nd elements are equal
+        if(array1[0] == array2[0]){return 0;}
+        else if(array1[0] > array2[0]){return 1;}
+        else{return -1;}
+    }
+    else{
+        //sort based on the second element
+        if(array1[1] > array2[1]){return 1;}
+        else{return -1;}
+    }
+}
+
+int findMinArrowShots(int** points, int pointsSize, int* pointsColSize){
+qsort(points,pointsSize,sizeof(int*),second_element_asscend);
+//end point of the first ballon
+int end_point_balloon = points[0][1];
+int num_arrows = 1;
+//iterate through balloon array
+for(int balloon = 0; balloon< pointsSize; balloon++){
+    //condtion to check if the start point of the balloon is greater than the end point of the current balloon
+    //this means we need another arrow to hit this balloon
+    if(points[balloon][0] > end_point_balloon){
+        end_point_balloon = points[balloon][1];
+        num_arrows++;
+    }
+}
+return num_arrows;
+}

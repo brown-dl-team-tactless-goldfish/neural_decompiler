@@ -1,0 +1,18 @@
+class Solution {
+public:
+    bool validPartition(vector<int>& nums) {
+		vector<int> valid(nums.size() + 1);
+        valid[0] = 1;
+        valid[2] = nums[0] == nums[1];
+        
+        for (int i = 3; i <= nums.size(); ++i) {
+            int a = nums[i - 3], b = nums[i - 2], c = nums[i - 1];
+            valid[i] |= valid[i - 2] && (b == c);
+            valid[i] |= valid[i - 3] && (a == b && b == c);
+            valid[i] |= valid[i - 3] && (a + 1 == b && b + 1 == c);
+        }
+        
+        return valid.back();
+	}
+
+};

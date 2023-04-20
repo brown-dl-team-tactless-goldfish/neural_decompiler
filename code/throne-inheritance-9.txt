@@ -1,0 +1,42 @@
+public class ThroneInheritance {
+private string kingName;
+private HashSet<string> deads;
+private Dictionary<string, List<string>> hm;
+private List<string> inheritanceOrder;
+public ThroneInheritance(string kingName) {
+    this.kingName = kingName;
+    deads = new HashSet<string>();
+    
+    hm = new Dictionary<string,List<string>>();
+}
+
+public void Birth(string parentName, string childName) {
+   if (!hm.ContainsKey(parentName)) 
+    {
+       List<string> list = new List<string>();
+       list.Add(childName);
+       hm.Add(parentName, list);
+    }
+   else {
+       var l = hm[parentName];
+       l.Add(childName);
+   }
+}
+
+public void Death(string name) {
+    deads.Add(name);
+}
+
+public void successor(string s) {
+    if(!deads.Contains(s)) inheritanceOrder.Add(s);
+    if (!hm.ContainsKey(s)) return;
+    foreach(string c in hm[s]) {
+        successor(c);
+    }
+}
+
+public IList<string> GetInheritanceOrder() {
+    inheritanceOrder = new List<string>();
+    successor(kingName);
+    return inheritanceOrder;
+}

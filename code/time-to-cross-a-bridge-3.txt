@@ -1,0 +1,62 @@
+class Solution {
+public:
+    int findCrossingTime(int n, int k, vector<vector<int>>& T) {
+        priority_queue<pair<int, int>> wait_l, wait_r, pick, put;
+        for(int i = 0; i < T.size(); i++) wait_l.push({T[i][0]+T[i][2], i});
+        int t = 0;
+        while(n > 0) {
+            if(!wait_r.empty()) {
+                auto p = wait_r.top(); wait_r.pop();
+                int idx = p.second;
+                t += T[idx][2];
+                put.push({-(t + T[idx][3]), idx});
+            } else if(!wait_l.empty()) {
+                auto p = wait_l.top(); wait_l.pop();
+                n--;
+                int idx = p.second;
+                t += T[idx][0];
+                pick.push({-(t + T[idx][1]), idx});
+            } else {
+                if(pick.empty()) {
+                    t = -put.top().first;
+                } else if(put.empty()) {
+                    t = -pick.top().first;
+                } else {
+                    t = min(-pick.top().first, -put.top().first);
+                }
+            }
+
+            //KEY: when time changes, we update the waiting queue
+            while(!pick.empty() && -pick.top().first <= t) {
+                auto p = pick.top(); pick.pop();
+                int idx = p.second;
+                wait_r.push({T[idx][0]+T[idx][2], idx});
+            }
+            while(!put.empty() && -put.top().first <= t) {
+                auto p = put.top(); put.pop();
+                int idx = p.second;
+                wait_l.push({T[idx][0]+T[idx][2], idx});
+            }
+        }
+
+        while(!wait_r.empty()) {
+            auto p = wait_r.top(); wait_r.pop();
+            int idx = p.second;
+            t += T[idx][2];
+            //put.push({t + T[idx][3], idx});
+            while(!pick.empty() && -pick.top().first <= t) {
+                auto p = pick.top(); pick.pop();
+                int idx = p.second;
+                wait_r.push({T[idx][0]+T[idx][2], idx});
+            }
+        }
+
+        while(!pick.empty()) {
+            auto p = pick.top(); pick.pop();
+            int idx = p.second;
+            t = max(t, -p.first);
+            t += T[idx][2];
+        }
+        return t;
+    }
+};

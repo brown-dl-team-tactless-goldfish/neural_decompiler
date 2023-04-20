@@ -1,0 +1,40 @@
+class Solution {
+public:
+    long long minimumDifference(vector<int>& nums) {
+       int t = nums.size();
+       int n = t/3;
+       priority_queue<int> l;
+       priority_queue<int, vector<int>, greater<int>> r;
+       vector<long long> v(t);
+       long long right = 0, left = 0;
+       long long ans = LLONG_MAX;
+       for(int i=t-1; i>=n; i--)
+       {
+          r.push(nums[i]);
+          right += nums[i];
+          if(r.size() > n)
+          {
+             right -= r.top();
+                  r.pop();
+          }
+          if(r.size() == n)
+                  v[i] = right;
+       }
+            
+      for(int i=0; i<t-n; i++)
+      {
+          l.push(nums[i]);
+          left += nums[i];
+           if(l.size() > n)
+           {
+             left -=l.top();
+             l.pop();
+           }
+           if(l.size() == n)
+           {
+             ans = min(ans, left - v[i+1]);
+           }
+      }
+            return ans;
+    }
+};

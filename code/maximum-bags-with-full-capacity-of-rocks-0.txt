@@ -1,0 +1,26 @@
+int cmp(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+int maximumBags(int* capacity, int capacitySize, int* rocks, int rocksSize, int additionalRocks){
+    int n = capacitySize;
+    int* leftCap = malloc(n * sizeof(int));
+    for(int i = 0; i < n; i++){
+        leftCap[i] = capacity[i] - rocks[i];
+    }
+    qsort(leftCap, n, sizeof(int), cmp);
+    int ans = 0;
+    int leftRocks = additionalRocks;
+    for(int i = 0; i < n; i++){
+        if(leftCap[i] == 0){
+            ans++;
+            continue;
+        }
+        leftRocks -= leftCap[i]; 
+        if(leftRocks < 0)
+            break;
+        else
+            ans++;
+    }
+    free(leftCap);
+    return ans;
+}

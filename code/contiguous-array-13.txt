@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int findMaxLength(vector<int>& nums) {
+        
+        int n = nums.size();
+        int c = 0;
+        unordered_map<int,int>track;    // track first index occurence of count 
+        
+        track[0] = -1;  // zero count index before 0 means -1
+        
+        int maxL = 0;   // max subarray length
+        
+        // loop through items and update count
+        for(int i=0;i<nums.size();i++)
+        {
+            if(nums[i])c++;
+            else c--;
+            
+            // if count found in the Map then get length and update Max Length
+            if(track.count(c)>0)maxL=max(maxL,i-track[c]);
+            else track[c]=i;    // otherwise udpate Map with count and index
+        }
+        
+        return maxL;
+    }
+};

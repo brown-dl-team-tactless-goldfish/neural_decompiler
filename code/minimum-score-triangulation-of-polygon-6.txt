@@ -1,0 +1,49 @@
+class Solution {
+public:
+    int minScoreTriangulation(vector<int>& A) {
+        long mask = (1L << A.size()) - 1;
+        unordered_map<long, int> cache;
+        return impl(A, mask, cache);
+    }
+    
+    static int impl(const vector<int>& A, long mask, unordered_map<long, int>& cache) {
+        if (mask == 0) {
+            return 0;
+        }
+        auto it = cache.find(mask);
+        if (it != cache.end()) {
+            return it->second;
+        }
+        
+        int ret = numeric_limits<int>::max();
+        int cnt = 0, base = 1;
+        long bits = 1;
+        long left = 0, right = mask;
+        for (int i = 0; i < A.size(); ++i, bits <<= 1) {
+            if (!(mask & bits)) {
+                continue;
+            }
+            if (cnt < 2) {
+                base *= A[i];
+                if (cnt == 1) {
+                    left |= bits;
+                    right &= ~bits;
+                } else {  // 0
+                    left &= ~bits;
+                }
+            } else {
+                left |= bits;
+                auto tmp = base * A[i] + impl(A, left, cache) + impl(A, right, cache);
+                ret = min(tmp, ret);
+                right &= ~bits;
+            }
+            ++cnt;
+        }
+        if (cnt < 3) {
+            ret = 0;
+        }
+        
+        cache.emplace(mask, ret);
+        return ret;
+    }
+};

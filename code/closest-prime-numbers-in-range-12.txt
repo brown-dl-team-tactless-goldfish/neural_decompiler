@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<int> closestPrimes(int left, int right) {
+        vector<bool> prime(right+1, true);
+        
+        // sieve of eratosthenes algorithm
+        for (int p = 2; p * p <= right; p++) 
+            if (prime[p] == true) 
+                for (int i = p * p; i <= right; i += p)
+                    prime[i] = false;
+        
+        vector<int> a;
+        if(left == 1) left++;   // if left = 1,we start left = 2
+        for(int i = left; i <= right; i++) 
+            if(prime[i]) a.push_back(i);
+    
+        
+        if(a.size() <= 1) return {-1, -1};  // no prime numbers in b/w left and right then return -1;
+        
+        int mn = INT_MAX;
+        
+        int f, s;
+        for(int i = 1; i < a.size(); i++) 
+            if(a[i] - a[i-1] < mn) {
+                f = a[i-1], s = a[i];
+                mn = a[i] - a[i-1];
+            }
+       
+        return {f, s};
+    }
+};

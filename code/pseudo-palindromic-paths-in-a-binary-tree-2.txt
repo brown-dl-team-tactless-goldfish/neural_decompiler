@@ -1,0 +1,43 @@
+void check(struct TreeNode* root, int* number, int* ans, int deep){
+    number[root->val]++;
+    if (root->left == NULL){
+        if (root->right == NULL){
+            if ((deep&1) == 1){
+                int count = 1;
+                for (int i = 1 ; i < 9 ; i++){
+                    if ((number[i]&1) == 1){
+                        count--;
+                        if (count < 0){
+                            number[root->val]--;
+                            return;
+                        }
+                    }
+                }                
+            } else {
+                for (int i = 1 ; i < 9 ; i++){
+                    if ((number[i]&1) == 1){
+                        number[root->val]--;
+                        return;
+                    }
+                }
+            }              
+            *ans += 1;
+        } else {
+            check(root->right, number,ans, deep+1);
+        }
+    } else {
+        check(root->left, number,ans, deep+1);
+        if (root->right != NULL){
+            check(root->right, number,ans, deep+1);
+        }
+    }
+    number[root->val]--;
+    return;
+}
+
+int pseudoPalindromicPaths (struct TreeNode* root){
+    int number[10] = {0};
+    int ans = 0;
+    check(root, number, &ans, 1);
+    return ans;
+}

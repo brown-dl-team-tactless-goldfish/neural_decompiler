@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<vector<string>> displayTable(vector<vector<string>>& orders) {
+        map<int, int> tables;
+        map<string, int> dishes;
+        for (auto p:orders){
+            tables[stoi(p[1])] = 1;
+            dishes[p[2]] = 1;
+        }
+        vector<vector<string>> res(tables.size()+1, vector<string>(dishes.size()+1, "0"));
+        int count = 0;
+        for (auto& p:tables){
+            p.second = ++count;
+            res[count][0] = to_string(p.first);
+        }
+        count = 0;
+        for (auto& p:dishes){
+            p.second = ++count;
+            res[0][count] = p.first;
+        }
+        res[0][0] = "Table";
+        for (auto o:orders){
+            int table = stoi(o[1]);
+            res[tables[table]][dishes[o[2]]] = to_string(stoi(res[tables[table]][dishes[o[2]]])+1);
+        }
+        return res;
+    }
+};

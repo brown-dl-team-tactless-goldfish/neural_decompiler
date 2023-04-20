@@ -1,0 +1,52 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+int counter;
+
+int longestUnivaluePath(struct TreeNode* root){
+
+   counter = 0;
+    performDFS(root);
+    return counter;
+    
+}
+
+int performDFS(struct TreeNode* root){
+
+   if(root == NULL){
+    return 0; 
+   }
+    
+    
+    int left = performDFS(root->left); //left count 
+    int right =  performDFS(root->right); //right count
+    
+    int x = 0;
+    int y = 0;
+    int flag = 0;
+    
+    if(root->left != NULL && root->left->val == root->val){
+        x += left + 1;
+     
+    }
+     if(root->right != NULL && root->right->val == root->val){
+       y += right +1;
+       
+    }
+    counter = max(counter, x+y);
+    
+    return max(x, y);
+    
+}
+
+int max(int num1, int num2)
+{
+    return (num1 > num2 ) ? num1 : num2;
+}
+

@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int bestRotation(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> cnt(n+1, 0);
+		// For each number a at index i. In order to be counted as one, we need to move the number to the range of index [a, n-1].
+		// If the number is outside of this range, the count is 0.
+		// The idea is to calculate the range of move. [a, b]. When a <= move <= b, number a at index i will be moved to a position between  [a, n-1]. 
+        for(int i=0; i<n; ++i) {
+            int a = nums[i];
+            if(a <= i) {
+                cnt[0]++;
+                cnt[i-a+1]--;
+                if(i + 1 <= n-1) {
+                    cnt[i+1]++;
+                    cnt[n]--;
+                }
+            } else {
+                if(i + 1 <= n + i - a) {
+                    cnt[i+1]++;
+                    cnt[n+i-a+1]--;
+                }
+            }
+        }
+        
+        int ans = 0, mx = 0, cur = 0;
+        for(int k=0; k<n; k++) {
+            cur += cnt[k];
+            if(cur > mx) {
+                ans = k;
+                mx = cur;
+            }
+        }
+        return ans;
+    }
+};

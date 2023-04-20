@@ -1,0 +1,33 @@
+class Solution {
+public:
+    vector<vector<string>> displayTable(vector<vector<string>>& orders) {
+        map<int, vector<string>> tableOrders; // table specific food items
+        set<string> foodItems; // set of all the food items ordered across all table
+        vector<vector<string>> result;
+        
+        for (auto& order : orders) {
+            string table = order[1];
+            string food = order[2];            
+            tableOrders[stoi(table)].push_back(food);
+            foodItems.emplace(food);
+        }
+        
+        vector<string> food{begin(foodItems), end(foodItems)};
+        food.insert(begin(food), "Table");
+        result.push_back(food); // insert the table header
+        
+        vector<string> row;
+        for (auto& [table, foods] : tableOrders) {
+            row.push_back(to_string(table));
+            sort(begin(foods), end(foods));
+            for (const auto& food : foodItems) {  // count each food item for the current table
+                int c = count (begin(foods), end(foods), food);
+                row.push_back(to_string(c));
+            }
+            result.push_back(row); // insert table specific data to result
+            row.clear();
+        }
+        
+        return result;
+    }
+};

@@ -1,0 +1,58 @@
+class Solution {
+    const int MOD = 1e9+7;
+    int m, n;
+    vector<vector<vector<int>>> dp;
+    int helper(int maxMove, int startRow, int startColumn) {
+        //cout << "move, x, y = " << maxMove << ", " << startRow << ", " << startColumn << endl;
+        if (maxMove==0) { 
+            if (startRow<0 || startRow>=m || startColumn<0 || startColumn>=n)
+                return 1;
+            else
+                return 0;
+        }
+        if (dp[maxMove][startRow][startColumn]!=-1)
+            return dp[maxMove][startRow][startColumn];        
+        int retVal = 0, north=0, west=0, south=0, east=0;
+        if (startRow==0) 
+            retVal = (retVal + 1) % MOD;
+        if (startRow==m-1) 
+            retVal = (retVal + 1) % MOD;
+        if (startColumn==0) 
+            retVal = (retVal + 1) % MOD;        
+        if (startColumn==n-1) 
+            retVal = (retVal + 1) % MOD;  
+        
+        if (startColumn-1>=0) {
+            west = helper(maxMove-1, startRow, startColumn-1);
+            retVal = (retVal + west) % MOD;
+        }
+        if (startColumn+1<n) {
+            east = helper(maxMove-1, startRow, startColumn+1);
+            retVal = (retVal + east) % MOD;
+        }
+        if (startRow-1>=0) {
+            north = helper(maxMove-1, startRow-1, startColumn);
+            retVal = (retVal + north) % MOD;
+        }        
+        if (startRow+1<m) {
+            south = helper(maxMove-1, startRow+1, startColumn);
+            retVal = (retVal + south) % MOD;
+        }
+        //cout << "move, r, c = " << maxMove << ", " << startRow << ", " << startColumn << endl;
+        //cout << "retVal = " << retVal << endl;
+        dp[maxMove][startRow][startColumn] = retVal;
+        return retVal;        
+    }
+public:
+    int findPaths(int m_, int n_, int maxMove, int startRow, int startColumn) {
+        m = m_; n = n_;
+        dp.resize(maxMove+1);
+        for (int i=0; i<maxMove+1; i++) {
+            dp[i].resize(m);
+            for (int j=0; j<m; j++) {
+                dp[i][j].resize(n, -1);
+            }
+        }     
+        return helper(maxMove, startRow, startColumn);
+    }
+};

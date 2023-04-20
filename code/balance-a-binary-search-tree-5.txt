@@ -1,0 +1,48 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+
+int arr[10000];
+int pos = 0;
+
+struct TreeNode* new_node (int val)
+{
+    struct TreeNode* temp = (struct TreeNode*) malloc (sizeof(struct TreeNode));
+    temp->left = NULL;
+    temp->right = NULL;
+    temp->val = val;
+    return temp;
+}
+
+void traverse (struct TreeNode* r)
+{
+    if (!r)
+        return;
+    traverse (r->left);
+    arr[pos] = r->val;
+    pos++;
+    traverse (r->right);
+}
+
+struct TreeNode* tree (int *a, int len)
+{
+    if (len < 1)
+        return NULL;
+    int m = len / 2;
+    struct TreeNode* temp = new_node (a[m]);
+    temp->left = tree (&a[0], m);
+    temp->right = tree (&a[m+1], len - (m + 1));
+    return temp;
+}
+
+struct TreeNode* balanceBST(struct TreeNode* root)
+{
+    pos = 0;
+    traverse (root);
+    return tree (arr, pos);
+}

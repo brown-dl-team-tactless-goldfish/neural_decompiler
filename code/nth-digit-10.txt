@@ -1,0 +1,34 @@
+int findNthDigit(int n){
+        long digits_passed = 9;
+        long digits_count = 1;
+        long current_count = 0;
+        long running_number = 0;
+        long prev = 0;
+        long diff, add, remainder;
+        if(n <= 9)
+                return n;
+        while((current_count+ digits_passed*digits_count) < n){
+                current_count += digits_passed*digits_count;
+                digits_count++;
+                digits_passed *= 10;
+                running_number += (digits_passed/10);
+        }
+        diff = (n - current_count);
+        if(diff % digits_count == 0){
+                running_number += (diff/digits_count);
+                return running_number%10;
+        }
+        else
+        {
+                prev = diff;
+                diff += (digits_count - diff % digits_count);
+                running_number += (diff/digits_count);
+                prev = (prev % digits_count);
+                digits_count = digits_count - prev;
+                while(digits_count--)
+                        running_number /= 10;
+                return running_number%10;
+        }
+        return -1;
+
+}

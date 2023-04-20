@@ -1,0 +1,43 @@
+struct ListNode* insertionSortList(struct ListNode* head){
+    if(head==NULL||head->next==NULL)
+        return head;
+    struct ListNode *cur=head->next,*next=cur->next,*start=head,*tmp=start,*pre;
+    bool flag=false;
+    head->next=NULL;
+    while(cur)
+    {
+        if(start->val>=cur->val)    //if current node is minimum, insert it at the head of list.
+        {
+            cur->next=start;
+            start=cur;
+        }
+        else                        
+        {
+            pre=start;
+            tmp=start->next;
+            while(tmp)
+            {
+                if(cur->val<=tmp->val)
+                {
+                    flag=true;
+                    pre->next=cur;
+                    cur->next=tmp;
+                    break;
+                }
+                pre=tmp;
+                tmp=tmp->next;
+            }
+            if(!flag)
+            {
+                pre->next=cur;
+                cur->next=NULL;
+            }
+        }
+        flag=false;
+        cur=next;
+        if(cur)
+        next=cur->next;
+
+    }
+    return start;
+}

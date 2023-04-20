@@ -1,0 +1,38 @@
+public class Solution
+{
+    public int[] AvoidFlood(int[] rains) 
+    {
+        var zeros = new List<int>();
+        var prev = new Dictionary<int, int>();
+        var result = Enumerable.Repeat(-1, rains.Length).ToArray();
+        
+        for(int i = 0; i < rains.Length; i++)
+        {
+            var lake = rains[i];
+            if(rains[i] == 0)
+            {
+                zeros.Add(i);
+                result[i] = 1;
+            }
+            else
+            {
+                if(!prev.ContainsKey(lake))
+                    prev[lake] = i;
+                else
+                {
+                    var prevIndex =  prev[lake];
+                    var index = zeros.BinarySearch(prevIndex + 1);
+                    if(index < 0)
+                        index = ~index;
+                    if(index == zeros.Count)
+                        return new int[0];
+                    prev[lake] = i;
+                    result[zeros[index]] = lake;
+                    zeros.RemoveAt(index);
+                }
+            }
+        }
+        
+        return result;
+    }
+}

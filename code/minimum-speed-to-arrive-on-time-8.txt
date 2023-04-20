@@ -1,0 +1,25 @@
+class Solution 
+{
+    public:
+    bool check(vector<int>& dist,int speed,double hour)
+    {
+        double result=0;
+        int n=dist.size();
+        for(int i=0;i<n-1;i++) result+=ceil((double)dist[i]/(double)speed);
+        
+        result+=double(dist[n-1]/(double)speed);
+        return result<=hour;
+    }
+    int minSpeedOnTime(vector<int>& dist, double hour) 
+    {
+        int p1=1,p2=10000001;
+        while(p1<p2)
+        {
+            int middle=p1+(p2-p1)/2;
+            if(check(dist,middle,hour)) p2=middle;
+            else p1=middle+1;
+        }
+        if(p2==10000001) return -1;
+        return p1;
+    }
+};

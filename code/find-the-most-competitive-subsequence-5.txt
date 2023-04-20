@@ -1,0 +1,19 @@
+    vector<int> mostCompetitive(vector<int>& nums, int k) {
+        const int n = nums.size();
+        priority_queue<pair<int,int>> q;
+        int i = 0, pre = -1;
+        for(; i+k<=n; i++) q.push(pair{-nums[i], -i});
+        vector<int> res;
+        while(k){
+            auto [x, j] = q.top(); q.pop();
+            x = -x, j = -j;
+            if(j > pre){
+                pre = j;
+                res.push_back(x);
+                k--;
+                if(i<n) q.push(pair{-nums[i], -i});
+                i++;
+            }
+        }
+        return res;
+    }

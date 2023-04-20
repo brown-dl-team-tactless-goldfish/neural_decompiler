@@ -1,0 +1,99 @@
+class Encrypter {
+public:
+	class node{
+		public:
+		node* next[26];
+		bool isend;
+		node(){
+			for(int i=0; i<26; i++){
+				next[i] = nullptr;
+			}
+			isend = false;
+		}
+	};
+	class Trie {
+	public:
+
+		node* root = new node;
+		void insert(string word) {
+			node* temp = root;
+			for(int i=0; i<word.size(); i++){
+				char c = word[i];
+				if(temp->next[c - 'a'] == nullptr) temp->next[c-'a'] = new node;
+				temp = temp->next[c-'a'];
+			}
+			temp->isend = true;
+		}
+
+		bool search(string word) {
+			node* temp = root;
+			for(int i=0; i<word.size(); i++){
+				char c = word[i];
+				if(temp->next[c - 'a'] == nullptr) return false;;
+				temp = temp->next[c-'a'];
+			}
+			return temp->isend;
+		}
+
+	};
+	Trie t;
+	unordered_map<char,string> mp;
+	unordered_map<string, vector<char>> rmp;
+	unordered_map<string , bool> vis;
+	Encrypter(vector<char>& keys, vector<string>& values, vector<string>& dictionary) {
+		for(int i=0; i<keys.size(); i++){
+			mp[keys[i]] = values[i];
+			rmp[values[i]].push_back(keys[i]);
+		}
+		for(auto &w : dictionary){
+			vis[w] = true;
+			t.insert(w);
+		}
+	}
+
+	string encrypt(string word1) {
+		string str = "";
+		for(auto &c : word1){
+			str += mp[c];
+		}
+		return str;
+	}
+	int solve(int i, vector<vector<char>> &vt, node* temp){
+		if(i == vt.size()){
+			if(temp->isend) return 1;
+			return 0;
+		}
+		int ans = 0;
+		for(int j=0; j<vt[i].size(); j++){
+			if(temp->next[vt[i][j] - 'a'] != NULL){
+				ans += solve(i+1, vt, temp->next[vt[i][j] - 'a']);
+			}
+
+		}
+		return ans;
+
+	}
+	int decrypt(string word2) {
+		int n = word2.size();
+		vector<vector<char>> vt;
+		vector<char> prev;
+		if(n &1) return 0;
+		for(int i=0; i<n; i+=2){
+			string str = "";
+			str += word2[i];
+			str += word2[i+1];
+			if(rmp.count(str) == 0) return 0;
+			vt.push_back(rmp[str]);
+		}
+		node* temp = t.root;
+		int ans = solve(0, vt, temp);
+		return ans;
+	}
+};
+
+/**
+ * Your Encrypter object will be instantiated and called as such:
+ * Encrypter* obj = new Encrypter(keys, values, dictionary);
+ * string param_1 = obj->encrypt(word1);
+ * int param_2 = obj->decrypt(word2);
+ */

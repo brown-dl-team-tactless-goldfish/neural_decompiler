@@ -1,0 +1,37 @@
+class Solution {
+    int sumdigits(int n)
+    {
+        int sum = 0;
+        while(n != 0)
+        {
+            sum += n%10;
+            n = n/10;
+        }
+        return sum;
+    }
+public:
+    int maximumSum(vector<int>& nums) {
+        unordered_map<int, pair<int, int>> um;
+        for(int &num : nums)
+        {
+            int val = sumdigits(num);
+            if(!um.count(val))
+                um[val] = {num,0};
+            else
+            {
+                if(um[val].first > um[val].second)
+                    um[val].second = max(num, um[val].second);
+                else
+                    um[val].first = max(num, um[val].first);
+            }
+        }
+        int sum = -1;
+        for(auto &[fst, snd] : um)
+        {
+            if(snd.second == 0) continue;
+            int tmp = snd.first + snd.second;
+            sum = max(sum, tmp);
+        }
+        return sum;
+    }
+};

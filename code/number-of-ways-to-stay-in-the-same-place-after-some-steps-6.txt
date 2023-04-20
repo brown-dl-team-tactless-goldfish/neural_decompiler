@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int mod=1000000007;
+    int N;
+    int numWays(int steps, int arrLen) {
+        N=steps;
+        vector<vector<int>>dp(min(arrLen,steps/2+1),vector<int>(steps,-1));
+        long res=dfs(dp,0,0,min(arrLen,steps/2+1));
+        return (int)(res);
+    }
+    
+    long dfs(vector<vector<int>>&dp,int curpos,int step,int LEN){
+        if(curpos<0||curpos>=LEN)return 0;
+        if(step==N){
+            if(curpos==0)return 1;
+            return 0;
+        }
+        if(dp[curpos][step]!=-1){
+            return dp[curpos][step];
+        }
+        long res=0;
+        res+=dfs(dp,curpos+1,step+1,LEN);
+        res+=dfs(dp,curpos-1,step+1,LEN);
+        res+=dfs(dp,curpos,step+1,LEN);
+        res%=mod;
+        dp[curpos][step]=res;
+        return res;
+    }
+};

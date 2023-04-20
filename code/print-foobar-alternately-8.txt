@@ -1,0 +1,55 @@
+#include<pthread.h>
+#include<semaphore.h>
+#include<stdlib.h>
+#include<stdio.h>
+typedef struct {
+    int n;
+    sem_t foo;
+    sem_t bar;
+} FooBar;
+
+FooBar* fooBarCreate(int n) {
+    FooBar* obj = (FooBar*) malloc(sizeof(FooBar));
+    obj->n = n;
+    sem_init(&obj->foo,0,0);
+    sem_init(&obj->bar,0,1);
+    return obj;
+}
+
+void* foo(void* obj) {
+    FooBar* tmp=(FooBar*)obj;
+    for (int i = 0; i < tmp->n; i++) {
+        sem_wait(&tmp->bar);
+        // printFoo() outputs "foo". Do not change or remove this line.
+        printf("foo");
+        sem_post(&tmp->foo);
+    }
+}
+
+void* bar(void* obj) {
+    FooBar* tmp=(FooBar*)obj;
+    for (int i = 0; i < tmp->n; i++) {
+        sem_wait(&tmp->foo);
+        // printBar() outputs "bar". Do not change or remove this line.
+        printf("bar");
+        sem_post(&tmp->bar);
+    }
+}
+
+void fooBarFree(FooBar* obj) {
+    sem_destroy(&obj->foo);
+    sem_destroy(&obj->bar);
+    free(obj);
+}
+
+int main(){
+    int n;
+    scanf("%d",&n);
+    FooBar* obj=fooBarCreate(n);
+    pthread_t a,b;
+    pthread_create(&a,NULL,foo,obj);
+    pthread_create(&b,NULL,bar,obj);
+    pthread_join(a,NULL);
+    pthread_join(b,NULL);
+    return 0;
+}

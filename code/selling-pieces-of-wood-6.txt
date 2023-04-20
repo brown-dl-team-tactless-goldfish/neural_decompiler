@@ -1,0 +1,40 @@
+#define ll long long
+class Solution {
+public:
+    ll dp[201][201];
+	
+    ll solve(int m, int n, unordered_map<string,ll> &price){
+        if(m<=0 || n<=0) return 0;
+        if(dp[m][n] != -1) return dp[m][n];
+        
+        string key = to_string(m)+"#"+to_string(n);
+        
+        ll ans = 0;
+        if(price.find(key) != price.end()) ans = price[key];
+   
+        for(int i=1; i<=m/2; ++i){
+            ans = max(ans, solve(i,n,price) + solve(m-i,n,price));
+        }
+        
+        for(int j=1; j<=n/2; ++j){
+            ans = max(ans, solve(m,n-j,price) + solve(m,j,price));
+        }
+        
+        return dp[m][n] = ans;
+    }
+    
+    
+    long long sellingWood(int m, int n, vector<vector<int>>& prices) {
+
+        memset(dp,-1,sizeof(dp));
+        ll sz = prices.size();
+        unordered_map<string,ll> price;
+        
+        for(int i=0; i<sz; ++i){
+            string key = to_string(prices[i][0])+"#"+to_string(prices[i][1]);
+            price[key] = prices[i][2];
+        }
+        
+        return solve(m,n,price);
+    }
+};

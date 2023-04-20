@@ -1,0 +1,116 @@
+class Solution {
+public:
+     int arr[4]= {0,0,1,-1};
+    int brr[4]={1,-1,0,0};
+    bool chk (vector<vector<char>>& grid, int reachx,int reachy,int bx,int by,int sx,int sy)
+    {
+        
+        int r = grid.size();
+        int c = grid[0].size();
+        vector<vector<int>>vis(r,vector<int>(c,-1));
+        queue<pair<int,int>>qq;
+        qq.push({sx,sy});
+        vis[sx][sy] =1;
+       
+        while(qq.size()>0)
+        {
+            auto it = qq.front();
+            qq.pop();
+            int x = it.first;
+            int y=  it.second;
+            if(x==reachx && y==reachy)
+            { 
+                return true;
+            }
+            for(int i=0;i<4;i++)
+            {
+                int xx = x + arr[i];
+                int yy = y+brr[i];
+                if(xx>=0 && xx<r && yy>=0 && yy<c && vis[xx][yy]==-1 && grid[xx][yy]!='#'&& !(xx==bx&& yy==by))
+                {
+                    vis[xx][yy] = 1;
+                    qq.push({xx,yy});
+                }
+            }
+        }
+        return false;
+    }
+    int minPushBox(vector<vector<char>>& grid) 
+    {
+       int r = grid.size();
+       int c  = grid[0].size();
+        int box_x ;
+        int box_y;
+        int t_x;
+        int t_y;
+        int s_x;
+        int s_y;
+        for(int i=0;i<r;i++)
+        {
+            for(int j=0;j<c;j++)
+            {
+                if(grid[i][j]=='S')
+                {
+                    s_x  = i;
+                    s_y  = j;
+                }
+                else if(grid[i][j]=='B')
+                {
+                    box_x = i;
+                    box_y=j;
+                }
+                else if(grid[i][j]=='T')
+                {
+                    t_x = i;
+                    t_y = j;
+                }
+            }
+        }
+         grid[t_x][t_y]='.';
+        grid[s_x][s_y]='.';
+     
+        queue<vector<int>>q;
+        q.push({box_x,box_y,s_x,s_y});
+        set<vector<int>>stt;
+        int ans =  0;
+        
+        while(q.size()>0)
+        {
+            int si = q.size();
+            while(si--)
+            {
+            auto it = q.front();
+            q.pop();
+            int x = it[0];
+            int y = it[1];
+            int ssx = it[2];
+            int ssy = it[3];
+            if(x==t_x && y==t_y)
+            {
+                return ans;
+            }
+            for(int i=0;i<4;i++)
+            {
+                int xx_new = x + arr[i];
+                int yy_new = y +brr[i];
+                int sx = x-arr[i];
+                int sy = y-brr[i];
+                if(xx_new>=0 && xx_new<r && sx>=0 && sx<r && yy_new>=0 && yy_new<c && sy>=0 && sy<c && grid[xx_new][yy_new]!='#' && !stt.count({xx_new,yy_new,sx,sy}) )
+                { 
+                    bool chkk = chk(grid,sx,sy,x,y,ssx,ssy);
+                    if(chkk)
+                    {
+                        stt.insert({xx_new,yy_new,sx,sy});    
+                        q.push({xx_new,yy_new,sx,sy});
+                    }
+                }
+            }
+                
+            }
+            ans++;
+            
+        }
+        
+        return -1;
+    }
+};

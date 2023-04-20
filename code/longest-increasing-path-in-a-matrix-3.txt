@@ -1,0 +1,82 @@
+int dfs(int **matrix, int **rem, int row, int col, int x, int y) {
+    
+    
+    int ans = 1;
+    int curr;
+    
+    if(rem[x][y] != 0)
+        return rem[x][y];
+    
+    if (x + 1 < row && matrix[x+1][y] > matrix[x][y]) {
+    
+        curr = 1 + dfs(matrix, rem, row, col, x + 1, y);
+        if(ans < curr)
+            ans = curr;
+    }
+    
+    if (x - 1 >= 0 && matrix[x-1][y] > matrix[x][y]) {
+    
+        curr = 1 + dfs(matrix, rem, row, col, x - 1, y);
+        if(ans < curr)
+            ans = curr;
+    }
+    
+    if (y - 1 >= 0 && matrix[x][y - 1] > matrix[x][y]) {
+    
+        curr = 1 + dfs(matrix, rem, row, col, x, y - 1);
+        if(ans < curr)
+            ans = curr;
+    }
+    
+    if (y + 1 < col && matrix[x][y + 1] > matrix[x][y]) {
+    
+        curr = 1 + dfs(matrix, rem, row, col, x, y + 1);
+        if(ans < curr)
+            ans = curr;
+    }
+    
+    rem[x][y] = ans;
+    return ans;
+    
+}
+
+int longestIncreasingPath(int** matrix, int matrixSize, int* matrixColSize){
+    
+    int **rem;
+    
+    if(matrixSize == 0 || matrixColSize == 0)
+        return 0;
+    
+    int row = matrixSize;
+    int col = *matrixColSize;
+    int ans = 1;
+    
+    rem = malloc(sizeof(int *) * row);
+    
+    for(int i = 0; i < row; i++)
+        rem[i] = calloc(sizeof(int), col);
+        
+    for(int i = 0; i < row; i++) {
+        
+        for (int j = 0; j < col; j++) {
+            
+            
+            if (rem[i][j] == 0) {
+                
+                
+                dfs(matrix, rem, row, col, i, j);
+                
+            }
+            
+            if (ans < rem[i][j])
+                ans = rem[i][j];
+        }
+        
+    }
+
+    for(int i = 0; i < row; i++)
+        free(rem[i]);
+    free(rem);
+    
+    return ans;
+}

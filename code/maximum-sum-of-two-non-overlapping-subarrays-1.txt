@@ -1,0 +1,58 @@
+int maxSumTwoNoOverlap(int* A, int ASize, int L, int M){
+    int* bufferL = (int*)malloc((ASize-L+1)*sizeof(int));
+    int* bufferM = (int*)malloc((ASize-M+1)*sizeof(int));
+    int sumL=0, sumM=0;
+    int max = 0;
+    int i,j;
+    
+    for(i=0;i<ASize;i++)
+    {
+        if(i<L)
+            sumL += A[i];
+        else
+        {
+            bufferL[i-L] = sumL;
+            sumL += A[i];
+            sumL -= A[i-L];
+        }
+        
+        if(i<M)
+            sumM += A[i];
+        else
+        {
+            bufferM[i-M] = sumM;
+            sumM += A[i];
+            sumM -= A[i-M];
+        }
+    }
+    bufferL[i-L] = sumL;
+    bufferM[i-M] = sumM;
+    //printf("\n bufferL[%d]=%d",i-L,bufferL[i-L]);
+    //printf("\n bufferM[%d]=%d",i-M,bufferM[i-M]);
+    
+    for(i=0;i<=ASize-L-M;i++)
+    {
+        for(j=i+L;j<=ASize-M;j++)
+        {
+            if((bufferL[i]+bufferM[j]) > max)
+            {
+                max = bufferL[i]+bufferM[j];
+            }
+        }
+    }
+    
+    for(i=0;i<=ASize-L-M;i++)
+    {
+        for(j=i+M;j<=ASize-L;j++)
+        {
+            if((bufferM[i]+bufferL[j]) > max)
+            {
+                max = bufferM[i]+bufferL[j];
+            }
+        }
+    }
+    
+    free(bufferL);
+    free(bufferM);
+    return max;
+}

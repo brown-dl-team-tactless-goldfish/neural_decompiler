@@ -1,0 +1,34 @@
+public class Solution {
+    public int MaxRepOpt1(string text) {
+        List<(char key, int count)> groups = new List<(char key, int count)>();
+        Dictionary<char, int> total = new Dictionary<char, int>();
+
+        foreach (char c in text) {
+            if (groups.Count == 0 || groups[groups.Count - 1].key != c)
+                groups.Add((c, 1));
+            else 
+                groups[groups.Count - 1] = (groups[groups.Count - 1].key, groups[groups.Count - 1].count + 1);
+            
+            if (total.TryGetValue(c, out int count))
+                total[c] = count + 1;
+            else
+                total.Add(c, 1);
+        }    
+
+        if (total.Count <= 1)
+            return text.Length;
+
+        int result = 1;
+
+        for (int i = 0; i < groups.Count; ++i) {
+            int current = groups[i].count + 1;
+
+            if (i + 2 < groups.Count && groups[i + 1].count == 1 && groups[i + 2].key == groups[i].key) 
+                current += groups[i + 2].count;
+
+            result = Math.Max(Math.Min(current, total[groups[i].key]), result);
+        }
+
+        return result;
+    }
+}

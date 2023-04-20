@@ -1,0 +1,113 @@
+typedef long long int ll;
+class SegTree{
+    vector<ll> seg, sum;
+public:
+    SegTree(ll n){
+        seg.resize(4*n + 1);
+        sum.resize(4*n + 1);
+    }
+    void build(ll ind, ll low, ll high, vector<ll> &arr){
+        if(low == high){
+            seg[ind] = arr[low];
+            sum[ind] = arr[low];
+            return;
+        }
+        ll mid = (low + high) >> 1;
+        build(2*ind + 1, low, mid, arr);
+        build(2*ind + 2, mid + 1, high, arr);
+        seg[ind] = max(seg[2*ind + 1], seg[2*ind + 2]);
+        sum[ind] = sum[2*ind + 1] + sum[2*ind + 2];
+        
+    }
+    void update(ll ind, ll low, ll high, ll i, ll val, vector<ll> &arr){
+        if(low == high){
+            sum[ind] = val;
+            seg[ind] = val;
+            arr[low] = val;
+            return;
+        }
+        ll mid = (low + high) >> 1;
+        if(i <= mid){
+            update(2*ind + 1, low, mid, i, val, arr);
+        }else{
+            update(2*ind + 2, mid + 1, high, i, val, arr);
+        }
+        seg[ind] = max(seg[2*ind + 1], seg[2*ind + 2]);
+        sum[ind] = sum[2*ind + 1] + sum[2*ind + 2];
+    }
+    ll atleastx(ll ind, ll low, ll high, ll x, ll n){
+        if(seg[ind] < x){
+            return n;
+        }
+        if(low == high){
+            return low;
+        }
+        ll mid = (low + high) >> 1;
+        if(seg[2*ind+1] >= x){
+            return atleastx(2*ind + 1, low, mid, x, n);
+        }
+        return atleastx(2*ind + 2, mid + 1, high, x, n);
+    }
+    ll getsum(ll ind, ll low, ll high, ll l, ll r){
+        if(high < l || low > r){
+            return 0;
+        }
+        if(low >= l && r >= high){
+            return sum[ind];
+        }
+        ll mid = (low + high) >> 1;
+        return getsum(2*ind + 1, low, mid, l, r) + getsum(2*ind + 2, mid + 1, high, l, r);
+    }
+};
+
+class BookMyShow {
+    vector<ll> arr;
+    SegTree* st;
+    ll rows;
+    ll cols;
+    ll zero;
+public:
+    BookMyShow(ll n, ll m) {
+        arr.resize(n, m);
+        st = new SegTree(n);
+        st->build(0, 0, n-1, arr);
+        rows = n;
+        cols = m;
+        zero = 0;
+    }
+    
+    vector<ll> gather(ll k, ll maxRow) {
+        vector<ll> result;
+        ll index = st->atleastx(0, 0, rows-1, k, rows);
+        if(index > maxRow){
+            return result;
+        }
+        result.push_back(index);
+        result.push_back(cols - arr[index]);
+        st->update(0, 0, rows-1, index, arr[index] - k, arr);
+        return result;
+    }
+    
+    bool scatter(ll k, ll maxRow) {
+        ll sum = st->getsum(0, 0, rows-1, 0, maxRow);
+        if(sum < k){
+            return false;
+        }
+        while(k != 0){
+            ll mini = min(k, arr[zero]);
+            k -= mini;
+            st->update(0, 0, rows-1, zero, arr[zero] - mini, arr);
+            if(arr[zero] == 0){
+                zero++;
+            }
+        }
+        return true;
+    }
+};
+
+/**
+ * Your BookMyShow object will be instantiated and called as such:
+ * BookMyShow* obj = new BookMyShow(n, m);
+ * vector<int> param_1 = obj->gather(k,maxRow);
+ * bool param_2 = obj->scatter(k,maxRow);
+ */

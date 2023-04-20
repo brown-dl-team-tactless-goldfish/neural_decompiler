@@ -1,0 +1,54 @@
+  /*
+        we have to DeQueues -> max
+        we have to DeQueues -> min
+        
+        double ended queues where you can insert front and back...
+        
+        we store max and min
+        
+        if ever our max - min > limit than we have to move our left window 
+        
+        
+        right window - left = length just get maximum of that....
+        
+        
+        
+    */
+    public int LongestSubarray(int[] nums, int limit) {
+        
+        //two Dequeue
+        var maxQ = new LinkedList<int>();
+        var minQ = new LinkedList<int>();
+        
+        int l = 0, rslt = 1;
+        
+        //O(n) avg O(n^2) worst
+        //space O(n)
+        for(int r = 0; r < nums.Length; r++){
+            
+            //updating maximum queue
+            while(maxQ.Count > 0 &&  maxQ.Last.Value < nums[r]){
+                maxQ.RemoveLast();
+            }
+            
+            maxQ.AddLast(nums[r]);
+            
+            while(minQ.Count > 0 && minQ.Last.Value > nums[r]){
+                minQ.RemoveLast();
+            }
+            
+            minQ.AddLast(nums[r]);
+            
+            
+            while(maxQ.First.Value -  minQ.First.Value > limit ){
+                if(maxQ.First.Value == nums[l]) maxQ.RemoveFirst();
+                if(minQ.First.Value == nums[l]) minQ.RemoveFirst();
+                l++;
+            }
+            
+            rslt = Math.Max(rslt, r - l + 1);
+            
+        }
+        
+        return rslt;
+    }

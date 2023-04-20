@@ -1,0 +1,17 @@
+class Solution {
+public:
+    int findRadius(vector<int>& houses, vector<int>& heaters) {
+        sort(houses.begin(), houses.end()); 
+        sort(heaters.begin(), heaters.end()); 
+        int ans = 0; 
+        auto it = heaters.begin(); 
+        for (auto& x : houses) {
+            for (; it != heaters.end() && *it < x; ++it); 
+            int cand = INT_MAX; 
+            if (it != heaters.end()) cand = min(cand, *it - x); 
+            if (it != heaters.begin()) cand = min(cand, x - *prev(it)); 
+            ans = max(ans, cand); 
+        }
+        return ans; 
+    }
+};

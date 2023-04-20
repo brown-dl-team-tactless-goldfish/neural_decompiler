@@ -1,0 +1,71 @@
+
+class Solution {
+public:
+    vector<vector<int>> highestRankedKItems(vector<vector<int>>& grid, vector<int>& pricing, vector<int>& start, int k) {
+        int r = grid.size();
+        int c = grid[0].size();
+        
+        std::vector<std::vector<bool>> visited(r, std::vector<bool>(c, false));
+        std::vector<std::vector<int>> directions { { -1, 0 }, 
+                                                   { 1, 0 }, 
+                                                   { 0, -1}, 
+                                                   { 0, 1 } };
+        
+        std::vector<std::vector<int>> items;
+        std::queue<std::vector<int>> q;
+        q.push(std::vector<int> { start[0], start[1], 0 });
+        while (!q.empty()) {
+            auto cell = std::move(q.front());
+            q.pop();
+            
+            int i = cell[0];
+            int j = cell[1];
+            int d = cell[2];
+            if (visited[i][j])
+                continue;
+            
+            visited[i][j] = true;
+            
+            if (grid[i][j] >= pricing[0] && grid[i][j] <= pricing[1])
+                items.push_back(std::vector<int> { i, j, d, grid[i][j] });
+            for (const auto& direction : directions) {
+                int rr = i + direction[0];
+                int cc = j + direction[1];
+
+                if (rr >= 0 && rr < r && cc >= 0 && cc < c && !visited[rr][cc] && grid[rr][cc] != 0)
+                    q.push(std::vector<int> { rr, cc, d + 1 });
+            }
+        }
+        
+        std::sort(items.begin(), items.end(), [&start] (const std::vector<int>& a, const std::vector<int>& b) {
+            if (a[2] < b[2])
+                return true;
+            else if (b[2] < a[2])
+                return false;
+            else {
+                if (a[3] < b[3])
+                    return true;
+                else if (b[3] < a[3])
+                    return false;
+                else {
+                    if (a[0] < b[0])
+                        return true;
+                    else if (b[0] < a[0])
+                        return false;
+                    else
+                        return a[1] <= b[1];
+                }
+            }
+        });
+        
+        for (auto& item : items) {
+            item.pop_back();
+            item.pop_back();
+        }
+        
+        if (k < items.size())
+            items.erase(items.begin() + k, items.end());
+        
+        return items;
+    }
+};

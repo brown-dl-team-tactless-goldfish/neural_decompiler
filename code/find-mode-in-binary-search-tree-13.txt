@@ -1,0 +1,39 @@
+class Solution {
+public:
+    vector<int> findMode(TreeNode* root) {
+        vector<int> output;
+        if(root==NULL)
+            return output;
+        
+        unordered_map<int,int> frequency;
+        int max = INT_MIN;
+        int maxval = -1;
+        
+        queue<TreeNode*> pendingNodes;
+        pendingNodes.push(root);
+        
+        while(!pendingNodes.empty()){
+            TreeNode* curr = pendingNodes.front();
+            pendingNodes.pop();
+            frequency[curr->val]++;
+            
+            if(curr->left!=NULL)
+                pendingNodes.push(curr->left);
+            if(curr->right!=NULL)
+                pendingNodes.push(curr->right); 
+        }
+        
+        for(auto c:frequency){
+            if(c.second>=max){
+                max = c.second;
+            }
+        }
+        
+        for(auto c : frequency){
+            if(c.second==max)
+                output.push_back(c.first);
+        }
+        
+        return output;
+    }
+};

@@ -1,0 +1,32 @@
+class Solution
+{
+    public:  
+    
+    long long MOD = 1000000007;
+    unordered_map<int, unordered_map<int, int>> cache;
+    
+    int numRollsToTarget(int d, int f, int target)
+    {
+        if (target < d || target > d*f)
+            return 0;
+        
+        if (d == 1)
+            return (target<=f)? 1: 0;
+        
+        // If cached, return the result
+        if (cache[d].count(target))
+            return cache[d][target];
+        
+        int waysCount = 0;
+        for (int i=1; i<=f; i++)
+        {
+            waysCount = waysCount + numRollsToTarget(d-1, f, target-i);
+            waysCount = waysCount % MOD;
+        }
+        
+        // Cache the result
+        cache[d][target] = waysCount;
+        
+        return waysCount;
+    }
+};

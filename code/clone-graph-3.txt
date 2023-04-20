@@ -1,0 +1,105 @@
+'''
+struct he {
+    struct Node *key;
+    struct Node *val;
+    struct he *next;
+};
+
+struct ht {
+    struct he **table;
+};
+
+#define TSIZE 250
+
+struct ht * create_ht(void)
+{
+    struct ht *ht = calloc(sizeof(struct ht), 1);
+    ht->table = calloc(sizeof(struct he *), TSIZE);
+    return ht;
+}
+
+void insert_ht(struct ht *ht, struct Node *key, struct Node *val)
+{
+    int hkey = abs(key)%TSIZE;
+    struct he *he_tmp = ht->table[hkey];
+    struct he *he_new = calloc(sizeof(struct he), 1);
+    
+    he_new->key = key;
+    he_new->val = val;
+    
+    if (he_tmp == NULL) {
+        ht->table[hkey] = he_new;
+        return;
+    }
+    
+    while (he_tmp->next) {
+        if (he_tmp->key == key)
+            return;
+        he_tmp = he_tmp->next;        
+    }
+    
+    he_tmp->next = he_new;
+}
+
+bool is_present_ht(struct ht *ht, struct Node *key) 
+{
+    int hkey = abs(key)%TSIZE;
+    struct he *he_tmp = ht->table[hkey];
+    if (he_tmp == NULL)
+        return false;
+    while (he_tmp) {
+        if (he_tmp->key == key)
+            return true;
+    }
+    return false;
+}
+
+struct Node * find_ht(struct ht *ht, struct Node *key) 
+{
+    int hkey = abs(key)%TSIZE;
+    struct he *he_tmp = ht->table[hkey];
+    if (he_tmp == NULL)
+        return NULL;
+    while (he_tmp) {
+        if (he_tmp->key == key)
+            return he_tmp->val;
+    }
+    return NULL;
+}
+
+
+void create_copy(struct ht *ht, struct Node *s)
+{
+    struct Node *tmp;
+    if (s == NULL)
+        return;
+    if (is_present_ht(ht, s))
+        return;
+    tmp = calloc(sizeof(struct Node), 1);
+    insert_ht(ht, s, tmp);
+    for (int i = 0 ; i < s->numNeighbors; i++)
+        create_copy(ht, s->neighbors[i]);
+}
+
+void connect_graph(struct ht *ht, struct Node *s)
+{   struct Node *copy;
+    if (s == NULL)
+        return;
+    copy = find_ht(ht, s);
+    if (copy->neighbors != NULL)
+        return;
+    copy->val = s->val;
+    copy->numNeighbors = s->numNeighbors;
+    copy->neighbors = calloc(sizeof(struct Node *), s->numNeighbors);
+    for (int i = 0 ; i < s->numNeighbors; i++) {
+        copy->neighbors[i] = find_ht(ht, s->neighbors[i]);
+        connect_graph(ht, s->neighbors[i]);
+    }
+}
+
+struct Node *cloneGraph(struct Node *s) {
+    struct ht *ht = create_ht();
+	create_copy(ht, s);
+    connect_graph(ht, s);
+    return find_ht(ht, s);
+}'''

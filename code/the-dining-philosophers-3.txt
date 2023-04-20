@@ -1,0 +1,13 @@
+    void wantsToEat(int i,
+                    function<void()> pickLeftFork,
+                    function<void()> pickRightFork,
+                    function<void()> eat,
+                    function<void()> putLeftFork,
+                    function<void()> putRightFork) {        
+        unique_lock<mutex> lk1(mts[i], defer_lock), lk2(mts[(i+1) % 5], defer_lock); 
+        if(i == 1) lk1.lock(), lk2.lock();
+        else lk2.lock(), lk1.lock();                  
+        pickLeftFork(), pickRightFork(), eat(), putRightFork(), putLeftFork();
+    }
+    
+    vector<mutex> mts = vector<mutex>(5);

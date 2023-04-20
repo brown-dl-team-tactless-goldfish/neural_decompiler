@@ -1,0 +1,43 @@
+
+class Solution {
+public:
+    int minimumJumps(vector<int>& forb, int a, int b, int x) {
+        unordered_set<int> forbidden(begin(forb), end(forb));
+        
+        using State = pair<int, bool>;
+        
+        queue<State> q;
+        q.push({0, false});
+        
+        set<State> seen{{0, false}};
+        
+        int jumps = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            
+            for (int i = 0; i < size; ++i) {
+                auto [pos, isBackward] = q.front();
+                q.pop();
+
+                if (pos == x) {
+                    return jumps;
+                }
+                
+                // Go forward
+                if (!seen.count({pos + a, false}) && pos < 4000 && !forbidden.count(pos + a)) {
+                    seen.insert({pos + a, false});
+                    q.push({pos + a, false});
+                }
+                
+                // Go backward
+                if (!isBackward && pos - b > 0 && !seen.count({pos - b, true}) && !forbidden.count(pos - b)) {
+                    seen.insert({pos - b, true});
+                    q.push({pos - b, true});
+                }
+            }
+            ++jumps;
+        }
+        
+        return -1;
+    }
+};

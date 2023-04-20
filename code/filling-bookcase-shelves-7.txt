@@ -1,0 +1,40 @@
+class Solution {
+public:
+    int minHeightShelves(vector<vector<int>>& books, int shelf_width) {
+        // We need an array dp where dp[i] is the minimum height of books[:i].
+        // Also we need 2 variables, lastLevelWidth which is the the width of the last shelf, and lastLevelHeight
+        // which is the height of the last shelf. To get dp[i] here are the steps:
+        // 1) If books[i] can be put into the last shelf, add it, update dp[i];
+        // 2) Add books[i] to a new shelf, update dp[i];
+        // 3) Add books[i] and books[i - 1] to a new shelf, the new min height = dp[i - 2] + max(i_height, i-1_height);
+        // ... and so on until books[j:i] is greater than shelf_width. Among all those calculated heights, we choose the
+        // the minimum one and update lastLevelWidth/lastLevelHeight accordingly. 
+        int size = books.size(), lastLevelHeight = books[0][1], lastLevelWidth = books[0][0];
+        vector<int> dp(size, books[0][1]);
+        for (int i = 1; i < size; ++i)
+        {
+            int w = books[i][0], h = books[i][1], accuWidth = 0, maxHeight = 0;
+            dp[i] = INT_MAX;
+            
+            if (w + lastLevelWidth <= shelf_width)
+            {
+                dp[i] = dp[i - 1] + (lastLevelHeight >= h ? 0 : h - lastLevelHeight);
+                lastLevelHeight = h > lastLevelHeight ? h : lastLevelHeight;
+                lastLevelWidth += w;
+            }
+            
+            for (int j = i; j >= 0 && accuWidth + books[j][0] <= shelf_width; --j)
+            {
+                accuWidth += books[j][0];
+                maxHeight = max(maxHeight, books[j][1]);
+                
+                int height = (j > 0 ? dp[j - 1] : 0) + maxHeight;
+                dp[i] = height < dp[i] ? height : dp[i];
+                
+                lastLevelHeight = dp[i] == height ? maxHeight : lastLevelHeight;
+                lastLevelWidth = dp[i] == height ? accuWidth : lastLevelWidth;
+            }
+        }
+        return dp[size - 1];
+    }
+};

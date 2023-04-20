@@ -1,0 +1,28 @@
+int** matrixReshape(int** mat, int matSize, int* matColSize, int r, int c, int* returnSize, int** returnColumnSizes){
+    
+    if(matSize*matColSize[0] != r*c)
+    {
+        *returnSize = matSize;
+        *returnColumnSizes = matColSize;
+        return mat;
+    }
+    int * temp = (int *)malloc(matSize*matColSize[0]*sizeof(int));
+    int ** result = (int**)malloc(r*sizeof(int*));
+    int idx = 0;
+    for(int i=0; i<matSize; i++)
+        for(int j=0; j<matColSize[0]; j++)
+            temp[idx++] = mat[i][j];
+    idx = 0;
+    int * col = (int *)malloc(r*sizeof(int));
+    for(int i=0; i<r; i++)
+    {
+        result[i] = (int *)malloc(c*sizeof(int));
+        col[i] = c;
+        for(int j=0; j<c; j++)
+            result[i][j] = temp[idx++];
+    }
+    *returnColumnSizes = col;
+    *returnSize = r;
+    free(temp);
+    return result;
+}

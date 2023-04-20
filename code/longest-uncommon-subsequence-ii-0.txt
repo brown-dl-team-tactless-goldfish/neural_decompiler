@@ -1,0 +1,42 @@
+int cmpfunc(const void* a, const void* b){
+    char* A =  *(char**)a;
+    char* B =  *(char**)b;
+    return strlen(B) - strlen(A);
+}
+// if s1 is s2 subtring return true, else false
+bool checkSubStr(char* s1, char* s2){
+    int n1 = strlen(s1);
+    int n2 = strlen(s2);
+    int match = 0;
+    int p1 = 0, p2 = 0;
+    while(p2 < n2){
+        if(s1[p1] == s2[p2]){
+            match++;
+            if(match == n1)
+                return true;
+            p1++;
+        }
+        p2++;
+    }
+    
+    return false;
+}
+int findLUSlength(char ** strs, int strsSize){
+    
+    qsort(strs, strsSize, sizeof(char*), cmpfunc);
+    
+    for(int i = 0; i < strsSize; i++){
+        int count = 0;
+        int n1 = strlen(strs[i]);
+        for(int j = 0; j < strsSize; j++){
+            int n2 = strlen(strs[j]);
+            if(n1 > n2)
+                break;
+            if(checkSubStr(strs[i], strs[j]))
+                    count++;
+        }
+        if(count == 1)
+            return n1;
+    }
+    return -1;
+}

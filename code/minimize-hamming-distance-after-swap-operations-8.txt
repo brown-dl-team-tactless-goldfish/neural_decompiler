@@ -1,0 +1,83 @@
+// Approach - 
+// Consider graph of n(size of source vector) nodes
+// Consider the indices given for swap as edges between two nodes
+// Now find the connected components of a graph using DSU
+// Here edges between two nodes means that we can swap them 
+// So if a graph is connected then we can place any nodes->value to anywhere in the connected graph by swapping
+// So Form a group which consist of the values from the target vector
+// Now value will be taken only from that index in target that will be in pur connected component
+// Now check for each index of our connected compnent if the value in source vector in in our group or not
+// if it is not then increement our answer count otherwise decoreement the target value count
+
+
+class Solution {
+public:
+    int find(int u, vector<int> &parent)
+    {
+        if(parent[u] == u)
+            return u;
+        return parent[u] = find(parent[u], parent);
+    }
+    
+    void dsu_union(int u, int v, vector<int> &parent, vector<int> &rank)
+    {
+        u = find(u, parent);
+        v = find(v, parent);
+        
+        if(u != v)
+        {
+            if(rank[u] > rank[v]) parent[v] = u;
+            else if(rank[v] > rank[u]) parent[u] = v;
+            else{
+                parent[v] = u;
+                rank[u]++;
+            }
+        }
+    }
+    
+    int minimumHammingDistance(vector<int>& source, vector<int>& target, vector<vector<int>>& allowedSwaps){
+        int n = source.size();
+        vector<int> parent(n);
+        vector<int> rank(n,0);
+        for(int i=0; i<n; i++) parent[i] = i;
+        
+        for(auto edge:allowedSwaps)
+        {
+            int u = edge[0];
+            int v = edge[1];
+            
+            dsu_union(u, v, parent, rank);
+        }
+        
+        unordered_map<int, vector<int>> mp;
+        for(int i=0; i<n; i++)                      //Finding all the connected component of graph
+        {
+            mp[find(i, parent)].push_back(i);  //{parent --> {vector of all nodes in a connected component}}
+        }
+        
+        int ans = 0;
+        for(auto &comp:mp)
+        {
+            unordered_map<int, int> group;
+            
+            //Put all the elements of a connected component from target vector into a map
+            for(auto i:comp.second)         
+                group[target[i]]++;
+            
+            //Now check if elements from the source is in the group that you formed from target
+            for(auto i:comp.second)
+            {
+                if(group[source[i]])
+                {   
+                    //Here we are decrementing count in group b/c same element can be repeated in source vertex
+                    group[source[i]]--;     
+                }
+                else{
+                    ans++;
+                }
+            }
+        }
+        
+        return ans;
+    }
+};

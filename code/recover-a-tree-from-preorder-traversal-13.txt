@@ -1,0 +1,41 @@
+class Solution {
+public:
+    TreeNode* recoverFromPreorder(string S) {
+        const auto v = parse(S);
+        auto it = v.cbegin();
+        return construct(0, it, v.end());
+    }
+    
+    using Iter = vector<pair<int,int>>::const_iterator;    
+    TreeNode* construct(int curDepth, Iter& it, Iter end){
+        if(it == end || it->first != curDepth) return nullptr;
+        auto root = new TreeNode(it->second);
+        ++it;
+        root->left = construct(curDepth + 1, it, end);
+        root->right = construct(curDepth + 1, it, end);
+        return root;
+    }
+    
+    vector<pair<int,int>> parse(string& S){
+        vector<pair<int,int>> v; //{depth, val}
+        int depth = 0;
+        int num = 0;
+        S.push_back('-');
+        for(auto c:S){
+            if(c == '-'){
+                if(num > 0)
+                {
+                    v.emplace_back(depth, num);
+                    num = 0;
+                    depth = 0;
+                }
+                depth++;
+            } 
+            else{
+                num = num*10 + c-'0';
+                depth == 0;
+            }                 
+        }
+        return v;
+    }
+};

@@ -1,0 +1,47 @@
+typedef struct {
+    int size ;
+    int *sumPrefix;
+} Solution;
+
+
+Solution* solutionCreate(int* w, int wSize) {
+   Solution *s = (Solution *) malloc (sizeof(Solution));
+   s->sumPrefix = (int *) malloc (sizeof(int)*wSize);
+   int sum = 0;
+    s->size = wSize ;
+   // find the prefix sum for the range , assumtion ios that w array is in sorted order.
+   for (int i=0 ; i < wSize ; i++) {
+       sum = sum + w[i];
+       s->sumPrefix[i] = sum;
+   }
+   return (Solution *) s;
+}
+
+int solutionPickIndex(Solution* obj) {
+   int l = 0;
+   int h = obj->size  ;
+   int ran = rand() % obj->sumPrefix[h-1];
+   int m = 0;
+   while (l < h) {
+      m = l + (h - l) /2 ;
+      if (ran < obj->sumPrefix[m]) {
+          h = m ;
+      } else {
+          l = m + 1;
+      }
+   }
+   return l ;    
+}
+
+void solutionFree(Solution* obj) {
+    free (obj->sumPrefix);
+    free (obj);
+}
+
+/**
+ * Your Solution struct will be instantiated and called as such:
+ * Solution* obj = solutionCreate(w, wSize);
+ * int param_1 = solutionPickIndex(obj);
+ 
+ * solutionFree(obj);
+*/

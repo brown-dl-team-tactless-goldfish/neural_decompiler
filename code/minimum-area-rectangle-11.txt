@@ -1,0 +1,25 @@
+int minAreaRect(vector<vector<int>>& points) {
+        unordered_map<int, unordered_set<int>> checker; // map key: x; value: ys
+        for (auto& row : points)
+            checker[row[0]].insert (row[1]);
+        int ret = INT_MAX;
+        // ab, cd -> ad, cb
+        for (unsigned i = 0; i < points.size (); ++i)
+        {   
+            vector<int> ab = points[i];
+            int a = ab[0];
+            int b = ab[1];
+            for (unsigned j = i + 1; j < points.size (); ++j) 
+            {
+                vector<int> cd = points[j];
+                int c = cd[0];
+                int d = cd[1];
+                if (a == c || b == d) continue;
+                if (checker[a].find (d) != checker[a].end ()) // found
+                    if (checker[c].find (b) != checker[c].end ()) 
+                        ret = min (ret, abs ((c-a) * (b-d)));
+            }
+        }
+        return ret == INT_MAX ? 0 : ret;
+    }
+	```

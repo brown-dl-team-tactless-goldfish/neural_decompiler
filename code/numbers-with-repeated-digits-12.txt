@@ -1,0 +1,37 @@
+class Solution {
+public:
+    
+    int n;
+    vector<int> v;
+    int dp[11][1025][2][2];
+    
+    int util(int i, int mask, int works, int less, int start){
+        if(i>=n){
+            if(works) return 1;
+            else return 0;
+        }
+        if(dp[i][mask][works][less]!=-1) return dp[i][mask][works][less];
+        int lim=less?9:v[i], ans=0;
+        if(start){
+            for(int dig=0; dig<=lim; dig++)
+                ans+=util(i+1, mask|(1<<dig), works|((mask>>dig)&1), less|(dig<v[i]), 1);
+        }
+        else{
+            for(int dig=1; dig<=lim; dig++)
+                ans+=util(i+1, mask|(1<<dig), works|((mask>>dig)&1), less|(dig<v[i]), 1);
+            ans+=util(i+1, mask, works, 1, 0);
+        }
+        return dp[i][mask][works][less]=ans;
+    }
+    
+    int numDupDigitsAtMostN(int N) {
+        while(N){
+            v.push_back(N%10);
+            N/=10;
+        }
+        reverse(v.begin(), v.end());
+        n=v.size();
+        memset(dp, -1, sizeof(dp));
+        return util(0, 0, 0, 0, 0);
+    }
+};

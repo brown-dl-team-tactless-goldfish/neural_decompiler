@@ -1,0 +1,18 @@
+int cmp(const void* a, const void* b) {
+    return *(const int*) a - *(const int*) b;
+}
+
+int findBestValue(int* arr, int arrSize, int target) {
+    qsort(arr, arrSize, sizeof(int), cmp);
+    
+    int idx, sum = 0, tmp = 0;
+    for(idx = 0; idx < arrSize; ++idx) {
+        sum = tmp + arr[idx] * (arrSize - idx);
+        if(sum > target) break;
+        tmp += arr[idx];
+    }
+    if(idx == arrSize) return arr[arrSize-1];
+    int res = target - tmp;
+    int a = res / (arrSize - idx), b = a + 1;
+    return (res - a * (arrSize - idx) <= b * (arrSize - idx) - res) ? a : b;
+}

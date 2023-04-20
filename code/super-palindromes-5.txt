@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int superpalindromesInRange(string L, string R) {
+        int res = 0;
+        const long left = stol(L);
+        const long right = stol(R);
+        dfs("", left, right, res);
+        for(char c='0'; c<='9';c++) dfs(string(1,c), left, right, res);
+        return res;
+    }
+    
+private:
+    void dfs(string cur, const long left, const long right, int& res){
+        if(cur.size() > 9) return;
+        if(!cur.empty() && cur[0] !='0'){
+            long num = stol(cur);
+            num *= num;
+            if(num > right) return;
+            if(num >= left && isPalindrome(num)) ++res;
+        }
+        
+        for(char c='0'; c<='9'; c++) dfs(c + cur + c, left, right, res);        
+    }
+    
+    bool isPalindrome(const long num){
+        const string numStr = to_string(num);
+        for(int l = 0, r = numStr.size() - 1; l < r; )
+            if(numStr[l++]!=numStr[r--]) return false;
+        return true;
+    }
+};

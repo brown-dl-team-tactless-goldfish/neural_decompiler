@@ -1,0 +1,28 @@
+class Solution {
+public:
+    vector<string> wordSubsets(vector<string>& A, vector<string>& B) {
+        vector<string> res;
+        unordered_map<char,int> dominate;
+        for(int i = 0 ; i < B.size() ; i ++)
+        {
+            unordered_map<char,int> temp;
+            for(char C : B[i])
+                dominate[C] = max(dominate[C],++temp[C]);
+        }
+        for(int i = 0 ; i < A.size() ; i ++)
+        {
+            int ever_fail = 0;
+            for(auto C : dominate)
+            {
+                if(count(A[i].begin(),A[i].end(),C.first) < C.second)
+                {
+                    ever_fail = 1;
+                    break;
+                }
+            }
+            if(ever_fail == 0)
+                res.push_back(A[i]);
+        }
+        return res;
+    }
+};

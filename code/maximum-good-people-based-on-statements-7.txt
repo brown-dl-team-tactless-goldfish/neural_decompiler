@@ -1,0 +1,53 @@
+
+class Solution {
+public:
+
+    bool isValid(int bitMask, vector<vector<int>> &s) {
+        int n = s[0].size();
+
+        for (int i = 0; i < n; i++) {
+            
+            int amIGood = bitMask & (1 << i);
+            for (int j = 0; j < s[0].size(); j++) {
+                if (amIGood) {
+                    // means i will always speak the truth
+                    if (s[i][j] == 1) {
+                        if (!(bitMask & (1 << j))) return false;
+                    } else if (s[i][j] == 0) {
+                        if ((bitMask & (1 << j))) return false;
+                    }
+                }
+            }
+        }
+
+
+        return true;
+    }
+
+    void generateSubsetsAndCheck(int i, int bitMask, int &n, vector<vector<int>> &s, int &ans) {
+        
+        if (i == n - 1) {
+            if (isValid(bitMask , s)) {
+                ans = max(ans, __builtin_popcount(bitMask));
+                
+            }
+            return;
+        }
+
+        generateSubsetsAndCheck(i + 1, bitMask & (~(1 << (i + 1))), n, s, ans);
+        generateSubsetsAndCheck(i + 1, bitMask | (1 << (i + 1)), n, s, ans);
+
+    }
+    
+    int maximumGood(vector<vector<int>>& statements) {
+        int n = statements[0].size();
+        int ans1 = 0, ans2 = 0;
+        int bitMask1 = 0;
+        int bitMask2 = 1;
+        generateSubsetsAndCheck(0, bitMask1, n, statements, ans1);
+        generateSubsetsAndCheck(0, bitMask2, n, statements, ans2);
+
+        return max(ans1, ans2);
+
+    }
+};

@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int longestWPI(vector<int>& hours) {
+        int n = hours.size() ;
+        vector<int>preSum ;
+        int sum = 0 ;
+        preSum.push_back(sum) ;
+        for(int i = 0; i < n ; i++){
+            if(hours[i] > 8)
+                sum += 1 ;
+            else 
+                sum += -1 ;
+            preSum.push_back(sum) ;
+        }
+        
+        stack<int>stk ;
+        for(int i = 0; i <= n; i++){
+            if(stk.empty() || preSum[i] < preSum[stk.top()])
+                stk.push(i) ;
+        }
+        
+        int ret = 0 ;
+        for(int i = n; i >= 0; i--){
+            while(!stk.empty() && preSum[i] > preSum[stk.top()])
+            {
+                ret = max(ret, i - stk.top()) ;
+                stk.pop() ;
+            }
+        }
+        return ret ;
+    }
+};

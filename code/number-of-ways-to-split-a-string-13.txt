@@ -1,0 +1,27 @@
+#define MOD 1000000007
+
+class Solution {
+public:
+    int numWays(const string& s) {
+        int ones{std::accumulate(s.begin(), s.end(), 0, [](const auto a, const auto b){return a + (b == '1');})};
+        if(ones % 3) return 0;
+        int i{0}, j{(int)s.size()-1}, count{ones/3}, cl{0}, cr{0};
+        
+        if(count == 0) return choose(s.size()-1, 2);
+        
+        while(count) count -= s[i++] == '1';
+        count = ones/3;
+        while(count) count -= s[j--] == '1';
+        
+        while(s[i] == '0') ++i, ++cl;
+        while(s[j] == '0') --j, ++cr;
+        return ((int64_t)(cl+1)*(cr+1)) % MOD;
+    }
+    
+    int choose(int n, int k) {
+        if(n == 0 || k == 0) return 1;
+        int64_t count{n};
+        for( int i = 2; i <= k; ++i ) count *= (n-i+1), count /= i;
+        return count % MOD;
+    }
+};

@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int numTriplets(vector<int>& nums1, vector<int>& nums2) {
+        using lint = long long int;
+        unordered_map<lint, int> squares1;
+        unordered_map<lint, int> squares2;
+        for(lint i : nums1)
+            ++squares1[i*i];
+        for(lint i : nums2)
+            ++squares2[i*i];
+        auto N1 = nums1.size();
+        auto N2 = nums2.size();
+        int ret = 0;
+        for(size_t i = 0; i < N1; ++i) {
+            for(size_t j = i + 1; j < N1; ++j) {
+                lint n = nums1[i];
+                auto it = squares2.find(n * nums1[j]);
+                if(it != squares2.end())
+                    ret += it->second;
+            }
+        }
+        for(size_t i = 0; i < N2; ++i) {
+            for(size_t j = i + 1; j < N2; ++j) {
+                lint n = nums2[i];
+                auto it = squares1.find(n * nums2[j]);
+                if(it != squares1.end())
+                    ret += it->second;
+            }
+        }
+        return ret;
+    }
+};

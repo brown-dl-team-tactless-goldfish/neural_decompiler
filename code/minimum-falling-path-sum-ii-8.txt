@@ -1,0 +1,32 @@
+public class Solution {
+    public int MinFallingPathSum(int[][] grid) {
+        
+        if(grid == null || grid.Length == 0)
+            return 0;
+        
+        int prevMin1 = 0, prevMin2 = 0, prevMinPos = -1;
+        for(int i = 0; i < grid.Length; i++)
+        {
+            int currMin1 = Int32.MaxValue, currMin2 = Int32.MaxValue, currMinPos = -1;
+            for(int j = 0; j < grid[i].Length; j++)
+            {
+                int minPathSum = j == prevMinPos? prevMin2 : prevMin1;
+                
+                if(minPathSum + grid[i][j] < currMin1)
+                {
+                    currMinPos = j;
+                    currMin2 = currMin1;
+                    currMin1 = minPathSum + grid[i][j];
+                }
+                else
+                    currMin2 = Math.Min(currMin2, minPathSum + grid[i][j]);
+            }
+            
+            prevMin1 = currMin1;
+            prevMin2 = currMin2;
+            prevMinPos = currMinPos;
+        }
+        
+        return prevMin1;
+    }
+}

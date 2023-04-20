@@ -1,0 +1,26 @@
+// OJ: https://leetcode.com/problems/minimum-white-tiles-after-covering-with-carpets/
+// Author: github.com/lzl124631x
+// Time: O(N * numCarpet)
+// Space: O(N)
+class Solution {
+public:
+    int minimumWhiteTiles(string floor, int numCarpet, int carpetLen) {
+        int N = floor.size(), sum = 0;
+        vector<int> cover(N);
+        for (int i = 0, white = 0; i < N; ++i) {
+            sum += floor[i] - '0';
+            white += floor[i] - '0';
+            if (i - carpetLen >= 0) white -= floor[i - carpetLen] - '0'; 
+            cover[i] = white;
+        }
+        vector<int> dp(N + 1);
+        for (int i = 1; i <= numCarpet; ++i) {
+            vector<int> next(N + 1);
+            for (int j = 0; j < N; ++j) {
+                next[j + 1] = max(next[j], (j - carpetLen + 1 >= 0 ? dp[j - carpetLen + 1] : 0) + cover[j]);
+            }
+            swap(dp, next);
+        }
+        return sum - dp[N];
+    }
+};

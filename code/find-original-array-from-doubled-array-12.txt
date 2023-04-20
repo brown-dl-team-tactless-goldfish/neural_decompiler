@@ -1,0 +1,29 @@
+class Solution {
+public:
+  vector<int> findOriginalArray(vector<int>& changed) {
+    int N = changed.size();
+    if(N%2 == 1) return{};
+    
+    map<int,int>mp;
+    for(auto &x: changed) mp[x]++;
+    
+    vector<int>a;
+    if(mp.count(0)){
+      int z = mp[0];
+      if(z%2 == 1) return {};
+      z /= 2;
+      while(z--) a.push_back(0);
+      mp[0]=0;
+    }
+    
+    for(auto &[x, n]: mp)
+      if(n != 0){
+        int dx = x + x;
+        if(!mp.count(dx) || n > mp[dx] ) return {};
+        for(int i = 0; i != n;i++) a.push_back(x);
+        mp[dx] -= n;
+      }
+    
+    return a;
+  }
+};

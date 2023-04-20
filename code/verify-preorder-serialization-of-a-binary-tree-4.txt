@@ -1,0 +1,104 @@
+
+#define MAX     10001
+#define INVALID -1
+
+int fill_counter_arr(int counter[][4], char *preorder) {
+    char *token = NULL;
+    char *rest = preorder; 
+    int i = 0;
+    
+    while ((token = strtok_r(rest, ",", &rest))) {
+        //printf("%s\n", token); 
+        if(token[0] == '#') {
+            counter[i][0] = INVALID;             // root index
+            counter[i][1] = ~MAX;               // NULL node
+            counter[i][2] = INVALID;             // left index
+            counter[i][3] = INVALID;             // right index
+        } else {
+            counter[i][0] = INVALID;             // root index
+            counter[i][1] = MAX;                //  normal node
+            counter[i][2] = INVALID;             // left index
+            counter[i][3] = INVALID;             // right index
+        }  
+        //printf("root %d c %d l %d r %d\n", counter[i][0], counter[i][1], counter[i][2], counter[i][3]);
+        ++i;
+    }
+    return i;
+
+}
+
+bool verify_preorder(int counter[][4], int num_nodes) {
+    int left = INVALID, right = INVALID;
+    int i, j = 0;
+    bool decision = false;
+    
+    left = INVALID;
+    right = INVALID;
+    
+    j = num_nodes-1;
+    while(j >= 0) {
+        if(counter[j][1] == MAX) {
+            i = j+1;
+            left = INVALID;
+            right = INVALID;
+            
+            while(i < num_nodes) {   
+                if(counter[i][0] == INVALID && left == INVALID) {
+                    left = i;
+                } else if(counter[i][0] == INVALID && right == INVALID) {
+                    right = i;    
+                }   
+                if(left != INVALID && right != INVALID) {
+                    break;
+                }
+                ++i;
+            }
+
+            if(left != INVALID && right != INVALID) {
+                counter[j][2] = left;             // left index
+                counter[j][3] = right;             // right index   
+                counter[left][0] = j;
+                counter[right][0] = j;
+                //printf(" l %d r %d root %d\n", left, right, j);
+            }
+        }
+        //printf(" j %d root %d c %d l %d r %d\n", j, counter[j][0], counter[j][1], counter[j][2], counter[j][3]);
+
+        --j;
+    }
+
+    for(i = 1; i < num_nodes; ++i) {
+        //printf(" i %d root %d c %d l %d r %d\n", i, counter[i][0], counter[i][1], counter[i][2], counter[i][3]);
+        if(counter[i][0] == INVALID) {
+           goto End;
+        }
+    }
+    
+    if(counter[0][1] == MAX && num_nodes == 1)
+        goto End;
+    
+    decision = true;
+End:
+    return decision;
+}
+
+bool isValidSerialization(char * preorder){
+    int num_nodes = 0;
+    int counter[MAX][4] = {0};
+    bool decision = false;
+    
+    
+    if(NULL == preorder)
+        goto End;
+
+    if(0 == strlen(preorder))
+        goto End;
+   
+    //printf("len %d\n", len);
+    
+    num_nodes = fill_counter_arr(counter, preorder);
+    decision = verify_preorder(counter, num_nodes);    
+End:
+    return decision;
+
+}

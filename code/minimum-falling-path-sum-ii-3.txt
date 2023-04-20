@@ -1,0 +1,40 @@
+# DP
+# Time complexity: O(MN)
+# Space complexity: O(MN)
+
+class Solution:
+    def minFallingPathSum(self, arr: List[List[int]]) -> int:
+        num_rows = len(arr)
+        num_cols = len(arr[0])
+
+        # print("arr = ")
+        # for i in range(num_rows):
+        #     print(arr[i])
+
+        dp = [[float('inf') for i in range(num_cols+2)]
+              for j in range(num_rows+2)]
+
+        for i in range(1, num_rows+1):
+            for j in range(1, num_cols+1):
+                dp[i][j] = arr[i-1][j-1]
+
+        # print("dp = ")
+        for i in range(num_rows+2):
+            print(dp[i])
+
+        for i in range(1, num_rows+2):
+            for j in range(1, num_cols+1):
+                tmpRow = dp[i-1][:j] + dp[i-1][j+1:]
+                tmpMin = min(tmpRow)
+                # print("j = ", j, "   tmpRow = ", tmpRow, " tmpMin = ", tmpMin)
+
+                if (tmpMin != float('inf')):
+                    dp[i][j] = tmpMin + dp[i][j]
+
+        # print("2 dp = ")
+        for i in range(num_rows+2):
+            print(dp[i])
+
+        res = min(dp[-2])
+        # print("res = ", res)
+        return res

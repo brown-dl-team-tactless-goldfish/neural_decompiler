@@ -1,0 +1,33 @@
+class Solution {
+public:
+    
+    vector<int> removed;
+    int n, m;
+    vector<string> v;
+    
+    int util(int col, int i, int j){
+        if(col>=m || i>j) return 0;
+        if(i==j || removed[col]) return util(col+1, i, j);
+        int k, ans=0;
+        for(k=i+1; k<=j; k++){
+            if(v[k][col]<v[k-1][col]){
+                removed[col]=1;
+                return 1+util(col+1, i, j);
+            } 
+        }
+        for(k=i+1; k<=j; k++){
+            if(v[k][col]>v[k-1][col]){
+                ans+=util(col+1, i, k-1);
+                i=k;
+            }
+        }
+        ans+=util(col+1, i, k-1);
+        return ans;
+    }
+    
+    int minDeletionSize(vector<string>& A) {
+        v=A, n=v.size(), m=v[0].size();
+        removed=vector<int>(m, 0);
+        return util(0, 0, n-1);
+    }
+};

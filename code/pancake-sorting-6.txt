@@ -1,0 +1,7 @@
+public IList<int> PancakeSort(int[] A)
+{
+	if (A.Length == 0) return new List<int>();
+	var index = A.Select((x, i) => (i, x)).Where(x => x.x == A.Max()).Select(x => x.i).First() + 1;
+	var list = Enumerable.Range(0, index).Select(x => A[x]).Reverse().ToList().Concat(A.Skip(index)).ToArray();
+	return new List<int> { index, list[0] }.Concat(PancakeSort(list.Reverse().Take(list.Length - 1).ToArray())).ToArray();
+}

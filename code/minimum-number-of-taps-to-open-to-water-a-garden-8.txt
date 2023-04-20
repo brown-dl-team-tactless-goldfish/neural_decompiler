@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int minTaps(int n, vector<int>& ranges) {
+        vector<Range> v;
+        for(int i=0;i<n+1;i++) v.emplace_back(Range{max(0, i-ranges[i]), min(n,i+ranges[i])});
+        sort(v.begin(), v.end());
+        int cnt = 0, curPos = 0, nextPos = 0;    
+        for(auto [l, r] : v){
+            if(l<=curPos){
+                nextPos = max(nextPos, r);
+            }
+            else if(l <= nextPos){
+                if(r > nextPos){
+                    cnt++;
+                    curPos = nextPos;
+                    nextPos = r;
+                }
+            }
+            else return -1;
+        }
+        return cnt+1;
+    }
+    
+    struct Range{
+        int l;
+        int r;
+        bool operator<(const Range& rhs) const{return l < rhs.l;}
+    };
+};

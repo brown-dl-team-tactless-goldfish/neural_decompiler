@@ -1,0 +1,24 @@
+int maximumUniqueSubarray(vector<int>& nums) {
+    int n = nums.size();
+    int i = 0,j = 0,sum = 0,c = 0;
+    unordered_map<int,int>m;
+    while(j<n){
+        if(m.find(nums[j])==m.end()){
+            sum+=nums[j];
+            m[nums[j]]++;
+            j++;
+        }else{
+            c = max(c,sum);
+            while(m.find(nums[j])!=m.end()){
+                m[nums[i]]--;
+                sum-=nums[i];
+                if(m[nums[i]]==0){
+                    m.erase(nums[i]);
+                }
+                i++;
+            }
+        }
+    }
+    c = max(c,sum);
+    return c;
+}

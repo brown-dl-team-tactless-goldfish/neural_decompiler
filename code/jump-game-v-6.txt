@@ -1,0 +1,45 @@
+public class Solution 
+{
+    public int MaxJumps(int[] arr, int d) 
+    {
+        int n = arr.Length;
+        var graph = new Dictionary<int, HashSet<int>>();
+        for(int i = 0; i < n; i++)
+        {
+            graph[i] = new HashSet<int>();
+            int max = 0;
+            for(int j = i + 1; j <= Math.Min(n - 1, i + d); j++)
+            {
+                if(arr[j] >= arr[i])
+                    break;
+                if(arr[j] >= max)
+                    graph[i].Add(j);
+                
+                max = Math.Max(max, arr[j]);
+            }
+            max = 0;
+            for(int j = i - 1; j >= Math.Max(0, i - d); j--)
+            {
+                if(arr[j] >= arr[i])
+                    break;
+                if(arr[j] >= max)
+                    graph[i].Add(j);
+                max = Math.Max(max, arr[j]);
+            }
+        }
+        
+        int result = 0;
+        for(int i = 0; i < n; i++)
+            result = Math.Max(result, DFS(graph, i));
+
+        return result;
+    }
+    
+    private int DFS(Dictionary<int, HashSet<int>> graph, int start)
+    {
+        int max = 0;
+        foreach(var neighbor in graph[start])
+            max = Math.Max(max, DFS(graph, neighbor));
+        return max + 1;
+    }
+}

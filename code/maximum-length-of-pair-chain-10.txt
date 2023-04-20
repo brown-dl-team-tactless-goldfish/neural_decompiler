@@ -1,0 +1,12 @@
+int findLongestChain(vector<vector<int>>& pairs) {
+        sort(pairs.begin(), pairs.end(),[](vector<int> &v1, vector<int> &v2){
+            return v1[1] < v2[1];});
+        vector<int> tails = {INT_MIN};
+        for(auto & pair : pairs){
+            int c = pair[0], d = pair[1];
+            auto iter = lower_bound(tails.begin(), tails.end(), c );
+            if(iter == tails.end()) tails.push_back(d);
+            else if (*iter > d ) *iter = d;
+        }
+        return tails.size() - 1;
+    }

@@ -1,0 +1,26 @@
+int maxSumRangeQuery(vector<int>& nums, vector<vector<int>>& requests) {
+
+	vector<int> m(nums.size(), 0);
+	for (vector<int>& request : requests) {
+		m[request[0]]++;
+		if (request[1] < nums.size() - 1) m[request[1] + 1]--;
+	}
+
+	int curr = 0;
+	for (int i = 0; i < nums.size(); ++i) {
+		curr += m[i];
+		m[i] = curr;
+	}
+
+	sort(nums.begin(), nums.end());
+	sort(m.begin(), m.end());
+
+	int res = 0;
+	int magic = 1e9 + 7;
+
+	for (int i = 0; i < nums.size(); ++i) {
+		res = (res + m[i] * nums[i]) % magic;
+	}
+
+	return res;
+}

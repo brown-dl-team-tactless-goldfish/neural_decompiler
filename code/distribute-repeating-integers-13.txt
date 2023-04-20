@@ -1,0 +1,41 @@
+class Solution {
+    void gen(int now, int state, int sum, const vector<int> &q, vector<int> &a) {
+        if (now >= q.size()) {
+            a[state] = sum;
+            return;
+        }
+        gen(now + 1, state, sum, q, a);
+        gen(now + 1, state | (1 << now), sum + q[now], q, a);
+    }
+    
+public:
+    bool canDistribute(vector<int>& nums, vector<int>& quantity) {
+        unordered_map<int, int> have;
+        for (int x : nums) {
+            ++have[x];
+        }
+        vector<int> v;
+        for (const auto& p : have) {
+            v.push_back(p.second);
+        }
+        sort(v.begin(), v.end());
+        const int m = quantity.size();
+        const int s = 1 << m;
+        vector<int> a(s);
+        gen(0, 0, 0, quantity, a);
+        vector<bool> dp(s);
+        dp[0] = true;
+        int sum = 0;
+        for (int t = max(0, ((int) v.size()) - m); t < v.size(); ++t) {
+            sum += v[t];
+            for (int i = s - 1; i >= 0; --i) {
+                if (a[i] > sum) continue;
+                for (int j = i; !dp[i]; j = (j - 1) & i) {
+                    dp[i] = dp[j] && a[i ^ j] <= v[t];
+                    if (j == 0) break;
+                }
+            }
+        }
+        return dp[s - 1];
+    }
+};

@@ -1,0 +1,77 @@
+int cmp(const void*a,const void*b){
+    return (*(int**)a)[0]-(*(int**)b)[0];
+}
+int cmp1d(const void*a,const void*b){
+    return *(int*)a-*(int*)b;
+}
+int UFfind(int *class,int num){
+    int ret = num;
+    while(class[ret]!=ret){
+        ret = class[ret];
+    }
+    class[num] = ret;
+    return ret;
+}
+void UFunion(int *class,int numa,int numb){
+    int ca = UFfind(class,numa);
+    int cb = UFfind(class,numb);
+    if(ca==cb)
+        return;
+    if(ca<cb){
+        class[cb] = ca;
+        class[numb] = ca;
+    }
+    else{
+        class[ca] = cb;
+        class[numa] = cb;        
+    }
+}
+int numberOfGoodPaths(int* vals, int valsSize, int** edges, int edgesSize, int* edgesColSize){
+    int ans = 0;
+    int **qdata = malloc(valsSize*sizeof(int*));
+    bool **connect = malloc(valsSize*sizeof(bool*));
+    int **qedges = malloc(edgesSize*sizeof(int*));
+    int *class = malloc(valsSize*sizeof(int));
+    int *tmp = malloc(valsSize*sizeof(int));
+    for(int i=0;i<valsSize;i++){
+        qdata[i] = malloc(2*sizeof(int)); 
+        class[i] = i;
+        qdata[i][0] = vals[i];
+        qdata[i][1] = i;
+        //connect[i] = malloc(valsSize*sizeof(bool));
+        //memset(connect[i],0,valsSize*sizeof(bool));
+    }
+    for(int i=0;i<edgesSize;i++){
+        qedges[i] = malloc(3*sizeof(int));
+        qedges[i][0] = (vals[edges[i][0]]>vals[edges[i][1]])?vals[edges[i][0]]:vals[edges[i][1]];
+        qedges[i][1] = edges[i][0];
+        qedges[i][2] = edges[i][1];
+    }
+    qsort(qdata,valsSize,sizeof(qdata[0]),cmp);
+    qsort(qedges,edgesSize,sizeof(qedges[0]),cmp);
+    int edgesidx = 0;
+    int left = 0;
+    int right = 0;
+    while(right<valsSize){
+        while(edgesidx<edgesSize && qedges[edgesidx][0]<=qdata[right][0]){
+            UFunion(class,qedges[edgesidx][1],qedges[edgesidx][2]);
+            edgesidx++;
+        }
+        left = right;
+        int tmpidx = 0;
+        int count = 0;
+        while(right<valsSize && qdata[left][0]==qdata[right][0]){
+            tmp[tmpidx++] = class[qdata[right][1]];
+            right++;
+        }
+        qsort(tmp,tmpidx,sizeof(tmp[0]),cmp1d);//tle 
+        for(int i=1;i<tmpidx;i++){
+            if(tmp[i]==tmp[i-1])
+                count++;
+            else
+                count = 0;
+            ans+=count;
+        }
+    }
+    return ans+valsSize;
+}

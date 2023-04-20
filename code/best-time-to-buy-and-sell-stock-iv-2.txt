@@ -1,0 +1,20 @@
+int maxProfit(int k, int* prices, int pricesSize){
+    if(pricesSize == 0 || k == 0) return 0;
+    
+    int **dp = calloc(sizeof(int *), k+1);
+    for(int i = 0; i <= k; i++)
+        dp[i] = calloc(sizeof(int), pricesSize);
+    
+    // we will have a zero profit for a transaction count of zero
+    //dp[0][0] = 0;
+    
+    for(int tCount = 1; tCount <= k; tCount++) {
+        int minCost = INT_MAX, maxProfit = 0;
+        for(int day = 0; day < pricesSize; day++) {
+            minCost = fmin(minCost, prices[day] - dp[tCount-1][day]);
+            maxProfit = fmax(maxProfit, prices[day] - minCost);
+            dp[tCount][day] = maxProfit;
+        }
+    }
+    return dp[k][pricesSize-1];
+}

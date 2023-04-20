@@ -1,0 +1,39 @@
+ void solve(vector<int>& s, int i) {
+    if (i == s.size()) {
+        res.push_back(s);
+        return;
+    }
+    
+    for (int j = i; j < s.size(); j++) {
+        int c = s[j];
+        
+        if (c % (i + 1) != 0 && (i + 1) % c != 0)
+            continue;
+        
+        for (int z = j - 1; z >= i; z--)
+            s[z + 1] = s[z];
+        
+        s[i] = c;
+        
+        solve(s, i + 1);
+        
+        c = s[i];
+        
+        for (int z = i + 1; z <= j; z++)
+            s[z - 1] = s[z];
+        
+        s[j] = c;
+    }
+    
+    return;
+}
+
+int countArrangement(int n) {
+    vector<int> nums = {};
+    
+    for (int i = 1; i <= n; i++)
+        nums.push_back(i);
+    
+    solve(nums, 0);
+    return res.size();
+}

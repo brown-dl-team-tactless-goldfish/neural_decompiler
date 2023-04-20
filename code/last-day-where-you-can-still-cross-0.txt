@@ -1,0 +1,36 @@
+class Solution {
+public:
+    vector<int> DIR = {1, 0, -1, 0, 1};
+    int latestDayToCross(int row, int col, vector<vector<int>>& cells) {
+        int result = 0;
+        vector<vector<int>> A(row, vector<int>(col));
+        for(int i = 0; i < cells.size(); i++)
+            A[cells[i][0] - 1][cells[i][1] - 1] = i + 1;
+        
+        vector<vector<int>> dist(row, vector<int>(col, INT_MIN));
+        priority_queue<pair<int, pair<int, int>>> pq;
+        for(int i = 0; i < col; i++){
+            pq.push({A[0][i], {0, i}});
+            dist[0][i] = A[0][i];
+        }
+        while(!pq.empty()){
+            auto cost = pq.top().first;
+            auto [r, c] = pq.top().second;
+            pq.pop();
+            if(r == row - 1){
+                result = max(result, cost);
+                continue;
+            }
+            for(int k = 0; k < 4; k++){
+                int nr = r + DIR[k], nc = c + DIR[k + 1];
+                if(nr < 0 || nc < 0 || nr == row || nc == col)
+                    continue;
+                int b = min(cost, A[nr][nc]);
+                if(b <= dist[nr][nc]) continue;
+                dist[nr][nc] = b;
+                pq.push({b, {nr, nc}});
+            }
+        }
+        return result - 1;
+    }
+};

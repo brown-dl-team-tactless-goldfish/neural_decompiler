@@ -1,0 +1,49 @@
+using Graph = vector<vector<int>>;
+class Solution {
+public:
+    int findMaxLevel(int root, const Graph& graph, vector<int>& vis) {
+        vector<int> level(graph.size(), -1);
+        level[root] = 1;
+        queue<int> q;
+        q.push(root);
+        int mx = 1;
+        while (!q.empty()) {
+            int cur = q.front();
+            vis[cur] = vis[root];  // mark as part of same component.
+            q.pop();
+
+            for (int next : graph[cur]) {
+                if (level[next] == -1) {
+                    level[next] = level[cur] + 1;
+                    mx = max(mx, level[next]);
+                    q.push(next);
+                } else {
+                    // apply the check stated in problem
+                    if (abs(level[next] - level[cur]) != 1) return -1;
+                }
+            }
+        }
+        return mx;
+    }
+    int magnificentSets(int n, vector<vector<int>>& edges) {
+        Graph g(n);
+        for (const auto& edge : edges) {
+            int u = edge[0] - 1;
+            int v = edge[1] - 1;
+            g[u].push_back(v);
+            g[v].push_back(u);
+        }
+        vector<int> components, vis(n, -1);
+        for (int st = 0; st < n; ++st) {
+            if (vis[st] == -1) {
+                // found a new component
+                vis[st] = components.size();
+                components.push_back(1);
+            }
+            int res = findMaxLevel(st, g, vis);
+            if (res == -1) return -1;
+            components[vis[st]] = max(components[vis[st]], res);
+        }
+        return accumulate(components.begin(), components.end(), 0);
+    }
+};

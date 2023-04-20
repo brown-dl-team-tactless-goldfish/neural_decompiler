@@ -1,0 +1,67 @@
+int idealArrays(int n, int maxValue) {
+    
+    int k = maxValue;
+    vector<int> factors[k+1];
+	
+    //factors of all the numbers 
+    for(int i=1; i<=k; i++)
+    {
+        for(int j=(2*i); j<=k; j+=i)
+        factors[j].push_back(i);
+    }
+    
+    vector<long long> fact(15),ncr(16);
+    
+    fact[0]=1;
+    for(int i=1; i<15; i++)
+    fact[i]= fact[i-1]*(i*(1LL));
+        
+    //max number of unique numbers int the array would be 13
+
+    long long p = n-1;
+    ncr[0] = 0;
+    ncr[1] = 1;
+    for(int i=2; i<16; i++)
+    {
+        // i is the count of the unique numbers 
+        long long val = 1;
+        long long deno = fact[i-1];
+        for(int j=0; j<(i-1); j++)
+        {
+            long long x = p-j;
+            long long common = __gcd(x,deno);
+            x/=common;
+            deno/=common;
+            val*=x;
+            val%=(mod);
+        }
+        ncr[i]=val;
+    }
+    
+    vector<vector<long long>> dp(15,vector<long long>(k+1,0));
+    
+    for(int i=1; i<=k; i++)
+        dp[1][i]=1;
+    
+    long long res = k;
+    
+    for(int len=2; len<15; len++)
+    {
+        for(int i=1; i<=k; i++)
+        {
+            long long count=0;
+            for(auto num: factors[i])
+            count+=(dp[len-1][num]);
+            
+            count%=mod;
+            dp[len][i]=count;
+            
+            // count of array of size len
+            
+            res+=((count*ncr[len])%mod);
+            res%=mod;
+        }
+    }
+    
+    return res;
+}

@@ -1,0 +1,29 @@
+class Solution {
+public:
+    long long totalCost(vector<int>& A, int k, int c) {
+        int n = A.size();
+        long long res = 0;
+        auto cmp = [](vector<int>& a, vector<int>& b){
+            if(a[0] != b[0])
+                return a[0] > b[0];
+            return a[1] > b[1];
+        };
+        priority_queue<vector<int>, vector<vector<int>>, decltype(cmp)> pq(cmp);
+        int li = 0, ri = n - 1;
+        while(li < c)
+            pq.push({A[li], li++, 1});
+        for(int i = 0; i < c && ri > li; i++)
+            pq.push({A[ri], ri--, 0});
+        
+        while(k--){
+            int cost = pq.top()[0], idx = pq.top()[1], isLeft = pq.top()[2]; pq.pop();
+            res += cost;
+            if(ri >= li)
+                if(isLeft)
+                    pq.push({A[li], li++, 1});
+                else
+                    pq.push({A[ri], ri--, 0});
+        }
+        return res;
+    }
+};

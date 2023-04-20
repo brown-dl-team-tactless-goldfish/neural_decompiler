@@ -1,0 +1,105 @@
+public class DinnerPlates {
+
+    List<int> valueList = new List<int>();
+    List<int> indexesList = new List<int>();
+    int cap = 0;
+    public DinnerPlates(int capacity) {
+        cap = capacity;
+    }
+    
+    public void Push(int val) {
+        
+        var low = 0;
+        var high = indexesList.Count-1;
+        
+        if(high < 0){
+            valueList.Add(val);
+            indexesList.Add(0);
+            return;
+        }else if(low != indexesList[low]){
+            valueList.Insert(0,val);
+            indexesList.Insert(0,0);
+            return;
+        }
+        
+        while(low < high-1){
+            var mid = (low+high)/2;
+            
+            if(indexesList[mid] == mid){
+                low = mid+1;
+            }else{
+                high = mid;
+            }
+        }
+        
+        if(low != indexesList[low]){
+            
+            valueList.Insert(low,val);
+            indexesList.Insert(low,low);
+        }else if(high != indexesList[high]){
+            
+            
+            valueList.Insert(high,val);
+            indexesList.Insert(high,high);
+        }else{
+            
+            valueList.Insert(high+1,val);
+            indexesList.Insert(high+1,high+1);
+        }
+        
+        //Console.WriteLine(string.Join(",",valueList));
+        //Console.WriteLine(string.Join(",",indexesList));
+    }
+    
+    public int Pop() {
+        var result = -1;
+        
+        //Console.WriteLine(string.Join(",",valueList));
+        //Console.WriteLine(string.Join(",",indexesList));
+        
+        if(valueList.Any())
+        {
+            result = valueList.Last();
+            indexesList.RemoveAt(valueList.Count-1);
+            valueList.RemoveAt(valueList.Count-1);
+        }
+        
+        return result;
+    }
+    
+    public int PopAtStack(int index) {
+        
+        var ii = indexesList.BinarySearch((index+1)*cap);
+        if(ii < 0){
+            ii = ~ii;
+        }
+        
+        if(ii-1 < 0) 
+            return -1;
+        
+        var v = indexesList[ii-1];
+        
+        if(v >= cap*index && v < (index+1)*cap){
+            var result = valueList[ii-1];
+            
+            valueList.RemoveAt(ii-1);
+            indexesList.RemoveAt(ii-1);
+            
+        //Console.WriteLine(string.Join(",",valueList));
+        //Console.WriteLine(string.Join(",",indexesList));
+            return result;
+        }else{
+            return -1;
+        }
+        
+        
+    }
+}
+
+/**
+ * Your DinnerPlates object will be instantiated and called as such:
+ * DinnerPlates obj = new DinnerPlates(capacity);
+ * obj.Push(val);
+ * int param_2 = obj.Pop();
+ * int param_3 = obj.PopAtStack(index);
+ */

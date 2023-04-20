@@ -1,0 +1,27 @@
+class Solution {
+    int dp[101][101][101] ;
+    int mod = 1e9 + 7 ;
+public:
+    int profitableSchemes(int n, int minProfit, vector<int>& group, vector<int>& profit) {
+        int m = group.size() ;
+        dp[0][0][0] = 1 ;
+        
+        for(int i = 1; i <= m; i++){
+            for(int j = 0; j <= n; j++){
+                for(int k = 0; k <= minProfit; k++){
+                    dp[i][j][k] = (dp[i][j][k] +  dp[i-1][j][k]) % mod ;
+                    if(j + group[i-1] > n)
+                        continue ;
+                    int J = j+group[i-1] ;
+                    int K = min(minProfit, k+profit[i-1]) ;
+                    dp[i][J][K] = (dp[i][J][K] + dp[i-1][j][k]) % mod ;
+                }
+            }
+        }
+        
+        long long ret = 0;
+        for (int j = 0; j <= n; j++)                
+            ret = (ret + dp[m][j][minProfit]) % mod;
+        return ret ;
+    }
+};

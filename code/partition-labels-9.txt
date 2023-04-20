@@ -1,0 +1,47 @@
+int* partitionLabels(char * S, int* returnSize){
+  int* result = malloc(sizeof(int));
+
+  // use this struct to store char position info
+  int charLastIndex[26];
+  int len = strlen(S);
+  if (len < 2) {
+    *returnSize = 1;
+    result[0] = len;
+    return result;
+  }
+
+  for (int i = 0; i < len; i++){
+    int index = S[i] - 'a';
+    charLastIndex[index] = i;
+  }
+
+  // split S according to charPosition
+  *returnSize = 1;
+  int start = 0;
+  int end = 0;
+  for (int i = 0; i < len; i++) {
+    int index = S[i] - 'a';
+    if (charLastIndex[index] > i) {
+      if (charLastIndex[index] > end) {
+        end = charLastIndex[index];
+        if (end == len - 1) {
+          result = realloc(result, sizeof(int) * (*returnSize)); 
+          result[(*returnSize) - 1] = end - start + 1;
+        }
+      } 
+    } else {
+      if (i == end) {
+        result = realloc(result, sizeof(int) * (*returnSize));
+        result[(*returnSize) - 1] = end - start + 1;
+        start = end + 1;
+        end = start;
+        if (start == len) {
+          break;
+        } 
+        *returnSize += 1;
+      }
+    } 
+  } 
+
+  return result;
+}

@@ -1,0 +1,40 @@
+typedef long long ll;
+class Solution {
+public:
+    long long minimumTotalCost(vector<int>& nums1, vector<int>& nums2) {
+        ll res = 0;
+        int n = nums1.size();
+        map<int,int> mp1,mp2;
+        map<int,int> mp3, mp4;
+        for(int x:nums1) mp1[x]++;
+        for(int x:nums2) mp2[x]++;
+        for(int x:nums1){
+            if(mp1[x]+mp2[x]>n) return -1;
+        }
+        int curr = 0;
+        set<int> vis;
+        for(int i=0;i<n;i++){
+            if(nums1[i]==nums2[i]){
+                curr++;
+                mp3[nums1[i]]++;
+                vis.insert(i);
+            }
+        }
+        int to_add=0, mx = -1;
+        for(auto it:mp3){
+            int tt = it.second;
+            if(tt*2>curr){
+                to_add+=(tt*2-curr);
+                mx = it.first;
+            }
+        }
+        int c=0;
+        while(to_add>0){
+            to_add--;
+            while(vis.count(c) || nums1[c]==mx) c++;
+            vis.insert(c);
+        }
+        for(auto it:vis) res += it;
+        return res;
+    }
+};

@@ -1,0 +1,32 @@
+class Solution {
+public:
+    bool primeSubOperation(vector<int>& nums) {
+        auto ps = getPrimes(1000);
+        int pre = 0;
+        for(auto& x:nums){
+            if(x <= pre) return false;
+            int d = x - pre;            
+            if(auto it = ps.lower_bound(d); it != ps.begin()){
+                x -= *prev(it);
+            }
+            pre = x;
+        }
+        return true;
+    }
+
+    set<int> getPrimes(int n){
+        set<int> ps;
+        for(int i=2;i<n;i++){
+            int n2 = sqrt(i+1);
+            bool isGood    = true;
+            for(int j=2;j<=n2;j++){
+                if(i % j == 0){
+                    isGood = false;
+                    break;
+                }
+            }
+            if(isGood) ps.insert(i);
+        }
+        return ps;
+    }
+};

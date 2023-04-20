@@ -1,0 +1,33 @@
+class Solution {
+public:
+    vector<vector<int>> substringXorQueries(string s, vector<vector<int>>& queries) {
+        unordered_map <int,pair<int,int>> ump;
+        int curr,n=s.length();
+        for(int i=0;i<n;i++){
+            if(s[i] == '0' && ump.find(0) == ump.end()){
+                ump[0] = {i,i};
+                continue;
+            }
+            else if(s[i] == '0')
+                continue;
+            curr = 0;
+            for(int j=i;j<min(31+i,n);j++){
+                curr <<=1 ;
+                curr += s[j]-'0';
+                if(ump.find(curr) == ump.end()){
+                    ump[curr] = {i,j};
+                }
+             }
+        }
+        // cout << ump[5].first << ump[5].second << endl;
+        vector <vector<int>> ans;
+        for(auto &it:queries){
+            curr = it[0] ^ it[1];
+            if(ump.find(curr) == ump.end())
+                ans.push_back({-1,-1});
+            else
+                ans.push_back({ump[curr].first,ump[curr].second});
+        }
+        return ans;
+    }
+};

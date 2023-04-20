@@ -1,0 +1,60 @@
+
+    public class Solution
+    {
+        private static readonly (int di, int dj)[] _directions = { (0, 1), (1, 0), (0, -1), (-1, 0) };
+
+        private bool Helper(int[] source, int[] target, ISet<(int i, int j)> blocked)
+        {
+            ISet<(int i, int j)> visited = new HashSet<(int i, int j)>();
+            Queue<(int i, int j)> bfs = new Queue<(int i, int j)>();
+
+            bfs.Enqueue((source[0], source[1]));
+            visited.Add((source[0], source[1]));
+
+            (int i, int j) t = (target[0], target[1]);
+            int depth = 0;
+
+            while (bfs.Count != 0)
+            {
+                int count = bfs.Count;
+
+                for (int i = 0; i < count; i++)
+                {
+                    (int i, int j) curr = bfs.Dequeue();
+
+                    if (curr.i == t.i && curr.j == t.j)
+                    {
+                        return true;
+                    }
+
+                    foreach (var dir in _directions)
+                    {
+                        int newI = curr.i + dir.di;
+                        int newJ = curr.j + dir.dj;
+
+                        if (newI >= 0 && newJ >= 0 && newI < 1_000_000 && newJ < 1_000_000)
+                        {
+                            if (!blocked.Contains((newI, newJ)) && visited.Add((newI, newJ)))
+                            {
+                                bfs.Enqueue((newI, newJ));
+                            }
+                        }
+                    }
+                }
+
+                depth++;
+                if(depth >= blocked.Count)
+                {
+                    return true;
+                }
+            }
+
+            return false;
+        }
+
+        public bool IsEscapePossible(int[][] blocked, int[] source, int[] target)
+        {
+            ISet<(int i, int j)> bSet = blocked.Select(b => (b[0], b[1])).ToHashSet();
+            return Helper(source, target, bSet) && Helper(target, source, bSet);
+        }
+    }

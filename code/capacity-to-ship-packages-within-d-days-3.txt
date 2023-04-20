@@ -1,0 +1,39 @@
+
+
+int shipWithinDays(int* weights, int weightsSize, int D){
+    int sum = 0, max = 0;
+    for (int i = 0; i < weightsSize; i++){
+        sum += weights[i];
+        if (weights[i] > max)
+            max = weights[i];
+    }
+    int min = max;
+    max = sum;
+    int middle;
+    int day = 0, day_sum = 0, index = 0;
+    while (min < max){
+        printf("min = %d, max = %d\n", min, max);
+        day = 0;
+        day_sum = 0;
+        index = 0;
+        middle = (min + max) / 2;
+        while (index < weightsSize){
+            day_sum += weights[index];
+            if (day_sum > middle){
+                day_sum = 0;
+                index--;
+                day++;
+            }
+            index++;
+        }
+        if (day_sum > 0)
+            day++;
+        if (day > D){
+            min = middle + 1;
+        }
+        else{
+            max = middle;
+        }
+    }
+    return min;
+}

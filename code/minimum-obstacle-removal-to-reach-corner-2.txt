@@ -1,0 +1,88 @@
+class Solution {
+public:
+    
+    struct node
+    {
+        int a;   // this will store minimum obstacle
+        
+        int b;   // this will store the x cordinate of cell
+        
+        int c;   // this will store the y cordinate of cell
+        
+        node(int x, int y, int z)
+        {
+            a = x;
+            
+            b = y;
+            
+            c = z;
+        }
+    };
+    
+    struct mycomp
+    {
+        bool operator() (node* &node1, node* &node2)
+        {
+            return node1 -> a > node2 -> a;
+        }
+    };
+    
+    int minimumObstacles(vector<vector<int>>& grid) {
+        
+        int n = grid.size();
+        
+        int m = grid[0].size();
+        
+        vector<int> dx = {-1, 0, 1, 0};
+    
+        vector<int> dy = {0, 1, 0, -1};
+		
+		// declare a min. heap
+        
+        priority_queue<node*, vector<node*>, mycomp> pq;
+        
+        node* new_node = new node(0, 0, 0);
+        
+        pq.push(new_node);
+        
+        grid[0][0] = -1;
+        
+        while(!pq.empty())
+        {
+            node* curr_node = pq.top();
+            
+            int min_obstacle = curr_node -> a;
+            
+            int x = curr_node -> b;
+            
+            int y = curr_node -> c;
+            
+            pq.pop();
+			
+			// if last cell is reached
+            
+            if(x == n - 1 && y == m - 1)
+            {
+                return min_obstacle;
+            }
+            
+            for(int k = 0; k < 4; k++)
+            {
+                int new_row = x + dx[k];
+                
+                int new_col = y + dy[k];
+                
+                if(new_row >= 0 && new_col >= 0 && new_row < n && new_col < m && grid[new_row][new_col] != -1)
+                {
+                    node* new_node = new node(min_obstacle + grid[new_row][new_col], new_row, new_col);
+                    
+                    pq.push(new_node);
+                    
+                    grid[new_row][new_col] = -1;
+                }
+            }
+        }
+        
+        return 0;
+    }
+};

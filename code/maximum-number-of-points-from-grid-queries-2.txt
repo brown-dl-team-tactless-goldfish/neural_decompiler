@@ -1,0 +1,95 @@
+public class Solution {
+    public int[] MaxPoints(int[][] grid, int[] q) {
+        PriorityQueue<int,int> Q = new ();  //REMOVE REPEAT
+        int n  = q.Length;
+        int[] ans = new int[n];
+        int res = 0;
+        int[,] dirs = new int[4,2]{{-1,0},{1,0},{0,-1},{0,1}};
+        
+        int r = grid.Length;
+        int c = grid[0].Length;
+        int[][] V = new int[r][];
+        for(int i=0;i<r;i++)
+            V[i] = new int[c];
+        
+        for(int i=0;i<n;i++)
+        {
+            Q.Enqueue(i,q[i]);
+        }
+        
+        Queue<int> N1 = new(); //next 
+        Dictionary<int,int> B = new(); //boder point,v
+        B[0] = grid[0][0];
+        
+        while(Q.Count>0)
+        {
+            int idx = Q.Dequeue();
+            int v = q[idx];
+            ResetQ(N1,B,v);
+            while(N1.Count>0)
+            {
+                
+                int m = N1.Dequeue();
+                int r1 = m/c;
+                int c1 = m%c;
+                //Console.WriteLine($"{res}");
+                if(V[r1][c1]==0)
+                {
+                    V[r1][c1]= 1;
+                    res += 1;
+                    
+                    for(int i=0;i<4;i++)
+                    {
+                        int r2 = r1+dirs[i,0];
+                        int c2 = c1+dirs[i,1];
+                        
+                        if(r2>=0 && r2<r && c2>=0 && c2<c)
+                        {
+                          //  Console.WriteLine($"{r2},{c2},{grid[r2][c2]},{V[r2][c2]},{v}");
+                            if(V[r2][c2]==0)
+                            {
+                                if(grid[r2][c2]<v)
+                                {
+                                    //res += 1;
+                                    //V[r2][c2] = 1;
+                                    N1.Enqueue(r2*c+c2);
+                                }
+                                else
+                                {
+                                    if(!B.ContainsKey(r2*c+c2))
+                                    {
+                                        B[r2*c+c2] = grid[r2][c2];
+                                    }
+                                }
+                                    
+                            }
+                        }
+                    }
+                }
+                
+              
+                
+                
+            }
+             ans[idx] = res;
+           
+            
+        } 
+        return ans;
+    }
+    public void ResetQ(Queue<int> Q1, Dictionary<int,int>B,int t)
+    {
+         List<int> D = new();
+         foreach(KeyValuePair<int,int> kv in B)
+         {
+             if(kv.Value<t)
+             {
+                 Q1.Enqueue(kv.Key);
+                 D.Add(kv.Key);
+             }
+         }
+        foreach(int key in D)
+            B.Remove(key);
+    }
+    
+}

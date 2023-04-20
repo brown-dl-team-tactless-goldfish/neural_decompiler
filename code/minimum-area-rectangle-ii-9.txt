@@ -1,0 +1,70 @@
+class Solution {
+public:
+    double minAreaFreeRect(vector<vector<int>>& points) {
+        int sz=points.size();
+
+        //must short points first by first dimension x. 
+		 // We find boundary points first, then find middle points in the triangles. 
+        sort (points.begin(), points.end());
+
+        // long instead of int to avoid overflow after multiplication
+        vector<vector<long>> dist_square(sz, vector<long>(sz,0));
+
+        // dist_square[i][j] for any two points indexed i and j
+        for (int i=0; i<sz;i++)
+            for (int j=i+1; j<sz; j++)
+            {
+                long dx= points[i][0]-points[j][0], dy= points[i][1]-points[j][1];
+                dist_square[i][j]= dx*dx + dy*dy;
+                dist_square[j][i]=  dist_square[i][j];
+            }
+
+        long min_area_square= numeric_limits<long>::max();
+
+        // now find all i,j, then l1, then l2
+        for (int i=0; i<sz; i++)
+            for (int j=sz-1; j>i+2; j--) // i0, i1,i2, j, at least four points between [i,j]
+            {
+                long c_square= dist_square[i][j];                
+                if (c_square==0) continue; // skip 0 len c edge
+
+                // a^2+ b^2=c^2:   pair of a2 and b2 satisfying the equation
+                unordered_map <long, vector<pair<long,long>>> c2pairs;
+
+                for (int l=i+1; l<j; l++)
+                {
+                    long a_square= dist_square[i][l];
+                    long b_square= dist_square[j][l];
+
+                    //optimize: even if we found a square, the area would be too large
+                    if (a_square*b_square >= min_area_square) continue;
+                  
+                    if (a_square+b_square==c_square) // a new l is found
+                    {
+                        if (c2pairs.count(c_square)) // prevous l ??
+                        {
+                            for (auto p: c2pairs[c_square])
+                            {
+                                // matching same a b pairs:
+                                // it is possible same c_square, but differnt a, b pair
+                                if ( (p.first==a_square && p.second==b_square) ||
+                                     (p.first==b_square && p.second==a_square) )
+                                { 
+                                    min_area_square= min (min_area_square,  a_square*b_square);
+                                    break; // one square of same a,b,c length is enough
+                                }
+                            }
+                        }
+                        // store current triangle anyway
+                        c2pairs[c_square].push_back({a_square, b_square});
+                    }
+
+                }
+            }
+
+        if (min_area_square==numeric_limits<long>::max() )
+            return 0.0;
+        return sqrt ((double)min_area_square);
+
+    }
+};

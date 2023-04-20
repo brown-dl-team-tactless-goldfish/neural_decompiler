@@ -1,0 +1,45 @@
+class Solution {
+public:
+    string repeatLimitedString(string s, int repeatLimit) {
+        unordered_map<char, int> mp;
+        priority_queue<pair<char, int>> pq;
+        
+        for(auto x:s) mp[x]++;      //Make a frequency map of each character
+        string ans = "";
+        
+        for(auto x:mp)          //Insert all the character with count in a max heap
+        {
+            pq.push(x);
+        }
+        
+        while(!pq.empty())
+        {
+            auto ch = pq.top().first;
+            auto cnt = pq.top().second;
+            pq.pop();
+            
+            int c = 0;      //count of character in the answer
+            
+            while(c < cnt && c < repeatLimit)       //Add the top most char of max heap to the answer
+            {                                       //until the c > count of char or upto limit
+                ans += ch;
+                c++;
+            }
+            cnt -= c;       //reduce the count of character
+            
+            if(cnt > 0 && !pq.empty()){        //if count is still greater than 0 and pq in not empty then
+                
+                auto ch1 = pq.top().first;
+                auto cnt1 = pq.top().second;
+                pq.pop();
+                
+                ans += ch1;             //insert next character on top of hean in ans only 1 time
+                cnt1--;
+                pq.push({ch, cnt});
+                if(cnt1 > 0)pq.push({ch1, cnt1});
+            }
+        }
+        
+        return ans;
+    }
+};

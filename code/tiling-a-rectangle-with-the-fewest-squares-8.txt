@@ -1,0 +1,82 @@
+#define SIZE 14
+
+//credit to awice!!
+
+class Solution {
+
+
+    int arr[SIZE][SIZE]={0};
+    int ans = 0;
+    int R ,C;
+
+    //backtrack solution
+    void tiling(int r, int c, int noOfSquareTiles){
+
+        if(noOfSquareTiles >= ans){//prune branch with higher cost
+            return;
+        }else if(r>=R){//once we reached end of matrix
+            ans = noOfSquareTiles;
+        }else if(c >= C){ //try tiling in next row
+            tiling(r+1, 0, noOfSquareTiles);
+        }else if(arr[r][c]==1){ //if tiles is already placed, check for next col
+            tiling(r, c+1, noOfSquareTiles);
+        }else{//try to make all possible square tiles in row-major, start from biggest size
+
+            //max size of squares which can be tiled
+            for(int size=min(R-r, C-c); size >0; size-- ){
+
+                bool flag = false;
+
+                //check if possible to tile for size from current (row, col)
+                for(int row = r; row < (r+size) && !flag; row++){
+                    for(int col = c; col < (c + size); col++ ){
+                        if(arr[row][col]==1){
+                            flag = true;
+                            break;
+                        }
+                    }
+                }
+
+                if(flag){//skip current size
+                    continue;
+                }
+
+                //tile square
+                for(int row = r; row < (r+size); row++)
+                    for(int col = c; col < (c + size); col++ )
+                        arr[row][col] = 1;
+
+                //recurse
+                tiling(r,c+1, noOfSquareTiles+1);
+
+
+                //delete tiles
+                //backtrack
+                for(int row = r; row < (r+size); row++)
+                    for(int col = c; col < (c + size); col++ )
+                        arr[row][col] = 0;
+
+            }
+
+        }
+    }
+
+public:
+    int tilingRectangle(int n, int m) {
+
+       // no of sq tiles in case of
+       //(n,m) == (1,m) or (n,1)
+       ans = n*m;
+
+       R = n;
+       C = m;
+       for(int i=0;i<R;i++)
+           for(int j=0;j<C;j++)
+               arr[i][j] =0;
+
+        
+        tiling(0,0,0);
+
+        return ans;
+    }
+};

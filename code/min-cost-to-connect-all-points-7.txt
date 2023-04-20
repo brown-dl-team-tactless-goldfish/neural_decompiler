@@ -1,0 +1,78 @@
+typedef struct {
+    int i;
+    int j;
+    int dist;
+} Edge;
+
+int cmp (const void *a, const void *b){
+    return ((Edge*)a) -> dist - ((Edge*)b) -> dist;
+}
+
+int minCostConnectPoints(int** points, int pointsSize, int* pointsColSize){
+    int *pgroup_id = calloc(pointsSize, sizeof(int));
+    memset(pgroup_id, 0xff, sizeof(int)*pointsSize);
+    int ans = 0;
+    int edge_count = (((pointsSize-1) + 1) * (pointsSize-1)) / 2;
+    Edge *pEdge = calloc(edge_count, sizeof(Edge));
+    int edge_idx = 0;
+    for (int i = 0; i < pointsSize; i++){
+        for (int j = i+1; j < pointsSize; j++){
+            pEdge[edge_idx].i = i;
+            pEdge[edge_idx].j = j;
+            pEdge[edge_idx].dist = abs(points[i][0]-points[j][0]) + abs(points[i][1]-points[j][1]);
+            edge_idx++;
+        }
+    }
+
+    qsort(pEdge, edge_count, sizeof(Edge), cmp);
+
+    int select_id = 1;
+    for (int edge_idx = 0; edge_idx < edge_count && select_id <= (pointsSize-1); edge_idx++){
+        int node_i = pEdge[edge_idx].i;
+        int node_j = pEdge[edge_idx].j;
+        if (pgroup_id[node_i] == -1 || pgroup_id[node_j] == -1){
+            if (pgroup_id[node_i] != -1){
+                pgroup_id[node_j] = pgroup_id[node_i] ;
+            } else if (pgroup_id[node_j] != -1) {
+                pgroup_id[node_i] = pgroup_id[node_j] ;
+            } else { //pgroup_id[node_i] == 0 && pgroup_id[node_j] == 0
+                pgroup_id[node_i] = node_i;
+                pgroup_id[node_j] = node_i;
+            }
+            ans = ans + pEdge[edge_idx].dist;
+            select_id++;
+        } else if (pgroup_id[node_j] == pgroup_id[node_i] ){ //cycle
+            continue;
+        } else if (pgroup_id[node_i] != pgroup_id[node_j] ){ // bridge or cycle
+
+            int root_i = pgroup_id[node_i];
+            int height_i = 0;
+            while(root_i!=pgroup_id[root_i]){
+                root_i = pgroup_id[root_i];
+                height_i++;
+            }
+            int root_j = pgroup_id[node_j];
+            int height_j = 0;
+            while(root_j!=pgroup_id[root_j]){
+                root_j = pgroup_id[root_j];
+                height_j++;
+            }
+
+            if(root_i == root_j){
+                //cycle
+            } else { // bridge
+                if (height_i > height_j){
+                    pgroup_id[root_j] = root_i;
+                } else {
+                    pgroup_id[root_i] = root_j;
+                }
+                ans = ans + pEdge[edge_idx].dist;
+                select_id++;
+            }
+
+        }
+    }
+    free(pgroup_id);
+    free(pEdge);
+    return ans;
+}

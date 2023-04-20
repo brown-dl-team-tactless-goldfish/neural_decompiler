@@ -1,0 +1,34 @@
+class Solution {
+public:
+    bool CrackSafe(int n, int k, const int &num_numbers, unordered_set<string> &visited, string last_digits, string &answer) {
+        if (num_numbers == visited.size())
+            return true;
+        for (int i = 0; i < k; ++i) {
+            char new_char = i + '0';
+            string new_string = last_digits + new_char;
+            if (visited.count(new_string) > 0)
+                continue;
+            visited.insert(new_string);
+            string new_last_digits = new_string.substr(1);
+            assert(new_last_digits.size() == n - 1);
+            answer = answer + new_char;
+            if (CrackSafe(n, k, num_numbers, visited, new_last_digits, answer))
+                return true;
+            answer.erase(answer.begin() + (answer.length() - 1));
+            visited.erase(visited.find(new_string));
+        }
+        return false;
+    }
+    string crackSafe(int n, int k) {
+        int num_numbers = pow(k, n);
+        string zero;
+        for (int i = 1; i < n; ++i)
+            zero = zero + '0';
+        string n_zeros = zero + '0';
+        unordered_set<string> visited;
+        visited.insert(n_zeros);
+        string answer = n_zeros;
+        CrackSafe(n, k, num_numbers, visited, zero, answer);
+        return answer;
+    }
+};

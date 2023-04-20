@@ -1,0 +1,28 @@
+class Solution {
+public:
+    int maximizeWin(vector<int>& prizePositions, int k) 
+    {
+        int f[3];
+        f[0]=f[1]=f[2]=0;
+        queue<int>q1;
+        queue<pair<int,int>>q2;
+        for(auto &x:prizePositions)
+        {
+            f[0]+=1;
+            q1.push(x);
+            while(q1.size()&&q1.front()<x-k)
+            {
+                f[0]-=1;
+                q1.pop();
+            }
+            q2.push({x,f[0]});
+            while(q2.size()&&q2.front().first<x-k)
+            {
+                f[1]=max(f[1],q2.front().second);
+                q2.pop();
+            }
+            f[2]=max(f[2],f[1]+f[0]);
+        }
+        return max({f[0],f[1],f[2]});
+    }
+};

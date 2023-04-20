@@ -1,0 +1,47 @@
+// calculates n ^ k
+int power(int n, int k) {
+    int result = 1;
+    
+    for (int i = 1; i <=k; i++) {
+        result *= n;
+    }
+    
+    return result;
+}
+
+int binaryToDecimal(char* s, int startIndex, int endIndex) {
+    int placeValue = 1;
+    int result = 0;
+    
+    // endIndex is the least significant index.
+    for (int i = endIndex; i >= startIndex; i--) {
+        result += (s[i] - '0') * placeValue;
+        placeValue *= 2;
+    }
+    
+    return result;
+}
+
+bool hasAllCodes(char * s, int k){
+    int numOfBinaryCodes = power(2, k);
+
+    short hash[numOfBinaryCodes];
+    for (int i = 0; i < numOfBinaryCodes; i++)
+        hash[i] = 0;
+    
+    int totalUniqueValue = 0;
+    int strLen = strlen(s);
+    for (int i = 0; i <= strLen - k; i++) {
+        int key = binaryToDecimal(s, i, i + k - 1);
+        if (hash[key] == 0) {
+            hash[key] = 1;
+            totalUniqueValue += 1;
+        }
+
+        if (totalUniqueValue == numOfBinaryCodes) { // // we have scanned s, and upto this point we generated all binary codes.
+            return true;
+        }
+    }
+    // we have scanneed whole s and couldn't generate some binary codes.
+    return false;
+}

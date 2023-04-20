@@ -1,0 +1,72 @@
+#include <string.h>
+
+#define MAX_LEN 10000
+
+typedef struct {
+    int size;
+    char *tmp;
+} Node;
+
+char *NUMBERS[10] = {"", "", "abc", "def", "ghi", "jkl", "mno", "pqrs", "tuv", "wxyz"};
+
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+char ** letterCombinations(char * digits, int* returnSize){
+    if (digits == NULL || strlen(digits) == 0) {
+        *returnSize = 0;
+        return NULL;
+    }
+    
+    Node deque[MAX_LEN];
+    int que_size = 0;
+    int right = 0;
+    int left = 0;
+    
+    int char_idx = (int) (digits[0] - '0');
+    
+    for (int i = 0; i < strlen(NUMBERS[char_idx]); i++) {
+        Node new_node;
+        new_node.size = 1;
+        new_node.tmp = calloc(strlen(digits) + 1, sizeof(char));
+        new_node.tmp[0] = NUMBERS[char_idx][i];
+        
+        deque[right++] = new_node;
+        right = right % MAX_LEN;
+        que_size++;
+    }
+    
+    char **res = malloc(MAX_LEN * sizeof(char *));
+    *returnSize = 0;
+    
+    while (que_size > 0) {
+        Node cur_node = deque[left++];
+        left = left % MAX_LEN;
+        que_size--;
+        if (cur_node.size == strlen(digits)) {
+            res[*returnSize] = malloc(sizeof(char)*(strlen(digits) + 1));
+            strcpy(res[*returnSize], cur_node.tmp);
+            (*returnSize)++;
+            
+            free(cur_node.tmp);
+            
+            continue;
+        }
+        char_idx = (int) (digits[cur_node.size] - '0');
+        for (int i = 0; i < strlen(NUMBERS[char_idx]); i++) {
+            Node nxt_node;
+            nxt_node.size = cur_node.size + 1;
+            nxt_node.tmp = calloc(strlen(digits) + 1, sizeof(char));
+            strcpy(nxt_node.tmp, cur_node.tmp);
+            nxt_node.tmp[cur_node.size] = NUMBERS[char_idx][i];
+            
+            deque[right++] = nxt_node;
+            right = right % MAX_LEN;
+            que_size++;
+        }
+        free(cur_node.tmp);
+    }
+    
+    return res;
+}

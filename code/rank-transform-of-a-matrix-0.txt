@@ -1,0 +1,91 @@
+#define SIZE    10
+
+typedef struct {
+    int elem;
+    int **pair;
+    int count;
+    int size;
+    UT_hash_handle hh;
+} hElem;
+
+int find(int *parent, int x) {
+    return parent[x] == x ? x : find(parent, parent[x]);
+}
+
+int *merge(int *parent, int a, int b) {
+    int u = find(parent, a);
+    int v = find(parent, b);
+    parent[u] = v;
+    int *ret = calloc(sizeof(int), 2);
+    ret[0] = u; ret[1] = v;
+    return ret;
+}
+
+int *unionFind(int n) {
+    int *ret = calloc(sizeof(int), n);
+    for(int i = 0; i < n; i++)
+        ret[i] = i;
+    return ret;
+}
+
+int cmp(hElem *a, hElem *b) {
+    return a->elem - b->elem;
+}
+
+int** matrixRankTransform(int** matrix, int matrixSize, int* matrixColSize, int* returnSize, int** returnColumnSizes){
+    hElem *map = NULL, *s, *t;
+    int n = matrixSize, m = matrixColSize[0];
+    int *rank = calloc(sizeof(int), n+m);
+    *returnSize = n;
+    *returnColumnSizes = calloc(sizeof(int), n);
+    for(int i = 0; i < n; i++)
+        (*returnColumnSizes)[i] = matrixColSize[0];
+    
+    // add the locations of the cells with same keys to map
+    for(int i = 0; i < n; i++) {
+        for(int j = 0; j < m; j++) {
+            int *pair = calloc(sizeof(int), 2);
+            pair[0] = i, pair[1] = j;
+            HASH_FIND_INT(map, &matrix[i][j], s);
+            if(!s) {
+                s = calloc(sizeof(hElem), 1);
+                s->elem = matrix[i][j]; s->count = 0; s->size = SIZE;                
+                s->pair = calloc(sizeof(int *), s->size);
+                s->pair[s->count++] = pair;
+                HASH_ADD_INT(map, elem, s);
+            } else {
+                if(s->count >= s->size) {
+                    s->size *= 2;
+                    s->pair = realloc(s->pair, sizeof(int *) * s->size * 2);                 
+                }
+                s->pair[s->count++] = pair;                
+            }
+        }
+    }    
+    
+    // sort the map based on the key (matrix elements)
+    HASH_SORT(map, cmp);
+    
+    // group the cell locations of same keys
+    HASH_ITER(hh, map, s, t) {
+        int *parent = unionFind(n + m);
+        int *rank2 = calloc(sizeof(int), n+m);
+        memcpy(rank2, rank, sizeof(int) * (n+m));
+        
+        int **pairs = s->pair, count = s->count;
+        for(int c = 0; c < count; c++) {
+            int i = pairs[c][0], j = pairs[c][1];
+            int *k = merge(parent, i, j + n);
+            rank2[k[1]] = fmax(rank2[k[0]], rank2[k[1]]);
+        }
+        
+        for(int c = 0; c < count; c++) {
+            int i = pairs[c][0], j = pairs[c][1];
+            rank[i] = rank[j + n] = matrix[i][j] = rank2[find(parent, i)] + 1;
+        }
+        free(rank2);
+        free(parent);
+    }
+    
+    return matrix;
+}

@@ -1,0 +1,32 @@
+struct tweet { int uid, tid; };
+
+struct user { char fwe[500]; };
+
+typedef struct { struct user u[600]; struct tweet t[20000]; int nt, nf[10]; } Twitter;
+
+Twitter* twitterCreate() {
+    return calloc(1, sizeof(Twitter));
+}
+
+void twitterPostTweet(Twitter* obj, int userId, int tweetId) {
+    obj->t[obj->nt].uid = userId;
+    obj->t[obj->nt++].tid = tweetId;
+}
+
+int* twitterGetNewsFeed(Twitter* obj, int userId, int* retSize) {
+    int i = obj->nt, j = 0, d, s;
+    for (Twitter *t = obj ; --i >= 0 && j < 10 ; (d = t->t[i].uid) == (s = userId) || t->u[s].fwe[d] ? t->nf[j++] = t->t[i].tid : 0);
+    return *retSize = j, obj->nf;
+}
+
+void twitterFollow(Twitter* obj, int followerId, int followeeId) {
+    obj->u[followerId].fwe[followeeId] = 1;
+}
+
+void twitterUnfollow(Twitter* obj, int followerId, int followeeId) {
+    obj->u[followerId].fwe[followeeId] = 0;  
+}
+
+void twitterFree(Twitter* obj) {
+    free(obj);
+}

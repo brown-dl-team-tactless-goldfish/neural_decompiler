@@ -1,0 +1,34 @@
+class Solution {
+    int BinarySearch(int &val, int &e, int &s, vector<vector<int>>& rides)
+    {
+        int end = e-1, start = s+1, ans = e;
+        while(start <= end)
+        {
+            int mid = start + (end - start)/2;
+            if(rides[mid][0] >= val)
+            {
+                ans = mid;
+                end = mid-1;
+            }
+            else
+                start = mid+1;
+        }
+        return ans;
+    }
+    long long dfs(vector<long long> &dp, vector<vector<int>>& rides, int i, int &n)
+    {
+        if(i >= n) return 0;
+        if(dp[i] != -1) 
+            return dp[i];
+        int val = BinarySearch(rides[i][1], n, i, rides);
+        long long price = rides[i][1]-rides[i][0]+rides[i][2];
+        return dp[i] = max(dfs(dp, rides, i+1, n),price + dfs(dp, rides, val, n));
+    }
+public:
+    long long maxTaxiEarnings(int n, vector<vector<int>>& rides) {
+        int m = rides.size();
+        sort(rides.begin(), rides.end());
+        vector<long long> dp(m, -1);
+        return dfs(dp, rides, 0, m);
+    }
+};

@@ -1,0 +1,40 @@
+int* addToArrayForm(int* num, int numSize, int k, int* returnSize){
+    int car = 0; int* returnNum;
+    *returnSize = numSize;
+    
+    for (int i = numSize - 1; i > -1; i--)
+    {
+        num[i] += ((k % 10) + car);
+        k /= 10;
+        
+        if (num[i] > 9)
+        {
+            car = 1;
+            num[i] %= 10;
+        }
+        else car = 0;
+    }
+    
+	// i.e. if k.len > num.len and/or (num + k).len > num.len
+    if (k || car)
+    {
+        k += car;
+        int nlen = ((k) ? log10(k) + 1 : 0);
+        *returnSize += nlen;
+        returnNum = (int*) malloc(sizeof(int) * (*returnSize));
+        
+        for (int i = nlen - 1; i > -1; i--) 
+        {
+            returnNum[i] = k % 10;
+            k /= 10;
+        }
+        for (int i = nlen; i < (*returnSize); i++) returnNum[i] = num[i - nlen];
+    }
+    else
+    {
+        returnNum = (int*) malloc(sizeof(int) * numSize); 
+        for (int i = 0; i < numSize; i++) returnNum[i] = num[i];
+    }
+    
+    return returnNum;
+}

@@ -1,0 +1,21 @@
+#define LEFT_MASK       (0b111100000)
+#define MIDDLE_MASK     (0b001111000)
+#define RIGHT_MASK      (0b000011110)
+
+int maxNumberOfFamilies(int n, int** reservedSeats, int reservedSeatsSize, int* reservedSeatsColSize){
+    int idx, maskIdx, options = 0, *pSeats;
+    
+    pSeats = calloc(n, sizeof(int));
+    for (idx = 0; idx < reservedSeatsSize; idx++)
+        pSeats[reservedSeats[idx][0] - 1] |= (1 << (reservedSeats[idx][1] - 1));
+    for (idx = 0; idx < n; idx++) {
+        if (!(pSeats[idx] & (LEFT_MASK | RIGHT_MASK)))
+            options += 2;
+        else if (!(pSeats[idx] & LEFT_MASK)
+                 || !(pSeats[idx] & MIDDLE_MASK)
+                 || !(pSeats[idx] & RIGHT_MASK))
+            options++;
+    }
+    
+    return options;
+}

@@ -1,0 +1,30 @@
+int **gd, gdR, gdC; 
+
+void dfs(int r, int c, int *cur) {
+    if (r >= gdR || r < 0 || c >= gdC || c < 0) return ;
+    if (gd[r][c] == 1) {
+        (*cur) ++;
+        gd[r][c] = 2;
+        dfs(r-1, c, cur);
+        dfs(r+1, c, cur);
+        dfs(r, c-1, cur);
+        dfs(r, c+1, cur);
+    }
+}
+
+int maxAreaOfIsland(int** grid, int gridSize, int* gridColSize){
+    gd = grid;
+    gdR = gridSize;
+    gdC = gridColSize[0];
+    int mx = 0, tmp = 0;
+    for (int i=0; i<gdR; i++) {
+        for (int j=0; j<gdC; j++) {
+            if (gd[i][j] == 1) {
+                tmp = 0;
+                dfs(i, j, &tmp);
+                mx = (mx > tmp) ? mx : tmp;
+            }
+        }
+    }
+    return mx;
+}

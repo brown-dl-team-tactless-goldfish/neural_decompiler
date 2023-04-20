@@ -1,0 +1,55 @@
+struct dsu {
+  vector<int> parent, rank;
+  dsu(int n) : parent(n), rank(n, 1) {
+    for (int i = 0; i < n; i++)
+      parent[i] = i;
+  }
+  int find(int i) {
+    if (parent[i] == i)
+      return i;
+    return parent[i] = find(parent[i]);
+  }
+  void unite(int i, int j) {
+    if (find(i) != find(j)) {
+      int repi = find(i);
+      int repj = find(j);
+      if (rank[repi] < rank[repj])
+        swap(repi, repj);
+      parent[repj] = repi;
+      rank[repi] += int(rank[repi] == rank[repj]);
+    }
+  }
+};
+
+class Solution {
+public:
+  vector<int> smallestMissingValueSubtree(vector<int> &parents, vector<int> &nums) {
+    int n = parents.size();
+
+    vector<vector<int>> childrens(n);
+    for (int i = 1; i < n; i++) {
+      childrens[parents[i]].push_back(i);
+    }
+
+    dsu ds(200001);
+    for (int i = 0; i < n; i++) {
+      ds.unite(nums[i], i + 100001);
+    }
+
+    vector<int> ans(n);
+    auto dfs = [&](auto &self, int cur) -> int {
+      int mex = 1;
+      for (int children : childrens[cur]) {
+        int children_mex = self(self, children);
+        mex = max(mex, children_mex);
+        ds.unite(children + 100001, cur + 100001);
+      }
+      for (; mex <= 100000 && ds.find(mex) == ds.find(cur + 100001); mex++) {
+      }
+      return ans[cur] = mex;
+    };
+    dfs(dfs, 0);
+
+    return ans;
+  }
+};

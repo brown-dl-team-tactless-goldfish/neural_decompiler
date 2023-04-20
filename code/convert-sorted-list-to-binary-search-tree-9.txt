@@ -1,0 +1,61 @@
+struct TreeNode* ListToBST(struct ListNode* node)
+{
+    int len = 0;
+    struct ListNode* cur = node;
+    struct ListNode* prev = NULL;
+    struct ListNode* left = node;
+    struct ListNode* right = NULL;
+    struct ListNode* middle = NULL;
+    struct TreeNode* ret = NULL;
+    int i = 0;
+    
+    if (node == NULL)
+    {
+        return ret;
+    }
+    
+    while (cur)
+    {
+        len++;
+        cur = cur->next;
+    }
+    
+    // one node left
+    if (len == 1)
+    {
+        ret = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+        ret->val = node->val;
+        ret->left = NULL;
+        ret->right = NULL;
+        
+        return ret;
+    }
+    
+    cur = left;
+    for (i=0; i<len/2; i++)
+    {
+        prev = cur;
+        cur = cur->next;
+    }
+    prev->next = NULL;
+    
+    if (cur != NULL)
+    {
+        middle = cur;
+        right = middle->next;
+    }
+    
+    if (middle != NULL)
+    {
+        ret = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+        ret->val = middle->val;
+        ret->left = ListToBST(left);
+        ret->right = ListToBST(right);
+    }
+    
+    return ret;
+}
+
+struct TreeNode* sortedListToBST(struct ListNode* head) {
+    return ListToBST(head);
+}

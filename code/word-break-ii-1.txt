@@ -1,0 +1,38 @@
+class Trie {
+public:
+    Trie() : cs() {};
+    void insert(string &s) {
+        auto cur = this;
+        for (auto c : s) {
+            if (!cur->cs[c - 'a']) cur->cs[c - 'a'] = new Trie;
+            cur = cur->cs[c - 'a'];
+        }
+        cur->isword = true;
+    }
+    void dfs(string &s, int i, vector<string> &ans, string buf) {
+        auto cur = this;
+        if (i == s.size()) 
+            ans.emplace_back(buf.begin(), prev(buf.end()));
+        for (; i < s.size() && cur->cs[s[i] - 'a']; i++) {
+            cur = cur->cs[s[i] - 'a'];
+            buf += s[i];
+            if (cur->isword) {
+                dfs(s, i + 1, ans, buf + " ");
+            } 
+        }
+    }
+private:
+    array<Trie *, 26> cs;
+    bool isword = false;
+};
+
+class Solution {
+public:
+    vector<string> wordBreak(string s, vector<string>& wordDict) {
+        Trie tr;
+        vector<string> ans;
+        for (auto &w : wordDict) tr.insert(w);
+        tr.dfs(s, 0, ans, "");
+        return ans;
+    }
+};

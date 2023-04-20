@@ -1,0 +1,29 @@
+class Solution {
+public:
+    int findKthNumber(int n, int k) {
+        unsigned int root = 1;
+        
+        while (k > 1) {
+            int subTreeSz = calcSubSize(n, root);
+            if (subTreeSz < k) {
+                k -= subTreeSz;
+                root++;
+            } else {
+                root *= 10;
+                k--;
+            }
+        }
+        return root;
+    }
+    
+    int calcSubSize(unsigned long long int n, unsigned long long int root) {
+        unsigned long long int l = root, r = root + 1;
+        int sz = 0;
+        while (l <= n) {
+            sz += min(n + 1, r) - l;
+            l *= 10;
+            r *= 10;
+        }
+        return sz;
+    }
+};

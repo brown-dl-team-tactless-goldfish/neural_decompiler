@@ -1,0 +1,109 @@
+#define SIZE 229
+
+typedef struct Node
+{
+    char *key;
+    int val;
+    struct Node *next;
+} Node;
+
+typedef struct HTable
+{
+    struct Node **arr;
+} HTable;
+
+HTable *create()
+{
+    HTable *ht = calloc(1, sizeof(HTable));
+    ht->arr = calloc(SIZE, sizeof(Node *));
+    
+    return ht;
+}
+
+unsigned long hash(unsigned char *str)
+{
+	unsigned long hash = 5381;
+	int c;
+
+	while (c = *str++)
+	    hash = ((hash << 5) + hash) + c;
+
+	return hash % SIZE;
+}
+
+void insert(HTable *ht, char *key, int val)
+{
+    int index = hash(key);
+    Node *temp = ht->arr[index];
+    
+    if (temp == NULL)
+    {
+        temp = calloc(1, sizeof(Node));
+        temp->key = calloc(strlen(key) + 1, sizeof(char));
+        strcpy(temp->key, key);
+        temp->val = 1;
+        ht->arr[index] = temp;
+        return;
+    }
+    
+    while (temp != NULL)
+    {
+        if (!strcmp(temp->key, key))
+        {
+            temp->val++;
+            return;
+        }
+        
+        temp = temp->next;
+    }
+    
+    Node *newNode = calloc(1,sizeof(Node));
+    newNode->key = calloc(strlen(key) + 1, sizeof(char));
+    strcpy(newNode->key, key);
+    newNode->val = 1;
+    newNode->next = ht->arr[index];
+    ht->arr[index] = newNode;
+}
+
+char **uncommonFromSentences(char *A, char *B, int *returnSize)
+{
+    *returnSize = 0;
+    char **res = NULL;
+    
+    HTable *ht = create();
+    
+    char *str = malloc(sizeof(char) * (strlen(A) + strlen(B) + 2));
+    strcpy(str, A);
+    strcat(str, " ");
+    strcat(str, B);
+    
+    char *token = strtok(str, " ");
+    while (token)
+    {
+        insert(ht, token, 1);
+        token = strtok(NULL, " ");
+    }
+    
+    for (int i = 0; i < SIZE; i++)
+    {
+        Node *temp = ht->arr[i];
+        
+        if (temp == NULL)
+            continue;
+        
+        while (temp)
+        {
+            if (temp->val == 1)
+            {
+                (*returnSize)++;
+                res = realloc(res, sizeof(char *) * (*returnSize));
+                res[*returnSize - 1] = calloc(strlen(temp->key) + 1, sizeof(char));
+                strcpy(res[*returnSize - 1], temp->key);
+            }
+            
+            temp = temp->next;
+        }
+    }
+    
+    return res;
+}

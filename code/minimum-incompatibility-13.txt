@@ -1,0 +1,50 @@
+class Solution {
+public:
+    int memo[70000];
+    int dp(int mask,vector <int> &comb,map <int ,int> &values){
+        if (mask==0) return 0;
+        if (memo[mask]!=-1) return memo[mask];
+        int best=INT_MAX/2;
+        for (auto &c: comb){
+            if ((mask & c)==c){
+                best=min(best,dp(mask ^ c,comb,values)+values[c]);
+            }
+        }
+        return memo[mask]=best;
+    }
+    int minimumIncompatibility(vector<int>& nums, int k) {
+        ios_base::sync_with_stdio(false); cin.tie(NULL); cout.tie(NULL);
+        int n=nums.size();
+        int l=n/k;
+        memset(memo,-1,sizeof(memo));
+        map <int ,int> values;
+        vector <int> comb;
+        for (int mask=0;mask<(1<<n);mask++){
+            int val=0;
+            for (int i=0;i<n;i++){
+                if ((mask & (1<<i))!=0) val++;
+            }
+            if (val==l){
+                bool flag=true;
+                vector <int> seen(n+1,0);
+                vector <int> okay;
+                for (int j=0;j<n;j++){
+                    if ((mask & (1<<j))!=0){
+                        if (seen[nums[j]]==1){
+                            flag=false;
+                            break;
+                        }
+                        seen[nums[j]]=1;
+                        okay.push_back(nums[j]);
+                    } 
+                }
+                if (flag){
+                    values[mask]=*max_element(okay.begin(),okay.end())-*min_element(okay.begin(),okay.end());
+                    comb.push_back(mask);
+                }
+            }
+        }
+        int ans=dp((1<<n)-1,comb,values);
+        return (ans<INT_MAX/2)?ans:-1;
+    }
+};

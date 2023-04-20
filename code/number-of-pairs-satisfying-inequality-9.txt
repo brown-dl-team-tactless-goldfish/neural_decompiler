@@ -1,0 +1,61 @@
+class Solution {
+public:
+    void update(vector<int>& seg, int idx, int l, int r, int val)
+    {
+        if(l>r)
+            return;
+        if(l==r)
+        {
+             if(val==l)
+             {
+                 seg[idx]++;
+             }
+            return;
+        }
+        int mid = (l+r)/2;
+        if(val>=l && val<=mid)
+        update(seg, idx*2+1, l, mid, val);
+        else
+        update(seg, idx*2+2, mid+1, r, val);
+        seg[idx] = seg[idx*2+1]+seg[idx*2+2];
+        
+    }
+    
+    int query(vector<int>& seg, int idx, int l, int r, int ll, int rr)
+    {
+        if(l>rr || r<ll)
+        {
+            return 0;
+        }
+        if(l>=ll && r<=rr)
+        {
+            return seg[idx];
+        }
+        int mid = (l+r)/2;
+        int p1 =  query(seg, idx*2+1, l, mid, ll,rr);
+        int p2 =   query(seg, idx*2+2, mid+1, r, ll, rr);
+        return p1+p2;
+    }
+    long long numberOfPairs(vector<int>& nums1, vector<int>& nums2, int diff) 
+    {
+        int  n = nums1.size();
+        vector<int>v(n);
+        for(int i =  0;i<n;i++)
+        {
+            v[i] = (nums1[i]-nums2[i])+20000;    
+        }
+       long long int ans = 0;
+        
+        vector<int>seg(160004,0);
+        int nn = 40001;
+        
+        for(int i = 0;i<n;i++)
+        {
+            int pp = query(seg, 0, 0, nn, 0, v[i]+diff );
+            ans += pp;
+            update(seg, 0, 0, nn, v[i]);
+        }
+        return ans;
+              
+    }
+};

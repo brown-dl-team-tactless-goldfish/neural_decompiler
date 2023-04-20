@@ -1,0 +1,28 @@
+class Solution {
+public:
+    
+    bool canArrange(vector<int>& arr, int k) {
+        vector<int> freq(k, 0);  /* Hash Map to store remainders */
+        for(int i : arr){
+            int rem = i % k;
+            if(rem < 0){    /* To handle Neg Values */
+                rem += k;
+            }
+            freq[rem]++;
+        }
+        int count = 0;
+       
+        count += freq[0] / 2;       
+        for(int i = 1; i <= k / 2 && i != k - i; i++){
+            while(freq[i] != 0 && freq[k - i] != 0) {
+                count++;
+                freq[i]--; freq[k - i]--;
+            }
+        }
+        if(k % 2 == 0){
+           count += freq[k / 2] / 2;
+        }
+        
+        return arr.size() / 2 == count;
+    }
+};

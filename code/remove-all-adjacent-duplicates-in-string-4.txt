@@ -1,0 +1,29 @@
+/* 
+10^5 is max input size for this problem ,
+so it determines the max size of the stack.
+*/
+static char stack[100000]; /* Initialize an array for the stack */
+static int stackSize; /* Used for implicit push and pop logic */
+
+
+char * removeDuplicates(char * s){
+    stackSize = 0; /* Implicitly reset stack every time this function is called */
+    stack[stackSize++] = s[0]; /* Push first element */
+    while(*(++s) != '\0'){
+        if(stackSize == 0 || stack[stackSize-1] != *s){
+            stack[stackSize++] = *s; /* Implicit push */
+        }
+        else {
+            stackSize--; /* Implicit pop */
+        }
+    }
+    
+    /* Build response string */
+    char *resStr = malloc(sizeof(char) * (stackSize + 1));
+    for(int i = 0; i < stackSize; i++){
+        resStr[i] = stack[i];
+    }
+    resStr[stackSize] = '\0';
+
+    return resStr;
+}

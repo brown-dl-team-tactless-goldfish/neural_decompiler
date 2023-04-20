@@ -1,0 +1,87 @@
+struct Node {
+	int i;
+	int j;
+	unordered_set<char> keys;
+	string status;
+	Node(int x, int y, unordered_set<char> key, string s) :i(x), j(y), keys(key), status(s) {}
+};
+
+class Solution {
+public:
+	int shortestPathAllKeys(const vector<string>& grid) {
+		int starti = 0, startj = 0;
+		int numK = 0;
+		for (int i = 0; i<grid.size(); ++i)
+			for (int j = 0; j<grid[0].size(); ++j)
+				if (grid[i][j] >= 'a'&&grid[i][j] <= 'f') numK++;
+				else if (grid[i][j] == '@') {
+					starti = i;
+					startj = j;
+				}
+
+				vector<int> dirs = { 0,1,0,-1,0 };
+				queue<Node*> todo;
+				unordered_set<char> keys;
+				Node* start = new Node(starti, startj, keys, to_string(starti) + "," + to_string(startj) + ",");
+				todo.push(start);
+				unordered_set<string> seen;
+				seen.insert(start->status);
+
+				int cnt = 0;
+
+				int step = 0;
+				unordered_set<char> mykeys;
+
+				while (!todo.empty()) {
+					int n = todo.size();
+
+					while (n-->0) {
+						Node* cur = todo.front();
+						todo.pop();
+						mykeys.clear();
+						for (char l : cur->keys) mykeys.insert(l);
+						
+						bool flag = false;
+						for (int dir = 0; dir<4; ++dir) {
+							unordered_set<char> bset;
+							for (auto k : mykeys) bset.insert(k);
+							int ni = cur->i + dirs[dir];
+							int nj = cur->j + dirs[dir + 1];
+							//cout<<cur->i<<","<<cur->j<<"@"<<ni<<","<<nj<<endl;
+
+							if (ni<0 || ni >= grid.size() || nj<0 || nj >= grid[0].size()) continue;
+							if (grid[ni][nj] == '#' || (grid[ni][nj] >= 'A'&&grid[ni][nj] <= 'F'&&bset.count(grid[ni][nj] + 'a' - 'A') == 0)) continue;
+
+							char c = grid[ni][nj];
+							
+							if (c >= 'a'&&c <= 'f') {
+								if (bset.count(c) == 0) {
+									bset.insert(c);
+									if (bset.size() == numK) return (step + 1);
+									
+								}
+							}
+							
+							
+							string status = to_string(ni) + "," + to_string(nj) + ",";
+							for (char k : bset) status += to_string(k) + ",";
+
+							if (seen.count(status) != 0) continue;
+							seen.insert(status);
+
+							
+							Node* newNode = new Node(ni, nj, bset, status);
+							todo.push(newNode);
+							//cout<<status<<endl;
+							
+						}
+					}
+
+					step++;
+					cout << step << endl;
+					
+				}
+
+				return -1;
+	}
+};

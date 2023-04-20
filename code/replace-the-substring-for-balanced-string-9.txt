@@ -1,0 +1,56 @@
+class Solution {
+public:
+    int balancedString(string s) {
+        int n=s.size();
+         unordered_map<char,int>mp;
+        int k=0;
+        // Find those extra which appears in our string
+           // WWEQERQWQWWRWWERQWEQ
+             // EXTRA STRING IS "WWW"
+                 // WE HAVE TO FIND THE MINIMUM LENGTH OF SUB-STRING WHICH CONTAINS THIS "WWW"
+        for(int i=0;i<n;i++)
+        {  
+            mp[s[i]]++;
+            if(mp[s[i]]>n/4)
+              k++;
+        }
+        
+        if(k==0) return 0;
+    // Now find it the minimum length of substring which contains these extra_s all character with same frequency
+        int i=0;
+        int j=0;
+        int count=0;
+        int result=INT_MAX;
+        // Variable size window problem
+        while(j<n)
+        { 
+            // Do pre-calculatoin
+            mp[s[j]]--;
+            if(mp[s[j]]>=n/4)
+              count+=1;
+          
+           // Play with condition
+         if(count<k)
+             j++;
+         else
+         {
+            
+             while(count==k)
+             {  // store result
+             result=min(result,j-i+1);
+                 // Remove calculation for i
+                 mp[s[i]]++;
+                 if(mp[s[i]]==(n/4)+1)
+                     count--;
+                 i++;
+             }
+             j++;
+         }
+        }
+        // cout<<"result="<<result<<endl;
+        return result;
+    }
+};
+
+Time  Complexity: O(2*n)
+Space Complexity: O(1)

@@ -1,0 +1,51 @@
+class Solution {
+private:
+    vector<int> seen;
+    
+public:
+    bool cycleDetectedInDFS(vector<vector<int>> &adjList, int cur, int source)
+    {
+        seen[cur] = 1;
+        
+        bool res{false};
+        for(auto&neighbor: adjList[cur])
+        {
+            if(!seen[neighbor])
+            {
+                res = cycleDetectedInDFS(adjList,neighbor, source);
+            }
+            else if(source == cur)
+            {
+                return true;
+            }
+        }
+        
+        return res;
+    }
+    
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        if(edges.empty())
+        {
+            return {};
+        }
+        
+        vector<int> res;
+        vector<vector<int>> adjList(edges.size()+1);
+        seen.resize(edges.size()+1, 0);
+        
+        for(auto &edge : edges)
+        {
+            adjList[edge[0]].push_back(edge[1]);
+            adjList[edge[1]].push_back(edge[0]);
+            
+            if(cycleDetectedInDFS(adjList, edge[0], edge[0]))
+            {
+                return edge;
+            }
+            
+            fill(seen.begin(), seen.end(), 0);
+        }
+        
+        return {};
+    }
+};

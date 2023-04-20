@@ -1,0 +1,43 @@
+
+int maxDepth(struct TreeNode* root) {
+    if (root==NULL) return 0;
+    int L=maxDepth(root->left);
+    int R=maxDepth(root->right);
+    int M=(L>R)?L:R;
+    
+    return M+1;
+}
+
+
+void pathRecursive(struct TreeNode* root,char*** res,int d,int depth,int left,int right) {
+    if (root==NULL || d==depth) return ;
+    
+    int mid=(left+right)/2;
+    res[d][mid]=(char*)malloc(4*sizeof(char));
+    sprintf(res[d][mid],"%d",root->val);
+    
+    pathRecursive(root->left,res,d+1,depth,left,mid-1);
+    pathRecursive(root->right,res,d+1,depth,mid+1,right);
+}
+
+
+char*** printTree(struct TreeNode* root,int** columnSizes,int* returnSize) {
+    int depth=maxDepth(root);
+    int width=pow(2,depth)-1;
+    
+    *returnSize=depth;
+    char*** res=(char***)malloc(depth*sizeof(char**));
+    columnSizes[0]=(int*)malloc(depth*sizeof(int));
+    
+    for (int i=0;i<depth;i++) {
+        columnSizes[0][i]=width;
+        res[i]=(char**)malloc(width*sizeof(char*));
+        for (int j=0;j<width;j++) {
+            res[i][j]="";
+        }
+    }
+    
+    pathRecursive(root,res,0,depth,0,width-1);
+    return res;
+}
+

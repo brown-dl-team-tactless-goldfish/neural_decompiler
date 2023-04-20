@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int minMoves(vector<int>& nums, int limit) 
+    {
+        int res=INT_MAX,n=nums.size(),N=2*limit;
+        vector<int>count(N+1,0),premin(N+1,0),premax(N+1,0);
+        for(int i=0,j=n-1;i<j;i++,j--)
+        {
+            int sum=nums[i]+nums[j];
+            int mn=min(nums[i],nums[j]);
+            int mx=max(nums[i],nums[j]);
+            count[sum]++;
+            premin[mn]++;
+            premax[mx]++;
+        }
+        for(int i=1;i<=N;i++)
+        {
+            premin[i]+=premin[i-1];
+            premax[i]+=premax[i-1];
+        }
+        for(int sum=2;sum<=N;sum++) //checking for all possible sum
+        {
+            int x=count[sum];   //no change
+            int y1=premin[N]-premin[sum-1]; // 2 change for pairs having minimum >=sum
+            int y2=sum-limit>=1?premax[sum-limit-1]:0;// 2 change for pairs having maximum < sum-limit
+            int y=y1+y2; // 2 change
+            int z=(n/2)-x-y;  // 1 change for remaining pairs
+            res=min(res,2*y+z);
+        }
+        return res;
+    }
+};

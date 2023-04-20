@@ -1,0 +1,39 @@
+class Solution {
+private:
+	// s is the start pos, x and y are left most and right most pos.
+	// calculate shortest path needed.
+    int cal(int x, int y, int s) {
+        return y-x + min(abs(s-x), abs(s-y));
+    }
+public:
+    int maxTotalFruits(vector<vector<int>>& a, int spos, int k) {
+        int  n = a.size();
+        int l = -1;
+		// find the left most postion that can be visited.
+        for(int i = 0;i<n;i++){
+            if(abs(spos-a[i][0])<=k){
+                l = i;
+                break;
+            }
+        }
+        if(l==-1)return 0;
+        int r = l-1;
+        int sum = 0;
+        int ret = 0;
+		// sliding window, moving the left most position.
+        for(int i = l; i < n;i++){
+			// find the right most position possible, given the left most position.
+            while(r+1<n){
+                int tt = cal(a[i][0], a[r+1][0], spos);
+                if(tt>k)break;
+                r++;
+                sum+=a[r][1];
+                ret=max(ret, sum);
+            }
+            if(a[i][0]<spos){
+                sum-=a[i][1];
+            } else break; // no need to process anymore when the left most position is on the right of the start pos.
+        }
+        return ret;
+    }
+};

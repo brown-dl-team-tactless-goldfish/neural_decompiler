@@ -1,0 +1,26 @@
+int largestValsFromLabels(vector<int>& nums, vector<int>& label, int n, int k)     {
+    unordered_map<int,int>mp;
+    for(auto x:label) mp[x]++;
+    priority_queue<pair<int,int>>pq;
+    for(int i=0;i<nums.size();i++){
+        pq.push({nums[i],label[i]});
+    }
+    int c = 0;
+    unordered_map<int,int>m;
+    while(n>0 && !pq.empty()){
+        auto x = pq.top();
+        pq.pop();
+        if(mp.find(x.second)!=mp.end()){
+            if(mp[x.second]<=k){
+                c+=(x.first);
+                n-=1;
+            }else{
+                c+=(x.first);
+                n-=1;
+                m[x.second]++;
+                if(m[x.second]==k) mp.erase(x.second);
+            }
+        }
+    }
+    return c;
+}

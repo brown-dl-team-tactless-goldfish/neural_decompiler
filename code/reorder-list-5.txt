@@ -1,0 +1,55 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+struct ListNode* reverse(struct ListNode *head) {
+    if (head == NULL) return NULL;
+    struct ListNode *prev = NULL;
+    struct ListNode *curr = head;
+    while (curr != NULL) {
+        struct ListNode *tmpNext = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = tmpNext;
+    }
+    return prev;
+}
+
+void merge(struct ListNode *L1, struct ListNode *L2) {
+    while (L1 != NULL) {
+        struct ListNode *L1_next = L1->next;
+        struct ListNode *L2_next = L2->next;
+        L1->next = L2;
+        if (L1_next == NULL) {
+            break;
+        }
+        L2->next = L1_next;
+        L1 = L1_next;
+        L2 = L2_next;   
+    }
+    return;
+}
+
+void reorderList(struct ListNode *head){
+    if (head == NULL || head->next == NULL) {
+        return;
+    }
+    struct ListNode *slow = head;
+    struct ListNode *fast = head;
+    struct ListNode *prev = NULL;
+    while (fast != NULL && fast->next != NULL) {
+        prev = slow;
+        slow = slow->next;
+        fast = fast->next->next;
+    }
+    prev->next = NULL;
+    struct ListNode *List1 = head;
+    struct ListNode *List2 = reverse(slow);
+    merge(List1, List2);
+    return;
+}
+

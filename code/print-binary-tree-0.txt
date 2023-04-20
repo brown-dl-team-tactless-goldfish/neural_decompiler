@@ -1,0 +1,55 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *columnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+void order(struct TreeNode* root,int *hight,int *max){
+    if(root==NULL){
+        return;
+    }
+    (*hight)++;
+    if(*max<*hight){
+        *max=*hight;
+    }
+    order(root->left,hight,max);
+    order(root->right,hight,max);
+    (*hight)--;
+}
+void order1(struct TreeNode* root,char*** ret,int left,int right,int *hight){
+    if(root==NULL){
+        return;
+    }
+    (*hight)++;
+    int temp=(right-left)/2+left;
+    ret[(*hight)-1][temp]=(char*)malloc(sizeof(char)*4);
+    sprintf(ret[(*hight)-1][temp],"%d",root->val);
+    order1(root->left,ret,left,temp,hight);
+    order1(root->right,ret,temp+1,right,hight);
+    (*hight)--;
+}
+char*** printTree(struct TreeNode* root, int** columnSizes, int* returnSize) {
+    int hight=0;
+    int max=0;
+    order(root,&hight,&max);
+    char*** ret=(char***)malloc(sizeof(char**)*max);
+    *returnSize=max;
+    int temp=pow(2,max)-1;
+    columnSizes[0]=(int*)malloc(sizeof(int)*max);
+    for(int i=0;i<max;i++){
+        columnSizes[0][i]=temp;
+        ret[i]=(char**)malloc(sizeof(char*)*temp);
+        for(int j=0;j<temp;j++){
+            ret[i][j]="";
+        }
+    }
+    order1(root,ret,0,temp-1,&hight);
+    return ret;
+}

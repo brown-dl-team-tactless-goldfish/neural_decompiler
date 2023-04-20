@@ -1,0 +1,66 @@
+class Solution {
+public:
+class Node{
+    public:
+	 unordered_map<string,Node*>child;
+	 bool del;
+	 string name;
+    Node(string s=""){
+     del=false;
+     name=s;
+    } 
+};
+Node*root;
+    void add(vector<string>&word){
+        Node*temp=root;
+        for(auto x:word){
+            if(temp->child[x]){
+                temp=temp->child[x];
+            }else{
+                temp->child[x]=new Node(x);
+                temp=temp->child[x];
+            }
+        }
+    }
+    unordered_map<string, Node*> seen;
+    string  dfs(Node*root){
+        string s="";
+        for(auto x:root->child){
+            s+="+"+dfs(x.second);
+        }
+        if(s!=""){
+            if(seen.count(s)){
+                seen[s]->del=root->del=true;
+            }else{
+                seen[s]=root;
+            }   
+        }
+        return root->name+s;
+        
+    }
+    vector<vector<string>> ans;
+    vector<string> path;
+    void getPath(Node *node) {
+        if (node->del) return; 
+        path.push_back(node->name);
+        ans.push_back(path);
+        for (auto &[name, child] : node->child) {
+            getPath(child);
+        }
+        path.pop_back();
+    }
+
+
+    vector<vector<string>> deleteDuplicateFolder(vector<vector<string>>& paths) {
+        int n=paths.size();
+        root=new Node();
+        for(auto x:paths){
+            add(x);
+        }
+        dfs(root);
+        for(auto x:root->child){
+            getPath(x.second);
+        }
+        return ans;
+    }
+};

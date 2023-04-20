@@ -1,0 +1,103 @@
+int comp (const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+    
+long long maximumBeauty(int* flowers, int flowersSize, long long newFlowers, int target, int full, int partial){
+    if (flowersSize == 1){
+        if (flowers[0] + newFlowers >= target){
+            return full > (long long)(target-1)*partial ? full : (long long)(target-1)*partial;
+        } else {
+            return (long long)(flowers[0] + newFlowers)*partial;
+        }
+    }
+    qsort(flowers,flowersSize,sizeof(int),comp);
+    int end = flowersSize-1;
+    long long now = 0;
+    while (end >= 0 && flowers[end] >= target){
+        end--;
+        now++;
+    }
+    if (end < 0){
+        return (long long)flowersSize*full;
+    }
+    
+    now *= full;
+    long long* p_add = malloc(sizeof(long long)*flowersSize);
+    p_add[0] = flowers[1]-flowers[0];
+    for (int i = 1 ; i < flowersSize-1 ; i++){
+        p_add[i] = (i+1)*(flowers[i+1]-flowers[i]);
+        p_add[i] +=  p_add[i-1];
+        if (p_add[i] > newFlowers){
+            break;
+        }  
+    }
+    
+    int head = 0;
+    long long copy = newFlowers;
+    while (head < end && copy >= p_add[head]){
+        head++;
+    }
+    if (head > 0){
+        copy -= p_add[head-1];
+    }
+    
+    long long min = flowers[head]+copy/(head+1);
+    if (min >= target){
+        long long a = (long long)full*flowersSize;
+        long long b = (long long)full*(flowersSize-1)+(long long)(target-1)*partial;
+        return a > b ? a : b;
+    }
+    long long ans = (min*partial)+now;
+    
+    
+    newFlowers -= target-flowers[end];
+    if (newFlowers >= 0){
+        now += full;
+        while (newFlowers < p_add[head] || head >= (end-1) ){
+            head--;
+            if (head < 0){
+                if (ans < (flowers[0]+newFlowers)*partial + now){
+                    ans = (flowers[0]+newFlowers)*partial + now;
+                    }  
+                return ans;
+            }
+        }
+        copy = newFlowers-p_add[head];
+        min = flowers[head+1] + copy/(head+2);
+        copy %= (head+2);
+        while (end-1 > head+1 && target-flowers[end-1] <= copy) {
+            copy -= (target-flowers[end-1]);
+            now += full;
+            newFlowers -= (target-flowers[end-1]);
+            end--;
+        }
+        while (target-min <= copy) {
+            copy -= (target-min);
+            now += full;
+            newFlowers -= (target-flowers[end-1]);
+            end--;
+        }
+        if (ans < (min*partial)+now){
+            ans = (min*partial)+now;
+        }
+    }   
+    end--;
+    
+    while (1){
+        newFlowers -= target-flowers[end];
+        if (newFlowers >= 0){
+            now += full;
+            while (head >= (end-1) || newFlowers < p_add[head]){
+                head--;
+            }
+            min = flowers[head+1] + (newFlowers-p_add[head])/(head+2);
+            if (ans < (min*partial)+now){
+                ans = (min*partial)+now;
+            }
+            end--;
+        } else {
+            break;
+        }
+    }
+    return ans;
+}

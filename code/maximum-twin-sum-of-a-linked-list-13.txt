@@ -1,0 +1,40 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+
+int num(struct ListNode** front, struct ListNode* back, int* max);
+
+int pairSum(struct ListNode* head){
+    
+    int max = 0;
+    struct ListNode * temp = head, *slow = head;
+    
+    while(head && head->next) {
+        slow = slow->next;
+        head = head->next->next;
+    }
+    
+    num(&temp,slow,&max);
+    
+    return max;
+
+}
+
+int num(struct ListNode** front, struct ListNode* back, int* max) {
+    
+    if(!back) return 0;
+    
+    num(front,back->next,max);
+    
+    
+    *max = (*front)->val+back->val > *max ? (*front)->val + back->val : *max;
+    
+    *front = (*front)->next;
+    
+    return *max;
+    
+}

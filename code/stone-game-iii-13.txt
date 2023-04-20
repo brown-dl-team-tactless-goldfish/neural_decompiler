@@ -1,0 +1,44 @@
+class Solution {
+public: 
+    int solve(int i,vector<int>&arr,vector<vector<int>>&brr){
+        if(i>=arr.size())
+        return 0;
+     if(brr[i][3]!= INT_MIN)
+       return brr[i][3];
+        int maxi = INT_MIN;
+        
+ //int sum =0;
+ if(i<arr.size()){
+ int  a = arr[i] + min(solve(i+2,arr,brr),min(solve(i+3,arr,brr),solve(i+4,arr,brr)));
+ maxi = max(maxi,a);
+ }
+if((i+1)<arr.size()){
+int b = arr[i]+arr[i+1] + min(solve(i+3,arr,brr),min(solve(i+4,arr,brr),solve(i+5,arr,brr)));
+maxi = max(maxi,b);
+}
+if((i+2)<arr.size()){
+int c = arr[i]+arr[i+1]+arr[i+2] +min(solve(i+4,arr,brr),min(solve(i+5,arr,brr),solve(i+6,arr,brr)));
+maxi = max(maxi,c);
+}
+return brr[i][3]=  maxi;
+    }
+
+
+
+    string stoneGameIII(vector<int>& arr) {
+        int n = arr.size();
+        vector<vector<int>>brr(n+1,vector<int>(4,INT_MIN));
+     int ans =   solve(0,arr,brr);
+    int sum =0;
+     for(int i =0;i<n;i++)
+     sum+=arr[i];
+     int diff = sum -ans;
+     if(diff == ans)
+     return "Tie";
+     else if(ans > diff)
+     return "Alice";
+     else
+     return "Bob";
+
+    }
+};

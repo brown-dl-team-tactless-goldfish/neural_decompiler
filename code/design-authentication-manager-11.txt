@@ -1,0 +1,39 @@
+class AuthenticationManager 
+{
+    public:
+    int t;
+    map<string,int> total;
+    AuthenticationManager(int timeToLive) 
+    {
+        t=timeToLive;
+    }
+    
+    void generate(string tokenId, int currentTime) 
+    {
+        total[tokenId]=currentTime+t;
+    }
+    
+    void renew(string tokenId, int currentTime) 
+    {
+        if(total[tokenId]>currentTime)
+            total[tokenId]=currentTime+t;        
+    }
+    
+    int countUnexpiredTokens(int currentTime) 
+    {
+        int result=0;
+        for(map<string,int>::iterator it=total.begin();it!=total.end();it++)
+            if(it->second>currentTime)
+                result++;
+        
+        return result;
+    }
+};
+
+/**
+ * Your AuthenticationManager object will be instantiated and called as such:
+ * AuthenticationManager* obj = new AuthenticationManager(timeToLive);
+ * obj->generate(tokenId,currentTime);
+ * obj->renew(tokenId,currentTime);
+ * int param_3 = obj->countUnexpiredTokens(currentTime);
+ */

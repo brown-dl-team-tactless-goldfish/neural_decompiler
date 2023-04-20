@@ -1,0 +1,28 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+bool compare(int* x, int* y)
+{
+    for(int i = 0; i < 26; i++)
+        if(x[i] != y[i]) return false;
+    return true;
+}
+int* findAnagrams(char * s, char * p, int* returnSize)
+{
+    int ns = strlen(s);
+    int np = strlen(p);
+    int* res = malloc(ns * sizeof(int));
+    *returnSize = 0;
+    if(ns < np) return res;
+    int ref[26] = {0};
+    int cmp[26] = {0};
+    for(int i = 0; i < np; i++)
+        ref[p[i] - 'a']++;//build reference array
+    for(int i = 0; i < ns; i++)
+    {
+        cmp[s[i] - 'a']++;//add right char
+        if(i >= np) cmp[s[i - np] - 'a']--;//sutract left char
+        if(compare(&ref, &cmp)) res[(*returnSize)++] = i - np + 1;
+    }
+    return res;
+}

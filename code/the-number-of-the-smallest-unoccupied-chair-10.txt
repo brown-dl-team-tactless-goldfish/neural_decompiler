@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int smallestChair(vector<vector<int>>& times, int targetFriend) {
+        vector<int> idx(times.size());
+        iota(idx.begin(), idx.end(), 0);
+        sort(idx.begin(), idx.end(), [&times] (int i, int j) {
+            return times[i][0] < times[j][0];
+        });
+        map<int, vector<int>> m;
+        priority_queue<int, vector<int>, greater<int>> pq(idx.begin(), idx.end());
+        for (int i = 0; i < times.size(); i++) {
+            int j = idx[i];
+            for (; !m.empty() && m.begin()->first <= times[j][0];) {
+                for (auto pos : m.begin()->second)
+                    pq.push(pos);
+                m.erase(m.begin());
+            }
+            if (j == targetFriend) return pq.top();
+            m[times[j][1]].push_back(pq.top());
+            pq.pop();
+        }
+        return -1;
+    }
+};

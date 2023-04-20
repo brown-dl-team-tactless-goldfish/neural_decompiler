@@ -1,0 +1,94 @@
+
+struct Value {
+    int mn = INT_MAX;
+    int mx = INT_MIN;
+    Value(int a, int b)
+    {
+        mn = a;
+        mx = b;
+    }
+    Value()
+    {}
+    
+    void update(Value& v)
+    {
+        mn = std::min(v.mn + 1, mn);
+        mx = std::max(v.mx + 1, mx);
+    }
+};
+class Solution {
+public:
+    // min
+    vector<vector<vector<::Value>>> dp;
+    // max
+    // a left b right
+    ::Value dfs(int a, int b, int n)
+    {
+        if (a > b) {
+            swap(a, b);
+        }
+        
+        if ((a == b) || (n <= 2))
+        {
+            dp[n][a][b] = ::Value(1, 1);
+             cout << a << "," << b << ":" << n << endl;
+            cout << dp[n][a][b].mn << "," << dp[n][a][b].mx << endl;
+            return dp[n][a][b];
+        }
+        if (dp[n][a][b].mn != INT_MAX)
+        {
+            cout << a << "," << b << ":" << n << endl;
+            cout << dp[n][a][b].mn << "," << dp[n][a][b].mx << endl;
+            return dp[n][a][b];
+        }
+        
+        int m = (n / 2) + (((n%2) == 0) ? 0 : 1);
+        ::Value best;
+        if (b <= m)
+        {
+            
+            for (int i = 1; i <= a; i++)
+            {
+                int x = a - i;
+                int y = b - a;
+                for (int j = x + 1; j <= x + y; j++)
+                {
+                    auto cur = dfs(i, j, m);
+                    best.update(cur);
+                }
+            }
+        }
+        else
+        {
+
+            for (int i = 1; i <= a; i++)
+            {
+                int x = a - i;
+                
+                int b1 = n + 1 - b;
+                int y = b1 - a;
+                int z = m - b1;
+                
+                for (int j = x + 1 + z; j <= x + y + z; j++)
+                {
+                    //cout << "next:" << i << "," << j << ","<< x << "," << z << "," << m << "," << b1 << "," << a << "," << b << "," << n << endl;
+                    auto cur = dfs(i, j, m);
+                    best.update(cur);
+                }
+            }
+        }
+        dp[n][a][b] = best;
+        
+        cout << a << "," << b << ":" << m << "," <<  n << endl;
+        cout << best.mn << "," << best.mx << endl;
+        return best;
+    }
+    
+    vector<int> earliestAndLatest(int n1, int firstPlayer, int secondPlayer) {
+        int n = n1 + 1;
+        dp = vector<vector<vector<::Value>>>(n, vector<vector<::Value>>(n, vector<::Value>(n)));
+        auto ans = dfs(firstPlayer, n - secondPlayer, n1);
+        vector<int> v = {ans.mn, ans.mx};
+        return v;
+    }
+};

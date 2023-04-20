@@ -1,0 +1,58 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+
+struct Node{
+    int loc;
+    int count;
+} values[105];
+
+int searchKWeakest(int* arr, int n){
+    int l=0;
+    int r=n-1;
+    while(l<=r){
+        int m=(l+r)/2;
+        if(arr[m]==1){
+            l=m+1;
+        }else{
+            if(m-1>=0 && arr[m-1]==0){
+                r=m-1;
+            }else if(arr[m]==0){
+                return m;
+            }else{
+                break;
+            }
+        }
+    }
+    return n;
+}
+
+void insertionSort(int n){
+  int checkVal,j,checkLoc;
+  for(int i=1;i<n;i++){
+    checkLoc=values[i].loc;
+    checkVal=values[i].count;
+    j=i-1;
+    while(j>=0 && values[j].count>checkVal){
+      values[j+1]=values[j];
+      j=j-1;
+    }
+    values[j+1].loc=checkLoc;
+    values[j+1].count=checkVal;
+  }
+}
+
+int* kWeakestRows(int** mat, int matSize, int* matColSize, int k, int* returnSize){
+    for(int i=0;i<matSize;i++){
+        values[i].loc=i;
+        values[i].count=searchKWeakest(mat[i], matColSize[i]);
+    }
+    insertionSort(matSize);
+    int* ans = (int*) malloc(k*sizeof(int));
+    *returnSize = k;
+    for(int i=0;i<k;i++){
+        ans[i]=values[i].loc;
+        // printf("%d - %d\n",values[i].loc, ans[i]);
+    }
+    return ans;
+}

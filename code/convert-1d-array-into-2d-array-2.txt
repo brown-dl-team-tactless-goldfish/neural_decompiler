@@ -1,0 +1,72 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** construct2DArray(int* original, int originalSize, int m, int n, int* returnSize, int** returnColumnSizes){
+    int** pRetVal = NULL;
+    (*returnSize) = 0;
+    (*returnColumnSizes) = NULL;
+
+    if (originalSize != (m * n))
+    {
+        return pRetVal;
+    }
+
+    (*returnSize) = m;
+    (*returnColumnSizes) = (int*)malloc((*returnSize) * sizeof(int));
+    if ((*returnColumnSizes) == NULL)
+    {
+        perror("malloc");
+        return pRetVal;
+    }
+    int i;
+    for (i=0; i<(*returnSize); ++i)
+    {
+        (*returnColumnSizes)[i] = n;
+    }
+
+    pRetVal = (int**)malloc((*returnSize) * sizeof(int*));
+    if (pRetVal == NULL)
+    {
+        perror("malloc");
+        free((*returnColumnSizes));
+        (*returnColumnSizes) = NULL;
+        return pRetVal;
+    }
+
+    i = 0;
+    int row = 0;
+    int col = 0;
+    for (row=0; row<(*returnSize); ++row)
+    {
+        pRetVal[row] = (int*)malloc(((*returnColumnSizes)[row]) * sizeof(int));
+        if (pRetVal[row] == NULL)
+        {
+            perror("malloc");
+            free((*returnColumnSizes));
+            (*returnColumnSizes) = NULL;
+            for (i=0; i<row; ++i)
+            {
+                free(pRetVal[i]);
+                pRetVal[i] = NULL;
+            }
+            free(pRetVal);
+            pRetVal = NULL;
+            return pRetVal;
+        }
+        memset(pRetVal[row], 0, ((*returnColumnSizes)[row]) * sizeof(int));
+
+        while (i<originalSize)
+        {
+            pRetVal[row][col++] = original[i++];
+            if (col == (*returnColumnSizes)[row])
+            {
+                col = 0;
+                break;
+            }
+        }
+    }
+
+    return pRetVal;
+}

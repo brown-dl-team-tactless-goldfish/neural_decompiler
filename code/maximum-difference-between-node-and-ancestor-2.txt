@@ -1,0 +1,29 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+ void dfs(struct TreeNode *root, int *arr, int len, int *max_val) {
+     if (!root) {
+         return;
+     }
+     arr[len] = root->val;
+     len++;
+     for (int i=0; i<len-1; i++) {
+         *max_val = fmax(*max_val, abs(arr[i]-arr[len-1]));
+     }
+     dfs(root->left, arr, len, max_val);
+     dfs(root->right, arr, len, max_val);
+ }
+
+int maxAncestorDiff(struct TreeNode* root){
+    int arr[5001] = {0};
+    int len = 0;
+    int max_val = -1;
+    dfs(root, arr, len, &max_val);
+
+    return max_val;
+}

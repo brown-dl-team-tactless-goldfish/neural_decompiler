@@ -1,0 +1,54 @@
+class Solution {
+public:
+    int ans;
+    void dfs(int i, string& s, string& s1, string& s2){
+        
+        if(i == size(s)){
+            
+            ans = max(ans, (isPal(s1) * isPal(s2)) );
+            
+            return;
+        }
+        
+        // choose ith character for s1 (not for s2)
+        
+        s1.push_back(s[i]);
+        dfs(i+1, s, s1, s2);
+        
+        //backtrack
+        
+        s1.pop_back();
+        
+        // choose ith character for s2 (not for s1)
+        
+        s2.push_back(s[i]);
+        dfs(i+1, s, s1, s2);
+        s2.pop_back();
+        dfs(i+1, s, s1, s2);
+    }
+    int maxProduct(string& s) {
+        
+        ans = 0;
+        string s1 = "",s2 = "";
+        dfs(0, s, s1, s2);
+        
+        return ans;
+        
+    }
+    private:
+        int isPal(string& s) {
+        
+        int n = size(s);
+        int i = 0, j = n-1;
+            
+        while(i <= j){
+            
+            if(s[i++] != s[j--]){
+                
+                return 0;
+            }
+        }
+            
+        return n;
+    }
+};

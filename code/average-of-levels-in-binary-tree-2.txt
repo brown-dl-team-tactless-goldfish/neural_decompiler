@@ -1,0 +1,51 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int max(int a,int b){
+    return a>b?a:b;
+}
+int h(struct TreeNode* root){
+   if(!root) return 0;
+   return 1+max(h(root->left),h(root->right)) ;
+}
+int node_num(struct TreeNode* root){
+    if(!root) return 0;
+    return 1+node_num(root->left)+node_num(root->right);
+}
+double* averageOfLevels(struct TreeNode* root, int* returnSize){
+    int height=h(root);
+    double *res=(double*)calloc(height,sizeof(double));
+    int res_idx=0;
+    *returnSize = height;
+    int num=node_num(root);
+    struct TreeNode *q[num];
+    int idx=0;
+    q[idx++]=root;
+    printf("height : %d | num : %d\n",height,num);
+    while(idx){
+        printf("idx : %d\n",idx);
+        struct TreeNode *pop[idx];
+        double number=0;
+        int pop_idx=0;
+        for(int i=0;i<idx;i++){
+            number+=q[i]->val;
+            pop[pop_idx++]=q[i];
+        }
+        res[res_idx++]=number/idx;
+        idx=0;
+        for(int i=0;i<pop_idx;i++){
+            if(pop[i]->left) q[idx++]=pop[i]->left;
+            if(pop[i]->right) q[idx++]=pop[i]->right;
+        }
+        
+    }
+    return res;
+}

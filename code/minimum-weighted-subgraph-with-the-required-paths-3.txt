@@ -1,0 +1,55 @@
+class Solution {
+public:
+    
+    typedef pair<long, long> P;
+    
+    long long minimumWeight(int n, vector<vector<int>>& edges, int a, int b, int d) {
+        
+        vector<vector<P>> adj(n);
+        vector<vector<P>> arr(n);
+        
+        for (auto edge : edges) {
+            int u = edge[0];
+            int v = edge[1];
+            int w = edge[2];
+            adj[u].push_back({w, v});
+            arr[v].push_back({w, u});
+        }
+        
+        vector<long> da(n, LONG_MAX);
+        vector<long> db(n, LONG_MAX);
+        vector<long> dd(n, LONG_MAX);
+        
+        dikshtra(adj, a, da);
+        dikshtra(adj, b, db);
+        dikshtra(arr, d, dd);
+        
+        long ans = LONG_MAX;
+        for (int i = 0; i < n; ++i) {
+            if (da[i] == LONG_MAX || db[i] == LONG_MAX || dd[i] == LONG_MAX) continue;
+            ans = min(ans, da[i] + db[i] + dd[i]);
+        }
+        
+        return ans == LONG_MAX ? -1 : ans;
+    }
+    
+    void dikshtra(vector<vector<P>> &G, int a, vector<long> &dist){
+        
+        dist[a] = 0;
+        priority_queue<P, vector<P>, greater<P>> pq;
+        pq.push({0, a});
+        
+        while (!pq.empty()) {
+            auto [cost, u] = pq.top(); pq.pop();
+            
+            if (cost > dist[u]) continue;
+            
+            for (auto &[c, v] : G[u]) {
+                if (dist[v] > dist[u] + c) {
+                    dist[v] = dist[u] + c;
+                    pq.push({dist[v], v});
+                }
+            }
+        }
+    }
+};

@@ -1,0 +1,81 @@
+ public class Solution
+    {
+        public int ReachableNodes(int[][] edges, int m, int n)
+        {
+            int res = 0;
+            int[] node2Remains = new int[n];
+            bool[] visited = new bool[n];
+            int[,] distance = new int[n,n];
+            int[,] edgeOccupied = new int[n,n];
+            IList<int>[] graph = new IList<int>[n];
+
+            for (int i = 0; i < n; i++)
+            {
+                node2Remains[i] = -1;
+                graph[i] = new List<int>();
+            }
+
+            for (int i = 0; i < edges.Length; i++)
+            {
+                int v1 = edges[i][0]; 
+                int v2 = edges[i][1];
+                graph[v1].Add(v2);
+                graph[v2].Add(v1);
+                distance[v1,v2] = edges[i][2];
+                distance[v2,v1] = edges[i][2];
+            }
+
+            Queue<(int node, int remains)> queue = new Queue<(int node, int remains)>();
+            (int node, int remains) start = (0, m);
+
+            queue.Enqueue(start);
+            node2Remains[0] = m;
+
+            while (queue.Count != 0)
+            {
+                var curr = queue.Dequeue();
+                visited[curr.node] = true;
+
+                IList<int> childs = graph[curr.node];
+
+                foreach (var child in childs)
+                {
+                    int dis = distance[curr.node,child];
+                    if (curr.remains >= dis)
+                    {
+                        edgeOccupied[curr.node,child] = dis;
+
+                        int newRemainMove = curr.remains - dis - 1;
+                        if (newRemainMove > node2Remains[child])
+                        {
+                            (int node, int remains) next = (child, newRemainMove);
+                            node2Remains[child] = newRemainMove;
+                            queue.Enqueue(next);
+                        }
+                    }
+                    else
+                    {
+                        edgeOccupied[curr.node,child] = Math.Max(edgeOccupied[curr.node,child], curr.remains);
+                    }
+                }
+            }
+
+            for (int i = 0; i < edges.Length; i++)
+            {
+                int v1 = edges[i][0]; 
+                int v2 = edges[i][1];
+                int occupied = Math.Min(edges[i][2], edgeOccupied[v1,v2] + edgeOccupied[v2,v1]);
+                res += occupied;
+            }
+
+            for (int i = 0; i < n; i++)
+            {
+                if (visited[i])
+                {
+                    res++;
+                }
+            }
+
+            return res;
+        }
+    }

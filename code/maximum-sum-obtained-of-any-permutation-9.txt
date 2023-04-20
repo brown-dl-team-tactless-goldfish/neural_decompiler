@@ -1,0 +1,25 @@
+class Solution {
+public:
+    #define ll long long int
+    int mod=1000000007;
+    int maxSumRangeQuery(vector<int>& nums, vector<vector<int>>& requests) 
+    {
+        int n=nums.size();
+        vector<int>freq(n+1,0);
+        for(auto q:requests)
+        {
+            freq[q[0]]++;
+            freq[q[1]+1]--;
+        }
+        for(int i=1;i<=n;i++)
+        {
+            freq[i]+=freq[i-1];
+        }
+        sort(freq.rbegin(),freq.rend());
+        sort(nums.rbegin(),nums.rend());
+        ll res=0;
+        for(int i=0;i<n;i++)
+            res=(res+(ll)freq[i]*nums[i])%mod;
+        return res;
+    }
+};

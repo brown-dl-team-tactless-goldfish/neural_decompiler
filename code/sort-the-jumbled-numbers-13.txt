@@ -1,0 +1,46 @@
+class Solution {
+public:
+    int solve(vector<int>&v,int n)
+    {
+        vector<int>res;
+        if(n==0)
+            res.push_back(v[0]);
+        else{
+          while(n>0)
+        {
+            res.push_back(v[n%10]);
+            n=n/10;
+        }  
+        }
+        
+        int s=0;
+        int d=1;
+        for(auto it:res)
+        {
+            s=s+(it*d);
+            d=d*10;
+        }
+        return s;
+    }
+    static bool cmp(const pair<int,int> &a,
+                    const pair<int,int> &b)
+    {
+        return a.second<b.second;
+    }
+ 
+    vector<int> sortJumbled(vector<int>& mapping, vector<int>& nums) {
+        int n=nums.size();
+        vector<int>res;
+        for(int i=0;i<nums.size();i++)
+            res.push_back(solve(mapping,nums[i]));
+        vector<pair<int,int>>ans;
+        for(int i=0;i<n;i++)
+            ans.push_back(make_pair(nums[i],res[i]));
+        sort(ans.begin(),ans.end(),cmp);
+        vector<int>v;
+        for(int i=0;i<ans.size();i++)
+            v.push_back(ans[i].first);
+        return v;
+        
+    }
+};

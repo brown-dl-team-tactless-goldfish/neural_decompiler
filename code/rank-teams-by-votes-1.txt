@@ -1,0 +1,40 @@
+int sum_char[26][26]={0};
+int num_team = 0;
+
+int cmpfunc (const void * a, const void * b) {
+    char a1 = *(char*)a;
+    char b1 = *(char*)b;
+
+    for(int j=0;j<num_team;j++){
+        if(sum_char[a1-'A'][j]==sum_char[b1-'A'][j]) continue;
+        else return sum_char[a1-'A'][j] < sum_char[b1-'A'][j];
+    }
+    return a1 > b1;
+}
+
+char * rankTeams(char ** votes, int votesSize){
+    if(votesSize==1) return *(votes);
+
+    // reset global variables for leetcode only
+    for(int i=0;i<26;i++)
+        for(int j=0;j<26;j++)
+            sum_char[i][j]=0;
+    num_team = 0;
+    
+    for(int i=0;i<votesSize;i++){
+        int tmp = 0;
+        char* c = *(votes+i);
+        while(*c!='\0'){
+            sum_char[*c-'A'][tmp]++;
+            c++;
+            tmp++;
+        }
+        num_team = (num_team == 0) ? tmp : num_team;
+    }
+    
+    char* sum = (char*) malloc((num_team+1)*sizeof(char));
+    strcpy(sum,*(votes));
+    qsort(sum, num_team, sizeof(char), cmpfunc);
+
+    return sum;
+}

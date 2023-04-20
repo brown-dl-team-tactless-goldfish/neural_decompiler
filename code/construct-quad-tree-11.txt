@@ -1,0 +1,30 @@
+class Solution {
+	vector<vector<int>> grid;
+	bool isLeaf(int row, int col, int size) {
+		int v = grid[row][col];
+		for(int r = row; r < row + size; ++r) 
+			for(int c = col; c < col + size; ++c) 
+				if(grid[r][c] != v)
+					return false;
+		return true;
+	}
+	Node* build(int row, int col, int size) {
+		if(isLeaf(row, col, size)) 
+			return new Node(grid[row][col], true);
+    
+		int halfSize = size / 2;
+    
+		return new Node(0,
+						false,
+						build(row, col, halfSize),
+						build(row, col + halfSize, halfSize),
+						build(row + halfSize, col, halfSize),
+						build(row + halfSize, col + halfSize, halfSize));
+	}
+public:
+	Node* construct(vector<vector<int>>& _grid) {
+		swap(grid, _grid);
+    
+		return build(0, 0, grid.size());
+	}
+};

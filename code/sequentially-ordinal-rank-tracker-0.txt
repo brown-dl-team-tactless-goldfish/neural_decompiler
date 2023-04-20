@@ -1,0 +1,203 @@
+#define MAX_NODES 40000
+
+typedef struct {
+    const char* name;
+    int score;
+} Node;
+
+typedef struct {
+    bool min;
+    int size;
+    Node heap[MAX_NODES];
+} Heap;
+
+typedef struct {
+    Heap min;
+    Heap max;
+} SORTracker;
+
+static inline int getFirstChildIndex(int idx)
+{
+    return idx * 2 + 1;
+}
+
+static inline int getParentIndex(int idx)
+{
+    return (idx - 1) / 2;
+}
+
+static inline bool nodeCompare(const Node* n1, const Node* n2)
+{
+    if (n1->score < n2->score) {
+        return true;
+    } else if (n1->score == n2->score) {
+        return strcmp(n1->name, n2->name) > 0;
+    } else {
+        return false;
+    }
+}
+
+static inline bool heapCompare(Heap *h, int idx1, int idx2)
+{
+    return nodeCompare(&h->heap[idx1], &h->heap[idx2]);
+}
+
+static inline void heapSwap(Heap *h, int idx1, int idx2)
+{
+    const Node temp = h->heap[idx1];
+    
+    h->heap[idx1] = h->heap[idx2];
+    h->heap[idx2] = temp;
+}
+
+static void heapBalanceUp(Heap* h) 
+{
+    int cIdx = h->size - 1;
+    
+    while (cIdx > 0) {
+        const int pIdx = getParentIndex(cIdx);
+        
+        if (h->min) {
+            if (heapCompare(h, cIdx, pIdx)) {
+                heapSwap(h, cIdx, pIdx);
+            } else {
+                break;
+            }
+        } else {
+            if (heapCompare(h, pIdx, cIdx)) {
+                heapSwap(h, cIdx, pIdx);
+            } else {
+                break;
+            }
+        }
+        cIdx = pIdx;
+    }
+}
+
+static void heapBalanceDown(Heap* h)
+{
+    int pIdx = 0;
+    
+    while (1) {
+        const int cIdx1 = getFirstChildIndex(pIdx);
+        const int cIdx2 = cIdx1 + 1;
+        int cIdx = -1;
+        
+        if (cIdx2 < h->size) {
+            if (h->min) {
+                if (heapCompare(h, cIdx1, cIdx2)) {
+                    cIdx = cIdx1;
+                } else {
+                    cIdx = cIdx2;
+                }
+            } else {
+                if (heapCompare(h, cIdx1, cIdx2)) {
+                    cIdx = cIdx2;
+                } else {
+                    cIdx = cIdx1;
+                }
+            }
+        } else if (cIdx1 < h->size) {
+            cIdx = cIdx1;
+        } else {
+            break;
+        }
+        
+        if (h->min) {
+            if (heapCompare(h, cIdx, pIdx)) {
+                heapSwap(h, cIdx, pIdx);
+            } else {
+                break;
+            }
+        } else {
+            if (heapCompare(h, pIdx, cIdx)) {
+                heapSwap(h, cIdx, pIdx);
+            } else {
+                break;
+            }
+        }
+        pIdx = cIdx;
+    }
+}
+
+static void heapPush(Heap *h, char* name, int score)
+{
+    h->heap[h->size++] = (Node){ name, score };
+    if (h->size > 1) {
+        heapBalanceUp(h);
+    }
+}
+
+static const Node* heapPeak(Heap *h) 
+{
+    const Node* ret = NULL;
+
+    if (h->size > 0) {
+        ret = &h->heap[0];
+    }
+    
+    return ret;
+}
+
+static const Node* heapPop(Heap *h)
+{
+    const Node* ret = NULL;
+
+    if (h->size > 0) {
+        h->size--;
+        heapSwap(h, 0, h->size);
+
+        if (h->size > 1) {
+            heapBalanceDown(h);
+        }
+        
+        ret = &h->heap[h->size];
+    }
+    
+    return ret;
+}
+
+SORTracker* sORTrackerCreate() {
+    SORTracker* h = calloc(1, sizeof(SORTracker));
+    
+    h->min.min = true;
+    h->max.min = false;
+    
+    return h;
+}
+
+void sORTrackerAdd(SORTracker* obj, char * name, int score) {
+    const Node *peak = heapPeak(&obj->min);
+    const Node temp = { name, score };
+
+    if (peak == NULL || nodeCompare(&temp, peak)) {
+        heapPush(&obj->max, name, score);
+    } else {
+        heapPush(&obj->min, name, score);
+        peak = heapPop(&obj->min);
+        heapPush(&obj->max, peak->name, peak->score);
+    }
+}
+
+char *sORTrackerGet(SORTracker* obj) {
+    const Node *popped = heapPop(&obj->max);
+
+    heapPush(&obj->min, popped->name, popped->score);
+    popped = heapPeak(&obj->min);
+
+    return popped->name;
+}
+
+void sORTrackerFree(SORTracker* obj) {
+    free(obj);
+}
+
+/**
+ * Your SORTracker struct will be instantiated and called as such:
+ * SORTracker* obj = sORTrackerCreate();
+ * sORTrackerAdd(obj, name, score);
+ 
+ * char * param_2 = sORTrackerGet(obj);
+ 
+ * sORTrackerFree(obj);
+*/

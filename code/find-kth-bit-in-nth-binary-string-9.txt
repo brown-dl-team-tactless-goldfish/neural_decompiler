@@ -1,0 +1,35 @@
+class Solution {
+public:
+    char findKthBit(int n, int k) {
+        for (int i = 1, cnt = 0; i <= n; ++i) {
+            cnt = cnt * 2 + 1;
+            
+            if (cnt >= k - 1) {
+                n = i;
+                break;
+            }
+        }
+        
+        return dfs(n)[k - 1];
+    }
+    
+    void invert(string& s) {
+        for (auto& c : s) {
+            c = c == '0' ? '1' : '0';
+        }
+    }
+    
+    string dfs(int n) {
+        if (n == 0) {
+            return "0";
+        }
+        
+        string s = dfs(n - 1);
+        string res = s;
+        
+        invert(s);
+        reverse(s.begin(), s.end());
+        
+        return res + "1" + s; 
+    }
+};

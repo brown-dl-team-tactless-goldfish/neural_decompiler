@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int mostBooked(int n, vector<vector<int>>& meetings) {
+        int len = meetings.size();
+        set<int> rooms;
+        for (int i = 0; i < n; i++) {
+            rooms.insert(i);
+        }
+        sort(meetings.begin(), meetings.end());
+        vector<int> room(n);
+        set<pair<long long, int>> st;
+        for (int i = 0; i < len; i++) {
+            while (!st.empty() && st.begin()->first <= meetings[i][0]) {
+                int r = st.begin()->second;
+                rooms.insert(r);
+                st.erase(st.begin());
+            }
+            if (!rooms.empty()) {
+                int r = *rooms.begin();
+                rooms.erase(rooms.find(r));
+                ++room[r];
+                st.insert(make_pair(meetings[i][1], r));
+            } else {
+                pair<long long, int> p = *st.begin();
+                st.erase(st.begin());
+                rooms.insert(p.second);
+                int r = *rooms.begin();
+                rooms.erase(rooms.begin());
+                long long start = max((long long) meetings[i][0], p.first);
+                long long end = start + meetings[i][1] - meetings[i][0];
+                st.insert(make_pair(end, r));
+                ++room[r];
+            }
+        }
+        int sol = 0;
+        int mx = 0;
+        for (int i = 0; i < n; i++) {
+            if (mx < room[i]) {
+                mx = room[i];
+                sol = i;
+            }
+        }
+        return sol;
+    }
+};

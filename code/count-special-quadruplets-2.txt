@@ -1,0 +1,47 @@
+
+int countQuadruplets(int* nums, int numsSize){
+ 	int count=0;
+ 	int n=numsSize;
+ 	int lenghtmat=(n*(n+1))/2;
+	int* C=(int *)malloc(sizeof(int)*lenghtmat);
+ 	for(int i=0;i<lenghtmat;i++){
+ 		C[i]=-1;
+	}
+	//build the array using column major formula
+	for(int a=0;a<numsSize-1;a++){
+		int c;
+		int pos=0;
+		for(int b=a+1;b<numsSize-1;b++){
+			pos=(b+1)*(b+1-1)/2+(a);
+			C[pos]=nums[a]+nums[b];
+		}
+	}
+	//visit the elements till current column 
+	for(int d=3;d<numsSize;d++){
+		int pos=d*(d-1)/2+(-1);
+		for(int aplasB=0;aplasB<pos;aplasB++){
+			if(C[aplasB]!=-1){
+			//get a and b value back using index
+				int a=0;
+				int x=0;
+				int b=1 ;
+				while(x<=aplasB) {
+					if(a==b){
+						a=0;
+						b++;
+					}
+					a++;
+					x++;
+				}
+				a--;
+				b--;
+				for(int c=b+1;c<d;c++){
+					if(C[aplasB]+nums[c]==nums[d]){
+						count++;
+					}
+				}
+			}
+		}
+	}
+	return count;
+}

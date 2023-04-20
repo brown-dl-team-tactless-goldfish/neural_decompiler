@@ -1,0 +1,109 @@
+#define vec vector
+#define vi vector<int>
+#define amax(x, y) x = max(x, y)
+
+struct dsu {
+  vec<int> parent, size;
+  int ans = 1, groups = 0;
+  dsu(int n) : parent(n), size(n, 1), groups(n) {
+    for (int i = 0; i < n; i++)
+      parent[i] = i;
+  }
+  int find(int i) {
+    if (parent[i] == i)
+      return i;
+    return parent[i] = find(parent[i]);
+  }
+  void unite(int i, int j) {
+    if (find(i) != find(j)) {
+      int repi = find(i);
+      int repj = find(j);
+      if (size[repi] < size[repj])
+        swap(repi, repj);
+      parent[repj] = repi;
+      size[repi] += size[repj];
+      amax(ans, size[repi]);
+      groups--;
+    }
+  }
+};
+
+struct trie {
+  struct node {
+    array<node *, 2> adj{};
+    array<int, 4> vis{};
+    vi pos;
+  };
+  node *root = new node();
+  void insert(string &s, dsu &ds, int p) {
+    auto cur = root;
+    for (int i = 0; i < s.size(); i++) {
+      auto &next = cur->adj[s[i] == ' '];
+      if (!next)
+        next = new node();
+      cur = next;
+    }
+    if (!cur->pos.empty()) {
+      ds.unite(p, cur->pos.back());
+    }
+    cur->pos.push_back(p);
+  }
+  void search(string &s, dsu &ds, int p, int i, int state, node *cur,
+              int vis_id) {
+    cur->vis[state] = vis_id;
+    if (i == s.size() && (state == 1 || state == 3)) {
+      if (!cur->pos.empty()) {
+        ds.unite(p, cur->pos.back());
+      }
+      return;
+    }
+
+    if (state == 1) {
+      if (cur->adj[0]) {
+        if (cur->adj[0]->vis[3] != vis_id) {
+          search(s, ds, p, i + 1, 3, cur->adj[0], vis_id);
+        }
+        if (cur->adj[0]->vis[2] != vis_id) {
+          search(s, ds, p, i + 1, 2, cur->adj[0], vis_id);
+        }
+      }
+    }
+    if (state == 2) {
+      auto next = cur->adj[1];
+      if (next && next->vis[3] != vis_id) {
+        search(s, ds, p, i + 1, 3, next, vis_id);
+      }
+    }
+
+    auto next = cur->adj[s[i] == ' '];
+    if (next && next->vis[state] != vis_id) {
+      search(s, ds, p, i + 1, state, next, vis_id);
+    }
+  }
+};
+
+class Solution {
+public:
+  vector<int> groupStrings(vector<string> &words) {
+    int n = words.size();
+    vec<string> transformed;
+    for (auto &w : words) {
+      string counted(26, ' ');
+      for (char c : w) {
+        counted[c - 'a'] = c;
+      }
+      transformed.push_back(counted);
+    }
+
+    dsu ds(n);
+    trie t;
+    for (int i = 0; i < n; i++) {
+      t.insert(transformed[i], ds, i);
+    }
+    for (int i = 0; i < n; i++) {
+      t.search(transformed[i], ds, i, 0, 1, t.root, i + 1);
+    }
+
+    return {ds.groups, ds.ans};
+  }
+};

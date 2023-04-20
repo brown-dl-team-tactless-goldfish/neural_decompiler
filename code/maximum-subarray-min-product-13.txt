@@ -1,0 +1,81 @@
+vector<long long> prefixSum(vector<int> &nums, int n)
+{
+	vector<long long> prefix;
+
+	long long sum = 0;
+
+	for(auto &x : nums)
+	{
+		sum += x;
+		prefix.push_back(sum);
+	}
+
+	return prefix;
+}
+
+vector<int> nsl(vector<int> &nums, int n)
+{
+	stack<int> st;
+
+	vector<int> vect;
+
+	for(int i = 0; i < n; i++)
+	{
+		while(!st.empty() and nums[i] <= nums[st.top()])
+			st.pop();
+
+		st.empty() ? vect.push_back(0) : vect.push_back(st.top() + 1);
+
+		st.push(i);
+	}
+
+	return vect;
+}
+
+vector<int> nsr(vector<int> &nums, int n)
+{
+	stack<int> st;
+
+	vector<int> vect;
+
+	for(int i = n-1; i >= 0; i--)
+	{
+		while(!st.empty() and nums[i] <= nums[st.top()])
+			st.pop();
+
+		st.empty() ? vect.push_back(n-1) : vect.push_back(st.top()-1);
+
+		st.push(i);
+	}
+
+	reverse(vect.begin(), vect.end());
+
+	return vect;
+}
+
+long long getSum(vector<long long> &prefix, int l, int r)
+{
+	if(l == 0)
+		return prefix[r];
+
+	return prefix[r] - prefix[l-1];
+}
+
+int maxSumMinProduct(vector<int>& nums) {
+
+	int n = nums.size(), mod = 1e9+7;
+
+	vector<int> left = nsl(nums, n), right = nsr(nums, n); // nearest smaller to left and right respectively/
+
+	vector<long long> prefix = prefixSum(nums, n);
+
+	long long maxProduct = INT_MIN, temp;
+
+	for(int i = 0;i < n; i++)
+	{
+		temp = ((long long)nums[i] * getSum(prefix, left[i], right[i]));
+		maxProduct = max(maxProduct, temp);
+	}
+
+	return maxProduct % mod;
+}

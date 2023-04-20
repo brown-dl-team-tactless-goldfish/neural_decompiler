@@ -1,0 +1,68 @@
+/*Turn the string n="470988884881403701" to an unsigned long long N=470988884881403701
+
+Represent N in a good base x:
+N = x^k + x^(k-1) + ... + 1
+Note that x^k < N < x^(k+1) => k < log(N)/log(x) < k+1
+=> k = floor(log(N)/log(x)) <= k0 = floor(log(N)/log(2))
+
+When k=1, we have N = (N-1) + 1.
+So, N-1 is always a good base of N.
+
+Fix k>=2. Note that 
+    x^k < N=x^k + x^(k-1) + ... + 1 < (x+1)^k
+=>
+    x < N^(1/k) < x+1  [i.e. N^(1/k) is never an integer if x is a good base up to power k]
+=>
+    x = floor(N^(1/k)) is the only possible candidate
+
+The final step is to compute 1+x+...+x^k and compare it with N
+*/
+
+class Solution {
+public:
+    unsigned long long result=0;
+    
+    string smallestGoodBase(string n) {
+        unsigned long long N = 0;
+        
+        for (int i=0; i<n.size(); i++){
+            N *= 10;
+            N += (n[i]-'0');
+        }
+        //std::cout<<"N="<<N<<"\n";
+        
+        result = N-1;
+        
+        int k0 = floor(log(N)/log(2));
+        //std::cout<<"k0="<<k0<<"\n";
+        
+        unsigned long long x;
+        unsigned long long test, base;
+        long double temp;
+        
+        for (int k=1; k<=k0; k++){
+            temp = std::pow(N, 1.0/k);
+            
+            if (trunc(temp)==temp){
+                x = (long long)temp-1;
+            }else{
+                x = floor(temp);
+            }       
+            
+            test = 1;
+            base = x;
+            for (int j=0; j<k; j++){
+                test += base;
+                base *= x;
+            }
+            
+            //std::cout<<"x="<<x<<", test="<<test<<"\n";
+            
+            if (test==N){
+                result = x;
+            }
+        }
+        
+        return std::to_string(result);
+    }
+};

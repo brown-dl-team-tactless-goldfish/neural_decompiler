@@ -1,0 +1,47 @@
+class Solution {
+public:
+    string subStrHash(string s, int power, int modulo, int k, int hashValue) 
+    {
+        reverse(s.begin(),s.end());
+       long long int p = 1;
+        vector<long long int>vv(k);
+        for(int i=0;i<=k-1;i++)
+        {
+            vv[i] = p;
+            p = (p*power)%modulo;     
+        }
+        int i = 0;
+        int j  = 0;
+        int len = s.length();
+       long long int sum = 0;
+        while(j<k)
+        {
+            sum += (((s[j]-'a'+1)*vv[k-1-j])%modulo);
+            sum %= modulo;
+            j++;
+        }
+        string ans = "";
+        if(sum==hashValue)
+        {
+          ans= s.substr(i,j);
+        }
+        while(j<len)
+        {
+            sum  +=  modulo;
+            sum  -= ((s[i]-'a'+1)*vv[k-1])%modulo;
+            sum %= modulo;
+            sum *= (power)%modulo;
+            sum += ((s[j]-'a'+1))%modulo;
+            sum %= modulo;
+            i++;
+            j++;
+            if(sum==hashValue)
+            {
+                ans= s.substr(i,j-i);
+            }
+           
+        }
+        reverse(ans.begin(),ans.end());
+     return ans;
+    }
+};

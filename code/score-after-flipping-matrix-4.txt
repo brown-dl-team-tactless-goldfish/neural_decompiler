@@ -1,0 +1,41 @@
+class Solution {
+public:
+    void flipRow(vector<vector<int>> &A, int row, int n) {
+        for(int i=0; i<n; i++) A[row][i] = 1 - A[row][i];
+    }
+    
+    void flipCol(vector<vector<int>> &A, int col, int m) {
+        for(int i=0; i<m; i++) A[i][col] = 1 - A[i][col];
+    }
+    
+    int matrixScore(vector<vector<int>>& A) {
+        int r = A.size();
+        int c = A[0].size();
+        
+        vector<int> colCount(c,0);
+        
+        for(int i=0; i<r; i++) {
+            if(A[i][0] == 0) flipRow(A,i,c);
+            
+            for(int j=0; j<c; j++) {
+                if(A[i][j] == 1) colCount[j]++;
+            }
+        }
+        
+        for(int j=0; j<c; j++) {
+            if(colCount[j] <= r/2) flipCol(A,j,r);
+        }
+        
+        int ans = 0;
+        
+        for(auto v: A) {
+            int result = 0, p = 0;
+            for(int i=v.size()-1; i>=0; i--) {
+                result+=v[i]*pow(2,p);
+                p++;
+            }
+            ans += result;
+        }
+        return ans;
+    }
+};

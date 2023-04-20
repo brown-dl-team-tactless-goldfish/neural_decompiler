@@ -1,0 +1,45 @@
+class Solution {
+public:
+    string minInteger(string num, int k) {
+        string res;
+        for(char c='0'; c<='9';c++){
+            if(k < num.size()) break;
+            int moved = 0;
+            string rest;
+            for(int i=0;i<num.size();i++){
+                if(num[i] != c || i - moved > k){
+                    rest.push_back(num[i]);
+                }
+                else{
+                    res.push_back(num[i]);
+                    k -= i-moved;
+                    moved++;
+
+                }                
+            }
+            num = move(rest);
+        }
+        
+        cout<<res<<" "<<k<<endl;
+        
+        list<char> li(num.begin(), num.end());
+        while(!li.empty()){
+            pair<char, int> minToMove = {'9' + 1, 0};
+            auto it = li.begin(), minIt = it;
+            int minI = 0;
+            for(int i=0; it != li.end() && i <=k; i++, it++){
+                auto pr = pair{*it, i};
+                if(pr < minToMove){
+                    minToMove = pr;
+                    minIt = it;
+                    minI=i;
+                }           
+            }
+            res.push_back(minToMove.first);
+            li.erase(minIt);
+            k -= minI;
+        }
+        
+        return res;
+    }
+};

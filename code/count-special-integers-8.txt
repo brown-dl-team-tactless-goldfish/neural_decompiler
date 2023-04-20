@@ -1,0 +1,62 @@
+public:
+    #define viii vector<vector<vector<int>>>
+    #define vii vector<vector<int>>
+    #define vi vector<int>
+    int countSpecialNumbers(int n) {
+        if (n < 10) return n;
+         
+        vector<int> num;
+        while (n > 0){
+            num.push_back(n % 10);
+            n = n / 10;
+        }
+        reverse(num.begin(), num.end());
+        viii dp(1024, vii(2, vi(num.size(), -1)));
+        
+        return  recur(num, dp, 0, 0, 0);
+    }
+    
+    int recur(vi& num, viii& dp, int idx, int col, int extend){
+        // idx is greater than the num.size() - 1
+        if (idx == num.size()){
+            if (col == 0) return 0;
+            return 1;
+        }
+    
+        if (dp[col][extend][idx] == -1){
+            int temp = 0;
+            if (extend == 1){
+                for (int i = 0; i < 10; ++ i){
+                    if (!(col & (1 << i))){
+                        if (col == 0 && i == 0){
+                            temp += recur(num, dp, idx + 1, 0, 1);
+                        }else{
+                            temp += recur(num, dp, idx + 1, col | (1 << i), 1);
+                        }
+                    }
+                }
+            }else{ // extend == 0
+                for (int i = 0; i < num[idx]; ++ i){
+                    if (!(col & (1 << i))){
+                        if (col == 0 && i == 0){
+                            temp += recur(num, dp, idx + 1, 0, 1);
+                        }else{
+                            temp += recur(num, dp, idx + 1, col | (1 << i), 1);
+                        }
+                    }
+                }
+                if (!(col & (1 << num[idx]))){
+                    if (col == 0 && num[idx] == 0){
+                        temp += recur(num, dp, idx + 1, 0, 0);
+                    }else{
+                        temp += recur(num, dp, idx + 1, col | (1 << num[idx]), 0);
+                    }
+                }
+                
+            }
+            
+            dp[col][extend][idx] = temp;
+        }
+        
+        return dp[col][extend][idx];    
+    }

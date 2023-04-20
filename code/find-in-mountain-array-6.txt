@@ -1,0 +1,36 @@
+int findInMountainArray(int target, MountainArray &mountainArr) {
+    int low = 1, high = mountainArr.length()-2;
+    while(low<high){
+        int mid = (low+high)/2;
+        if(mountainArr.get(mid+1)>mountainArr.get(mid))
+            low = mid+1;
+        else
+            high = mid;
+    }
+    int c = mountainArr.get(low);
+    if(target==c)
+        return low;
+    int c1, c2;
+
+    c1 = 0, c2 = low-1;
+    while(c1<c2){
+        int mid = (c1+c2)/2;
+        if(mountainArr.get(mid)<target)
+            c1 = mid+1;
+        else
+            c2 = mid;
+    }
+    if(mountainArr.get(c1)==target) return c1;
+    
+    c1 = low+1, c2 = mountainArr.length()-1;
+    while(c1<c2){
+        int mid = (c1+c2)/2;
+        if(mountainArr.get(mid)>target)
+            c1 = mid+1;
+        else
+            c2 = mid;
+    }
+    
+    if(mountainArr.get(c1)!=target) return -1;
+    return c1;
+}

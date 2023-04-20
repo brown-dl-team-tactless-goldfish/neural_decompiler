@@ -1,0 +1,57 @@
+void swap(int *a0, int *a1)
+{
+  int t = *a0;
+  *a0 = *a1;
+  *a1 = t;
+}
+
+int largestInteger(int num){
+  // count digits
+  int temp = num;
+  int totalDigits = 0;
+  while (temp > 0)
+  {
+    totalDigits += 1;
+    temp /= 10;
+  }
+
+  // Step 1
+  // transform to array
+  // seperate into 2 parts: odd and even
+  int* numArray = malloc(sizeof(int) * totalDigits);
+  bool* oddArray = malloc(sizeof(bool) * totalDigits);
+  for (int i = totalDigits - 1; i >= 0; i--)
+  {
+    int currDigit = num % 10;
+    numArray[i] = currDigit;
+    if (currDigit % 2 == 0)
+      oddArray[i] = 0;
+    else
+      oddArray[i] = 1;
+    num /= 10;
+  }
+
+  // Step 2
+  // swap digits, big move to left
+  for (int i = 0; i < totalDigits - 1; i++)
+  {
+    int pk = i;
+    for (int j = i + 1; j < totalDigits; j++)
+    {
+      if (oddArray[i] == oddArray[j] && numArray[pk] < numArray[j])
+        pk = j;
+    }
+    swap(&numArray[i], &numArray[pk]);
+  }
+
+  // Step 3
+  // transform back to int
+  int res = 0;
+  int powCount = totalDigits - 1;
+  for (size_t i = 0; i < totalDigits; i++)
+  {
+    res += numArray[i] * (int)pow(10.0, (double)powCount);
+    powCount -= 1;
+  }
+  return res;
+}

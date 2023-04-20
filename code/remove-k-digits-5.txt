@@ -1,0 +1,43 @@
+
+
+char * removeKdigits(char * num, int k){
+    for(int i = 0, j; i < k; i++){
+        if(num[1] == '\0'){
+            // if there is only one digit
+            num = "0\0";
+            return num;
+        }
+        if(num[1] == '0'){
+            // special case: if second positon is zero then we delete it immediately
+            num[0] = '0';
+            num += 2;
+            while(num[0] != '\0' && num[0] == '0'){
+                // find the first none zero digit
+                num++;
+            }
+            if(num[0] == '\0'){
+                //if there is no more number 
+                num = "0\0";
+                return num;
+            }
+            continue;
+        }
+        for(j = 0; num[j + 1] != '\0';){
+            if(num[j + 1] < num[j]){
+                // find the first decreasing position
+                break;
+            } else {
+                j++;
+            }
+        }
+        // set the first decreasing positon, change it to zero, and move up the digits before it 
+        num[j] = '0';
+        while(j != 0){
+            num[j] = num[j - 1];
+            j--;
+        }
+        // move the starting pointer forward one postion 
+        num = num + 1;
+    }
+    return num;
+}

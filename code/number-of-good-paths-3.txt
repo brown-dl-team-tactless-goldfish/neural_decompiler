@@ -1,0 +1,138 @@
+struct Node {
+	int parent;		/* Parent node of the node, points to self if root */
+	int max_val;	/* Maximum value of this node or below */
+	int count;		/* Count of the number of times max_val occurs */
+	int rank;			/* Rank of the node for optimising the union find */
+};
+
+static
+int imax(int a, int b) {
+	return (a < b) ? b : a;
+}
+
+static
+int** pick_pivot(int** edge_first, int** edge_last) {
+	/* The normal middle of 3 random values would be better, but the
+	   cost to get and compare 3 random values is not nothing. Just
+		 picking a random edge should be good enough. */
+	return edge_first + (rand() % (edge_last - edge_first));
+}
+
+static
+void swap_edge(int** edge1, int** edge2) {
+	int* tmp = *edge1;
+	*edge1 = *edge2;
+	*edge2 = tmp;
+}
+
+/* Quicksort the edges so that they are sorted based on the value of the nodes
+   the edge point to (picking the maximum of the two nodes), sorted assendingly */
+static
+void sort_edges_by_max_val(int** edge_first, int** edge_last, const int* vals) {
+	while (edge_first + 1 < edge_last) {
+		/* Swap the chosen pivot to the be front */
+		int** pivot = pick_pivot(edge_first, edge_last);
+		const int pivot_max = imax(vals[(*pivot)[0]], vals[(*pivot)[1]]);
+
+		int** less = edge_first;		/* Position passed end of the values less than pivot */
+		int** equal = edge_first;		/* Position passed end of the values equal to pivot */
+		int** greater = edge_last;	/* Position begining of the values greater than pivot */
+		while (equal < greater) {
+			const int edge_max = imax(vals[(*equal)[0]], vals[(*equal)[1]]);
+			if (pivot_max > edge_max) {
+				swap_edge(less++, equal++);
+			} else if (pivot_max < edge_max) {
+				swap_edge(equal, --greater);
+			} else {
+				++equal;
+			}
+		}
+
+		/*
+		Given the following ranges; 
+			[edge_first, less) -> Values less than pivot
+		  [less, equal) 			-> Values equal to pivot
+			[equal, edge_last) -> Values greater than pivot
+		Recurse around for the smaller range, and loop around for the larger. This
+		ensures the depth of recursion never exceeds logn
+		*/
+		if (less - edge_first < edge_last - equal) {
+			sort_edges_by_max_val(edge_first, less, vals);
+			edge_first = equal;
+		} else {
+			sort_edges_by_max_val(equal, edge_last, vals);
+			edge_last = less;
+		}
+	}
+}
+
+/* Find the root of the tree that contains the passed node */
+int find_root(struct Node* nodes, int node) {
+	while (node != nodes[node].parent) {
+		nodes[node].parent = nodes[nodes[node].parent].parent;
+		node = nodes[node].parent;
+	}
+	return node;
+}
+
+int numberOfGoodPaths(int* vals, int valsSize, int** edges, int edgesSize, int* edgesColSize) {
+	/* Allocate a single buffer to hold everything */
+	const size_t required_mem = 
+			edgesSize * sizeof(*edges) +
+			valsSize * sizeof(struct Node);
+	char* const buf = malloc(required_mem);
+	char* pos = buf;
+	int** sorted_edges = (int**) pos;
+	pos += edgesSize * sizeof(*edges);
+	struct Node* nodes = (struct Node*) pos;
+
+	memcpy(sorted_edges, edges, edgesSize * sizeof(*edges));
+	sort_edges_by_max_val(sorted_edges, sorted_edges + edgesSize, vals);
+
+	/* Initialise each node as a tree of just itself */
+	for (int i = 0; i < valsSize; ++i) {
+		nodes[i].parent = i;
+		nodes[i].max_val = vals[i];
+		nodes[i].count = 1;
+		nodes[i].rank = 0;
+	}
+
+	int ret = valsSize;
+	for (int i = 0; i < edgesSize; ++i) {
+		int* edge = sorted_edges[i];
+		const int r1 = find_root(nodes, edge[0]);
+		const int r2 = find_root(nodes, edge[1]);
+
+		/* Each edge must join two trees. If these two trees have the same
+		   maximum value, then more 'good' paths have been found */
+		if (nodes[r1].max_val == nodes[r2].max_val) {
+			const int c1 = nodes[r1].count;
+			const int c2 = nodes[r2].count;
+			ret += c1 * c2;
+			nodes[r1].count = nodes[r2].count = c1 + c2;
+		}
+
+		/* Decide which tree to make the parent base on the rank */
+		if (nodes[r1].rank <= nodes[r2].rank) {
+			nodes[r1].parent = r2;
+			nodes[r2].rank += (nodes[r1].rank == nodes[r2].rank);
+
+			/* Update the main roots max_val details if required */
+			if (nodes[r2].max_val < nodes[r1].max_val) {
+				nodes[r2].max_val = nodes[r1].max_val;
+				nodes[r2].count = nodes[r1].count;
+			}
+		} else {
+			nodes[r2].parent = r1;
+
+			/* Update the main roots max_val details if required */
+			if (nodes[r1].max_val < nodes[r2].max_val) {
+				nodes[r1].max_val = nodes[r2].max_val;
+				nodes[r1].count = nodes[r2].count;
+			}			
+		}
+	}
+
+	free(buf);
+	return ret;
+}

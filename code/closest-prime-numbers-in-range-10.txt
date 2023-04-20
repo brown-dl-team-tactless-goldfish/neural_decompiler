@@ -1,0 +1,32 @@
+vector<int> isPrime(1E6 + 1, 0);
+bool calculated = false;
+class Solution {
+public:
+    vector<int> closestPrimes(int left, int right) {
+        if(calculated == false) {
+            calculated = true;
+            for(int i = 2; i <= 1E6; i++) {
+                if(isPrime[i] == 0) {
+                    for(int j = i * 2; j <= 1E6; j += i) {
+                        isPrime[j] = 1;
+                    }
+                }
+            }
+        }
+        vector<int> p;
+        for(int i = left; i <= right; i++) {
+            if(isPrime[i] == 0 && i > 1)
+                p.push_back(i);
+        }
+        if(p.size() < 2) return {-1, -1};
+        vector<int> ans;
+        int gap = INT_MAX;
+        for(int i = 0; i < p.size() - 1; i++) {
+            if(p[i + 1] - p[i] < gap) {
+                gap = p[i + 1] - p[i];
+                ans = {p[i], p[i + 1]};
+            }
+        }
+        return ans;
+    }
+};

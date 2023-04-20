@@ -1,0 +1,29 @@
+public class Solution 
+{
+    public int NthUglyNumber(int n, int a, int b, int c) 
+    {
+        int start = 0, end = int.MaxValue;
+        long ab = LCM(a, b), bc = LCM(b, c), ca = LCM(c, a), abc = LCM(a, bc);
+        while(start < end)
+        {
+            int mid = start + (end - start) / 2;
+            int count = (int) (mid/a + mid/b + mid/c - mid/ab - mid/bc - mid/ca + mid/abc);
+            if(count < n)
+                start = mid + 1;
+            else
+                end = mid;
+        }
+        
+        return start;
+    }
+    
+    private long GCD(long x, long y)
+    {
+        return y == 0 ? x : GCD(y, x % y);
+    }
+    
+    private long LCM(long x, long y)
+    {
+        return (x * y) / GCD(x, y);
+    }
+}

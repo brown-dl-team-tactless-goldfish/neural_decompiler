@@ -1,0 +1,64 @@
+#define BUFFER_SIZE 20480
+
+struct NestedIterator {
+    int* result;
+    int count;
+    int idx;
+};
+
+void helper(struct NestedInteger** nestedList,int nestedListSize, int* buffer, int* size)
+{
+    int i;
+    
+    for(i=0;i<nestedListSize;i++)
+    {
+        if(NestedIntegerIsInteger(nestedList[i]))
+        {
+            buffer[(*size)++] = NestedIntegerGetInteger(nestedList[i]);
+        }
+        else
+        {
+            helper(NestedIntegerGetList(nestedList[i]),NestedIntegerGetListSize(nestedList[i]),buffer,size);
+        }
+    }
+}
+
+struct NestedIterator *nestedIterCreate(struct NestedInteger** nestedList, int nestedListSize) {
+    struct NestedIterator *iter;
+    int size = 0;
+    
+    iter = (struct NestedIterator *)malloc(sizeof(struct NestedIterator));
+    
+    iter->result = (int*)malloc(BUFFER_SIZE*sizeof(int));
+    helper(nestedList,nestedListSize,iter->result,&size);
+    iter->count = size;
+    iter->idx = 0;
+    
+    return iter;
+}
+
+bool nestedIterHasNext(struct NestedIterator *iter) {
+    if(iter->idx < iter->count)
+    {
+        return true;
+    }
+    return false;
+}
+
+int nestedIterNext(struct NestedIterator *iter) {
+    int val = -1;
+    
+    if(iter->idx < iter->count)
+    {
+        val = iter->result[iter->idx];
+        iter->idx++;
+    }
+    
+    return val;
+}
+
+/** Deallocates memory previously allocated for the iterator */
+void nestedIterFree(struct NestedIterator *iter) {
+    free(iter->result);
+    free(iter);
+}

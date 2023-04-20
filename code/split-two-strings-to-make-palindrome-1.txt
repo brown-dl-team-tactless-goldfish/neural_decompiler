@@ -1,0 +1,33 @@
+static bool isPalindrome(char *begin, char *end) {
+    while (begin < end) {
+        if (*begin != *end) {
+            return false;
+        }
+        ++begin;
+        --end;
+    }
+    return true;
+}
+
+static int sameFixSize(char *a, char *b, int len) {
+    int i;
+    for (i = 0; i < len / 2; ++i) {
+        if (a[i] != b[len - i - 1]) {
+            break;
+        }
+    }
+    return i;
+}
+
+static bool checkPalindromeFormationHelper(char * a, char * b, int len) {
+    int size = sameFixSize(a, b, len);
+    if (isPalindrome(a + size, a + len - size - 1) || isPalindrome(b + size, b + len - size - 1)) {
+        return true;
+    }
+    return false;
+}
+
+bool checkPalindromeFormation(char * a, char * b){
+    size_t len = strlen(a);
+    return checkPalindromeFormationHelper(a, b, len) || checkPalindromeFormationHelper(b, a, len);
+}

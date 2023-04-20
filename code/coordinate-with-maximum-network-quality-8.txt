@@ -1,0 +1,26 @@
+class Solution {
+public:
+    vector<int> bestCoordinate(vector<vector<int>>& towers, int radius) {
+        vector<int> ans(2,0) ; int maxi = 0 ;
+        
+        for(int i = 0 ; i <= 100 ; ++i ){
+            for(int j = 0 ; j <= 100 ; ++j ){
+                
+                int sum = 0 ;
+                for(auto &x : towers){
+                    int tx = x[0] , ty = x[1] , q = x[2] ;
+                    int d = (tx-i)*(tx-i) + (ty-j)*(ty-j) ;
+                    if(d > radius*radius) continue ;
+                    int NQ = q/(1 + sqrt(d)) ;
+                    sum += NQ ;
+                }
+                // cout << sum << endl ;
+                if(sum > maxi) ans[0] = i , ans[1] = j , maxi = sum ;
+                else if(sum == maxi){
+                    if(i < ans[0] || (i == ans[0] and j < ans[1])) {ans[0] = i , ans[1] = j ;}
+                } 
+            }
+        }
+        return ans ;
+    }
+};

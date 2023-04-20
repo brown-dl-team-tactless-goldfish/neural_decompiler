@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int subarrayLCM(vector<int>& nums, int k) {
+        //contains all the previous subarrays ending at (i-1)th element 
+        unordered_map<int,int>m;
+        int ans=0;
+        for(auto &i:nums){
+            m[i]++;
+            //since we always consider (i-1)th element
+            unordered_map<int,int>m1;
+            for(auto [d,cnt]:m){
+                int cur=lcm(i,d);
+                if(cur==k)ans+=cnt;
+                if(k%cur==0){
+                    m1[cur]++;
+                }
+            }
+            swap(m,m1);
+        }
+        return ans;
+    }
+};

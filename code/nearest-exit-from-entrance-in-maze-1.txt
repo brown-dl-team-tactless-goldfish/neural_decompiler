@@ -1,0 +1,96 @@
+// 1. replace all empty cells on border to '-'
+// 2. From entrance to BFS(), if reach '-': find the exit and return 1, else: return 0 
+//    in recursion: int rts, rts &= BFS()
+//    in main function: if rts == 0 ? return -1 : return rts.
+
+// Happy queue
+struct position {
+    int x;
+    int y;
+};
+struct position queue[10001];
+
+const int directions[5] = {0,1,0,-1,0};
+
+int BFS(char **maze, int pos_x, int pos_y, int mazeSize, int *mazeColSize) 
+{
+    int steps = 0;
+    int qFront = -1, qRear = -1;
+    // enqueue start
+    qRear++;
+    queue[qRear].x = pos_x;
+    queue[qRear].y = pos_y;
+    // enqueue null
+    qRear++;
+    queue[qRear].x = -1;
+    queue[qRear].y = -1;
+    
+    while (qFront < qRear) {
+        // dequeue
+        qFront++;
+        pos_x = queue[qFront].x;
+        pos_y = queue[qFront].y;
+        // check null
+        if (pos_x == -1) {// && pos_y == -1 // is null
+            steps++;
+            if (qFront < qRear) { // not empty
+                
+                qRear++;
+                queue[qRear].x = -1;
+                queue[qRear].y = -1;
+                continue;
+            }
+            else
+                break;
+        }  
+        
+        // enqueue
+        for (int d = 0; d < 4; d++) {
+            int next_pos_x = pos_x + directions[d];
+            int next_pos_y = pos_y + directions[d + 1];
+            if (0 <= next_pos_x && next_pos_x < mazeSize && \
+                0 <= next_pos_y && next_pos_y < *mazeColSize && \
+                maze[next_pos_x][next_pos_y] != '+') {
+                //printf("here");
+                qRear++;
+                queue[qRear].x = next_pos_x;
+                queue[qRear].y = next_pos_y;
+                
+                if (maze[next_pos_x][next_pos_y] == '-') {
+                    return steps + 1;
+                }
+                maze[next_pos_x][next_pos_y] = '+';
+            }
+        }
+    }
+    //printf("%d", steps);
+    return -1;
+}
+
+int nearestExit(char **maze, int mazeSize, int *mazeColSize, \
+                int *entrance, int entranceSize)
+{
+// 1. replace all empty cells on border to '-'
+    for (int i = 0; i < *mazeColSize; i++)
+        maze[0][i] = (maze[0][i] == '.') ? '-' : '+'; 
+    if (mazeSize - 1 > 0)
+        for (int i = 0; i < *mazeColSize; i++)
+            maze[mazeSize - 1][i] = (maze[mazeSize - 1][i] == '.') ? '-' : '+'; 
+    for (int j = 1; j < mazeSize - 1; j++)
+        maze[j][0] = (maze[j][0] == '.') ? '-' : '+'; 
+    if (*mazeColSize - 1 > 0)
+        for (int j = 1; j < mazeSize - 1; j++)
+            maze[j][*mazeColSize - 1] = (maze[j][*mazeColSize - 1] == '.') ? '-' : '+'; 
+    
+    /*for (int i = 0; i < mazeSize; i++) {
+        for (int j = 0; j < *mazeColSize; j++)
+            printf("%c ", maze[i][j]);
+        printf("\n");
+    }*/
+    
+    // BFS()
+    int start_x = entrance[0], start_y = entrance[1];
+    maze[start_x][start_y] = '+';
+    //printf("%c\n", maze[start_x][start_y]);
+    return BFS(maze, start_x, start_y, mazeSize, mazeColSize);
+}

@@ -1,0 +1,30 @@
+const int num [] ={0, 9, 99, 999, 9999, 99999};
+class Solution {
+public:
+    vector<string> splitMessage(string message, int limit) {
+        ios::sync_with_stdio(false);
+        cin.tie(nullptr);
+        int n=message.size(), m=0, k=1;
+        if(n+5<=limit) {
+            return {message+"<1/1>"};
+        }
+        for(int M=9*(limit-5); M<n; ) {
+            ++k;
+            if(k+k+3>limit) {
+                return {};
+            }
+            m=M;
+            M+=(num[k]-num[k-1])*(limit-3-k-k)-num[k-1];
+        }
+        m=num[k-1]+(n+num[k-1]-m+limit-4-k-k)/(limit-3-k-k);
+        vector<string> ans;
+        string tot=to_string(m);
+        for(int i=0, j=0, l; i<m; ++i) {
+            string idx=to_string(i+1);
+            l=min(n-j, limit-4-k-(int)log10(i+1));            
+            ans.push_back(message.substr(j,l)+'<'+idx+'/'+tot+'>');
+            j+=l;
+        }
+        return ans;
+    }
+};

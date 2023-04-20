@@ -1,0 +1,46 @@
+class Solution {
+public:
+    long long maximumBeauty(vector<int>& ar, long long m, int t, int f, int p) {
+        int n=ar.size();
+        sort(ar.rbegin(),ar.rend());
+        vector<long long> suf(n);
+        vector<long long> mi(n);
+        suf[n-1]=ar[n-1];
+        mi[n-1]=0;
+        for(int i=n-2;i>=0;i--){
+            suf[i]=suf[i+1]+ar[i];
+            mi[i]=mi[i+1]+(long long)(ar[i]-ar[i+1])*(n-i-1);
+        }
+        long long ans=0;
+        int i=0;
+        while(i<n && ar[i]>=t){i++;}
+        while(i<n){
+            if(m>=(long long)(t-1)*(n-i) - suf[i]){
+                ans=max(ans,(long long)(i)*f + (long long)p*(t-1));
+            }
+            else{
+                int lo=i,hi=n;
+                int anss=-1;
+                while(lo<hi){
+                    int mid = (lo+hi)/2;
+                    if(mi[mid]<=m){
+                        anss=mid;
+                        hi=mid;
+                    }
+                    else{
+                        lo=mid+1;
+                    }
+                }
+                long long mimi = m - mi[anss];
+                mimi = ar[anss] + mimi/(n-anss);
+                ans=max(ans,(long long)i*f + (long long)p*mimi);
+            }
+            long long dif = t-ar[i];
+            if(m<dif){break;}
+            m-=dif;
+            i++;
+        }
+        if(i==n){ans=max(ans,(long long)f*n);}
+        return ans;
+    }
+};

@@ -1,0 +1,29 @@
+constexpr static int N = 100001;
+int maxEqualFreq(vector<int>& nums) {
+	array<size_t, N> freq{0};
+	size_t k = 0;
+	bool max_once = false;
+	size_t ones = 0;
+	size_t max_freq = 0;
+	int ret = 0;
+	for (size_t i = 0; i != nums.size(); ++i) {
+		const auto cnt = ++freq[nums[i]];
+		if (cnt > max_freq) {
+			max_once = true;
+			max_freq = cnt;
+		} else if (cnt == max_freq) {
+			max_once = false;
+		}
+		if (cnt == 1) {
+			++ones;
+			++k;
+		} else if (cnt == 2) {
+			--ones;
+		}
+		if ((k * max_freq - max_freq == i && ones > 0) ||
+			(max_freq * k - k == i && max_once)) {
+			ret = i + 1;
+		}
+	}
+	return ret;
+}

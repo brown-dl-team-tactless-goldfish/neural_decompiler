@@ -1,0 +1,35 @@
+class Solution {
+public:
+    void check(vector<string> &words, unordered_map<char, int> letters, vector<int> &score, int &maxi, int cur, int index) {
+        if (index >= words.size()) {
+            maxi = max(maxi, cur);
+            return;
+        }
+        bool can = true;
+        unordered_map<char, int> temp = letters;
+        int sum = cur;
+        for (int i = 0; i < words[index].size(); i ++) {
+            if (letters.find(words[index][i]) == letters.end() || letters[words[index][i]] == 0) {
+                can = false;
+                break;
+            } else {
+                letters[words[index][i]] --;
+                sum += score[words[index][i] - 'a'];
+            }
+        }
+        if (can) {
+            check(words, letters, score, maxi, sum, index + 1);
+        }
+        check(words, temp, score, maxi, cur, index + 1);
+        return;
+    }
+    int maxScoreWords(vector<string>& words, vector<char>& l, vector<int>& score) {
+        unordered_map<char, int> letters;
+        for (int i = 0; i < l.size(); i ++) {
+            letters[l[i]] ++;
+        }
+        int maxi = 0;
+        check(words, letters, score, maxi, 0, 0);
+        return maxi;
+    }
+};

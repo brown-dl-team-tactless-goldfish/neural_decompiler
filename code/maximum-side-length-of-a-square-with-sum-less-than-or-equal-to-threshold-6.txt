@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int query(const vector<vector<int>>& sum, int i, int j, int l){
+        int ret = sum[i+l][j+l];
+        if(i>0){
+            ret -= sum[i-1][j+l];
+        }
+        if(j>0){
+            ret -=  sum[i+l][j-1];
+        }
+        if(i>0&&j>0){
+            ret += sum[i-1][j-1];
+        }
+        return ret; 
+    }
+    int maxSideLength(vector<vector<int>>& mat, int threshold) {
+        vector<vector<int>> sum(mat.size(),vector<int>(mat[0].size(),0));
+        sum[0][0] = mat[0][0];
+        for(int i = 1;i<mat[0].size();i++){
+            sum[0][i] = mat[0][i] + sum[0][i-1];
+        }
+        for(int i = 1;i<mat.size();i++){
+            int tmp = 0;
+            for(int j = 0;j<mat[0].size();j++){
+                tmp += mat[i][j];
+                sum[i][j] = sum[i-1][j] + tmp;
+            }
+        }
+        int ret = 0;
+        for(int i = 0;i<mat.size();i++){
+            for(int j = 0;j<mat[0].size();j++){
+                int limit = min(mat.size()-i,mat[0].size()-j);
+                for(int k = 0;k<limit;k++){
+                    int tmp = query(sum,i,j,k);
+                    if(tmp<=threshold){
+                        ret = max(ret,k+1);
+                    } else {
+                        break;
+                    }
+                }
+            }
+        }
+        return ret; 
+    }
+};

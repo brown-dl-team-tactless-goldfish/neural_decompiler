@@ -1,0 +1,47 @@
+int bestprofit[2]= {0,0}; /*Rotation,profit*/
+int gondola_max = 4;
+int pplOnGondola = 0;
+int waiting_ppl = 0;
+int i = 0;
+int iter = 1;
+int sum = 0;
+bool flag = false;
+
+while( waiting_ppl != 0 || i < customersSize )
+{
+
+    if (i < customersSize)
+    {
+        waiting_ppl += customers[i];
+        i++;
+    }
+	
+    if (gondola_max < waiting_ppl)
+    {
+        pplOnGondola += gondola_max;
+        waiting_ppl -=gondola_max;
+    }
+	
+    else{
+        pplOnGondola += waiting_ppl;
+        waiting_ppl= 0;
+    }
+	
+    sum = (pplOnGondola*boardingCost)-(iter*runningCost);
+
+    if(bestprofit[1]<sum)
+    {
+        bestprofit[0]=iter;
+        bestprofit[1]=sum;
+        flag=true;
+    }
+    sum = 0;
+    iter +=1; 
+}
+if (flag==false)
+{
+    return -1;
+}
+else{
+    return bestprofit[0];
+}

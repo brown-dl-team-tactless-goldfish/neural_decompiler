@@ -1,0 +1,48 @@
+class Solution {
+public:
+    
+    void addCandidates(vector<long>& candidates, string hs, int n) {
+        long h = stol(hs);
+        vector<long> hv = {h, h-1, h+1};
+        for (long val : hv) {
+            string t = to_string(val);
+            if (n%2 != 0) t.pop_back();
+            reverse(t.begin(), t.end());
+            candidates.push_back(stol(to_string(val) + t));
+        }
+    }
+    
+    long p(long a, long b) {
+        long res = a;
+        while (--b) {
+            res *= a;
+        }
+        return res;
+    }
+    
+    string nearestPalindromic(string s) {
+        int n = s.size();
+        if (n == 1) {
+            s[0]--;
+            return s;
+        }
+
+        int hn = (n+1)/2;
+        vector<long> candidates = {p(10, n)-1, p(10, n-1)-1, p(10, n-1)+1, p(10, n)+1};
+        string hs = s.substr(0, hn);
+        addCandidates(candidates, hs, n);
+        sort(candidates.begin(), candidates.end());
+        
+        string res;
+        long minDiff = INT_MAX, num = stol(s);
+        for (long c : candidates) {
+            if (c == num) continue;
+            long diff = labs(num-c);
+            if (diff < minDiff) {
+                minDiff = diff;
+                res = to_string(c);
+            }
+        }
+        return res;
+    }
+};

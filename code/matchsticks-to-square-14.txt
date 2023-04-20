@@ -1,0 +1,84 @@
+bool is_seen(vector<int> sides, int pos)
+{
+    for(int i=0; i < pos; i++)
+    {
+        if(sides[i] == sides[pos])
+        {
+            
+            return true;
+        }
+        
+    }
+    
+    return false;
+    
+}
+
+bool dfs(vector<int> sides,int sum, vector<int> m, int idx)
+{
+    
+    if(idx == m.size( ))
+    {
+        
+            
+        if(sides[0]==sum && sides[1]== sum && sides[2] == sum && sides[3] == sum)
+        {
+            return true;
+            
+        }
+    
+        
+    }
+    
+    for(int i= 0; i < 4; i++)
+    {
+        if(sides[i] + m[idx] > sum || is_seen(sides, i))
+        {
+            continue;
+        }
+        
+        sides[i] = sides[i] + m[idx];
+        
+        if(dfs(sides,sum, m, idx+1))
+        {
+            
+            return true;
+        }
+        
+        sides[i] = sides[i] - m[idx];
+        
+        
+        
+    }
+    
+    return false;
+    
+}
+
+bool makesquare(vector<int>& m) {
+    
+   int sum, side;
+    
+   sum = accumulate(m.begin( ), m.end( ), 0);
+    
+    sort(m.rbegin( ), m.rend());
+    
+    
+    if(sum % 4 || m.size( ) < 4)
+    {
+        
+        return false;
+    }
+    
+    side = sum / 4;
+    
+    if(m[0] > side)
+    {
+        return false;
+    }
+    
+    vector<int> sides(4, 0);
+    
+    return dfs(sides, side, m, 0);
+    
+}

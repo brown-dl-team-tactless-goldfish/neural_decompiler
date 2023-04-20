@@ -1,0 +1,54 @@
+class Solution {
+public:
+
+    //Solution using recursion
+
+    // int countPalindromes(string s,int i,int j)
+    // {
+    //    if(i>j)
+    //      return 0;
+    //    if(i==j)
+    //      return 1;
+        
+    //     if(s[i]==s[j])
+    //      return 2+countPalindromes(s,i+1,j-1);
+        
+    //     return max(countPalindromes(s,i+1,j),countPalindromes(s,i,j-1));
+        
+    // }
+    // int longestPalindromeSubseq(string s) 
+    // {
+    //     int n=s.length();
+    //     int count=0;
+    //     int i=0,j=n-1;
+    //     if(n==1)
+    //      return 1;
+        
+    //     return countPalindromes(s,i,j);
+    // }
+
+    //Solution using memoization
+
+        string s;
+        int mem[1000][1000];
+
+        int findlongestPalin(int i, int j)
+        {
+            if (i == j)
+                return 1;
+            if (i > j)
+                return 0;
+            if (mem[i][j] > 0)
+                return mem[i][j];
+            if (s[i] == s[j])
+                return mem[i][j] = 2 + findlongestPalin(i+1, j-1);
+            return mem[i][j] = max(findlongestPalin(i+1, j), findlongestPalin(i, j-1));
+        }
+
+        int longestPalindromeSubseq(string str)
+        {
+            s = str;
+            int n = s.length();
+            return findlongestPalin(0, n-1);
+        }
+        };

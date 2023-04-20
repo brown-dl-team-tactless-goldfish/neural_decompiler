@@ -1,0 +1,38 @@
+class Solution {
+public:
+   
+    vector<bool> checkIfPrerequisite(int num, vector<vector<int>>&nums,vector<vector<int>>& qu) 
+    {
+        vector<int>dp[num+10];
+        for(auto it:nums)
+        {
+            dp[it[0]].push_back(it[1]);
+        }
+        queue<int>q;
+        vector<vector<bool>>vis(num+10,vector<bool>(num+10,false));
+        for(int i=0;i<num;i++)
+        {
+            queue<int>q;
+            q.push(i);
+            while(q.size())
+            {
+                auto temp=q.front();
+                q.pop();
+                for(auto it:dp[temp])
+                {
+                    if(vis[i][it]==false)
+                    {
+                      vis[i][it]=true;
+                      q.push(it);
+                    }
+                }
+            }
+        }
+        vector<bool>ans;
+        for(auto it:qu)
+        {
+            ans.push_back(vis[it[0]][it[1]]);
+        }
+        return ans;
+    }
+};

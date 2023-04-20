@@ -1,0 +1,46 @@
+bool flag=false;
+long f[100001]={};
+class Solution 
+{
+    public:
+    long d=1000000007;
+    long powmod(long a,long b)
+    {
+        long result=1,base=a;
+        while(b)
+        {
+            if(b&1) result=(result*base)%d;
+            base=(base*base)%d;
+            b>>=1;
+        }
+        return result;
+    }
+    long inv(long n) { return powmod(n,d-2); }
+    int countAnagrams(string s) 
+    {
+        if(!flag)
+        {
+            f[1]=1;
+            for(int i=2;i<100001;i++) f[i]=(f[i-1]*i)%d;
+            flag=true;
+        }
+        s+=" ";
+        long result=1,n=s.length();
+        string current;
+        for(int i=0;i<n;i++)
+        {
+            if(s[i]==' ')
+            {
+                long t=current.length(),c=f[t],a[26]={};
+                for(int j=0;j<current.length();j++) a[current[j]-'a']++;
+                for(int j=0;j<26;j++)
+                    if(a[j]>1) c=(c*inv(f[a[j]]))%d;
+
+                result=(result*c)%d;
+                current="";
+            }
+            else current+=s[i];
+        }
+        return result;
+    }
+};

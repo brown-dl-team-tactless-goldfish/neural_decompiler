@@ -1,0 +1,26 @@
+class Solution {
+public:
+    #define ll long long
+    long long minimumRemoval(vector<int>& a) {
+        ll n = a.size(); vector<ll> suff(n+1); sort(begin(a),end(a));
+        suff[n-1] = a[n-1];
+        for(int i = n-2;i>=0;i--){
+            suff[i] = a[i] +  suff[i+1]; 
+        }
+    
+        //intialise ans with case where we would reduce all elems to 0 except the max one
+        int maxi = INT_MIN; for(auto &e:a) maxi = max(maxi,e);
+        ll c = 0; for(auto &e:a) if(e!=maxi) c+=e;
+    
+        ll ans = c,sum = 0 ; c=0;
+      
+        for(int i = 0;i<a.size();i++){
+            c = (suff[i+1] - a[i]*(n-i-1)) + sum;  
+            
+            sum+=a[i];
+            ans = min(ans,c);
+        }
+        return ans;
+    }
+};
+    

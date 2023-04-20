@@ -1,0 +1,35 @@
+int *freq(char *word)
+{
+    int *f = malloc(4 * 30);
+    memset(f, 0, 4 * 30);
+    int i;
+    
+    for (i = 0; i < strlen(word); i++) {
+        f[word[i] - 'a'] += 1;
+    }
+    
+    return f;
+}
+
+int countCharacters(char ** words, int wordsSize, char * chars){
+    int *freq_chars = freq(chars);
+    int *f;
+    int c;
+    int w;
+    
+    int res = 0;
+    for (w = 0; w < wordsSize; w += 1) {
+        f = freq(words[w]);
+        bool good = true;
+        for (c = 0; c < 30; c++) {
+            if (f[c] > 0) {
+                if (freq_chars[c] < f[c])
+                    good = false;
+            }
+        }
+        if (good)
+            res += strlen(words[w]);
+    }
+
+    return res;
+}

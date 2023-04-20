@@ -1,0 +1,64 @@
+class Solution {
+public:
+  class leaf{
+    public:
+    int maxleaf;
+    int ans;
+    
+    
+  };
+  leaf dp[40][40];
+  leaf solve(vector<int>&arr , int i ,int j){
+     leaf curr;
+    if(i==j){
+      curr.ans=0;
+      curr.maxleaf=arr[i];
+      return dp[i][j]=curr;
+    }
+    
+    if((dp[i][j].ans)!=INT_MAX) return dp[i][j];
+     
+    leaf node;
+    node.ans=INT_MAX;
+    node.maxleaf=-1;
+  
+    for(int k=i;k<j;k++){
+      leaf l = solve(arr,i,k);
+      leaf r= solve(arr,k+1,j);
+      int sum = l.ans+r.ans+ l.maxleaf * r.maxleaf;
+      curr.ans =sum;
+      curr.maxleaf= max(l.maxleaf,r.maxleaf);
+      
+        if(node.ans>curr.ans){
+          node=curr;
+        }
+        
+    }
+  
+  
+  
+  return dp[i][j]=node;
+  
+  }
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+  
+    int mctFromLeafValues(vector<int>& arr) {
+      
+      for(int i=0;i<=39;i++){
+        for(int j=0;j<=39;j++){
+          dp[i][j].ans=INT_MAX;
+        }
+      }
+      
+       return  solve(arr,0,arr.size()-1).ans;
+    }
+};

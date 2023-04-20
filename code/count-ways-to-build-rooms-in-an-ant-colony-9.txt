@@ -1,0 +1,73 @@
+/*
+    basically is asking how many topological order there is
+
+    think the relation between current problem s[u] and subprobelm s[v_i]
+    where v_i is the children of u
+    
+    if the order of the subtree of v_i is fixed,
+    then total order there is a multinomial
+    
+    (sum(sz[v_i]) ! 
+----------------------
+    product(sz[v_i]!)
+    
+    and there is product(s[v_i]) of different fixed combination 
+*/
+
+
+typedef long long LL;
+
+const int N = 100010, mod = 1e9 + 7;
+
+class Solution {
+    int f[N], g[N];
+    int s[N], sz[N];
+    int qmi(int a, int k)
+    {
+        int res = 1;
+        while (k)
+        {
+            if (k & 1) res = (LL)res * a % mod;
+            a = (LL)a * a % mod;
+            k >>= 1;
+        }
+        return res;
+    }
+    
+    vector<vector<int>> gh;
+    
+    int dfs(int u)
+    {
+        s[u] = 0;
+        for (int v : gh[u])
+        {
+            dfs(v);
+            sz[u] += sz[v];
+        }
+        s[u] = f[sz[u]];
+        for (int v : gh[u])
+        {
+            s[u] = (LL)s[u] * g[sz[v]] % mod * s[v] % mod;
+        }
+        sz[u] ++ ;
+        return s[u];
+    }
+    
+public:
+    int waysToBuildRooms(vector<int>& es) {
+        int n = es.size();
+        gh.resize(n);
+        
+        f[0] = g[0] = 1;
+        for (int i = 1; i <= n; ++ i)
+        {
+            f[i] = (LL)f[i - 1] * i % mod;
+            g[i] = qmi(f[i], mod - 2) % mod;
+        }
+        
+        for (int i = 1; i < n; ++ i)
+            gh[es[i]].push_back(i);
+        
+        return dfs(0);        
+    }
+};

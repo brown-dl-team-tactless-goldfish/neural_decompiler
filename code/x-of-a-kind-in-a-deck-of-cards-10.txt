@@ -1,0 +1,42 @@
+#include <vector>
+#include <unordered_map>
+#include <algorithm>
+
+class Solution {
+public:
+
+    static int get_gcd(int a, int b) {
+        if (b == 0) {
+            return a;
+        }
+
+        int c = a % b;
+        while (c != 0) {
+            a = b;
+            b = c;
+            c = a % b;
+        }
+
+        return b;
+    }
+
+    bool hasGroupsSizeX(std::vector<int>& deck) {
+
+        if (deck.size() < 2) {
+            return false;
+        }
+
+        std::unordered_map<int, int> cards;
+
+        for (int card : deck) {
+            cards[card] += 1;
+        }
+
+        int res = 0;
+        for (const auto& ele : cards) {
+            res = get_gcd(res, ele.second);
+        }
+
+        return res > 1;        
+    }
+};

@@ -1,0 +1,22 @@
+public class Solution {
+    public int MaxStarSum(int[] vals, int[][] edges, int k) {
+        PriorityQueue<int,int>[] g = new PriorityQueue<int,int>[vals.Length];
+        for(int i = 0; i < vals.Length; i++){
+            g[i] = new PriorityQueue<int,int>();
+        }
+        foreach(int[] edge in edges){
+            g[edge[0]].Enqueue(edge[1], -vals[edge[1]]);
+            g[edge[1]].Enqueue(edge[0], -vals[edge[0]]);
+        }
+        int max = int.MinValue;
+        for(int i = 0; i < vals.Length; i++){
+            int sum = vals[i], edgesAdded = 0;
+            while(edgesAdded < k && g[i].Count > 0 && sum+vals[g[i].Peek()] > sum){
+                sum += vals[g[i].Dequeue()];
+                edgesAdded++;
+            }
+            max = Math.Max(max, sum);
+        }
+        return max;
+    }
+}

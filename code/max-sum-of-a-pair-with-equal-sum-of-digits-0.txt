@@ -1,0 +1,55 @@
+int countDigit(int val){
+    int ret = 0 ; 
+    while(val){
+        ret += val % 10 ;
+        val /= 10 ;
+    }
+    return ret ;
+}
+int maximumSum(int* nums, int numsSize){
+    int n = numsSize ;
+    int* idx = calloc(82, sizeof(int)) ;
+    int** queue = malloc(82 * sizeof(int*)) ;
+    for(int i = 0; i < 82; i++){
+        queue[i] = malloc(2 * sizeof(int)) ;
+    }
+    for(int i = 0; i < n; i++){
+        int d = countDigit(nums[i]) ;
+        int index = idx[d] ;
+        if(index == 0){
+            queue[d][0] = nums[i] ;
+            idx[d]++ ;
+        }
+        else if(index == 1){
+            if(nums[i] <= queue[d][0]){
+                queue[d][1] =  nums[i] ;   
+            }
+            else{
+                queue[d][1] = queue[d][0] ;    
+                queue[d][0] = nums[i] ;
+            }
+            idx[d]++;
+        }
+        else{
+            if(nums[i] >= queue[d][0]){
+                queue[d][1] = queue[d][0] ;  
+                queue[d][0] = nums[i] ;
+            }
+            else if(nums[i] >= queue[d][1]){ 
+                queue[d][1] = nums[i] ;
+            }
+        }
+    }
+    int ans = -1 ;
+    for(int i = 1; i < 82; i++){
+        if(idx[i] == 2){
+            ans = fmax(ans, queue[i][0] + queue[i][1] ) ;
+        }
+    }
+    free(idx) ;
+    for(int i = 0; i < 82; i++){
+        free(queue[i]) ;
+    }
+    free(queue) ;
+    return ans ;
+}

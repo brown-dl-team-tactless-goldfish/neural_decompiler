@@ -1,0 +1,130 @@
+struct pr_range
+{
+    int left;
+    int right;
+    int count;
+};
+void binarySearch(struct pr_range *range, int findindex, int *nearindex, int size, bool flag);
+int* platesBetweenCandles(char * s, int** queries, int queriesSize, int* queriesColSize, int* returnSize){
+    
+    
+    int *res = (int *)malloc(sizeof(int) *queriesSize);
+    memset(res,0,sizeof(int)*queriesSize);
+    *returnSize = queriesSize;
+    int len = strlen(s);
+    struct pr_range *range = (struct pr_range *)malloc(sizeof(struct pr_range)*len);
+    int i;
+    int p,q;
+    int j,k;
+    int nearIndex;
+    int total;
+    int prev=-1;
+    int ridx=0;
+    while (s[p]!=NULL)
+    {
+        total=0;
+        while(s[p]!=NULL && s[p]=='*')
+        {
+            p++;
+        }
+        if (s[p] == NULL)
+            break;
+            
+        if (prev == -1)
+        {
+            prev=p;
+        }
+        else
+        {
+            total = total + (p - prev - 1);
+            if (total != 0)
+            {
+                if (ridx!=0)
+                    range[ridx].count = range[ridx-1].count+total;
+                else
+                    range[ridx].count = total;
+                range[ridx].left = prev;
+                range[ridx].right = p;
+                ridx++;
+            }
+            prev=p;
+        }
+        p++;
+    }
+    for (i=0; i < queriesSize; i++)
+    {
+        p=queries[i][0];
+        q=queries[i][1];
+        nearIndex=-1;
+        binarySearch(range,p,&nearIndex,ridx,0);
+        j=nearIndex;
+        nearIndex=-1;
+        binarySearch(range,q,&nearIndex,ridx,1);
+        k=nearIndex;
+        
+        if (j==-1 || k < j)
+            res[i]=0;
+        else
+        {
+            if (j-1>=0)
+                res[i] = range[k].count - range[j-1].count;
+            else
+                res[i] = range[k].count;
+        }
+    }
+    return &res[0];
+}
+
+void binarySearch(struct pr_range *range, int findIndex, int *nearIndex, int size, bool flag)
+{
+    int start = 0;
+    int end = size-1;
+    int mid;
+    
+    if (flag == 0)
+    {    
+        while (start <= end)
+        {
+            mid = (start+end)/2;
+            
+            if (range[mid].left == findIndex)
+            {
+                *nearIndex = mid;
+                break;
+            }
+            else if (range[mid].left > findIndex)
+            {
+                *nearIndex = mid;
+                end = mid-1;
+            }
+            else
+            {
+                 start = mid+1;
+            }
+            
+        }
+    }
+    else
+    {
+        while (start <= end)
+        {
+            mid = (start+end)/2;
+             
+            if (range[mid].right == findIndex)
+            {
+                *nearIndex = mid; 
+                break;
+            }
+            else if (range[mid].right > findIndex)
+            {
+                end = mid-1;
+            }
+            else
+            {  
+                *nearIndex = mid; 
+                start=mid+1;
+            }
+            
+        }   
+    }
+}

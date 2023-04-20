@@ -1,0 +1,21 @@
+int MAX(int a, int b){ return(a>b?a:b); }
+int maximumCostSubstring(char * s, char * chars, int* vals, int valsSize){
+    int currSum = 0, ans = 0, slen = strlen(chars);
+    int* score = (int*)calloc(26, sizeof(int));
+	/* initial cost by index */
+    for(int i = 0; i < 26; i++)
+        score[i] = i+1;    
+	/* update by vals */
+    for(int i = 0; i < slen; i++)
+        score[chars[i] - 'a'] = vals[i];
+    
+    slen = strlen(s);
+    for(int i = 0; i < slen; i++){
+        int cost = score[s[i]-'a'];
+        currSum += cost;
+        if(currSum < 0)
+            currSum = 0;
+        ans = MAX(ans, currSum);
+    }
+    return ans;
+}

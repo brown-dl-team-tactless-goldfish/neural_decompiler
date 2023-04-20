@@ -1,0 +1,32 @@
+class Solution {
+public:
+    bool checkValidString(string s) {
+        stack<int> open, star;
+        for(int i=0; i<s.size(); i++){
+            char c = s[i];
+            if(c == ')'){
+                if(open.empty() && star.empty()) return false;
+                if(!open.empty()) open.pop();
+                else if(!star.empty()) star.pop();
+            }
+            else if(c == '(') open.push(i);
+            else star.push(i);
+        }
+        if(open.empty()) return true;
+        
+        //If ( is more than *, then ( can't be balanced.
+        if(open.size() > star.size()) return false;
+        
+        //Try to balance ( with *
+        while(!open.empty()){
+            if(star.empty()) return false;
+            int starIndex = star.top();
+            star.pop();
+            
+            int openIndex = open.top();
+            if(starIndex > openIndex) open.pop();
+            if(open.empty()) return true;
+        }
+        return false;
+    }
+};

@@ -1,0 +1,108 @@
+/// Swap two objects by swapping each of their bytes.
+static inline
+void swap(char *a, char *b, size_t size)
+{
+    do
+    {
+        char tmp = *a;
+        *(a++) = *b;
+        *(b++) = tmp;
+    }
+    while (--size > 0);
+}
+
+/// Take an (otherwise valid) heap where the last element may be out of
+/// order and restore the heap property.
+static void heap_sift_up(void *base, size_t nmemb, size_t size,
+    int (*cmp)(const void *, const void *))
+{
+    assert(!nmemb || base && size && cmp);
+    if (! nmemb) return;
+    for (size_t child_idx = nmemb - 1; child_idx; )
+    {
+        size_t parent_idx = (child_idx + 1) / 2 - 1;
+        void *parent = (char *)base + parent_idx * size;
+        void *child = (char *)base + child_idx * size;
+        if (cmp(parent, child) <= 0)
+            break;
+        swap(parent, child, size);
+        child_idx = parent_idx;
+    }
+}
+
+/// Take an (otherwise valid) heap where the first element may be out of
+/// order and restore the heap property.
+static void heap_sift_down(void *base, size_t nmemb, size_t size,
+    int (*cmp)(const void *, const void *))
+{
+    assert(!nmemb || base && size && cmp);
+    size_t parent_idx = 0;
+    size_t limit = nmemb / 2;
+    while (parent_idx < limit)
+    {
+        size_t child_idx = (parent_idx + 1) * 2 - 1;
+        void *parent = (char *)base + parent_idx * size;
+        void *child = (char *)base + child_idx * size;
+        if (child_idx + 1 < nmemb && cmp(child, (char *)child + size) >= 0)
+        {
+            ++child_idx;
+            child = (char *)child + size;
+        }
+        if (cmp(parent, child) <= 0)
+            break;
+        swap(parent, child, size);
+        parent_idx = child_idx;
+    }
+}
+
+/// Reorder an array so that it becomes a valid binary min heap.
+static void heap_heapify(void *base, size_t nmemb, size_t size,
+    int (*cmp)(const void *, const void *))
+{
+    assert(!nmemb || base && size && cmp);
+    for (size_t i = 2; i <= nmemb; ++i)
+        heap_sift_up(base, i, size, cmp);
+}
+
+/// Return -1/0/1 if the first argument is
+/// GREATER than / equal to / SMALLER than the second argument.
+static int cmp_int_rev(const void *ptr1, const void *ptr2)
+{
+    int a = *(int *)ptr1, b = *(int *)ptr2;
+    return (a < b) - (a > b);
+}
+
+int lastStoneWeight(int* stones, int stones_length)
+{
+    // reorder `stones` so that it becomes a binary max heap (greatest value first)
+    heap_heapify(stones, stones_length, sizeof(*stones), cmp_int_rev);
+
+    // repeatedly process the two heaviest stones
+    while (stones_length > 1)
+    {
+        // remove the heaviest stone from the heap by storing its weight in `stone1`,
+        // then replace the first element of the heap (the heaviest stone)
+        // with the last element (the lightest stone)
+        // and restore the heap property by calling `heap_sift_down`
+        int stone1 = stones[0];
+        stones[0] = stones[--stones_length];
+        heap_sift_down(stones, stones_length, sizeof(*stones), cmp_int_rev);
+
+        if (stone1 == stones[0])
+            // if both stones have equal weight,
+            // remove the second stone from the heap
+            // by replacing the first element (the second stone)
+            // with the last element and shrinking the heap
+            stones[0] = stones[--stones_length];
+        else
+            // if the second stone is smaller,
+            // replace the first element (the second stone)
+            // with the difference of the two stones
+            stones[0] = stone1 - stones[0];
+
+        // the first element has changed, we have to restore the heap property
+        heap_sift_down(stones, stones_length, sizeof(*stones), cmp_int_rev);
+    }
+
+    return stones_length == 0? 0: *stones;
+}

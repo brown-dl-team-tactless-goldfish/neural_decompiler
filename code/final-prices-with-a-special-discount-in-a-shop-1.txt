@@ -1,0 +1,24 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* finalPrices(int* prices, int pricesSize, int* returnSize){
+    *returnSize = pricesSize;
+    int *result = (int *)malloc(sizeof(int) * pricesSize);
+    int stack[pricesSize];
+    memset(stack, 0xff, pricesSize * sizeof(int));
+    int stack_idx = -1;
+    for (int i = 0; i < pricesSize; i++)
+    {
+        int price = prices[i];
+        result[i] = price;
+        while (stack_idx > -1 && prices[stack[stack_idx]] >= price)
+        {
+            result[stack[stack_idx--]] -= price;
+        }
+
+        stack[++stack_idx] = i;
+    }
+    
+
+    return result;
+}

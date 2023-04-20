@@ -1,0 +1,21 @@
+public int LongestSubstring(string s, int k) {
+	if (s == "")
+		return 0;
+
+	var chars = s
+		.ToCharArray()
+		.GroupBy(c => c)
+		.ToDictionary(c => c.Key, c => c.Count())
+		.Where(d => d.Value < k)
+		.Select(d => d.Key)
+		.ToArray();
+
+	if (!chars.Any())
+		return s.Length;
+
+	return chars
+		.Aggregate(new List<string> { s },
+			(x, y) => x.SelectMany(z => z.Split(y)).ToList())
+		.Select(r => LongestSubstring(r, k))
+		.Max();
+}

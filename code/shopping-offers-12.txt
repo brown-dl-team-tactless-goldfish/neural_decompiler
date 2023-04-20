@@ -1,0 +1,31 @@
+class Solution {
+public:
+    int shopping(vector<int>& price, vector<vector<int>>& special, vector<int>& needs) {
+        int res = 0;
+        for(int i=0;i<needs.size();i++) {
+            res += needs[i]*price[i];
+        }
+        for(auto offer:special) {
+            bool flag = true;
+            vector<int> clone = needs;
+            for(int i=0;i<offer.size()-1;i++) {
+                if(needs[i]<offer[i]) {
+                    flag = false;
+                    break;
+                }
+            }
+            if(flag) {
+                 int offer_cost = offer[offer.size()-1];
+                 for(int i=0;i<clone.size();i++) {
+                        clone[i] -= offer[i];
+                 }
+                 res = min(res, offer_cost + shopping(price,special,clone));
+             }
+        }
+        return res;
+        
+    }
+    int shoppingOffers(vector<int>& price, vector<vector<int>>& special, vector<int>& needs)    {
+        return shopping(price, special, needs);
+    }
+};

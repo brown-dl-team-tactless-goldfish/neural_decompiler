@@ -1,0 +1,54 @@
+public class Solution {
+        public string ReorderSpaces(string text)
+        {
+            if (text == null || text == string.Empty)
+                return text;
+
+            StringBuilder res = new StringBuilder();
+            int spaces = 0,
+                words = 0,
+                i = 0;
+            List<int[]> indexes = new List<int[]>();
+            
+            while (i < text.Length)
+                if (text[i] == ' ')
+                    while (i < text.Length && text[i] == ' ')
+                    {
+                        i++;
+                        spaces++;
+                    }
+                else
+                {
+                    int[] index = new int[2];
+
+                    index[0] = i;
+
+                    while (i < text.Length && text[i] != ' ')
+                        i++;
+
+                    index[1] = i;
+
+                    indexes.Add(index);
+                    words++;
+                }
+
+            int k = words == 1 ? spaces : spaces / (words - 1);
+
+            foreach (var item in indexes)
+            {
+                res.Append(text.Substring(item[0], item[1] - item[0]));
+
+                for (int j = 0; j < k && spaces > 0; j++)
+                {
+                    res.Append(" ");
+                    spaces--;
+                }
+            }
+            
+            if (spaces > 0)
+                for (int j = 0; j < spaces; j++)
+                    res.Append(" ");
+
+            return res.ToString();
+        }
+}

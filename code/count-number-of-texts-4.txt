@@ -1,0 +1,22 @@
+int keys[10] = {0, 0, 3, 3, 3, 3, 3, 4, 3, 4};
+const int mod = 1e9 + 7;
+
+class Solution {
+public:
+    int countTexts(string pressedKeys) {
+        int n= pressedKeys.size();
+        if (n == 0) return 0;
+        int dp[n+1];
+        memset(dp, 0, sizeof(dp));
+        dp[0] = 1;
+        
+        for (int i = 1; i <= n; ++i) {
+            char c = pressedKeys[i-1];
+            for (int j = 0; j < keys[c-'0']; ++j) {
+                if (i-j <= 0 || pressedKeys[i-j-1] != c) {break;}
+                dp[i] = (dp[i] + dp[i-j-1]) % mod;
+            }
+        }
+        return dp[n];
+    }
+};

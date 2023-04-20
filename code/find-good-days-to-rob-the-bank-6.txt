@@ -1,0 +1,41 @@
+class Solution {
+public:
+    vector<int> goodDaysToRobBank(vector<int>& nums, int time) {
+      int n=nums.size();  
+      
+      vector<int>bDiff(n,0);
+     vector<int>fDiff(n,0);
+
+      int count=0;
+      for(int i=1;i<n;i++){
+        if(nums[i]-nums[i-1]<=0){
+          count++;
+          bDiff[i]=count;
+        }
+        else{
+          count=0;
+          bDiff[i]=0;
+        }
+      }
+      
+       count=0;
+      for(int i=n-2;i>=0;i--){
+        if(nums[i+1]-nums[i]>=0){
+          count++;
+          fDiff[i]=count;
+        }
+        else{
+          count=0;
+          fDiff[i]=0;
+        }
+      }
+      
+      vector<int>ans;
+      for(int i=time;i<n-time;i++){
+        if(bDiff[i]>=time && fDiff[i]>=time)
+          ans.push_back(i);
+      }
+      
+      return ans;
+    }
+};

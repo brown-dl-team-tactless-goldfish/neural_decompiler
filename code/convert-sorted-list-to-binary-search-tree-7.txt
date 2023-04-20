@@ -1,0 +1,38 @@
+if(head == NULL)
+{
+    return NULL;
+}
+
+if(head->next == NULL)
+{
+    struct TreeNode* newNode = (struct TreeNode*)malloc(sizeof(struct TreeNode));
+    newNode->left = NULL;
+    newNode->right = NULL;
+    newNode->val = head->val;
+    return newNode;
+}
+
+struct ListNode* runner = head;
+struct ListNode* chaser = head;
+struct ListNode* firstListTail = NULL;
+
+while(runner != NULL && runner->next != NULL)
+{
+    firstListTail = chaser;
+    chaser = chaser->next;
+    runner = runner->next->next;
+}
+
+struct ListNode* leftList = head;
+struct ListNode* rightList = chaser->next;
+firstListTail->next = NULL;
+chaser->next = NULL;
+
+struct TreeNode* root = sortedListToBST(chaser);
+struct TreeNode* left = sortedListToBST(leftList);
+struct TreeNode* right = sortedListToBST(rightList);
+
+root->left = left;
+root->right = right;
+
+return root;

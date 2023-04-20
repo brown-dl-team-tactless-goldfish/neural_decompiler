@@ -1,0 +1,71 @@
+class Solution {
+private:
+    int rSize;
+    int cSize;
+    
+    const int dir[5] = {0, 1, 0, -1, 0};
+    
+    struct Slot {
+    public:
+        int r;
+        int c;
+        int d;
+        
+        bool operator < (const Slot &otherSlot) const {
+            return d > otherSlot.d;
+        }
+        
+        Slot(int _r, int _c, int _d) {
+            r = _r;
+            c = _c;
+            d = _d;
+        }
+    };
+    
+    bool outOfBound(int r, int c) {
+        if (r < 0 || c < 0 || r >= rSize || c >= cSize) return true;
+        return false;
+    }
+    
+    bool reachGoal(int r, int c) {
+        return (r == rSize - 1 && c == cSize - 1);
+    }
+    
+public:
+    int minimumEffortPath(vector<vector<int>>& heights) {
+        rSize = heights.size();
+        cSize = heights[0].size();
+        
+        priority_queue<Slot> priQ;
+        vector<vector<bool>> memo (rSize, vector<bool> (cSize, false));
+        int maxDiff = 0;
+        
+        priQ.emplace(0, 0, 0);
+        
+        while (!priQ.empty()) {
+            int currR = priQ.top().r;
+            int currC = priQ.top().c;
+            int currD = priQ.top().d;
+            
+            priQ.pop();
+            
+            if (memo[currR][currC]) continue; // Guard against a longer path
+            if (reachGoal(currR, currC)) return currD;
+            
+            memo[currR][currC] = true;
+            
+            // push the 4 directions
+            for (int i = 0; i < 4; i++) {
+                int nextR = currR + dir[i];
+                int nextC = currC + dir[i + 1];
+                
+                if (outOfBound(nextR, nextC)) continue;
+                if (memo[nextR][nextC]) continue;
+                
+                priQ.emplace(nextR, nextC, max(currD, abs(heights[currR][currC] - heights[nextR][nextC])));
+            }
+        }
+        
+        return -1;
+    }
+};

@@ -1,0 +1,86 @@
+class Solution {
+public:
+    vector<int> maxK(const vector<int>& nums, int k){
+        vector<int> ret;
+        for(int i = 0;i<nums.size();i++){
+            int x = nums[i];
+            while(ret.size()&&ret.back()<x&&ret.size()-1+nums.size()-i>=k){
+                ret.pop_back();
+            }
+            ret.push_back(x);
+        }
+        if(ret.size()>k){
+            ret.resize(k);
+        }
+        return ret;
+    }
+    
+    vector<vector<int>> buildDP(const vector<int>& nums,int k){
+        k = nums.size()>k?k:nums.size();
+        vector<vector<int>> dp(k+1);
+        dp[k] = maxK(nums,k);
+        for(int i = k-1;i>0;i--){
+            dp[i] = maxK(dp[i+1],i);
+        }
+        return dp;
+    }
+    vector<int> merge(const vector<int>& a, const vector<int>& b){
+        vector<int> ret;
+        int i = 0;
+        int j = 0;
+        while(i<a.size()&&j<b.size()){
+            if(a[i]>b[j]){
+                ret.push_back(a[i++]);
+            } else if(a[i] == b[j]){
+                int n = i+1;
+                int m = j+1;
+                while(n<a.size()&&m<b.size()){
+                    if(a[n]!=b[m]){
+                        break;
+                    }
+                    n++;
+                    m++;
+                }
+                if(n==a.size()||m==b.size()){
+                    if(n!=a.size())
+                        ret.push_back(a[i++]);
+                    else
+                        ret.push_back(b[j++]);
+                }
+                else if(a[n]>b[m]){
+                    ret.push_back(a[i++]);
+                } else{
+                    ret.push_back(b[j++]);
+                }
+            }
+            else{
+                ret.push_back(b[j++]);
+            }
+        }
+        while(i<a.size()){
+            ret.push_back(a[i++]);
+        }
+        while(j<b.size()){
+            ret.push_back(b[j++]);
+        }
+        return ret;
+    }
+    
+    vector<int> mergeDP(const vector<vector<int>>& dp1, const vector<vector<int>>& dp2,int k){
+        vector<int> ret;
+        for(int i = 0;i<=k;i++){
+            if(i<dp1.size()&&k-i<dp2.size()){
+                auto tmp = merge(dp1[i],dp2[k-i]);
+                ret = max(ret,tmp);
+            }
+            
+        }
+        return ret;
+    }
+    
+    vector<int> maxNumber(vector<int>& nums1, vector<int>& nums2, int k) {
+        auto dp1 = buildDP(nums1,k);
+        auto dp2 = buildDP(nums2,k);
+        return mergeDP(dp1,dp2,k);
+    }
+};

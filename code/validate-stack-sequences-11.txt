@@ -1,0 +1,34 @@
+bool validateStackSequences(int* pushed, int pushedSize, int* popped, int poppedSize){
+	if(pushedSize < 2){//for the case that size <= 2, it will always be true. 
+		return true;
+	}
+
+	int pivot;
+	int minv;
+	int hash[1000] = {0};
+
+	//step1: rearrange the popped array. Make pushed array's element index 1 2 3 4 5 
+	for(int i = 0; i < pushedSize;i++){
+		hash[pushed[i]] = i;
+	}
+
+	for(int i = 0; i < pushedSize;i++){
+		popped[i] = hash[popped[i]];
+	}
+	//thus regard the popped array as pushed array's element indexes (e.g 5 3 4 1 2) 
+
+	//step2: check whether the popped array's arrangement is legal
+	minv = pivot = popped[0];
+	for(int i = 1; i < pushedSize;i++){
+		if(popped[i] > pivot){//if there's a bigger index element, the remain element should all in a decreasing way. 
+			minv = pivot = popped[i];
+		}else{//if the current index element is smaller than the pivot value, it should in a decreasing way.
+			if(popped[i] < minv){
+				minv = popped[i];
+			}else{//As a result, if the current index element is not in a decreasing way, it must comes fault.
+				return false;
+			}
+		}
+	}
+	return true;
+}

@@ -1,0 +1,88 @@
+#define STATION_LENGTH 10
+
+struct UndergroundHash_Key {
+  char start_station[STATION_LENGTH + 1];
+  char end_station[STATION_LENGTH + 1];
+};
+
+struct UndergroundHash {
+  UT_hash_handle hh;
+  int total_time;
+  size_t num_entries;
+  struct UndergroundHash_Key key;
+};
+
+struct CheckinHash {
+  UT_hash_handle hh;
+  char station[STATION_LENGTH + 1];
+  int id;
+  int time;
+};
+
+typedef struct {
+  struct UndergroundHash* average_times;
+  struct CheckinHash* checkins;
+} UndergroundSystem;
+
+/* Write a string into destination, filling any left over characters with null terminator */
+void write_fill_name(char* dest, int n, const char* src) {
+  int i = 0;
+  while (*src) {
+    dest[i++] = *src++;   
+  };
+  memset(dest + i, 0, n - i);
+}
+
+UndergroundSystem* undergroundSystemCreate() {
+  UndergroundSystem* ret = (UndergroundSystem*) calloc(sizeof(UndergroundSystem), 1);
+  return ret;
+}
+
+void undergroundSystemCheckIn(UndergroundSystem* obj, int id, char * stationName, int t) {
+  struct CheckinHash* entry = (struct CheckinHash*) malloc(sizeof(struct CheckinHash));
+  strcpy(entry->station, stationName);
+  entry->id = id;
+  entry->time = t;
+  HASH_ADD_INT(obj->checkins, id, entry);
+}
+
+void undergroundSystemCheckOut(UndergroundSystem* obj, int id, char * stationName, int t) {
+  struct CheckinHash* entry;
+  HASH_FIND_INT(obj->checkins, &id, entry);
+  struct UndergroundHash* avg_entry;
+  struct UndergroundHash_Key key;
+  write_fill_name(key.start_station, STATION_LENGTH + 1, entry->station);
+  write_fill_name(key.end_station, STATION_LENGTH + 1, stationName);
+  HASH_FIND(hh, obj->average_times, &key, sizeof(key), avg_entry);
+  if (avg_entry) /* Entry already exists */ {
+    avg_entry->total_time += t - entry->time;
+    ++avg_entry->num_entries;
+  } else /* No existing source/destination pair */ {
+    avg_entry = (struct UndergroundHash*) malloc(sizeof(*avg_entry));
+    avg_entry->total_time = t - entry->time;
+    avg_entry->num_entries = 1;
+    memcpy(&avg_entry->key, &key, sizeof(key));
+    HASH_ADD(hh, obj->average_times, key, sizeof(key), avg_entry);
+  }
+  HASH_DEL(obj->checkins, entry);
+}
+
+double undergroundSystemGetAverageTime(UndergroundSystem* obj, char * startStation, char * endStation) {
+  /* Assume key exists because problem statement says it will */
+  struct UndergroundHash_Key key;
+  write_fill_name(key.start_station, STATION_LENGTH + 1, startStation);
+  write_fill_name(key.end_station, STATION_LENGTH + 1, endStation);
+  struct UndergroundHash* entry;
+  HASH_FIND(hh, obj->average_times, &key, sizeof(key), entry);
+  return (double) (entry->total_time) / entry->num_entries;
+}
+
+void undergroundSystemFree(UndergroundSystem* obj) {
+  struct UndergroundHash* entry;
+  struct UndergroundHash* tmp;
+  HASH_ITER(hh, obj->average_times, entry, tmp) {
+    HASH_DEL(obj->average_times, entry);
+    free(entry);
+  }
+  free(obj);
+}

@@ -1,0 +1,21 @@
+    TreeNode* constructFromPrePost(vector<int>& pre, vector<int>& post) {
+        return dfs(pre, 0, pre.size()-1, post, 0, post.size()-1);
+    }
+    
+private:
+    TreeNode* dfs(const vector<int>& pre, int l1, int r1, const vector<int>& post, int l2, int r2)
+    {
+        if (l1 > r1)
+        {
+            return nullptr;
+        }
+        if (l1 == r1)
+        {
+            return new TreeNode(pre[l1]);
+        }
+        TreeNode* root = new TreeNode(pre[l1]);
+        int idx = std::find(post.begin()+l2, post.begin()+r2+1, pre[l1+1]) - post.begin() - l2;
+        root->left = dfs(pre, l1+1, l1+1+idx, post, l2, l2+idx);
+        root->right = dfs(pre, l1+idx+2, r1, post, l2+idx+1, r2-1);
+        return root;
+    }

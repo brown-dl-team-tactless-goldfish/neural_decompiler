@@ -1,0 +1,68 @@
+class Solution {
+public:
+    int maximumGain(string s, int x, int y) {
+        int ans = 0;
+        string hi = "ab", lo = "ba";
+        if (x<y) {
+            hi = "ba"; lo = "ab";
+            swap(x,y);
+        }
+        while (true) {
+            size_t pos = 0;
+            bool flag = false;
+            while (true) {
+                pos = s.find(hi, pos);
+                if (pos==string::npos) break;
+                int k = 1;
+                s[pos] = '_'; s[pos+1] = '_';                
+                while (pos>=k && pos-k>=0 && s[pos-k]==hi[0] &&
+                       pos+1+k<s.length() && s[pos+1+k]==hi[1]) {
+                    s[pos-k] = '_';
+                    s[pos+k+1] = '_';
+                    k++;
+                    //cout << "k = " << k << endl;
+                }
+                ans += (x*k);
+                flag = true;
+            }
+            //cout << s << endl;
+            if (!flag)
+                break;
+            string t;
+            for (char c : s) {
+                if (c!='_')
+                    t += c;
+            }
+            s = t;
+        }
+        while (true) {
+            size_t pos = 0;
+            bool flag = false;
+            while (true) {
+                pos = s.find(lo, pos);
+                if (pos==string::npos) break;
+                int k = 1;
+                s[pos] = '_'; s[pos+1] = '_'; 
+                while (pos>=k && pos-k>=0 && s[pos-k]==lo[0] &&
+                       pos+1+k<s.length() && s[pos+1+k]==lo[1]) {
+                    s[pos-k] = '_';
+                    s[pos+k+1] = '_';
+                    k++;
+                    //cout << "k = " << k << endl;
+                }                
+                ans += (y*k);
+                flag = true;
+            }
+            //cout << s << endl;
+            if (!flag)
+                break;
+            string t;
+            for (char c : s) {
+                if (c!='_')
+                    t += c;
+            }
+            s = t;
+        }
+        return ans;
+    }
+};

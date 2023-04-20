@@ -1,0 +1,48 @@
+class TopVotedCandidate {
+public:
+    TopVotedCandidate(vector<int>& persons, vector<int>& times) : _times(times) {
+        _votesForCandidate.resize(persons.size()+1, 0);
+        _leadingAtTime.resize(times.size(), {});
+        
+        Preprocess(persons);
+    }
+    
+    
+    int q(int t) {
+        // Find the first time greater than or equal to t using lower_bound. Then
+        // identify the position in _times that has the first time lesser than or
+        // equal to t to use in _leadingAtTime
+        int pos = std::lower_bound(_times.begin(), _times.end(), t) - _times.begin();
+        if (pos < _times.size()) {
+            if (_times[pos] != t) {
+                --pos;
+            }
+        } else {
+            pos = _times.size()-1;
+        }
+        
+        return _leadingAtTime[pos].first;
+    }
+    
+    private:
+    vector<int> _times;
+    // List of the number of votes for candidate identified by the index
+    vector<int> _votesForCandidate;
+    using candidateToNumVotes = pair<int, int>;
+    vector<candidateToNumVotes> _leadingAtTime;
+    
+    
+     void Preprocess(const vector<int>& persons) {
+         for (int i = 0; i < persons.size(); ++i) {
+             auto c = persons[i];
+             ++_votesForCandidate[c];
+             if (i == 0) {
+                 _leadingAtTime[i] = {c, _votesForCandidate[c]};
+             } else if (_votesForCandidate[c] >= _leadingAtTime[i-1].second) {
+                 _leadingAtTime[i] = {c, _votesForCandidate[c]};
+             } else if (_votesForCandidate[c] < _leadingAtTime[i-1].second) {
+                 _leadingAtTime[i] = _leadingAtTime[i-1];
+             }
+         }
+     }
+};

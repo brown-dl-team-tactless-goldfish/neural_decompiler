@@ -1,0 +1,36 @@
+int longestPalindrome(char ** words, int wordsSize){
+    //hash table creation 
+    int** HASH_TABLE = (int**)calloc(sizeof(int*),255);
+    for(int i= 0 ; i< 255; i++){
+        HASH_TABLE[i] = (int*)calloc(sizeof(int),255);
+    }
+    for(int i = 0; i< wordsSize; i++){
+        HASH_TABLE[words[i][0]][words[i][1]]++;
+    }
+
+    int total_length = 0;
+    int repeat_check = 0;
+    for(int i = 0; i< wordsSize ; i++){
+        //condtion to check shame character in word
+        if(words[i][0] == words[i][1]){
+            int count = HASH_TABLE[words[i][0]][words[i][1]];
+            HASH_TABLE[words[i][0]][words[i][1]] = 0;
+            total_length += count *2;
+            if(repeat_check == 1 && count % 2 != 0 ){total_length -= 2 ;}
+            else if(count % 2 != 0){repeat_check++;}
+        }
+        else{
+            if(HASH_TABLE[words[i][0]][words[i][1]]){
+                int count = HASH_TABLE[words[i][0]][words[i][1]] < HASH_TABLE[words[i][1]][words[i][0]] ? HASH_TABLE[words[i][0]][words[i][1]] : HASH_TABLE[words[i][1]][words[i][0]];
+                total_length  += count*4;
+                HASH_TABLE[words[i][0]][words[i][1]] = 0;
+                HASH_TABLE[words[i][1]][words[i][0]] = 0;
+            }
+        }
+    }
+    for(int i= 0 ; i< 255; i++){
+        free(HASH_TABLE[i]);
+    }
+    free(HASH_TABLE);
+    return total_length;
+}

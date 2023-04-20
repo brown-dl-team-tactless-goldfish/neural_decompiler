@@ -1,0 +1,30 @@
+int* findNumOfValidWords(char ** words, int wordsSize, char ** puzzles, int puzzlesSize, int* returnSize){
+    int * result = (int *)calloc(puzzlesSize, sizeof(int));
+    int * freq = (int *)calloc(68000000, sizeof(int));
+    for(int i=0; i<wordsSize; i++)
+    {
+        int temp = 0, count = 0;
+        for(int j=0; j<strlen(words[i]); j++)
+        {
+            int bit = (1 << (int)(words[i][j] - 'a'));
+            if(temp & bit) continue;
+            count++;
+            if(count > 7) break;
+            temp |= (1 << (int)(words[i][j] - 'a'));
+        }
+        if(count > 7) continue;
+        freq[temp]++;
+    }
+    for(int i=0; i<puzzlesSize; i++)
+        for(int j=0; j<64; j++)
+        {
+            int t = (1 << (int)(puzzles[i][0] - 'a'));
+            for(int k=0; k<6; k++)
+                if(j & (1<<k))
+                    t |= (1 << (int)(puzzles[i][k+1] - 'a'));
+            result[i] += freq[t];
+            
+        }
+    *returnSize = puzzlesSize;
+    return result;
+}

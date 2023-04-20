@@ -1,0 +1,28 @@
+class TopVotedCandidate {
+private:
+    vector<int> times;
+    vector<int> leaders;
+		
+public:
+    TopVotedCandidate(vector<int> persons, vector<int> t) : times(t), leaders(t.size()) {
+        unordered_map<int, int> votes;
+        
+        int currLeader;
+        int currVotes = 0;
+        for(int i = 0; i < times.size(); ++i) {
+            int pers = persons[i];
+            int v = ++votes[pers];
+            if (v >= currVotes) {
+                currLeader = pers;
+                currVotes = v;
+            }
+            
+            leaders[i] = currLeader;
+        }  
+    }
+    
+    int q(int t) {
+        auto i = distance(times.begin(), prev(upper_bound(times.begin(), times.end(), t)));
+        return leaders[i];
+    }
+};

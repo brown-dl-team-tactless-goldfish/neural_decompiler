@@ -1,0 +1,41 @@
+     // Time: O(n) Space: O(1)
+    string smallestSubsequence(string s, int k, char letter, int repetition) {
+       int len = s.length();
+		int letter_count = 0;
+		for (char& c : s) if (c == letter) letter_count++;
+        
+		string stack;
+
+        for (int i = 0; i < len; i++) {
+            
+            /* Pop a character from the stack only if:
+            // 1. Stack is not empty.
+            // 2. There are enough characters left to construct a k-size string.
+            // 3. If the character to be popped is the same as letter, then there 
+            // should also be at least k character letter left.
+            */
+            while (!stack.empty() && stack.back() > s[i] && (len - i + stack.length() > k) && (stack.back() != letter || letter_count > repetition)) {
+                if (stack.back() == letter)
+                    repetition++;
+                stack.pop_back();
+            }
+
+            /* Push a character in the stack only if:
+            // 1. The stack is already full (has size of k)
+            // 2. The character is the same as letter.
+            // 3. Other wise there is enough space for the matching characters.
+            */
+            
+            if (stack.length() < k) {
+                if (s[i] == letter or k - (int)stack.length() > repetition) {
+                    stack.push_back(s[i]);
+                    if (s[i] == letter)
+                        repetition--;
+                }
+            }
+
+            if (s[i] == letter)
+                letter_count--;
+        }
+        return stack;
+    }

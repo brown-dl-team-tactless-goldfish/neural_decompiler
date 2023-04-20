@@ -1,0 +1,47 @@
+vector<vector<string>> findDuplicate(vector<string>& paths) {
+  std::unordered_map<std::string_view, std::vector<std::pair<std::string_view, std::string_view>>> files;
+  std::vector<std::string_view> dups;
+  for (const auto& path : paths) {
+    const char* path_str = path.c_str();
+    const char* path_str_end = path_str + path.size();
+    const char* path_last = std::find(path_str, path_str_end, ' ');
+    std::string_view path_view(path_str, path_last - path_str);
+
+    // For each file and content under the path
+    for (const char* pos = path_last + 1; pos < path_str_end; ) {
+      auto file_last = std::find(pos, path_str_end, '('); 
+      std::string_view file_view(pos, file_last - pos);
+      auto content_first = file_last + 1;
+      auto content_last = std::find(content_first, path_str_end, ')');
+      std::string_view contents_view(content_first, content_last - content_first);
+      pos = content_last + 2; // Skip the ") " following the contents
+
+      // Add the file into a hashtable, indexed by content
+      auto& content_files = files[contents_view];
+      content_files.emplace_back(path_view, file_view);
+      // If this is the second file for these contents, add it to the duplicates
+      if (2 == content_files.size()) {
+        dups.emplace_back(contents_view);
+      }
+    }
+  }
+
+  std::vector<std::vector<std::string>> ret;
+  ret.reserve(dups.size());
+  for (const std::string_view contents : dups) {
+    const auto& contents_files = files[contents];
+    ret.emplace_back();
+    ret.back().reserve(contents_files.size());
+    for (const auto& [path_view, file_view] : files[contents]) {
+      // Build the full filename from the saved string_views
+      std::string filename;
+      filename.reserve(path_view.size() + file_view.size() + 1);
+      filename += path_view;
+      filename += '/';
+      filename += file_view;
+      ret.back().emplace_back(std::move(filename));
+    }
+  }
+
+  return ret;
+}

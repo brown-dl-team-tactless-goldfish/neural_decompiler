@@ -1,0 +1,46 @@
+typedef struct ListNode Node;
+
+struct ListNode* insertionSortList(struct ListNode* head) {
+   Node* dummy = malloc(sizeof(Node));
+   Node* cur = head, *prev, *old_dummy = dummy, *temp, *last = NULL;
+   
+   
+   dummy->next = head;
+   
+   if ( !cur || !cur->next )
+       return cur;
+       
+   prev = cur;
+   cur = cur->next;    
+   while ( cur )
+   {
+       if ( cur->val < prev->val )
+       {
+           if ( last && cur->val > last->val )
+               old_dummy = last;
+           else
+               old_dummy = dummy;
+           while ( old_dummy->next != cur )
+           {
+               
+               if ( cur->val < old_dummy->next->val )
+               {
+                   prev->next = cur->next;
+                   temp = old_dummy->next;
+                   old_dummy->next = cur;
+                   cur->next = temp;
+                   last = cur;
+                   cur = prev;
+                   break;
+               }
+               else
+                   old_dummy = old_dummy->next;
+           }
+       }
+       prev = cur;
+       cur = cur->next;
+
+   }
+   
+   return dummy->next;
+}

@@ -1,0 +1,42 @@
+int findRoot(int *flags, int index)
+{
+	if(flags[index] < 0)	return index;
+	flags[index] = findRoot(flags, flags[index]);
+
+	return flags[index];
+}
+
+//union find
+int findCircleNum(int **M, int MRowSize, int MColSize)
+{
+	int *flags = malloc(MRowSize*sizeof(int));
+	int i,j, num=MRowSize, l, r;
+
+	for(i=0;i<MRowSize;i++)
+	{
+		flags[i] = -1;
+	}
+	for(i=0; i<MRowSize; i++)
+	{
+		for(j=i+1; j<MColSize; j++)
+		{
+			if(M[i][j] == 0)	continue;
+			l = findRoot(flags, i);
+			r = findRoot(flags, j);
+			if(l == r)	continue;
+			if(l < r)
+			{
+				flags[r] = l;
+				flags[l] --;
+			}else{
+				flags[l] = r;
+				flags[r] --;
+			}
+			num--;
+		}
+	}
+
+	free(flags);
+	
+	return num;
+}

@@ -1,0 +1,24 @@
+class Solution {
+public:
+    vector<vector<int>> mergeArrays(vector<vector<int>> &n1, vector<vector<int>> &n2) {
+        // support variables
+        int l1 = n1.size(), l2 = n2.size(), i1 = 0, i2 = 0, w = 0, t1, t2;
+        vector<vector<int>> res(l1 + l2);
+        // main loop
+        while (i1 < l1 && i2 < l2) {
+            t1 = n1[i1][0], t2 = n2[i2][0];
+            // case 1: overlap
+            if (t1 == t2) res[w++] = {t1, n1[i1++][1] + n2[i2++][1]};
+            // case 2: t1 goes first
+            else if (t1 < t2) res[w++] = n1[i1++];
+            // case 3: t2 goes first
+            else res[w++] = n2[i2++];
+        }
+        // managing the leftovers, if any
+        while (i1 < l1) res[w++] = n1[i1++];
+        while (i2 < l2) res[w++] = n2[i2++];
+        // cutting any potential unused cells
+        res.resize(w);
+        return res;
+    }
+};

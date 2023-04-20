@@ -1,0 +1,31 @@
+public class Solution
+{
+    public int Largest1BorderedSquare(int[][] grid)
+    {
+        if (grid.Length == 0) return 0;
+        int r = grid.Length, c = grid[0].Length, max = 0;
+        int[,] dpr = new int[r, c], dpc = new int[r, c];
+        for (int i = 0; i < r; i++)
+        {
+            for (int j = 0; j < c; j++)
+            {
+                if (grid[i][j] == 1)
+                {
+                    dpr[i, j] = i == 0 ? 1 : dpr[i - 1, j] + 1;
+                    dpc[i, j] = j == 0 ? 1 : dpc[i, j - 1] + 1;
+                    int distance = Math.Min(dpr[i, j], dpc[i, j]);
+                    for (int k = distance; k >= 1; k--)
+                    {
+                        if (dpr[i, j - k + 1] >= k && dpc[i - k + 1, j] >= k)
+                        {
+                            max = Math.Max(max, k);
+                            break;
+                        }
+                    }
+                }
+            }
+        }
+
+        return max * max;
+    }
+}

@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<vector<int>> getAncestors(int n, vector<vector<int>>& edges) {
+        vector<vector<int>>graph(n) ;
+        vector<vector<int>>ret(n) ;
+        for(auto& e : edges){
+            int u = e[0] ;
+            int v = e[1] ;
+            graph[u].push_back(v) ;
+        }
+        for(int i = 0; i < n; i++){
+            vector<bool>visited(n) ;
+            dfs(graph, i, i, visited, ret) ;
+        }
+        return ret ;
+    }
+    
+    void dfs(vector<vector<int>>&graph, int cur, int ancestor, vector<bool>&visited ,vector<vector<int>>&ret){
+        for(auto& next : graph[cur]){
+            if(visited[next])
+                continue ;
+            visited[next] = true ;
+            ret[next].push_back(ancestor) ;
+            dfs(graph, next, ancestor, visited, ret) ;
+        }    
+    }
+};

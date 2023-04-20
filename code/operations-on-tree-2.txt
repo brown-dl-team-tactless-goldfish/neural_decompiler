@@ -1,0 +1,57 @@
+class LockingTree {
+public:
+    LockingTree(vector<int>& parent) {
+        tree=parent;
+        childrens.resize(tree.size());
+        
+        for(int i=0; i<tree.size(); ++i){
+            if(tree[i] != -1)
+                childrens[tree[i]].push_back(i);
+        }
+    }
+    
+    bool lock(int num, int user) {
+        if(locking.count(num))
+            return false;
+        locking[num] = user;
+        return true;
+    }
+    
+    bool unlock(int num, int user) {
+        if(locking.count(num) == 0)
+            return false;
+        if(locking[num] != user)
+            return false;
+        locking.erase(num);
+        return true;
+    }
+
+    void search(int num, set<int>& list){
+        if(locking.count(num))  
+            list.insert(num);
+        for(auto i : childrens[num])
+            search(i, list);
+    }
+    bool upgrade(int num, int user) {
+        int c = num;
+        while(c != -1){
+            if(locking.count(c))
+                return false;
+            c = tree[c];
+        }
+        set<int> list;
+        search(num, list);
+        if(list.empty())
+            return false;
+        
+        for(auto i : list)
+            locking.erase(i);
+        
+        locking[num] = user;
+        return true;
+    }
+    
+    unordered_map<int, int> locking;
+    vector<int> tree;
+    vector<vector<int>> childrens;
+};

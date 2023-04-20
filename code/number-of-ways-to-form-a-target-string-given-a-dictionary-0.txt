@@ -1,0 +1,16 @@
+#define MOD 1000000007
+int numWays(char ** words, int wordsSize, char * target){
+    int tlen = strlen(target);
+    int wlen = strlen(words[0]);
+    long *res = (long*)calloc(tlen+1, sizeof(long));
+    res[0] = 1;
+    for(int i=0;i<wlen;i++)
+    {
+        int count[26] = {0};
+        for(int j=0;j<wordsSize;j++)
+            count[words[j][i]-'a']++;
+        for(int k=tlen-1;k>=0;k--)
+            res[k+1] += res[k]*count[target[k]-'a']%MOD;
+    }
+    return res[tlen]%MOD;
+}

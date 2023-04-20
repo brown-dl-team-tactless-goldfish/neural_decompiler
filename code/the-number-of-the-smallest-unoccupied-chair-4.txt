@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int smallestChair(vector<vector<int>>& times, int targetFriend) {
+        map<int, int> cnt;
+        for(int i = 0; i < times.size(); i++) cnt[i] = 1; //init chairs
+        for(int i = 0; i < times.size(); i++) {
+            times[i].push_back(i);
+        }
+        sort(times.begin(), times.end());
+        map<int, vector<int> > leave;
+        for(int i = 0; i < times.size(); i++) {
+            for(auto it2 = leave.begin(); it2 != leave.end(); ) {
+                if(it2->first <= times[i][0]) {
+                    for(auto x : it2->second)
+                        cnt[x] = 1; //set chair to be available.
+                    it2 = leave.erase(it2);
+                    continue;
+                }
+                break;
+            }
+            auto it = cnt.begin();
+            if(times[i][2] == targetFriend) {
+                return it->first;
+            }
+            leave[times[i][1]].push_back(it->first);
+            cnt.erase(it);
+        }
+        return 0;
+    }
+};

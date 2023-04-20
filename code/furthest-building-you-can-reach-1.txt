@@ -1,0 +1,309 @@
+struct LadderRecord
+{
+    int nHeight;
+
+    struct LadderRecord* pstParent;
+    struct LadderRecord* pstLeft;
+    struct LadderRecord* pstRight;
+};
+
+void InsertLadderRecord(struct LadderRecord* pstRoot, struct LadderRecord* pstNew)
+{
+    if(pstNew->nHeight >= pstRoot->nHeight)
+    {
+        if(pstRoot->pstRight != NULL)
+        {
+            InsertLadderRecord(pstRoot->pstRight, pstNew);
+        }
+        else
+        {
+            pstRoot->pstRight = pstNew;
+            pstNew->pstParent = pstRoot;
+        }
+    }
+    else
+    {
+        if(pstRoot->pstLeft != NULL)
+        {
+            InsertLadderRecord(pstRoot->pstLeft, pstNew);
+        }
+        else
+        {
+            pstRoot->pstLeft = pstNew;
+            pstNew->pstParent = pstRoot;
+        }
+    }
+}
+
+void FreeLadderRecord(struct LadderRecord* pstRoot)
+{
+    if(pstRoot == NULL) return;
+
+    FreeLadderRecord(pstRoot->pstLeft);
+    FreeLadderRecord(pstRoot->pstRight);
+    free(pstRoot);
+}
+
+int furthestBuilding(int* heights, int heightsSize, int bricks, int ladders){
+    // if ladders is larger than heightsSize, return heightsSize
+    heightsSize--;
+    if(ladders >= heightsSize) return heightsSize;
+
+    // no bricks, check ladders only
+    if(bricks == 0)
+    {
+        for(int i=1; i<=heightsSize; i++)
+        {
+            if(heights[i] > heights[i-1])
+            {
+                if(ladders-- == 0) return i-1;
+            }
+
+            if(heightsSize - i <= ladders) return heightsSize;
+        }
+
+        return heightsSize;
+    }
+
+    // no ladders, check bricks only
+    if(ladders == 0)
+    {
+        for(int i=1; i<=heightsSize; i++)
+        {
+            int nHeight = heights[i] - heights[i-1];
+            if(nHeight > 0)
+            {
+                if(nHeight > bricks) return i-1;
+
+                bricks -= nHeight;
+            }
+        }
+
+        return heightsSize;
+    }
+
+    // if heightsSize == 1
+    if(heightsSize == 1) return 1;
+    
+    // go through bricks and ladders
+    int nAvailableLadder = ladders;
+    struct LadderRecord *pstRoot = NULL, *pstMin = NULL, *pstMax = NULL;
+    for(int i=1; i<=heightsSize; i++)
+    {
+        int nHeight = heights[i] - heights[i-1];
+        if(nHeight <= 0) continue;
+
+        // *** special case ***, skip checking if we have enough ladders
+        if(heightsSize-i < ladders) return heightsSize;
+/*
+        printf("i: %d, nHeight: %d, bricks: %d, ladders: %d,  nAvailableLadder: %d", i, nHeight, bricks, ladders, nAvailableLadder);
+        if(pstRoot != NULL)
+        {
+            printf(", pstRoot->nHeight: %d, pstMax->nHeight: %d, pstMin->nHeight: %d", pstRoot->nHeight, pstMax->nHeight, pstMin->nHeight);
+        }
+        printf("\n");
+//*/
+        // we done't have enough bricks
+        bool bUseRealLadder = false;
+        while(nHeight > bricks)
+        {
+            // run out of available ladders
+            if(pstMax == NULL || nHeight > pstMax->nHeight)
+            {
+                if(ladders-- == 0) return i-1;
+
+                // *** special case ***, use real ladder directly instead of available ladder
+                bUseRealLadder = true;
+
+                if(nAvailableLadder > 0)
+                {
+                    nAvailableLadder--;
+                }
+                else
+                {
+                    if(pstMin != NULL)
+                    {
+                        // delete old pstMin & adjust new pstMin
+                        if(pstMin->pstRight != NULL)
+                        {
+                            pstMin->pstRight->pstParent = pstMin->pstParent;
+                            if(pstMin->pstParent != NULL)
+                            {
+                                pstMin->pstParent->pstLeft = pstMin->pstRight;
+                            }
+                            else
+                            {
+                                pstRoot = pstMin->pstRight;
+                            }
+
+                            struct LadderRecord* pstTmp = pstMin;
+                        
+                            pstMin = pstMin->pstRight;
+                            while(pstMin->pstLeft != NULL) pstMin = pstMin->pstLeft;
+
+                            free(pstTmp);
+                        }
+                        else if(pstMin->pstParent != NULL)
+                        {
+                            pstMin = pstMin->pstParent;
+                            free(pstMin->pstLeft);
+                            pstMin->pstLeft = NULL;
+                        }
+                        else
+                        {
+                            free(pstMin);
+
+                            pstMax = NULL;
+                            pstMin = NULL;
+                            pstRoot = NULL;
+                        }
+                    }
+                }
+                break;
+            }
+
+            // reduce on ladder and add max bricks back
+            bricks += pstMax->nHeight;
+            ladders--;
+
+            // delete old pstMax & adjust new pstMax
+            if(pstMax->pstLeft != NULL)
+            {
+                pstMax->pstLeft->pstParent = pstMax->pstParent;
+                if(pstMax->pstParent != NULL)
+                {
+                    pstMax->pstParent->pstRight = pstMax->pstLeft;
+                }
+                else
+                {
+                    pstRoot = pstMax->pstLeft;
+                }
+
+                struct LadderRecord* pstTmp = pstMax;
+
+                pstMax = pstMax->pstLeft;
+                while(pstMax->pstRight != NULL) pstMax = pstMax->pstRight;
+                
+                free(pstTmp);
+            }
+            else if(pstMax->pstParent != NULL)
+            {
+                pstMax = pstMax->pstParent;
+                free(pstMax->pstRight);
+                pstMax->pstRight = NULL;
+            }
+            else
+            {
+                free(pstMax);
+
+                pstMax = NULL;
+                pstMin = NULL;
+                pstRoot = NULL;
+            }
+        }
+
+        // use ladders already, check next heights
+        if(bUseRealLadder) continue;
+        bricks -= nHeight;
+
+        if(nAvailableLadder > 0)
+        {
+            // add new available ladders
+            if(pstRoot == NULL)
+            {
+                pstRoot = (struct LadderRecord*) malloc(sizeof(struct LadderRecord));
+                pstRoot->nHeight = nHeight;
+                pstRoot->pstParent = NULL;
+                pstRoot->pstLeft = NULL;
+                pstRoot->pstRight = NULL;
+
+                pstMin = pstRoot;
+                pstMax = pstRoot;
+            }
+            else if(nHeight >= pstMax->nHeight)
+            {
+                pstMax->pstRight = (struct LadderRecord*) malloc(sizeof(struct LadderRecord));
+                pstMax->pstRight->pstParent = pstMax;
+                pstMax = pstMax->pstRight;
+                
+                pstMax->nHeight = nHeight;
+                pstMax->pstLeft = NULL;
+                pstMax->pstRight = NULL;
+            }
+            else if(nHeight < pstMin->nHeight)
+            {
+                pstMin->pstLeft = (struct LadderRecord*) malloc(sizeof(struct LadderRecord));
+                pstMin->pstLeft->pstParent = pstMin;
+                pstMin = pstMin->pstLeft;
+                
+                pstMin->nHeight = nHeight;
+                pstMin->pstLeft = NULL;
+                pstMin->pstRight = NULL;
+            }
+            else
+            {
+                struct LadderRecord* pstNew = (struct LadderRecord*) malloc(sizeof(struct LadderRecord));
+                pstNew->nHeight = nHeight;
+                pstNew->pstLeft = NULL;
+                pstNew->pstRight = NULL;
+
+                InsertLadderRecord(pstRoot, pstNew);
+            }
+            
+            nAvailableLadder--;
+        }
+        else
+        {
+            // no available ladders already
+            struct LadderRecord* pstNew = pstMin;
+            if(pstNew == NULL || nHeight < pstNew->nHeight) continue;
+
+            // adjust pstMin
+            if(pstMin->pstRight != NULL)
+            {
+                pstMin->pstRight->pstParent = pstMin->pstParent;
+                if(pstMin->pstParent != NULL)
+                {
+                    pstMin->pstParent->pstLeft = pstMin->pstRight;
+                }
+                else
+                {
+                    pstRoot = pstMin->pstRight;
+                }
+
+                pstMin = pstMin->pstRight;
+                while(pstMin->pstLeft != NULL) pstMin = pstMin->pstLeft;
+
+                pstNew->nHeight = nHeight;
+                pstNew->pstRight = NULL;
+                InsertLadderRecord(pstRoot, pstNew);
+
+                // *** special case ***, always update pstMax and pstMin if necessary
+                if(nHeight >= pstMax->nHeight) pstMax = pstNew;
+                if(nHeight < pstMin->nHeight) pstMin = pstNew;
+            }
+            else if(pstMin->pstParent != NULL)
+            {
+                pstMin = pstMin->pstParent;
+                pstMin->pstLeft = NULL;
+
+                pstNew->nHeight = nHeight;
+                pstNew->pstRight = NULL;
+                InsertLadderRecord(pstRoot, pstNew);
+
+                // *** special case ***, always update pstMax and pstMin if necessary
+                if(nHeight >= pstMax->nHeight) pstMax = pstNew;
+                if(nHeight < pstMin->nHeight) pstMin = pstNew;
+            }
+            else
+            {
+                pstNew->nHeight = nHeight;
+            }
+        }
+    }
+
+    // free memory
+    FreeLadderRecord(pstRoot);
+    
+    return heightsSize;
+}

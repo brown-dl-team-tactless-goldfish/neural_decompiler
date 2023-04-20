@@ -1,0 +1,26 @@
+class AuthenticationManager {
+    int livingTime;
+    unordered_map<string, int> cache; //<id, endTime>
+public:
+    AuthenticationManager(int timeToLive) {
+        livingTime=timeToLive;
+        cache={};
+    }
+    
+    void generate(string tokenId, int currentTime) {
+        cache[tokenId]=currentTime+livingTime;
+    }
+    
+    void renew(string tokenId, int currentTime) {
+        if(cache.count(tokenId) && cache[tokenId]>currentTime)
+            cache[tokenId]=currentTime+livingTime;
+    }
+    
+    int countUnexpiredTokens(int currentTime) {
+        int count=0;
+        for(auto &[id, time]: cache)
+            if(currentTime<time)
+                count++;
+        return count;
+    }
+};

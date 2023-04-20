@@ -1,0 +1,109 @@
+    public class Solution
+    {
+        private int Query(int from, int to, int[][] prefBits)
+        {
+            int res = 0;
+            int len = to - from + 1;
+            for (int i = 0; i < 32; i++)
+            {
+                if (prefBits[to][i] - (from > 0 ? prefBits[from - 1][i] : 0) == len)
+                {
+                    res |= (1 << i);
+                }
+            }
+            return res;
+        }
+
+        public int ClosestToTarget(int[] arr, int target)
+        {
+            IList<int> tmp = new List<int>(arr.Length);
+            for (int i = 0; i < arr.Length; i++)
+            {
+                if (i == 0 || arr[i] != tmp[tmp.Count - 1])
+                {
+                    tmp.Add(arr[i]);
+                }
+            }
+
+            arr = tmp.ToArray();
+            int[][] prefBits = new int[arr.Length][];
+            for (int i = 0; i < arr.Length; i++)
+            {
+                prefBits[i] = new int[32];
+            }
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                for (int j = 0; j < 32; j++)
+                {
+                    prefBits[i][j] = i > 0 ? prefBits[i - 1][j] : 0;
+                    if ((arr[i] & (1 << j)) != 0)
+                    {
+                        prefBits[i][j]++;
+                    }
+                }
+            }
+
+            int res = int.MaxValue;
+
+
+            for (int i = 0; i < arr.Length; i++)
+            {
+                int l = 0;
+                int r = i;
+
+                while (true)
+                {
+                    if (r == l)
+                    {
+                        res = Math.Min(res, Math.Abs(Query(l, i, prefBits) - target));
+                        break;
+                    }
+
+                    if (r == l + 1)
+                    {
+                        int and = Query(r, i, prefBits);
+                        res = Math.Min(res, Math.Abs(and - target));
+                        and &= arr[l];
+                        res = Math.Min(res, Math.Abs(and - target));
+                        break;
+                    }
+
+                    int mid = l + (r - l) / 2;
+
+                    int mUp = Query(mid + 1, i, prefBits);
+                    int m = mUp & arr[mid];
+                    int mDown = m & arr[mid - 1];
+
+                    int midQUp = Math.Abs(mUp - target);
+                    int midQ = Math.Abs(m - target);
+                    int midQDown = Math.Abs(mDown - target);
+
+                    if (midQ < midQDown && midQ < midQUp)
+                    {
+                        res = Math.Min(res, midQ);
+                        break;
+                    }
+
+                    if (m == 0 || mDown == 0 || mUp == 0)
+                    {
+                        res = Math.Min(res, midQ);
+                        res = Math.Min(res, midQUp);
+                        res = Math.Min(res, midQDown);
+                        break;
+                    }
+
+                    if (midQ > midQDown)
+                    {
+                        r = mid;
+                    }
+                    else
+                    {
+                        l = mid;
+                    }
+                }
+            }
+
+            return res;
+        }
+    }

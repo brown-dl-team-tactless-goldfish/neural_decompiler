@@ -1,0 +1,58 @@
+class Solution {
+    
+    int m,n;
+    int dp[12][1<<12]{};
+    int withinmin[12][1<<12]{};
+    int withinsum[12][1<<12]{};
+    
+public:
+    
+    void prepare(vector<vector<int>>& co) {
+        for(int i = 0; i < m; i++) {
+            for(int j = 0; j < n; j++) {
+                withinsum[i][1<<j] = dp[i][1<<j] = co[i][j];
+            }
+            
+            for(int j = 3; j < (1 << n); j++) {
+                if(withinsum[i][j]) continue;
+                withinsum[i][j] = withinsum[i][j&-j] + withinsum[i][j-(j&-j)];
+            }
+            
+            vector<int> x(n);
+            iota(x.begin(), x.end(), 0);
+            auto f=[&co, &i](int j, int k){return co[i][j] < co[i][k];};
+            std::sort(x.begin(), x.end(), f);
+            
+            int ind = (1 << n) - 1, inc;
+            for(int j : x) {
+                inc = 1 << j;
+                ind ^= inc;
+                for(int k = ind;;k = (k - 1)&ind) {
+                    withinmin[i][k|inc] = co[i][j];
+                    if(!k)break;
+                }
+            }
+        }
+    }
+    
+    int connectTwoGroups(vector<vector<int>>& cost) {
+        m = cost.size();
+        n = cost[0].size();
+        
+        prepare(cost);
+        
+        for(int i = 0; i < m; i++) {
+            for(int j = 1; j < (1<<n); j++) {
+                if(i == 0) dp[i][j] = dp[i][j&-j] + dp[i][j-(j&-j)];
+                else {
+                    dp[i][j] = dp[i-1][j] + withinmin[i][j]; // case 1)
+                    for(int k = j-1; k; k = (k-1)&j) { // case 2)
+                        dp[i][j] = min(dp[i][j], withinsum[i][k] + dp[i-1][j^k]); 
+                    }
+                }
+            }
+        }
+        
+        return dp[m-1][(1<<n)-1];
+    }
+};

@@ -1,0 +1,74 @@
+
+class Codec {
+public:
+
+    // Encodes a tree to a single string.
+    string serialize(TreeNode* root) {
+        stringstream ss;
+        queue<TreeNode*> q;
+        q.push(root);
+        string output;
+        while (!q.empty()) {
+            int n = q.size();
+            ss.str("");
+            bool all_leaf = true;
+            while (n-- > 0) {
+                TreeNode* curr = q.front();
+                q.pop();
+                if (curr) {
+                    all_leaf = false;
+                    ss << curr->val << ",";
+                    q.push(curr->left);
+                    q.push(curr->right);
+                } else {
+                    ss << "n" << "," ;
+                }
+            }
+            if (!all_leaf) output += ss.str();
+        }
+        return output;
+    }
+
+    // Decodes your encoded data to tree.
+    TreeNode* deserialize(string data) {
+        if (data.empty()) return nullptr;
+        
+        // define stringstream 
+        stringstream ss(data);
+        
+        // define root
+        TreeNode* root = new TreeNode();
+        char comma;
+        ss >> root->val >> comma;
+        
+        queue<TreeNode*> q;
+        q.push(root);
+        
+        auto next_node = [&]() -> TreeNode* {
+            if (ss.peek() == 'n') {
+                ss >> comma >> comma;
+                return nullptr;
+            }
+            int val;
+            ss >> val >> comma;
+            if (ss.fail()) return nullptr;
+            return new TreeNode(val);
+        };
+        
+        while (!q.empty()) {
+            int n = q.size();
+            while (n-- > 0) {
+                TreeNode* c = q.front();
+                q.pop();
+                TreeNode* l = next_node();
+                TreeNode* r = next_node();
+                c->left = l;
+                c->right = r;
+                if (l) {q.push(l);}
+                if (r) {q.push(r);}
+            }
+        }
+        
+        return root;
+    }
+};

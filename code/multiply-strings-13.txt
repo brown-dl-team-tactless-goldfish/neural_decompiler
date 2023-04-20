@@ -1,0 +1,67 @@
+int i=0;
+
+int len1 = strlen(num1);
+int len2 = strlen(num2);
+
+int out_size = len1 + len2;
+char *out = (char *) malloc(sizeof(char) * out_size+1);
+out[out_size] = '\0';
+
+
+int j=len2-1;
+int carry = 0;
+int r = 0;
+int final_index = 0;
+
+//init output string
+for(i=0;i<out_size;i++)
+    out[i] = 0 + '0';
+out[i] = '\0';
+
+while(j  >= 0)
+{
+    carry = 0;
+    out_size = len1+len2 -1 - final_index;
+    
+    for(i=len1-1;i>=0;i--)
+    {
+        r  = (carry + out[out_size] - '0' + (num2[j] -'0') *( num1[i] -'0')) % 10;
+        carry = (carry + out[out_size] -'0' + (num2[j] -'0')* (num1[i] - '0')) / 10;
+        //update result in out matrix
+        out[out_size] = r + '0'; 
+        out_size--;
+    }
+    
+    //in case carry leftover in last stage
+    if(carry > 0)
+        out[out_size] = carry + '0';
+    
+    j--;
+    final_index++;
+  }
+
+//remove the leading zero's from final answer
+j=0;
+if(out[0] -'0' == 0 )
+{
+    
+    //find first non-zero
+     for(i=0;i<(len1+len2);i++)
+     {
+         if(out[i] -'0' != 0 )
+            break;
+     } 
+     //if all zero's     
+     if(i == (len1+len2))
+     {  
+         out[j++] = '0' + 0;
+         out[j] ='\0';
+     }
+     else
+     {     
+         while(i<(len1+len2))
+            out[j++] = out[i++];
+        out[j] ='\0';
+     }
+}
+return out;

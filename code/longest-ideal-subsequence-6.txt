@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int longestIdealString(string s, int k) {
+        int n = s.length();
+        
+        vector<int> dp(n, 1);
+		// max LIS of a particular character till now
+        vector<int> prev_max(26, 0);
+        for(int i = 0; i < n; i++) {
+            int c = s[i]-'a';
+            if(i > 0) {
+                for(int j = 0; j < 26; j++) {
+                    if(abs(c-j) <= k)
+                        dp[i] = max(dp[i], 1 + prev_max[j]);
+                }
+            }
+            prev_max[c] = max(prev_max[c], dp[i]);
+        }
+        
+        return *max_element(dp.begin(), dp.end());
+    }
+};

@@ -1,0 +1,44 @@
+class Solution {
+public:
+    int minOperations(vector<int>& nums1, vector<int>& nums2) 
+    {
+        if(nums1.size()>6*nums2.size()||nums1.size()*6<nums2.size())
+        {
+            return -1;
+        }
+        int sum1=accumulate(nums1.begin(),nums1.end(),0);
+        int sum2=accumulate(nums2.begin(),nums2.end(),0);
+        if(sum1<sum2)
+        {
+            swap(nums1,nums2);
+            swap(sum1,sum2);
+        }
+        int diff=sum1-sum2;
+        vector<int>ans;
+        for(int i=0;i<nums1.size();i++)
+        {
+            ans.push_back(nums1[i]-1);
+        }
+        for(int i=0;i<nums2.size();i++)
+        {
+            ans.push_back(6-nums2[i]);
+        }
+        if(sum1==sum2)
+        {
+            return 0;
+        }
+        int count=0;
+        int size=ans.size();
+        sort(ans.rbegin(),ans.rend());
+        for(int i=0;i<size;i++)
+        {
+            count++;
+            diff-=ans[i];
+            if(diff<=0)
+            {
+                return count;
+            }
+        }
+        return -1;
+    }
+};

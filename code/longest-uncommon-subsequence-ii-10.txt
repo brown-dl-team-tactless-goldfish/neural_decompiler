@@ -1,0 +1,57 @@
+class Solution {
+public:
+    bool f(const string& x, const string& y) {
+        int j = 0;
+        int i = 0;
+        while(j<y.size()&&i<x.size()) {
+            //cout<<"i= "<<i<<" j= "<<j<<endl;
+            if(y[j]==x[i]) {
+                i++;
+                j++;
+            }
+            else {
+                j++;
+            }
+        }
+        //cout<<"?"<<endl;
+        return i == x.size();
+    }
+    struct Comp{
+      bool operator ()(const string& a, const string& b) const {
+           return a.size() < b.size();
+      }  
+    };
+    int findLUSlength(vector<string>& strs) {
+        unordered_map<string,int> m; 
+        for(auto& str : strs) {
+            m[str]++;
+        }
+        priority_queue<string,vector<string>,Comp> q; 
+        set<string> du; 
+        for(auto& x : m) {
+            if(x.second == 1) {
+                q.emplace(move(x.first));
+            } else {
+                du.emplace(move(x.first));
+            }
+        }
+        
+        while(q.size()) {
+            auto x = q.top();
+            q.pop();
+            bool ok = true; 
+            for(auto& y : du) {
+                if(f(x,y)) {
+                    ok = false; 
+                    break;
+                }
+            }
+            if(ok) {
+                return x.size();
+            }
+            du.insert(move(x));
+        }
+        return -1; 
+        
+    }
+};

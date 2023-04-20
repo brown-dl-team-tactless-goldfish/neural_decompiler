@@ -1,0 +1,47 @@
+class Solution
+{
+public:
+    vector<string> findAllRecipes(vector<string> &recipes, vector<vector<string>> &ingredients, vector<string> &supplies)
+    {
+        map<string, vector<string>> adj;
+        map<string, int> indegree;
+        int cur_recepie = 0;
+        for (auto it : ingredients)
+        {
+		//in each iteration we move to another recepie and another list of ingridients
+            for (auto i : it)
+            {
+                adj[i].push_back(recipes[cur_recepie]);
+                indegree[recipes[cur_recepie]]++; //increase the indegree of i-th recepie
+            }
+            cur_recepie+=1; // just a pointer/ index to recepie, bcz it and i cannot give posoition/ value of recepie.
+        }
+        queue<string> q;
+        vector<string> ans;
+		// insert all the supplies
+		// Note: a recepie will become supply when its indegree will become=0.
+        for (auto it : supplies)
+            q.push(it);
+        string temp;
+        while (!q.empty())
+        {
+            temp = q.front();
+			// let temp=a, and a is needed to make b and c.
+            q.pop();
+            for (auto it : adj[temp])
+            {
+			// Since we got temp = a, then we have one ingridient a to make b and c
+			// hence, we can reduce the indegrees of b and c, bcz we got one ingridinet a
+			// when the indegrees of b and c becomes = 0, they are said to be prepared, and push them in ans.
+			// also they can now act as supply, hence push them in queue, bcz these can be used to make other recepies.
+                indegree[it]--;
+                if (indegree[it] == 0)
+                {
+                    ans.push_back(it);
+                    q.push(it);
+                }
+            }
+        }
+        return ans;
+    }
+};

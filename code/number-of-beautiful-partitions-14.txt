@@ -1,0 +1,26 @@
+class Solution {
+    enum { mod = int(1e9) + 7 };
+public:
+    int beautifulPartitions(string s, int const k, int minLength) {
+        const int n = s.size() - minLength + 1;
+        vector<bool> data(s.size()); // is_prime
+        for (int i = 0; i < s.size(); ++i) {
+            char c = s[i] - '0';
+            if (c == 2 || c == 3 || c == 5 || c == 7) data[i] = true;
+        }
+        if (!data.front() || data.back()) return 0;
+        
+        vector<int> dp(n), dp_next(n);
+        dp[0] = 1;
+        for (int i = 1; i < k; ++i) {
+            int psum = 0;
+            dp_next[0] = 0;
+            for (int j = minLength; j < n; ++j) {
+                psum = (psum + dp[j - minLength]) % mod;
+                dp_next[j] = (!data[j-1] && data[j]) ? psum : 0;
+            }
+            swap(dp, dp_next);
+        }
+        return accumulate(dp.begin(), dp.end(), long(0)) % mod;
+    }
+};

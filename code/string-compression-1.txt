@@ -1,0 +1,36 @@
+int append_string(char const *string, int count)
+{
+    char number[10]; // maximum number of digits is 10 for INT_MAX
+    count = snprintf(number, 10, "%d", count);
+    memcpy(string, number, count);
+    return count;
+}
+
+int compress(char* chars, int charsSize){
+    char c = chars[0];
+    int count = 1;
+    int index = 1;
+    for (int i = 1; i < charsSize; i++)
+    {
+        if (c == chars[i])
+        {
+            count++;
+        }
+        else
+        {
+            if (count != 1)
+            {
+                index += append_string(chars + index, count);
+                count = 1;
+            }
+            chars[index++] = chars[i];
+            c = chars[i];
+        }
+    }
+    if (count != 1)
+    {
+        index += append_string(chars + index, count);
+    }
+    
+    return index;
+}

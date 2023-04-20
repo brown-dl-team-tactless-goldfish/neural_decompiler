@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<int> maxDepthAfterSplit(string seq) {
+        // Get the max depth
+        int count = 0, maxCount = 0;
+        for (char c: seq) {
+            count += c == '(' ? 1 : -1;
+            maxCount = max(maxCount, count);
+        }
+        
+        vector<int> res(seq.size(), 0);
+        
+        // maxCount / 2 is the threshold for being in A or B. A if count < threshold.
+        int threshold = maxCount / 2;
+        count = 0;
+        
+        for (int i = 0; i < seq.size(); ++i) {
+            char c = seq[i];
+            count += c == '(' ? 1 : -1;
+            if ((c == '(' && count > threshold) || (c == ')' && count >= threshold)) {
+                res[i] = 1;
+            }
+        }
+        
+        return res;
+    }
+};

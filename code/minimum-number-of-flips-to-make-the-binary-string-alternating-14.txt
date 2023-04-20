@@ -1,0 +1,46 @@
+
+
+int minFlips(char * s){
+    /* count 0 and 1 in odd and even positions
+      odd 1, odd 0, even 1, even 0   the order of the array*/
+    int cnt[4] = {0, 0, 0, 0};
+    int i;
+    int result, temp;
+    char* x;
+    for (x = s, i = 0; *x != 0; x++, i++) {
+        cnt[((i << 1) | *x) & 3] += 1;
+    }
+    /* find what is less to flip even 1 and odd 0  vs odd 1 and even 0 */
+    result = cnt[1] + cnt[2];
+    temp = cnt[3] + cnt[0];
+    result = temp < result? temp : result;
+      /*# if the line has odd size, one can perform type 1 operation and shift
+        # every digit changes from even to odd and vice versa, except for the first one
+        # we do not do the actual shift, just move along s and update cnt accordingly*/
+    
+    if (i & 1) {
+        for (x = s, i = 0; *x != 0; x++, i++) {
+            temp = cnt[0];
+            cnt[0] = cnt[2];
+            cnt[2] = temp;
+            
+            temp = cnt[1];
+            cnt[1] = cnt[3];
+            cnt[3] = temp;
+            
+            cnt[1 & *x]++;
+            
+            cnt[(1 & *x) | 2]--;
+            
+            temp = cnt[1] + cnt[2];
+            result = temp < result? temp : result;
+            temp = cnt[3] + cnt[0];
+            result = temp < result? temp : result;
+        }
+    }
+    
+    return result;
+}
+
+
+

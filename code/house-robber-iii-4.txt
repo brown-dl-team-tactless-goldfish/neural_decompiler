@@ -1,0 +1,28 @@
+typedef struct {
+    int robMoney;
+    int notRobMoney;
+} Money;
+
+Money robMoney(struct TreeNode* root) {
+    if (root == NULL) {
+        Money money = {0};
+        return money;
+    }
+
+    Money moneyFromLeft = robMoney(root->left);
+    Money moneyFromRight = robMoney(root->right);
+    Money money;
+    money.robMoney = root->val + moneyFromLeft.notRobMoney + moneyFromRight.notRobMoney;
+    money.notRobMoney = (moneyFromLeft.robMoney > moneyFromLeft.notRobMoney ?
+    moneyFromLeft.robMoney : moneyFromLeft.notRobMoney)
+    +
+    (moneyFromRight.robMoney > moneyFromRight.notRobMoney ?
+    moneyFromRight.robMoney : moneyFromRight.notRobMoney);
+    
+    return money;
+}
+
+int rob(struct TreeNode* root) {
+    Money money = robMoney(root);
+    return money.robMoney > money.notRobMoney ? money.robMoney : money.notRobMoney;
+}

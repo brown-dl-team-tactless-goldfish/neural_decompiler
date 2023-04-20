@@ -1,0 +1,29 @@
+    int minDeletionSize(vector<string>& strs) {
+//         so what question demands is internal sorting of strings (not among each other)
+//         so what this is a good variation of LIS and truly a hard question
+//         so let me draw what i want to explain
+// 1. k->  b a b c a
+// 2. k->  b b a z b
+//           i
+//         j
+//         so at every i th  and jth column we make comparison in each kth row if(strs[k][j]>strs[k][i]) then we have to remove this column
+//         optimal way is to just count columns which does not violate above conditions because that are columns we want to keep ;)
+//         at last our answer -----> total columns(n) - columns to keep(should max so that we can minimise no of columns to be deleted)
+//         Lets code it;
+        
+        int i,j, k;
+        int n=strs[0].size();
+        int m=strs.size();
+        vector<int>dp(n,1);
+        for(i=0;i<n;i++){
+            for(j=0;j<i;j++){
+                for(k=0;k<m;k++){
+                    if(strs[k][j]>strs[k][i]) break;
+                }
+                if(k==m&&dp[i]<1+dp[j]) dp[i]=1+dp[j];
+            }
+           
+        }
+         return n - *max_element(dp.begin(), dp.end());
+    }
+};

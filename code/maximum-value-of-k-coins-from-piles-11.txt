@@ -1,0 +1,19 @@
+int dp[1001][2001]; 
+int maxValueOfCoins(vector<vector<int>>& p, int k) {
+    memset(dp,-1,sizeof dp);
+    return solve(p,0,k);
+}
+int solve(vector<vector<int>>&p ,int i ,int k){
+  if(i>=p.size())
+  return 0;
+  if(dp[i][k] !=-1)
+    return dp[i][k];
+  int exclude=solve(p,i+1,k);
+  int include=0,sum=0;
+  for(int j=0;j<p[i].size();j++){
+    sum+=p[i][j];
+    if(k-j-1>=0)
+    include=max(include,sum+solve(p,i+1,k-j-1));
+  }
+  return dp[i][k]=max(exclude,include);
+}

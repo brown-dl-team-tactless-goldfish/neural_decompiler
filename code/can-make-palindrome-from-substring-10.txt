@@ -1,0 +1,22 @@
+    vector<bool> canMakePaliQueries(string s, vector<vector<int>>& queries) {
+        
+        vector<bool> res;
+        int v[s.size()][26]; memset(v, 0, sizeof(v)); v[0][s.front() - 'a']++;
+        for(int i = 1 ; i < s.size() ; i++) {
+            for(int j = 0 ; j < 26 ; j++) v[i][j] = v[i - 1][j];
+            v[i][s[i] - 'a']++;
+        }
+        
+        for(auto q : queries) {
+            
+            int odds = 0;
+            int l = q[0]; int r = q[1]; int k = q[2];
+            for(auto c = 'a' ; c <= 'z' ; c++) odds += 
+                (v[r][c - 'a'] - (l == 0? 0 : v[l - 1][c - 'a'])) % 2;
+            
+            if(odds > k * 2 + 1) res.push_back(false);
+            else res.push_back(true);
+        }
+        
+        return res;
+    }

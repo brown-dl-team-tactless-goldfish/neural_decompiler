@@ -1,0 +1,69 @@
+public class Solution {
+
+    public int[] MaxPoints(int[][] grid, int[] queries) {
+      PriorityQueue<(int r, int c), int> agenda = new();
+      HashSet<(int r, int c)> visited = new();
+
+      agenda.Enqueue((0, 0), grid[0][0]);
+
+      visited.Add((0, 0));
+
+      int limit = grid[0][0];
+
+      Dictionary<int, int> cache = new() {
+        { limit, 0 },
+      };
+
+      while (agenda.Count > 0) {
+        var node = agenda.Dequeue();
+
+        var value = grid[node.r][node.c];
+
+        if (value <= limit)
+          cache[limit] += 1;
+        else {
+          cache.Add(value, cache[limit] + 1);
+
+          limit = value;
+        }
+
+        for (int d = 0; d < 4; ++d) {
+          int dr = node.r + (d - 1) % 2;
+          int dc = node.c + (d - 2) % 2;
+
+          if (dr < 0 || dc < 0 || dr >= grid.Length || dc >= grid[dr].Length)
+            continue;
+
+          if (visited.Add((dr, dc)))
+            agenda.Enqueue((dr, dc), grid[dr][dc]);
+        }
+      }
+
+      (int limit, int count)[] data = cache
+        .OrderBy(pair => pair.Key)
+        .Select(pair => (pair.Key, pair.Value))
+        .ToArray();
+
+      int[] result = new int[queries.Length];
+
+      var comparer = Comparer<(int limit, int count)>.Create((a, b) => a.limit.CompareTo(b.limit));
+
+      for (int i = 0; i < queries.Length; ++i) {
+        int q = queries[i] - 1;
+
+        int index = Array.BinarySearch(data, (q, 0), comparer);
+
+        if (index >= 0)
+          result[i] = data[index].count;
+        else {
+          index = ~index - 1;
+
+          if (index >= 0)
+            result[i] = data[index].count;
+        }
+      }
+
+      return result;
+    }
+
+}

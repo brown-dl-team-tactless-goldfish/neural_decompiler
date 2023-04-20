@@ -1,0 +1,56 @@
+class Solution {
+public:
+    vector<long long> minOperations(vector<int>& nums, vector<int>& queries) {
+        
+        int n = nums.size();
+        int q = queries.size();
+
+        // SORT THE ARRAY
+        sort(nums.begin(),nums.end());
+
+        // CALCULATE PREFIX OF NUMS 
+        vector<long long>prefix(n,0);
+        prefix[0] = nums[0];
+        for(int i=1;i<n;i++) prefix[i] = prefix[i-1] + nums[i];
+        
+        // USE LONG LONG FOR AVOID RUNTIME
+        vector<long long>ans;
+
+        long long increment = 0 , decrement = 0;
+        long long value = 0;
+
+        // processing each query 
+        for(auto q : queries){
+            
+            // binary search
+            int lo = 0 , hi = n-1;
+            int mid; value = q;
+
+            // find position of current query element in sorted nums
+            while(lo <= hi){
+
+                mid = lo + (hi - lo)/2;
+
+                if(nums[mid] <= value) lo = mid + 1;
+                else hi = mid - 1;
+                
+            }
+
+            // reset increment & decrement
+            increment = 0 , decrement = 0;
+
+            // get length of less than current query element which are need to increment
+            if(lo > 0) increment = abs((value * lo) - prefix[lo-1]);
+
+            // get length of greater than current query element which are need to decrement
+            if(lo == 0) decrement = abs((value*n) - prefix[n-1]);
+            else decrement = abs((value * (n-lo)) - (prefix[n-1] - prefix[lo-1]));
+
+            // store answerr for current query
+            ans.push_back(increment + decrement);
+        }
+        
+        // return result
+        return ans;
+    }
+};

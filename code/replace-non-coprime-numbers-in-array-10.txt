@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int gcd(int a, int b) {
+      if (b == 0)
+        return a;
+      return gcd(b, a % b);
+    }
+
+    int lcm(int a, int b) {
+        return (a / gcd(a, b)) * b;
+    }
+    vector<int> replaceNonCoprimes(vector<int>& nums) {
+        vector<int> modified;
+        for (int i : nums) {
+            int pre = 0, cur = i;
+            while (modified.size() && gcd(modified.back(), cur) > 1) {
+                pre  = modified.back();
+                cur = lcm(cur, pre);
+                modified.pop_back();
+            }
+            modified.push_back(cur);
+        }
+        
+        return modified;
+    }
+};

@@ -1,0 +1,27 @@
+int splitArray(int* nums, int numsSize, int m){
+    long right = 0, left = 0;
+    for(int i = 0; i < numsSize; i++)
+    {
+        left = left > nums[i] ? left : nums[i];
+        right += nums[i];
+    }
+    right++;
+    while(left < right)
+    {
+        long mid = (left + right) / 2;
+        int count = 1, temp = 0;
+        for(int i = 0; i < numsSize; i++)
+        {
+            if(temp + nums[i] > mid)
+            {
+                count++;
+                temp = nums[i];
+            }
+            else
+                temp += nums[i];
+        }
+        if(count > m) left = mid + 1;
+        else right = mid;
+    }
+    return (int)left;
+}

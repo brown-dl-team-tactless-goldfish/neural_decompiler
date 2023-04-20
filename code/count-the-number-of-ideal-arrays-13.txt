@@ -1,0 +1,30 @@
+
+class Solution
+{
+public:
+    int mod = pow(10, 9) + 7;
+    int dfs(int n, int prev, int maxval, vector<vector<int>> &dp)
+    {
+        if (n == 0)
+            return 1;
+
+        if (dp[n][prev] != -1)
+            return dp[n][prev];
+
+        int ways = 0;
+
+        for (int i = prev; i <= maxval; i += prev)
+        {
+            ways = (ways + dfs(n - 1, i, maxval, dp)) % mod;
+        }
+
+        return dp[n][prev] = ways;
+    }
+    int idealArrays(int n, int maxValue)
+    {
+        vector<vector<int>> dp(n + 1, vector<int>(
+                                          maxValue + 1, -1));
+
+        return dfs(n, 1, maxValue, dp);
+    }
+};

@@ -1,0 +1,21 @@
+#pragma GCC optimize("Ofast","inline","fast-math","unroll-loops","no-stack-protector")
+#pragma GCC target("sse,sse2,sse3,ssse3,sse4,popcnt,abm,mmx,avx,avx2,tune=native","f16c")
+static const auto fast = []() {ios_base::sync_with_stdio(false); cin.tie(0); cout.tie(0); return 0; } ();
+class Solution {
+public:
+    vector<double> getCollisionTimes(vector<vector<int>>& cars) {
+        stack<int> s;
+        int n = cars.size();
+        vector<double> res(n, -1.0);
+        for (int i = n - 1; i >= 0; --i) {
+            while (!s.empty() && (cars[i][1] <= cars[s.top()][1] || (res[s.top()] > 0 && (double)(cars[s.top()][0] - cars[i][0]) / (cars[i][1] - cars[s.top()][1]) >= res[s.top()]))) {
+                s.pop();
+            }
+            if (!s.empty()) {
+                res[i] = (double)(cars[s.top()][0] - cars[i][0]) / (cars[i][1] - cars[s.top()][1]);
+            }
+            s.push(i);
+        }
+        return res;
+    }
+};

@@ -1,0 +1,53 @@
+class Solution {
+public:
+    int maxPalindromes(string s, int k) {
+        int n = s.length(),
+            ans = 0;
+        
+        // Manacher's Algorithm (O(n))
+        n = (n << 1) | 1;
+        int L[n];
+        L[0] = 0;
+        for(int i=1, C=0, R=0; i<n; ++i){
+            L[i] = i < R ? min(L[(C<<1) - i], R - i)
+                         : 0;
+            while(
+                i + L[i] < n &&
+                i - L[i] > 0 &&
+                (
+                    !((i + L[i] + 1) & 1) ||
+                    s[(i + L[i] + 1) >> 1] == s[(i - L[i] - 1) >> 1]
+                )
+            )
+                L[i]++;
+            
+            if(i + L[i] > R){
+                C = i;
+                R = i + L[i];
+            }
+        }
+        
+        // Greedy
+        for(int i=0, prevR=-1, R=n>>1; i<n; ++i){
+            if(L[i] < k)
+                continue;
+            L[i] = k + ((L[i]&1) ^ (k&1));
+            
+            int left = (i - L[i]) >> 1,
+                right = left + L[i] - 1;
+            
+            if(left <= prevR)
+                continue;
+            
+            R = min(R, right);
+            
+            if(left > prevR){
+                ++ans;
+                prevR = R;
+                R = n >> 1;
+            }
+        }
+        
+        return ans;
+    }
+};

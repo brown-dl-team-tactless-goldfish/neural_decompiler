@@ -1,0 +1,27 @@
+class Solution {
+public:
+    const int MOD = 1e9 + 7;
+
+    int solve(string s) {
+        int n = s.size();
+        vector<int> dp(2);
+        long long ans = 0;
+        for (int i = n; i>=1; i--) {
+            int c = s[i - 1] - '0';
+            int curr = (ans + 1 - dp[c] + MOD) % MOD;
+            ans = (ans + curr) % MOD;
+            dp[c] = (dp[c] + curr) % MOD;
+        }
+        return dp[1];
+    }
+    
+    int numberOfUniqueGoodSubsequences(string binary) {
+        bool count = false;
+        for(char c: binary){
+            if(c=='0') count=true;
+        }
+        int res = solve(binary);
+        if(count) res +=1;
+        return res % MOD;
+    }
+};

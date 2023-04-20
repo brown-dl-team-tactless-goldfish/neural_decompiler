@@ -1,0 +1,26 @@
+class Solution {
+public:
+    #define ll long long
+    int ans;
+    void dfs(int curr , vector<pair<int,int>> gr[],vector<int> &vis){
+        vis[curr] = true;
+        for(auto [node,dis] : gr[curr]){
+                ans = min(ans,dis);
+            if(!vis[node]){
+                dfs(node,gr,vis);
+            }
+        }
+    }
+    int minScore(int n, vector<vector<int>>& roads) {
+        vector<pair<int,int>> gr[n+1];
+        for(auto x: roads){
+            int a = x[0] , b = x[1] , c = x[2];
+            gr[a].push_back({b,c});
+            gr[b].push_back({a,c});
+        }
+        ans = INT_MAX;
+        vector<int> vis(n+1,0);
+        dfs(1,gr,vis);
+        return ans;
+    }
+};

@@ -1,0 +1,71 @@
+bool isValid(char* s) {
+    if (NULL == s) {
+        return true;
+    }
+    uint32_t len      = strlen(s);
+    int      sp       = 0;
+    char*    stack    = (char*)malloc(len);
+    memset(stack, 0, len);
+    
+    for (uint32_t i=0; i<len; i++) {
+        switch (s[i]) {
+            case '(':
+                stack[sp] = '(';
+                sp++;
+                break;
+                
+            case ')':
+                if (sp < 1){
+                    return false;
+                }
+                if (stack[sp-1] == '(') {
+                    sp--;
+                } else {
+                    stack[sp] = ')';
+                    sp++;
+                }
+                break;
+                
+            case '[':
+                stack[sp] = '[';
+                sp++;
+                break;
+                
+            case ']':
+                if (sp < 1){
+                    return false;
+                }
+                if (stack[sp-1] == '[') {
+                    sp--;
+                } else {
+                    stack[sp] = ']';
+                    sp++;
+                }
+                break;
+                
+            case '{':
+                stack[sp] = '{';
+                sp++;
+                break;
+                
+            case '}':
+                if (sp < 1){
+                    return false;
+                }
+                if (stack[sp-1] == '{') {
+                    sp--;
+                } else {
+                    stack[sp] == '}';
+                    sp++;
+                }
+                break;
+        }
+    }
+    free(stack);
+    stack = NULL;
+    if (sp) {
+        return false;
+    } else {
+        return true;
+    }
+}

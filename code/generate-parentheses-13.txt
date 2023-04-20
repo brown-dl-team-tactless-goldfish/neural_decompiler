@@ -1,0 +1,61 @@
+
+char** sub_func(char** existing, char* str, int left, int right, int max, int* returnSize)
+{
+    int len = str == NULL ? 0 : strlen(str);
+    if (len == (max << 1))
+    {
+        int newSize = (*returnSize + 1) * sizeof(char**);
+
+        if (existing == NULL)
+        {
+            existing = (char**)malloc(newSize);
+        }
+        else
+        {
+            existing = (char**)realloc(existing, newSize);
+        }
+
+        existing[*returnSize] = str;
+        (*returnSize)++;
+        return existing;
+    }
+
+    if (left < max)
+    {
+        char* newstr = (char*)malloc((len + 2) * sizeof(char));
+        if (str == NULL)
+        {
+            sprintf(newstr, "(");
+        }
+        else
+        {
+            sprintf(newstr, "%s(", str);
+        }
+
+        existing = sub_func(existing, newstr, left + 1, right, max, returnSize);
+    }
+
+    if (right < left)
+    {
+        char* newstr = (char*)malloc((len + 2) * sizeof(char));
+
+        if (str == NULL)
+        {
+            sprintf(newstr, ")");
+        }
+        else
+        {
+            sprintf(newstr, "%s)", str);
+        }
+
+        existing = sub_func(existing, newstr, left, right+1, max, returnSize);
+    }
+
+    free(str);
+
+    return existing;
+}
+
+char** generateParenthesis(int n, int* returnSize) {
+    return sub_func(NULL, NULL, 0, 0, n, returnSize);
+}

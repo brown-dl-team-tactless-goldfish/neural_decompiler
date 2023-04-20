@@ -1,0 +1,29 @@
+class Solution {
+public:
+      unordered_map <int , pair < int  , int > > mp;
+       int dp[302][27][27];    
+    int fun(string w , int i ,int a ,int b){ 
+    if(i >= w.size()) return 0;  // base case
+      
+       if(dp[i][a+1][b+1] != -1) return dp[i][a+1][b+1];   // a+1 and b+1 done because we have taken the initial value of a ,b as -1
+        
+       pair < int , int > val = mp[(w[i] - 'A')];   //  get the coordinates of the current character
+        int c = 0 , d = 0; 
+        c = (a == -1) ? 0 : abs(val.first - mp[a].first) + abs(val.second - mp[a].second);  // cost incurred if we choose the current char for finger 1
+         d = (b == -1) ? 0 : abs(val.first - mp[b].first) + abs(val.second - mp[b].second); // cost incurred if we choose the current char for finger 2
+       
+        int ans = c + fun(w , i+1 , w[i]-'A' , b); 
+        ans = min(ans , d + fun(w , i+1 , a , w[i] -'A')); 
+          return dp[i][a+1][b+1] = ans;
+    }
+    int minimumDistance(string word) {
+       int ch = 0; 
+        for(int i = 0; i<5; i++){ 
+          for(int j = 0 ; j < 6 ; j++){ 
+            mp[ch] = {i,j}; ch++;   // mapped the coordinates with the characters 
+          }
+        }
+      memset(dp , -1 , sizeof(dp)); 
+      return fun(word , 0 , -1 , -1);      
+    }
+};

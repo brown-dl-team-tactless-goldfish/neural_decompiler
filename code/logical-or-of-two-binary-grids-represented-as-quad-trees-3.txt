@@ -1,0 +1,58 @@
+class Solution {
+public:
+    Node* intersect(Node* quadTree1, Node* quadTree2) {
+        if (quadTree1 == nullptr) {
+            return quadTree2;
+        }
+        if (quadTree2 == nullptr) {
+            return quadTree1;
+        }
+        auto unionNode = new Node(false, false, nullptr, nullptr, nullptr, nullptr);
+        if (quadTree1->isLeaf && quadTree2->isLeaf) {
+            unionNode->val = quadTree1->val||quadTree2->val;
+            unionNode->isLeaf = true;
+            return unionNode;
+        }
+        if (quadTree1->isLeaf) {
+            if (quadTree1->val == true) {
+                unionNode->val = true;
+                unionNode->isLeaf = true;
+            } else {
+                unionNode->topLeft = quadTree2->topLeft;
+                unionNode->topRight = quadTree2->topRight;
+                unionNode->bottomLeft = quadTree2->bottomLeft;
+                unionNode->bottomRight = quadTree2->bottomRight;
+                unionNode->isLeaf = false;
+            }
+            return unionNode;
+        }
+        if (quadTree2->isLeaf) {
+            if (quadTree2->val == true) {
+                unionNode->val = true;
+                unionNode->isLeaf = true;
+            } else {
+                unionNode->topLeft = quadTree1->topLeft;
+                unionNode->topRight = quadTree1->topRight;
+                unionNode->bottomLeft = quadTree1->bottomLeft;
+                unionNode->bottomRight = quadTree1->bottomRight;
+                unionNode->isLeaf = false;
+            }
+            return unionNode;
+        }
+        unionNode->topLeft = intersect(quadTree1->topLeft, quadTree2->topLeft);
+        unionNode->topRight = intersect(quadTree1->topRight, quadTree2->topRight);
+        unionNode->bottomLeft = intersect(quadTree1->bottomLeft, quadTree2->bottomLeft);
+        unionNode->bottomRight = intersect(quadTree1->bottomRight, quadTree2->bottomRight);
+        if (unionNode->topLeft->isLeaf && unionNode->topRight->isLeaf && unionNode->bottomLeft->isLeaf && unionNode->bottomRight->isLeaf) {
+            if ((unionNode->topLeft->val && unionNode->topRight->val && unionNode->bottomLeft->val && unionNode->bottomRight->val) || (!unionNode->topLeft->val && !unionNode->topRight->val && !unionNode->bottomLeft->val && !unionNode->bottomRight->val)) {
+                unionNode->isLeaf = true;
+                unionNode->val = unionNode->topLeft->val;
+                unionNode->topLeft = nullptr;
+                unionNode->topRight = nullptr;
+                unionNode->bottomLeft = nullptr;
+                unionNode->bottomRight = nullptr;
+            }
+        }
+        return unionNode;
+    }
+};

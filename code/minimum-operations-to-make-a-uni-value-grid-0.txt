@@ -1,0 +1,26 @@
+int cmp(const void* a, const void* b) {
+    return *(const int*) a - *(const int*) b;
+}
+
+int minOperations(int** grid, int gridSize, int* gridColSize, int x) {
+    int arrSize = gridSize * gridColSize[0], idx = 0;
+    int* arr = (int*) malloc(arrSize * sizeof(int));
+    for(int i = 0; i < gridSize; i++) {
+        for(int j = 0; j < gridColSize[0]; j++) {
+            arr[idx++] = grid[i][j];
+        }
+    }
+    qsort(arr, arrSize, sizeof(int), cmp);
+    int ans = 0, tar = arr[arrSize/2];
+    for(int i = 0; i < arrSize; i++) {
+        if(arr[i] == tar) continue;
+        int cnt = abs(tar - arr[i]);
+        if(cnt % x != 0 || cnt < x) {
+            free(arr);
+            return -1;
+        }
+        ans += cnt/x;
+    }
+    free(arr);
+    return ans;
+}

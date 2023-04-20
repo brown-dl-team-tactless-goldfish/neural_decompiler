@@ -1,0 +1,56 @@
+public class Solution
+{
+    private int FindIndexOfMax(int[] nums, int to)
+    {
+        int max = int.MinValue;
+        int maxIdx = -1;
+
+        for (int i = 0; i <= to; i++)
+        {
+            if (nums[i] > max)
+            {
+                max = nums[i];
+                maxIdx = i;
+            }
+        }
+
+        return maxIdx;
+    }
+
+
+    public IList<int> PancakeSort(int[] arr)
+    {
+        if (arr.Length <= 1)
+        {
+            return new List<int>();
+        }
+
+        IList<int> res = new List<int>(arr.Length * 2);
+        for (int i = arr.Length - 1; i >= 0; i--)
+        {
+            var maxIdx = FindIndexOfMax(arr, i);
+            if (maxIdx == i)
+            {
+                continue;
+            }
+
+            if (maxIdx < 0)
+            {
+                throw new Exception("Invalid index");
+            }
+
+            if (maxIdx != 0)
+            {
+                Array.Reverse(arr, 0, maxIdx + 1);
+                res.Add(maxIdx + 1);
+            }
+
+            if (i != 0)
+            {
+                Array.Reverse(arr, 0, i + 1);
+                res.Add(i + 1);
+            }
+        }
+        return res;
+    }
+}

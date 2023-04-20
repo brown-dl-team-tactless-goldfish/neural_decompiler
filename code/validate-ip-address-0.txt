@@ -1,0 +1,50 @@
+public class Solution 
+{
+    public string ValidIPAddress(string IP) 
+    {
+        if (string.IsNullOrEmpty(IP)) return "Neither";       
+        if (IP.Count(t => t == '.') == 3) return ValidateIPv4(IP);      
+        if (IP.Count(t => t == ':') == 7)   return ValidateIPv6(IP);      
+         return "Neither";
+    }
+    
+    private string ValidateIPv4(string ip)
+    {
+        string[] tokens = ip.Split('.');
+        if (tokens.Length != 4) return "Neither";
+         
+       foreach(var token in tokens)
+       {
+           if (token.Length == 0 || token.Length > 3) return "Neither";        
+           if(token[0] == '0' && token.Length != 1) return "Neither";
+           foreach(var ch in token) 
+           {
+			  if (!Char.IsDigit(ch))  return "Neither";
+           }
+		   
+		   if ( Int32.Parse(token) > 255) return "Neither";     
+       }
+        
+       return "IPv4";
+    }
+    
+    private string ValidateIPv6(string ip)
+    {
+        string[] tokens = ip.Split(':');
+        if (tokens.Length != 8) return "Neither";
+        
+       foreach(var token in tokens)
+       {
+           if (token.Length == 0 || token.Length > 4) return "Neither";        
+           foreach(var ch in token)
+               if (!IsHex(ch)) return "Neither";
+       }
+	   
+        return "IPv6";
+    }
+    
+    private bool IsHex(char c)
+    {
+         return ((c >= '0' && c <= '9') ||   (c >= 'a' && c <= 'f') ||  (c >= 'A' && c <= 'F'));
+    }
+}

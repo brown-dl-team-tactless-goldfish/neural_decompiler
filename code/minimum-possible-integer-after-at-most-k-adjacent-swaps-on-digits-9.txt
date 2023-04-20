@@ -1,0 +1,250 @@
+   public class Solution
+    {
+        private struct Data : IComparable<Data>, IEquatable<Data>
+        {
+            public readonly char C;
+            public readonly int Pos;
+
+            public Data(char c, int pos)
+            {
+                C = c;
+                Pos = pos;
+            }
+
+            public int CompareTo(Data other)
+            {
+                var cmp = C.CompareTo(other.C);
+                if (cmp != 0)
+                {
+                    return cmp;
+                }
+
+                return Pos.CompareTo(other.Pos);
+            }
+
+            public override string ToString()
+            {
+                return $"C: {C}; Pos: {Pos}";
+            }
+
+            public override bool Equals(object obj)
+            {
+                return Equals((Data)obj);
+            }
+
+            public override int GetHashCode()
+            {
+                unchecked
+                {
+                    return C * 117 + Pos;
+                }
+            }
+
+            int IComparable<Data>.CompareTo(Data other)
+            {
+                return CompareTo(other);
+            }
+
+            public bool Equals(Data other)
+            {
+                return C == other.C && Pos == other.Pos;
+            }
+        }
+
+        private class Fenwick
+        {
+            private const int CHUNK_SIZE = 256;
+
+            private class Node
+            {
+                public readonly int Min;
+                public readonly int Max;
+
+                public Node(int min, int max)
+                {
+                    Min = min;
+                    Max = max;
+                }
+
+                public Node Left;
+                public Node Right;
+                public bool IsLeaf => Left == null && Right == null;
+                public long Sum;
+            }
+
+            private readonly Node _root;
+
+            public Fenwick(int min, int max, int[] input)
+            {
+                _root = new Node(min, max);
+                Build(_root, input);
+            }
+
+            private void Build(Node node, int[] input)
+            {
+                int chunk = node.Max - node.Min + 1;
+                int chunksCount = Convert.ToInt32(Math.Ceiling((double)chunk / CHUNK_SIZE));
+
+                if (chunksCount <= 1)
+                {
+                    checked
+                    {
+                        long sum = 0;
+
+                        for (int i = node.Min; i <= node.Max; i++)
+                        {
+                            sum += input[i];
+                        }
+
+                        node.Sum = sum;
+                    }
+
+                    return;
+                }
+
+                int leftChunksCount = chunksCount / 2;
+
+                node.Left = new Node(node.Min, node.Min + leftChunksCount * CHUNK_SIZE - 1);
+                node.Right = new Node(node.Min + leftChunksCount * CHUNK_SIZE, node.Max);
+
+                Build(node.Left, input);
+                Build(node.Right, input);
+
+                node.Sum = node.Left.Sum + node.Right.Sum;
+            }
+
+            private void Update(Node node, int i, int val, int[] data)
+            {
+                if (node == null || i < node.Min || i > node.Max)
+                {
+                    return;
+                }
+
+                var diff = val - data[i];
+                node.Sum += diff;
+
+                if (!node.IsLeaf)
+                {
+                    Update(node.Left, i, diff, data);
+                    Update(node.Right, i, diff, data);
+                }
+                else
+                {
+                    data[i] = val;
+                }
+            }
+
+            public void Update(int i, int val, int[] data)
+            {
+                Update(_root, i, val, data);
+            }
+
+            private long SumRange(Node node, int from, int to, int[] data)
+            {
+                if (node == null || from > node.Max || to < node.Min)
+                {
+                    return 0;
+                }
+
+                if (node.Min == from && node.Max == to)
+                {
+                    return node.Sum;
+                }
+
+                if (node.IsLeaf)
+                {
+                    int start = Math.Max(node.Min, from);
+                    int end = Math.Min(node.Max, to);
+                    long res = 0;
+                    for (int i = start; i <= end; i++)
+                    {
+                        res += data[i];
+                    }
+
+                    return res;
+                }
+
+                return SumRange(node.Left, Math.Max(node.Left.Min, from), Math.Min(node.Left.Max, to), data)
+                       + SumRange(node.Right, Math.Max(node.Right.Min, from), Math.Min(node.Right.Max, to), data);
+            }
+
+            public long SumRange(int from, int to, int[] data)
+            {
+                return SumRange(_root, from, to, data);
+            }
+        }
+
+
+        public string MinInteger(string num, int k)
+        {
+            int[] shifts = new int[num.Length];
+            Fenwick f = new Fenwick(0, num.Length - 1, shifts);
+            StringBuilder res = new StringBuilder(num.Length);
+            SortedSet<Data> set = new SortedSet<Data>();
+            LinkedList<Data> ll = new LinkedList<Data>();
+            IDictionary<Data, LinkedListNode<Data>> map = new Dictionary<Data, LinkedListNode<Data>>();
+
+            for (int i = 0; i < num.Length; i++)
+            {
+                var d = new Data(num[i], i);
+                ll.AddLast(d);
+                map[d] = ll.Last;
+            }
+
+            LinkedListNode<Data> last = ll.First;
+
+            for (int i = 0; i < num.Length; i++)
+            {
+                //try attach all possible chars for next step
+                while (true)
+                {
+                    if (set.Count == k + 1)
+                    {
+                        break;
+                    }
+
+                    set.Add(last.Value);
+                    if (last.Next == null)
+                    {
+                        break;
+                    }
+
+                    last = last.Next;
+                }
+
+                var top = set.First();
+
+
+                //here we should need to know the index of selected item
+				//shifted = count of removed precedessors of selected items in LinkedList
+                var shifted = (int) f.SumRange(0, top.Pos, shifts);
+                k -= top.Pos + shifted;
+                f.Update(top.Pos, -1, shifts);
+
+                res.Append(top.C);
+
+                if (last == map[top])
+                {
+                    last = map[top].Previous;
+                    if (last == null)
+                    {
+                        last = map[top].Next;
+                    }
+                }
+
+                ll.Remove(map[top]);
+                set.Remove(top);
+                map.Remove(top);
+
+
+                //remove items that can not to be used as next char
+                while (set.Count > k + 1 && last != null)
+                {
+                    set.Remove(last.Value);
+                    last = last.Previous;
+                }
+            }
+
+            return res.ToString();
+        }
+    }

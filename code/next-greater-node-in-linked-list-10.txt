@@ -1,0 +1,30 @@
+int countNodes(struct ListNode* head) {
+    if (!head->next)
+        return 1;
+    return 1 + countNodes(head->next);
+} 
+
+int* nextLargerNodes(struct ListNode* head, int* returnSize){
+    int size = countNodes(head), i = 0;
+    struct ListNode* current = head;
+    int *result = calloc(sizeof(int), size);
+
+    while (current) {
+        struct ListNode* temp = current->next;
+
+        while (temp) {
+            if (current->val < temp->val) {
+                result[i++] = temp->val;
+                break;
+            }
+            temp = temp->next;
+        }
+        if (!temp)
+            i++;
+
+        current = current->next;
+    }
+
+    *returnSize = size;
+    return result;
+}

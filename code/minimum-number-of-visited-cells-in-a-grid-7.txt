@@ -1,0 +1,38 @@
+class Solution {
+    #define ll long long
+    int n,m;
+public:
+   
+    int minimumVisitedCells(vector<vector<int>>& g) {
+         n=g.size();m=g[0].size();
+        vector<vector<ll>>v(n,vector<ll>(m,0));
+        v[0][0]=1;
+        int ans=0;
+        queue<pair<int,int>>q;
+        q.push({0,0});
+       while(q.size()){
+           int sz=q.size();
+           ans++;
+           for(int i=0;i<sz;i++){
+               int x=q.front().first;
+               int y=q.front().second;
+               if(x==n-1 && y==m-1)return ans;
+               int val=g[x][y];
+               q.pop();
+               for(int it=min(n-1,val+x);it>=x+1;it--){
+                  // cout<<it<<" "<<y<<endl;
+                   if(v[it][y])continue;
+                   v[it][y]=1;
+                   q.push({it,y});
+               }
+               for(int it=min(m-1,val+y);it>=y+1;it--){
+                  // cout<<x<<" "<<it<<endl;
+                   if(v[x][it])continue;
+                   v[x][it]=1;
+                   q.push({x,it});
+               }
+           }
+       }
+       return -1;
+    }
+};

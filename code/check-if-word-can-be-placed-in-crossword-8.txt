@@ -1,0 +1,60 @@
+public class Solution {
+    public bool PlaceWordInCrossword(char[][] board, string word) {
+        var n = board.Length;
+        if (n == 0) {
+            return word.Length == 0;
+        }
+        
+        var m = board[0].Length;
+        for (var i = 0; i < n; i++) {
+            for (var j = 0; j < m; j++) {
+                if (board[i][j] == '#') {
+                    continue;
+                }
+                
+                if ((i == 0 || board[i - 1][j] == '#') && Check(board, (i, j), n, m, word, (1, 0))) {
+                    return true;
+                }
+                
+                if ((i == n - 1 || board[i + 1][j] == '#') && Check(board, (i, j), n, m, word, (-1, 0))) {
+                    return true;
+                }
+                
+                if ((j == 0 || board[i][j - 1] == '#') && Check(board, (i, j), n, m, word, (0, 1))) {
+                    return true;
+                }
+                
+                if ((j == m - 1 || board[i][j + 1] == '#') && Check(board, (i, j), n, m, word, (0, -1))) {
+                    return true;
+                }
+            }
+        }
+            
+        return false;
+    }
+    
+    private bool Check(char[][] board, 
+                       (int, int) pos, 
+                       int n, int m, 
+                       string word,
+                       (int, int) direction) {
+        var k = 0;
+        while (0 <= pos.Item1 && pos.Item1 < n &&
+               0 <= pos.Item2 && pos.Item2 < m &&
+               k < word.Length) {
+            if (board[pos.Item1][pos.Item2] == '#' 
+                || board[pos.Item1][pos.Item2] != word[k]
+                && board[pos.Item1][pos.Item2] != ' ') {
+                break;
+            }
+            
+            k++;
+            pos = (pos.Item1 + direction.Item1, pos.Item2 + direction.Item2);
+        }
+
+        return k == word.Length 
+            && (0 > pos.Item1 || pos.Item1 == n 
+             || 0 > pos.Item2 || pos.Item2 == m
+             || board[pos.Item1][pos.Item2] == '#'); 
+    }
+}

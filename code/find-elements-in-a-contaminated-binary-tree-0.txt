@@ -1,0 +1,34 @@
+typedef struct {
+    bool* hash ;
+} FindElements;
+
+void proTree(struct TreeNode* root, bool* hash){
+    if(root->left){
+        root->left->val = root->val *2 + 1;
+        hash[ root->left->val  ] = true;
+        proTree(root->left, hash);
+    }
+    if(root->right){
+        root->right->val = root->val *2 + 2;
+        hash[ root->right->val  ] = true;
+        proTree(root->right, hash);
+    }
+}
+
+FindElements* findElementsCreate(struct TreeNode* root) {
+    FindElements* ret = malloc(sizeof(FindElements));
+    ret->hash = calloc(1000001, sizeof(bool));
+    root->val = 0;
+    ret->hash[root->val] = true;
+    proTree(root, ret->hash);
+    return ret;
+}
+
+bool findElementsFind(FindElements* obj, int target) {
+    return obj->hash[target];
+}
+
+void findElementsFree(FindElements* obj) {
+    free(obj->hash);
+    free(obj);
+}

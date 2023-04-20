@@ -1,0 +1,20 @@
+class Solution(object):
+    def isMatch(self, s, p):
+        return rec(s,0,len(s),p,0,len(p))
+        
+def rec(s,ss,ls,p,sp,lp):
+    while (lp-sp)>3 and p[sp]==p[sp+2] and p[sp+1]=='*' and p[sp+3]=='*': sp += 2;
+    if lp==sp: return ls==ss
+    if p[sp]=='*': return False;
+    if (lp-sp)==1: return (ls-ss)==1 and (p[sp]==s[ss] or p[sp]=='.')
+    if ls==ss:
+        if (lp-sp)%2==0:
+            while (lp-sp)>1 and p[sp]!='*' and p[sp+1]=='*': sp += 2;
+            return lp==sp;
+        else: return False;
+    m,n = s[ss],p[sp]
+    if p[sp+1]!='*'   : return rec(s,ss+1,ls,p,sp+1,lp) if m==n or n=='.' else False
+    if m!=n and n!='.' : return rec(s,ss,ls,p,sp+2,lp)
+    if rec(s,ss+1,ls,p,sp+2,lp): return True
+    if rec(s,ss,ls,p,sp+2,lp): return True
+    return True if rec(s,ss+1,ls,p[0:sp:1] + n + p[sp+1::1],sp,lp) else False

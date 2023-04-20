@@ -1,0 +1,26 @@
+public class Solution {
+    int mci;
+    public bool CanIWin(int maxChoosableInteger, int desiredTotal) {
+        mci=maxChoosableInteger;
+        if (desiredTotal<=0)
+            return true;
+        if (maxChoosableInteger*(maxChoosableInteger+1)/2 < desiredTotal) 
+            return false;
+        return dfs(new Dictionary<int,bool>(),0,0,desiredTotal);
+    }
+    public bool dfs(Dictionary<int,bool> dict,int val,int state,int target) {
+        if (val>=target) return false;
+        if(dict.ContainsKey(state)) return dict[state];
+        bool ret=false;
+        for(int i=0;i<mci;i++)
+        {
+            if ((state & (1 << i))==0)
+            {
+                ret = ret || !dfs(dict,val+i+1,state | (1 << i),target);
+                // If use following statement, it leads to TLE.
+                // ret |= !dfs(dict,val+i+1,state | (1 << i),target);
+            }
+        }
+        return dict[state]=ret;
+    }
+}

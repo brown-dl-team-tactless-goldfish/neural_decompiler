@@ -1,0 +1,40 @@
+  int visiblePoints(vector<vector<int>>& points, int angle, vector<int>& location) {
+    vector<double> angles;
+    int numOnSameLocation = 0;
+    for (const auto& p : points) {
+      if (p == location) {
+        ++numOnSameLocation;
+        continue;
+      }
+      angles.push_back(estimateAngle(location, p));
+    }
+
+    sort(angles.begin(), angles.end());
+    angles.resize(angles.size() * 2);
+    transform(angles.begin(), angles.begin() + angles.size() / 2,
+                              angles.begin() + angles.size() / 2,
+              [](double a){ return a + 360; });
+    return numOnSameLocation + maxPointsWithinFOV(angles, angle);
+  }
+
+  double estimateAngle(const vector<int>& origin, const vector<int>& point) {
+    int x = point[0] - origin[0];
+    int y = point[1] - origin[1];
+    double at = atan2(y, x);
+    if (at < 0)
+      at += 2 * M_PI;
+    return at * 180 / M_PI;
+  }
+
+  int maxPointsWithinFOV(const vector<double>& angles, double fov) {
+    int maxWithinFOV = 0;
+    
+    size_t left = 0;
+    for (size_t right = 0; right < angles.size(); ++right) {
+      while (angles[right] - angles[left] > fov)
+        ++left;
+      maxWithinFOV = max(maxWithinFOV, static_cast<int>(right - left + 1));
+    }
+
+    return maxWithinFOV;
+  }

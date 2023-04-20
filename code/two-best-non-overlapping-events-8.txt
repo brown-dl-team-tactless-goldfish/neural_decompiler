@@ -1,0 +1,64 @@
+static bool comp(vector<int> &x, vector<int> &y)
+{
+    return x[0] < y[0];
+}
+class Solution {
+public:
+int maxTwoEvents(vector<vector<int>>& a) 
+{
+    sort(a.begin(), a.end(), comp);
+    
+    vector<int> et;
+    
+    for(int i=0;i<a.size();i++)
+    {
+        et.push_back(a[i][0]);
+    }
+    
+    int ans = 0;
+    
+    int n = a.size();
+    
+    int maxr[n];
+    
+    int maxm = 0;
+    
+    for(int i=n-1;i>=0;i--)
+    {
+        maxm = max(maxm, a[i][2]);
+        
+        maxr[i] = maxm;
+    }
+    
+    for(int i=0;i<a.size();i++)
+    {
+        int c = 0;
+        
+        c += a[i][2];
+        
+        int v = a[i][1];
+        
+        auto it = upper_bound(et.begin(), et.end(), v);
+        
+        int count = 1;
+        
+        if(it != et.end())
+        while(true)
+        {
+            count++;
+            
+            int idx = it - et.begin();
+            
+            int maxi = maxr[idx];
+            
+            c += maxi;
+
+            if(count == 2) break;
+        }
+        
+        ans = max(ans, c);
+    }
+    
+    return ans;
+}
+};

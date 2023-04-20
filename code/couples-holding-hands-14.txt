@@ -1,0 +1,49 @@
+/* 
+    Think about each couple as a vertex in the graph. So if there are N couples,
+    there are N vertices.
+    
+    The min number of swaps = N - number of connected components. This follows
+    directly from the theory of permutations. Any permutation can be decomposed
+    into a composition of cyclic permutations. If the cyclic permutation involve
+    k elements, we need k -1 swaps. You can think about each swap as reducing the
+    size of the cyclic permutation by 1. So in the end, if the graph has k connected
+    components, we need N - k swaps to reduce it back to N disjoint vertices.
+*/
+class Solution {
+    int find( vector<int> &groups, int i ) {
+        while( i != groups[i] )
+            i = groups[i];
+        return i;
+    }
+    
+public:
+    int minSwapsCouples( vector<int>& row ) {
+        /* Initialize n groups one for each couple */
+        int n = row.size()/2;
+        vector<int> groups(n);
+        for( int i=0; i<n; i++ )
+            groups[i] = i;
+        
+        /* Try to map couple at index i to group i/2. If one spouse is already
+        mapped then merge groups */
+        unordered_map<int, int> coupleToGroup;
+        for( int i=0; i<row.size(); i++ ) {
+            int couple = row[i]/2;
+            if( coupleToGroup.find( couple ) == coupleToGroup.end() )
+                coupleToGroup[couple] = i/2;
+            else {
+                // Union
+                int root1 = find( groups, coupleToGroup[couple] );
+                int root2 = find( groups, i/2 );
+                groups[root1] = root2;
+            }
+        }
+        
+        /* count no of connected component */
+        int connectedComp = 0;
+        for( int i=0; i < n; i++ ) 
+            if( groups[i] == i ) connectedComp++;
+        
+        return n - connectedComp;
+    }
+};

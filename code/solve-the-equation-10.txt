@@ -1,0 +1,42 @@
+class Solution {
+public:
+    string solveEquation(string equation) {
+        int x = 0, c = 0, num = 0;
+        bool b = false, s = true, cf = false;
+        for (char e : equation) {
+            switch (e) {
+                case '=':
+                    (b^s) ? c -= num : c += num;
+                    num = 0;
+                    b = s = true;
+                    cf = false;
+                    break;
+                case 'x':
+                    if (!cf) num = 1;
+                    (b^s) ? x += num : x -= num;
+                    num = 0;
+                    cf = false;
+                    break;
+                case '+':
+                    (b^s) ? c -= num : c += num;
+                    num = 0;
+                    s = true;
+                    cf = false;
+                    break;
+                case '-':
+                    (b^s) ? c -= num : c += num;
+                    num = 0;
+                    s = cf = false;
+                    break;
+                default:
+                    num = num * 10 + e - '0';
+                    cf = true;
+            }
+        }
+        (b^s) ? c -= num : c += num;
+        
+        if (!x && !c) return "Infinite solutions";
+        else if (x) return "x=" + to_string(c/x);
+        else return "No solution";
+    }
+};

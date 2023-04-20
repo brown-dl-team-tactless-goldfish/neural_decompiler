@@ -1,0 +1,32 @@
+void checkBoundary(int r, int c, int rlen, int clen, bool** m, int** ans, int* col, int* wIdx){
+    if(r<0 || c<0 || r>=rlen || c>= clen || m[r][c])
+        return;
+    m[r][c] = true;
+    ans[*wIdx] =(int*)calloc(2, sizeof(int));
+    ans[*wIdx][0] = r;
+    ans[*wIdx][1] = c;
+    col[(*wIdx)++] = 2;
+}
+int** allCellsDistOrder(int rows, int cols, int rCenter, int cCenter, int* returnSize, int** returnColumnSizes){
+    int** ans = (int**)calloc(rows * cols, sizeof(int*));
+    int* col = (int*)calloc(rows * cols, sizeof(int));    
+    int wIdx = 0, rIdx = 0;
+    bool** m = (int**)calloc(rows, sizeof(int*));/* record visit or not */
+    for(int i = 0; i < rows; i++)
+        m[i] = (int*)calloc(cols, sizeof(int));
+    
+    checkBoundary(rCenter, cCenter, rows, cols, m, ans, col, &wIdx);
+    while(wIdx != rIdx){
+        int rr = ans[rIdx][0];
+        int cc = ans[rIdx++][1];
+		/* chek the 4 directions */
+        checkBoundary(rr+1, cc, rows, cols, m, ans, col, &wIdx);
+        checkBoundary(rr-1, cc, rows, cols, m, ans, col, &wIdx);
+        checkBoundary(rr, cc+1, rows, cols, m, ans, col, &wIdx);
+        checkBoundary(rr, cc-1, rows, cols, m, ans, col, &wIdx);        
+    }
+    
+    *returnSize = rows * cols;
+    *returnColumnSizes = col;
+    return ans;
+}

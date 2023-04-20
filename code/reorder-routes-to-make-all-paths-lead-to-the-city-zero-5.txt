@@ -1,0 +1,76 @@
+typedef struct ll_node {
+    struct ll_node* next;
+    struct ll_node* prv;
+    int val;
+    int link_dir; // 0: 0->1, 1: 1->0
+};
+
+int minReorder(int n, int** connections, int connectionsSize, int* connectionsColSize){
+    int adj_list_num[100000] = {0};
+    int node_visit[100001] = {0};
+    struct ll_node* adj_list[100000];
+    struct ll_node* tmp;
+    int output = 0;
+    int stack[100001];
+    int stack_size = 0;
+    int pop_idx = 0;
+    int i = 0;
+
+    // construct adj list
+    for (i = 0; i < connectionsSize; i++) {
+        if (adj_list_num[connections[i][0]] == 0) {
+            adj_list[connections[i][0]] = (struct ll_node*)malloc(sizeof(struct ll_node));
+            adj_list[connections[i][0]]->val = connections[i][1];
+            adj_list[connections[i][0]]->next = NULL;
+            adj_list[connections[i][0]]->prv = NULL;
+            adj_list[connections[i][0]]->link_dir = 0;
+        } else {
+            adj_list[connections[i][0]]->next = (struct ll_node*)malloc(sizeof(struct ll_node));
+            tmp = adj_list[connections[i][0]];
+            adj_list[connections[i][0]] = adj_list[connections[i][0]]->next;
+            adj_list[connections[i][0]]->val = connections[i][1];
+            adj_list[connections[i][0]]->next = NULL;
+            adj_list[connections[i][0]]->prv = tmp;
+            adj_list[connections[i][0]]->link_dir = 0;
+        }
+
+        if (adj_list_num[connections[i][1]] == 0) {
+            adj_list[connections[i][1]] = (struct ll_node*)malloc(sizeof(struct ll_node));
+            adj_list[connections[i][1]]->val = connections[i][0];
+            adj_list[connections[i][1]]->next = NULL;
+            adj_list[connections[i][1]]->prv = NULL;
+            adj_list[connections[i][1]]->link_dir = 1;
+        } else {
+            adj_list[connections[i][1]]->next = (struct ll_node*)malloc(sizeof(struct ll_node));
+            tmp = adj_list[connections[i][1]];
+            adj_list[connections[i][1]] = adj_list[connections[i][1]]->next;
+            adj_list[connections[i][1]]->val = connections[i][0];
+            adj_list[connections[i][1]]->next = NULL;
+            adj_list[connections[i][1]]->prv = tmp;
+            adj_list[connections[i][1]]->link_dir = 1;
+        }
+        adj_list_num[connections[i][0]]++;
+        adj_list_num[connections[i][1]]++;
+    }
+
+    stack[stack_size++] = 0;
+    node_visit[0] = 1;
+    while (stack_size > 0) {
+        pop_idx = stack[--stack_size];
+        //printf("pop index = %d\n", pop_idx);
+        for (i = 0; i < adj_list_num[pop_idx]; i++) {
+            if (node_visit[adj_list[pop_idx]->val] == 0) {
+                stack[stack_size++] = adj_list[pop_idx]->val;
+                node_visit[adj_list[pop_idx]->val] = 1;
+                if (adj_list[pop_idx]->link_dir == 0) {
+                    output++;
+                    //printf("dir occur %d\n", adj_list[pop_idx]->val);
+                }
+            }
+            adj_list[pop_idx] = adj_list[pop_idx]->prv;
+        }
+    }
+
+
+    return output;
+}

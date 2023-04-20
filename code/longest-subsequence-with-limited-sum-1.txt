@@ -1,0 +1,35 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+int* answerQueries(int* nums, int numsSize, int* queries, int queriesSize, int* returnSize){
+    int maxsuminterval[numsSize - 1];
+    int startvalue = 0;
+    int intervalvalue, minvalue;
+    int minsum[numsSize + 1];
+    minsum[0] = 0;
+    for (int k = 1; k <= numsSize; k++) {
+        startvalue += nums[k - 1];
+        intervalvalue = startvalue;
+        minvalue = intervalvalue;
+        for (int j = k; j < numsSize; j++) {
+            intervalvalue -= nums[j - k];
+            intervalvalue += nums[j];
+            if (minvalue > intervalvalue) {
+                minvalue = intervalvalue;
+            }
+        }
+        minsum[k] = minvalue;
+    }
+    
+    returnSize = malloc(queriesSize*sizeof(int));
+    // Perform search
+    for (int k = 0; k < queriesSize; k++) {
+        for (int j = 1; j <= numsSize; j++) {
+            if (minsum[j] <= queries[k]) {
+                returnSize[k] = j;
+            }
+        }
+    }
+    
+    return returnSize;
+}

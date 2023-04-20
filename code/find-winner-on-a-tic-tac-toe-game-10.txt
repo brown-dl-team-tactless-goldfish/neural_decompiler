@@ -1,0 +1,111 @@
+
+
+char * tictactoe(int** moves, int movesSize, int* movesColSize){
+    char board[3][3];
+    
+    for (int i = 0 ; i < 3 ; ++i) {
+        for (int j = 0 ; j < 3 ; ++j) {
+            board[i][j] = ' ';
+        }
+    }
+    
+    int count = 1;
+    
+    for (int i = 0 ; i < movesSize ; ++i) {
+        if (count % 2) {
+            board[moves[i][0]][moves[i][1]] = 'X';
+        }
+        else {
+            board[moves[i][0]][moves[i][1]] = 'O';
+        }
+        ++count;
+    }
+   
+    char ch;
+    
+    //Check Rows
+    for (int i = 0 ; i < 3 ; ++i) {
+        int flag = 1;
+        for (int j = 0 ; (j < 3) && flag ; ++j) {
+            if (!j)
+                ch = board[i][j];
+            else 
+                if (ch == board[i][j])
+                    continue;
+                else
+                    flag = 0;
+        }
+        if (flag)
+            if (ch == 'X')
+                return "A";
+            else if (ch == 'O')
+                return "B";
+            else
+                continue;
+    }
+    
+    //Check Columns
+    for (int i = 0 ; i < 3 ; ++i) {
+        int flag = 1;
+        for (int j = 0 ; j < 3 && flag ; ++j) {
+            if (!j)
+                ch = board[j][i];
+            else 
+                if (ch == board[j][i])
+                    continue;
+                else
+                    flag = 0;
+        }
+        if (flag)
+            if (ch == 'X')
+                return "A";
+            else if (ch == 'O')
+                return "B";
+            else
+                continue;
+    }
+    
+    //Check Diagonal - 1
+    int flag = 1;
+    for (int i = 0 ; i < 3 && flag ; ++i) {
+        if (!i)
+            ch = board[i][i];
+        else
+            if (ch == board[i][i])
+                continue;
+            else
+                flag = 0;
+    }
+    if (flag)
+        if (ch == 'X')
+            return "A";
+        else if (ch == 'O')
+            return "B";
+    
+    // Check Diagonal - 2
+    flag = 1;
+    for (int i = 2 ; i >= 0 && flag ; --i) {
+        if (i == 2)
+            ch = board[2-i][i];
+        else
+            if (ch == board[2-i][i])
+                continue;
+            else
+                flag = 0;
+    }
+    if (flag)
+        if (ch == 'X')
+            return "A";
+        else if (ch == 'O')
+            return "B";
+    
+    //Check Draw or Pending
+    for (int i = 0 ; i < 3 ; ++i) {
+        for (int j = 0 ; j < 3 ; ++j) {
+            if (board[i][j] == ' ')
+                return "Pending";
+        }
+    }
+    
+    return "Draw";
+}

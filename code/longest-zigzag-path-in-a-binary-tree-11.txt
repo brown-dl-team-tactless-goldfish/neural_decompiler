@@ -1,0 +1,33 @@
+int maximum = 0;
+
+int answer(TreeNode* root , bool direction){
+    if(!root){
+        return 0;
+    }
+    int a = 0 , b = 0 , c = 0 ,  d = 0;
+    if(direction){
+        a = answer(root->right , !direction) + 1;
+    }else{
+        b = answer(root->left , !direction) + 1;
+    }
+    if(direction){
+        c = answer(root->left , true) + 1;
+    }
+    if(!direction){
+        d = answer(root->right , false) + 1;
+    }
+    
+    int val = max(c,  d);
+    if(val > a and val > b){
+        maximum = max(maximum , val);
+    }
+    return (direction)?a:b;
+}
+
+int longestZigZag(TreeNode* root) {
+    if(!root->left and !root->right)return 0;
+    int a = answer(root->left , true)+1;
+    int b = answer(root->right , false)+1;
+    
+    return max(maximum - 1 , max(a - 1 , b - 1));
+}

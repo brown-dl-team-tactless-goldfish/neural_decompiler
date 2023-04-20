@@ -1,0 +1,37 @@
+public class Solution {
+        
+    private static IEnumerable<(int time, int direction, int index)> Sequence(int[][] times) {
+        for (int i = 0; i < times.Length; ++i) {
+            yield return (time : times[i][0], direction : +1, index : i);
+            
+            yield return (time : times[i][1], direction : -1, index : i);
+        }
+    }
+    
+    public int SmallestChair(int[][] times, int targetFriend) {
+        var seq = Sequence(times)
+            .OrderBy(item => item.time)
+            .ThenBy(item => item.direction);
+        
+        SortedSet<int> free = new(Enumerable.Range(0, times.Length));
+        
+        Dictionary<int, int> seats = new();
+        
+        foreach (var item in seq) 
+            if (item.direction == 1) {
+                int at = free.Min;
+                
+                seats.Add(item.index, at);
+                
+                free.Remove(at);
+                
+                if (targetFriend == item.index) 
+                    return at;
+            }
+            else 
+                free.Add(seats[item.index]);
+        
+        return free.Min;
+    }
+    
+}

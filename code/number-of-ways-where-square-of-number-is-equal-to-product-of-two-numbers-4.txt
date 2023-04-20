@@ -1,0 +1,17 @@
+class Solution {
+public:
+    int numTriplets(vector<int>& nums1, vector<int>& nums2) {
+        return count(nums1, nums2) + count(nums2, nums1);
+    }
+    
+    int count(std::vector<int>& a, std::vector<int>& b) {
+        std::unordered_map<int64_t,int> m;
+        for(const auto &n: a) ++m[(int64_t)n*n];
+        int count{0};
+        for(int i{0}, size{(int)b.size()}; i < size; ++i)
+            for(int j{i+1}; j < size; ++j)
+                if(m.count((int64_t)b[i]*b[j])) count += m[(int64_t)b[i]*b[j]];
+        
+        return count;
+    }
+};

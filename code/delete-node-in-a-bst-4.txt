@@ -1,0 +1,49 @@
+static struct TreeNode *findSuccessorParent(struct TreeNode *root)
+{
+    struct TreeNode *parent = root;
+    root = root->right;
+    while (root->left)
+        root = (parent = root)->left;
+    return parent;
+}
+
+struct TreeNode* deleteNode(struct TreeNode* root, int key)
+{
+    struct TreeNode *oldl, *oldr, *succParent;
+
+    if (!root)
+        return NULL;
+
+    if (key < root->val) {
+        root->left = deleteNode(root->left, key);
+        return root;
+    }
+    if (key > root->val) {
+        root->right = deleteNode(root->right, key);
+        return root;
+    }
+
+    oldl = root->left;
+    oldr = root->right;
+
+    if (!oldl)
+        return oldr;
+
+    if (!oldr)
+        return oldl;
+
+    if (oldr->left == NULL) {
+        oldr->left = oldl;
+        return oldr;
+    }
+
+    succParent = findSuccessorParent(root);
+    root = succParent->left;
+
+    succParent->left = root->right;
+
+    root->left = oldl;
+    root->right = oldr;
+
+    return root;
+}

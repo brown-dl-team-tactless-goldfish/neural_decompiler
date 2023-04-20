@@ -1,0 +1,33 @@
+#define min(x,y) (((x) < (y))?(x):(y))
+#define max(x,y) (((x) > (y))?(x):(y))
+#define MAX_LIMIT 10000          //As per contraints; 0 <= jobDifficulty[i] <= 1000
+int minDifficulty(int* jobDifficulty, int jobDifficultySize, int d){
+    int maxValue = MAX_LIMIT+1;
+    int maxDifficulty = 0;      //Maximum difficulty of a job done on particular day 'day'.
+    if (jobDifficultySize < d){
+        return -1;
+    }
+    if(d == 1){
+        for (int i = 0 ; i < jobDifficultySize ; i++){
+            maxDifficulty = max(maxDifficulty, jobDifficulty[i]);
+        }
+        return maxDifficulty;
+    }
+    maxDifficulty = 0;
+    int minJobDiff[jobDifficultySize + 1];      //Total minimum difficulty for total days 'd'
+    for(int i=0; i<jobDifficultySize; i++){
+        minJobDiff[i] = maxValue;
+    }
+    minJobDiff[jobDifficultySize] = 0;
+    
+    for (int day = 1; day <= d; ++day) {
+        for (int i = 0; i <= jobDifficultySize - day; i++) {    //Check for the i'th job per day
+            maxDifficulty = 0, minJobDiff[i] = maxValue;
+            for (int j = i; j <= jobDifficultySize - day; j++) { //Check for all job lists for i'th job per day
+                maxDifficulty = max(maxDifficulty, jobDifficulty[j]);
+                minJobDiff[i] = min(minJobDiff[i], maxDifficulty + minJobDiff[j + 1]);
+            }
+        }
+    }
+    return minJobDiff[0];
+}

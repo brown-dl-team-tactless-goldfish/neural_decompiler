@@ -1,0 +1,50 @@
+/**
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+bool sortQuery(int *nums, int numsSize, int indexA, int indexB){
+    int *t = (int *)malloc(((indexB-indexA)+1)*sizeof(int));
+    int temp, k, c=1, tC=0;
+    bool flag = true;
+    
+    //create the query
+    for (int i=indexA, tC=0; i<=indexB; i++, tC++){
+        t[tC] = nums[i];
+    }
+    
+    //sort the query
+    for(int i=0; i<(indexB-indexA); i++){
+        for(int j=0; j<(indexB-indexA); j++){
+            if (t[j] >= t[j+1]){
+                temp = t[j];
+                t[j] = t[j+1];
+                t[j+1] = temp;
+            }
+        }
+    }
+    
+    k = t[1]-t[0];
+    
+    //control if is there an arithmetic sequence
+    while (c < (indexB-indexA+1) && flag == true){
+        if (t[c]-t[c-1] != k)
+            flag = false;
+        c++;
+    }
+    
+    return flag;
+}
+
+
+bool* checkArithmeticSubarrays(int* nums, int numsSize, int* l, int lSize, int* r, int rSize, int* returnSize){
+    bool *R = (bool *)malloc(lSize*sizeof(bool));
+    
+    for (int i=0; i<lSize; i++){
+        R[i] = sortQuery(nums, numsSize, l[i], r[i]);
+    }
+    
+    *returnSize = lSize;
+    return R;
+}
+
+
+

@@ -1,0 +1,75 @@
+class Solution {
+public:
+    
+    int maximumWhiteTiles(vector<vector<int>>& tiles, int carpetLen) {
+        
+		// base case 
+        if(carpetLen==1) return 1;
+        
+        // sort tile intervals
+        sort(tiles.begin(),tiles.end());
+
+        int tileSize = tiles.size();
+
+        // max tiles covered by carpet
+        int maxCovered = 0;
+        
+        // total length of current window
+        int totalLen = 0;
+        
+        // current tile interval length
+        int tileLen = 0;
+        
+        // total tiles covered in current window 
+        int coveredTile = 0;
+        
+        // extra tile to be added from current tile interval
+        int extraTile;
+                
+        // start index of tile intervals in current window
+        int startIndex = 0;
+        
+        // loop until all tile intervals are checked or maxCovered < carpetLen
+        for(int currentIndex=0;currentIndex<tileSize && maxCovered < carpetLen;currentIndex++)
+        {
+            // get the current tile interval length
+            tileLen = tiles[currentIndex][1] - tiles[currentIndex][0] + 1;
+                
+            // check if current window length + tileLen >= carpet length
+            // if then we have to calculate number of tiles covered with in carpet length
+            while(totalLen + tileLen >= carpetLen && startIndex<=currentIndex && maxCovered < carpetLen)
+            {
+                // current window length >= carpet length then there is no more tile
+                // to be add from current tile interval and so extra tile will be 0
+                // otherwise we add the carpet length - current window length extra tiles
+                extraTile = totalLen >= carpetLen ? 0 : (carpetLen-totalLen);
+                
+                // updated max covered tile with total tiles covered by current window + extra tiles 
+                maxCovered = max(maxCovered,coveredTile+extraTile);
+                
+                // as current window length + tileLen > carpet length, we slide our window right and so 
+                // we deduce start index tile interval length from cover tile count and total window length
+                coveredTile -= (tiles[startIndex][1] - tiles[startIndex][0] + 1);
+                totalLen -= (tiles[startIndex][1] - tiles[startIndex][0] + 1);
+                
+                // also deduce the gap between start tile interval and its next tile interval
+                totalLen -= startIndex+1 < tileSize ? (tiles[startIndex+1][0] - tiles[startIndex][1] - 1) : 0;
+                
+                // increment start tile index and move right
+                startIndex++;                
+            }
+             
+            // update current window length and covered tile length with tileLen
+            coveredTile += tileLen;
+            totalLen += tileLen;
+            
+            // also update current window length with gap between current tile interval and next tile interval 
+            totalLen += currentIndex+1 < tileSize ? (tiles[currentIndex+1][0] - tiles[currentIndex][1] - 1) : 0;
+        }
+        
+        // check current window length <= carpet length and then update max covered tile
+        if(totalLen <= carpetLen)maxCovered = max(coveredTile,maxCovered);
+        
+        return maxCovered;
+    }
+};

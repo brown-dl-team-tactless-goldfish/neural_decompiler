@@ -1,0 +1,93 @@
+void grouping_work(char*** group, char ** products, char * keyword, int keyword_len, int product_size, int** retColSizes)
+{
+    char* temp = (char*)calloc(keyword_len+1, sizeof(char));
+    int keyword_len_cpy = keyword_len;
+    int col = 0;
+    
+    for(int i=0; i<keyword_len; i++)
+    {
+        col = 0;
+        memcpy(temp, keyword, i+1); // will copy with this sequence: m -> mo -> mou -> mous -> mouse
+        group[i] = (char**)calloc(product_size, sizeof(char**));// make a room to save char pointer
+        
+        for(int k=0; k<product_size; k++)
+        {
+            int pos = 0;
+            bool boFlag = false;
+            
+            while(pos < i+1)
+            {
+                if(temp[pos] != products[k][pos])
+                {
+                    boFlag = false;
+                    break;
+                }
+                else
+                {
+                    boFlag = true;
+                }
+                pos += 1;
+            }
+            
+            //we only save, when there is a match betwwen a prefix of keyword and another prefix of product
+            if(boFlag == true)
+            {
+                group[i][col] = products[k];
+                col += 1;
+            }
+        }
+        
+        if(col > 3) (*retColSizes)[i] = 3;
+        else (*retColSizes)[i] = col;
+    }
+    
+    free(temp);
+}
+
+int compfunc(const void **p1, const void **p2)
+{
+    char* ptr1 = *(char**)p1; // point a string
+    char* ptr2 = *(char**)p2; // point a string
+    
+    int ptr1_len = strlen(ptr1);
+    int ptr2_len = strlen(ptr2);
+    int pos = 0;
+    
+    while(pos < ptr1_len && pos < ptr2_len)
+    {        
+        if(ptr1[pos] != ptr2[pos]) break;
+        pos += 1;
+    }
+    
+    if(ptr1[pos] > ptr2[pos]) return 1;
+    else if(ptr1[pos] < ptr2[pos]) return -1;
+    else return 0;
+}
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+char *** suggestedProducts(char ** products, int productsSize, char * searchWord, int* returnSize, int** returnColumnSizes)
+{
+    
+    int searchWord_len = strlen(searchWord);
+    
+    char*** group = (char***)calloc(searchWord_len, sizeof(char***));
+    *returnColumnSizes = (int*)calloc(searchWord_len, sizeof(int)); 
+    
+    qsort(products, productsSize, sizeof(char*), compfunc);
+    
+    grouping_work(group, products, searchWord, searchWord_len, productsSize, returnColumnSizes);
+    
+    
+    *returnSize = searchWord_len;
+    
+    return group;
+}
+
+
+
+
+

@@ -1,0 +1,38 @@
+/* Greedy algorithm */
+char *getSmallestString(int n, int k) {
+    int residual = k;
+
+    // 1. put 'a' first
+    // 2. total is n
+    char *result = malloc((n+1) * sizeof(char));
+    memset(result, 0, (n+1)*sizeof(char));
+    
+    for(int i=0;i<n-1;i++) {
+        result[i] = 1;
+        residual--;
+    }
+
+    int index = n-1;
+    while(residual > 0) {
+        // printf("%d\n", residual);
+        assert(index>=0);
+        
+        int temp_sum = residual + result[index];
+        if(temp_sum <= 26) {
+            result[index] += residual;
+            residual = 0;
+        }
+        else if(temp_sum > 26) {
+            int temp = 26 - result[index];
+            result[index] = 26;
+            residual -= temp;
+            index--;
+        }
+    }
+
+    for(int i=0;i<n;i++) {
+        result[i] += 'a' - 1;
+    }
+
+    return result;
+}

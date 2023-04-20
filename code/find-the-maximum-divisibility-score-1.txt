@@ -1,0 +1,19 @@
+int cmp(const void *a, const void *b){return(*(int*)a - *(int*)b);}
+int maxDivScore(int* nums, int numsSize, int* divisors, int divisorsSize){
+    qsort(divisors, divisorsSize, sizeof(int), cmp);
+    int predivisor = 0, maxAns = divisors[0], maxValue = 0;
+    for(int i = 0; i < divisorsSize; i++){
+        if(predivisor != divisors[i]){
+            int currCnt = 0;
+            for(int j = 0; j < numsSize; j++){
+                currCnt += nums[j] % divisors[i]? 0 : 1;
+            }
+            if(currCnt > maxValue){
+                maxValue = currCnt;
+                maxAns = divisors[i];
+            }
+        }
+        predivisor = divisors[i];
+    }
+    return maxAns;
+}

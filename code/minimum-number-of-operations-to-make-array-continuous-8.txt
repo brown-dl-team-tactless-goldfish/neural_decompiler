@@ -1,0 +1,19 @@
+class Solution {
+public:
+    int minOperations(vector<int>& _nums) {
+        if(_nums.size() == 1) return 0;
+        int n = _nums.size();
+        map<int, int> cnt;
+        for(auto x : _nums) ++cnt[x];
+        vector<int> nums;
+        for(auto it : cnt) nums.push_back(it.first); // sorted
+        int ans = 0;
+        queue<int> q;
+        for(auto x : nums) {
+            q.push(x);
+            while(q.back() - q.front() > n - 1) q.pop();
+            ans = max(ans, (int)q.size());
+        }
+        return n - ans;
+    }
+};

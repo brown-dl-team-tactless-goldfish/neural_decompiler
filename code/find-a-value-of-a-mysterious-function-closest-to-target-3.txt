@@ -1,0 +1,33 @@
+class Solution {
+public:
+    int closestToTarget(vector<int>& arr, int target) {
+        
+        int n=arr.size();
+        int min_diff=1e7;
+        
+        unordered_set<int> uset[2];
+        uset[0].insert(arr[0]);
+        if(min_diff>abs(target-arr[0]))     min_diff=abs(target-arr[0]);
+        
+        int bit=0;
+        
+        for(int i=1;i<n;i++)
+        {
+            bit=1-bit;
+            uset[bit].insert(arr[i]);
+            if(min_diff>abs(target-arr[i]))     min_diff=abs(target-arr[i]);
+            
+            for(auto itr=uset[1-bit].begin();itr!=uset[1-bit].end();itr++)
+            {
+                int val=*itr&arr[i];
+                uset[bit].insert(val);
+                
+                if(min_diff>abs(target-val))     min_diff=abs(target-val);
+            }
+            
+            uset[1-bit].clear();
+        }
+        
+        return min_diff;
+    }
+};

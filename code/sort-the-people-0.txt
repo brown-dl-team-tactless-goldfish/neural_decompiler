@@ -1,0 +1,26 @@
+typedef struct data{
+    char* name;
+    int   height;
+}data;
+
+int cmpfunc(const void * a, const void* b){
+    return (*(data*)b).height - (*(data*)a).height;
+}
+char ** sortPeople(char ** names, int namesSize, int* heights, int heightsSize, int* returnSize){
+    int n = namesSize;
+    data* table = malloc(n * sizeof(data));
+    for(int i = 0; i < n; i++){
+        table[i].name = malloc(21 * sizeof(char));
+        strcpy(table[i].name ,names[i] );
+        table[i].height = heights[i];
+    }
+    qsort(table, n, sizeof(data), cmpfunc);
+    
+    char** ans = malloc(n * sizeof(char*));
+    for(int i = 0; i < n ; i++){
+        names[i] = table[i].name;
+    }
+
+    *returnSize = n;
+    return names;
+}

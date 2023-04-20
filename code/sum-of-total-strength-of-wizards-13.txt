@@ -1,0 +1,37 @@
+int totalStrength(vector<int>& arr) {
+        stack<int> s;
+        vector<long long> p(arr.size()+1);
+        vector<long long> pp(arr.size()+1);
+        p[0] = 0;
+        p[1] = arr[0];
+        pp[0] = 0;
+        pp[1] = arr[0];
+        for(int i=1; i<arr.size(); i++){
+            p[i+1] = p[i]+arr[i];
+            pp[i+1] = pp[i]+p[i+1];
+        }
+        s.push(-1);
+        s.push(0);
+        int top;
+        int res = 0;
+        int w,h,cur;
+        long long val,sum;
+        int m = 1000000007;
+        for(int i=1; i<=arr.size(); i++){
+            cur = i==arr.size() ? -1:arr[i];
+            while(s.top()!=-1&&cur<=arr[s.top()]){
+                top = s.top();
+                s.pop();
+                w = i-top;
+                h = top-s.top();
+                int x = top>h ? top-h:0;
+				// this is the trickiest part!!! 
+                sum = w==1&&h==1 ? arr[top]:(h*((pp[i]-pp[top])%m)-w*((pp[top]-pp[x])%m))%m;
+                if(sum<0) sum += m;
+                val = (sum*arr[top])%m;
+                res = (res+val)%m;
+            }
+            s.push(i);
+        }
+        return res;
+    }

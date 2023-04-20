@@ -1,0 +1,15 @@
+    int lastStoneWeightII(vector<int>& stones) {
+        int sum = accumulate(stones.begin(), stones.end(), 0), max = sum/2, cur = 0;
+        vector<bool> dp(max+1, false);
+        dp[0] = true;
+        for(auto s :stones) {
+            cur += s;
+            for(int i = min(cur, max); i >= 0; i--) {
+                if(i >= s && dp[i-s]) {
+                    dp[i] = true;
+                }
+            }
+        }
+        for(int i = max; i >= 0; i--) if(dp[i]) return sum-i-i;
+        return 0;
+    }

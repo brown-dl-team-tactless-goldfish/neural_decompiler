@@ -1,0 +1,39 @@
+public class Solution {
+    public int[] PlatesBetweenCandles(string s, int[][] queries) {
+        int[] lc = new int[s.Length], rc = new int[s.Length], cc = new int[s.Length], res = new int[queries.Length];
+        int c = -1;
+        for (int i = 0; i < s.Length; ++i) {
+            if (s[i] == '|') c = i;
+            lc[i] = c;
+        }
+        
+        c = -1;
+        for (int i = s.Length - 1; i >= 0; --i) {
+            if (s[i] == '|') c = i;
+            rc[i] = c;
+        }
+        
+        c = 0;
+        for (int i = 0; i < s.Length; ++i) {
+            if (s[i] == '|') c++;
+            cc[i] = c;
+        }
+        
+        for (int i = 0; i < queries.Length; ++i) {
+            int[] q = queries[i];
+            int l = rc[q[0]], r = lc[q[1]], d = 0;
+            if (l == -1 || r == -1) {
+                res[i] = 0;
+            } else {
+                d = r - l;
+                if (d > 0) {
+                    res[i] = (r - l + 1) - (cc[r] - cc[l] + 1);
+                } else {
+                    res[i] = 0;
+                }
+            }
+        }
+        
+        return res;
+    }
+}

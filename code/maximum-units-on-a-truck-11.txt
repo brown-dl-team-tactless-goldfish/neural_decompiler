@@ -1,0 +1,20 @@
+int cmpfunc(int** a, int** b){
+    return (*a)[1] - (*b)[1];      
+}
+
+int maximumUnits(int** boxTypes, int boxTypesSize, int* boxTypesColSize, int truckSize){
+    qsort(boxTypes,boxTypesSize,sizeof(int*),cmpfunc);
+    int i=boxTypesSize-1,total=0,count=0; 
+    while(i>=0 && count!=truckSize){
+        if(count+boxTypes[i][0]<=truckSize){
+            count+=boxTypes[i][0];
+            total+=boxTypes[i][0]*boxTypes[i][1];
+        }
+        else{
+            total+=(truckSize-count)*boxTypes[i][1];
+            count=truckSize;
+        }
+        i--;
+    }
+    return total; 
+}

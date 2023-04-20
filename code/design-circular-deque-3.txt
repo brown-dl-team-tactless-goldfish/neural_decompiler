@@ -1,0 +1,145 @@
+typedef struct {
+    
+    int *arr;
+    int front;
+    int rear;
+    int size;
+} MyCircularDeque;
+
+
+bool myCircularDequeIsEmpty(MyCircularDeque* obj) {
+  
+    if(obj->front == -1)
+        return true;
+    else
+        return false;
+    
+}
+
+bool myCircularDequeIsFull(MyCircularDeque* obj) {
+    
+    if(obj->front == 0 && obj->rear == obj->size -1)
+        return true;
+    
+    if(obj->front == obj->rear + 1)
+        return true;
+    
+    return false;
+  
+}
+MyCircularDeque* myCircularDequeCreate(int k) {
+    
+    MyCircularDeque *mq = malloc(sizeof(MyCircularDeque));
+    mq->arr = malloc(sizeof(int)*k);
+    mq->front = -1;
+    mq->rear = -1;
+    mq->size = k;
+    
+    return mq;
+}
+
+bool myCircularDequeInsertFront(MyCircularDeque* obj, int value) {
+    
+    if(myCircularDequeIsFull(obj))
+        return false;
+    
+    
+    if(obj->front == 0)
+        obj->front = obj->size -1;
+    
+    else if(obj->front == -1)
+        obj->front = obj->rear = 0;
+    
+    else
+        obj->front = obj->front - 1;
+    
+    obj->arr[obj->front] = value;
+    return true;
+    
+  
+}
+
+bool myCircularDequeInsertLast(MyCircularDeque* obj, int value) {
+    
+    if(myCircularDequeIsFull(obj))
+        return false;
+    
+    
+    if(obj->rear == obj->size - 1)
+        obj->rear = 0;
+    
+    else if(obj->rear == -1)
+        obj->front = obj->rear = 0;
+    
+    else
+        obj->rear = obj->rear + 1;
+    
+    obj->arr[obj->rear] = value;
+    return true;
+  
+}
+
+bool myCircularDequeDeleteFront(MyCircularDeque* obj) {
+    
+    if(myCircularDequeIsEmpty(obj))
+        return false;
+    
+    if(obj->front == obj->rear) {
+        obj->front = obj->rear = -1;
+        return true;
+    }
+  
+    if(obj->front == obj->size - 1)
+        obj->front = 0;
+    
+    else
+        obj->front = obj->front + 1;
+    return true;
+}
+
+bool myCircularDequeDeleteLast(MyCircularDeque* obj) {
+    
+    
+    if(myCircularDequeIsEmpty(obj))
+        return false;
+    
+    if(obj->front == obj->rear) {
+        obj->front = obj->rear = -1;
+        return true;
+    }
+  
+    if(obj->rear == 0)
+        obj->rear = obj->size -1;
+    
+    else
+        obj->rear = obj->rear - 1;
+    
+    return true;
+  
+}
+
+int myCircularDequeGetFront(MyCircularDeque* obj) {
+    
+    if(myCircularDequeIsEmpty(obj))
+        return -1;
+    
+    return obj->arr[obj->front];
+  
+}
+
+int myCircularDequeGetRear(MyCircularDeque* obj) {
+    
+    if(myCircularDequeIsEmpty(obj))
+        return -1;
+    
+    return obj->arr[obj->rear];
+  
+}
+
+
+
+void myCircularDequeFree(MyCircularDeque* obj) {
+    
+    free(obj->arr);
+    free(obj);
+}

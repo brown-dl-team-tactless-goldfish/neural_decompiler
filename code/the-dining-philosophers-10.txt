@@ -1,0 +1,38 @@
+using System.Threading;
+class DiningPhilosophers {
+    private Semaphore[] rightForks = new Semaphore[5];
+
+	public DiningPhilosophers() {
+        for (int i = 0; i < 5; i++)
+        {
+            rightForks[i] = new Semaphore(1, 1);
+        }        
+    }
+
+    public void wantsToEat(int philosopher,
+                    Action pickLeftFork,
+                    Action pickRightFork,
+                    Action eat,
+                    Action putLeftFork,
+                    Action putRightFork) {
+					        
+        if (philosopher%2 == 0) {
+            rightForks[philosopher].WaitOne();
+            rightForks[(philosopher+1)%5].WaitOne();
+        }
+        else
+        {
+            rightForks[(philosopher+1)%5].WaitOne();
+            rightForks[philosopher].WaitOne();            
+        }
+        
+        pickLeftFork();
+        pickRightFork();
+        eat();
+        putLeftFork();
+        putRightFork();
+        
+        rightForks[philosopher].Release();
+        rightForks[(philosopher+1)%5].Release();  
+    }
+};

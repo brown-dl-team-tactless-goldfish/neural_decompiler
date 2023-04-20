@@ -1,0 +1,85 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     TreeNode *left;
+ *     TreeNode *right;
+ *     TreeNode(int x) : val(x), left(NULL), right(NULL) {}
+ * };
+ */
+
+void disp(vector<TreeNode*> my)
+{
+    int n = my.size();
+    for (int i=0;i<n;++i)
+    {
+        cout<<my[i]->val<<' ';
+    }
+    cout<<endl;
+}
+
+class CBTInserter {
+public:
+    vector<TreeNode*> A,B;
+    TreeNode* head;
+    CBTInserter(TreeNode* root) {
+        
+        head = root;
+        A.push_back(root);
+        
+        while (1)
+        {
+            int i=0;
+            for (;i<A.size();++i)
+            {
+                TreeNode* n = A[i];
+                if (n->left) B.push_back(n->left);
+                else break;
+                if (n->right) B.push_back(n->right);
+                else break;
+                
+            }
+            
+            if (i==A.size())
+            {
+                A = B;
+                B.clear();
+            }
+            else break;
+        }
+    }
+    
+    int insert(int v) {
+        
+        TreeNode* n =  new TreeNode(v);
+        
+        int my = B.size();
+        int p = floor(my/2);
+        
+        if (my%2) A[p]->right = n;
+        else A[p]->left = n;
+        
+        int ans = A[p]->val;
+        B.push_back(n);
+        if (A.size()*2==B.size())
+        {
+            A=B;
+            B.clear();
+        }
+        
+        return ans;
+        
+    }
+    
+    TreeNode* get_root() {
+        
+        return head;
+    }
+};
+
+/**
+ * Your CBTInserter object will be instantiated and called as such:
+ * CBTInserter* obj = new CBTInserter(root);
+ * int param_1 = obj->insert(v);
+ * TreeNode* param_2 = obj->get_root();
+ */

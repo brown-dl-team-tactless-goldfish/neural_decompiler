@@ -1,0 +1,31 @@
+class Solution {
+public:
+    vector<int> recoverArray(int n, vector<int>& sums) {
+        ios_base::sync_with_stdio(0);
+        cin.tie(0);
+        const int minSum = *min_element(cbegin(sums), cend(sums)), maxSum = *max_element(cbegin(sums), cend(sums));
+        vector<int> dp(maxSum-minSum+1), sortedSums, ans;
+        for (const auto&i: sums) dp[i-minSum]++;
+        for (int i = minSum; i <= maxSum; i++) if(dp[i-minSum]) sortedSums.emplace_back(i);
+        int count = 0;
+        while (n--) {
+            vector<int> store(maxSum-minSum+1), sorted;
+            const int shift = (dp[sortedSums[0]-minSum]==1) ? sortedSums[0]-sortedSums[1]:0;
+            assert(shift <= 0);
+            for (const auto&i: sortedSums) {
+                if(!dp[i-minSum]) continue;
+                dp[i-shift-minSum] -= shift ? dp[i-minSum]:dp[i-minSum]/2;
+                store[i-shift-minSum] = dp[i-minSum];
+                sorted.emplace_back(i-shift);
+            }
+            dp = move(store);
+            sortedSums = move(sorted);
+            if(dp[count-minSum]) ans.emplace_back(shift);
+            else {
+                ans.emplace_back(-shift);
+                count -= shift;
+            }
+        }
+        return ans;
+    }
+};

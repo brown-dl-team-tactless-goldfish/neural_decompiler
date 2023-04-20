@@ -1,0 +1,55 @@
+int comp(const void* a, const void* b) { return *(int*)a - *(int*)b; }
+//comparator for stdlib.qsort
+int isSpellSuccessfull(long long success, int spell, int potion) {
+    return ((long long)spell * potion >= success) ? 1 : 0;
+}
+int countPairs(int* potions, int potionsSize, int target) {
+    int max = potionsSize - 1;
+    int min = 0;
+    int mid;
+    while (max > min) {
+        mid = min + (max - min) / 2;
+        if (potions[mid] >= target) {
+            max = mid;
+        } else {
+            min = mid + 1;
+        }
+    }
+    return potionsSize - min;
+}
+
+int find_first_successfull_spell(int max_spell, int max_posion, long long success) {
+    int min = 1;
+    int mid;
+    while (min < max_spell) {
+        mid = min + (max_spell - min) / 2;
+        if (isSpellSuccessfull(success, mid, max_posion)) {
+            max_spell = mid;
+        } else {
+            min = mid + 1;
+        }
+    }
+    return (isSpellSuccessfull(success, min, max_posion)) ? min : 0;
+} //return min integer from 1...10^5 starts from we can find t least 1 successfull spell
+
+int* successfulPairs(int* spells, int spellsSize, int* potions, int potionsSize, long long success,
+                     int* returnSize) {
+    
+    int* successfulPairs = calloc(spellsSize, sizeof(int));
+    *returnSize = spellsSize;
+    // qsort(spells,spellsSize,sizeof(int),comp);
+    qsort(potions, potionsSize, sizeof(int), comp);
+
+    int min_spell = find_first_successfull_spell(100000, potions[potionsSize - 1], success);
+    if (!min_spell) return successfulPairs;
+
+    for (int i = 0; i < spellsSize; i++) {
+        if (spells[i] >= min_spell) {
+            int target = ceil((double)success / (double)spells[i]);
+            successfulPairs[i] = countPairs(potions, potionsSize, target);
+        }
+        // else //if current spell < min_spell don't bother ourselve with bin search 
+        //     successfulPairs[i] = 0;
+    }
+    return successfulPairs;
+}

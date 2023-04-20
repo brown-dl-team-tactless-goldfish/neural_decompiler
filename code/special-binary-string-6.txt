@@ -1,0 +1,13 @@
+class Solution {
+public:
+    string makeLargestSpecial(string a) {
+        vector<string> sub;
+        int n = a.size(), prev = 0, gao = 0;
+        for(int i=0; i<n; i++){
+            gao += a[i] == '1' ? 1 : -1;
+            if(gao == 0) sub.push_back("1" + makeLargestSpecial(a.substr(prev+1, i-(prev+1))) + "0"), prev = i+1;
+        }
+        sort(sub.begin(), sub.end(), greater<string>());
+        return accumulate(sub.begin(), sub.end(), string(""));
+    }
+};

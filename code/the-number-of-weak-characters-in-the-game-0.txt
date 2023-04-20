@@ -1,0 +1,61 @@
+//
+// sort attack
+int cmpfunc( const void* p1,  const void* p2){
+   int* arr1 = *(int**)p1;
+   int* arr2 = *(int**)p2;
+  if(arr1[0] == arr2[0]) 
+      return arr1[1] - arr2[1]; 
+  return arr1[0] - arr2[0];
+}
+
+//
+//find numbers of "arr[1] < val" 
+int BTS(int** arr, int size, int val){
+    int left = 0, right = size-1;
+    int mid;
+    if(arr[0][1] >= val)
+        return 0;
+    while(left < right){
+        mid = right - (right -left)/2 ;
+        if(arr[mid][1] < val){
+            left = mid;
+        }
+        else{
+            right = mid - 1;
+        }        
+    }
+    
+    return (left+1);
+}
+
+int numberOfWeakCharacters(int** properties, int propertiesSize, int* propertiesColSize){
+    int ans = 0;
+    int n = propertiesSize;
+        
+    // sort attack
+    qsort(properties, n, sizeof(int*), cmpfunc);
+    
+    //suffixDef for defense
+    int*  suffixDef = malloc(n * sizeof(int));
+    suffixDef[n-1] = properties[n-1][1];
+    for(int i = n-2; i >=0; i--){
+        suffixDef[i] = fmax(suffixDef[i+1], properties[i][1]);
+    }
+    
+    //iterate and count by group of "attack"
+    int begin = 0, end = 0;
+    for(int i = 1; i < n; i++){
+        if(properties[i][0] == properties[i-1][0]){
+            continue;
+        }
+        else{
+            end = i-1;
+            //find each groud meet request via binay tree search
+            ans += BTS(&properties[begin], end-begin+1, suffixDef[i]);
+            begin = i, end = i;
+        }
+    }
+    
+    free(suffixDef);
+    return ans;
+}

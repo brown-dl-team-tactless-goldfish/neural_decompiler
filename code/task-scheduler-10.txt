@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int leastInterval(vector<char>& tasks, int n) {
+        if(n == 0) return tasks.size();
+        
+        vector<int> letter(26, 0);
+        
+        for(auto x : tasks)
+            letter[x-'A']++;// to count the frequency of each latter
+        
+        int max_val = *max_element(letter.begin(), letter.end());// maximum frequency
+        
+        int ans = (max_val - 1) * (n + 1);
+		
+        // adding in ans all max freq
+        ans += count_if(letter.begin(), letter.end(), [& max_val] (const int & c) { return c == max_val; }); 
+        
+        ans = max(ans, (int)tasks.size());
+        
+        return ans;
+    }
+};

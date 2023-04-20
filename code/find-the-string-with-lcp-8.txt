@@ -1,0 +1,51 @@
+class Solution {
+public:
+    string findTheString(vector<vector<int>>& lcp) {
+        int n = lcp.size();
+        for (int i = 0; i < n; i++) {
+            if (lcp[i][i] != (n - i)) {
+                return "";
+            }
+        }
+        
+        string ans = string(n, 'a');
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                if (lcp[i][j] != lcp[j][i]) {
+                    // lcp needs to be symmetric
+                    return "";
+                }
+                if (lcp[i][j] > (n - j)) {
+                    // the prefix can't be longer than [i,n] or [j,n]
+                    return "";
+                }
+                if (lcp[i][j] == 0) {
+                    // j must be a different letter than i
+                    if (ans[i] == ans[j]) {
+                        ans[j]++;
+                        if (ans[j] > 'z') {
+                            // couldn't find an english letter to suffice criteria
+                            return "";
+                        }
+                    }
+                }
+            }
+        }
+        for (int i = 0; i < n; i++) {
+            for (int j = i + 1; j < n; j++) {
+                int p = 0;
+                int k = i;
+                int l = j;
+                while ((k < n) && (l < n) && ans[k++] == ans[l++]) {
+                    p++;
+                }
+                if (lcp[i][j] != p) {
+                    // prefix is longer than value specified
+                    return "";
+                }
+            }
+        }
+        
+        return ans;
+    }
+};

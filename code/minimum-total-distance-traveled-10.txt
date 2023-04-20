@@ -1,0 +1,48 @@
+class Solution
+{
+private:
+    long long solve(int fidx, int ridx, vector<int> &robot, vector<vector<int>> &factory, vector<vector<long long>> &dp)
+    {
+        if (ridx == robot.size())
+        {
+            return dp[fidx][ridx] = 0l;
+        }
+
+        if (fidx == factory.size())
+        {
+            return dp[fidx][ridx] = (long long)(1e18);
+        }
+
+        if (dp[fidx][ridx] != -1l)
+        {
+            return dp[fidx][ridx];
+        }
+
+        long long ans = (long long)1e18;
+        long long sum = 0l;
+        int cap = factory[fidx][1], pos = factory[fidx][0];
+
+        for (int i = 0; i < cap && ridx + i < robot.size(); i++)
+        {
+            sum += (long long) (abs(pos - robot[ridx + i]));
+            long long curr = sum + solve(fidx + 1, ridx + i + 1, robot, factory, dp);
+            ans = min(ans, curr);
+        }
+
+        ans = min(ans, solve(fidx + 1, ridx, robot, factory, dp));
+
+        return dp[fidx][ridx] = ans;
+    }
+
+public:
+    long long minimumTotalDistance(vector<int> &robot, vector<vector<int>> &factory)
+    {
+        sort(robot.begin(), robot.end());
+        sort(factory.begin(), factory.end());
+
+        int n = factory.size(), m = robot.size();
+        vector<vector<long long>> dp(n + 1, vector<long long>(m + 1, -1l));
+
+        return solve(0, 0, robot, factory, dp);
+    }
+};

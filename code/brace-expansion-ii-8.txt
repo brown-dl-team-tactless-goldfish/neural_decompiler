@@ -1,0 +1,152 @@
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace _1096_brace_expansion_II
+{
+    class Program
+    {
+        static void Main(string[] args)
+        {
+            var test = new Program();
+            var result1 = test.BraceExpansionII("{{a,b},{b,c}}");
+        }
+
+        /// <summary>
+        /// study code
+        /// https://leetcode.com/problems/brace-expansion-ii/discuss/464468/Accepted-C-solution%3A-Easy-to-understand
+        /// </summary>
+        /// <param name="expression"></param>
+        /// <returns></returns>
+        public IList<string> BraceExpansionII(string expression)
+        {
+            var currentList = new List<String>() {""};
+            var stack = new Stack<List<String>>();
+            var opStack = new Stack<char>();
+            char sign = '*';
+
+            foreach (char c in expression)
+            {
+                stack.Push(new List<String>(currentList));
+
+                currentList.Clear();
+                currentList.Add("");
+
+                if (c == '{')
+                {
+                    while (opStack.Count > 0 && opStack.Peek() != ',' && opStack.Peek() != '{')
+                    {
+                        doOp(stack, opStack);
+                    }
+
+                    opStack.Push(sign);
+                    opStack.Push('{');
+                    sign = '*';
+                }
+                else if (c == '}')
+                {
+                    while (opStack.Peek() != '{')
+                    {
+                        doOp(stack, opStack);
+                    }
+
+                    opStack.Pop();
+                    opStack.Push(sign);
+                    sign = '*';
+                }
+                else if (c == ',')
+                {
+                    while (opStack.Count > 0 && opStack.Peek() != '{')
+                    {
+                        doOp(stack, opStack);
+                    }
+
+                    opStack.Push(sign);
+                    sign = ',';
+                }
+                else
+                {
+                    currentList[0] = "" + c;
+                    while (opStack.Count > 0 && opStack.Peek() != ',' && opStack.Peek() != '{')
+                    {
+                        doOp(stack, opStack);
+                    }
+
+                    opStack.Push(sign);
+                    sign = '*';
+                }
+            }
+
+            stack.Push(currentList);
+            while (opStack.Count > 0)
+            {
+                doOp(stack, opStack);
+            }
+
+            List<String> result = stack.Pop();
+
+            result.Sort((a, b) => a.CompareTo(b));
+
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="list1"></param>
+        /// <param name="list2"></param>
+        /// <returns></returns>
+        private List<String> multi(List<String> list1, List<String> list2)
+        {
+            var result = new List<String>();
+            foreach (String s1 in list1)
+            {
+                foreach (String s2 in list2)
+                {
+                    result.Add(s1 + s2);
+                }
+            }
+
+            return result;
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="list1"></param>
+        /// <param name="list2"></param>
+        /// <returns></returns>
+        private List<String> plus(List<String> list1, List<String> list2)
+        {
+            var set = new HashSet<String>(list1);
+
+            set.UnionWith(list2);
+
+            return new List<String>(set);
+        }
+
+        /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="stack"></param>
+        /// <param name="opStack"></param>
+        private void doOp(Stack<List<String>> stack, Stack<char> opStack)
+        {
+            List<String> list2 = stack.Pop();
+            List<String> list1 = stack.Pop();
+
+            char c = opStack.Pop();
+
+            if (c == ',')
+            {
+                stack.Push(plus(list1, list2));
+            }
+            else
+            {
+                stack.Push(multi(list1, list2));
+            }
+        }    
+    }
+}

@@ -1,0 +1,77 @@
+class Solution {
+public:
+    static bool comp(pair<int,int> a,pair<int,int>b)
+    {
+        return a.first>b.first;
+    }
+    int dfs(TreeNode *root,map<int,int>&depth)
+    {
+        if(!root) return 0;
+        
+        int l = dfs(root->left,depth);
+        int r = dfs(root->right,depth);
+        
+        depth[root->val] = max(l,r)+1;
+        
+        return depth[root->val];
+        
+    }
+    
+    
+    vector<int> treeQueries(TreeNode* root, vector<int>& queries) 
+    {
+        
+        
+         map<int,int>depth;
+        map<int,int>findl;
+         dfs(root,depth);
+        
+        map<int,vector<pair<int,int>>>lnodes;
+        
+        queue<TreeNode *> q;
+        q.push(root);
+        int l = 1;
+        while(q.size())
+        {
+            int s = q.size();
+            
+            while(s--)
+            {
+                auto f = q.front();
+                q.pop();
+                
+                if(f->left) q.push(f->left);
+                if(f->right) q.push(f->right);
+                
+                lnodes[l].push_back({depth[f->val],f->val});
+                findl[f->val] = l;
+            }
+            sort(lnodes[l].begin(),lnodes[l].end(),comp);
+            l++;
+        }
+        
+       vector<int> ans;
+        for(auto q:queries)
+        {
+            int lv = findl[q];
+             
+            if(lnodes[lv].size()==1) ans.push_back(lv-2);
+            else if(lnodes[lv][0].second!=q)
+            {
+                
+                ans.push_back(lnodes[lv][0].first+lv-2);
+            }
+            else
+            {
+                
+                ans.push_back(lnodes[lv][1].first+lv-2);
+            }
+            
+            
+        }
+        
+        return ans;
+         
+        
+    }
+};

@@ -1,0 +1,42 @@
+class Solution {
+public:
+    long long maxPoints(vector<vector<int>>& points) {
+        
+        int r = points.size();
+        int c = points[0].size();
+        
+        // create 1D DP array and res array to store the
+        // previous row relative max values in each position
+        vector<long long>res(points[0].begin(),points[0].end());
+        vector<long long>dp(points[0].begin(),points[0].end());
+        
+        for(int i=1;i<r;i++)
+        {
+            // running left and right max values
+            long long left = 0;
+            long long right = 0;
+            
+            for(int j=0;j<c;j++)
+            {
+                // get the max values among previous row updated and non-updated values
+                // and running left and right values
+                dp[j] = max({res[j],dp[j],left});
+                dp[c-1-j] = max({res[c-1-j],dp[c-1-j],right});
+                left = dp[j];
+                right = dp[c-1-j];
+                left--;
+                right--;
+            }
+            
+            // update current row max scores based on previous row max score for each position
+            for(int j=0;j<c;j++)
+            {
+                dp[j] = dp[j] + (long long)points[i][j];
+                res[j] = dp[j];
+            }
+        }
+        
+        // return max value from dp array at last
+        return *max_element(dp.begin(),dp.end());
+    }
+};

@@ -1,0 +1,23 @@
+class Solution {
+public:
+    int findIntegers(int num) {
+        int n = 0;
+        for (; num >> n; ++n)
+        ;
+        vector<vector<vector<int>>> dp(n + 1, vector<vector<int>>(2, vector<int>(2)));
+        dp[0][0][0] = 1;
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < 2; ++j) {
+                for (int k = 0; k < 2; ++k) {
+                    if (dp[i][j][k]) {
+                        const int b = (num >> (n - 1 - i)) & 1;
+                        for (int x = min(k ^ 1, j ? 1 : b); x >= 0; --x) {
+                            dp[i + 1][j || x < b][x] += dp[i][j][k];
+                        }
+                    }
+                }
+            }
+        }
+        return dp[n][0][0] + dp[n][0][1] + dp[n][1][0] + dp[n][1][1];  
+    }
+};

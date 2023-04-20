@@ -1,0 +1,32 @@
+  int longestAwesome(string A ) {
+        
+        int N = A.size();
+        string t(10,0);
+        unordered_map< string , int > M ;
+        M[t] = -1 ;
+        int res = 0 ;
+        
+        for( int i = 0 ; i < N ; i++ )
+        {
+            int v = A[i]-'0';
+            t[v] ^= 1 ;
+            
+            // even count 
+            if( M.find(t) != M.end() )
+                res = max( res , i-M[t]);
+            // one odd count 
+            for( int j = 0 ; j < 10 ; j++ )
+            {
+                t[j] ^= 1;
+                
+                if( M.find(t) != M.end() )
+                    res = max( res , i-M[t] );
+                
+                t[j] ^= 1;
+            }
+            
+            if( M.find(t) == M.end() )
+                M[t] = i ;
+        }
+        return res ;
+    }

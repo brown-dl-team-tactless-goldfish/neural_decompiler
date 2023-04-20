@@ -1,0 +1,45 @@
+class Solution {
+public:
+    int longestSubsequence(string s, int k) 
+    {
+        string st;
+        while(k)
+        {
+            if(k%2)
+                st+='1';
+            else
+                st+='0';
+            k/=2;
+        }
+	
+        string rev=st;
+        reverse(rev.begin(),rev.end());
+        if(s.length()<st.length())return s.length();
+        int n=s.length();
+        int j=0;
+     
+        int pre[n];
+        int p=0;
+        for(int i=0;i<n;i++)
+        {
+            if(s[i]=='0')p++;
+            pre[i]=p;
+        }
+        int maxx=0;
+        int t=st.length();
+        
+          int i;
+        for(i=n-t;i>=0;i--)
+        {
+         
+            string temp=s.substr(i,t);
+            string tt=s.substr(i,t-1);
+          
+            if(temp<=rev)
+                maxx=max(maxx,(i==0?0:pre[i-1])+t);
+                maxx=max(maxx,(i==0?0:pre[i-1])+t-1);
+        }
+
+        return maxx;
+    }
+};

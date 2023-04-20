@@ -1,0 +1,40 @@
+class Twitter {
+public:
+    unordered_map<int, unordered_set<int>> followMap; // userId -> userId
+    unordered_map<int, vector<pair<int, int>>> tweetMap; // userId -> <tweetId, timeStamp>
+    int time;
+    Twitter() : time(0) {}
+    void postTweet(int userId, int tweetId)
+    {
+        tweetMap[userId].push_back({tweetId, time++});
+    }
+    vector<int> getNewsFeed(int userId)
+    {
+        priority_queue<pair<int, int>> heap;
+        for(auto & tweet : tweetMap[userId])
+                heap.push({tweet.second, tweet.first});
+        for(auto & id : followMap[userId])
+            for(auto & tweet : tweetMap[id])
+                heap.push({tweet.second, tweet.first});
+        vector<int> tweets; tweets.reserve(10);
+        while(tweets.size() < 10 && !heap.empty())
+        {
+            auto front = heap.top(); heap.pop();
+            tweets.push_back(front.second);
+        }
+        return tweets;
+    }
+    void follow(int followerId, int followeeId)
+    {
+        if(followerId == followeeId)
+            return;
+        followMap[followerId].insert(followeeId);
+    }
+    
+    void unfollow(int followerId, int followeeId)
+    {
+        if(followerId == followeeId)
+            return;
+        followMap[followerId].erase(followeeId);
+    }
+};

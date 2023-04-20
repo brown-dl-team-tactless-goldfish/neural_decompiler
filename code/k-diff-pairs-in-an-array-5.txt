@@ -1,0 +1,52 @@
+struct count
+{
+    int n, count;
+    UT_hash_handle hh;
+};
+
+int findPairs(const int* nums, int nums_len, int k)
+{
+    struct count *counter = NULL, *c1, *c2;
+
+	// count the numbers in nums
+    for (int i = 0; i < nums_len; ++i)
+    {
+        HASH_FIND_INT(counter, nums + i, c1);
+        if (!c1)
+        {
+            c1 = malloc(sizeof(*c1));
+            c1->n = nums[i];
+            c1->count = 0;
+            HASH_ADD_INT(counter, n, c1);
+        }
+        c1->count++;
+    }
+
+	// calculate the result
+    int result = 0;
+    if (k == 0)
+    {
+	    // k == 0 is a special case, count all numbers that appeared more than once
+        for (c1 = counter; c1; c1 = c1->hh.next)
+            result += c1->count > 1;
+    }
+    else
+    {
+		// count all numbers n if n - k has been seen, too
+        for (c1 = counter; c1; c1 = c1->hh.next)
+        {
+            int complement = c1->n - k;
+            HASH_FIND_INT(counter, &complement, c2);
+            result += (c2 != NULL);
+        }
+    }
+
+	// cleanup
+    HASH_ITER(hh, counter, c1, c2)
+	{
+        HASH_DEL(counter, c1);
+        free(c1);
+    }
+
+    return result;
+}

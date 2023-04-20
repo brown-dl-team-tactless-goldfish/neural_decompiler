@@ -1,0 +1,32 @@
+class Solution {
+public:
+    int r1[7][7] = {
+        {0,1,1,1,1,1,1},// initial case
+        {0,0,1,1,1,1,1},
+        {0,1,0,1,0,1,0},
+        {0,1,1,0,1,1,0},
+        {0,1,0,1,0,1,0},
+        {0,1,1,1,1,0,1},
+        {0,1,0,0,0,1,0}
+    };
+    int mod = 1000000007, start;
+    int dp[10001][7][7] = {};
+    int solve(int n, int p, int pp){
+        if(n == 0) return 1;
+        if(dp[n][p][pp] > 0) return dp[n][p][pp];
+        int res = 0;
+
+        for(int i = 1; i < 7; i++)
+        {
+            if(r1[p][i] == 1 && pp != i)
+            {
+                res = (res + solve(n-1,i,p)) % mod;
+            }
+        }
+        dp[n][p][pp] = res;
+        return res;
+    }
+    int distinctSequences(int n) {
+        return solve(n,0,0);
+    }
+};

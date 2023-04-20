@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int takeCharacters(string s, int k) {
+        int n = s.size();
+        vector<int> map(3, 0);
+        for(auto it : s) 
+            map[it - 'a']++;
+        // If number of a or b or c is less than k
+        if(map[0] < k || map[1] < k || map[2] < k)
+            return -1;
+        // Remaining a, b and c 
+        int a = map[0] - k, b = map[1] - k, c = map[2] - k;
+        map[0] = map[1] = map[2] = 0;
+        int i = 0, j = 0, maxLen = 0;
+        while(j < n) {
+            map[s[j++] -'a']++;
+            while(map[0] > a || map[1] > b || map[2] > c) {
+                map[s[i++] - 'a']--;
+            }
+            maxLen = max(maxLen, j - i);
+        }
+        return n - maxLen;
+    }
+};

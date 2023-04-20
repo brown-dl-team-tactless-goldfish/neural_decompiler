@@ -1,0 +1,66 @@
+void affect(int*** grid, int gridSize, int gridColSize, int row, int col, int time);
+
+int orangesRotting(int** grid, int gridSize, int* gridColSize){
+    int time = 0;
+    bool all = true;
+    bool canAffect = true;
+    for(int i = 0; i < gridSize; i++){
+        for (int j = 0; j < gridColSize[i]; j++){
+            if (grid[i][j] == 1){
+                all = false;
+                break;
+            }
+            if (grid[i][j] >= time + 2){
+                canAffect = true;
+            }
+        }
+    }
+    if (all)
+        return 0;
+    while (canAffect){
+        all = true;
+        canAffect = false;
+        for(int i = 0; i < gridSize; i++){
+            for (int j = 0; j < gridColSize[i]; j++){
+                if (grid[i][j] == time + 2){
+                    affect(&grid, gridSize, gridColSize[0], i, j, time);
+                }
+            }
+        }
+        for(int i = 0; i < gridSize; i++){
+            for (int j = 0; j < gridColSize[i]; j++){
+                if (grid[i][j] == 1){
+                    //printf("row = %d, col = %d\n", i ,j);
+                    all = false;
+                }
+                if (grid[i][j] > time + 2){
+                    canAffect = true;
+                }
+            }
+        }
+        time++;
+        if (all)
+            return time;
+    }
+    return -1;
+}
+
+void affect(int*** grid, int gridSize, int gridColSize, int row, int col, int time){
+    if (row < 0 || col < 0 || row >= gridSize || col >= gridColSize)
+        return;
+    if ((*grid)[row][col] == time + 2){
+        (*grid)[row][col] = 0;
+        affect(grid, gridSize, gridColSize, row - 1, col, time);
+        affect(grid, gridSize, gridColSize, row + 1, col, time);
+        affect(grid, gridSize, gridColSize, row, col - 1, time);
+        affect(grid, gridSize, gridColSize, row, col + 1, time);
+        return;
+    }
+    if ((*grid)[row][col] == 0){
+        return;
+    }
+    if ((*grid)[row][col] == 1){
+        (*grid)[row][col] = time + 3;
+        return;
+    }
+}

@@ -1,0 +1,28 @@
+int minMoves(vector<int>& nums, int k) {
+        using ll = long long;
+        const int n = size(nums);
+        vector<ll> positions;
+        for (int i = 0; i < n; ++i) {
+            if (nums[i]) {
+                positions.push_back(i);
+            }
+        }
+        vector<ll> sums(size(positions) + 1);
+        partial_sum(begin(positions), end(positions), begin(sums) + 1);
+        ll ans = numeric_limits<int>::max();
+        const auto getSum = [&](int l, int r) {
+            if (l > r) return 0ll;
+            return sums[r + 1] - sums[l];
+        };
+        const auto isEven = k % 2 == 0;
+        const ll r = (k - 1) / 2;
+        for (int i = k - 1; i < size(positions); ++i) {
+            const ll center = i - r;
+            ll res = getSum(center + 1, i) - getSum(center - r - isEven, center - 1);
+            if (isEven) {
+                res -= (-positions[center] + r + 1);
+            }
+            ans = min(ans, res);
+        }
+        return ans - r * (r + 1);
+    }

@@ -1,0 +1,41 @@
+class Solution {
+public:
+    
+    void generate(int s, int e, int total, vector<int>& nums, vector<int>& sums){
+        if(s==e){
+            sums.push_back(total);
+            return;
+        }
+        
+        generate(s+1, e, total, nums, sums);        
+        generate(s+1, e, total + nums[s], nums, sums);
+    }
+    
+    int minAbsDifference(vector<int>& nums, int goal) {
+        int n = nums.size(), ans = INT_MAX;
+        vector<int> left, right;
+        
+        generate(0, n/2+1, 0, nums, left);        
+        generate(n/2+1, n, 0, nums, right);
+        
+        for(int& x : left)
+            ans = min(ans, abs(x - goal));
+        for(int& x : right)
+            ans = min(ans, abs(x - goal));
+        
+        sort(begin(left), end(left));        
+        sort(begin(right), end(right));
+        
+        int l = 0, r = right.size() - 1;
+        
+        while(l<left.size() && r>=0){
+            int s = left[l] + right[r];
+            ans = min(ans, abs(s - goal));
+            if(s<goal) l++;
+            else if(s>goal) r--;
+            else break;
+        }
+        
+        return ans;
+    }
+};

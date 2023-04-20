@@ -1,0 +1,43 @@
+    int countServers(vector<vector<int>>& grid) {
+        // count every row, if the count of 1 is greater than one, then add the count to the result
+        // if the count of 1 is greater than one, change all 1 to 2
+        // then do another iteration, but count the count of 1 and 2 for every column
+        // if the count is greater than 1, then add the count of 1 to the result
+        int res = 0;
+        for (int r = 0; r < grid.size(); r++) {
+            int num = 0;
+            // we need to change all 1 to 2 if we meet more than one 1
+            // we keep the column of the first 1 we met, if we meet more than 1 one, we change the first 1 we met to 2 in the end
+            int preC = -1;
+            for (int c = 0; c < grid[0].size(); c++) {
+                if (grid[r][c] == 1) {
+                    num++;
+                    if (preC == -1) {
+                        preC = c;
+                    } else {
+                        grid[r][c] = 2;
+                    }
+                }
+            }
+            if (num >= 2) {
+                res += num;
+                grid[r][preC] = 2;
+            }
+        }
+        for (int c = 0; c < grid[0].size(); c++) {
+            int count = 0;
+            int oneNum = 0;
+            for (int r = 0; r < grid.size(); r++) {
+                if (grid[r][c] == 1) {
+                    oneNum++;
+                }
+                if (grid[r][c] != 0) {
+                    count++;
+                }
+            }
+            if (count >= 2) {
+                res += oneNum;
+            }
+        }
+        return res;
+    }

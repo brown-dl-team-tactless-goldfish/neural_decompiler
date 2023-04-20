@@ -1,0 +1,51 @@
+#include <stdint.h>
+#include <stdbool.h>
+#include <math.h>
+#include <bits.h>
+
+typedef struct {
+    char letter;
+    int cnt;
+} array_t;
+
+int comp( const void * l, const void * r )
+{
+    return (( array_t * )l)->cnt - (( array_t* )r)->cnt;
+}
+
+char * reorganizeString( char * S ) {
+    int size = strlen( S );
+    array_t * array = malloc( 26 * sizeof( array_t ) );
+
+    memset( array, 0, 26 * sizeof( array_t ) );
+
+    for ( int i = 0; i < size; i++ )
+    {
+        array[S[i] - 'a'].letter  = S[i];
+        array[S[i] - 'a'].cnt++;
+    }
+
+    qsort( array, 26, sizeof( array_t ), comp );
+
+    if ( array[25].cnt >( size + 1 ) / 2 )
+    {
+        free( array );
+        return "";
+    }
+
+    int index = 1;
+    for ( int i = 0; i < 26; i++ )
+    {
+        if ( array[i].cnt == 0 ) continue;
+        for ( int j = 0; j < array[i].cnt; j++ )
+        {
+            S[index] = array[i].letter;
+            index = index + 2;
+            if ( index >= size ) index = 0;
+        }
+    }
+
+    free( array );
+
+    return S;
+}

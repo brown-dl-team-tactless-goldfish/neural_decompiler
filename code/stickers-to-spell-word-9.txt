@@ -1,0 +1,47 @@
+class Solution {
+public:
+    unordered_map<string, long> memo;
+    int n;
+    vector<vector<int>> dict;
+    
+    int minStickers(vector<string>& stickers, string target) {
+        n = stickers.size();
+        dict.assign(n, vector<int>(26, 0));
+        for (int i = 0; i < n; ++i){
+            string s = stickers[i];
+            for (auto c: s){
+                dict[i][c - 'a']++;
+            }
+        }
+        long ans = dp(stickers, target);
+        return (ans == INT_MAX) ? -1:ans;
+    }
+    
+    long dp(vector<string>& stickers, string target){
+        if (target == "") return 0;
+        vector<int> t1(26, 0), t2(26, 0);
+        for (auto c: target){
+            t1[c - 'a']++;
+        }
+
+        if (!memo.count(target)){
+            memo[target] = INT_MAX;
+            for (int i = 0; i < n; ++i){
+                if (dict[i][target[0] - 'a'] == 0) continue; 
+                t2 = t1;
+                for (int j = 0; j < 26; ++j){
+                    if (t2[j] > 0 and dict[i][j] > 0){
+                        t2[j] -= dict[i][j];
+                    }
+                }
+                string remain = "";
+                for (int j = 0; j < 26; ++j){
+                    if (t2[j] > 0)
+                        remain += string(t2[j], 'a' + j);
+                }
+                memo[target] = min(memo[target], 1 + dp(stickers, remain));
+            }
+        }
+        return memo[target];
+    }
+};

@@ -1,0 +1,36 @@
+int inSet(int n, char **digits, int size) 
+{
+    if ( n == 0 ) return 0 ;
+    for (int i = 0 ; i < size ;i ++) {
+        if ( (*digits[i] - '0') == n ) return 1 ;
+    }
+    return 0 ;
+}
+
+int atMostNGivenDigitSet(char ** digits, int digitsSize, int n){
+    char *dp = (char *) calloc(n+1,sizeof(char)) ;
+    int count = 0 ;
+    for (int i = 1 ;i <= 9 ;i ++) {
+        if ( inSet(i,digits,digitsSize) ) {
+            dp[i] = 1 ;
+            count ++ ;
+        }
+    }
+    
+    // O(n*k) k = digitsSize ;
+    for ( int i =11, base = 10 ; i <= n ; i ++) {
+        if ( i >= (base*10) ) {
+            i += base ;
+            base *= 10 ;
+        }
+        int residue = i%base ;
+        if (  residue >= (base/10) && dp[residue]) {
+            int digit = i/base % 10;
+            if ( inSet(digit, digits,digitsSize) ) {
+                dp[i] = 1 ;
+                count ++ ;
+            }
+        }
+    }
+    return count ;
+}

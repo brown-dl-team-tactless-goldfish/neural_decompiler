@@ -1,0 +1,48 @@
+class Solution {
+public:
+    int countPalindromes(string s) {
+        const int MOD = (int)(1E9 + 7);
+        int len = s.length();
+        vector<vector<int>> dp1(len, vector<int>(10));
+        vector<vector<vector<int>>> cnt_forward(len, vector<vector<int>>(10, vector<int>(10)));
+        vector<vector<int>> dp2(len, vector<int>(10));
+        vector<vector<vector<int>>> cnt_backward(len, vector<vector<int>>(10, vector<int>(10)));
+        for (int i = 0; i < len; ++i) {
+            if (i > 0) {
+                for (int j = 0; j < 10; ++j) {
+                    for (int k = 0; k < 10; ++k) {
+                        cnt_forward[i][j][k] = cnt_forward[i - 1][j][k];
+                    }
+                }
+                for (int j = 0; j < 10; ++j) {
+                    dp1[i][j] = dp1[i - 1][j];
+                    cnt_forward[i][j][s[i] - '0'] += dp1[i - 1][j];
+                }
+            }
+            ++dp1[i][s[i] - '0'];
+        }
+        for (int i = len - 1; i >= 0; --i) {
+            if (i < len - 1) {
+                for (int j = 0; j < 10; ++j) {
+                    for (int k = 0; k < 10; ++k) {
+                        cnt_backward[i][j][k] = cnt_backward[i + 1][j][k];
+                    }
+                }
+                for (int j = 0; j < 10; ++j) {
+                    dp2[i][j] = dp2[i + 1][j];
+                    cnt_backward[i][s[i] - '0'][j] += dp2[i + 1][j];
+                }
+            }
+            ++dp2[i][s[i] - '0'];
+        }
+        int result = 0;
+        for (int i = 1; i < len - 1; ++i) {
+            for (int j = 0; j < 10; ++j) {
+                for (int k = 0; k < 10; ++k) {
+                    result = (result + (cnt_forward[i - 1][j][k] * 1ll * cnt_backward[i + 1][k][j]) % MOD) % MOD;
+                }
+            }
+        }
+        return result;
+    }
+};

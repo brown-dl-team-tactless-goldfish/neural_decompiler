@@ -1,0 +1,26 @@
+class Solution {
+public:
+    int atMostNGivenDigitSet(vector<string>& digits, int n) {
+        string s = to_string(n);
+        int k = s.length();
+        
+        vector<int> dp(k + 1, 0);
+        dp.at(k) = 1;
+        
+        for(int i = k - 1; i >= 0; i--){
+            int val = s.at(i) - '0';
+            for(string &num : digits){
+                if(stoi(num) < val)
+                    dp.at(i) += pow(digits.size(), k - i - 1);
+                
+                else if(stoi(num) == val)
+                    dp.at(i) += dp.at(i + 1);
+            }
+        }
+        
+        for(int i = 1; i < k; i++)
+            dp.at(0) += pow(digits.size(), i);
+        
+        return dp.at(0);
+    }
+};

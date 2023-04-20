@@ -1,0 +1,22 @@
+class Solution {
+public:
+    int minTrioDegree(int n, vector<vector<int>>& edges) 
+    {
+        int res=INT_MAX;
+        vector<int>degree(n+1,0);
+        vector<vector<int>>mat(n+1,vector<int>(n+1,0));
+        for(auto v:edges)
+        {
+            mat[min(v[0],v[1])][max(v[0],v[1])]=1;
+            degree[v[0]]++;
+            degree[v[1]]++;
+        }
+        for(int i=1;i<=n;i++)
+            for(int j=i+1;j<=n;j++)
+                if(mat[i][j])
+                    for(int k=j+1;k<=n;k++)
+                        if(mat[i][k] && mat[j][k])
+                            res=min(res,degree[i]+degree[j]+degree[k]-6);
+        return res==INT_MAX?-1:res;
+    }
+};

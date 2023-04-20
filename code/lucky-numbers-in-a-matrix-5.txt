@@ -1,0 +1,35 @@
+
+
+int* luckyNumbers (int** matrix, int matrixSize, int* matrixColSize, int* returnSize){
+	//record the maximum of every col
+    int* result = (int*)calloc(sizeof(int), matrixColSize[0]);
+	//record if the value in any col is a lucky number or not
+    bool* isLucky = (bool*)calloc(sizeof(bool), matrixColSize[0]);
+    for(int i = 0; i < matrixSize; i++){
+        int min = 100001, c_index = -1;
+        for(int j = 0; j < matrixColSize[0]; j++){
+            if(matrix[i][j] < min){
+                min = matrix[i][j];
+                c_index = j;
+            }
+			//if the value is the maximum value of the col, it may not be the lucky value
+            if(matrix[i][j] > result[j]){
+                result[j] = matrix[i][j];
+                isLucky[j] = false;
+            }
+        }
+		//if the maximum value of the col is the min of this row
+		//then the value is a lucky value so far
+        if(result[c_index] == min){
+            isLucky[c_index] = true;
+        }
+    }
+    *returnSize = 0;
+    for(int i = 0; i < matrixColSize[0]; i++){
+        if(isLucky[i]){
+            result[(*returnSize)++] = result[i];
+        }
+    }
+    free(isLucky);
+    return realloc(result, sizeof(int) * (*returnSize));
+}

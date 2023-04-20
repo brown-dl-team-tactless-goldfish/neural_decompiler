@@ -1,0 +1,68 @@
+class Solution {
+public:
+    
+    int mod = 1e9+7;
+    
+    int a[4][3];
+    
+    int dp[4][3][50005];
+    
+    int fun(int i, int j,int n){
+        
+        //'*'  and '#' are not allowed to land on
+        if((i==3 and j==0)  || (i==3 and j==2))return 0;
+         
+        if(i<0 || j<0 || i>=4 || j>=3 )return 0;
+        
+        if(n==0)return 1;
+        
+        
+        if(dp[i][j][n]!=-1)return dp[i][j][n];
+    
+        int c=0;
+        
+        //vertical 
+        c= ( c + fun(i-2,j-1,n-1) )%mod ;
+        c= ( c + fun(i-2,j+1,n-1) )%mod;
+        c= ( c + fun(i+2,j+1,n-1) )%mod ;
+        c= ( c + fun(i+2,j-1,n-1) )%mod ;
+        
+        //horizontal
+        c= ( c + fun(i-1,j-2,n-1) )%mod;
+        c= ( c + fun(i+1,j-2,n-1) )%mod;
+        c= ( c + fun(i-1,j+2,n-1) )%mod;
+        c= ( c + fun(i+1,j+2,n-1) )%mod;
+        
+        dp[i][j][n] = c;
+        
+        return c;
+        
+    }
+    
+    int knightDialer(int n) {
+        
+        memset(dp,-1,sizeof(dp));
+        
+        int i,j,ans=0, num=1;
+        
+		//start from 1,2,3...9 keys
+        for(i=0;i<3;i++){
+            for(j=0;j<3;j++){
+                
+                int x=fun(i,j,n-1);
+                ans = (ans + x)%mod;
+             
+            }
+       
+        }
+        
+        a[3][1]=0;
+        
+		//start from '0' key
+        ans = (ans + fun(3,1,n-1))%mod;
+       
+        
+        return ans;
+        
+    }
+};

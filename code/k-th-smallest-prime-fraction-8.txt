@@ -1,0 +1,41 @@
+class Solution {
+public:
+    vector<int> kthSmallestPrimeFraction(vector<int>& A, int K) {
+        double low = 0, high = 1, mid;
+        set<int> set1(A.begin(), A.end());
+        while (high - low >= 0.00000001) {
+            mid = (high + low) / 2.0;
+            int cnt = CountNum(A, mid);  
+            if (cnt >= K)
+                high = mid;
+            else
+                low = mid;
+        }
+				
+		double dis = INT_MAX;
+        vector<int> res;
+        for (int i = A.size() - 1; i >= 0; i--) {
+            int d = A[i] * mid + 0.5;
+            if (set1.find(d) != set1.end()) {
+                double cur_dis = fabs((double) d / (double) A[i] - mid);
+                if (dis > cur_dis) {
+                    res = {d, A[i]};
+                    dis = cur_dis;
+                }
+            }
+        }
+        return res;
+    }
+		
+    int CountNum(vector<int>& A, double val) {
+        int cnt = 0, end = A.size();
+        for (int i = A.size() - 2; i >= 0; i--) {
+            cnt += A.size() - end;
+            if (i < end) {
+                while (A[i] <= val * A[--end]) cnt++;
+                end++;
+            }
+        }
+        return cnt;
+    }
+};

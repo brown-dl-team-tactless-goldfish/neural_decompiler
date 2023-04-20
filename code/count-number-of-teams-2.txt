@@ -1,0 +1,42 @@
+int numTeams(int* rating, int ratingSize){
+    int count = 0;
+    int *largers = (int *)calloc(ratingSize, sizeof(int));
+    int *smallers = (int *)calloc(ratingSize, sizeof(int));
+    for (int i = 0; i < ratingSize - 1; i++)
+    {
+        for (int j = i + 1; j < ratingSize; j++)
+        {
+            // for each rate, check how many others that are larger than
+            // itself and how many are smaller
+            if (rating[i] > rating[j])
+            {
+                smallers[i]++;
+            }
+            else
+            {
+                largers[i]++;
+            }
+        }
+    }
+    
+    for (int i = 0; i < ratingSize - 2; i++)
+    {
+        for (int j = i + 1; j < ratingSize - 1; j++)
+        {
+            if (rating[i] > rating[j])
+            {
+                // we only need to know how many rates that are smaller than ratings[j]
+                count += smallers[j];
+            }
+            else
+            {
+                count += largers[j];
+            }
+        }
+    }
+    
+    free(largers);
+    free(smallers);
+    
+    return count;
+}

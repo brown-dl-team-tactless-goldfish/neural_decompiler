@@ -1,0 +1,228 @@
+#define HASH_SIZE 100001
+#define MAX_FREQ 100
+
+
+typedef struct qnode {
+    
+    struct qnode *prev;
+    struct qnode *next;
+    int key;
+    int val;
+    int count; // keep a count of freq of access of each node
+    
+} Qnode; 
+
+typedef struct queue {
+    
+    Qnode * head;
+    Qnode * tail;
+    int size;
+    
+} Queue;
+
+
+ // Queue will be a map(freq : node) 
+ // for each freq , there is a double linked list of nodes (head -> nodes -> tail)
+// Remove node from Tail of Least Frequency Queue
+// Hash maintains key:value pairs of (key : nodes)
+typedef struct { 
+    Queue **queue; 
+    Qnode **hash;
+    int capacity;
+    int nodecount;
+    int minfreq; // current minimum freq to evict from
+} LFUCache;
+
+
+Qnode *createnode(int key, int val)
+{
+      Qnode *node = (Qnode *)malloc(sizeof(Qnode ));
+      node->key = key;
+      node->val = val;
+      node->count = 1;
+      return node;
+}
+
+Queue *createqueue()
+{
+    Queue *q = (Queue *)malloc(sizeof(Queue));
+    q->head = createnode(-1,0); // dummy
+    q->tail = createnode(-1,0); // dummy
+    q->head->next = q->tail;
+    q->tail->prev = q->head;
+    q->size = 0;
+    return q;
+}
+
+Queue **createfreqmap(int max_frequency)
+{
+    Queue **q = (Queue **)malloc(sizeof(Queue *) * max_frequency);
+    
+    memset(q,0,max_frequency *sizeof(Queue *));
+    return q; 
+}
+
+Qnode **createhash(int size)
+{
+    Qnode **hash = (Qnode **)malloc(sizeof(Qnode *) * size);
+    memset(hash,0,size * sizeof(Qnode *));
+    return hash;
+}
+
+
+void addnode(LFUCache *cache, Qnode *node)
+{
+    // Add node at in Frequency Map right after Head
+    Queue *queue = cache->queue[node->count];
+    node->next = queue->head->next;
+    queue->head->next->prev = node;
+    node->prev = queue->head;
+    queue->head->next = node;
+    queue->size++;
+}
+
+void removenode(LFUCache *cache, Qnode *node)
+{
+    // Remove node by joining prev node next node
+    Qnode *prev = node->prev;
+    Qnode *next = node->next;
+    
+    prev->next = next;
+    next->prev = prev; 
+}
+
+void movetohead(LFUCache *cache,Qnode *node)
+{
+    // remove node from current freq map
+    // move node to head of correct freq map
+    removenode(cache,node);
+    addnode(cache, node);
+}
+
+Qnode *poptail(LFUCache *cache, int freq)
+{
+    Queue *queue = cache->queue[freq];
+    if(!queue || queue->size==0)
+        return NULL;
+    Qnode *tmp = queue->tail->prev;
+    removenode(cache,tmp);
+    return tmp;
+}
+
+void updateminfreq(LFUCache *cache, Qnode *node)
+{
+    // update the minfreq, by comparing current node freq with valid freq from freqmap
+    if(node->count == 1)
+    {
+        cache->minfreq = 1;
+        return;
+    }
+    int currminfreq = cache->minfreq;
+    if(!cache->queue[currminfreq] || cache->queue[currminfreq]->size == 0)
+    {
+        cache->minfreq = node->count;
+    }
+    
+}
+
+LFUCache* lFUCacheCreate(int capacity) {
+    
+    LFUCache *cache = (LFUCache *)malloc(sizeof(LFUCache));
+    cache->queue = createfreqmap(MAX_FREQ);
+    cache->hash = createhash(HASH_SIZE);
+    cache->capacity = capacity;
+    cache->nodecount = 0;
+    cache->minfreq = MAX_FREQ;
+    
+    return cache;
+}
+
+int lFUCacheGet(LFUCache* obj, int key) {
+  
+    if(obj->capacity == 0)
+    {
+        return -1;
+    }
+    
+    Qnode *node = obj->hash[key];
+    if(node) // if key exists in queue
+    {
+        obj->queue[node->count]->size--;// update size of freqmap
+        node->count++; // increment node freq;
+        if(obj->queue[node->count] == NULL) // if the queue in freq map not initialized
+        {
+            obj->queue[node->count] = createqueue();
+        }
+        
+        movetohead(obj,node); // move the node to correct freq map queue
+        updateminfreq(obj,node);
+        return node->val;
+    }
+    
+    return -1;
+}
+
+void lFUCachePut(LFUCache* obj, int key, int value) {
+ 
+    if(obj->capacity == 0)
+    {
+        return;
+    }
+    
+    Qnode *node = obj->hash[key];
+    if(node) // node already exists
+    {
+        obj->queue[node->count]->size--;
+        node->val = value;
+        node->count++; // increament freq of node
+        if(obj->queue[node->count] == NULL)// if the queue in freq map not initialized
+        {
+            obj->queue[node->count] = createqueue();
+        }
+        movetohead(obj,node);// move node to correct freq
+        // update min freq variable
+        updateminfreq(obj,node);
+    }
+    else{ // new node / evict lfu node if cache reached capacity
+        if(obj->nodecount == obj->capacity)// cache reached capacity
+        {
+            Qnode *tmp = NULL;
+            int idx = obj->minfreq;
+            tmp = poptail(obj,idx);
+            if(tmp)
+            {
+                obj->queue[tmp->count]->size--;// update size of freq map
+                obj->hash[tmp->key] = NULL; // remove node from hash map
+                obj->nodecount--; // update cache capacity
+            }
+        }
+        Qnode *newnode = createnode(key,value);
+        if(obj->queue[newnode->count] == NULL)// if the queue in freq map not initialized
+        {
+            obj->queue[newnode->count] = createqueue();
+        }
+        addnode(obj,newnode);
+        updateminfreq(obj,newnode);
+        obj->nodecount++; // update cache node count
+        obj->hash[key] = newnode; // add key to hash map
+        
+    }
+    
+}
+
+void lFUCacheFree(LFUCache* obj) {
+    
+    free(obj->queue);
+    free(obj->hash);
+    free(obj);
+}
+
+/**
+ * Your LFUCache struct will be instantiated and called as such:
+ * LFUCache* obj = lFUCacheCreate(capacity);
+ * int param_1 = lFUCacheGet(obj, key);
+ 
+ * lFUCachePut(obj, key, value);
+ 
+ * lFUCacheFree(obj);
+*/

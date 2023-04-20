@@ -1,0 +1,42 @@
+
+public class UndergroundSystem 
+{
+    private Dictionary<int, KeyValuePair<string, int>> dicPersons = new Dictionary<int, KeyValuePair<string, int>>();
+    private Dictionary<string, List<int>> dicLocations = new Dictionary<string, List<int>>();
+
+    public UndergroundSystem()
+    {
+
+    }
+
+    public void CheckIn(int id, string stationName, int t)
+    {
+        KeyValuePair<string, int> temp = new KeyValuePair<string, int>(stationName, t);
+        dicPersons.Add(id, temp);
+    }
+
+    public void CheckOut(int id, string stationName, int t)
+    {
+        KeyValuePair<string, int> temp = dicPersons[id];
+
+        string startstation = temp.Key;
+        int starttime = temp.Value;
+
+        if (dicLocations.ContainsKey(startstation + "-" + stationName))
+        {
+            dicLocations[startstation + "-" + stationName].Add(t - starttime);
+        }
+        else
+        {
+            dicLocations.Add(startstation + "-" + stationName, new List<int>() { t - starttime });
+        }
+        
+        dicPersons.Remove(id);
+    }
+
+    public double GetAverageTime(string startStation, string endStation)
+    {
+        List<int> total = dicLocations[startStation + "-" + endStation];
+        return total.Average();
+    }
+}

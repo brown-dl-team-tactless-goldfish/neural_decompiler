@@ -1,0 +1,59 @@
+class SummaryRanges {
+public:
+    vector<vector<int>> list;
+    SummaryRanges() {       
+        
+    }
+    
+    void addNum(int val) {
+        int s = 0, e = list.size();
+        int m = (s + e) / 2;
+        while(s < e) {
+            if(list[m][1] < val) s = m + 1;
+            else e = m;
+            m = (s + e) / 2;
+        }
+
+        int state = 0;
+        if(s-1 >= 0){
+            if(list[s-1][1] + 1 == val) state += 1;
+            else if(list[s-1][1] >= val) return;
+        } 
+        if(s < list.size()) {
+            if(list[s][0] - 1 == val) state += 2;
+            else if(list[s][0] <= val) return;
+        }
+        // insert
+        if(state == 0) {
+            list.push_back(vector(2, 0));
+            for (int i=list.size()-1; i > s; --i) {
+                list[i][0] = list[i-1][0];
+                list[i][1] = list[i-1][1];
+            }
+            list[s][0] = val;
+            list[s][1] = val;
+        }
+        // left merge
+        else if(state == 1) {
+            list[s-1][1] = val;
+        }
+        // right merge
+        else if (state == 2) {
+            list[s][0] = val;
+        }
+        // merge left and right
+        else {
+            list[s-1][1] = list[s][1];
+            int end = list.size() - 1;
+            for (int i = s; i < end; ++i){
+                list[i][0] = list[i+1][0];
+                list[i][1] = list[i+1][1];
+            }
+            list.pop_back();
+        }
+    }
+    
+    vector<vector<int>> getIntervals() {
+        return list;
+    }
+};

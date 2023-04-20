@@ -1,0 +1,27 @@
+class Solution {
+public:
+    long long distinctNames(vector<string>& ideas) {
+        unordered_map<string, int> m;
+        for(auto& t : ideas) {
+            m[t.substr(1)] = m[t.substr(1)] | (1 << (t[0] - 'a'));
+        }
+        unordered_map<int, int> cnt;
+        for(auto& t : m) {
+            cnt[t.second]++;
+        }
+        long long res = 0;
+        for(auto p1 = cnt.begin(); p1 != cnt.end(); p1++) {
+            for(auto p2 = p1; p2 != cnt.end(); p2++) {
+                int c = p1->first & p2->first;
+                int r1 = p1->first ^ c;
+                if(r1 == 0) continue;
+                int r2 = p2->first ^ c;
+                if(r2 == 0) continue;
+                int m = __builtin_popcount(r1);
+                int n = __builtin_popcount(r2);
+                res += 1LL * m * n * p1->second * p2->second;
+            }
+        }
+        return res * 2;
+    }
+};

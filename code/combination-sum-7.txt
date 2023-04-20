@@ -1,0 +1,56 @@
+#define MAX_COMBINATION_LEN 500 //since min of nums[i] is 1 and max target is 500, the max combination is 500
+
+int *new_combination(int *arr, int len)
+{
+        int *new = malloc(sizeof(int) * len);
+        memcpy(new, arr, sizeof(int) * len);
+        return new;
+}
+
+void __combination_sum(int *cdd, int cdd_size, int start, int target, int *arr, int len, int **ret, int *rcs, int *idx)
+{
+        if (!target) {
+                ret[*idx] = new_combination(arr, len);
+                rcs[*idx] = len;
+                (*idx)++;
+                return;
+        }
+        if (len == MAX_COMBINATION_LEN)
+                return;
+        
+        //we pass 'i' to the next recursion so as to make arr[len + 1] >= arr[len].
+        //this make arr[] monotonously non-decreasing thus avoid duplicated combinations
+        int i;
+        for (i = start; i < cdd_size; i++) {
+                if (cdd[i] > target)
+                        return;
+                
+                arr[len] = cdd[i];
+                __combination_sum(cdd, cdd_size, i, target - cdd[i], arr, len + 1, ret, rcs, idx);
+        }
+}
+
+int cmp(int *a, int *b)
+{
+        return *a - *b;
+}
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** combinationSum(int* candidates, int candidatesSize, int target, int* returnSize, int** returnColumnSizes)
+{
+        int **ret = malloc(150 * sizeof(int *));
+        int *rcs = malloc(150 * sizeof(int)); //return column sizes
+        
+        qsort(candidates, candidatesSize, sizeof(int), cmp);
+        
+        int idx = 0;
+        int arr[MAX_COMBINATION_LEN];
+        __combination_sum(candidates, candidatesSize, 0, target, arr, 0, ret, rcs, &idx);
+        
+        *returnSize = idx;
+        *returnColumnSizes = rcs;
+        return ret;
+}

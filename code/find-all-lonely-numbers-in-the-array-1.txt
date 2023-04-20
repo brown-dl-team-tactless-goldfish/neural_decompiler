@@ -1,0 +1,46 @@
+int cmpfunc(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+int* findLonely(int* nums, int numsSize, int* returnSize){
+
+    qsort(nums, numsSize, sizeof(int), cmpfunc);
+    int* ans = malloc(numsSize * sizeof(int));
+    if(numsSize == 1){
+        ans[0] = nums[0];
+        * returnSize = 1;
+        return ans;
+    }
+    
+    int idx = 0;
+    if(nums[0] + 1 < nums[1]){
+        ans[idx] = nums[0];
+        idx++;
+    }
+    int i = 1;
+    while(i < (numsSize - 1)){
+        if(nums[i] == nums[i-1]){
+            i++;;
+        }
+        else if(nums[i] == (nums[i-1] + 1)){
+            i += 1;  
+        }
+        else if(nums[i] == nums[i+1]){
+            i += 2;   
+        }
+        else if(nums[i] == (nums[i+1] -1)){
+            i += 2;   
+        }
+        else{
+            ans[idx] = nums[i];
+            idx++;
+            i++;
+        }
+    }
+    if(nums[numsSize -1] > nums[numsSize-2] + 1){
+        ans[idx] = nums[numsSize-1];
+        idx++;
+    }
+    ans = realloc(ans, idx * sizeof(int));    
+    * returnSize = idx;
+    return ans;
+}

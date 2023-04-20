@@ -1,0 +1,20 @@
+class Solution {
+public:
+    int maxWidthRamp(vector<int>& nums) {
+        int n = nums.size();
+        vector<int> mono;
+        vector<int> index;
+        int ans = 0;
+        for (int i = 0; i < n; ++i){
+            if (mono.empty() or mono.back() < -nums[i]){
+                mono.push_back(-nums[i]);
+                index.push_back(i);
+            } else {
+                auto it = lower_bound(mono.begin(), mono.end(), -nums[i]);
+                int j = it - mono.begin();
+                ans = max(ans, i - index[j]);
+            }
+        }
+        return ans;
+    }
+};

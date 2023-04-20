@@ -1,0 +1,42 @@
+class Solution {
+public:
+  bool isPrime(int d) {
+    return d == 2 || d == 3 || d == 5 || d == 7;
+  }
+  
+  bool isPrimeC(char c) {
+    return isPrime(c - '0');
+  }
+  
+  int beautifulPartitions(string s, int K, int minDistance) {
+    int n = s.size();
+    long mod = 1000000007;
+    
+    vector<vector<long>> dp(n, vector<long>(K + 1, 0));
+    int lastComposite = -1;
+    for (int i = 0; i < n; ++i) {
+      for (int k = 1; k <= K; ++k) {
+        if (isPrimeC(s[i])) continue;
+        if (lastComposite >= 0) {
+          dp[i][k] = dp[lastComposite][k];
+        }
+        // Cover all prime numbers not covered by the last composite.
+        for (int j = 1 + (1 + lastComposite - minDistance);
+             (1 + i - j) >= minDistance; ++j) {
+          if (j < 0) continue;
+          if (!isPrimeC(s[j])) continue;
+          if (j == 0 && k == 1) {
+            dp[i][k] += 1;
+            dp[i][k] %= mod;
+          } else if ((j - 1) >= 0) {
+            dp[i][k] += dp[j - 1][k - 1];
+            dp[i][k] %= mod;
+          }
+        }
+      }
+      if (!isPrimeC(s[i])) lastComposite = i;
+    }
+    
+    return dp[n - 1][K];
+  }
+};

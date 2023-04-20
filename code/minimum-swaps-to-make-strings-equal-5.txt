@@ -1,0 +1,70 @@
+    public class Solution
+    {
+        public int MinimumSwap(string s1, string s2)
+        {
+            int length = s1.Length;
+            LinkedList<int> diffIndices = new LinkedList<int>();
+            int[] char2Count = new int[26];
+            for (int i = 0; i < length; i++)
+            {
+                if (s1[i] != s2[i])
+                {
+                    diffIndices.AddLast(i);
+                }
+
+                char2Count[s1[i] - 'a']++; 
+                char2Count[s2[i] - 'a']++;
+            }
+
+            if (char2Count.Any(c => c % 2 == 1))
+            {
+                return -1;
+            }
+
+            if (diffIndices.Count == 0)
+            {
+                return 0;
+            }
+
+            if (diffIndices.Count % 2 == 1)
+            {
+                return -1;
+            }
+
+            int res = 0;
+
+            StringBuilder s1b = new StringBuilder(s1);
+            StringBuilder s2b = new StringBuilder(s2);
+
+            while (diffIndices.Count > 0)
+            {
+                var idx1 = diffIndices.First;
+                var idx2 = diffIndices.Last;
+
+                while (idx2 != idx1)
+                {
+                    if (s1b[idx1.Value] != s2b[idx2.Value])
+                    {
+                        break;
+                    }
+                    idx2 = idx2.Previous;
+                }
+
+                if (idx1 != idx2)
+                {
+                    diffIndices.Remove(idx1);
+                    diffIndices.Remove(idx2);
+                }
+                else
+                {
+                    var tmp = s1b[idx1.Value];
+                    s1b[idx1.Value] = s2b[idx1.Value];
+                    s2b[idx1.Value] = tmp;
+                }
+
+                res++;
+            }
+
+            return res;
+        }
+    }

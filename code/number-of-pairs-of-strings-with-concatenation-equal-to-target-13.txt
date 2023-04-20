@@ -1,0 +1,18 @@
+public int NumOfPairs(string[] nums, string target)
+{
+	var pairs = 0;
+	var freqs = nums.GroupBy(x => x).ToDictionary(x => x.Key, x => x.Count());
+
+	foreach (var (key, value) in freqs)
+	{
+		if (!target.StartsWith(key)) continue;
+		var rest = target[key.Length..];
+		if (!freqs.ContainsKey(rest)) continue;
+
+		var freq = freqs[rest];
+		if (key == rest) freq--;
+		pairs += value * freq;
+	}
+
+	return pairs;
+}

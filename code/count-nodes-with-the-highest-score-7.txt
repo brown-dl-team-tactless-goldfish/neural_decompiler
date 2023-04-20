@@ -1,0 +1,34 @@
+
+class Solution {
+public:
+    long long ans = 0;
+    long long cnt = 0;
+    vector<vector<int> > adj;
+    int n;
+    long long dfs(int node) {
+        long long rest = n - 1;
+        long long score = 1;
+        for(int child : adj[node]) {
+            long long subtreeCount = dfs(child);
+            rest -= subtreeCount;
+            score *= subtreeCount ? subtreeCount : 1;
+        }
+        score *= rest ? rest : 1;
+        if(score == ans) {
+            ++cnt;
+        }else if(score > ans) {
+            ans = score;
+            cnt = 1;
+        }
+        return n - rest;
+    }
+    int countHighestScoreNodes(vector<int>& parents) {
+        n = parents.size();
+        adj.resize(n);
+        for(int i = 1; i < parents.size(); i++ ){
+            adj[parents[i]].push_back(i);
+        }
+        dfs(0);
+        return cnt;
+    }
+};

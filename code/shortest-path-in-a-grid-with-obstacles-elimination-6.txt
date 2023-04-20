@@ -1,0 +1,38 @@
+int directions[][4] = {{0, -1, 0, 1}, {-1, 0, 1, 0}};
+    
+class Solution {
+public:
+    int shortestPath(vector<vector<int>>& grid, int k) {
+		vector<vector<int>> obs(grid.size(), vector<int>(grid[0].size(), -1));
+		obs[0][0] = k;
+		
+        queue<array<int, 3>> q;
+        q.push({0, 0, k});
+		
+        int step = 0;
+        while (!q.empty()) {
+            int size = q.size();
+            for (int s = 0; s < size; s++) {
+            	int row = q.front()[0], col = q.front()[1], remain = q.front()[2];
+				
+                if (row + 1 == grid.size() && col + 1 == grid[row].size()) 
+                    return step;
+              
+                for (int i = 0; i < 4; i++) {
+                    int r = row + directions[0][i];
+                    int c = col + directions[1][i];
+      				if (r >= 0 && r < grid.size() && c >= 0 && c < grid[r].size()) {
+                        if (obs[r][c] < remain - grid[r][c]) {
+                        	obs[r][c] = remain - grid[r][c];
+                            q.push({r, c, after});
+                        }
+                    }
+                }
+                q.pop();
+            }
+            step++;
+        }
+        return -1;
+    }
+};
+

@@ -1,0 +1,38 @@
+/**
+ * Definition for singly-linked list.
+ * struct ListNode {
+ *     int val;
+ *     struct ListNode *next;
+ * };
+ */
+struct hash_entry {
+    int id;            /* we'll use this field as the key */
+    char name[10];
+    UT_hash_handle hh; /* makes this structure hashable */
+};
+
+bool hasCycle(struct ListNode *head) {
+    
+    struct ListNode *temp = head;
+    struct hash_entry *s;
+    struct hash_entry *users = NULL;
+    while(temp)
+    {
+        long int user_id = temp;
+        HASH_FIND_INT(users, &user_id, s);
+        if(!s)
+        {
+            s = malloc(sizeof *s);
+            s->id = temp;
+            HASH_ADD_INT(users, id, s);
+        }
+        else
+            return true;
+        
+        temp = temp->next;
+    }
+    
+    
+    return false;
+    
+}

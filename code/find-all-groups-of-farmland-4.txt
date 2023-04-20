@@ -1,0 +1,32 @@
+vector<vector<int>> findFarmland(vector<vector<int>>& land) {
+    queue<pair<int, int>>q;
+    vector<vector<int>>res;
+    int dir[5] = {-1 , 0 , 1 , 0 , -1};
+    int m = land.size() , n = land[0].size();
+    for(int i = 0; i < m; i++){
+        for(int j = 0; j < n; j++){
+            if(land[i][j] == 1){
+                int maxR = 0 , maxC = 0;
+                q.push({i , j});
+                land[i][j] = 0;
+                while(!q.empty()){
+                    int r = q.front().first , c = q.front().second;
+                    q.pop();
+                    if(r > maxR)
+                        maxR = r , maxC = c;
+                    else if(r == maxR)
+                        maxC = max(c , maxC);
+                    for(int it = 0; it < 4; it++){
+                        int nr = r + dir[it] , nc = c + dir[it + 1];
+                        if(nr >= 0 && nc >= 0 && nr < m && nc < n && land[nr][nc] == 1){
+                            land[nr][nc] = 0;
+                            q.push({nr , nc});
+                        }
+                    }   
+                }
+                res.push_back({i , j , maxR, maxC});
+            }
+        }
+    }
+    return res;
+}

@@ -1,0 +1,9 @@
+with row_id as (
+Select product_id,year,row_number() over (partition by product_id order by year asc) as id
+From Sales)
+
+select s.product_id,s.year as first_year,s.quantity,s.price
+From Sales as s inner join row_id as r
+on s.product_id = r.product_id and r.year=s.year
+where r.id = 1
+order by s.product_id

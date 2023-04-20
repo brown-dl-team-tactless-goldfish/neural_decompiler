@@ -1,0 +1,35 @@
+class Solution {
+public:
+    bool parseBoolExpr(string exp) {
+        stack<char> st;
+        int n = exp.size();
+        for (char c : exp) {
+            if (c == ',') continue;
+            else if (c == ')') {
+                bool hasOneTrue = false,  // needed for OR evaluation
+                    hasOneFalse = false;  // needed for AND evaluation
+                char prevChar;  // needed for NOT
+                while (st.top() != '(') {
+                    char t = st.top();
+                    st.pop();
+                    if (t == 't')
+                        hasOneTrue = true;
+                    else
+                        hasOneFalse = true;
+                    prevChar = t;
+                }
+                st.pop();
+                char op = st.top(); st.pop();
+                if (op == '!')
+                    st.push(prevChar == 't' ? 'f' : 't');
+                else if (op == '&')
+                    st.push(hasOneFalse ? 'f' : 't');
+                else if (op == '|')
+                    st.push(hasOneTrue ? 't': 'f');
+            } else {
+                st.push(c);
+            }
+        }
+        return st.top() == 't';
+    }
+};

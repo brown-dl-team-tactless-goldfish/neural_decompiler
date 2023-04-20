@@ -1,0 +1,7 @@
+WITH Cal  as (
+select e.name Employee, e.salary Salary, e.departmentId, DENSE_RANK() over(partition by departmentId order by salary desc)   sal_rank from Employee e
+)
+   select d.name Department, c.Employee, c.Salary 
+       from Cal c join Department d
+           on c.departmentId = d.id 
+               where sal_rank = 1;

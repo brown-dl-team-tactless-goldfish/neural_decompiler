@@ -1,0 +1,51 @@
+class Solution {
+public:
+    int wordCount(string s){
+        int cnt=0;
+        for(int i=0;i<=s.size();i++){
+            if(i==s.size() || s[i]==' '){
+                cnt++;
+            }
+        }
+        return cnt;
+    }
+    string largestWordCount(vector<string>& messages, vector<string>& senders) {
+        unordered_map<string,int> mp;
+        for(int i=0;i<senders.size();i++){
+            mp[senders[i]]+=wordCount(messages[i]);
+        }
+        
+        int maxi=0;string ans;
+        for(auto it:mp){
+            cout<<it.first<<" "<<it.second<<" ";
+            if(it.second>maxi){
+                maxi=it.second;
+                ans=it.first;
+            }
+            if(it.second==maxi){
+                int n=min(it.first.size(),ans.size());
+                for(int i=0;i<=n;i++){
+                    if(i==n){
+                        if(it.first.size()>ans.size()){
+                            ans=it.first;
+                        }
+                    }
+                    int x=ans[i]-'a';
+                    int y=it.first[i]-'a';
+                    if(x==y){
+                        continue;
+                    }
+                    else if(x>y){
+                        break;
+                    }
+                    else{
+                        ans=it.first;
+                        break;
+                    }
+                }
+            }
+        }
+        cout<<endl;
+        return ans;
+    }
+};

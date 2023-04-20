@@ -1,0 +1,25 @@
+class Solution {
+    int power(int x, int n, int mod) {
+        long long ans = 1;
+        while(n) {
+            if(n % 2) ans = (ans * x) % mod;
+            x = (x * x) % mod;
+            n /= 2;
+        }
+        return ans;
+    }
+public:
+    int countWays(vector<vector<int>>& ranges) {
+        vector<vector<int>> merged;
+        sort(ranges.begin(), ranges.end());
+        merged.push_back(ranges[0]);
+        
+        for(int i=1; i<ranges.size(); i++) {
+            if(merged.back()[1] >= ranges[i][0]){
+                merged.back()[1] = max(merged.back()[1], ranges[i][1]);
+            }
+            else merged.push_back(ranges[i]);
+        }
+        return power(2, merged.size(), 1e9 + 7);
+    }
+};

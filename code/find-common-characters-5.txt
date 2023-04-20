@@ -1,0 +1,40 @@
+/**
+ * Return an array of size *returnSize.
+ * Note: The returned array must be malloced, assume caller calls free().
+ */
+char** commonChars(char** A, int ASize, int* returnSize) {
+    int hash_table[ASize][26];
+    memset(hash_table, 0, sizeof(int)*ASize*26);
+    for (int i = 0; i < ASize; i++) {
+        for (int j = 0; j < strlen(A[i]); j++) {
+            hash_table[i][A[i][j]-'a']++;
+        }
+    }
+    
+    int len = 0;
+    char** ans = (char**)malloc(sizeof(char*) * 100);
+    for (int j = 0; j < 26; j++) {
+        int count = 0;
+        while (count >= 0) {
+            for (int i = 0; i < ASize; i++) {
+                if (hash_table[i][j] > 0) {
+                    count++;
+                    hash_table[i][j]--;
+                } else {
+                    count = -1;
+                    continue;
+                }
+                if (count == ASize) {
+                    len++;
+                    ans[len-1] = malloc (sizeof(char) *2);
+                    ans[len-1][0] = j+97;
+                    ans[len-1][1] = '\0';
+                    count = 0;
+                }
+            }
+        }
+    }
+    
+    *returnSize = len;
+    return ans;
+}

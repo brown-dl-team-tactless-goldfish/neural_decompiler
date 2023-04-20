@@ -1,0 +1,40 @@
+public class Solution {
+    public Node Construct(int[][] grid) {
+        if (grid.Length == 0) return null;
+        
+        return Construct(grid, 0, 0, grid.Length);
+    }
+    
+    private Node Construct(int[][] grid, int x, int y, int l)
+        {
+            if (l == 1) return new Node { val = grid[x][y] == 1, isLeaf = true };
+
+            var val = GetVal(grid, x, y, l);
+
+            if (val != -1)
+                return new Node { val = val == 1, isLeaf = true };
+
+            var node = new Node
+            {
+                isLeaf = false,
+                topLeft = Construct(grid, x, y, l / 2),
+                topRight = Construct(grid, x, y + l / 2, l / 2),
+                bottomLeft = Construct(grid, x + l / 2, y, l / 2),
+                bottomRight = Construct(grid, x + l / 2, y + l / 2, l / 2)
+            };
+
+            return node;
+        }
+    
+    private int GetVal(int[][] grid, int x, int y, int l)
+        {
+            var val = grid[x][y];
+
+            for(var i = x; i < x + l;i++)
+                for(var j = y; j < y + l;j++)
+                    if (val != grid[i][j])
+                        return -1;
+
+            return val;
+        }
+}

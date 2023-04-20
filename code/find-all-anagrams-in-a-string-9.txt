@@ -1,0 +1,23 @@
+bool isSame(int *x, int *y)
+{
+    for(int i = 0; i < 26; i++)
+        if(x[i] != y[i])
+            return false;
+    return true;
+}
+int* findAnagrams(char * s, char * p, int* returnSize){
+    int * result = (int *)malloc(strlen(s)*sizeof(int));
+    *returnSize = 0;
+    int pA[26] = {0}, sA[26] = {0};
+    for(int i = 0; i < strlen(p); i++)
+        pA[p[i] - 'a']++;
+    for(int i = 0; i < strlen(s); i++)
+    {
+        if(i >= strlen(p))
+            sA[s[i - strlen(p)] - 'a']--;
+        sA[s[i] - 'a']++;
+        if(isSame(sA, pA))
+            result[(*returnSize)++] = i + 1 - strlen(p);
+    }
+    return result;
+}

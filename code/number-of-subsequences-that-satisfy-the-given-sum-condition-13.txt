@@ -1,0 +1,32 @@
+public class Solution
+{
+    public int NumSubseq(int[] nums, int target)
+    {
+        Array.Sort(nums);
+        long mod = (long)Math.Pow(10, 9) + 7;
+		//Pre compute 2^N, since N is big in this question.
+        long[] cnt = new long[nums.Length];
+        cnt[0] = 1;
+        for (int i = 1; i < nums.Length; i++)
+        {
+            cnt[i] = cnt[i - 1] * 2 % mod;
+        }
+        
+        long res = 0;
+        int left = 0;
+        int right = nums.Length - 1;
+        while (left <= right)
+        {
+            if (nums[left] + nums[right] > target)
+                right--;
+            else
+            {
+				//The combination of sub sequence starting from nums[left] is 2 ^ (right - left)
+                res += cnt[right - left];
+                left++;
+            }
+        }
+
+        return (int)(res % mod);
+    }
+}

@@ -1,0 +1,49 @@
+class Solution {
+    vector<int> v;
+    
+    int lowbit(int x) {
+        return x & (-x);
+    }
+    
+    void update(int x, int y) {
+        for (int i = x; i < v.size(); i += lowbit(i)) {
+            v[i] += y;
+        }
+    }
+    
+    int get(int x) {
+        int r = 0;
+        for (int i = x; i; i ^= lowbit(i)) {
+            r += v[i];
+        }
+        return r;
+    }
+    
+public:
+    string minInteger(string num, int k) {
+        const int n = num.length();
+        v.resize(n + 1);
+        vector<list<int>> d(10);
+        for (int i = 0; i < n; ++i) {
+            update(i + 1, 1);
+            d[num[i] - '0'].push_back(i);
+        }
+        string r(n, ' ');
+        for (int i = 0; i < n; ++i) {
+            for (int j = 0; j < 10; ++j) {
+                if (!d[j].empty()) {
+                    const int x = get(*d[j].begin());
+                    if (x <= k) {
+                        k -= x;
+                        r[i] = j + '0';
+                        update(1 + *d[j].begin(), -1); 
+                        d[j].pop_front();
+                        break;
+                    }
+                    
+                }
+            }
+        }
+        return r;
+    }
+};

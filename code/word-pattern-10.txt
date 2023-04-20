@@ -1,0 +1,55 @@
+    bool wordPattern(char* pattern, char* str) {
+    int patternLength = strlen(pattern);
+    int tokens = 0;
+    for (int i = 0; str[i] != 0; i++) {
+        if (str[i] == ' ') {
+            tokens++;
+        }
+    }
+    tokens++;
+    if (patternLength != tokens) {
+        return false;
+    }
+    char *dict[26];
+    for (int i = 0; i < 26; i++) {
+        dict[i] = NULL;
+    }
+    for (int i = 0; pattern[i] != 0; i++) {
+        int size = 0;
+        int capacity = 8;
+        char *ithTok = malloc(sizeof(char) * 8);
+        int spacesToSkip = i;
+        char *stringPointer = str;
+        while (spacesToSkip) {
+            if (*stringPointer == ' ') {
+                spacesToSkip--;
+            }
+            stringPointer++;
+        }
+        for (int i = 0; stringPointer[i] != ' ' && stringPointer[i] != 0; i++) {
+            ithTok[i] = stringPointer[i];
+            size++;
+            if (size >= capacity) {
+                ithTok = realloc(ithTok, sizeof(char) * capacity * 2);
+                capacity *= 2;
+            }
+        }
+        ithTok[size] = 0;
+        if (dict[pattern[i] - 'a'] == NULL) {
+            for (int j = 0; j < 26; j++) {
+                if (dict[j] != NULL) {
+                    if (strcmp(dict[j], ithTok) == 0) {
+                        return false;
+                    }
+                }
+            } 
+            dict[pattern[i] - 'a'] = ithTok;
+        }
+        else {
+            if (strcmp(dict[pattern[i] - 'a'], ithTok) != 0) {
+                return false;
+            }
+        }
+    }
+    return true;
+}

@@ -1,0 +1,30 @@
+class Solution {
+public:
+    int minimumAverageDifference(vector<int>& nums) {
+                            //value   index
+        pair<int,int> res = {INT_MAX, -1};
+        long long tot = 0;
+        for (int n : nums)
+            tot += n;
+        
+        long long part1 = 0, part2 = tot;
+        for (int i = 0; i < nums.size(); i++){
+             part1 += nums[i];
+             part2 -= nums[i];
+
+            int average1 = 0;
+            int average2 = 0;
+            
+            if (part1 != 0 && i + 1 !=0)
+                average1 = part1 / (i + 1);
+            if (part2 != 0 && nums.size() - i - 1 != 0)
+                average2 = part2 / (nums.size() - i - 1);
+            
+            int tempRes = abs(average1 - average2);
+            if (tempRes < res.first)
+                res = {tempRes, i};
+        }
+        
+        return res.second;
+    }
+};

@@ -1,0 +1,23 @@
+int minOperations(vector<int>& target, vector<int>& arr) 
+{
+	int m=target.size(),n=arr.size();
+	unordered_map<int,int> total; //for value to index mapping
+	vector<int> result; //for LIS
+	for(int i=0;i<m;i++) total[target[i]]=i; //map target value to target index
+
+	for(int i=0;i<n;i++)
+		if(total.find(arr[i])==total.end()) arr[i]=-1; //no such value in target
+		else arr[i]=total[arr[i]]; //replace arr value with its target index
+
+	for(int i=0;i<n;i++)
+	{
+		if(arr[i]==-1) continue;
+
+		//LIS algorithm
+		vector<int>::iterator low=lower_bound(result.begin(),result.end(),arr[i]);
+		
+		if(low==result.end()) result.push_back(arr[i]); //arr[i] is larger than all values
+		else *low=arr[i]; //find the index to replace arr[i] with
+	}
+	return m-result.size();
+}

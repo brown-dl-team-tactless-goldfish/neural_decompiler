@@ -1,0 +1,29 @@
+class Solution {
+public:
+    vector<string> getFolderNames(vector<string>& names) {
+        vector<string>ret ;
+        unordered_map<string, int>names2count ;
+        
+        for(auto& name : names){
+            auto iter = names2count.find(name) ;
+            if(iter == names2count.end())
+                ret.push_back(name) ;
+            else{
+                string t  ;
+                int cn = iter->second ;
+                while(1){
+                    t = name ;
+                    t += "(" + to_string(cn) + ")" ;
+                    if(names2count.count(t) )
+                        cn++ ;
+                    else
+                        break ;
+                }
+                ret.push_back(t) ;
+                names2count[t] = 1 ;
+            }
+            names2count[name]++ ;
+        }
+        return ret ;
+    }
+};

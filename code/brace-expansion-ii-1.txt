@@ -1,0 +1,49 @@
+class Solution {
+public:
+   vector<string> braceExpansionII(string expression) {
+      auto p = preprocess(expression);
+      stringstream ss(p);
+      auto st = parse(ss);
+      return vector<string>(st.begin(), st.end());
+   }
+
+   string preprocess(string expression) {
+      string res = "{";
+      for (auto c : expression) {
+         if (isalpha(c)) res += string("{") + c + "}";
+         else res += c;
+      }
+      return res += "}";
+   }
+
+   set<string> parse(stringstream& ss) {
+      set<string> toAdd, toMultiply;
+      ss.get(); // '{'
+      while (ss) {
+         char c = ss.peek();
+         if (c == '{') {
+            auto st = parse(ss);
+            toMultiply = multiply(toMultiply, st);
+         }
+         else if (c == ',' || c == '}') {
+            ss.get();
+            toAdd.insert(toMultiply.begin(), toMultiply.end());
+            toMultiply.clear();
+            if (c == '}') break;
+         }
+         else { //alpha, directly return
+            ss.get(); ss.get(); // alpha, "}"
+            return { string(1,c) };
+         }
+      }
+      return toAdd;
+   }
+
+   set<string> multiply(set<string> & st1, set<string> & st2) {
+      if (st1.empty()) return st2;
+      set<string> res;
+      for (auto& s1 : st1) for (auto& s2 : st2)
+         res.insert(s1 + s2);
+      return res;
+   }
+};

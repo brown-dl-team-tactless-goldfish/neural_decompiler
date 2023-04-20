@@ -1,0 +1,47 @@
+class Solution {
+public:
+    int n;
+    vector<pair<int,int>> arr;
+    vector<vector<int>> graph;
+    
+    int dfs(int cur){
+        int l=0, r=0, size = graph[cur].size();
+        if(size > 0) l = dfs(graph[cur][0]);
+        if(size > 1) r = dfs(graph[cur][1]);
+        arr[cur].first = l;
+        arr[cur].second = r;
+        return l+r+1;
+    }
+    
+    int countHighestScoreNodes(vector<int>& parents) {
+        n=parents.size();
+        arr.resize(n,{0,0});
+        graph.resize(n,vector<int>());
+        
+        for(int i=0; i<n; ++i){
+            int par = parents[i];
+            if(par == -1) continue;
+            graph[par].push_back(i);
+        }
+        
+        dfs(0);
+        
+        long long maxVal = 0;
+        int total=0;
+        for(int i=0; i<n; ++i){
+            pair<int,int> e = arr[i];
+            int rem = n-e.first-e.second-1;
+            if(rem==0) rem=1;
+            if(e.first == 0) e.first = 1;
+            if(e.second == 0) e.second = 1;
+            long long pro = (long long)e.first*e.second*rem;
+            if(pro > maxVal){
+                total =1;
+                maxVal=pro;
+            }else if(pro == maxVal){
+                total+=1;
+            }
+        }
+        return total;
+    }
+};

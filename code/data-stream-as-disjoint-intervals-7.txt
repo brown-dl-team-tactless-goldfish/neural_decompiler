@@ -1,0 +1,84 @@
+class SummaryRanges {
+private:
+    vector<vector<int>> out;
+public:
+    /** Initialize your data structure here. */    
+    SummaryRanges() {
+        
+    }
+    
+    void addNum(int val) {
+        if(out.size() == 0)
+        {
+            out.push_back({val, val});
+            return;
+        }
+        
+        int start = 0;
+        int end = out.size()-1;
+        int pos = 0;
+        while(start < end)
+        {
+            int mid = start + (end-start)/2;
+            if(out[mid][0] > val) end = mid;
+            else if(out[mid][0] <= val) start = mid+1;
+        }
+        pos = out[start][0] > val ? start : (start+1);
+                
+        if(pos == 0)
+        {
+            if(val == out[0][0]-1)
+            {
+                out[0][0]--;
+                return;
+            }
+            out.insert(out.begin(), {val, val});
+            return;
+        }
+        
+        if(val <= out[pos-1][1]) return; // do nothing
+        
+        if(pos == out.size())
+        {
+            if(val == out[pos-1][1] + 1)
+            {
+                out[pos-1][1]++;
+                return;
+            }
+            out.push_back({val, val});
+            return;
+        }
+        
+        if(val == out[pos-1][1] + 1 && val == out[pos][0] - 1)
+        {
+            out[pos-1][1] = out[pos][1];
+            out.erase(out.begin()+pos);
+            return;
+        }
+        
+        if(val == out[pos-1][1] + 1)
+        {
+            out[pos-1][1]++;
+            return;
+        }
+        
+        if(val == out[pos][0] - 1)
+        {
+            out[pos][0]--;
+            return;
+        }
+        
+        out.insert(out.begin()+pos, {val, val});
+    }
+    
+    vector<vector<int>> getIntervals() {
+        return out;
+    }
+};
+
+/**
+ * Your SummaryRanges object will be instantiated and called as such:
+ * SummaryRanges* obj = new SummaryRanges();
+ * obj->addNum(val);
+ * vector<vector<int>> param_2 = obj->getIntervals();
+ */

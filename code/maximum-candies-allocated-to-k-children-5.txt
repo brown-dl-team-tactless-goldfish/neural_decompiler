@@ -1,0 +1,29 @@
+class Solution {
+public:
+    bool CanMakeKHeaps(const vector<int>& candies, long long k, int heap_size) {
+        long long res = 0;
+        for (int c : candies) {
+            res += c/heap_size;
+            if (res >= k) {
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    int maximumCandies(vector<int>& candies, long long k) {
+        int left = 1;
+        int right = *max_element(candies.begin(), candies.end());
+        
+        while (left <= right) {
+            int  mid = left + (right - left) / 2;
+            if (CanMakeKHeaps(candies, k, mid)) {
+                left = mid + 1;
+            } else {
+                right = mid - 1;
+            }
+        }
+        return right;
+    }
+};

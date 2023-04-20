@@ -1,0 +1,34 @@
+class Solution {
+public:
+    int countCollisions(string dir) {
+        stack<char> str;
+        stack<char> stl;
+        char ch = dir[0];
+        if (ch == 'R') str.push(ch);
+        if (ch == 'L' || ch == 'S') stl.push(ch); 
+        int res = 0;
+        for (int i = 1; i < dir.size(); i++) {
+            char c = dir[i];
+            if (c == 'L') {
+                if (!str.empty()) {
+                    stl.push('S');
+                    res += 2;
+                    str.pop();
+                    while (!str.empty()) str.pop(), res++;
+                } else {
+                    if (!stl.empty() && stl.top() == 'S') {
+                        res += 1;
+                    } else {
+                        stl.push(c);
+                    }
+                }
+            }
+            if (c == 'R') str.push(c);
+            if (c == 'S') {
+                while (!str.empty()) str.pop(), res++;
+                stl.push(c);
+            }
+        }
+        return res;
+    }
+};

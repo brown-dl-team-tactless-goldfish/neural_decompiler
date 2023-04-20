@@ -1,0 +1,84 @@
+public class Solution {
+    Dictionary<char, (int x, int y)> _k = new Dictionary<char, (int x, int y)>();
+    int[,,] _cache;
+    private const char Dummy = (char)('A' - 1);
+    
+    private int _hits = 0;
+    private int _requests = 0;
+    
+    public int MinimumDistance(string word) {
+        PopulateKeyboard();
+        
+        var left = Dummy;
+        var right = Dummy;
+        _cache = new int[28,28,word.Length];
+        
+        
+        var result = Recursive(left, right, word, 0);
+        Console.WriteLine($"Hit ratio = {_hits * 100 / _requests} %");
+        return result;
+    }
+    
+    
+    private int Recursive(char left, char right, string word, int i)
+    {
+        var cached = ReadCache(left, right, i);
+        if (cached != 0)
+        {
+            _hits++;
+            return cached;
+        }
+        
+        var letter = word[i];
+        if (i == word.Length - 1)
+        {
+            return Math.Min(Distance(left, letter), Distance(right, letter));
+        }
+
+        // going left
+        var ldistance = Distance(left, letter) + Recursive(letter, right, word, i + 1);
+        // going right 
+        var rdistance = Distance(right, letter) + Recursive(left, letter, word, i + 1);
+        var result = Math.Min(ldistance, rdistance);
+        
+        WriteCache(left, right, i, result);
+        return result;
+    }
+    
+    private int ReadCache(char left, char right, int i)
+    {
+        _requests++;
+        return _cache[left - Dummy, right - Dummy,i];
+    }
+    
+    private void WriteCache(char left, char right, int i, int distance)
+    {
+        _cache[left - Dummy, right - Dummy, i] = distance;
+    }
+    
+    private int Distance(char a, char b)
+    {
+        // emtpy position
+        if (a == Dummy || b == Dummy) return 0;
+        
+        var ac = _k[a];
+        var bc = _k[b];
+        
+        return Math.Abs(ac.x - bc.x) + Math.Abs(ac.y - bc.y);
+    }
+    
+    private void PopulateKeyboard()
+    {
+        var x = 0;
+        var y = 0;
+        for (var c = 'A'; c <= 'Z'; c++)
+        {
+            _k.Add(c, (x++, y));
+            if (x == 6)
+            {
+                y++;
+                x = 0;
+            }
+        }
+    }
+}

@@ -1,0 +1,27 @@
+class Solution {
+public:
+    vector<int> rearrangeBarcodes(vector<int>& barcodes) {
+        unordered_map<int, int> um;
+        int n = barcodes.size();
+        for(int i = 0; i < n; i++)
+            um[barcodes[i]]++;
+        priority_queue<pair<int, int>> pq;
+        for(auto &[fst, snd] : um)
+            pq.push({snd,fst});
+        int i = 0;
+        while(!pq.empty())
+        {
+            pair<int, int> p = pq.top();
+            pq.pop();
+            int x = p.first, y = p.second;
+            while(x--)
+            {
+                if(i>= n)
+                    i = 1;
+                barcodes[i] = y;
+                i += 2;
+            }
+        }
+        return barcodes;
+    }
+};

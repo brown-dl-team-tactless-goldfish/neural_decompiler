@@ -1,0 +1,136 @@
+void sort(int* nums, int numsSize) {
+    if (numsSize == 0 || numsSize == 1) {
+        return;
+    } else {
+        int *l_nums = nums;
+        int l_ind = 0;
+        int l_size = numsSize / 2;
+        int *r_nums = nums + l_size;
+        int r_ind = 0;
+        int r_size = numsSize - l_size;
+        
+        sort(l_nums, l_size);
+        sort(r_nums, r_size);
+        
+        int *t_arr = (int*) malloc(numsSize * sizeof(int));
+        
+        for (int i = 0; i < numsSize; i++) {
+            if (l_ind == l_size) {
+                *(t_arr + i) = *(r_nums + r_ind);
+                r_ind++;
+            } else if (r_ind == r_size) {
+                *(t_arr + i) = *(l_nums + l_ind);
+                l_ind++;
+            } else if (*(l_nums + l_ind) < *(r_nums + r_ind)) {
+                *(t_arr + i) = *(l_nums + l_ind);
+                l_ind++;
+            } else {
+                *(t_arr + i) = *(r_nums + r_ind);
+                r_ind++;
+            }
+        }
+        
+        for (int i = 0; i < numsSize; i++) {
+            *(nums + i) = *(t_arr + i);
+        }
+        
+        free(t_arr);
+    }
+}
+
+bool is_monotonic(int *nums, int numsSize) {
+    for (int i = 1; i < numsSize; i++) {
+        if (*(nums + i - 1) < *(nums + i)) {
+            return false;
+        }
+    }
+    
+    return true;
+}
+
+void swap(int* nums, int a, int b) {
+    int t = *(nums + a);
+    *(nums + a) = *(nums + b);
+    *(nums + b) = t;
+}
+
+void nextPermutation(int* nums, int numsSize){
+    if (is_monotonic(nums, numsSize)) {
+        sort(nums, numsSize);
+        return;
+    }
+    
+    for (int i = numsSize - 2; i >= 0; i--) {
+        int pivot = *(nums + i);
+        int min_val = INT_MAX;
+        int min_ind;
+        
+        for (int j = i + 1; j < numsSize; j++) {
+            if (*(nums + j) > pivot && *(nums + j) < min_val) {
+                min_val = *(nums + j);
+                min_ind = j;
+            }
+        }
+        
+        if (min_val != INT_MAX) {
+            swap(nums, i, min_ind);
+            sort(nums + i + 1, numsSize - i - 1);
+            return;
+        }
+    }
+    
+    return;
+}
+
+int fact(int n) {
+    if (n == 0) {
+        return 1;
+    } else {
+        return n * fact(n - 1);
+    }
+}
+
+int * copy_arr(int* nums, int numsSize) {
+    int *arr = (int*) malloc(numsSize * sizeof(int));
+    for (int i = 0; i < numsSize; i++) {
+        *(arr + i) = *(nums + i);
+    }
+    return arr;
+}
+
+int get_permutation_count(int* nums, int numsSize) {
+    int *sorted_nums = copy_arr(nums, numsSize);
+    sort(sorted_nums, numsSize);
+    
+    int count = fact(numsSize);
+    int dups = 1;
+    
+    for (int i = 1; i < numsSize; i++) {
+        if (*(sorted_nums + i - 1) == *(sorted_nums + i)) {
+            dups++;
+        } else {
+            dups = 1;
+        }
+        count /= dups;
+    }
+    
+    return count;
+}
+
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int** permuteUnique(int* nums, int numsSize, int* returnSize, int** returnColumnSizes){
+    *returnSize = get_permutation_count(nums, numsSize);
+    
+    int **permutations = (int**) malloc(*returnSize * sizeof(int*));
+    *returnColumnSizes = (int*) malloc(*returnSize * sizeof(int));
+    for (int i = 0; i < *returnSize; i++) {
+        nextPermutation(nums, numsSize);
+        *(permutations + i) = copy_arr(nums, numsSize);
+        *(*returnColumnSizes + i) = numsSize;
+    }
+    return permutations;
+}

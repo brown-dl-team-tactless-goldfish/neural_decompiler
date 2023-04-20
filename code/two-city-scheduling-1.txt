@@ -1,0 +1,41 @@
+int cmp(const void* a, const void* b){
+    return *(int*)a - *(int*)b;
+}
+int twoCitySchedCost(int** costs, int costsSize, int* costsColSize){
+    int ans = 0;
+    int n = costsSize;
+    int* stackB = malloc(n * sizeof(int));
+    int* stackA = malloc(n * sizeof(int));
+    int idxB = 0;
+    int idxA = 0;
+    int typeA = 0;
+    for(int i = 0; i < n; i++){
+        if(costs[i][0] <= costs[i][1]){
+            typeA++;
+            ans += costs[i][0];
+            stackB[idxB] = costs[i][1] - costs[i][0];
+            idxB++;
+        }
+        else{
+            ans += costs[i][1];
+            stackA[idxA] = costs[i][0] - costs[i][1];
+            idxA++;
+        }
+    }
+    if(typeA == n/2)
+        return ans;
+    qsort(stackB, idxB, sizeof(int), cmp);
+    qsort(stackA, idxA, sizeof(int), cmp);
+    int* stack;
+    if(typeA > n/2)
+        stack = stackB;
+    else{
+        stack = stackA;
+    }
+    for(int i = 0; i < fabs(n/2 - typeA); i++){
+        ans += stack[i];
+    }
+    free(stackA);
+    free(stackB);
+    return ans;
+}

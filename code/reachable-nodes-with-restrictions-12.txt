@@ -1,0 +1,31 @@
+    public int ReachableNodes(int n, int[][] edges, int[] restricted) 
+    {
+        HashSet<int> visited = new HashSet<int>();
+        HashSet<int> restrictedHs = new HashSet<int>(restricted); 
+        Dictionary<int, List<int>> edgesMap = new Dictionary<int, List<int>>();
+        foreach (int[] edge in edges)
+        {
+            edgesMap.TryAdd(edge[0], new List<int>());
+            edgesMap[edge[0]].Add(edge[1]);
+            edgesMap.TryAdd(edge[1], new List<int>());
+            edgesMap[edge[1]].Add(edge[0]);
+        }
+
+        Queue<int> q = new Queue<int>();
+        q.Enqueue(0);
+        visited.Add(0);
+        while (q.Count > 0)
+        {
+            int value = q.Dequeue();
+            foreach (int node in edgesMap[value])
+            {
+                if (!visited.Contains(node) && !restrictedHs.Contains(node))
+                {
+                    visited.Add(node);
+                    q.Enqueue(node);
+                }
+            }
+        }
+
+        return visited.Count;
+    }

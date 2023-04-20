@@ -1,0 +1,36 @@
+class Solution {
+public:
+    int numberWays(vector<vector<int>>& hats) {
+        int n = hats.size();
+        vector<int> dp(1<<n);
+        int mod = 1e9 + 7;
+        dp[0] = 1;
+        unordered_map<int,set<int>> hatToPeople;
+        set<int> allHatsSet;
+        for(int i=0;i<hats.size();i++)
+        {
+            for(int j=0;j<hats[i].size();j++)
+            {
+                hatToPeople[hats[i][j]].insert(i);
+                allHatsSet.insert(hats[i][j]);
+            }
+        }
+        vector<int> allHats(allHatsSet.begin(),allHatsSet.end());
+        for(int i=0;i<allHats.size();i++)
+        {
+            for(int j=dp.size()-1;j>=0;j--)
+            {
+                for(auto k:hatToPeople[allHats[i]])
+                {
+                    if((j & (1<<k))==0)
+                    {
+                        int newValue = j | (1<<k);
+                        dp[newValue] = (dp[newValue]+dp[j])%mod;
+                    }
+                }
+            }
+        }
+        
+        return dp[(1<<n) - 1];
+    }
+};

@@ -1,0 +1,39 @@
+class Solution {
+public:
+    int minimumDeletions(string s) {
+        //prefix-suffix pair-vector
+        vector<pair<int , int>> pre_suf(s.length());
+        //no of b's
+        int b = 0;
+        
+        //finding the no of b's before the current index as the b's are suppossed to be in right
+        for(int i = 0 ; i < s.length() ; i++){
+            pre_suf[i].second = b;
+            if(s[i] == 'b'){
+                b++;
+            }
+        }
+        
+        int a = 0;
+        
+        //finding the no of a's after the current index as a's are suppossed to be to left 
+        for(int i = s.length() - 1 ; i > -1 ; i--){
+            pre_suf[i].first = a;
+            if(s[i] == 'a'){
+                a++;
+            }
+        }
+        
+        int ans = INT_MAX;
+        
+        //the min value of total no of a's and b's after and before current index is the 
+        //min no of deletions to be done
+        for(int i = 0 ; i < s.length() ; i++){
+            int temp = pre_suf[i].first + pre_suf[i].second;
+            ans = min(ans , temp);
+        }
+        
+        return ans;
+        
+    }
+};

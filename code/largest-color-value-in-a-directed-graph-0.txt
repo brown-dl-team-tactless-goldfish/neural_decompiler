@@ -1,0 +1,86 @@
+typedef struct node{
+    int val;
+    struct node* next;
+}list;
+
+typedef struct{
+    list* next;
+    char color;
+    int* count;
+}graph;
+
+void empty(graph* s,int tamanho){
+    for(int i=0;i<tamanho;i++){
+        while(s[i].next){
+            list* temp=s[i].next;
+            s[i].next=s[i].next->next;
+            free(temp);
+        }
+        free(s[i].count);
+    }
+    free(s);
+}
+
+list* create(list* previous, int val){
+    list* new=(list*)malloc(sizeof(list));
+    new->next=previous;
+    new->val=val;
+    return new;
+}
+
+void search(int val,graph* plan,bool* visited,bool* cycle,int* ans){
+    visited[val]=1;
+    while(plan[val].next){
+        int new=plan[val].next->val;
+        if(visited[new]){
+            *cycle=1;
+            return;
+        }
+        if(plan[new].count){
+            for(int i=0;i<26;i++){
+                if(plan[val].count[i]<plan[new].count[i]) plan[val].count[i]=plan[new].count[i];
+            }
+            plan[val].next=plan[val].next->next;
+            continue;
+        }
+        plan[new].count=(int*)calloc(26,4);
+        search(new,plan,visited,cycle,ans);
+        for(int i=0;i<26;i++){
+            if(plan[val].count[i]<plan[new].count[i]) plan[val].count[i]=plan[new].count[i];
+        }
+        plan[val].next=plan[val].next->next;
+    }
+    plan[val].count[plan[val].color-'a']++;
+    if(*ans<plan[val].count[plan[val].color-'a']) *ans=plan[val].count[plan[val].color-'a'];
+    visited[val]=0;
+}
+
+int largestPathValue(char * colors, int** edges, int edgesSize, int* edgesColSize){
+    int tamanho=strlen(colors);
+    graph* plan=(graph*)calloc(tamanho,sizeof(graph));
+    bool* visited=(bool*)calloc(tamanho,sizeof(bool));
+    for(int i=0;i<tamanho;i++){
+        plan[i].color=colors[i];
+    }
+    for(int i=0;i<edgesSize;i++){
+        if(edges[i][0]==edges[i][1]){
+            empty(plan,tamanho);
+            return -1;
+        }
+        plan[edges[i][0]].next=create(plan[edges[i][0]].next,edges[i][1]);
+    }
+    bool cycle=0;
+    int ans=0;
+    for(int i=0;i<tamanho;i++){
+        if(!plan[i].count){
+            plan[i].count=(int*)calloc(26,4);
+            search(i,plan,visited,&cycle,&ans);
+            if(cycle){
+                empty(plan,tamanho);
+                return -1;
+            }
+        }
+    }
+    empty(plan,tamanho);
+    return ans;
+}

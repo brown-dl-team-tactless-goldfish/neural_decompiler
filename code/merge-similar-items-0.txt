@@ -1,0 +1,27 @@
+int** mergeSimilarItems(int** items1, int items1Size, int* items1ColSize, int** items2, int items2Size, int* items2ColSize, int* returnSize, int** returnColumnSizes){
+    int* val = calloc(1001, sizeof(int) );
+    for(int i = 0; i < items1Size; i++){
+        val[items1[i][0]] = items1[i][1];
+    }
+    for(int i = 0; i < items2Size; i++){
+        val[items2[i][0]] += items2[i][1];
+    }
+    
+    int** ans = malloc((items1Size + items2Size) * sizeof(int*));
+    int a_id = 0;
+    for(int i = 1; i < 1001; i++){
+        if(val[i]){
+            ans[a_id] = malloc(2 * sizeof(int));
+            ans[a_id][0] = i;
+            ans[a_id][1] = val[i];
+            a_id++;
+        }
+    }
+    *returnSize = a_id;
+    *returnColumnSizes = malloc(a_id * sizeof(int));
+    for(int i = 0; i < a_id; i++){
+        returnColumnSizes[0][i] = 2;
+    }
+    free(val);
+    return ans;
+}

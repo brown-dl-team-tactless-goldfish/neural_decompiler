@@ -1,0 +1,21 @@
+    vector<int> exclusiveTime(int n, vector<string>& logs) {
+        vector<int> time(n); // exclusive time
+        stack<int> ids; // active function ids
+        int preTime = 0;
+        for (auto& log : logs) {
+            int id, timeStamp; string type;
+            readLog(log, id, type, timeStamp);
+            if (type == "end") timeStamp++; // including end timeStamp itself
+            if (!ids.empty()) time[ids.top()] += (timeStamp - preTime);            
+            (type == "start")? ids.push(id) : ids.pop();
+            preTime = timeStamp;
+        }
+        return time;
+    }
+    
+    void readLog(string& log, int& id, string& type, int& timeStamp) {
+            stringstream ss(log); string s;
+            getline(ss, s, ':'); id = stoi(s);
+            getline(ss, s, ':'); type = s;
+            getline(ss, s, ':'); timeStamp = stoi(s);        
+    }

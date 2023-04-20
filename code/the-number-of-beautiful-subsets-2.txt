@@ -1,0 +1,24 @@
+class Solution {
+public:
+    int beautifulSubsets(vector<int>& nums, int k) {
+        sort(nums.begin(), nums.end());
+        vector<bool> taken(1001, false);
+        return solve(nums, k, taken, 0);
+    }
+    
+    int solve(vector<int>& nums, int k, vector<bool>& taken, int ind){
+        int n = nums.size(), ans = 0;
+        for(int i = ind ; i < n ; i++){
+            if(nums[i]-k > 0 && !taken[nums[i]-k]){
+                taken[nums[i]] = true;
+                ans += (1 + solve(nums, k, taken, i+1));
+                taken[nums[i]] = false;
+            }else if(nums[i]-k <= 0){
+                taken[nums[i]] = true;
+                ans += (1 + solve(nums, k, taken, i+1));
+                taken[nums[i]] = false;
+            }
+        }
+        return ans;
+    }
+};

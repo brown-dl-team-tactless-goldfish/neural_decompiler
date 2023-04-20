@@ -1,0 +1,31 @@
+/**
+ * Return an array of arrays of size *returnSize.
+ * The sizes of the arrays are returned as *returnColumnSizes array.
+ * Note: Both returned array and *columnSizes array must be malloced, assume caller calls free().
+ */
+int **shiftGrid(int **grid, int gridSize, int *gridColSize, int k, int *returnSize, int **returnColumnSizes) {
+    *returnColumnSizes = malloc(sizeof(int)*gridSize);
+    *returnSize = gridSize;
+    
+    int grid_area = gridSize*(*gridColSize);
+
+    int **grid_copy = malloc(sizeof(int *)*gridSize);
+    for(int i=0;i<gridSize;i++) {
+        grid_copy[i] = malloc(sizeof(int)*(*gridColSize));
+        memcpy(grid_copy[i], &grid[i][0], sizeof(int)*(*gridColSize));
+    }
+
+    for(int i=0;i<gridSize;i++) {
+        (*returnColumnSizes)[i] = *gridColSize;
+        for(int j=0;j<*gridColSize;j++) {
+            int temp = j + i*(*gridColSize) + k;
+            temp %= grid_area;
+            int m = temp / (*gridColSize);
+            int n = temp % (*gridColSize);
+            // printf("%d, %d\n", m, n);
+            grid_copy[m][n] = grid[i][j];
+        }
+    }
+
+    return grid_copy;
+}

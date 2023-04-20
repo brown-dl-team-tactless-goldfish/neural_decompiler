@@ -1,0 +1,58 @@
+public class Solution 
+{
+    public IList<int> DistanceK(TreeNode root, TreeNode target, int K) 
+    {
+        var result = new List<int>();
+        var graph = new Dictionary<TreeNode, HashSet<TreeNode>>();
+        ConvertToGraph(root, graph);
+        var visited = new HashSet<TreeNode>();
+        visited.Add(target);
+        var queue = new Queue<TreeNode>();
+        queue.Enqueue(target);
+        int depth = 0;
+        while(queue.Count != 0)
+        {
+            var count = queue.Count;
+            for(int i = 0; i < count; i++)
+            {
+                var curr = queue.Dequeue();
+                if(depth == K)
+                    result.Add(curr.val);
+                foreach(var neighbor in graph[curr])
+                {
+                    if(!visited.Contains(neighbor))
+                    {
+                        queue.Enqueue(neighbor);
+                        visited.Add(neighbor);
+                    }
+                }
+            }
+            if(++depth > K)
+                break;
+        }
+        
+        return result;
+    }
+    
+    private void ConvertToGraph(TreeNode root, Dictionary<TreeNode, HashSet<TreeNode>> graph)
+    {
+        if(root == null) return;
+        if(!graph.ContainsKey(root)) graph[root] = new HashSet<TreeNode>();
+        if(root.left != null)
+        {
+            graph[root].Add(root.left);
+            if(!graph.ContainsKey(root.left)) graph[root.left] = new HashSet<TreeNode>();
+            graph[root.left].Add(root);
+            ConvertToGraph(root.left, graph);
+        }
+        
+        if(root.right != null)
+        {
+            graph[root].Add(root.right);
+            if(!graph.ContainsKey(root.right)) graph[root.right] = new HashSet<TreeNode>();
+            graph[root.right].Add(root);
+            ConvertToGraph(root.right, graph);
+        }
+        
+    }
+}

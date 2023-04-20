@@ -1,0 +1,85 @@
+class Solution {
+public:
+    #define mod 1000000007
+    int dp[501][53][2];
+    string_view s, ev;
+
+    int dp2[51][26];
+
+    int next(int ind, char c) {
+        int &ret = dp2[ind][c - 'a'];
+        if(ret != -1) return ret;
+        // not found
+        string t = string(ev.substr(0, ind)) + c;
+        string_view tt = t;
+        tt = tt.substr(1);
+        while(!tt.empty()) {
+            if(ev.substr(0, tt.size()) == tt) return ret = tt.size();
+            tt = tt.substr(1);
+        }
+        return ret = 0;
+    }
+
+    int rec(int i, int inde, bool hitight) {
+        if(inde == ev.size()) return 0;
+        if(i >= s.size()) return 1;
+        int &ret = dp[i][inde][hitight];
+        if(ret != -1) return ret;
+        // not found
+
+        long ans = 0;
+
+        for(int a = 0; a < 26; ++a) {
+            char c = a + 'a';
+            if(hitight && c > s[i]) continue;
+
+            bool nexthi = hitight && c == s[i];
+            if(inde == 0) {  // not start evil yet
+                if(c == ev[inde]) {
+                    ans += rec(i + 1, 1, nexthi);
+                }
+                else {
+                    ans += rec(i + 1, 0, nexthi);
+                }
+            } else { // need to keep evil
+                if(c == ev[inde])
+                    ans += rec(i + 1, inde + 1, nexthi);
+                else {
+                    // ans += rec(i + 1, 0, nexthi);  // should not restart
+                    int restart_point = next(inde, c);
+                    ans += rec(i + 1, restart_point, nexthi);
+                }
+            }
+        }
+        return ret = ans % mod;
+    }
+
+    inline bool alla(string_view s) {
+        for(char c: s) if(c != 'a')
+            return false;
+        return true;
+    }
+
+    inline bool contains(string_view a, string_view b) {
+        int k = a.size() - b.size() + 1;
+        for(int i = 0; i < k; ++i) {
+            if(a.substr(i, b.size()) == b) return true;
+        }
+        return false;
+    }
+
+    int findGoodStrings(int n, string s1, string s2, string evil) {
+        s = s2, ev = evil;
+        memset(dp, -1, sizeof(dp));
+        memset(dp2, -1, sizeof(dp2));
+
+        long LEs2_withoutEV = rec(0, 0, true);
+
+        s = s1, ev = evil;
+        memset(dp, -1, sizeof(dp));
+
+        long LEs1 = rec(0, 0, true);
+
+        return (LEs2_withoutEV - LEs1 + !contains(s1, evil) + mod) % mod;
+    }
+};

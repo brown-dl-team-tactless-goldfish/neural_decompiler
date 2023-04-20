@@ -1,0 +1,35 @@
+/**
+ * Definition for a binary tree node.
+ * struct TreeNode {
+ *     int val;
+ *     struct TreeNode *left;
+ *     struct TreeNode *right;
+ * };
+ */
+int sumOfBinaryTree(struct TreeNode* root, int* subtree_sums, int* size)
+{
+        if (!root) return 0;
+        int left = sumOfBinaryTree(root->left, subtree_sums, size);
+        int right = sumOfBinaryTree(root->right, subtree_sums, size);
+        if (left > 0) subtree_sums[(*size)++] = left;
+        if (right > 0) subtree_sums[(*size)++] = right;
+        return left + root->val + right;
+}
+
+int maxProduct(struct TreeNode* root)
+{
+        const int m = 1e9 + 7;
+        int subtree_sums[50000] = {0};
+        int size = 0;
+        int total_sum = sumOfBinaryTree(root, subtree_sums, &size);
+        int subtree_sum = 0;
+        int min_diff = INT_MAX;
+        for (int i = 0; i < size; ++i) {
+                int diff = abs((total_sum - subtree_sums[i]) - subtree_sums[i]);
+                if (diff < min_diff) {
+                        subtree_sum = subtree_sums[i];
+                        min_diff = diff;
+                }
+        }
+        return ((long)(total_sum - subtree_sum) * (long)subtree_sum) % m;
+}

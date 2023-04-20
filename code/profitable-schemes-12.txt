@@ -1,0 +1,37 @@
+        const int Mod = 1000_000_000 + 7;
+		public int Recursion(int n, int minProfit, int[] group, int[] profit)
+        {
+
+            Dictionary<(int, int, int), long> cache = new Dictionary<(int, int, int), long>();
+
+            Help(n, 0, 0);
+
+            return (int)(Help(n, 0, 0) + (minProfit == 0 ? 1 : 0) % Mod);
+
+            long Help(int curr, int award, int i)
+            {
+                if (i == group.Length) return 0;
+
+                var key = (curr, award, i);
+
+                if (cache.TryGetValue(key, out var v)) return v;
+
+                var need = group[i];
+                var currAward = profit[i];
+
+                long res = 0;
+
+                if (curr == need)
+                {
+                    if (award + currAward >= minProfit) res++;
+                }
+                else if (curr > need)
+                {
+                    if (award + currAward >= minProfit) res++;
+                    res += Help(curr - need, award + currAward, i + 1);
+                }
+                res += Help(curr, award, i + 1);
+                return cache[key] = res % Mod;
+            }
+
+        }

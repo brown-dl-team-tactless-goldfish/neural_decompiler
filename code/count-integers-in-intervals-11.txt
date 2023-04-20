@@ -1,0 +1,38 @@
+class CountIntervals {
+private:
+    int cnt;
+    set<pair<int, int>> pool;
+    
+public:
+    CountIntervals() {
+        cnt = 0;        
+    }
+    
+    void add(int left, int right) {
+        auto it = pool.lower_bound({left, right});
+        if (it != pool.end()) {
+            auto [qleft, qright] = *it;
+            if (qleft <= right) {
+                cnt -= qright - qleft + 1;
+                pool.erase(it);
+                add(left, max(right, qright));
+                return;
+            }
+        }
+        if (it != pool.begin()) {
+            auto [pleft, pright] = *(--it);
+            if (pright >= left) {
+                cnt -= pright - pleft + 1;
+                pool.erase(it);
+                add(pleft, max(pright, right));
+                return;
+            }
+        }
+        cnt += right - left + 1;
+        pool.insert({left, right});
+    }
+    
+    int count() {
+        return cnt;
+    }
+};

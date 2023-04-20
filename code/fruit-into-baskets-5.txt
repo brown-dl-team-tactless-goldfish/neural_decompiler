@@ -1,0 +1,32 @@
+int function(int index2, int* tree, int treeSize){
+    int ret1=0;
+    int ret2=0;
+    int index1=0;
+    while(index2<treeSize&&tree[index2]==tree[index1]){
+        index2++;
+    }
+    if(index2==treeSize){
+        return treeSize-index1;
+    }else{
+        ret1=index2-index1+1;
+        int i=index2+1;
+        int temp=index2;
+        for(;i<treeSize;i++){
+            if(tree[i]!=tree[index2]&&tree[i]!=tree[index1]){
+                ret1=i-index1;
+                ret2=function(i-temp,&tree[temp],treeSize-temp);
+                break;
+            }
+            if(tree[i]!=tree[i-1]){
+                temp=i;
+            }
+        }
+        if(i==treeSize){
+            ret1=i-index1;
+        }
+    }
+    return ret1>ret2?ret1:ret2;
+}
+int totalFruit(int* tree, int treeSize) {
+    return function(0,tree,treeSize);
+}
