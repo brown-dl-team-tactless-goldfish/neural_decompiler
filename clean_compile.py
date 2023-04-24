@@ -181,13 +181,13 @@ class CodeCleanerCompiler:
 
 def clean():
     ccc = CodeCleanerCompiler()
-    ccc.remove_cpp("code", "c_code")
-    ccc.clean_code("c_code", "cleaned_c")
+    # ccc.remove_cpp("uncompiled", "uncompiled")
+    ccc.clean_code("uncleaned", "uncompiled")
 
 def compile():
     ccc = CodeCleanerCompiler()
     ccc.compile("cleaned_c", "C_FILES", "ASM_FILES")
 
 if __name__ == "__main__":
-    # clean()
-    compile()
+    clean()
+    # compile()
