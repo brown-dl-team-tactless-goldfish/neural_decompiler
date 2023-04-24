@@ -4,7 +4,7 @@ import openai
 
 # CHATGPT API
 
-openai.api_key = "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" # secret key!
+openai.api_key = "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" # secret key!
 
 def get_chatgpt_alternate(code):
     """ 
@@ -21,11 +21,12 @@ def get_chatgpt_alternate(code):
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
         temperature=1.5,
-        max_tokens=4096,
+        max_tokens=3000,
         messages=[
-            {"role": "user", "content": f"Refactor the following C code: {code}"}
+            {"role": "user", "content": f"Refactor the following C code without explanation: {code}"}
         ]
     )
+
     # structure of response found at https://platform.openai.com/docs/guides/chat/introduction
     response = completion.choices[0].message.content
 
@@ -58,16 +59,18 @@ def make_alternates(original_dir_path, new_dir_path, num_alternates):
         original_path = f"{original_dir_path}/{file_name}" # path of that file
         with open(original_path, 'r') as f:
             lines = f.read() # read the contents of the file into lines
-
+        
+        print(file_name)
+        print(len(lines))
         # generate `num_alternates` alternate files
         for alt in range(num_alternates):
             # get new file name and path. adds "alt[x]" after name for each alt
-            new_file_name = file_name.split('.')[0] + f"alt{alt}" + ".txt"
+            new_file_name = "[ALT] " + file_name.split('.')[0] + f"{alt}" + ".txt"
             new_path = f"{new_dir_path}/{new_file_name}"
 
             # call chatgpt api to get alternate
             response = get_chatgpt_alternate(lines)
-
+            print(response)
             with open(new_path, "w") as g:
                 g.write(response)
 
