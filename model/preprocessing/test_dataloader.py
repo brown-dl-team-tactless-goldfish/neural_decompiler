@@ -11,7 +11,7 @@ def test_c_tokenization():
     # make a DataLoader object to test the helper functions
     dataloader = DataLoader(c_path=c_filedir_path)
 
-    with open(f"{c_filedir_path}/arithmetic-subarrays-2.txt", "r") as f:
+    with open(f"{c_filedir_path}/assign-cookies-0.txt", "r") as f:
         c_code = f.read()
 
     c_code = dataloader.clean_c(c_code)
@@ -19,5 +19,13 @@ def test_c_tokenization():
 
     print(tokens)
 
+def test_c_token_check():
+    token = "hello++"
+
+    dataloader = DataLoader()
+
+    print(dataloader.check_c_token(token))
+
 if __name__ == "__main__":
     test_c_tokenization()
+    # test_c_token_check()
