@@ -7,7 +7,7 @@ class CodeCleanerCompiler:
     """
     CodeCleanerCompiler {CLASS}:
     - Handles all cleaning of scraped data
-    - Compiles the 
+    - Compiles the C code to ASM via the Compiler Explorer API
     """
 
     def __init__(self):
