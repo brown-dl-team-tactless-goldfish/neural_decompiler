@@ -1,0 +1,122 @@
+rangeBitwiseAnd_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    %edi, -20(%rbp)
+        movl    %esi, -24(%rbp)
+        movl    -20(%rbp), %eax
+        movl    %eax, -4(%rbp)
+        movl    $0, -8(%rbp)
+        movl    $0, -12(%rbp)
+        jmp     .L2
+.L5:
+        addl    $1, -8(%rbp)
+.L3:
+        cmpl    $30, -8(%rbp)
+        ja      .L4
+        movl    -8(%rbp), %eax
+        movl    $1, %edx
+        movl    %eax, %ecx
+        sall    %cl, %edx
+        movl    %edx, %eax
+        andl    -4(%rbp), %eax
+        testl   %eax, %eax
+        je      .L5
+.L4:
+        movl    -8(%rbp), %eax
+        movl    %eax, -12(%rbp)
+        jmp     .L6
+.L8:
+        addl    $1, -12(%rbp)
+.L6:
+        cmpl    $31, -12(%rbp)
+        ja      .L7
+        movl    -12(%rbp), %eax
+        movl    $1, %edx
+        movl    %eax, %ecx
+        sall    %cl, %edx
+        movl    %edx, %eax
+        andl    -4(%rbp), %eax
+        testl   %eax, %eax
+        jne     .L8
+.L7:
+        movl    -12(%rbp), %eax
+        cmpl    -8(%rbp), %eax
+        jbe     .L9
+        movl    -12(%rbp), %eax
+        movl    $1, %edx
+        movl    %eax, %ecx
+        sall    %cl, %edx
+        movl    %edx, %eax
+        orl     -4(%rbp), %eax
+        movl    %eax, %edx
+        movl    -12(%rbp), %eax
+        movl    %eax, %ecx
+        shrl    %cl, %edx
+        movl    %edx, %eax
+        movl    %eax, -16(%rbp)
+        movl    -12(%rbp), %eax
+        movl    %eax, %ecx
+        sall    %cl, -16(%rbp)
+        movl    -24(%rbp), %eax
+        cmpl    %eax, -16(%rbp)
+        jbe     .L10
+        movl    -4(%rbp), %eax
+        jmp     .L11
+.L10:
+        movl    -16(%rbp), %eax
+        andl    %eax, -4(%rbp)
+.L9:
+        cmpl    $0, -4(%rbp)
+        jne     .L12
+        movl    $0, %eax
+        jmp     .L11
+.L12:
+        addl    $1, -8(%rbp)
+.L2:
+        cmpl    $30, -8(%rbp)
+        jbe     .L3
+        movl    -4(%rbp), %eax
+.L11:
+        popq    %rbp
+        ret
+rangeBitwiseAnd:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    %edi, -20(%rbp)
+        movl    %esi, -24(%rbp)
+        movl    $30, -4(%rbp)
+        movl    -20(%rbp), %eax
+        andl    -24(%rbp), %eax
+        movl    %eax, -8(%rbp)
+        jmp     .L15
+.L17:
+        subl    $1, -4(%rbp)
+.L15:
+        cmpl    $0, -4(%rbp)
+        jle     .L16
+        movl    -20(%rbp), %eax
+        xorl    -24(%rbp), %eax
+        movl    %eax, %edx
+        movl    -4(%rbp), %eax
+        movl    %eax, %ecx
+        sarl    %cl, %edx
+        movl    %edx, %eax
+        andl    $1, %eax
+        testl   %eax, %eax
+        je      .L17
+.L16:
+        movl    -4(%rbp), %eax
+        movl    %eax, %ecx
+        shrl    %cl, -8(%rbp)
+        movl    -4(%rbp), %eax
+        movl    %eax, %ecx
+        sall    %cl, -8(%rbp)
+        movl    -8(%rbp), %eax
+        popq    %rbp
+        ret
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    $0, %eax
+        popq    %rbp
+        ret

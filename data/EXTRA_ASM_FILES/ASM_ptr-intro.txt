@@ -1,0 +1,32 @@
+g:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movl    $42, (%rax)
+        nop
+        popq    %rbp
+        ret
+f:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movl    $1, -12(%rbp)
+        leaq    -12(%rbp), %rax
+        movq    %rax, -24(%rbp)
+        movq    -24(%rbp), %rax
+        movq    %rax, %rdi
+        call    g
+        leaq    -24(%rbp), %rax
+        movq    %rax, -8(%rbp)
+        nop
+        leave
+        ret
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    $0, %eax
+        call    f
+        movl    $0, %eax
+        popq    %rbp
+        ret

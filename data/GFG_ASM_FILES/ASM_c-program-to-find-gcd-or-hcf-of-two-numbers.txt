@@ -1,0 +1,43 @@
+gcd:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    %edi, -20(%rbp)
+        movl    %esi, -24(%rbp)
+        movl    -20(%rbp), %eax
+        cmpl    %eax, -24(%rbp)
+        cmovle  -24(%rbp), %eax
+        movl    %eax, -4(%rbp)
+        jmp     .L2
+.L5:
+        movl    -20(%rbp), %eax
+        cltd
+        idivl   -4(%rbp)
+        movl    %edx, %eax
+        testl   %eax, %eax
+        jne     .L3
+        movl    -24(%rbp), %eax
+        cltd
+        idivl   -4(%rbp)
+        movl    %edx, %eax
+        testl   %eax, %eax
+        je      .L7
+.L3:
+        subl    $1, -4(%rbp)
+.L2:
+        cmpl    $0, -4(%rbp)
+        jg      .L5
+        jmp     .L4
+.L7:
+        nop
+.L4:
+        movl    -4(%rbp), %eax
+        popq    %rbp
+        ret
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    $98, -4(%rbp)
+        movl    $56, -8(%rbp)
+        movl    $0, %eax
+        popq    %rbp
+        ret

@@ -45,6 +45,9 @@ class CodeCleanerCompiler:
             return False
 
         for file_name in sorted(list(os.listdir(code_dir_path))): 
+            if file_name == '.DS_Store':
+                continue 
+
             path = f"{code_dir_path}/{file_name}"
             new_path = f"{new_dir_path}/{file_name}"
 
@@ -181,13 +184,13 @@ class CodeCleanerCompiler:
 
 def clean():
     ccc = CodeCleanerCompiler()
-    ccc.remove_cpp("LEETCODE/code", "LEETCODE/c_code")
-    ccc.clean_code("LEETCODE/c_code", "LEETCODE/cleaned_c")
+    ccc.remove_cpp("extra_code", "extra_c_code")
+    ccc.clean_code("extra_c_code", "extra_cleaned_c_code")
 
 def compile():
     ccc = CodeCleanerCompiler()
-    ccc.compile("LEETCODE/cleaned_c", "LEETCODE/C_FILES", "LEETCODE/ASM_FILES")
+    ccc.compile("gfg_cleaned_c_code", "GFG_C_FILES", "GFG_ASM_FILES")
 
 if __name__ == "__main__":
-    clean()
-    # compile()
+    # clean()
+    compile()

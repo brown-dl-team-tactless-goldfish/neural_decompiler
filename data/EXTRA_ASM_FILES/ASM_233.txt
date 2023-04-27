@@ -1,0 +1,178 @@
+countDigitOne:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        pushq   %rbx
+        subq    $40, %rsp
+        movl    %edi, -36(%rbp)
+        cmpl    $0, -36(%rbp)
+        jg      .L2
+        movl    $0, %eax
+        jmp     .L3
+.L2:
+        cmpl    $0, -36(%rbp)
+        jle     .L4
+        cmpl    $9, -36(%rbp)
+        jg      .L4
+        movl    $1, %eax
+        jmp     .L3
+.L4:
+        movl    -36(%rbp), %eax
+        movl    %eax, -20(%rbp)
+        movl    $1, -24(%rbp)
+        jmp     .L5
+.L6:
+        movl    -20(%rbp), %ecx
+        movl    $1717986919, %edx
+        movl    %ecx, %eax
+        imull   %edx
+        sarl    $2, %edx
+        movl    %ecx, %eax
+        sarl    $31, %eax
+        subl    %eax, %edx
+        movl    %edx, %eax
+        movl    %eax, -20(%rbp)
+        movl    -24(%rbp), %edx
+        movl    %edx, %eax
+        sall    $2, %eax
+        addl    %edx, %eax
+        addl    %eax, %eax
+        movl    %eax, -24(%rbp)
+.L5:
+        cmpl    $9, -20(%rbp)
+        jg      .L6
+        cmpl    $1, -20(%rbp)
+        je      .L7
+        movl    -24(%rbp), %eax
+        subl    $1, %eax
+        movl    %eax, %edi
+        call    countDigitOne
+        imull   -20(%rbp), %eax
+        movl    %eax, %ebx
+        movl    -36(%rbp), %eax
+        cltd
+        idivl   -24(%rbp)
+        movl    %edx, %eax
+        movl    %eax, %edi
+        call    countDigitOne
+        leal    (%rbx,%rax), %edx
+        movl    -24(%rbp), %eax
+        addl    %edx, %eax
+        jmp     .L3
+.L7:
+        movl    -24(%rbp), %eax
+        subl    $1, %eax
+        movl    %eax, %edi
+        call    countDigitOne
+        movl    %eax, %ebx
+        movl    -36(%rbp), %eax
+        cltd
+        idivl   -24(%rbp)
+        movl    %edx, %eax
+        movl    %eax, %edi
+        call    countDigitOne
+        leal    (%rbx,%rax), %ecx
+        movl    -36(%rbp), %eax
+        cltd
+        idivl   -24(%rbp)
+        movl    %edx, %eax
+        addl    %ecx, %eax
+        addl    $1, %eax
+.L3:
+        addq    $40, %rsp
+        popq    %rbx
+        popq    %rbp
+        ret
+.LC0:
+        .string "/app/example.c"
+.LC1:
+        .string "countDigitOne(-1) == 0"
+.LC2:
+        .string "countDigitOne(1) == 1"
+.LC3:
+        .string "countDigitOne(10) == 2"
+.LC4:
+        .string "countDigitOne(13) == 6"
+.LC5:
+        .string "countDigitOne(21) == 13"
+.LC6:
+        .string "countDigitOne(99) == 20"
+.LC7:
+        .string "countDigitOne(115) == 44"
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    $-1, %edi
+        call    countDigitOne
+        testl   %eax, %eax
+        je      .L9
+        movl    $__PRETTY_FUNCTION__.4156, %ecx
+        movl    $25, %edx
+        movl    $.LC0, %esi
+        movl    $.LC1, %edi
+        call    __assert_fail
+.L9:
+        movl    $1, %edi
+        call    countDigitOne
+        cmpl    $1, %eax
+        je      .L10
+        movl    $__PRETTY_FUNCTION__.4156, %ecx
+        movl    $26, %edx
+        movl    $.LC0, %esi
+        movl    $.LC2, %edi
+        call    __assert_fail
+.L10:
+        movl    $10, %edi
+        call    countDigitOne
+        cmpl    $2, %eax
+        je      .L11
+        movl    $__PRETTY_FUNCTION__.4156, %ecx
+        movl    $27, %edx
+        movl    $.LC0, %esi
+        movl    $.LC3, %edi
+        call    __assert_fail
+.L11:
+        movl    $13, %edi
+        call    countDigitOne
+        cmpl    $6, %eax
+        je      .L12
+        movl    $__PRETTY_FUNCTION__.4156, %ecx
+        movl    $28, %edx
+        movl    $.LC0, %esi
+        movl    $.LC4, %edi
+        call    __assert_fail
+.L12:
+        movl    $21, %edi
+        call    countDigitOne
+        cmpl    $13, %eax
+        je      .L13
+        movl    $__PRETTY_FUNCTION__.4156, %ecx
+        movl    $29, %edx
+        movl    $.LC0, %esi
+        movl    $.LC5, %edi
+        call    __assert_fail
+.L13:
+        movl    $99, %edi
+        call    countDigitOne
+        cmpl    $20, %eax
+        je      .L14
+        movl    $__PRETTY_FUNCTION__.4156, %ecx
+        movl    $30, %edx
+        movl    $.LC0, %esi
+        movl    $.LC6, %edi
+        call    __assert_fail
+.L14:
+        movl    $115, %edi
+        call    countDigitOne
+        cmpl    $44, %eax
+        je      .L15
+        movl    $__PRETTY_FUNCTION__.4156, %ecx
+        movl    $31, %edx
+        movl    $.LC0, %esi
+        movl    $.LC7, %edi
+        call    __assert_fail
+.L15:
+        movl    $0, %eax
+        popq    %rbp
+        ret
+__PRETTY_FUNCTION__.4156:
+        .string "main"

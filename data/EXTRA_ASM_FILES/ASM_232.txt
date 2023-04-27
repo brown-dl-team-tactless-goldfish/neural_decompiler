@@ -1,0 +1,292 @@
+push:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        cmpq    $0, -24(%rbp)
+        je      .L4
+        movl    $16, %edi
+        call    malloc
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movl    -28(%rbp), %edx
+        movl    %edx, (%rax)
+        movq    -24(%rbp), %rax
+        movq    (%rax), %rdx
+        movq    -8(%rbp), %rax
+        movq    %rdx, 8(%rax)
+        movq    -24(%rbp), %rax
+        movq    -8(%rbp), %rdx
+        movq    %rdx, (%rax)
+        jmp     .L1
+.L4:
+        nop
+.L1:
+        leave
+        ret
+pop:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        cmpq    $0, -24(%rbp)
+        je      .L6
+        movq    -24(%rbp), %rax
+        movq    (%rax), %rax
+        testq   %rax, %rax
+        jne     .L7
+.L6:
+        movl    $0, %eax
+        jmp     .L8
+.L7:
+        movq    -24(%rbp), %rax
+        movq    (%rax), %rax
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movl    (%rax), %eax
+        movl    %eax, -12(%rbp)
+        movq    -24(%rbp), %rax
+        movq    (%rax), %rax
+        movq    8(%rax), %rdx
+        movq    -24(%rbp), %rax
+        movq    %rdx, (%rax)
+        movq    -8(%rbp), %rax
+        movq    %rax, %rdi
+        call    free
+        movl    -12(%rbp), %eax
+.L8:
+        leave
+        ret
+isEmpty:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -8(%rbp)
+        cmpq    $0, -8(%rbp)
+        jne     .L10
+        movl    $1, %eax
+        jmp     .L11
+.L10:
+        movq    -8(%rbp), %rax
+        movq    (%rax), %rax
+        testq   %rax, %rax
+        sete    %al
+.L11:
+        popq    %rbp
+        ret
+queueCreate:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -8(%rbp)
+        movl    %esi, -12(%rbp)
+        cmpq    $0, -8(%rbp)
+        je      .L15
+        movq    -8(%rbp), %rax
+        movq    $0, 8(%rax)
+        movq    -8(%rbp), %rax
+        movq    8(%rax), %rdx
+        movq    -8(%rbp), %rax
+        movq    %rdx, (%rax)
+        jmp     .L12
+.L15:
+        nop
+.L12:
+        popq    %rbp
+        ret
+queuePush:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        cmpq    $0, -24(%rbp)
+        je      .L21
+        jmp     .L19
+.L20:
+        movq    -24(%rbp), %rax
+        addq    $8, %rax
+        movq    %rax, %rdi
+        call    pop
+        movl    %eax, -4(%rbp)
+        movq    -24(%rbp), %rax
+        movl    -4(%rbp), %edx
+        movl    %edx, %esi
+        movq    %rax, %rdi
+        call    push
+.L19:
+        movq    -24(%rbp), %rax
+        addq    $8, %rax
+        movq    %rax, %rdi
+        call    isEmpty
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L20
+        movq    -24(%rbp), %rax
+        movl    -28(%rbp), %edx
+        movl    %edx, %esi
+        movq    %rax, %rdi
+        call    push
+        jmp     .L16
+.L21:
+        nop
+.L16:
+        leave
+        ret
+queuePop:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        cmpq    $0, -24(%rbp)
+        je      .L28
+        movq    -24(%rbp), %rax
+        addq    $8, %rax
+        movq    %rax, %rdi
+        call    isEmpty
+        testb   %al, %al
+        je      .L25
+        jmp     .L26
+.L27:
+        movq    -24(%rbp), %rax
+        movq    %rax, %rdi
+        call    pop
+        movl    %eax, -4(%rbp)
+        movq    -24(%rbp), %rax
+        leaq    8(%rax), %rdx
+        movl    -4(%rbp), %eax
+        movl    %eax, %esi
+        movq    %rdx, %rdi
+        call    push
+.L26:
+        movq    -24(%rbp), %rax
+        movq    %rax, %rdi
+        call    isEmpty
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L27
+.L25:
+        movq    -24(%rbp), %rax
+        addq    $8, %rax
+        movq    %rax, %rdi
+        call    pop
+        jmp     .L22
+.L28:
+        nop
+.L22:
+        leave
+        ret
+queuePeek:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movq    -24(%rbp), %rax
+        addq    $8, %rax
+        movq    %rax, %rdi
+        call    isEmpty
+        testb   %al, %al
+        je      .L30
+        jmp     .L31
+.L32:
+        movq    -24(%rbp), %rax
+        movq    %rax, %rdi
+        call    pop
+        movl    %eax, -4(%rbp)
+        movq    -24(%rbp), %rax
+        leaq    8(%rax), %rdx
+        movl    -4(%rbp), %eax
+        movl    %eax, %esi
+        movq    %rdx, %rdi
+        call    push
+.L31:
+        movq    -24(%rbp), %rax
+        movq    %rax, %rdi
+        call    isEmpty
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L32
+.L30:
+        movq    -24(%rbp), %rax
+        addq    $8, %rax
+        movq    %rax, %rdi
+        call    isEmpty
+        xorl    $1, %eax
+        testb   %al, %al
+        je      .L33
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        testq   %rax, %rax
+        je      .L33
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movl    (%rax), %eax
+        jmp     .L34
+.L33:
+        movl    $0, %eax
+.L34:
+        leave
+        ret
+queueEmpty:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $8, %rsp
+        movq    %rdi, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movq    %rax, %rdi
+        call    isEmpty
+        testb   %al, %al
+        je      .L36
+        movq    -8(%rbp), %rax
+        addq    $8, %rax
+        movq    %rax, %rdi
+        call    isEmpty
+        testb   %al, %al
+        je      .L36
+        movl    $1, %eax
+        jmp     .L37
+.L36:
+        movl    $0, %eax
+.L37:
+        leave
+        ret
+queueDestroy:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $16, %rsp
+        movq    %rdi, -8(%rbp)
+        jmp     .L39
+.L40:
+        movq    -8(%rbp), %rax
+        movq    %rax, %rdi
+        call    pop
+.L39:
+        movq    -8(%rbp), %rax
+        movq    %rax, %rdi
+        call    isEmpty
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L40
+        jmp     .L41
+.L42:
+        movq    -8(%rbp), %rax
+        addq    $8, %rax
+        movq    %rax, %rdi
+        call    pop
+.L41:
+        movq    -8(%rbp), %rax
+        addq    $8, %rax
+        movq    %rax, %rdi
+        call    isEmpty
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L42
+        nop
+        leave
+        ret
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    $5, -4(%rbp)
+        movl    $0, %eax
+        popq    %rbp
+        ret

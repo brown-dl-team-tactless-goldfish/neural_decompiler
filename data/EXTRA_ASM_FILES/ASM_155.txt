@@ -1,0 +1,244 @@
+minStackCreate:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -8(%rbp)
+        movl    %esi, -12(%rbp)
+        cmpq    $0, -8(%rbp)
+        je      .L3
+        movq    -8(%rbp), %rax
+        movq    $0, 16(%rax)
+        movq    -8(%rbp), %rax
+        movq    $0, 8(%rax)
+        movq    -8(%rbp), %rax
+        movl    $0, (%rax)
+.L3:
+        nop
+        popq    %rbp
+        ret
+minStackPush:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        cmpq    $0, -24(%rbp)
+        je      .L8
+        movl    $16, %esi
+        movl    $1, %edi
+        call    calloc
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movl    -28(%rbp), %edx
+        movl    %edx, (%rax)
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rdx
+        movq    -8(%rbp), %rax
+        movq    %rdx, 8(%rax)
+        movq    -24(%rbp), %rax
+        movq    -8(%rbp), %rdx
+        movq    %rdx, 8(%rax)
+        movq    -24(%rbp), %rax
+        movl    (%rax), %eax
+        leal    1(%rax), %edx
+        movq    -24(%rbp), %rax
+        movl    %edx, (%rax)
+        movl    $16, %esi
+        movl    $1, %edi
+        call    calloc
+        movq    %rax, -16(%rbp)
+        movq    -16(%rbp), %rax
+        movl    -28(%rbp), %edx
+        movl    %edx, (%rax)
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rdx
+        movq    -16(%rbp), %rax
+        movq    %rdx, 8(%rax)
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        testq   %rax, %rax
+        je      .L6
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movl    (%rax), %eax
+        cmpl    %eax, -28(%rbp)
+        jg      .L8
+        movq    -24(%rbp), %rax
+        movq    -16(%rbp), %rdx
+        movq    %rdx, 16(%rax)
+        jmp     .L8
+.L6:
+        movq    -24(%rbp), %rax
+        movq    -16(%rbp), %rdx
+        movq    %rdx, 16(%rax)
+.L8:
+        nop
+        leave
+        ret
+minStackPop:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        cmpq    $0, -24(%rbp)
+        je      .L12
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        testq   %rax, %rax
+        je      .L12
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, -8(%rbp)
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    8(%rax), %rdx
+        movq    -24(%rbp), %rax
+        movq    %rdx, 8(%rax)
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        testq   %rax, %rax
+        je      .L11
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        cmpq    %rax, -8(%rbp)
+        ja      .L11
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, -16(%rbp)
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    8(%rax), %rdx
+        movq    -24(%rbp), %rax
+        movq    %rdx, 16(%rax)
+        movq    -16(%rbp), %rax
+        movq    %rax, %rdi
+        call    free
+.L11:
+        movq    -24(%rbp), %rax
+        movl    (%rax), %eax
+        leal    -1(%rax), %edx
+        movq    -24(%rbp), %rax
+        movl    %edx, (%rax)
+        movq    -8(%rbp), %rax
+        movq    %rax, %rdi
+        call    free
+.L12:
+        nop
+        leave
+        ret
+minStackTop:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -8(%rbp)
+        cmpq    $0, -8(%rbp)
+        je      .L14
+        movq    -8(%rbp), %rax
+        movq    8(%rax), %rax
+        testq   %rax, %rax
+        je      .L14
+        movq    -8(%rbp), %rax
+        movq    8(%rax), %rax
+        movl    (%rax), %eax
+        jmp     .L15
+.L14:
+        movl    $0, %eax
+.L15:
+        popq    %rbp
+        ret
+minStackGetMin:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -8(%rbp)
+        cmpq    $0, -8(%rbp)
+        je      .L17
+        movq    -8(%rbp), %rax
+        movq    16(%rax), %rax
+        testq   %rax, %rax
+        je      .L17
+        movq    -8(%rbp), %rax
+        movq    16(%rax), %rax
+        movl    (%rax), %eax
+        jmp     .L18
+.L17:
+        movl    $0, %eax
+.L18:
+        popq    %rbp
+        ret
+minStackDestroy:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        cmpq    $0, -24(%rbp)
+        je      .L25
+        jmp     .L21
+.L22:
+        movq    -24(%rbp), %rax
+        movq    %rax, %rdi
+        call    minStackPop
+.L21:
+        movq    -24(%rbp), %rax
+        movl    (%rax), %eax
+        testl   %eax, %eax
+        jne     .L22
+        jmp     .L23
+.L24:
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, -8(%rbp)
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    8(%rax), %rdx
+        movq    -24(%rbp), %rax
+        movq    %rdx, 16(%rax)
+        movq    -8(%rbp), %rax
+        movq    %rax, %rdi
+        call    free
+.L23:
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        testq   %rax, %rax
+        jne     .L24
+.L25:
+        nop
+        leave
+        ret
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        leaq    -32(%rbp), %rax
+        movl    $10, %esi
+        movq    %rax, %rdi
+        call    minStackCreate
+        movl    $0, -4(%rbp)
+        jmp     .L27
+.L28:
+        movl    -4(%rbp), %edx
+        leaq    -32(%rbp), %rax
+        movl    %edx, %esi
+        movq    %rax, %rdi
+        call    minStackPush
+        addl    $1, -4(%rbp)
+.L27:
+        cmpl    $4, -4(%rbp)
+        jle     .L28
+        movl    $1, -4(%rbp)
+        jmp     .L29
+.L30:
+        movl    -4(%rbp), %eax
+        negl    %eax
+        movl    %eax, %edx
+        leaq    -32(%rbp), %rax
+        movl    %edx, %esi
+        movq    %rax, %rdi
+        call    minStackPush
+        addl    $1, -4(%rbp)
+.L29:
+        cmpl    $4, -4(%rbp)
+        jle     .L30
+        leaq    -32(%rbp), %rax
+        movq    %rax, %rdi
+        call    minStackDestroy
+        movl    $0, %eax
+        leave
+        ret

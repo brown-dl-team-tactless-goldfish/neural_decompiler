@@ -1,0 +1,77 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>
+struct HashNode {
+int key;
+struct HashNode *next;
+};
+static inline int hash(int key, int size) {
+int index = key % size;
+return (index > 0) ? (index) : (-index);
+}
+bool isHappy_1(int n) {
+if (n == 1) return true;
+int i;
+bool isHappy = false;
+int size = 20;
+struct HashNode **hashtable
+= (struct HashNode **)calloc(size, sizeof(struct HashNode*));
+while (1) {
+int index = hash(n, size);
+struct HashNode **p = hashtable + index;
+while (*p){
+if ((*p)->key == n) { 
+isHappy = false;
+goto OUT;
+}
+p = &((*p)->next);
+}
+struct HashNode *new_node
+= (struct HashNode*)malloc(sizeof(struct HashNode));
+new_node->key = n;
+new_node->next = NULL;
+*p = new_node;
+int t = 0;
+while (n) {
+t += (n % 10) * (n % 10);
+n /= 10;
+}
+if (t == 1) {
+isHappy = true;
+goto OUT;
+}
+else n = t;
+}
+OUT:
+for (i = 0; i < size; i++) {
+struct HashNode *t = hashtable[i];
+struct HashNode *x = NULL;
+while (t) {
+x = t->next;
+free(t);
+t = x;
+}
+}
+free(hashtable);
+return isHappy;
+}
+bool isHappy(int n) {
+if (n <= 0) return false;
+int magic = 4;
+while (1) {
+if (n == 1) return true;
+if (n == magic) return false;
+int t = 0;
+while (n) {
+t += (n % 10) * (n % 10);
+n /= 10;
+}
+n = t;
+}
+}
+int main() {
+return 0;
+}

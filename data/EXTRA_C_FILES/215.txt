@@ -1,0 +1,64 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>
+int findKthLargest(int* nums, int numsSize, int k) {
+if (k < 1 || k > numsSize) return 0;
+int pivot = nums[0];
+int i = 0, j = numsSize - 1;
+while (i < j) {
+while (i < j && nums[j] >= pivot)
+j--;
+nums[i] = nums[j];
+while (i < j && nums[i] <= pivot)
+i++;
+nums[j] = nums[i];
+}
+nums[i] = pivot;
+int rightSize = numsSize - i - 1; 
+if (rightSize + 1 == k) { 
+return nums[i];
+}
+if (rightSize >= k) {
+return findKthLargest(nums + i + 1, rightSize, k); 
+}
+else {
+return findKthLargest(nums, i, k - rightSize - 1); 
+}
+}
+void swap(int *a, int *b) {
+int t = *a;
+*a = *b;
+*b = t;
+}
+int findKthLargest0(int* nums, int numsSize, int k) {
+if (k < 1 || k > numsSize) return 0;
+int pivotIndex = 0; 
+int pivotValue = nums[pivotIndex];
+int i = 0; 
+int j; 
+swap(&nums[pivotIndex], &nums[numsSize - 1]);
+for (j = 0; j < numsSize - 1; j++) {
+if (nums[j] <= pivotValue) {
+swap(&nums[j], &nums[i]);
+i++;
+}
+}
+swap(&nums[i], &nums[numsSize - 1]);
+int rightSize = numsSize - i - 1; 
+if (rightSize + 1 == k) { 
+return nums[i];
+}
+if (rightSize >= k) {
+return findKthLargest0(nums + i + 1, rightSize, k); 
+}
+else {
+return findKthLargest0(nums, i, k - rightSize - 1); 
+}
+}
+int main() {
+int n[] = { 3, 7, 8, 1, 2, 5, 6, 9 };
+return 0;
+}

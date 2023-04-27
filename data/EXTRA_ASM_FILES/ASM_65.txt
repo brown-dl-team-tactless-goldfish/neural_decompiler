@@ -1,0 +1,519 @@
+isNumber:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $48, %rsp
+        movq    %rdi, -40(%rbp)
+        cmpq    $0, -40(%rbp)
+        jne     .L4
+        movl    $0, %eax
+        jmp     .L3
+.L5:
+        addq    $1, -40(%rbp)
+.L4:
+        movq    -40(%rbp), %rax
+        movzbl  (%rax), %eax
+        cmpb    $32, %al
+        je      .L5
+        movq    -40(%rbp), %rax
+        movzbl  (%rax), %eax
+        testb   %al, %al
+        jne     .L6
+        movl    $0, %eax
+        jmp     .L3
+.L6:
+        movq    -40(%rbp), %rax
+        movq    %rax, -24(%rbp)
+        movq    -40(%rbp), %rax
+        movq    %rax, %rdi
+        call    strlen
+        leaq    -1(%rax), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movq    %rax, -8(%rbp)
+        jmp     .L7
+.L8:
+        subq    $1, -8(%rbp)
+.L7:
+        movq    -8(%rbp), %rax
+        movzbl  (%rax), %eax
+        cmpb    $32, %al
+        je      .L8
+        movb    $0, -9(%rbp)
+        movb    $0, -10(%rbp)
+        movb    $0, -11(%rbp)
+        jmp     .L9
+.L22:
+        movq    -40(%rbp), %rax
+        movzbl  (%rax), %eax
+        cmpb    $47, %al
+        jle     .L10
+        movq    -40(%rbp), %rax
+        movzbl  (%rax), %eax
+        cmpb    $57, %al
+        jg      .L10
+        movb    $1, -11(%rbp)
+        jmp     .L11
+.L10:
+        movq    -40(%rbp), %rax
+        movzbl  (%rax), %eax
+        cmpb    $46, %al
+        jne     .L12
+        cmpb    $0, -10(%rbp)
+        jne     .L13
+        cmpb    $0, -9(%rbp)
+        je      .L14
+.L13:
+        movl    $0, %eax
+        jmp     .L3
+.L14:
+        movb    $1, -9(%rbp)
+        jmp     .L11
+.L12:
+        movq    -40(%rbp), %rax
+        movzbl  (%rax), %eax
+        cmpb    $101, %al
+        jne     .L15
+        movzbl  -11(%rbp), %eax
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L16
+        cmpb    $0, -10(%rbp)
+        je      .L17
+.L16:
+        movl    $0, %eax
+        jmp     .L3
+.L17:
+        movb    $1, -10(%rbp)
+        movb    $0, -11(%rbp)
+        jmp     .L11
+.L15:
+        movq    -40(%rbp), %rax
+        movzbl  (%rax), %eax
+        cmpb    $45, %al
+        je      .L18
+        movq    -40(%rbp), %rax
+        movzbl  (%rax), %eax
+        cmpb    $43, %al
+        jne     .L19
+.L18:
+        movq    -40(%rbp), %rax
+        cmpq    -24(%rbp), %rax
+        je      .L23
+        movq    -40(%rbp), %rax
+        subq    $1, %rax
+        movzbl  (%rax), %eax
+        cmpb    $101, %al
+        je      .L23
+        movl    $0, %eax
+        jmp     .L3
+.L19:
+        movl    $0, %eax
+        jmp     .L3
+.L23:
+        nop
+.L11:
+        addq    $1, -40(%rbp)
+.L9:
+        movq    -40(%rbp), %rax
+        movzbl  (%rax), %eax
+        testb   %al, %al
+        je      .L21
+        movq    -8(%rbp), %rax
+        addq    $1, %rax
+        cmpq    %rax, -40(%rbp)
+        jne     .L22
+.L21:
+        movzbl  -11(%rbp), %eax
+.L3:
+        leave
+        ret
+.LC0:
+        .string "0"
+.LC1:
+        .string "/app/example.c"
+.LC2:
+        .string "isNumber(\"0\") == true"
+.LC3:
+        .string "0!"
+.LC4:
+        .string "isNumber(\"0!\") == false"
+.LC5:
+        .string " 0.1 "
+.LC6:
+        .string "isNumber(\" 0.1 \") == true"
+.LC7:
+        .string "abc"
+.LC8:
+        .string "isNumber(\"abc\") == false"
+.LC9:
+        .string "1 a"
+.LC10:
+        .string "isNumber(\"1 a\") == false"
+.LC11:
+        .string "2e10"
+.LC12:
+        .string "isNumber(\"2e10\") == true"
+.LC13:
+        .string "2e10e10"
+.LC14:
+        .string "isNumber(\"2e10e10\") == false"
+.LC15:
+        .string "2e"
+.LC16:
+        .string "isNumber(\"2e\") == false"
+.LC17:
+        .string "e10"
+.LC18:
+        .string "isNumber(\"e10\") == false"
+.LC19:
+        .string "005047e+6"
+.LC20:
+        .string "isNumber(\"005047e+6\") == true"
+.LC21:
+        .string "3.2e6"
+.LC22:
+        .string "isNumber(\"3.2e6\") == true"
+.LC23:
+        .string "3.2e0.6"
+.LC24:
+        .string "isNumber(\"3.2e0.6\") == false"
+.LC25:
+        .string ".e06"
+.LC26:
+        .string "isNumber(\".e06\") == false"
+.LC27:
+        .string "-1234"
+.LC28:
+        .string "isNumber(\"-1234\") == true"
+.LC29:
+        .string "+1234"
+.LC30:
+        .string "isNumber(\"+1234\") == true"
+.LC31:
+        .string "6+1"
+.LC32:
+        .string "isNumber(\"6+1\") == false"
+.LC33:
+        .string "1.2.3"
+.LC34:
+        .string "isNumber(\"1.2.3\") == false"
+.LC35:
+        .string ""
+.LC36:
+        .string "isNumber(\"\") == false"
+.LC37:
+        .string " "
+.LC38:
+        .string "isNumber(\" \") == false"
+.LC39:
+        .string " . "
+.LC40:
+        .string "isNumber(\" . \") == false"
+.LC41:
+        .string " + "
+.LC42:
+        .string "isNumber(\" + \") == false"
+.LC43:
+        .string "+1+2"
+.LC44:
+        .string "isNumber(\"+1+2\") == false"
+.LC45:
+        .string " e "
+.LC46:
+        .string "isNumber(\" e \") == false"
+.LC47:
+        .string ".23"
+.LC48:
+        .string "isNumber(\".23\") == true"
+.LC49:
+        .string "00."
+.LC50:
+        .string "isNumber(\"00.\") == true"
+.LC51:
+        .string " -54.53061"
+.LC52:
+        .string "isNumber(\" -54.53061\") == true"
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    $.LC0, %edi
+        call    isNumber
+        testb   %al, %al
+        jne     .L25
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $44, %edx
+        movl    $.LC1, %esi
+        movl    $.LC2, %edi
+        call    __assert_fail
+.L25:
+        movl    $.LC3, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L26
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $45, %edx
+        movl    $.LC1, %esi
+        movl    $.LC4, %edi
+        call    __assert_fail
+.L26:
+        movl    $.LC5, %edi
+        call    isNumber
+        testb   %al, %al
+        jne     .L27
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $46, %edx
+        movl    $.LC1, %esi
+        movl    $.LC6, %edi
+        call    __assert_fail
+.L27:
+        movl    $.LC7, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L28
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $47, %edx
+        movl    $.LC1, %esi
+        movl    $.LC8, %edi
+        call    __assert_fail
+.L28:
+        movl    $.LC9, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L29
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $48, %edx
+        movl    $.LC1, %esi
+        movl    $.LC10, %edi
+        call    __assert_fail
+.L29:
+        movl    $.LC11, %edi
+        call    isNumber
+        testb   %al, %al
+        jne     .L30
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $49, %edx
+        movl    $.LC1, %esi
+        movl    $.LC12, %edi
+        call    __assert_fail
+.L30:
+        movl    $.LC13, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L31
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $50, %edx
+        movl    $.LC1, %esi
+        movl    $.LC14, %edi
+        call    __assert_fail
+.L31:
+        movl    $.LC15, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L32
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $51, %edx
+        movl    $.LC1, %esi
+        movl    $.LC16, %edi
+        call    __assert_fail
+.L32:
+        movl    $.LC17, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L33
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $52, %edx
+        movl    $.LC1, %esi
+        movl    $.LC18, %edi
+        call    __assert_fail
+.L33:
+        movl    $.LC19, %edi
+        call    isNumber
+        testb   %al, %al
+        jne     .L34
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $53, %edx
+        movl    $.LC1, %esi
+        movl    $.LC20, %edi
+        call    __assert_fail
+.L34:
+        movl    $.LC21, %edi
+        call    isNumber
+        testb   %al, %al
+        jne     .L35
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $54, %edx
+        movl    $.LC1, %esi
+        movl    $.LC22, %edi
+        call    __assert_fail
+.L35:
+        movl    $.LC23, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L36
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $55, %edx
+        movl    $.LC1, %esi
+        movl    $.LC24, %edi
+        call    __assert_fail
+.L36:
+        movl    $.LC25, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L37
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $56, %edx
+        movl    $.LC1, %esi
+        movl    $.LC26, %edi
+        call    __assert_fail
+.L37:
+        movl    $.LC27, %edi
+        call    isNumber
+        testb   %al, %al
+        jne     .L38
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $57, %edx
+        movl    $.LC1, %esi
+        movl    $.LC28, %edi
+        call    __assert_fail
+.L38:
+        movl    $.LC29, %edi
+        call    isNumber
+        testb   %al, %al
+        jne     .L39
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $58, %edx
+        movl    $.LC1, %esi
+        movl    $.LC30, %edi
+        call    __assert_fail
+.L39:
+        movl    $.LC31, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L40
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $59, %edx
+        movl    $.LC1, %esi
+        movl    $.LC32, %edi
+        call    __assert_fail
+.L40:
+        movl    $.LC33, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L41
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $60, %edx
+        movl    $.LC1, %esi
+        movl    $.LC34, %edi
+        call    __assert_fail
+.L41:
+        movl    $.LC35, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L42
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $61, %edx
+        movl    $.LC1, %esi
+        movl    $.LC36, %edi
+        call    __assert_fail
+.L42:
+        movl    $.LC37, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L43
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $62, %edx
+        movl    $.LC1, %esi
+        movl    $.LC38, %edi
+        call    __assert_fail
+.L43:
+        movl    $.LC39, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L44
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $63, %edx
+        movl    $.LC1, %esi
+        movl    $.LC40, %edi
+        call    __assert_fail
+.L44:
+        movl    $.LC41, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L45
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $64, %edx
+        movl    $.LC1, %esi
+        movl    $.LC42, %edi
+        call    __assert_fail
+.L45:
+        movl    $.LC43, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L46
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $65, %edx
+        movl    $.LC1, %esi
+        movl    $.LC44, %edi
+        call    __assert_fail
+.L46:
+        movl    $.LC45, %edi
+        call    isNumber
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L47
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $66, %edx
+        movl    $.LC1, %esi
+        movl    $.LC46, %edi
+        call    __assert_fail
+.L47:
+        movl    $.LC47, %edi
+        call    isNumber
+        testb   %al, %al
+        jne     .L48
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $67, %edx
+        movl    $.LC1, %esi
+        movl    $.LC48, %edi
+        call    __assert_fail
+.L48:
+        movl    $.LC49, %edi
+        call    isNumber
+        testb   %al, %al
+        jne     .L49
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $68, %edx
+        movl    $.LC1, %esi
+        movl    $.LC50, %edi
+        call    __assert_fail
+.L49:
+        movl    $.LC51, %edi
+        call    isNumber
+        testb   %al, %al
+        jne     .L50
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $69, %edx
+        movl    $.LC1, %esi
+        movl    $.LC52, %edi
+        call    __assert_fail
+.L50:
+        movl    $0, %eax
+        popq    %rbp
+        ret
+__PRETTY_FUNCTION__.4165:
+        .string "main"

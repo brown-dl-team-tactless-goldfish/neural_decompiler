@@ -1,0 +1,165 @@
+nthUglyNumber:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $64, %rsp
+        movl    %edi, -52(%rbp)
+        cmpl    $1, -52(%rbp)
+        jg      .L2
+        movl    $1, %eax
+        jmp     .L3
+.L2:
+        movl    -52(%rbp), %eax
+        cltq
+        salq    $2, %rax
+        movq    %rax, %rdi
+        call    malloc
+        movq    %rax, -32(%rbp)
+        movq    -32(%rbp), %rax
+        movl    $1, (%rax)
+        movl    $0, -4(%rbp)
+        movl    $0, -8(%rbp)
+        movl    $0, -12(%rbp)
+        movl    $1, -16(%rbp)
+        jmp     .L4
+.L10:
+        movl    $0, -20(%rbp)
+        movl    -4(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        leal    (%rax,%rax), %ecx
+        movl    -8(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %edx
+        movl    %edx, %eax
+        addl    %eax, %eax
+        addl    %edx, %eax
+        cmpl    %eax, %ecx
+        jg      .L5
+        movl    -4(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        addl    %eax, %eax
+        movl    %eax, -20(%rbp)
+        jmp     .L6
+.L5:
+        movl    -8(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %edx
+        movl    %edx, %eax
+        addl    %eax, %eax
+        addl    %edx, %eax
+        movl    %eax, -20(%rbp)
+.L6:
+        movl    -12(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %edx
+        movl    %edx, %eax
+        sall    $2, %eax
+        addl    %edx, %eax
+        cmpl    %eax, -20(%rbp)
+        jle     .L7
+        movl    -12(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %edx
+        movl    %edx, %eax
+        sall    $2, %eax
+        addl    %edx, %eax
+        movl    %eax, -20(%rbp)
+.L7:
+        movl    -16(%rbp), %eax
+        leal    1(%rax), %edx
+        movl    %edx, -16(%rbp)
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -32(%rbp), %rax
+        addq    %rax, %rdx
+        movl    -20(%rbp), %eax
+        movl    %eax, (%rdx)
+        movl    -4(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        addl    %eax, %eax
+        cmpl    %eax, -20(%rbp)
+        jne     .L8
+        addl    $1, -4(%rbp)
+.L8:
+        movl    -8(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %edx
+        movl    %edx, %eax
+        addl    %eax, %eax
+        addl    %edx, %eax
+        cmpl    %eax, -20(%rbp)
+        jne     .L9
+        addl    $1, -8(%rbp)
+.L9:
+        movl    -12(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %edx
+        movl    %edx, %eax
+        sall    $2, %eax
+        addl    %edx, %eax
+        cmpl    %eax, -20(%rbp)
+        jne     .L4
+        addl    $1, -12(%rbp)
+.L4:
+        movl    -16(%rbp), %eax
+        cmpl    -52(%rbp), %eax
+        jl      .L10
+        movl    -52(%rbp), %eax
+        cltq
+        salq    $2, %rax
+        leaq    -4(%rax), %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        movl    %eax, -36(%rbp)
+        movq    -32(%rbp), %rax
+        movq    %rax, %rdi
+        call    free
+        movl    -36(%rbp), %eax
+.L3:
+        leave
+        ret
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    $10, -8(%rbp)
+        movl    $1, -4(%rbp)
+        jmp     .L12
+.L13:
+        addl    $1, -4(%rbp)
+.L12:
+        movl    -4(%rbp), %eax
+        cmpl    -8(%rbp), %eax
+        jle     .L13
+        movl    $0, %eax
+        popq    %rbp
+        ret

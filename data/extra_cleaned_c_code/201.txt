@@ -1,0 +1,43 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>
+int rangeBitwiseAnd_1(int m, int n) {
+unsigned ans = m;
+unsigned k;
+unsigned one_index = 0; 
+unsigned zero_index = 0; 
+while (one_index < 31) {
+while (one_index < 31 && (ans & (1 << one_index)) == 0){
+one_index ++;
+}
+zero_index = one_index;
+while (zero_index < 32 && ans & (1 << zero_index)) {
+zero_index ++;
+}
+if (zero_index > one_index) {
+k = (ans | (1 << zero_index)) >> zero_index;
+k = k << zero_index;
+if (k > n) return ans; 
+ans &= k;
+}
+if (ans == 0) return 0; 
+one_index ++;
+}
+return ans;
+}
+int rangeBitwiseAnd(int m, int n) {
+int k = 30;
+unsigned ans = m & n;
+while (k > 0 && (m & (1 << k)) == (n & (1 << k))){
+k--;
+}
+ans >>= k;
+ans <<= k;
+return ans;
+}
+int main() {
+return 0;
+}

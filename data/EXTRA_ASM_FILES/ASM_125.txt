@@ -1,0 +1,201 @@
+ch2lower:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    %edi, %eax
+        movb    %al, -4(%rbp)
+        cmpb    $64, -4(%rbp)
+        jle     .L2
+        cmpb    $90, -4(%rbp)
+        jg      .L2
+        movzbl  -4(%rbp), %eax
+        addl    $32, %eax
+        movb    %al, -4(%rbp)
+.L2:
+        movzbl  -4(%rbp), %eax
+        popq    %rbp
+        ret
+isPalindrome:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        pushq   %rbx
+        subq    $40, %rsp
+        movq    %rdi, -40(%rbp)
+        movq    -40(%rbp), %rax
+        movq    %rax, %rdi
+        call    strlen
+        movl    %eax, -28(%rbp)
+        movl    $0, -24(%rbp)
+        movl    -24(%rbp), %eax
+        movl    %eax, -20(%rbp)
+        movl    -28(%rbp), %eax
+        subl    $1, %eax
+        movl    %eax, -24(%rbp)
+        jmp     .L5
+.L8:
+        addl    $1, -20(%rbp)
+        movl    -20(%rbp), %eax
+        cmpl    -24(%rbp), %eax
+        jg      .L19
+.L6:
+        movl    -20(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        movl    %eax, %edi
+        call    ch2lower
+        cmpb    $47, %al
+        jle     .L8
+        movl    -20(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        movl    %eax, %edi
+        call    ch2lower
+        cmpb    $57, %al
+        jle     .L9
+        movl    -20(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        movl    %eax, %edi
+        call    ch2lower
+        cmpb    $96, %al
+        jle     .L8
+.L9:
+        movl    -20(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        movl    %eax, %edi
+        call    ch2lower
+        cmpb    $122, %al
+        jg      .L8
+        jmp     .L10
+.L19:
+        nop
+        jmp     .L10
+.L12:
+        subl    $1, -24(%rbp)
+        movl    -20(%rbp), %eax
+        cmpl    -24(%rbp), %eax
+        jg      .L20
+.L10:
+        movl    -24(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        movl    %eax, %edi
+        call    ch2lower
+        cmpb    $47, %al
+        jle     .L12
+        movl    -24(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        movl    %eax, %edi
+        call    ch2lower
+        cmpb    $57, %al
+        jle     .L13
+        movl    -24(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        movl    %eax, %edi
+        call    ch2lower
+        cmpb    $96, %al
+        jle     .L12
+.L13:
+        movl    -24(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        movl    %eax, %edi
+        call    ch2lower
+        cmpb    $122, %al
+        jg      .L12
+        jmp     .L11
+.L20:
+        nop
+.L11:
+        movl    -20(%rbp), %eax
+        cmpl    -24(%rbp), %eax
+        jg      .L21
+        movl    -20(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        movl    %eax, %edi
+        call    ch2lower
+        movl    %eax, %ebx
+        movl    -24(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        movl    %eax, %edi
+        call    ch2lower
+        cmpb    %al, %bl
+        je      .L16
+        movl    $0, %eax
+        jmp     .L17
+.L16:
+        addl    $1, -20(%rbp)
+        subl    $1, -24(%rbp)
+.L5:
+        movl    -20(%rbp), %eax
+        cmpl    -24(%rbp), %eax
+        jle     .L6
+        jmp     .L15
+.L21:
+        nop
+.L15:
+        movl    $1, %eax
+.L17:
+        addq    $40, %rsp
+        popq    %rbx
+        popq    %rbp
+        ret
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movabsq $6998642673526317121, %rax
+        movabsq $6998642673526272032, %rdx
+        movq    %rax, -32(%rbp)
+        movq    %rdx, -24(%rbp)
+        movabsq $2322287723582415648, %rax
+        movq    %rax, -16(%rbp)
+        movl    $1634623824, -8(%rbp)
+        movw    $24941, -4(%rbp)
+        movb    $0, -2(%rbp)
+        movabsq $7142815800777466226, %rax
+        movq    %rax, -43(%rbp)
+        movw    $29281, -35(%rbp)
+        movb    $0, -33(%rbp)
+        movb    $0, -44(%rbp)
+        movw    $97, -46(%rbp)
+        movw    $11310, -49(%rbp)
+        movb    $0, -47(%rbp)
+        movw    $46, -51(%rbp)
+        movw    $32, -53(%rbp)
+        movl    $0, %eax
+        popq    %rbp
+        ret

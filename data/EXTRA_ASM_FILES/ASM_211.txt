@@ -1,0 +1,388 @@
+wordDictionaryCreate:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $16, %rsp
+        movl    $216, %edi
+        call    malloc
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movb    $0, (%rax)
+        movq    -8(%rbp), %rax
+        addq    $8, %rax
+        movl    $208, %edx
+        movl    $0, %esi
+        movq    %rax, %rdi
+        call    memset
+        movq    -8(%rbp), %rax
+        leave
+        ret
+addWord:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        pushq   %rbx
+        subq    $40, %rsp
+        movq    %rdi, -40(%rbp)
+        movq    %rsi, -48(%rbp)
+        cmpq    $0, -40(%rbp)
+        je      .L10
+        cmpq    $0, -48(%rbp)
+        je      .L10
+        movq    -40(%rbp), %rax
+        movq    %rax, -24(%rbp)
+        jmp     .L7
+.L9:
+        movq    -48(%rbp), %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        leal    -97(%rax), %edx
+        movq    -24(%rbp), %rax
+        movslq  %edx, %rdx
+        movq    8(%rax,%rdx,8), %rax
+        testq   %rax, %rax
+        jne     .L8
+        movq    -48(%rbp), %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        leal    -97(%rax), %ebx
+        movl    $0, %eax
+        call    wordDictionaryCreate
+        movq    %rax, %rcx
+        movq    -24(%rbp), %rax
+        movslq  %ebx, %rdx
+        movq    %rcx, 8(%rax,%rdx,8)
+.L8:
+        movq    -48(%rbp), %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        leal    -97(%rax), %edx
+        movq    -24(%rbp), %rax
+        movslq  %edx, %rdx
+        movq    8(%rax,%rdx,8), %rax
+        movq    %rax, -24(%rbp)
+        addq    $1, -48(%rbp)
+.L7:
+        movq    -48(%rbp), %rax
+        movzbl  (%rax), %eax
+        testb   %al, %al
+        jne     .L9
+        movq    -24(%rbp), %rax
+        movb    $1, (%rax)
+        jmp     .L3
+.L10:
+        nop
+.L3:
+        addq    $40, %rsp
+        popq    %rbx
+        popq    %rbp
+        ret
+search:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movq    %rsi, -32(%rbp)
+        cmpq    $0, -24(%rbp)
+        je      .L12
+        cmpq    $0, -32(%rbp)
+        jne     .L13
+.L12:
+        movl    $0, %eax
+        jmp     .L14
+.L13:
+        movq    -32(%rbp), %rax
+        movzbl  (%rax), %eax
+        testb   %al, %al
+        jne     .L15
+        movq    -24(%rbp), %rax
+        movzbl  (%rax), %eax
+        testb   %al, %al
+        je      .L16
+        movl    $1, %eax
+        jmp     .L14
+.L16:
+        movl    $0, %eax
+        jmp     .L14
+.L15:
+        movq    -32(%rbp), %rax
+        movzbl  (%rax), %eax
+        cmpb    $46, %al
+        jne     .L17
+        movl    $0, -4(%rbp)
+        jmp     .L18
+.L20:
+        movq    -24(%rbp), %rax
+        movl    -4(%rbp), %edx
+        movslq  %edx, %rdx
+        movq    8(%rax,%rdx,8), %rax
+        testq   %rax, %rax
+        je      .L19
+        movq    -32(%rbp), %rax
+        leaq    1(%rax), %rcx
+        movq    -24(%rbp), %rax
+        movl    -4(%rbp), %edx
+        movslq  %edx, %rdx
+        movq    8(%rax,%rdx,8), %rax
+        movq    %rcx, %rsi
+        movq    %rax, %rdi
+        call    search
+        movb    %al, -5(%rbp)
+        cmpb    $0, -5(%rbp)
+        je      .L19
+        movl    $1, %eax
+        jmp     .L14
+.L19:
+        addl    $1, -4(%rbp)
+.L18:
+        cmpl    $25, -4(%rbp)
+        jle     .L20
+        movl    $0, %eax
+        jmp     .L14
+.L17:
+        movq    -32(%rbp), %rax
+        leaq    1(%rax), %rcx
+        movq    -32(%rbp), %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        leal    -97(%rax), %edx
+        movq    -24(%rbp), %rax
+        movslq  %edx, %rdx
+        movq    8(%rax,%rdx,8), %rax
+        movq    %rcx, %rsi
+        movq    %rax, %rdi
+        call    search
+.L14:
+        leave
+        ret
+wordDictionaryFree:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        cmpq    $0, -24(%rbp)
+        je      .L26
+        movl    $0, -4(%rbp)
+        jmp     .L24
+.L25:
+        movq    -24(%rbp), %rax
+        movl    -4(%rbp), %edx
+        movslq  %edx, %rdx
+        movq    8(%rax,%rdx,8), %rax
+        movq    %rax, %rdi
+        call    wordDictionaryFree
+        addl    $1, -4(%rbp)
+.L24:
+        cmpl    $25, -4(%rbp)
+        jle     .L25
+        movq    -24(%rbp), %rax
+        movq    %rax, %rdi
+        call    free
+        jmp     .L21
+.L26:
+        nop
+.L21:
+        leave
+        ret
+.LC0:
+        .string "bad"
+.LC1:
+        .string "dad"
+.LC2:
+        .string "mad"
+.LC3:
+        .string "dcd"
+.LC4:
+        .string "pad"
+.LC5:
+        .string "/app/example.c"
+.LC6:
+        .string "search(wordDictionary, \"pad\") == false"
+.LC7:
+        .string "search(wordDictionary, \"bad\") == true"
+.LC8:
+        .string ".ad"
+.LC9:
+        .string "search(wordDictionary, \".ad\") == true"
+.LC10:
+        .string "b.."
+.LC11:
+        .string "search(wordDictionary, \"b..\") == true"
+.LC12:
+        .string "b.d"
+.LC13:
+        .string "search(wordDictionary, \"b.d\") == true"
+.LC14:
+        .string "b.c"
+.LC15:
+        .string "search(wordDictionary, \"b.c\") == false"
+.LC16:
+        .string ".cd"
+.LC17:
+        .string "search(wordDictionary, \".cd\") == true"
+.LC18:
+        .string "b"
+.LC19:
+        .string "search(wordDictionary, \"b\") == false"
+.LC20:
+        .string "."
+.LC21:
+        .string "search(wordDictionary, \".\") == false"
+.LC22:
+        .string "badd"
+.LC23:
+        .string "search(wordDictionary, \"badd\") == false"
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $16, %rsp
+        movl    $0, %eax
+        call    wordDictionaryCreate
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movl    $.LC0, %esi
+        movq    %rax, %rdi
+        call    addWord
+        movq    -8(%rbp), %rax
+        movl    $.LC1, %esi
+        movq    %rax, %rdi
+        call    addWord
+        movq    -8(%rbp), %rax
+        movl    $.LC2, %esi
+        movq    %rax, %rdi
+        call    addWord
+        movq    -8(%rbp), %rax
+        movl    $.LC3, %esi
+        movq    %rax, %rdi
+        call    addWord
+        movq    -8(%rbp), %rax
+        movl    $.LC4, %esi
+        movq    %rax, %rdi
+        call    search
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L28
+        movl    $__PRETTY_FUNCTION__.4179, %ecx
+        movl    $65, %edx
+        movl    $.LC5, %esi
+        movl    $.LC6, %edi
+        call    __assert_fail
+.L28:
+        movq    -8(%rbp), %rax
+        movl    $.LC0, %esi
+        movq    %rax, %rdi
+        call    search
+        testb   %al, %al
+        jne     .L29
+        movl    $__PRETTY_FUNCTION__.4179, %ecx
+        movl    $66, %edx
+        movl    $.LC5, %esi
+        movl    $.LC7, %edi
+        call    __assert_fail
+.L29:
+        movq    -8(%rbp), %rax
+        movl    $.LC8, %esi
+        movq    %rax, %rdi
+        call    search
+        testb   %al, %al
+        jne     .L30
+        movl    $__PRETTY_FUNCTION__.4179, %ecx
+        movl    $67, %edx
+        movl    $.LC5, %esi
+        movl    $.LC9, %edi
+        call    __assert_fail
+.L30:
+        movq    -8(%rbp), %rax
+        movl    $.LC10, %esi
+        movq    %rax, %rdi
+        call    search
+        testb   %al, %al
+        jne     .L31
+        movl    $__PRETTY_FUNCTION__.4179, %ecx
+        movl    $68, %edx
+        movl    $.LC5, %esi
+        movl    $.LC11, %edi
+        call    __assert_fail
+.L31:
+        movq    -8(%rbp), %rax
+        movl    $.LC12, %esi
+        movq    %rax, %rdi
+        call    search
+        testb   %al, %al
+        jne     .L32
+        movl    $__PRETTY_FUNCTION__.4179, %ecx
+        movl    $69, %edx
+        movl    $.LC5, %esi
+        movl    $.LC13, %edi
+        call    __assert_fail
+.L32:
+        movq    -8(%rbp), %rax
+        movl    $.LC14, %esi
+        movq    %rax, %rdi
+        call    search
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L33
+        movl    $__PRETTY_FUNCTION__.4179, %ecx
+        movl    $70, %edx
+        movl    $.LC5, %esi
+        movl    $.LC15, %edi
+        call    __assert_fail
+.L33:
+        movq    -8(%rbp), %rax
+        movl    $.LC16, %esi
+        movq    %rax, %rdi
+        call    search
+        testb   %al, %al
+        jne     .L34
+        movl    $__PRETTY_FUNCTION__.4179, %ecx
+        movl    $71, %edx
+        movl    $.LC5, %esi
+        movl    $.LC17, %edi
+        call    __assert_fail
+.L34:
+        movq    -8(%rbp), %rax
+        movl    $.LC18, %esi
+        movq    %rax, %rdi
+        call    search
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L35
+        movl    $__PRETTY_FUNCTION__.4179, %ecx
+        movl    $72, %edx
+        movl    $.LC5, %esi
+        movl    $.LC19, %edi
+        call    __assert_fail
+.L35:
+        movq    -8(%rbp), %rax
+        movl    $.LC20, %esi
+        movq    %rax, %rdi
+        call    search
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L36
+        movl    $__PRETTY_FUNCTION__.4179, %ecx
+        movl    $73, %edx
+        movl    $.LC5, %esi
+        movl    $.LC21, %edi
+        call    __assert_fail
+.L36:
+        movq    -8(%rbp), %rax
+        movl    $.LC22, %esi
+        movq    %rax, %rdi
+        call    search
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L37
+        movl    $__PRETTY_FUNCTION__.4179, %ecx
+        movl    $74, %edx
+        movl    $.LC5, %esi
+        movl    $.LC23, %edi
+        call    __assert_fail
+.L37:
+        movq    -8(%rbp), %rax
+        movq    %rax, %rdi
+        call    wordDictionaryFree
+        movl    $0, %eax
+        leave
+        ret
+__PRETTY_FUNCTION__.4179:
+        .string "main"

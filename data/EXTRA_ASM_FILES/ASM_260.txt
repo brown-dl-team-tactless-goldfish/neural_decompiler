@@ -1,0 +1,135 @@
+singleNumber:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $64, %rsp
+        movq    %rdi, -40(%rbp)
+        movl    %esi, -44(%rbp)
+        movq    %rdx, -56(%rbp)
+        cmpq    $0, -40(%rbp)
+        je      .L2
+        cmpq    $0, -56(%rbp)
+        jne     .L3
+.L2:
+        movl    $0, %eax
+        jmp     .L4
+.L3:
+        movq    -56(%rbp), %rax
+        movl    $2, (%rax)
+        movq    -56(%rbp), %rax
+        movl    (%rax), %eax
+        cltq
+        movl    $4, %esi
+        movq    %rax, %rdi
+        call    calloc
+        movq    %rax, -32(%rbp)
+        movl    $0, -4(%rbp)
+        movl    $0, -8(%rbp)
+        jmp     .L5
+.L6:
+        movl    -8(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        xorl    %eax, -4(%rbp)
+        addl    $1, -8(%rbp)
+.L5:
+        movl    -8(%rbp), %eax
+        cmpl    -44(%rbp), %eax
+        jl      .L6
+        movl    $0, -12(%rbp)
+        jmp     .L7
+.L8:
+        addl    $1, -12(%rbp)
+.L7:
+        movl    -12(%rbp), %eax
+        movl    -4(%rbp), %edx
+        movl    %eax, %ecx
+        sarl    %cl, %edx
+        movl    %edx, %eax
+        andl    $1, %eax
+        testl   %eax, %eax
+        je      .L8
+        movl    $0, -16(%rbp)
+        movl    $0, -20(%rbp)
+        movl    $0, -8(%rbp)
+        jmp     .L9
+.L12:
+        movl    -8(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %edx
+        movl    -12(%rbp), %eax
+        movl    %eax, %ecx
+        sarl    %cl, %edx
+        movl    %edx, %eax
+        andl    $1, %eax
+        testl   %eax, %eax
+        je      .L10
+        movl    -8(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        xorl    %eax, -16(%rbp)
+        jmp     .L11
+.L10:
+        movl    -8(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        xorl    %eax, -20(%rbp)
+.L11:
+        addl    $1, -8(%rbp)
+.L9:
+        movl    -8(%rbp), %eax
+        cmpl    -44(%rbp), %eax
+        jl      .L12
+        movq    -32(%rbp), %rax
+        movl    -16(%rbp), %edx
+        movl    %edx, (%rax)
+        movq    -32(%rbp), %rax
+        leaq    4(%rax), %rdx
+        movl    -20(%rbp), %eax
+        movl    %eax, (%rdx)
+        movq    -32(%rbp), %rax
+.L4:
+        leave
+        ret
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $64, %rsp
+        movl    $1, -48(%rbp)
+        movl    $2, -44(%rbp)
+        movl    $1, -40(%rbp)
+        movl    $3, -36(%rbp)
+        movl    $2, -32(%rbp)
+        movl    $5, -28(%rbp)
+        movl    $0, -52(%rbp)
+        leaq    -52(%rbp), %rdx
+        leaq    -48(%rbp), %rax
+        movl    $6, %esi
+        movq    %rax, %rdi
+        call    singleNumber
+        movq    %rax, -16(%rbp)
+        movl    $0, -4(%rbp)
+        jmp     .L14
+.L15:
+        addl    $1, -4(%rbp)
+.L14:
+        movl    -52(%rbp), %eax
+        cmpl    %eax, -4(%rbp)
+        jl      .L15
+        movq    -16(%rbp), %rax
+        movq    %rax, %rdi
+        call    free
+        movl    $0, %eax
+        leave
+        ret

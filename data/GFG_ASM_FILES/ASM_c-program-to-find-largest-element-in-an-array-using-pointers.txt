@@ -1,0 +1,70 @@
+findLargest:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        movl    $1, -4(%rbp)
+        jmp     .L2
+.L4:
+        movq    -24(%rbp), %rax
+        movl    (%rax), %edx
+        movl    -4(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rcx
+        movq    -24(%rbp), %rax
+        addq    %rcx, %rax
+        movl    (%rax), %eax
+        cmpl    %eax, %edx
+        jge     .L3
+        movl    -4(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %edx
+        movq    -24(%rbp), %rax
+        movl    %edx, (%rax)
+.L3:
+        addl    $1, -4(%rbp)
+.L2:
+        movl    -4(%rbp), %eax
+        cmpl    -28(%rbp), %eax
+        jl      .L4
+        nop
+        popq    %rbp
+        ret
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $16, %rsp
+        movl    $4, -4(%rbp)
+        movl    -4(%rbp), %eax
+        cltq
+        movl    $4, %esi
+        movq    %rax, %rdi
+        call    calloc
+        movq    %rax, -16(%rbp)
+        cmpq    $0, -16(%rbp)
+        jne     .L6
+        movl    $0, %edi
+        call    exit
+.L6:
+        movq    -16(%rbp), %rax
+        movl    $14, (%rax)
+        movq    -16(%rbp), %rax
+        addq    $4, %rax
+        movl    $12, (%rax)
+        movq    -16(%rbp), %rax
+        addq    $8, %rax
+        movl    $19, (%rax)
+        movq    -16(%rbp), %rax
+        addq    $12, %rax
+        movl    $20, (%rax)
+        movl    -4(%rbp), %edx
+        movq    -16(%rbp), %rax
+        movl    %edx, %esi
+        movq    %rax, %rdi
+        call    findLargest
+        movl    $0, %eax
+        leave
+        ret

@@ -1,0 +1,166 @@
+getHint:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $64, %rsp
+        movq    %rdi, -56(%rbp)
+        movq    %rsi, -64(%rbp)
+        movq    $0, -34(%rbp)
+        movw    $0, -26(%rbp)
+        movq    $0, -44(%rbp)
+        movw    $0, -36(%rbp)
+        movq    -56(%rbp), %rax
+        movq    %rax, %rdi
+        call    strlen
+        movl    %eax, -16(%rbp)
+        movl    $0, -4(%rbp)
+        movl    $0, -8(%rbp)
+        movl    $0, -12(%rbp)
+        jmp     .L2
+.L5:
+        movl    -12(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -56(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %edx
+        movl    -12(%rbp), %eax
+        movslq  %eax, %rcx
+        movq    -64(%rbp), %rax
+        addq    %rcx, %rax
+        movzbl  (%rax), %eax
+        cmpb    %al, %dl
+        jne     .L3
+        addl    $1, -4(%rbp)
+        jmp     .L4
+.L3:
+        movl    -12(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -56(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        subl    $48, %eax
+        movslq  %eax, %rdx
+        movzbl  -34(%rbp,%rdx), %edx
+        addl    $1, %edx
+        cltq
+        movb    %dl, -34(%rbp,%rax)
+        movl    -12(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -64(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        subl    $48, %eax
+        movslq  %eax, %rdx
+        movzbl  -44(%rbp,%rdx), %edx
+        addl    $1, %edx
+        cltq
+        movb    %dl, -44(%rbp,%rax)
+.L4:
+        addl    $1, -12(%rbp)
+.L2:
+        movl    -12(%rbp), %eax
+        cmpl    -16(%rbp), %eax
+        jl      .L5
+        movl    $0, -12(%rbp)
+        jmp     .L6
+.L7:
+        movl    -12(%rbp), %eax
+        cltq
+        movzbl  -44(%rbp,%rax), %edx
+        movl    -12(%rbp), %eax
+        cltq
+        movzbl  -34(%rbp,%rax), %eax
+        cmpb    %al, %dl
+        cmovle  %edx, %eax
+        movsbl  %al, %eax
+        addl    %eax, -8(%rbp)
+        addl    $1, -12(%rbp)
+.L6:
+        cmpl    $9, -12(%rbp)
+        jle     .L7
+        movl    $5, %edi
+        call    malloc
+        movq    %rax, -24(%rbp)
+        movq    -24(%rbp), %rax
+        addq    $5, %rax
+        movb    $0, (%rax)
+        movq    -24(%rbp), %rax
+        leave
+        ret
+.LC0:
+        .string "7810"
+.LC1:
+        .string "1807"
+.LC2:
+        .string "1A3B"
+.LC3:
+        .string "/app/example.c"
+.LC4:
+        .string "strcmp(getHint(\"1807\", \"7810\"), \"1A3B\") == 0"
+.LC5:
+        .string "0111"
+.LC6:
+        .string "1234"
+.LC7:
+        .string "0A1B"
+.LC8:
+        .string "strcmp(getHint(\"1234\", \"0111\"), \"0A1B\") == 0"
+.LC9:
+        .string "2211"
+.LC10:
+        .string "1122"
+.LC11:
+        .string "0A4B"
+.LC12:
+        .string "strcmp(getHint(\"1122\", \"2211\"), \"0A4B\") == 0"
+main:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    $.LC0, %esi
+        movl    $.LC1, %edi
+        call    getHint
+        movl    $.LC2, %esi
+        movq    %rax, %rdi
+        call    strcmp
+        testl   %eax, %eax
+        je      .L10
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $32, %edx
+        movl    $.LC3, %esi
+        movl    $.LC4, %edi
+        call    __assert_fail
+.L10:
+        movl    $.LC5, %esi
+        movl    $.LC6, %edi
+        call    getHint
+        movl    $.LC7, %esi
+        movq    %rax, %rdi
+        call    strcmp
+        testl   %eax, %eax
+        je      .L11
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $33, %edx
+        movl    $.LC3, %esi
+        movl    $.LC8, %edi
+        call    __assert_fail
+.L11:
+        movl    $.LC9, %esi
+        movl    $.LC10, %edi
+        call    getHint
+        movl    $.LC11, %esi
+        movq    %rax, %rdi
+        call    strcmp
+        testl   %eax, %eax
+        je      .L12
+        movl    $__PRETTY_FUNCTION__.4165, %ecx
+        movl    $34, %edx
+        movl    $.LC3, %esi
+        movl    $.LC12, %edi
+        call    __assert_fail
+.L12:
+        movl    $0, %eax
+        popq    %rbp
+        ret
+__PRETTY_FUNCTION__.4165:
+        .string "main"
