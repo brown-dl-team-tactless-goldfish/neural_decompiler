@@ -1,0 +1,33 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>
+int cmp(const void* a, const void* b)
+{
+	return *(int*)a - *(int*)b;
+}
+bool* checkArithmeticSubarrays(int* nums, int numsSize, int* l, int lSize, int* r, int rSize, int* returnSize){
+	bool* ans = malloc(sizeof(bool) * lSize);
+	for(int i = 0; i < lSize; i++){
+ans[i] = 1;
+	}
+	*returnSize = lSize;
+	int tmp[500];
+	for(int i = 0; i < lSize; i++)
+	{
+memcpy(tmp, nums + l[i], sizeof(int) * (r[i] - l[i] + 1));
+qsort(tmp, r[i] - l[i] + 1, sizeof(int), cmp);
+int diff = tmp[1] - tmp[0];
+for(int j = 0; j < r[i] - l[i]; j++)
+{
+if(tmp[j + 1] - tmp[j] != diff)
+{
+ans[i] = 0;
+break;
+}
+}
+	}
+	return ans;
+}
