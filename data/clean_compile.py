@@ -189,5 +189,5 @@ def compile():
     ccc.compile("LEETCODE/cleaned_c", "LEETCODE/C_FILES", "LEETCODE/ASM_FILES")
 
 if __name__ == "__main__":
-    # clean()
-    compile()
+    clean()
+    # compile()
