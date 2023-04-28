@@ -9,12 +9,13 @@ reserved_list = set(['auto', 'else', 'long', 'switch', 'break',	'enum',	'registe
                     'bool', 'true', 'false', 'int8_t', 'uint8_t', 'int16_t', 'uint16_t', 'int32_t', 'uint32_t', 
                     'int64_t', 'uint64_t', 'size_t', 'size_t', 'ssize_t', 'NAN', 'INFINITY', 'M_PI', 'SIZE_MAX'])
 
-operators = [' ', ';', '=', '~', '+', '-', '*', '/', ',', '.', 
+operators = [' ', ':', ';', '=', '~', '+', '-', '*', '/', ',', '.', 
             '<', '>', '&', '|', '%', '?', '{', '}', '^', '!', 
             '[', ']', '(', ')', '\n']
 
 for filename in sorted(list(os.listdir(folder_path))):
     print(filename, end='\r', flush=False)
+    # print(filename)
     with open(folder_path + '/' + filename, 'r') as f:
         FINAL_SRC_CODE = f.read()
 
@@ -39,11 +40,14 @@ for filename in sorted(list(os.listdir(folder_path))):
 
     func_names = set([x.split('(')[0] for x in param_names.strip().split() if '(' in x])
 
+    if '' in func_names:
+        func_names.remove('')
+
     ### REPLACE FUNC NAMES
     for i, func_name in enumerate(func_names):
         FINAL_SRC_CODE = FINAL_SRC_CODE.replace(func_name, 'func_' + str(i + 1))
 
-    # print(func_names)
+    print(func_names)
     param_names = re.findall(r'\((.*?)\)', param_names)
     # print(param_names)
     param_names = [[i.strip().split()[-1] for i in x.split(',')] for x in param_names if x != '']
@@ -84,5 +88,5 @@ for filename in sorted(list(os.listdir(folder_path))):
     with open(folder_path + '/' + filename, 'w') as out:
         out.write(FINAL_SRC_CODE)
 
-    # print(FINAL_SRC_CODE)
-    # break # remove this break before running!
+    print(FINAL_SRC_CODE)
+    break # remove this break before running!
