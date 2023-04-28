@@ -1,0 +1,40 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $16, %rsp
+        movl    %edi, -4(%rbp)
+        movl    %esi, -8(%rbp)
+        movl    -4(%rbp), %eax
+        cmpl    -8(%rbp), %eax
+        jl      .L2
+        movl    -4(%rbp), %eax
+        subl    -8(%rbp), %eax
+        jmp     .L3
+.L2:
+        movl    -8(%rbp), %eax
+        andl    $1, %eax
+        testl   %eax, %eax
+        jne     .L4
+        movl    -8(%rbp), %eax
+        movl    %eax, %edx
+        shrl    $31, %edx
+        addl    %edx, %eax
+        sarl    %eax
+        movl    %eax, %edx
+        movl    -4(%rbp), %eax
+        movl    %edx, %esi
+        movl    %eax, %edi
+        call    func_1
+        addl    $1, %eax
+        jmp     .L3
+.L4:
+        movl    -8(%rbp), %eax
+        leal    1(%rax), %edx
+        movl    -4(%rbp), %eax
+        movl    %edx, %esi
+        movl    %eax, %edi
+        call    func_1
+        addl    $1, %eax
+.L3:
+        leave
+        ret

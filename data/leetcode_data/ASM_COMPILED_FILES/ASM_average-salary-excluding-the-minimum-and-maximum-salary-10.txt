@@ -1,0 +1,75 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -40(%rbp)
+        movl    %esi, -44(%rbp)
+        movl    $0, -4(%rbp)
+        movq    -40(%rbp), %rax
+        movl    (%rax), %eax
+        movl    %eax, -8(%rbp)
+        pxor    %xmm0, %xmm0
+        movsd   %xmm0, -16(%rbp)
+        movl    $0, -20(%rbp)
+        jmp     .L2
+.L5:
+        movl    -20(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        cmpl    %eax, -4(%rbp)
+        jge     .L3
+        movl    -20(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        movl    %eax, -4(%rbp)
+        jmp     .L4
+.L3:
+        movl    -20(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        cmpl    %eax, -8(%rbp)
+        jle     .L4
+        movl    -20(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        movl    %eax, -8(%rbp)
+.L4:
+        movl    -20(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        cvtsi2sd        %eax, %xmm0
+        movsd   -16(%rbp), %xmm1
+        addsd   %xmm1, %xmm0
+        movsd   %xmm0, -16(%rbp)
+        addl    $1, -20(%rbp)
+.L2:
+        movl    -20(%rbp), %eax
+        cmpl    -44(%rbp), %eax
+        jl      .L5
+        cvtsi2sd        -4(%rbp), %xmm1
+        movsd   -16(%rbp), %xmm0
+        subsd   %xmm1, %xmm0
+        cvtsi2sd        -8(%rbp), %xmm1
+        subsd   %xmm1, %xmm0
+        movl    -44(%rbp), %eax
+        subl    $2, %eax
+        cvtsi2sd        %eax, %xmm1
+        divsd   %xmm1, %xmm0
+        movsd   %xmm0, -32(%rbp)
+        movsd   -32(%rbp), %xmm0
+        popq    %rbp
+        ret

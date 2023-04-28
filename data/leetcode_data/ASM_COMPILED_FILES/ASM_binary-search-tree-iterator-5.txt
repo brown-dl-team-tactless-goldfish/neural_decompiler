@@ -1,0 +1,96 @@
+func_2:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $16, %rsp
+        movq    %rdi, -8(%rbp)
+        movq    %rsi, -16(%rbp)
+        cmpq    $0, -8(%rbp)
+        je      .L4
+        movq    -8(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    -16(%rbp), %rdx
+        movq    %rdx, %rsi
+        movq    %rax, %rdi
+        call    func_2
+        movq    -16(%rbp), %rax
+        movl    400000(%rax), %eax
+        leal    1(%rax), %ecx
+        movq    -16(%rbp), %rdx
+        movl    %ecx, 400000(%rdx)
+        movq    -8(%rbp), %rdx
+        movl    (%rdx), %ecx
+        movq    -16(%rbp), %rdx
+        cltq
+        movl    %ecx, (%rdx,%rax,4)
+        movq    -8(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    -16(%rbp), %rdx
+        movq    %rdx, %rsi
+        movq    %rax, %rdi
+        call    func_2
+        jmp     .L1
+.L4:
+        nop
+.L1:
+        leave
+        ret
+func_4:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    $400008, %edi
+        call    malloc
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movl    $0, 400000(%rax)
+        movq    -8(%rbp), %rax
+        movl    $0, 400004(%rax)
+        movq    -8(%rbp), %rdx
+        movq    -24(%rbp), %rax
+        movq    %rdx, %rsi
+        movq    %rax, %rdi
+        call    func_2
+        movq    -8(%rbp), %rax
+        leave
+        ret
+func_3:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movl    400004(%rax), %eax
+        leal    1(%rax), %edx
+        movq    -8(%rbp), %rax
+        movl    %edx, 400004(%rax)
+        movq    -8(%rbp), %rax
+        movl    400004(%rax), %eax
+        leal    -1(%rax), %edx
+        movq    -8(%rbp), %rax
+        movslq  %edx, %rdx
+        movl    (%rax,%rdx,4), %eax
+        popq    %rbp
+        ret
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movl    400004(%rax), %edx
+        movq    -8(%rbp), %rax
+        movl    400000(%rax), %eax
+        cmpl    %eax, %edx
+        setl    %al
+        popq    %rbp
+        ret
+func_5:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $16, %rsp
+        movq    %rdi, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movq    %rax, %rdi
+        call    free
+        nop
+        leave
+        ret

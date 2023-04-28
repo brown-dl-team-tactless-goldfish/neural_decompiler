@@ -1,0 +1,152 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>
+struct TreeNode {
+int var_16;
+struct TreeNode *var_11;
+struct TreeNode *var_14;
+};
+struct var_3* func_1(struct TreeNode* var_15){
+struct var_3
+{
+int var_16;
+int var_9;
+struct var_3 *var_11;
+struct var_3 *var_14;
+ };
+struct var_3* var_5=NULL;
+int check_balance_factor(struct var_3 * var_15)
+{
+int var_8 = 0;
+if(var_15->var_11==NULL && var_15->var_14==NULL)
+{
+var_8 = 0;
+}
+else if(var_15->var_11==NULL && var_15->var_14!=NULL)
+{
+var_8 =(var_15->var_14)->var_9;
+}
+else if(var_15->var_11!=NULL && var_15->var_14==NULL)
+{
+var_8 = (var_15->var_11)->var_9;
+}
+else
+{
+var_8 =((var_15->var_11)->var_9) - ((var_15->var_14)->var_9);
+var_8=(var_8>=0)?(var_8):(var_8*(-1));
+}
+return var_8;
+}
+struct var_3* heightImbalancingNode(struct var_3* var_15,bool* var_10)
+{
+struct var_3* var_0=NULL; 
+if(var_15!=NULL)
+{
+var_0= heightImbalancingNode(var_15->var_14,var_10);
+if((*var_10)==false)
+{
+int var_7=check_balance_factor(var_15); 
+if(var_7>1)
+{
+*var_10=true;
+var_0=var_15;
+return var_0;
+}
+}
+}
+return var_0;
+}
+void LLRotation(struct var_3* var_15,int var_16){
+int var_17=var_15->var_16;
+struct var_3* var_2=(struct var_3* )malloc(sizeof(struct var_3));
+var_2->var_16=var_15->var_16;
+var_2->var_11=var_15->var_11;
+var_2->var_14=var_15->var_14;
+var_2->var_9=var_15->var_9;
+struct var_3* var_0=var_15->var_14;
+struct var_3* var_1=var_0->var_11;
+var_0->var_11=var_2;
+(var_0->var_11)->var_14=var_1; 
+if(var_17==var_16){
+var_5=var_0; 
+}
+else{
+*var_15=*var_0;
+}
+}
+int maximum(int var_4,int var_6)
+{
+if(var_4>var_6){
+return var_4;
+}
+return var_6;
+}
+int updateHeight(struct var_3* var_15)
+{
+if(var_15==NULL)
+{
+return 0;
+}
+var_15->var_9= 1+maximum(updateHeight(var_15->var_11),updateHeight(var_15->var_14));
+return var_15->var_9;
+}
+struct var_3* createNode(int var_16)
+{
+struct var_3* var_13=(struct var_3*) malloc(sizeof(struct TreeNode));
+var_13->var_11=NULL;
+var_13->var_14=NULL;
+var_13->var_16=var_16;
+return var_13;
+}
+struct var_3* insertion(int var_16,struct var_3* var_15)
+{
+struct var_3* var_0=var_15; 
+if(var_0==NULL){
+struct var_3* var_13=createNode(var_16);
+return var_13;
+}
+while(1)
+{
+if(var_16<var_0->var_16)
+{ 
+if(var_0->var_11==NULL)
+{
+struct var_3* var_13=createNode(var_16);
+var_0->var_11=var_13;
+return var_15;
+}
+var_0=var_0->var_11;
+}
+else{
+if(var_0->var_14==NULL){
+struct var_3* var_13=createNode(var_16);
+var_0->var_14=var_13;
+return var_15;
+}
+var_0=var_0->var_14;
+}
+}
+}
+void avlTreeInsertion(int var_16)
+{
+bool var_10=false;
+var_5= insertion(var_16,var_5);
+updateHeight(var_5);
+struct var_3* var_12= heightImbalancingNode(var_5,&var_10);
+if(var_10){
+LLRotation(var_12,var_5->var_16);
+}
+}
+void inOrderTraversal(struct TreeNode* var_15){
+if(var_15!=NULL){
+inOrderTraversal(var_15->var_11);
+avlTreeInsertion(var_15->var_16);
+inOrderTraversal(var_15->var_14);
+}
+}
+inOrderTraversal(var_15);
+return var_5;
+}

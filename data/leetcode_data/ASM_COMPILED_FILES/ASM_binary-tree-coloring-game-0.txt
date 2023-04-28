@@ -1,0 +1,122 @@
+func_2:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        cmpq    $0, -24(%rbp)
+        jne     .L2
+        movl    $0, %eax
+        jmp     .L3
+.L2:
+        movq    -24(%rbp), %rax
+        movl    (%rax), %eax
+        cmpl    %eax, -28(%rbp)
+        jne     .L4
+        movq    -24(%rbp), %rax
+        jmp     .L3
+.L4:
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movl    -28(%rbp), %edx
+        movl    %edx, %esi
+        movq    %rax, %rdi
+        call    func_2
+        movq    %rax, -8(%rbp)
+        cmpq    $0, -8(%rbp)
+        je      .L5
+        movq    -8(%rbp), %rax
+        jmp     .L3
+.L5:
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movl    -28(%rbp), %edx
+        movl    %edx, %esi
+        movq    %rax, %rdi
+        call    func_2
+.L3:
+        leave
+        ret
+func_3:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        pushq   %rbx
+        subq    $24, %rsp
+        movq    %rdi, -24(%rbp)
+        cmpq    $0, -24(%rbp)
+        jne     .L7
+        movl    $0, %eax
+        jmp     .L8
+.L7:
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, %rdi
+        call    func_3
+        leal    1(%rax), %ebx
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, %rdi
+        call    func_3
+        addl    %ebx, %eax
+.L8:
+        addq    $24, %rsp
+        popq    %rbx
+        popq    %rbp
+        ret
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        movl    %edx, -32(%rbp)
+        movl    -32(%rbp), %edx
+        movq    -24(%rbp), %rax
+        movl    %edx, %esi
+        movq    %rax, %rdi
+        call    func_2
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, %rdi
+        call    func_3
+        movl    %eax, -12(%rbp)
+        movq    -8(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, %rdi
+        call    func_3
+        movl    %eax, -16(%rbp)
+        movl    -28(%rbp), %eax
+        movl    %eax, %edx
+        shrl    $31, %edx
+        addl    %edx, %eax
+        sarl    %eax
+        cmpl    %eax, -12(%rbp)
+        jg      .L10
+        movl    -28(%rbp), %eax
+        movl    %eax, %edx
+        shrl    $31, %edx
+        addl    %edx, %eax
+        sarl    %eax
+        cmpl    %eax, -16(%rbp)
+        jg      .L10
+        movl    -28(%rbp), %eax
+        subl    $1, %eax
+        subl    -12(%rbp), %eax
+        subl    -16(%rbp), %eax
+        movl    %eax, %edx
+        movl    -28(%rbp), %eax
+        movl    %eax, %ecx
+        shrl    $31, %ecx
+        addl    %ecx, %eax
+        sarl    %eax
+        cmpl    %eax, %edx
+        jle     .L11
+.L10:
+        movl    $1, %eax
+        jmp     .L12
+.L11:
+        movl    $0, %eax
+.L12:
+        leave
+        ret

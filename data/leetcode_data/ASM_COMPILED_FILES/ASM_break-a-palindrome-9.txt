@@ -1,0 +1,57 @@
+.LC0:
+        .string ""
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        pushq   %rbx
+        subq    $40, %rsp
+        movq    %rdi, -40(%rbp)
+        movq    -40(%rbp), %rax
+        movq    %rax, %rdi
+        call    strlen
+        cmpq    $1, %rax
+        jne     .L2
+        movl    $.LC0, %eax
+        jmp     .L3
+.L2:
+        movl    $0, -20(%rbp)
+        jmp     .L4
+.L6:
+        movl    -20(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        cmpb    $97, %al
+        je      .L5
+        movl    -20(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movb    $97, (%rax)
+        movq    -40(%rbp), %rax
+        jmp     .L3
+.L5:
+        addl    $1, -20(%rbp)
+.L4:
+        movl    -20(%rbp), %eax
+        movslq  %eax, %rbx
+        movq    -40(%rbp), %rax
+        movq    %rax, %rdi
+        call    strlen
+        shrq    %rax
+        cmpq    %rax, %rbx
+        jb      .L6
+        movq    -40(%rbp), %rax
+        movq    %rax, %rdi
+        call    strlen
+        leaq    -1(%rax), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movb    $98, (%rax)
+        movq    -40(%rbp), %rax
+.L3:
+        addq    $40, %rsp
+        popq    %rbx
+        popq    %rbp
+        ret

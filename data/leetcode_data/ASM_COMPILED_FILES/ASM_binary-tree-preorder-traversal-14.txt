@@ -1,0 +1,59 @@
+var_3:
+        .zero   4
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $16, %rsp
+        movq    %rdi, -8(%rbp)
+        movq    %rsi, -16(%rbp)
+        cmpq    $0, -8(%rbp)
+        je      .L3
+        movl    var_3(%rip), %eax
+        leal    1(%rax), %edx
+        movl    %edx, var_3(%rip)
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -16(%rbp), %rax
+        addq    %rax, %rdx
+        movq    -8(%rbp), %rax
+        movl    (%rax), %eax
+        movl    %eax, (%rdx)
+        movq    -8(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    -16(%rbp), %rdx
+        movq    %rdx, %rsi
+        movq    %rax, %rdi
+        call    func_1
+        movq    -8(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    -16(%rbp), %rdx
+        movq    %rdx, %rsi
+        movq    %rax, %rdi
+        call    func_1
+.L3:
+        nop
+        leave
+        ret
+func_2:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movq    %rsi, -32(%rbp)
+        movl    $0, -4(%rbp)
+        movl    $404, %edi
+        call    malloc
+        movq    %rax, -16(%rbp)
+        movq    -16(%rbp), %rdx
+        movq    -24(%rbp), %rax
+        movq    %rdx, %rsi
+        movq    %rax, %rdi
+        call    func_1
+        movl    var_3(%rip), %edx
+        movq    -32(%rbp), %rax
+        movl    %edx, (%rax)
+        movl    -4(%rbp), %eax
+        movl    %eax, var_3(%rip)
+        movq    -16(%rbp), %rax
+        leave
+        ret

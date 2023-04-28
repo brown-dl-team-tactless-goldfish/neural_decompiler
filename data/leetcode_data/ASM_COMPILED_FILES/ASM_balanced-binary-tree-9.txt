@@ -1,0 +1,66 @@
+func_2:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        cmpq    $0, -24(%rbp)
+        jne     .L2
+        movl    $0, %eax
+        jmp     .L3
+.L2:
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, %rdi
+        call    func_2
+        movl    %eax, -12(%rbp)
+        cmpl    $0, -12(%rbp)
+        jns     .L4
+        movl    $-1, %eax
+        jmp     .L3
+.L4:
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, %rdi
+        call    func_2
+        movl    %eax, -16(%rbp)
+        cmpl    $0, -16(%rbp)
+        jns     .L5
+        movl    $-1, %eax
+        jmp     .L3
+.L5:
+        movl    -12(%rbp), %eax
+        movl    %eax, -4(%rbp)
+        movl    -16(%rbp), %eax
+        movl    %eax, -8(%rbp)
+        movl    -12(%rbp), %eax
+        cmpl    -16(%rbp), %eax
+        jge     .L6
+        movl    -16(%rbp), %eax
+        movl    %eax, -4(%rbp)
+        movl    -12(%rbp), %eax
+        movl    %eax, -8(%rbp)
+.L6:
+        movl    -4(%rbp), %eax
+        subl    -8(%rbp), %eax
+        cmpl    $1, %eax
+        jle     .L7
+        movl    $-1, %eax
+        jmp     .L3
+.L7:
+        movl    -4(%rbp), %eax
+        addl    $1, %eax
+.L3:
+        leave
+        ret
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $16, %rsp
+        movq    %rdi, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movq    %rax, %rdi
+        call    func_2
+        cmpl    $-1, %eax
+        setne   %al
+        leave
+        ret

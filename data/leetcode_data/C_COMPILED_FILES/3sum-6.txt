@@ -1,0 +1,55 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>
+int func_2(const void *var_0, const void *var_2)
+{
+int var_6 = *(const int*)var_0;
+int var_7 = *(const int*)var_2;
+return var_6-var_7;
+}
+int** func_1(int* var_1, int var_10, int* var_9) 
+{
+if(var_1 == NULL || var_10 == 0)
+return NULL;
+ 
+qsort((void *)var_1, var_10, sizeof(var_1[0]),func_2 );
+int var_3 = 0;
+int **var_8 = NULL;
+for(int var_5 = 0; var_5 < var_10; var_5++)
+{
+int var_11 = var_5 + 1;
+int var_4 = var_10 - 1;
+int var_12;
+	
+if(var_5 > 0 && var_1[var_5] == var_1[var_5 - 1])
+continue;
+while(var_11 < var_4 )
+{
+var_12 = var_1[var_5] + var_1[var_11] + var_1[var_4];
+if(var_12 == 0)
+{
+var_3++;
+var_8 = (int **)realloc(var_8, sizeof(int *) * var_3);
+var_8[var_3 - 1] = (int *) malloc(sizeof(int)*3);
+var_8[var_3 - 1][0] = var_1[var_5];
+var_8[var_3 - 1][1] = var_1[var_11];
+var_8[var_3 - 1][2] = var_1[var_4];
+while(var_11 < var_4 && var_1[var_11] == var_1[var_11 + 1])
+var_11++;
+while(var_11 < var_4 && var_1[var_4] == var_1[var_4 -1])
+var_4--;
+var_11++;
+var_4--;
+}
+else if(var_12 > 0)
+var_4--;
+else
+var_11++;
+}
+}
+*var_9 = var_3;
+return var_8;
+}

@@ -1,0 +1,55 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movl    %edi, -20(%rbp)
+        movl    %esi, -24(%rbp)
+        movl    -20(%rbp), %eax
+        cmpl    -24(%rbp), %eax
+        jne     .L2
+        movl    $0, %eax
+        jmp     .L3
+.L2:
+        movl    $0, -4(%rbp)
+.L10:
+        movl    -24(%rbp), %eax
+        andl    $1, %eax
+        testl   %eax, %eax
+        jne     .L4
+        movl    -24(%rbp), %eax
+        addl    $1, %eax
+        cmpl    %eax, -20(%rbp)
+        jne     .L5
+.L4:
+        addl    $1, -24(%rbp)
+        jmp     .L6
+.L5:
+        movl    -24(%rbp), %eax
+        cmpl    -20(%rbp), %eax
+        jge     .L7
+        movl    -20(%rbp), %eax
+        subl    -24(%rbp), %eax
+        addl    %eax, -4(%rbp)
+        nop
+        movl    -4(%rbp), %eax
+        jmp     .L3
+.L7:
+        sarl    -24(%rbp)
+.L6:
+        addl    $1, -4(%rbp)
+        movl    -24(%rbp), %eax
+        cmpl    -20(%rbp), %eax
+        jne     .L9
+        movl    -4(%rbp), %eax
+        jmp     .L3
+.L9:
+        cmpl    $9999, -4(%rbp)
+        setle   %al
+        movzbl  %al, %eax
+        movl    %eax, %edi
+        movl    $0, %eax
+        call    assert
+        jmp     .L10
+.L3:
+        leave
+        ret

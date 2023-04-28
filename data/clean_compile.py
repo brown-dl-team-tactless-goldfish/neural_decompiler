@@ -189,7 +189,7 @@ def clean():
 
 def compile():
     ccc = CodeCleanerCompiler()
-    ccc.compile("gfg_cleaned_c_code", "GFG_C_FILES", "GFG_ASM_FILES")
+    ccc.compile("leetcode_data/C_FILES", "leetcode_data/C_COMPILED_FILES", "leetcode_data/ASM_COMPILED_FILES")
 
 if __name__ == "__main__":
     # clean()

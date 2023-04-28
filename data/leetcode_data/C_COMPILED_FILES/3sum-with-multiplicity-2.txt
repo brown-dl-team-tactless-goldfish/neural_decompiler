@@ -1,0 +1,78 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>
+int func_1(const int* var_3, const int* var_7){
+return *var_3 - *var_7;
+}
+bool func_2(int **var_5, int var_16, int *var_17){
+if (!var_5){
+return false;
+}
+for(int var_11=0;var_11<var_16;var_11++){
+int var_8 = 3;
+for (int var_12=0;var_12<3;var_12++){
+if (var_5[var_11][var_12] != var_17[var_12]){
+break;
+}else{
+var_8 --;
+}
+}
+if (var_8 == 0){
+return true;
+}
+}
+return false;
+}
+long long func_3(long long *var_9, int *var_5,int var_13, int var_14, int var_15){
+long long var_19 = 0;
+if (var_5[var_13] == var_5[var_14] && var_5[var_13]==var_5[var_15]){
+var_19 += (long long)(var_9[var_5[var_13]]*(var_9[var_5[var_14]]-1)*(var_9[var_5[var_15]]-2)/6);
+}else if (var_5[var_13]==var_5[var_14]){
+var_19 += (long long)(var_9[var_5[var_13]]*(var_9[var_5[var_14]]-1)*(var_9[var_5[var_15]])/2);
+}else if (var_5[var_13]==var_5[var_15] || var_5[var_14]==var_5[var_15]){
+var_19 += (long long)(var_9[var_5[var_13]]*(var_9[var_5[var_14]])*(var_9[var_5[var_15]]-1)/2);
+}else{
+var_19 += (long long)(var_9[var_5[var_13]]*(var_9[var_5[var_14]])*(var_9[var_5[var_15]]));
+}
+return (long long)var_19%1000000007;
+}
+int func_4(int* var_5, int var_6, int var_18){
+qsort(var_5, var_6, sizeof(int), func_1);
+long long *var_9 = calloc(101, sizeof(long long));
+for (int var_11=0;var_11<var_6;var_11++){
+var_9[var_5[var_11]]++;
+}
+int var_8 = 0;
+int **var_10 = NULL;
+int var_0 = 0, var_2 = var_6 - 1;
+long long var_4 = 0;
+while (var_0<var_2){
+int var_1 = var_0 + 1;
+var_2 = var_6 - 1;
+while (var_1<var_2){
+if ((var_5[var_0] + var_5[var_1] + var_5[var_2]) == var_18){
+int *var_19 = malloc(sizeof(int)*3);
+var_19[0] = var_5[var_0];
+var_19[1] = var_5[var_1];
+var_19[2] = var_5[var_2];
+if (!func_2(var_10, var_8, var_19)){
+var_4 += func_3(var_9, var_5, var_0, var_1, var_2);
+var_8 = var_8 + 1;
+var_10 = (int**)realloc(var_10, sizeof(int*)*var_8);
+var_10[var_8-1] = var_19;
+}
+var_1+=var_9[var_5[var_1]];
+var_2-=var_9[var_5[var_2]];
+}else if (var_5[var_0] + var_5[var_1] + var_5[var_2] > var_18){
+var_2--;
+}else{
+var_1++;
+}
+}
+var_0++;
+}
+return var_4;
+}

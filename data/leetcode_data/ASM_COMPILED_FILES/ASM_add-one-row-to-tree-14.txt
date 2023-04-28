@@ -1,0 +1,160 @@
+func_1_left:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        movl    $24, %edi
+        call    malloc
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movl    -28(%rbp), %edx
+        movl    %edx, (%rax)
+        movq    -8(%rbp), %rax
+        movq    -24(%rbp), %rdx
+        movq    %rdx, 8(%rax)
+        movq    -8(%rbp), %rax
+        movq    $0, 16(%rax)
+        movq    -8(%rbp), %rax
+        leave
+        ret
+func_1_right:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        movl    $24, %edi
+        call    malloc
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movl    -28(%rbp), %edx
+        movl    %edx, (%rax)
+        movq    -8(%rbp), %rax
+        movq    $0, 8(%rax)
+        movq    -8(%rbp), %rax
+        movq    -24(%rbp), %rdx
+        movq    %rdx, 16(%rax)
+        movq    -8(%rbp), %rax
+        leave
+        ret
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movl    %edi, -20(%rbp)
+        movl    $24, %edi
+        call    malloc
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movl    -20(%rbp), %edx
+        movl    %edx, (%rax)
+        movq    -8(%rbp), %rax
+        movq    $0, 8(%rax)
+        movq    -8(%rbp), %rax
+        movq    $0, 16(%rax)
+        movq    -8(%rbp), %rax
+        leave
+        ret
+func_22Tree:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $48, %rsp
+        movl    %edi, -20(%rbp)
+        movq    %rsi, -32(%rbp)
+        movl    %edx, -24(%rbp)
+        movl    %ecx, -36(%rbp)
+        cmpq    $0, -32(%rbp)
+        je      .L11
+        movl    -36(%rbp), %eax
+        subl    $1, %eax
+        cmpl    %eax, -24(%rbp)
+        jne     .L10
+        movq    -32(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, -8(%rbp)
+        movl    -20(%rbp), %edx
+        movq    -32(%rbp), %rax
+        movl    %edx, %esi
+        movq    %rax, %rdi
+        call    func_1_left
+        movq    %rax, %rdx
+        movq    -32(%rbp), %rax
+        movq    %rdx, 8(%rax)
+        movq    -32(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    -8(%rbp), %rdx
+        movq    %rdx, 8(%rax)
+        movq    -32(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, -8(%rbp)
+        movl    -20(%rbp), %edx
+        movq    -32(%rbp), %rax
+        movl    %edx, %esi
+        movq    %rax, %rdi
+        call    func_1_right
+        movq    %rax, %rdx
+        movq    -32(%rbp), %rax
+        movq    %rdx, 16(%rax)
+        movq    -32(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    -8(%rbp), %rdx
+        movq    %rdx, 16(%rax)
+        jmp     .L7
+.L10:
+        movl    -24(%rbp), %eax
+        leal    1(%rax), %edi
+        movq    -32(%rbp), %rax
+        movq    8(%rax), %rsi
+        movl    -36(%rbp), %edx
+        movl    -20(%rbp), %eax
+        movl    %edx, %ecx
+        movl    %edi, %edx
+        movl    %eax, %edi
+        call    func_22Tree
+        movl    -24(%rbp), %eax
+        leal    1(%rax), %edi
+        movq    -32(%rbp), %rax
+        movq    16(%rax), %rsi
+        movl    -36(%rbp), %edx
+        movl    -20(%rbp), %eax
+        movl    %edx, %ecx
+        movl    %edi, %edx
+        movl    %eax, %edi
+        call    func_22Tree
+        jmp     .L7
+.L11:
+        nop
+.L7:
+        leave
+        ret
+func_2:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        movl    %edx, -32(%rbp)
+        cmpl    $1, -32(%rbp)
+        jne     .L13
+        movl    -28(%rbp), %eax
+        movl    %eax, %edi
+        call    func_1
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movq    -24(%rbp), %rdx
+        movq    %rdx, 8(%rax)
+        movq    -8(%rbp), %rax
+        jmp     .L14
+.L13:
+        movl    -32(%rbp), %edx
+        movq    -24(%rbp), %rsi
+        movl    -28(%rbp), %eax
+        movl    %edx, %ecx
+        movl    $1, %edx
+        movl    %eax, %edi
+        call    func_22Tree
+        movq    -24(%rbp), %rax
+.L14:
+        leave
+        ret

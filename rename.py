@@ -1,7 +1,7 @@
 import re
 import os
 
-folder_path = 'C_FILES'
+folder_path = 'data/leetcode_data/C_FILES'
 reserved_list = set(['auto', 'else', 'long', 'switch', 'break',	'enum',	'register',	'typedef', 
                     'case', 'extern', 'return', 'union', 'char', 'float', 'short', 'unsigned', 
                     'const', 'for', 'signed', 'void', 'continue', 'goto', 'sizeof', 'volatile', 
@@ -14,7 +14,7 @@ operators = [' ', ';', '=', '~', '+', '-', '*', '/', ',', '.',
             '[', ']', '(', ')', '\n']
 
 for filename in sorted(list(os.listdir(folder_path))):
-    print(filename)
+    print(filename, end='\r', flush=False)
     with open(folder_path + '/' + filename, 'r') as f:
         FINAL_SRC_CODE = f.read()
 
@@ -24,7 +24,17 @@ for filename in sorted(list(os.listdir(folder_path))):
     ##### GET ALL PARAM NAMES #####
     param_names = src_code
 
+
+    count = 0
     while '{' in param_names:
+        if count >= 100000:
+            print()
+            print("removed ", folder_path + '/' + filename)
+            os.remove(folder_path + '/' + filename)
+            break
+            
+        count += 1
+
         param_names = re.sub(r'\{[^{}]*\}', '', param_names)
 
     func_names = set([x.split('(')[0] for x in param_names.strip().split() if '(' in x])
@@ -35,7 +45,7 @@ for filename in sorted(list(os.listdir(folder_path))):
 
     # print(func_names)
     param_names = re.findall(r'\((.*?)\)', param_names)
-    print(param_names)
+    # print(param_names)
     param_names = [[i.strip().split()[-1] for i in x.split(',')] for x in param_names if x != '']
 
     temp = []

@@ -1,0 +1,96 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $48, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        movl    %edx, -32(%rbp)
+        movq    %rcx, -40(%rbp)
+        movl    -28(%rbp), %eax
+        addl    $1, %eax
+        cmpl    %eax, -32(%rbp)
+        jne     .L2
+        movq    -40(%rbp), %rax
+        movl    (%rax), %eax
+        leal    1(%rax), %edx
+        movq    -40(%rbp), %rax
+        movl    %edx, (%rax)
+        jmp     .L1
+.L2:
+        movl    $1, -4(%rbp)
+        jmp     .L4
+.L8:
+        movl    -4(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        testb   %al, %al
+        jne     .L9
+        movl    -32(%rbp), %eax
+        cltd
+        idivl   -4(%rbp)
+        movl    %edx, %eax
+        testl   %eax, %eax
+        je      .L7
+        movl    -4(%rbp), %eax
+        cltd
+        idivl   -32(%rbp)
+        movl    %edx, %eax
+        testl   %eax, %eax
+        jne     .L6
+.L7:
+        movl    -4(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movb    $1, (%rax)
+        movl    -32(%rbp), %eax
+        leal    1(%rax), %edi
+        movq    -40(%rbp), %rdx
+        movl    -28(%rbp), %esi
+        movq    -24(%rbp), %rax
+        movq    %rdx, %rcx
+        movl    %edi, %edx
+        movq    %rax, %rdi
+        call    func_1
+        movl    -4(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movb    $0, (%rax)
+        jmp     .L6
+.L9:
+        nop
+.L6:
+        addl    $1, -4(%rbp)
+.L4:
+        movl    -4(%rbp), %eax
+        cmpl    -28(%rbp), %eax
+        jle     .L8
+.L1:
+        leave
+        ret
+func_2:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movl    %edi, -20(%rbp)
+        movl    $0, -12(%rbp)
+        movl    -20(%rbp), %eax
+        addl    $1, %eax
+        cltq
+        movl    $4, %esi
+        movq    %rax, %rdi
+        call    calloc
+        movq    %rax, -8(%rbp)
+        leaq    -12(%rbp), %rdx
+        movl    -20(%rbp), %esi
+        movq    -8(%rbp), %rax
+        movq    %rdx, %rcx
+        movl    $1, %edx
+        movq    %rax, %rdi
+        call    func_1
+        movl    -12(%rbp), %eax
+        leave
+        ret

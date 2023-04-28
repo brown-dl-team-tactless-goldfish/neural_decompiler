@@ -1,0 +1,96 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>
+struct TreeNode {
+int var_19;
+struct TreeNode *var_4;
+struct TreeNode *var_15;
+};
+struct qNode
+{
+struct TreeNode* var_19;
+struct qNode* var_8;
+};
+struct var_12 
+{
+int var_18;
+struct qNode* var_3;
+struct qNode* var_13;
+};
+void func_2(struct var_12* var_11, struct TreeNode* var_10)
+{
+struct qNode* var_7 = malloc(sizeof(struct qNode));
+var_7->var_19 = var_10;
+var_7->var_8 = NULL;
+if(var_11->var_18 == 0)
+var_11->var_3 = var_7;
+else
+var_11->var_13->var_8 = var_7;
+var_11->var_13 = var_7;
+var_11->var_18++;
+}
+struct TreeNode* func_1(struct var_12* var_11)
+{
+if(var_11->var_18 == 0)
+return NULL;
+struct TreeNode* var_14 = var_11->var_3->var_19;
+struct var_12* var_6 = var_11->var_3->var_8;
+free(var_11->var_3);
+var_11->var_3 = var_6;
+var_11->var_18--;
+return var_14;
+}
+struct TreeNode* func_3(struct TreeNode* var_17, int var_19, int var_2)
+{
+struct var_12 var_0;
+var_0.var_3 = NULL;
+var_0.var_13 = NULL;
+var_0.var_18 = 0;
+func_2(&var_0, var_17);
+func_2(&var_0, NULL); 
+int var_1 = 1;
+while(var_0.var_18 != 0)
+{
+struct TreeNode* var_9 = func_1(&var_0);
+if(var_9 == NULL)
+{
+if(var_1 <= var_2 - 1)
+{
+func_2(&var_0, NULL);
+var_1++;
+}
+}
+else if(var_1 < var_2 - 1)
+{
+if(var_9->var_4 != NULL)
+func_2(&var_0, var_9->var_4);
+if(var_9->var_15 != NULL)
+func_2(&var_0, var_9->var_15);
+}
+else
+{
+struct TreeNode* var_5 = malloc(sizeof(struct TreeNode));
+var_5->var_19 = var_19;
+var_5->var_15 = NULL;
+if(var_2 != 1)
+{
+struct TreeNode* var_16 = malloc(sizeof(struct TreeNode));
+var_16->var_19 = var_19;
+var_16->var_4 = NULL;
+var_16->var_15 = var_9->var_15;
+var_9->var_15 = var_16;
+var_5->var_4 = var_9->var_4;
+var_9->var_4 = var_5;
+}
+else
+{
+var_5->var_4 = var_9;
+return var_5;
+}
+}
+}
+return var_17;
+}

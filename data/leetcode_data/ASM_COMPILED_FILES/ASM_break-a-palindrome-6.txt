@@ -1,0 +1,53 @@
+.LC0:
+        .string ""
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movq    -24(%rbp), %rax
+        movq    %rax, %rdi
+        call    strlen
+        movw    %ax, -4(%rbp)
+        cmpw    $1, -4(%rbp)
+        jne     .L2
+        movl    $.LC0, %eax
+        jmp     .L3
+.L2:
+        movb    $0, -1(%rbp)
+        jmp     .L4
+.L6:
+        movsbq  -1(%rbp), %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        cmpb    $97, %al
+        je      .L5
+        movsbq  -1(%rbp), %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movb    $97, (%rax)
+        movq    -24(%rbp), %rax
+        jmp     .L3
+.L5:
+        movzbl  -1(%rbp), %eax
+        addl    $1, %eax
+        movb    %al, -1(%rbp)
+.L4:
+        movsbw  -1(%rbp), %dx
+        movzwl  -4(%rbp), %eax
+        movl    %eax, %ecx
+        shrw    $15, %cx
+        addl    %ecx, %eax
+        sarw    %ax
+        cmpw    %ax, %dx
+        jl      .L6
+        movswq  -4(%rbp), %rax
+        leaq    -1(%rax), %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movb    $98, (%rax)
+        movq    -24(%rbp), %rax
+.L3:
+        leave
+        ret

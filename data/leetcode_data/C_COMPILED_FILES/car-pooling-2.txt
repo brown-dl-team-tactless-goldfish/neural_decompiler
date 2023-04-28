@@ -1,0 +1,31 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>
+int func_2(const void *var_0, const void *var_2){
+int var_1 = (*(int*)var_0) & 0xFFFF;
+int var_3 = (*(int*)var_2) & 0xFFFF;
+if(var_1 == var_3){
+var_1 = (*(int*)var_0)>>16;
+var_3 = (*(int*)var_2)>>16;
+}
+return (var_1-var_3); 
+}
+bool func_1(int** var_8, int var_10, int* var_9, int var_4){
+int* var_7 = calloc(var_10*2, sizeof(int));
+for(int var_5 = 0; var_5 < var_10; var_5++){
+var_7[2*var_5] = ((var_8[var_5][0]) << 16) | var_8[var_5][1];
+var_7[2*var_5+1] = (0 - (var_8[var_5][0] << 16)) | var_8[var_5][2];
+}
+qsort(var_7, var_10 * 2, sizeof(int), func_2);
+int var_6 = 0;
+for(int var_5 = 0; var_5 < var_10*2; var_5++)
+{
+var_6 += (var_7[var_5] >> 16);
+if(var_6 > var_4)
+return false;
+}
+return true;
+}

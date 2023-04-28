@@ -1,0 +1,80 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $48, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        movq    %rdx, -40(%rbp)
+        movq    $0, -8(%rbp)
+        movq    -24(%rbp), %rax
+        movq    (%rax), %rax
+        movl    (%rax), %eax
+        movl    %eax, -12(%rbp)
+        movl    $0, -16(%rbp)
+        jmp     .L2
+.L4:
+        movl    -16(%rbp), %eax
+        cltq
+        leaq    0(,%rax,8), %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movq    (%rax), %rax
+        movl    (%rax), %eax
+        cmpl    %eax, -12(%rbp)
+        jle     .L3
+        movl    -16(%rbp), %eax
+        cltq
+        leaq    0(,%rax,8), %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movq    (%rax), %rax
+        movl    (%rax), %eax
+        movl    -12(%rbp), %edx
+        subl    %eax, %edx
+        movl    %edx, %eax
+        cltq
+        addq    %rax, -8(%rbp)
+.L3:
+        movl    -16(%rbp), %eax
+        cltq
+        leaq    0(,%rax,8), %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movq    (%rax), %rax
+        addq    $4, %rax
+        movl    (%rax), %eax
+        cltq
+        addq    %rax, -8(%rbp)
+        cvtsi2sd        -12(%rbp), %xmm1
+        movl    -16(%rbp), %eax
+        cltq
+        leaq    0(,%rax,8), %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movq    (%rax), %rax
+        movl    (%rax), %eax
+        cvtsi2sd        %eax, %xmm0
+        call    fmax
+        movapd  %xmm0, %xmm1
+        movl    -16(%rbp), %eax
+        cltq
+        leaq    0(,%rax,8), %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movq    (%rax), %rax
+        addq    $4, %rax
+        movl    (%rax), %eax
+        cvtsi2sd        %eax, %xmm0
+        addsd   %xmm1, %xmm0
+        cvttsd2si       %xmm0, %eax
+        movl    %eax, -12(%rbp)
+        addl    $1, -16(%rbp)
+.L2:
+        movl    -16(%rbp), %eax
+        cmpl    -28(%rbp), %eax
+        jl      .L4
+        cvtsi2sdq       -8(%rbp), %xmm0
+        cvtsi2sd        -28(%rbp), %xmm1
+        divsd   %xmm1, %xmm0
+        leave
+        ret

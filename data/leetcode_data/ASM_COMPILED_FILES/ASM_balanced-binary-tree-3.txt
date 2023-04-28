@@ -1,0 +1,83 @@
+func_2:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movq    %rsi, -32(%rbp)
+        cmpq    $0, -24(%rbp)
+        jne     .L2
+        movq    -32(%rbp), %rax
+        movl    $0, (%rax)
+        movl    $1, %eax
+        jmp     .L5
+.L2:
+        movl    $0, -4(%rbp)
+        movl    $0, -8(%rbp)
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        leaq    -4(%rbp), %rdx
+        movq    %rdx, %rsi
+        movq    %rax, %rdi
+        call    func_2
+        testb   %al, %al
+        je      .L4
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        leaq    -8(%rbp), %rdx
+        movq    %rdx, %rsi
+        movq    %rax, %rdi
+        call    func_2
+        testb   %al, %al
+        je      .L4
+        movl    -4(%rbp), %edx
+        movl    -8(%rbp), %eax
+        subl    %eax, %edx
+        movl    %edx, %eax
+        cmpl    $-1, %eax
+        jl      .L4
+        movl    -4(%rbp), %edx
+        movl    -8(%rbp), %eax
+        subl    %eax, %edx
+        movl    %edx, %eax
+        cmpl    $1, %eax
+        jg      .L4
+        movl    -8(%rbp), %eax
+        cvtsi2sd        %eax, %xmm1
+        movl    -4(%rbp), %eax
+        cvtsi2sd        %eax, %xmm0
+        call    fmax
+        movapd  %xmm0, %xmm1
+        movsd   .LC0(%rip), %xmm0
+        addsd   %xmm1, %xmm0
+        cvttsd2si       %xmm0, %edx
+        movq    -32(%rbp), %rax
+        movl    %edx, (%rax)
+        movl    $1, %eax
+        jmp     .L5
+.L4:
+        movl    $0, %eax
+.L5:
+        leave
+        ret
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        cmpq    $0, -24(%rbp)
+        jne     .L7
+        movl    $1, %eax
+        jmp     .L9
+.L7:
+        movl    $0, -4(%rbp)
+        leaq    -4(%rbp), %rdx
+        movq    -24(%rbp), %rax
+        movq    %rdx, %rsi
+        movq    %rax, %rdi
+        call    func_2
+.L9:
+        leave
+        ret
+.LC0:
+        .long   0
+        .long   1072693248
