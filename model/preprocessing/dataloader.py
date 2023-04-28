@@ -3,7 +3,7 @@ from nltk.tokenize import wordpunct_tokenize
 
 
 START_TOKEN = "<START>"
-END_TOKEN = "<END>"
+END_TOKEN = "<STOP>"
 
 C_PUNCT = [
     "(", ")", "+", "-", "{", "}", "/", "*", "&", "[", "]"
@@ -27,7 +27,9 @@ class DataLoader:
         self.asm_path = asm_path
 
     def generate_c_vocabulary(self):
-
+        """
+        
+        """
         for file_name in sorted(list(os.listdir(self.c_path))):
         
             with open(f"{self.c_path}/{file_name}", "r") as c_file:
@@ -134,6 +136,12 @@ class DataLoader:
         asm_code = re.sub(r'\n', ' ', asm_code)
 
         asm_tokens = asm_code.split(" ")
+
+        # add start token to beginning
+        asm_tokens.insert(0, START_TOKEN)
+        
+        # add end token to end
+        asm_tokens.append(END_TOKEN)
 
         return asm_tokens
 
