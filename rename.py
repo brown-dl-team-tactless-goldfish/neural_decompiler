@@ -11,7 +11,7 @@ reserved_list = set(['auto', 'else', 'long', 'switch', 'break',	'enum',	'registe
 
 operators = [' ', ':', ';', '=', '~', '+', '-', '*', '/', ',', '.', 
             '<', '>', '&', '|', '%', '?', '{', '}', '^', '!', 
-            '[', ']', '(', ')', '\n']
+            '[', ']', '(', ')', '\n', '\t']
 
 for filename in sorted(list(os.listdir(folder_path))):
     if filename == '.DS_Store':
@@ -27,9 +27,8 @@ for filename in sorted(list(os.listdir(folder_path))):
 
     ##### GET ALL PARAM NAMES #####
     param_names = src_code
-
-
     count = 0
+
     while '{' in param_names:
         if count >= 100000:
             print()
@@ -43,6 +42,7 @@ for filename in sorted(list(os.listdir(folder_path))):
 
     func_names = set([x.split('(')[0] for x in param_names.strip().split() if '(' in x])
     func_names = set([x.replace('*', '') for x in func_names])
+    func_names = set([x for x in func_names if x not in reserved_list and x not in operators])
 
     if '' in func_names:
         func_names.remove('')
@@ -51,10 +51,10 @@ for filename in sorted(list(os.listdir(folder_path))):
     for i, func_name in enumerate(func_names):
         FINAL_SRC_CODE = FINAL_SRC_CODE.replace(func_name, 'func_' + str(i + 1))
 
-    # print(func_names)
+    # print("FUNC NAMES", func_names)
     param_names = re.findall(r'\((.*?)\)', param_names)
     # print(param_names)
-    param_names = [[i.strip().split()[-1] for i in x.split(',')] for x in param_names if x != '']
+    param_names = [[i.strip().split()[-1] for i in x.split(',')] for x in param_names if x != '' and x[0] not in operators]
 
     temp = []
 
@@ -62,14 +62,21 @@ for filename in sorted(list(os.listdir(folder_path))):
         temp.extend(x)
 
     param_names = [x.replace('*', '') for x in temp]
+    param_names = set([x for x in param_names if x not in reserved_list and x not in operators])
 
     # print("PARAM NAMES: ", param_names)
 
     ### GET ALL VAR NAMES AND COMBINE THEM TO GET ALL NAMES TO CONVERT ####
-    variable_names = [x for x in re.findall(r"[a-zA-Z_][a-zA-Z0-9_]*(?=[ ,;=\[])", src_code) if x not in reserved_list]
-    # print("VAR NAMES: ", variable_names)
+    variable_names = [x for x in re.findall(r"[a-zA-Z_][a-zA-Z0-9_]*(?=[ ,;=\[])", src_code) if x not in reserved_list and x not in operators]
+    variable_names = set([x.replace('*', '') for x in variable_names])
 
-    all_names = sorted([elt for elt in set(param_names + variable_names) if elt not in func_names])
+    # print("VAR NAMES: ", variable_names)\
+
+    all_names = sorted([elt for elt in param_names.union(variable_names) if elt not in func_names and not elt.isdigit()])
+
+    if '' in all_names:
+        all_names.remove('')
+
     # print("ALL NAMES: ", all_names)
 
     #### CHECK FOR ALL INSTANCES OF THIS VARIABLE NAME AND REPLACE IT #######
@@ -97,6 +104,9 @@ for filename in sorted(list(os.listdir(folder_path))):
 #include<stdbool.h>
 #include<stdint.h>
 #include<math.h>\n''' + FINAL_SRC_CODE
+
+    FINAL_SRC_CODE = FINAL_SRC_CODE.replace('\t', '')
+
     with open(folder_path + '/' + filename, 'w') as out:
         out.write(FINAL_SRC_CODE)
 
