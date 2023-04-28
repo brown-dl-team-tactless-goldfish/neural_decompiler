@@ -14,6 +14,9 @@ operators = [' ', ':', ';', '=', '~', '+', '-', '*', '/', ',', '.',
             '[', ']', '(', ')', '\n', '\t']
 
 for filename in sorted(list(os.listdir(folder_path))):
+    if filename == '.DS_Store':
+        continue
+
     print(filename, end='\r', flush=True)
     # print(filename)
     with open(folder_path + '/' + filename, 'r') as f:

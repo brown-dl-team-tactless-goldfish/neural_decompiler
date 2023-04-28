@@ -40,7 +40,33 @@ def test_asm_tokenization():
 
     print(tokens)
 
+def test_c_vocab():
+    c_filedir_relative_path = "../tiny_dataset/C"
+    c_filedir_path = f"{current_dir}/{c_filedir_relative_path}"
+    asm_filedir_relative_path = "../tiny_dataset/ASM"
+    asm_filedir_path = f"{current_dir}/{asm_filedir_relative_path}"
+
+    dataloader = DataLoader(c_path=c_filedir_path, asm_path=asm_filedir_path)
+
+    print(dataloader.generate_c_vocabulary())
+
+
+def test_asm_vocab():
+    c_filedir_relative_path = "../tiny_dataset/C"
+    c_filedir_path = f"{current_dir}/{c_filedir_relative_path}"
+    asm_filedir_relative_path = "../tiny_dataset/ASM"
+    asm_filedir_path = f"{current_dir}/{asm_filedir_relative_path}"
+
+    dataloader = DataLoader(c_path=c_filedir_path, asm_path=asm_filedir_path)
+
+    print(dataloader.generate_asm_vocabulary())
+
+
+
 if __name__ == "__main__":
     # test_c_tokenization()
     # test_c_token_check()
-    test_asm_tokenization()
+    # test_asm_tokenization()
+
+    # test_c_vocab()
+    test_asm_vocab()
