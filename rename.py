@@ -14,7 +14,7 @@ operators = [' ', ':', ';', '=', '~', '+', '-', '*', '/', ',', '.',
             '[', ']', '(', ')', '\n']
 
 for filename in sorted(list(os.listdir(folder_path))):
-    print(filename, end='\r', flush=False)
+    print(filename, end='\r', flush=True)
     # print(filename)
     with open(folder_path + '/' + filename, 'r') as f:
         FINAL_SRC_CODE = f.read()
@@ -47,7 +47,7 @@ for filename in sorted(list(os.listdir(folder_path))):
     for i, func_name in enumerate(func_names):
         FINAL_SRC_CODE = FINAL_SRC_CODE.replace(func_name, 'func_' + str(i + 1))
 
-    print(func_names)
+    # print(func_names)
     param_names = re.findall(r'\((.*?)\)', param_names)
     # print(param_names)
     param_names = [[i.strip().split()[-1] for i in x.split(',')] for x in param_names if x != '']
@@ -79,14 +79,22 @@ for filename in sorted(list(os.listdir(folder_path))):
             for op2 in operators:
                 all_checks.append(op1 + var_name + op2)
 
+    FINAL_SRC_CODE = FINAL_SRC_CODE[112:]
+
     for to_check in all_checks:
         before = to_check[0]
         after = to_check[-1]
         between = to_check[1:-1]
         FINAL_SRC_CODE = FINAL_SRC_CODE.replace(to_check, before + var_names_to_new_vars[between] + after)
 
+    FINAL_SRC_CODE = '''#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>\n''' + FINAL_SRC_CODE
     with open(folder_path + '/' + filename, 'w') as out:
         out.write(FINAL_SRC_CODE)
 
-    print(FINAL_SRC_CODE)
-    break # remove this break before running!
+    # print(FINAL_SRC_CODE)
+    # break # remove this break before running!
