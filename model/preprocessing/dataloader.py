@@ -126,8 +126,15 @@ class DataLoader:
         """
         Tokenization of components of the ASM file to unique integer values
         """
+        
+        asm_tokens = []
 
+        # replace >= 2 spaces with 1 space
+        asm_code = re.sub(r'\s{2,}', ' ', asm_code)
+        asm_code = re.sub(r'\n', ' ', asm_code)
 
-        return
+        asm_tokens = asm_code.split(" ")
+
+        return asm_tokens
 
 

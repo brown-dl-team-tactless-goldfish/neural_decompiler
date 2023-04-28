@@ -11,7 +11,7 @@ def test_c_tokenization():
     # make a DataLoader object to test the helper functions
     dataloader = DataLoader(c_path=c_filedir_path)
 
-    with open(f"{c_filedir_path}/assign-cookies-0.txt", "r") as f:
+    with open(f"{c_filedir_path}/two-sum-1.txt", "r") as f:
         c_code = f.read()
 
     c_code = dataloader.clean_c(c_code)
@@ -26,6 +26,21 @@ def test_c_token_check():
 
     print(dataloader.check_c_token(token))
 
+def test_asm_tokenization():
+
+    asm_filedir_relative_path = "../tiny_dataset/ASM"
+    asm_filedir_path = f"{current_dir}/{asm_filedir_relative_path}"
+
+    dataloader = DataLoader()
+
+    with open(f"{asm_filedir_path}/ASM_two-sum-1.txt", "r") as f:
+        asm_code = f.read()
+
+    tokens = dataloader.tokenize_asm(asm_code)
+
+    print(tokens)
+
 if __name__ == "__main__":
-    test_c_tokenization()
+    # test_c_tokenization()
     # test_c_token_check()
+    test_asm_tokenization()
