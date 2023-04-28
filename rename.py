@@ -27,6 +27,12 @@ for filename in sorted(list(os.listdir(folder_path))):
         param_names = re.sub(r'\{[^{}]*\}', '', param_names)
 
     func_names = set([x.split('(')[0] for x in param_names.strip().split() if '(' in x])
+
+    ### REPLACE FUNC NAMES
+    for i, func_name in enumerate(func_names):
+        FINAL_SRC_CODE = FINAL_SRC_CODE.replace(func_name, 'func_' + str(i + 1))
+
+    # print(func_names)
     param_names = re.findall(r'\((.*?)\)', param_names)
     param_names = [[i.strip().split()[-1].split('*')[-1] for i in x.split(',')] for x in param_names]
 
@@ -66,5 +72,5 @@ for filename in sorted(list(os.listdir(folder_path))):
     with open(folder_path + '/' + filename, 'w') as out:
         out.write(FINAL_SRC_CODE)
 
-    break
     # print(FINAL_SRC_CODE)
+    break # remove this break before running!
