@@ -14,6 +14,7 @@ operators = [' ', ';', '=', '~', '+', '-', '*', '/', ',', '.',
             '[', ']', '(', ')', '\n']
 
 for filename in sorted(list(os.listdir(folder_path))):
+    print(filename)
     with open(folder_path + '/' + filename, 'r') as f:
         FINAL_SRC_CODE = f.read()
 
@@ -34,7 +35,8 @@ for filename in sorted(list(os.listdir(folder_path))):
 
     # print(func_names)
     param_names = re.findall(r'\((.*?)\)', param_names)
-    param_names = [[i.strip().split()[-1] for i in x.split(',')] for x in param_names]
+    print(param_names)
+    param_names = [[i.strip().split()[-1] for i in x.split(',')] for x in param_names if x != '']
 
     temp = []
 
@@ -42,7 +44,6 @@ for filename in sorted(list(os.listdir(folder_path))):
         temp.extend(x)
 
     param_names = [x.replace('*', '') for x in temp]
-    print(param_names)
 
     # print("PARAM NAMES: ", param_names)
 
