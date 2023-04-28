@@ -25,27 +25,53 @@ class DataLoader:
     def __init__(self, c_path = "", asm_path = ""):
         self.c_path = c_path
         self.asm_path = asm_path
+        self.c_vocab = {}
+        self.asm_vocab = {}
 
     def generate_c_vocabulary(self):
         """
-        
+        Tokenizes individual 
         """
+
+        c_vocab_tokens_set = set()
+
         for file_name in sorted(list(os.listdir(self.c_path))):
         
             with open(f"{self.c_path}/{file_name}", "r") as c_file:
                 c_code = c_file.read()
 
-        return
+            c_code = self.clean_c(c_code)
+            tokens = self.tokenize_c(c_code)
+
+            c_vocab_tokens_set = c_vocab_tokens_set.union(set(tokens))
+        
+        c_vocab_tokens_set = sorted(list(c_vocab_tokens_set))
+
+        for i, token in enumerate(c_vocab_tokens_set):
+            self.c_vocab[token] = i
+
+        return self.c_vocab
     
     
     def generate_asm_vocabulary(self):
+
+        asm_vocab_tokens_set = set()
         
         for file_name in sorted(list(os.listdir(self.asm_path))):
         
             with open(f"{self.asm_path}/{file_name}", "r") as asm_file:
                 asm_code = asm_file.read()
 
-        return
+            tokens = self.tokenize_asm(asm_code)
+
+            asm_vocab_tokens_set = asm_vocab_tokens_set.union(set(tokens))
+        
+        asm_vocab_tokens_set = sorted(list(asm_vocab_tokens_set))
+
+        for i, token in enumerate(asm_vocab_tokens_set):
+            self.asm_vocab[token] = i
+
+        return self.asm_vocab
     
     def clean_c(self, c_code):
         """
@@ -90,11 +116,11 @@ class DataLoader:
 
                 c_tokens.pop(i)
 
-                print("found exception: ", token)
+                # print("found exception: ", token)
 
                 for j, char in enumerate(token):
 
-                    print(char)
+                    # print(char)
 
                     c_tokens.insert(i + j, char)
 
