@@ -1,49 +1,92 @@
 import os, re
+import numpy as np
 from nltk.tokenize import wordpunct_tokenize
-
 
 START_TOKEN = "<START>"
 END_TOKEN = "<STOP>"
+PAD_TOKEN = "<PAD>"
 
-C_PUNCT = [
-    "(", ")", "+", "-", "{", "}", "/", "*", "&", "[", "]"
-]
-
+C_PUNCT = [' ', ':', ';', '=', '~', '+', '-', '*', '/', ',', '.', 
+            '<', '>', '&', '|', '%', '?', '{', '}', '^', '!', 
+            '[', ']', '(', ')']
 
 class DataLoader:
     """
-    A class that loads and preprocesses training data
+    DATALOADER: Loads and preprocesses training data.
     """
     
     # fields
     c_path = ""
     asm_path = ""
-
     c_vocab = {}
     asm_vocab = {}
+    stats = {
+        'num_examples': 0,
+        'max_c_code_length': 0,         # in number of tokens
+        'max_asm_code_length': 0,       # in number of tokens
+        'avg_c_code_length': 0,         # in number of tokens
+        'avg_asm_code_length': 0        # in number of tokens
+    }
 
     def __init__(self, c_path = "", asm_path = ""):
+        """
+        Upon initialization, generates the C and ASM vocabularies (dictionaries
+        of mappings from tokens to integer values)
+
+        @params
+        - c_path: full path to the directory containing all C code
+        - asm_path: full path to the directory containing all ASM code
+
+        @returns
+        - None
+        """
+
         self.c_path = c_path
         self.asm_path = asm_path
-        self.c_vocab = {}
-        self.asm_vocab = {}
+
+        c_count, asm_count = (0, 0)
+        for f in os.listdir(c_path):
+            c_count += 1
+        for f in os.listdir(asm_path):
+            asm_count += 1
+        if c_count != asm_count:
+            raise Exception("The C and Assembly directories do not have " + \
+                "the same number of files.")
+        self.stats['num_examples'] = c_count
+
+        self.generate_c_vocabulary()
+        self.generate_asm_vocabulary()
 
     def generate_c_vocabulary(self):
         """
-        Tokenizes individual 
+        Generates the C vocabulary (a dictionary of mappings from 
+        tokens to integer values)
+
+        @params
+        - None
+
+        @returns
+        - self.c_vocab: list of tokens extracted from c_code
         """
 
         c_vocab_tokens_set = set()
-
-        for file_name in sorted(list(os.listdir(self.c_path))):
+        avg_tokens = 0
+        for file_name in sorted(os.listdir(self.c_path)):
         
             with open(f"{self.c_path}/{file_name}", "r") as c_file:
                 c_code = c_file.read()
 
-            c_code = self.clean_c(c_code)
             tokens = self.tokenize_c(c_code)
 
+            avg_tokens += len(tokens)
+
+            if len(tokens) > self.stats['max_c_code_length']:
+                self.stats['max_c_code_length'] = len(tokens)
+
             c_vocab_tokens_set = c_vocab_tokens_set.union(set(tokens))
+
+        self.stats['avg_c_code_length'] = avg_tokens / \
+            self.stats['avg_c_code_length']
         
         c_vocab_tokens_set = sorted(list(c_vocab_tokens_set))
 
@@ -52,20 +95,36 @@ class DataLoader:
 
         return self.c_vocab
     
-    
     def generate_asm_vocabulary(self):
+        """
+        Generates the ASM vocabulary (a dictionary of mappings from 
+        tokens to integer values)
+
+        @params
+        - None
+
+        @returns
+        - self.asm_vocab: list of tokens extracted from c_code
+        """
 
         asm_vocab_tokens_set = set()
-        
-        for file_name in sorted(list(os.listdir(self.asm_path))):
+        avg_tokens = 0
+        for file_name in sorted(os.listdir(self.asm_path)):
         
             with open(f"{self.asm_path}/{file_name}", "r") as asm_file:
                 asm_code = asm_file.read()
 
             tokens = self.tokenize_asm(asm_code)
+            avg_tokens += len(tokens)
+
+            if len(tokens) > self.stats['max_asm_code_length']:
+                self.stats['max_asm_code_length'] = len(tokens)
 
             asm_vocab_tokens_set = asm_vocab_tokens_set.union(set(tokens))
         
+        self.stats['avg_asm_code_length'] = avg_tokens / \
+            self.stats['num_examples']
+
         asm_vocab_tokens_set = sorted(list(asm_vocab_tokens_set))
 
         for i, token in enumerate(asm_vocab_tokens_set):
@@ -100,9 +159,8 @@ class DataLoader:
         @returns
         - c_tokens: list of tokens extracted from c_code
         """
-
+        c_code = self.clean_c(c_code)
         c_code_lines = c_code.splitlines()
-
         c_tokens = []
 
         # generates tokens
@@ -149,10 +207,15 @@ class DataLoader:
             return True
         return False
 
-
     def tokenize_asm(self, asm_code):
         """
         Tokenization of components of the ASM file to unique integer values
+        
+        @params
+        - asm_code: string of code
+
+        @returns
+        - asm_tokens: list of tokens extracted from c_code
         """
         
         asm_tokens = []
@@ -171,4 +234,84 @@ class DataLoader:
 
         return asm_tokens
 
+    def generate_numpy_array_from_vocab(self, code, is_asm=False, max_length=None):
+        """
+        Generates an np array of token sequences in their integer
+        representation.
+
+        @params
+        - code: string of code
+        - is_asm: True if code is assembly; default False
+        - max_length: optional arg for chopping off extra data after max length
+
+        @returns
+        - out: np.array of values from the appropriate vocabulary dictionary
+        """
+
+        if is_asm:
+            if max_length:
+                out = np.ones(max_length)
+            else:
+                out = np.ones(self.stats['max_asm_code_length'])
+            out = out * self.asm_vocab[PAD_TOKEN]
+            tokens = self.tokenize_asm(code)
+        else:
+            if max_length:
+                out = np.ones(max_length)
+            else:
+                out = np.ones(self.stats['max_c_code_length'])
+            out = out * self.c_vocab[PAD_TOKEN]
+            tokens = self.tokenize_c(code)
+
+        for i, token in enumerate(tokens):
+            if i >= max_length:
+                break
+
+            if is_asm:
+                out[i] = self.asm_vocab[token]
+            else:
+                out[i] = self.c_vocab[token]
+
+        return out
+
+    def load_data(self):
+        """
+        Returns all necessary data for the transformer model.
+
+        @params:
+        - None
+
+        @returns:
+        - c_vals: np.array of size (num_examples, max_c_code_length)
+        - asm_vals: np.array of size (num_examples, max_asm_code_length)
+        """
+
+        c_vals = np.zeros(shape=(
+            self.stats['num_examples'], 
+            self.stats['max_c_code_length']
+        ))
+
+        asm_vals = np.zeros(shape=(
+            self.stats['num_examples'], 
+            self.stats['max_asm_code_length']
+        ))
+
+        for i, c_filename in enumerate(sorted(os.listdir(self.c_path))):
+            with open(f"{self.c_path}/{c_filename}", "r") as c_file:
+                c_code = c_file.read()
+            c_tokens = self.tokenize_c(c_code)
+
+            c_arr = self.generate_numpy_array_from_vocab(c_tokens, is_asm=False)
+            c_vals[i, :] = c_arr
+        
+        for i, asm_filename in enumerate(sorted(os.listdir(self.asm_path))):
+            with open(f"{self.asm_path}/{asm_filename}", "r") as asm_file:
+                asm_code = asm_file.read()
+            asm_tokens = self.tokenize_asm(asm_code)
+
+            asm_arr = self.generate_numpy_array_from_vocab(asm_tokens, 
+                                                           is_asm=True)
+            asm_vals[i, :] = asm_arr
+    
+        return c_vals, asm_vals
 
