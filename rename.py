@@ -2,7 +2,7 @@ import re
 import os
 
 folder_path = 'data/leetcode_data/C_FILES'
-reserved_list = set(['auto', 'else', 'long', 'switch', 'break',	'enum',	'register',	'typedef', 
+reserved_list = set(['auto', 'else', 'long', 'switch', 'break',	'enum',	'register',	'typedef', 'inline',
                     'case', 'extern', 'return', 'union', 'char', 'float', 'short', 'unsigned', 
                     'const', 'for', 'signed', 'void', 'continue', 'goto', 'sizeof', 'volatile', 
                     'default', 'if', 'static', 'while', 'do', 'int', 'struct', 'double', 'NULL', 'nullptr', 
@@ -39,6 +39,7 @@ for filename in sorted(list(os.listdir(folder_path))):
         param_names = re.sub(r'\{[^{}]*\}', '', param_names)
 
     func_names = set([x.split('(')[0] for x in param_names.strip().split() if '(' in x])
+    func_names = set([x.replace('*', '') for x in func_names])
 
     if '' in func_names:
         func_names.remove('')
