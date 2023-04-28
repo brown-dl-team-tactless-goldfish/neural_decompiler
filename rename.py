@@ -34,14 +34,15 @@ for filename in sorted(list(os.listdir(folder_path))):
 
     # print(func_names)
     param_names = re.findall(r'\((.*?)\)', param_names)
-    param_names = [[i.strip().split()[-1].split('*')[-1] for i in x.split(',')] for x in param_names]
+    param_names = [[i.strip().split()[-1] for i in x.split(',')] for x in param_names]
 
     temp = []
 
     for x in param_names:
         temp.extend(x)
 
-    param_names = temp
+    param_names = [x.replace('*', '') for x in temp]
+    print(param_names)
 
     # print("PARAM NAMES: ", param_names)
 
@@ -73,4 +74,4 @@ for filename in sorted(list(os.listdir(folder_path))):
         out.write(FINAL_SRC_CODE)
 
     # print(FINAL_SRC_CODE)
-    break # remove this break before running!
+    # break # remove this break before running!
