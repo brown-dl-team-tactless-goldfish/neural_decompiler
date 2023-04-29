@@ -19,7 +19,6 @@ def get_chatgpt_alternate(code):
     ### Returns
     A string containing the contents of the refactored code, with comments cleaned
     """
-    print("HA")
     # sending request!
     completion = openai.ChatCompletion.create(
         model="gpt-3.5-turbo",
@@ -55,8 +54,8 @@ def make_alternates(original_dir_path, new_dir_path, num_alternates):
     ### Returns
     Nothing! Just puts the alternates into the new directory
     """
-    i = 0
     # iterate through all files in directory
+    i = 0
     for file_name in sorted(list(os.listdir(original_dir_path))):
         original_path = f"{original_dir_path}/{file_name}" # path of that file
         print("ORIGINAL PATH", original_path)
@@ -67,8 +66,9 @@ def make_alternates(original_dir_path, new_dir_path, num_alternates):
         with open(original_path, 'r') as f:
             lines = f.read() # read the contents of the file into lines
 
-        print(file_name)
-        print(len(lines))
+        print(lines)
+        if len(lines) > 1250:
+            continue
         # generate `num_alternates` alternate files
         for alt in range(num_alternates):
             # get new file name and path. adds "alt[x]" after name for each alt
@@ -81,11 +81,9 @@ def make_alternates(original_dir_path, new_dir_path, num_alternates):
             with open(new_path, "w") as g:
                 g.write('\n'.join(response.split('!!!!!')))
 
-            i += 1
-
-            assert 1==2
-
-            assert i < 21
+            i += 10
+            if i > 10:
+                assert False
 
 
 if __name__ == "__main__":
@@ -95,5 +93,4 @@ if __name__ == "__main__":
     original_dir_path = 'data/leetcode_renamed_data/C_COMPILED_FILES'
     new_dir_path = 'chatgpt_alternates'
     num_alternates = 3 # number of alternate files for chatgpt to generate
-
     make_alternates(original_dir_path, new_dir_path, num_alternates)
