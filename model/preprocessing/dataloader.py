@@ -86,11 +86,12 @@ class DataLoader:
             c_vocab_tokens_set = c_vocab_tokens_set.union(set(tokens))
 
         self.stats['avg_c_code_length'] = avg_tokens / \
-            self.stats['avg_c_code_length']
+            self.stats['num_examples']
         
-        c_vocab_tokens_set = sorted(list(c_vocab_tokens_set))
+        c_vocab_tokens_list = sorted(list(c_vocab_tokens_set))
+        c_vocab_tokens_list.insert(0, PAD_TOKEN)
 
-        for i, token in enumerate(c_vocab_tokens_set):
+        for i, token in enumerate(c_vocab_tokens_list):
             self.c_vocab[token] = i
 
         return self.c_vocab
@@ -125,9 +126,10 @@ class DataLoader:
         self.stats['avg_asm_code_length'] = avg_tokens / \
             self.stats['num_examples']
 
-        asm_vocab_tokens_set = sorted(list(asm_vocab_tokens_set))
+        asm_vocab_tokens_list = sorted(list(asm_vocab_tokens_set))
+        asm_vocab_tokens_list.insert(0, PAD_TOKEN)
 
-        for i, token in enumerate(asm_vocab_tokens_set):
+        for i, token in enumerate(asm_vocab_tokens_list):
             self.asm_vocab[token] = i
 
         return self.asm_vocab
@@ -234,13 +236,14 @@ class DataLoader:
 
         return asm_tokens
 
-    def generate_numpy_array_from_vocab(self, code, is_asm=False, max_length=None):
+    def generate_numpy_array_from_vocab(self, code_tokens, is_asm=False, 
+                                        max_length=None):
         """
         Generates an np array of token sequences in their integer
         representation.
 
         @params
-        - code: string of code
+        - code_tokens: list of tokens
         - is_asm: True if code is assembly; default False
         - max_length: optional arg for chopping off extra data after max length
 
@@ -254,18 +257,18 @@ class DataLoader:
             else:
                 out = np.ones(self.stats['max_asm_code_length'])
             out = out * self.asm_vocab[PAD_TOKEN]
-            tokens = self.tokenize_asm(code)
+
         else:
             if max_length:
                 out = np.ones(max_length)
             else:
                 out = np.ones(self.stats['max_c_code_length'])
             out = out * self.c_vocab[PAD_TOKEN]
-            tokens = self.tokenize_c(code)
 
-        for i, token in enumerate(tokens):
-            if i >= max_length:
-                break
+        for i, token in enumerate(code_tokens):
+            if max_length:
+                if i >= max_length:
+                    break
 
             if is_asm:
                 out[i] = self.asm_vocab[token]
@@ -284,6 +287,7 @@ class DataLoader:
         @returns:
         - c_vals: np.array of size (num_examples, max_c_code_length)
         - asm_vals: np.array of size (num_examples, max_asm_code_length)
+        - self.stats: stats dict 
         """
 
         c_vals = np.zeros(shape=(
