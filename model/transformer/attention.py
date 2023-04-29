@@ -4,7 +4,7 @@ import tensorflow as tf
 class Attention(tf.keras.layers.Layer):
     """
     Perhaps using built-in TensorFlow MHA might be the better option here.
-    https://www.tensorflow.org/text/tutorials/transformer#the_embedding_and_positional_encoding_layer
+    https://www.tensorflow.org/text/tutorials/transformer
     """
     def __init__(self, num_heads, key_dim, custom_mask=None, causal_mask=False):
         super().__init__()
@@ -47,7 +47,7 @@ def generate_custom_causal_mask(T, S):
     Used for Masked Multi-Head Attention
 
     For params info, read:
-    https://www.tensorflow.org/api_docs/python/tf/keras/layers/MultiHeadAttention
+    https://www.tensorflow.org/text/tutorials/transformer
     """
     mask_vals = np.logical_not(np.triu(np.ones((T, S)), k=1))
     mask = tf.convert_to_tensor(value=mask_vals, dtype=tf.bool) 

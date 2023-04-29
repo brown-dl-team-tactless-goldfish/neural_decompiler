@@ -1,5 +1,6 @@
-import os
-from preprocessing.dataloader import DataLoader
+import os, sys
+sys.path.insert(0, '')
+from model.preprocessing.dataloader import DataLoader
 
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -62,6 +63,8 @@ def test_asm_vocab():
     print(dataloader.generate_asm_vocabulary())
 
 def test_load_data():
+    print("Testing load_data")
+
     c_filedir_relative_path = "../tiny_dataset/C"
     c_filedir_path = f"{current_dir}/{c_filedir_relative_path}"
     asm_filedir_relative_path = "../tiny_dataset/ASM"

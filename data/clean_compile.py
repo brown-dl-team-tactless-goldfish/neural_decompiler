@@ -299,11 +299,11 @@ class CodeCleanerCompiler:
                                         var_names_to_new_vars[between] + after)
 
             FINAL_SRC_CODE = '''#include<stdlib.h>
-        #include<stdio.h>
-        #include<string.h>
-        #include<stdbool.h>
-        #include<stdint.h>
-        #include<math.h>\n''' + FINAL_SRC_CODE
+                #include<stdio.h>
+                #include<string.h>
+                #include<stdbool.h>
+                #include<stdint.h>
+                #include<math.h>\n''' + FINAL_SRC_CODE
 
             FINAL_SRC_CODE = FINAL_SRC_CODE.replace('\t', '')
 
@@ -319,6 +319,10 @@ def compile():
     ccc = CodeCleanerCompiler()
     ccc.compile("leetcode_data/C_FILES", "leetcode_data/C_COMPILED_FILES", 
                 "leetcode_data/ASM_COMPILED_FILES")
+    
+def rename():
+    ccc = CodeCleanerCompiler()
+    ccc.rename("leetcode_data/C_FILES")
 
 if __name__ == "__main__":
     # clean()

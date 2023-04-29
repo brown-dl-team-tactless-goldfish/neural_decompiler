@@ -5,7 +5,7 @@ import util
 
 """
 Implemenation help following TensorFlow's tutorial
-https://www.tensorflow.org/text/tutorials/transformer#the_embedding_and_positional_encoding_layer
+https://www.tensorflow.org/text/tutorials/transformer
 """
 
 class DecoderLayer(tf.keras.layers.Layer):
