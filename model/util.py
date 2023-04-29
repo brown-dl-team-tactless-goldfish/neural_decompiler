@@ -2,9 +2,12 @@ import numpy as np
 import tensorflow as tf
 
 
+
+
+
 def positional_encoding(length, depth):
     """
-    Taken from: 
+    This code was copied directly from the TensorFlow transformer tutorial.
     https://www.tensorflow.org/text/tutorials/transformer#the_embedding_and_positional_encoding_layer
 
     "Trust, bro. Just trust."
@@ -24,3 +27,27 @@ def positional_encoding(length, depth):
 
     return tf.cast(pos_encoding, dtype=tf.float32)
 
+class PositionalEmbedding(tf.keras.layers.Layer):
+    """
+    This code was copied directly from the TensorFlow transformer tutorial.
+    https://www.tensorflow.org/text/tutorials/transformer#the_embedding_and_positional_encoding_layer
+
+    "Trust, bro. Just trust."
+    """
+
+    def __init__(self, vocab_size, d_model):
+        super().__init__()
+        self.d_model = d_model
+        self.embedding = tf.keras.layers.Embedding(vocab_size, d_model, mask_zero=True) 
+        self.pos_encoding = positional_encoding(length=2048, depth=d_model)
+
+    def compute_mask(self, *args, **kwargs):
+        return self.embedding.compute_mask(*args, **kwargs)
+
+    def call(self, x):
+        length = tf.shape(x)[1]
+        x = self.embedding(x)
+        # This factor sets the relative scale of the embedding and positonal_encoding.
+        x *= tf.math.sqrt(tf.cast(self.d_model, tf.float32))
+        x = x + self.pos_encoding[tf.newaxis, :length, :]
+        return x
