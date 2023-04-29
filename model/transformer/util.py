@@ -1,10 +1,6 @@
 import numpy as np
 import tensorflow as tf
 
-
-
-
-
 def positional_encoding(length, depth):
     """
     This code was copied directly from the TensorFlow transformer tutorial.
@@ -58,7 +54,7 @@ class FeedForward(tf.keras.layers.Layer):
     Help from
     https://www.tensorflow.org/text/tutorials/transformer#the_embedding_and_positional_encoding_layer
     """
-    def __init__(self, dim, hidden_dim, dropout=0):
+    def __init__(self, dim, hidden_dim, dropout=0.0):
         super().__init__()
 
         self.linear_1 = tf.keras.layers.Dense(hidden_dim, activation='relu')

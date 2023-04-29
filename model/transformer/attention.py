@@ -3,17 +3,20 @@ import tensorflow as tf
 
 class Attention(tf.keras.layers.Layer):
     """
-    Perhaps using built-in TensorFlow MHA might be the better option here
+    Perhaps using built-in TensorFlow MHA might be the better option here.
     https://www.tensorflow.org/text/tutorials/transformer#the_embedding_and_positional_encoding_layer
     """
-    def __init__(self, num_heads, key_dim):
+    def __init__(self, num_heads, key_dim, custom_mask=None, causal_mask=False):
         super().__init__()
 
         self.mha = tf.keras.layers.MultiHeadAttention(num_heads, key_dim)
         self.layernorm = tf.keras.layers.LayerNormalization()
         self.add = tf.keras.layers.Add()
 
-    def call(self, x, context, custom_mask=None, causal_mask=False):
+        self.custom_mask = custom_mask
+        self.causal_mask = causal_mask
+
+    def call(self, x, context):
         """
         @params
         - x: used to create the Queries matrix
@@ -25,10 +28,10 @@ class Attention(tf.keras.layers.Layer):
         @return
         - attn: Attention matrix
         """
-        if custom_mask:
+        if self.custom_mask:
             out = self.mha(query=x, key=context, value=context, 
-                           attention_mask=custom_mask)
-        elif causal_mask: 
+                           attention_mask=self.custom_mask)
+        elif self.causal_mask: 
             out = self.mha(query=x, key=context, value=context, 
                            use_causal_mask=True)
         else:

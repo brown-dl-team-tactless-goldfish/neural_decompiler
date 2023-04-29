@@ -10,7 +10,7 @@ https://www.tensorflow.org/text/tutorials/transformer#the_embedding_and_position
 
 class EncoderLayer(tf.keras.layers.Layer):
     
-    def __init__(self, emb_sz, ff_hidden_dim, num_heads=8, dropout=0):
+    def __init__(self, emb_sz, ff_hidden_dim, num_heads=8, dropout=0.0):
         super().__init__()
 
         self.self_attention = attn.Attention(num_heads=num_heads, 
@@ -30,7 +30,7 @@ class EncoderLayer(tf.keras.layers.Layer):
 class Encoder(tf.keras.layers.Layer):
 
     def __init__(self, emb_sz, vocab_sz, ff_hidden_dim, num_layers, num_heads,
-                 dropout=0):
+                 dropout=0.0):
         super().__init__()
 
         self.emb_sz = emb_sz

@@ -1,5 +1,5 @@
 import os
-from dataloader import DataLoader
+from preprocessing.dataloader import DataLoader
 
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
