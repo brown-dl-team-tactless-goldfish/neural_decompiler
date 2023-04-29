@@ -51,3 +51,26 @@ class PositionalEmbedding(tf.keras.layers.Layer):
         x *= tf.math.sqrt(tf.cast(self.d_model, tf.float32))
         x = x + self.pos_encoding[tf.newaxis, :length, :]
         return x
+    
+
+class FeedForward(tf.keras.layers.Layer):
+    """
+    Help from
+    https://www.tensorflow.org/text/tutorials/transformer#the_embedding_and_positional_encoding_layer
+    """
+    def __init__(self, dim, hidden_dim, dropout=0):
+        super().__init__()
+
+        self.linear_1 = tf.keras.layers.Dense(hidden_dim, activation='relu')
+        self.linear_2 = tf.keras.layers.Dense(dim)
+        self.dropout = tf.keras.layers.Dropout(dropout)
+        self.add = tf.keras.layers.Add()
+        self.layer_norm = tf.keras.layers.LayerNormalization()
+    
+    def call(self, x, training=False):
+        out = self.linear_1(x)
+        out = self.linear_2(out)
+        out = self.dropout(out, training=training)
+        x = self.add([x, out])
+        x = self.layer_norm(x)
+        return x

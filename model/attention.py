@@ -1,35 +1,58 @@
 import numpy as np
 import tensorflow as tf
 
-
 class Attention(tf.keras.layers.Layer):
     """
     Perhaps using built-in TensorFlow MHA might be the better option here
     https://www.tensorflow.org/text/tutorials/transformer#the_embedding_and_positional_encoding_layer
     """
-    def __init__(self, num_heads, dim, dropout):
-        super(Attention, self).__init__()
+    def __init__(self, num_heads, key_dim):
+        super().__init__()
 
-        self.mha = tf.keras.layers.MultiHeadAttention(num_heads, dim, 
-                                                      dropout=dropout)
+        self.mha = tf.keras.layers.MultiHeadAttention(num_heads, key_dim)
         self.layernorm = tf.keras.layers.LayerNormalization()
         self.add = tf.keras.layers.Add()
 
-    def call(self, x, context, mask):
+    def call(self, x, context, custom_mask=None, causal_mask=False):
         """
         @params
         - x: used to create the Queries matrix
         - context: used to create the Keys and Values matrix; same as x if
             self attention
-        - mask: masking for Attention
+        - custom_mask: masking for Attention
+        - causal_mask: for causal self attention
 
         @return
         - attn: Attention matrix
         """
-        out = self.mha(query=x, key=context, value=context, attention_mask=mask)
-        out = self.add([x, out])
-        out = self.layernorm(out)
-        return out
+        if custom_mask:
+            out = self.mha(query=x, key=context, value=context, 
+                           attention_mask=custom_mask)
+        elif causal_mask: 
+            out = self.mha(query=x, key=context, value=context, 
+                           use_causal_mask=True)
+        else:
+            out = self.mha(query=x, key=context, value=context)
+        x = self.add([x, out])
+        x = self.layernorm(x)
+        return x
+    
+
+
+def generate_custom_causal_mask(T, S):
+    """
+    Used for Masked Multi-Head Attention
+
+    For params info, read:
+    https://www.tensorflow.org/api_docs/python/tf/keras/layers/MultiHeadAttention
+    """
+    mask_vals = np.logical_not(np.triu(np.ones((T, S)), k=1))
+    mask = tf.convert_to_tensor(value=mask_vals, dtype=tf.bool) 
+    return mask
+
+
+
+
 
 #### OLD ATTEMPT ####
 
@@ -76,7 +99,7 @@ class AttentionHead(tf.keras.layers.Layer):
     Largely borrowed from HW5 of Brown University's CS1470
     """
     def __init__(self, input_size, output_size, use_mask):
-        super(AttentionHead, self).__init__()
+        super().__init__()
         self.use_mask = use_mask
         self.w_query = tf.Variable(
             tf.random.truncated_normal([input_size, output_size], stddev=0.1)
@@ -103,7 +126,7 @@ class MultiHeadedAttention(tf.keras.layers.Layer):
     Largely borrowed from HW5 of Brown University's CS1470
     """
     def __init__(self, num_heads, emb_sz, use_mask):
-        super(MultiHeadedAttention, self).__init__()
+        super().__init__()
 
         self.emb_sz = emb_sz
         self.use_mask = use_mask
