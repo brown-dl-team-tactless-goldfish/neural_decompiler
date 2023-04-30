@@ -28,4 +28,7 @@ import tensorflow as tf
 # print(mask)
 
 
-from transformer.encoder import Encoder
+# from transformer.encoder import Encoder
+
+
+print(tf.random.shuffle(tf.range(10)))

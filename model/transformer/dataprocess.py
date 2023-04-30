@@ -1,5 +1,6 @@
 import os, re
 import numpy as np
+import tensorflow as tf
 from nltk.tokenize import wordpunct_tokenize
 
 START_TOKEN = "<START>"
@@ -12,7 +13,7 @@ C_PUNCT = [' ', ':', ';', '=', '~', '+', '-', '*', '/', ',', '.',
 
 class Translator:
     """
-    Translator: Tokenization, etc.
+    TRANSLATOR: Tokenization, etc.
     """
 
     def __init__(self):
@@ -145,7 +146,7 @@ class Translator:
 
         return out
 
-class DataLoader(DataProcessor):
+class DataLoader(Translator):
     """
     DATALOADER: Loads and preprocesses training data.
     """
@@ -208,6 +209,8 @@ class DataLoader(DataProcessor):
         c_vocab_tokens_set = set()
         avg_tokens = 0
         for file_name in sorted(os.listdir(self.c_path)):
+
+            # print(file_name)
         
             with open(f"{self.c_path}/{file_name}", "r") as c_file:
                 c_code = c_file.read()
@@ -229,6 +232,8 @@ class DataLoader(DataProcessor):
 
         for i, token in enumerate(c_vocab_tokens_list):
             self.c_vocab[token] = i
+
+        self.stats['c_vocab_size'] = len(c_vocab_tokens_list)
 
         return self.c_vocab
     
@@ -267,6 +272,8 @@ class DataLoader(DataProcessor):
 
         for i, token in enumerate(asm_vocab_tokens_list):
             self.asm_vocab[token] = i
+
+        self.stats['asm_vocab_size'] = len(asm_vocab_tokens_list)
 
         return self.asm_vocab
 
@@ -313,4 +320,34 @@ class DataLoader(DataProcessor):
             asm_vals[i, :] = asm_arr
     
         return c_vals, asm_vals, self.stats
+
+def partition_into_batches(X, Y, batch_size): 
+    '''
+    Randomly partitions dataset into batches each containing batch_size examples
+    '''
+
+    # get number of training examples
+    num_examples = X.shape[0]
+
+    # generate a random permutation of size m for nums 0 to (m-1)
+    rand_idx = np.random.permutation(np.arange(num_examples))
+
+    # reorder X_temp, Y_temp in the exact same way
+    # we cannot just shuffle both because we need each X_i to correspond
+    # to the correct Y_i
+    X_temp = tf.gather(X, rand_idx)
+    Y_temp = tf.gather(Y, rand_idx)
+
+    X_batches = []
+    Y_batches = []
+
+    # we will consider batches that are of length batch_size only
+    num_batches = int(np.floor(num_examples / batch_size))
+
+    for i in range(num_batches):
+        X_batches.append(X_temp[(i*batch_size):((i+1)*batch_size)])
+        Y_batches.append(Y_temp[(i*batch_size):((i+1)*batch_size)])
+
+    return X_batches, Y_batches
+
 

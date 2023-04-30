@@ -64,6 +64,7 @@ class FeedForward(tf.keras.layers.Layer):
         x = self.layer_norm(x)
         return x
 
+
 def positional_encoding(length, depth):
     """
     This code was copied directly from the TensorFlow transformer tutorial.
