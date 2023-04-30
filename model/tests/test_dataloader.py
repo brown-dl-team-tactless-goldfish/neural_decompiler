@@ -1,6 +1,6 @@
 import os, sys
 sys.path.insert(0, '')
-from model.preprocessing.dataloader import DataLoader
+from model.transformer.dataprocess import DataLoader
 
 
 current_dir = os.path.dirname(os.path.realpath(__file__))

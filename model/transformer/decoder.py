@@ -1,8 +1,8 @@
 import tensorflow as tf
 
-import attention as attn
-import util
-
+# relative imports
+from .attention import Attention
+from .util import FeedForward, PositionalEmbedding
 """
 Implemenation help following TensorFlow's tutorial
 https://www.tensorflow.org/text/tutorials/transformer
@@ -13,7 +13,7 @@ class DecoderLayer(tf.keras.layers.Layer):
     def __init__(self, emb_sz, ff_hidden_dim, num_heads, dropout=0):
         super().__init__()
 
-        self.self_attention = attn.Attention(
+        self.self_attention = Attention(
             num_heads=num_heads,
             key_dim=emb_sz,
             causal_mask=True            # need to do some masking for this...
@@ -25,20 +25,20 @@ class DecoderLayer(tf.keras.layers.Layer):
             # - https://jalammar.github.io/illustrated-transformer/
         )
 
-        self.cross_attention = attn.Attention(
+        self.cross_attention = Attention(
             num_heads=num_heads,
             key_dim=emb_sz,
         )
 
-        self.feed_forward = util.FeedForward(dim=emb_sz, 
+        self.feed_forward = FeedForward(dim=emb_sz, 
                                              hidden_dim=ff_hidden_dim,
                                              dropout=dropout)
 
-    def call(self, x, context):
+    def call(self, x, context, training):
         out = self.self_attention(x, x)
         out = self.cross_attention(out, context)
 
-        out = self.feed_forward(out)
+        out = self.feed_forward(out, training=training)
         return out
 
 class Decoder(tf.keras.layers.Layer):
@@ -50,7 +50,7 @@ class Decoder(tf.keras.layers.Layer):
         self.emb_sz = emb_sz
         self.num_layers = num_layers
 
-        self.pos_embedding = util.PositionalEmbedding(vocab_size=vocab_sz, 
+        self.pos_embedding = PositionalEmbedding(vocab_size=vocab_sz, 
                                                       d_model=emb_sz)
 
         self.dropout = tf.keras.layers.Dropout(dropout)
@@ -66,7 +66,7 @@ class Decoder(tf.keras.layers.Layer):
                 )
             )
         
-    def call(self, x, context):
+    def call(self, x, context, training):
         '''
         @params
         - x: previous output/output embedding
@@ -76,6 +76,6 @@ class Decoder(tf.keras.layers.Layer):
         x = self.pos_embedding(x)
         x = self.dropout(x)
         for i in range(self.num_layers):
-            x = self.decoder_layers[i](x, context)
+            x = self.decoder_layers[i](x, context, training)
         return x
 

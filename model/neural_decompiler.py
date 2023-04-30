@@ -1,9 +1,10 @@
+import os
 import tensorflow as tf
 
 from transformer.decoder import Decoder
 from transformer.encoder import Encoder
-import transformer.util as util
-
+from transformer.util import CustomSchedule, masked_loss, masked_accuracy
+from transformer.dataprocess import Translator, DataLoader
 
 class NeuralDecompiler(tf.keras.Model):
     '''
@@ -58,6 +59,28 @@ class NeuralDecompiler(tf.keras.Model):
         return logits
 
 
+
+
+def train():
+
+    current_dir = os.path.dirname(os.path.realpath(__file__))
+    c_dir = "../data/leetcode_renamed_data/C_COMPILED_FILES"
+    asm_dir = "../data/leetcode_renamed_data/ASM_COMPILED_FILES"
+    c_path = f"{current_dir}/{c_dir}"
+    asm_path = f"{current_dir}/{asm_dir}"
+
+    loader = DataLoader(c_path=c_path, asm_path=asm_path)
+
+
+    c_vals, asm_vals, stats = loader.load_data()
+
+    num_examples = c_vals[0]
+
+    # step 1: shuffle data
+    
+
+
+    model = NeuralDecompiler(emb_sz=)
 
 
 
