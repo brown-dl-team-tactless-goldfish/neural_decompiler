@@ -77,7 +77,7 @@ class Translator:
         # filtering things
         new_tokens = []
         for token in c_tokens:
-            if token not in ('\n', '""'):
+            if token not in ('""'):
                 new_tokens.append(token)
 
         c_tokens = new_tokens
@@ -599,6 +599,9 @@ class DataLoader(Translator):
             asm_vocab_tokens_set = asm_vocab_tokens_set.union(set(asm_tokens))
             c_vocab_tokens_set = c_vocab_tokens_set.union(set(c_tokens))
 
+            asm_avg_tokens += len(asm_tokens)
+            c_avg_tokens += len(c_tokens)
+
             if len(asm_tokens) > self.stats['max_asm_code_length']:
                 self.stats['max_asm_code_length'] = len(asm_tokens)
 
@@ -645,8 +648,8 @@ class DataLoader(Translator):
         - None
 
         @returns:
-        - c_vals: np.array of size (num_examples, max_c_code_length)
-        - asm_vals: np.array of size (num_examples, max_asm_code_length)
+        - asm_vals: np.array of size (num_examples, max_c_code_length)
+        - c_vals: np.array of size (num_examples, max_asm_code_length)
         - self.stats: stats dict 
         """
 
@@ -681,7 +684,7 @@ class DataLoader(Translator):
             asm_vals[i, :] = asm_arr
             c_vals[i, :] = c_arr
     
-        return c_vals, asm_vals, self.stats
+        return asm_vals.astype(int), c_vals.astype(int), self.stats
     
     
     def write_vocab_as_csv(self, vocab, file_path):

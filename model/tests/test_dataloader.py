@@ -79,8 +79,8 @@ def test_load_data():
     dataloader.write_vocab_as_csv(dataloader.c_vocab, f"{current_dir}/{c_csv_filedir_relative_path}")
 
     print(dataloader.stats)
-    print(dataloader.asm_vocab)
-    # print(dataloader.load_data()[0])
+    # print(dataloader.asm_vocab)
+    print(dataloader.load_data()[0])
 
 if __name__ == "__main__":
     # test_c_tokenization()
