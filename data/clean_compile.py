@@ -263,7 +263,7 @@ class CodeCleanerCompiler:
 
             ### GET ALL VAR NAMES AND COMBINE THEM TO GET ALL NAMES TO CONVERT ####
             variable_names = [x for x in re.findall(
-                r"[a-zA-Z_][a-zA-Z0-9_]*(?=[ ,;=\[])", src_code) \
+                r"[a-zA-Z_][a-zA-Z0-9_]*(?=[ ,;=\[])", FINAL_SRC_CODE) \
                     if x not in reserved_list and x not in operators]
             variable_names = set([x.replace('*', '') for x in variable_names])
 
