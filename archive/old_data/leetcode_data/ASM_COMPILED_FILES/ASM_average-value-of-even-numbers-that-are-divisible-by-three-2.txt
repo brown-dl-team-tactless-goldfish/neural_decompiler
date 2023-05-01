@@ -1,0 +1,62 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        pushq   %r14
+        pushq   %r13
+        pushq   %r12
+        pushq   %rbx
+        movq    %rdi, -40(%rbp)
+        movl    %esi, -44(%rbp)
+        movl    $3, %r14d
+        movl    $0, %ebx
+        movl    $0, %r13d
+        movl    $0, %r12d
+        jmp     .L2
+.L4:
+        movl    %r12d, %eax
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        andl    $1, %eax
+        testl   %eax, %eax
+        jne     .L3
+        movl    %r12d, %eax
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        movsbl  %r14b, %ecx
+        cltd
+        idivl   %ecx
+        movl    %edx, %eax
+        testl   %eax, %eax
+        jne     .L3
+        movl    %r12d, %eax
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        addl    %eax, %ebx
+        addl    $1, %r13d
+.L3:
+        addl    $1, %r12d
+.L2:
+        movl    -44(%rbp), %eax
+        cmpl    %eax, %r12d
+        jb      .L4
+        testl   %ebx, %ebx
+        jne     .L5
+        movl    $0, %eax
+        jmp     .L6
+.L5:
+        movl    %ebx, %eax
+        movl    $0, %edx
+        divl    %r13d
+.L6:
+        popq    %rbx
+        popq    %r12
+        popq    %r13
+        popq    %r14
+        popq    %rbp
+        ret

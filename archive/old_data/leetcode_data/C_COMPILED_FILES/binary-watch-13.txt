@@ -1,0 +1,90 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>
+static char** var_7[] = {"01\0", "02\0", "04\0", "08\0", "01\0", "02\0", "04\0", "08\0", "16\0", "32\0"};
+static char** var_3;
+static int var_4;
+#define var_0 200 
+void func_5(int *var_13, int var_8){
+*var_13 = ( 1 << var_8 ) | *var_13;
+}
+int func_1(int *var_13, int var_8){
+return ((( 1 << var_8 ) & *var_13)>0);
+}
+void func_4(int var_5){
+int var_1 = 0;
+for (int var_8 = 0; var_8 <=3; var_8++){
+if (func_1(&var_5, var_8) == 1){
+var_1 = var_1 + atoi(var_7[var_8]);
+}
+}
+if (var_1 >= 12){
+return;
+}
+int var_2 = 0;
+for (int var_8 = 4; var_8 <=9; var_8++){
+if (func_1(&var_5, var_8) == 1){
+var_2 = var_2 + atoi(var_7[var_8]);
+}
+}
+if (var_2 >= 60){
+return;
+}
+var_4++;
+int var_9 = 0;
+if (var_1 > 9){
+var_3[var_4][var_9] = '1';
+var_9++;
+}
+if (var_1==0){
+var_3[var_4][var_9] = '0';
+var_9++;
+var_3[var_4][var_9] = ':';
+} else {
+var_3[var_4][var_9] = (char)((var_1%10) + '0');
+var_9++;
+var_3[var_4][var_9] = ':';
+}
+var_9++;
+if (var_2 < 10){
+var_3[var_4][var_9] = '0';
+var_9++;
+var_3[var_4][var_9] = (char)( var_2 + '0');
+var_9++;
+} else {
+var_3[var_4][var_9] = (char)((var_2 /10) + '0');
+var_9++;
+var_3[var_4][var_9] = (char)( (var_2 % 10) + '0');
+var_9++;
+}
+var_3[var_4][var_9] = '\0';
+}
+void func_2(int var_11, int var_10, int var_5, int var_12){
+if (var_12 == 0) {
+func_4(var_5);
+return;
+}
+for (int var_8 = var_11; var_8<= var_10;var_8++){
+int var_15 = var_5;
+func_5(&var_5, var_8);
+func_2(var_8 + 1, var_10, var_5, var_12-1);
+var_5 = var_15;
+}
+}
+char ** func_3(int var_16, int* var_14){
+if (var_16 >= 9){
+*var_14 = 0;
+return var_3;
+}
+var_3 = (char**)calloc(var_0, sizeof(char*));
+var_4 = -1;
+for (int var_8 = 0; var_8 < var_0; var_8++){
+var_3[var_8] = (char*)calloc(6, sizeof(char));
+}
+func_2(0, 9, 0, var_16);
+*var_14 = var_4 + 1;
+return var_3;
+}

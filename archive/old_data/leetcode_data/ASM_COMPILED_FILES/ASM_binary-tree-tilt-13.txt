@@ -1,0 +1,92 @@
+func_2:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        pushq   %rbx
+        subq    $40, %rsp
+        movq    %rdi, -40(%rbp)
+        movl    $0, -20(%rbp)
+        cmpq    $0, -40(%rbp)
+        je      .L2
+        movq    -40(%rbp), %rax
+        movq    8(%rax), %rax
+        testq   %rax, %rax
+        jne     .L3
+        movq    -40(%rbp), %rax
+        movq    16(%rax), %rax
+        testq   %rax, %rax
+        jne     .L3
+.L2:
+        movl    $0, %eax
+        jmp     .L4
+.L3:
+        movq    -40(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, %rdi
+        movl    $0, %eax
+        call    func_1
+        movl    %eax, %ebx
+        movq    -40(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, %rdi
+        movl    $0, %eax
+        call    func_1
+        movl    %ebx, %edx
+        subl    %eax, %edx
+        movl    %edx, %eax
+        sarl    $31, %eax
+        xorl    %eax, %edx
+        movl    %edx, %ebx
+        subl    %eax, %ebx
+        movq    -40(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, %rdi
+        call    func_2
+        addl    %eax, %ebx
+        movq    -40(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, %rdi
+        call    func_2
+        addl    %ebx, %eax
+.L4:
+        addq    $40, %rsp
+        popq    %rbx
+        popq    %rbp
+        ret
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    $0, -4(%rbp)
+        cmpq    $0, -24(%rbp)
+        jne     .L6
+        movl    $0, %eax
+        jmp     .L7
+.L6:
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        testq   %rax, %rax
+        je      .L8
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, %rdi
+        call    func_1
+        addl    %eax, -4(%rbp)
+.L8:
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        testq   %rax, %rax
+        je      .L9
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, %rdi
+        call    func_1
+        addl    %eax, -4(%rbp)
+.L9:
+        movq    -24(%rbp), %rax
+        movl    (%rax), %edx
+        movl    -4(%rbp), %eax
+        addl    %edx, %eax
+.L7:
+        leave
+        ret

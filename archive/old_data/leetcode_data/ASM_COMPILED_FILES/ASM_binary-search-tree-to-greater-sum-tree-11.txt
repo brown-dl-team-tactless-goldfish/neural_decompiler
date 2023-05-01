@@ -1,0 +1,43 @@
+var_1:
+        .zero   4
+func_2:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $16, %rsp
+        movq    %rdi, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movq    %rax, %rdi
+        call    func_1
+        movl    $0, var_1(%rip)
+        movq    -8(%rbp), %rax
+        leave
+        ret
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $16, %rsp
+        movq    %rdi, -8(%rbp)
+        cmpq    $0, -8(%rbp)
+        je      .L6
+        movq    -8(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, %rdi
+        call    func_1
+        movq    -8(%rbp), %rax
+        movl    (%rax), %edx
+        movl    var_1(%rip), %eax
+        addl    %edx, %eax
+        movl    %eax, var_1(%rip)
+        movl    var_1(%rip), %edx
+        movq    -8(%rbp), %rax
+        movl    %edx, (%rax)
+        movq    -8(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, %rdi
+        call    func_1
+        jmp     .L3
+.L6:
+        nop
+.L3:
+        leave
+        ret

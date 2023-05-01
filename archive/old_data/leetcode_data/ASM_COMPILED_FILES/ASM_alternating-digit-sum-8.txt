@@ -1,0 +1,94 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        pushq   %r12
+        pushq   %rbx
+        subq    $32, %rsp
+        movl    %edi, -36(%rbp)
+        movl    -36(%rbp), %eax
+        cltd
+        movl    %edx, %eax
+        xorl    -36(%rbp), %eax
+        subl    %edx, %eax
+        cvtsi2sd        %eax, %xmm0
+        call    log10
+        call    floor
+        movapd  %xmm0, %xmm1
+        movsd   .LC0(%rip), %xmm0
+        addsd   %xmm1, %xmm0
+        cvttsd2si       %xmm0, %r12d
+        movl    $0, %ebx
+        movb    $0, -17(%rbp)
+        movl    %r12d, %eax
+        andl    $1, %eax
+        testl   %eax, %eax
+        je      .L3
+        movb    $1, -17(%rbp)
+        jmp     .L3
+.L6:
+        movzbl  -17(%rbp), %eax
+        xorl    $1, %eax
+        testb   %al, %al
+        je      .L4
+        movl    -36(%rbp), %ecx
+        movl    $1717986919, %edx
+        movl    %ecx, %eax
+        imull   %edx
+        sarl    $2, %edx
+        movl    %ecx, %eax
+        sarl    $31, %eax
+        subl    %eax, %edx
+        movl    %edx, %eax
+        sall    $2, %eax
+        addl    %edx, %eax
+        addl    %eax, %eax
+        subl    %eax, %ecx
+        movl    %ecx, %edx
+        subl    %edx, %ebx
+        jmp     .L5
+.L4:
+        movl    -36(%rbp), %ecx
+        movl    $1717986919, %edx
+        movl    %ecx, %eax
+        imull   %edx
+        sarl    $2, %edx
+        movl    %ecx, %eax
+        sarl    $31, %eax
+        subl    %eax, %edx
+        movl    %edx, %eax
+        sall    $2, %eax
+        addl    %edx, %eax
+        addl    %eax, %eax
+        subl    %eax, %ecx
+        movl    %ecx, %edx
+        addl    %edx, %ebx
+.L5:
+        movzbl  -17(%rbp), %eax
+        testl   %eax, %eax
+        setne   %al
+        xorl    $1, %eax
+        movzbl  %al, %eax
+        movb    %al, -17(%rbp)
+        andb    $1, -17(%rbp)
+        movl    -36(%rbp), %ecx
+        movl    $1717986919, %edx
+        movl    %ecx, %eax
+        imull   %edx
+        sarl    $2, %edx
+        movl    %ecx, %eax
+        sarl    $31, %eax
+        subl    %eax, %edx
+        movl    %edx, %eax
+        movl    %eax, -36(%rbp)
+.L3:
+        cmpl    $0, -36(%rbp)
+        jg      .L6
+        movl    %ebx, %eax
+        addq    $32, %rsp
+        popq    %rbx
+        popq    %r12
+        popq    %rbp
+        ret
+.LC0:
+        .long   0
+        .long   1072693248

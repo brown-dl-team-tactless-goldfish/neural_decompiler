@@ -1,0 +1,87 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        cmpq    $0, -24(%rbp)
+        jne     .L2
+        movl    $0, %eax
+        jmp     .L3
+.L2:
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, %rdi
+        call    func_1
+        movl    %eax, -4(%rbp)
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, %rdi
+        call    func_1
+        movl    %eax, -8(%rbp)
+        movl    -4(%rbp), %eax
+        cmpl    -8(%rbp), %eax
+        jle     .L4
+        movl    -4(%rbp), %eax
+        addl    $1, %eax
+        jmp     .L3
+.L4:
+        movl    -8(%rbp), %eax
+        addl    $1, %eax
+.L3:
+        leave
+        ret
+func_2:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movq    %rdi, -24(%rbp)
+        cmpq    $0, -24(%rbp)
+        jne     .L6
+        movl    $1, %eax
+        jmp     .L7
+.L6:
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, %rdi
+        call    func_1
+        movl    %eax, -4(%rbp)
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, %rdi
+        call    func_1
+        movl    %eax, -8(%rbp)
+        movl    -4(%rbp), %eax
+        subl    -8(%rbp), %eax
+        cmpl    $1, %eax
+        jle     .L8
+        movl    $0, %eax
+        jmp     .L7
+.L8:
+        movl    -4(%rbp), %eax
+        subl    -8(%rbp), %eax
+        cmpl    $-1, %eax
+        jge     .L9
+        movl    $0, %eax
+        jmp     .L7
+.L9:
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, %rdi
+        call    func_2
+        testb   %al, %al
+        je      .L10
+        movq    -24(%rbp), %rax
+        movq    16(%rax), %rax
+        movq    %rax, %rdi
+        call    func_2
+        testb   %al, %al
+        je      .L10
+        movl    $1, %eax
+        jmp     .L11
+.L10:
+        movl    $0, %eax
+.L11:
+        andl    $1, %eax
+.L7:
+        leave
+        ret

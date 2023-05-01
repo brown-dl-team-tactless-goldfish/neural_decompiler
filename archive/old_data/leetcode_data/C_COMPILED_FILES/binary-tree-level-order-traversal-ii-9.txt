@@ -1,0 +1,59 @@
+#include<stdlib.h>
+#include<stdio.h>
+#include<string.h>
+#include<stdbool.h>
+#include<stdint.h>
+#include<math.h>
+struct TreeNode {
+int var_14;
+struct TreeNode *var_3;
+struct TreeNode *var_10;
+};
+void func_3(struct TreeNode* var_11, int* var_5, int var_0){
+if(*var_5 < var_0) *var_5=var_0;
+if(var_11==NULL){
+return;
+}
+func_3(var_11->var_3, var_5, var_0+1);
+func_3(var_11->var_10, var_5, var_0+1);
+}
+void func_2(struct TreeNode* var_11, int** var_6, int* var_7, int var_4){
+if(var_11==NULL)return;
+func_2(var_11->var_3, var_6, var_7, var_4+1);
+func_2(var_11->var_10, var_6, var_7, var_4+1);
+var_6[var_4][var_7[var_4]++]=var_11->var_14;
+}
+void func_4(int** var_6, int* var_7, int var_4){
+int** var_12=malloc(sizeof(int*)*var_4);
+int* var_13=malloc(sizeof(int)*var_4);
+for(int var_1=0; var_1<var_4; var_1++){
+var_12[var_1]=malloc(sizeof(int)*var_7[var_4-var_1-1]);
+for(int var_2=0; var_2<var_7[var_4-var_1-1]; var_2++){
+var_12[var_1][var_2]=var_6[var_4-var_1-1][var_2];
+}
+}
+for(int var_1=0; var_1<var_4; var_1++){
+var_13[var_1]=var_7[var_4-var_1-1];
+}
+for(int var_1=0; var_1<var_4; var_1++){
+var_7[var_1]=var_13[var_1];
+for(int var_2=0; var_2<var_13[var_1]; var_2++){
+var_6[var_1][var_2]=var_12[var_1][var_2];
+}
+}
+free(var_12);
+free(var_13);
+}
+int** func_1(struct TreeNode* var_11, int* var_9, int** var_8){
+*var_9=0;
+func_3(var_11, var_9, 0);
+int var_4=*var_9;
+int** var_6=malloc(sizeof(int*)*(*var_9));
+for(int var_1=0; var_1<(*var_9); var_1++){
+var_6[var_1]=malloc(sizeof(int)*1000);
+}
+*var_8=calloc((*var_9),sizeof(int*));
+func_2(var_11, var_6, *var_8, 0);
+func_4(var_6, *var_8, var_4);
+return var_6;
+}

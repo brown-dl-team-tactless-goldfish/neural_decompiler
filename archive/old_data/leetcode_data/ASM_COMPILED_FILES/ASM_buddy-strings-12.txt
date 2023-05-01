@@ -1,0 +1,130 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $256, %rsp
+        movq    %rdi, -248(%rbp)
+        movq    %rsi, -256(%rbp)
+        movq    -248(%rbp), %rax
+        movq    %rax, %rdi
+        call    strlen
+        movl    %eax, -16(%rbp)
+        movl    $0, -4(%rbp)
+        leaq    -128(%rbp), %rdx
+        movl    $0, %eax
+        movl    $13, %ecx
+        movq    %rdx, %rdi
+        rep stosq
+        leaq    -240(%rbp), %rdx
+        movl    $0, %eax
+        movl    $13, %ecx
+        movq    %rdx, %rdi
+        rep stosq
+        movl    $0, -8(%rbp)
+        movq    -256(%rbp), %rax
+        movq    %rax, %rdi
+        call    strlen
+        movl    %eax, -20(%rbp)
+        movl    -16(%rbp), %eax
+        cmpl    -20(%rbp), %eax
+        je      .L2
+        movl    $0, %eax
+        jmp     .L14
+.L2:
+        movl    $0, -12(%rbp)
+        jmp     .L4
+.L8:
+        movl    -12(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -248(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        subl    $97, %eax
+        movslq  %eax, %rdx
+        movl    -128(%rbp,%rdx,4), %edx
+        addl    $1, %edx
+        cltq
+        movl    %edx, -128(%rbp,%rax,4)
+        movl    -12(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -256(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        subl    $97, %eax
+        movslq  %eax, %rdx
+        movl    -240(%rbp,%rdx,4), %edx
+        addl    $1, %edx
+        cltq
+        movl    %edx, -240(%rbp,%rax,4)
+        movl    -12(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -248(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        movsbl  %al, %eax
+        subl    $97, %eax
+        cltq
+        movl    -128(%rbp,%rax,4), %eax
+        cmpl    $1, %eax
+        jle     .L5
+        movl    $1, -8(%rbp)
+.L5:
+        movl    -12(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -248(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %edx
+        movl    -12(%rbp), %eax
+        movslq  %eax, %rcx
+        movq    -256(%rbp), %rax
+        addq    %rcx, %rax
+        movzbl  (%rax), %eax
+        cmpb    %al, %dl
+        je      .L6
+        addl    $1, -4(%rbp)
+.L6:
+        cmpl    $2, -4(%rbp)
+        jle     .L7
+        movl    $0, %eax
+        jmp     .L14
+.L7:
+        addl    $1, -12(%rbp)
+.L4:
+        movl    -12(%rbp), %eax
+        cmpl    -16(%rbp), %eax
+        jl      .L8
+        movl    $0, -12(%rbp)
+        jmp     .L9
+.L11:
+        movl    -12(%rbp), %eax
+        cltq
+        movl    -128(%rbp,%rax,4), %edx
+        movl    -12(%rbp), %eax
+        cltq
+        movl    -240(%rbp,%rax,4), %eax
+        cmpl    %eax, %edx
+        je      .L10
+        movl    $0, %eax
+        jmp     .L14
+.L10:
+        addl    $1, -12(%rbp)
+.L9:
+        cmpl    $25, -12(%rbp)
+        jle     .L11
+        cmpl    $2, -4(%rbp)
+        jne     .L12
+        movl    $1, %eax
+        jmp     .L14
+.L12:
+        cmpl    $0, -4(%rbp)
+        jne     .L13
+        cmpl    $1, -8(%rbp)
+        jne     .L13
+        movl    $1, %eax
+        jmp     .L14
+.L13:
+        movl    $0, %eax
+.L14:
+        leave
+        ret

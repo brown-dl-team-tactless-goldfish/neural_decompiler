@@ -1,0 +1,63 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $80048, %rsp
+        movq    %rdi, -80040(%rbp)
+        movl    %esi, -80044(%rbp)
+        leaq    -80032(%rbp), %rax
+        movl    $80004, %edx
+        movl    $0, %esi
+        movq    %rax, %rdi
+        call    memset
+        movl    $0, -4(%rbp)
+        jmp     .L2
+.L3:
+        movl    -4(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -80040(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        addl    $10000, %eax
+        movslq  %eax, %rdx
+        movl    -80032(%rbp,%rdx,4), %edx
+        addl    $1, %edx
+        cltq
+        movl    %edx, -80032(%rbp,%rax,4)
+        addl    $1, -4(%rbp)
+.L2:
+        movl    -4(%rbp), %eax
+        cmpl    -80044(%rbp), %eax
+        jl      .L3
+        movl    $0, -8(%rbp)
+        movl    $0, -12(%rbp)
+        movl    $0, -16(%rbp)
+        jmp     .L4
+.L5:
+        movl    -16(%rbp), %eax
+        cltq
+        movl    -80032(%rbp,%rax,4), %eax
+        leal    1(%rax), %edx
+        movl    -12(%rbp), %eax
+        andl    $1, %eax
+        subl    %eax, %edx
+        movl    %edx, %eax
+        sarl    %eax
+        movl    %eax, -20(%rbp)
+        movl    -16(%rbp), %eax
+        subl    $10000, %eax
+        imull   -20(%rbp), %eax
+        addl    %eax, -8(%rbp)
+        movl    -16(%rbp), %eax
+        cltq
+        movl    -80032(%rbp,%rax,4), %eax
+        addl    %eax, -12(%rbp)
+        addl    $1, -16(%rbp)
+.L4:
+        movl    -80044(%rbp), %eax
+        subl    $1, %eax
+        cmpl    %eax, -12(%rbp)
+        jl      .L5
+        movl    -8(%rbp), %eax
+        leave
+        ret

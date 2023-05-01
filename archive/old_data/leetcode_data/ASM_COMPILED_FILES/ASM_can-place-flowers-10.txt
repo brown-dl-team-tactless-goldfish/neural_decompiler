@@ -1,0 +1,58 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        movl    %edx, -32(%rbp)
+        movl    $0, -4(%rbp)
+        movl    $-1, -8(%rbp)
+        movl    $0, -12(%rbp)
+        jmp     .L2
+.L5:
+        movl    -12(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        testl   %eax, %eax
+        jne     .L3
+        addl    $1, -4(%rbp)
+        jmp     .L4
+.L3:
+        cmpl    $-1, -8(%rbp)
+        setne   %al
+        movzbl  %al, %eax
+        movl    -4(%rbp), %edx
+        subl    %eax, %edx
+        movl    %edx, %eax
+        movl    %eax, %edx
+        shrl    $31, %edx
+        addl    %edx, %eax
+        sarl    %eax
+        negl    %eax
+        addl    %eax, -32(%rbp)
+        movl    $0, -4(%rbp)
+        movl    -12(%rbp), %eax
+        movl    %eax, -8(%rbp)
+.L4:
+        addl    $1, -12(%rbp)
+.L2:
+        movl    -12(%rbp), %eax
+        cmpl    -28(%rbp), %eax
+        jl      .L5
+        cmpl    $-1, -8(%rbp)
+        sete    %al
+        movzbl  %al, %edx
+        movl    -4(%rbp), %eax
+        addl    %edx, %eax
+        movl    %eax, %edx
+        shrl    $31, %edx
+        addl    %edx, %eax
+        sarl    %eax
+        negl    %eax
+        addl    %eax, -32(%rbp)
+        cmpl    $0, -32(%rbp)
+        setle   %al
+        popq    %rbp
+        ret

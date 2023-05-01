@@ -1,0 +1,123 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -24(%rbp)
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, -8(%rbp)
+        movq    -24(%rbp), %rax
+        movq    $0, 8(%rax)
+        jmp     .L2
+.L3:
+        movq    -8(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, -16(%rbp)
+        movq    -8(%rbp), %rax
+        movq    -24(%rbp), %rdx
+        movq    %rdx, 8(%rax)
+        movq    -8(%rbp), %rax
+        movq    %rax, -24(%rbp)
+        movq    -16(%rbp), %rax
+        movq    %rax, -8(%rbp)
+.L2:
+        cmpq    $0, -8(%rbp)
+        jne     .L3
+        movq    -24(%rbp), %rax
+        popq    %rbp
+        ret
+func_2:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $64, %rsp
+        movq    %rdi, -56(%rbp)
+        movq    %rsi, -64(%rbp)
+        movq    -56(%rbp), %rax
+        movq    %rax, %rdi
+        call    func_1
+        movq    %rax, -56(%rbp)
+        movq    -64(%rbp), %rax
+        movq    %rax, %rdi
+        call    func_1
+        movq    %rax, -64(%rbp)
+        movq    $0, -8(%rbp)
+        movq    -56(%rbp), %rax
+        movq    %rax, -16(%rbp)
+        movq    -64(%rbp), %rax
+        movq    %rax, -24(%rbp)
+        movb    $0, -25(%rbp)
+        jmp     .L6
+.L9:
+        movzbl  -25(%rbp), %eax
+        movl    %eax, -32(%rbp)
+        cmpq    $0, -16(%rbp)
+        je      .L7
+        movq    -16(%rbp), %rax
+        movl    (%rax), %eax
+        addl    %eax, -32(%rbp)
+        movq    -16(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, -16(%rbp)
+.L7:
+        cmpq    $0, -24(%rbp)
+        je      .L8
+        movq    -24(%rbp), %rax
+        movl    (%rax), %eax
+        addl    %eax, -32(%rbp)
+        movq    -24(%rbp), %rax
+        movq    8(%rax), %rax
+        movq    %rax, -24(%rbp)
+.L8:
+        movq    -8(%rbp), %rax
+        movq    %rax, -40(%rbp)
+        movl    $16, %edi
+        call    malloc
+        movq    %rax, -8(%rbp)
+        movq    -8(%rbp), %rax
+        movq    -40(%rbp), %rdx
+        movq    %rdx, 8(%rax)
+        movl    -32(%rbp), %ecx
+        movl    $1717986919, %edx
+        movl    %ecx, %eax
+        imull   %edx
+        sarl    $2, %edx
+        movl    %ecx, %eax
+        sarl    $31, %eax
+        subl    %eax, %edx
+        movl    %edx, %eax
+        sall    $2, %eax
+        addl    %edx, %eax
+        addl    %eax, %eax
+        subl    %eax, %ecx
+        movl    %ecx, %edx
+        movq    -8(%rbp), %rax
+        movl    %edx, (%rax)
+        movl    -32(%rbp), %ecx
+        movl    $1717986919, %edx
+        movl    %ecx, %eax
+        imull   %edx
+        sarl    $2, %edx
+        movl    %ecx, %eax
+        sarl    $31, %eax
+        subl    %eax, %edx
+        movl    %edx, %eax
+        testl   %eax, %eax
+        setne   %al
+        movb    %al, -25(%rbp)
+.L6:
+        cmpq    $0, -16(%rbp)
+        jne     .L9
+        cmpq    $0, -24(%rbp)
+        jne     .L9
+        cmpb    $0, -25(%rbp)
+        jne     .L9
+        movq    -56(%rbp), %rax
+        movq    %rax, %rdi
+        call    func_1
+        movq    %rax, -56(%rbp)
+        movq    -64(%rbp), %rax
+        movq    %rax, %rdi
+        call    func_1
+        movq    %rax, -64(%rbp)
+        movq    -8(%rbp), %rax
+        leave
+        ret

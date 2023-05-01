@@ -1,0 +1,57 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movl    %edi, -20(%rbp)
+        cvtsi2sd        -20(%rbp), %xmm0
+        call    log2
+        movapd  %xmm0, %xmm1
+        movsd   .LC0(%rip), %xmm0
+        addsd   %xmm1, %xmm0
+        cvttsd2si       %xmm0, %eax
+        movl    %eax, -16(%rbp)
+        movl    $0, -4(%rbp)
+        movl    $0, -8(%rbp)
+        movb    $0, -9(%rbp)
+        cmpl    $0, -20(%rbp)
+        jg      .L4
+        movl    $0, %eax
+        jmp     .L3
+.L10:
+        movl    -20(%rbp), %eax
+        andl    $1, %eax
+        testl   %eax, %eax
+        je      .L5
+        movzbl  -9(%rbp), %eax
+        xorl    $1, %eax
+        testb   %al, %al
+        je      .L6
+        movb    $1, -9(%rbp)
+        addl    $1, -8(%rbp)
+        jmp     .L9
+.L6:
+        movl    -4(%rbp), %eax
+        cmpl    -8(%rbp), %eax
+        jge     .L8
+        movl    -8(%rbp), %eax
+        movl    %eax, -4(%rbp)
+.L8:
+        movl    $0, -8(%rbp)
+        addl    $1, -8(%rbp)
+        jmp     .L9
+.L5:
+        cmpb    $0, -9(%rbp)
+        je      .L9
+        addl    $1, -8(%rbp)
+.L9:
+        sarl    -20(%rbp)
+.L4:
+        cmpl    $0, -20(%rbp)
+        jne     .L10
+        movl    -4(%rbp), %eax
+.L3:
+        leave
+        ret
+.LC0:
+        .long   0
+        .long   1072693248

@@ -1,0 +1,70 @@
+.LC0:
+        .string "Heavy"
+.LC1:
+        .string "Neither"
+.LC2:
+        .string "Bulky"
+.LC3:
+        .string "Both"
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movq    %rdi, -24(%rbp)
+        movq    %rsi, -32(%rbp)
+        movq    %rdx, -40(%rbp)
+        movq    %rcx, -48(%rbp)
+        movl    $9999, -4(%rbp)
+        movl    $999999999, -8(%rbp)
+        movl    -4(%rbp), %eax
+        cltq
+        cmpq    %rax, -24(%rbp)
+        jg      .L2
+        movl    -4(%rbp), %eax
+        cltq
+        cmpq    %rax, -32(%rbp)
+        jg      .L2
+        movl    -4(%rbp), %eax
+        cltq
+        cmpq    %rax, -40(%rbp)
+        jg      .L2
+        movq    -24(%rbp), %rax
+        imulq   -32(%rbp), %rax
+        imulq   -40(%rbp), %rax
+        movq    %rax, %rdx
+        movl    -8(%rbp), %eax
+        cltq
+        cmpq    %rax, %rdx
+        jle     .L3
+.L2:
+        movl    $1, %eax
+        jmp     .L4
+.L3:
+        movl    $0, %eax
+.L4:
+        movl    %eax, -12(%rbp)
+        cmpq    $99, -48(%rbp)
+        setg    %al
+        movzbl  %al, %eax
+        movl    %eax, -16(%rbp)
+        cmpl    $1, -12(%rbp)
+        jne     .L5
+        cmpl    $1, -16(%rbp)
+        je      .L6
+.L5:
+        cmpl    $1, -12(%rbp)
+        je      .L7
+        cmpl    $1, -16(%rbp)
+        jne     .L8
+        movl    $.LC0, %eax
+        jmp     .L12
+.L8:
+        movl    $.LC1, %eax
+        jmp     .L12
+.L7:
+        movl    $.LC2, %eax
+        jmp     .L12
+.L6:
+        movl    $.LC3, %eax
+.L12:
+        popq    %rbp
+        ret

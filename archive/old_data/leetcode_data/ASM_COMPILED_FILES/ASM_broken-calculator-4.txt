@@ -1,0 +1,34 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    %edi, -20(%rbp)
+        movl    %esi, -24(%rbp)
+        movl    $0, -4(%rbp)
+        jmp     .L2
+.L5:
+        movl    -24(%rbp), %eax
+        andl    $1, %eax
+        testl   %eax, %eax
+        jne     .L3
+        movl    -24(%rbp), %eax
+        movl    %eax, %edx
+        shrl    $31, %edx
+        addl    %edx, %eax
+        sarl    %eax
+        jmp     .L4
+.L3:
+        movl    -24(%rbp), %eax
+        addl    $1, %eax
+.L4:
+        movl    %eax, -24(%rbp)
+        addl    $1, -4(%rbp)
+.L2:
+        movl    -24(%rbp), %eax
+        cmpl    -20(%rbp), %eax
+        jg      .L5
+        movl    -4(%rbp), %edx
+        movl    -20(%rbp), %eax
+        addl    %edx, %eax
+        subl    -24(%rbp), %eax
+        popq    %rbp
+        ret

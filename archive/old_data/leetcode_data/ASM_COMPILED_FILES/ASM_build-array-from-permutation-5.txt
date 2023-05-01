@@ -1,0 +1,48 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $48, %rsp
+        movq    %rdi, -24(%rbp)
+        movl    %esi, -28(%rbp)
+        movq    %rdx, -40(%rbp)
+        movl    -28(%rbp), %eax
+        cltq
+        salq    $2, %rax
+        movq    %rax, %rdi
+        call    malloc
+        movq    %rax, -16(%rbp)
+        movl    $0, -4(%rbp)
+        movl    $0, -8(%rbp)
+        movl    $0, -8(%rbp)
+        jmp     .L2
+.L3:
+        movl    -8(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -24(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -24(%rbp), %rax
+        leaq    (%rdx,%rax), %rcx
+        movl    -4(%rbp), %eax
+        leal    1(%rax), %edx
+        movl    %edx, -4(%rbp)
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -16(%rbp), %rax
+        addq    %rax, %rdx
+        movl    (%rcx), %eax
+        movl    %eax, (%rdx)
+        addl    $1, -8(%rbp)
+.L2:
+        movl    -8(%rbp), %eax
+        cmpl    -28(%rbp), %eax
+        jl      .L3
+        movq    -40(%rbp), %rax
+        movl    -28(%rbp), %edx
+        movl    %edx, (%rax)
+        movq    -16(%rbp), %rax
+        leave
+        ret

@@ -1,0 +1,58 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $48, %rsp
+        movq    %rdi, -40(%rbp)
+        movl    %esi, -44(%rbp)
+        movl    -44(%rbp), %eax
+        movl    %eax, -20(%rbp)
+        movl    -20(%rbp), %eax
+        cltq
+        movl    $4, %esi
+        movq    %rax, %rdi
+        call    calloc
+        movq    %rax, -32(%rbp)
+        movl    $1, -4(%rbp)
+        movl    $0, -8(%rbp)
+        jmp     .L2
+.L5:
+        movl    -8(%rbp), %eax
+        movl    %eax, -12(%rbp)
+        movl    $0, -16(%rbp)
+        jmp     .L3
+.L4:
+        movl    -12(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movb    $1, (%rax)
+        movl    -12(%rbp), %eax
+        cltq
+        leaq    0(,%rax,4), %rdx
+        movq    -40(%rbp), %rax
+        addq    %rdx, %rax
+        movl    (%rax), %eax
+        movl    %eax, -12(%rbp)
+        addl    $1, -16(%rbp)
+.L3:
+        movl    -12(%rbp), %eax
+        movslq  %eax, %rdx
+        movq    -32(%rbp), %rax
+        addq    %rdx, %rax
+        movzbl  (%rax), %eax
+        xorl    $1, %eax
+        testb   %al, %al
+        jne     .L4
+        cvtsi2sd        -16(%rbp), %xmm1
+        cvtsi2sd        -4(%rbp), %xmm0
+        call    fmax
+        cvttsd2si       %xmm0, %eax
+        movl    %eax, -4(%rbp)
+        addl    $1, -8(%rbp)
+.L2:
+        movl    -8(%rbp), %eax
+        cmpl    -20(%rbp), %eax
+        jl      .L5
+        movl    -4(%rbp), %eax
+        leave
+        ret
