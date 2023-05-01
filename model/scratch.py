@@ -35,9 +35,29 @@ import re
 # print(tf.random.shuffle(tf.range(10)))
 
 
-c_code = "\n\n\n"
-c_code1 = "a    a \t   a"
+# c_code = "\n\n\n"
+# c_code1 = "a    a \t   a"
 
 
-c_code = re.sub("\n", "", c_code)
-print(len(c_code))
+# c_code = re.sub("\n", "", c_code)
+# print(len(c_code))
+
+
+test = "87(%rax)"
+
+# print(re.match(r'.*\(.*\)', test))
+
+def asm_token_memory_handler(asm_token):
+    """
+    @params
+    - asm_token: string of asm token
+
+    @returns
+    - Memory (string) if is string literal, None otherwise
+    """
+    if re.match(r'.*\(.*\)', asm_token):
+        return asm_token.split('(')[0]
+    else:
+        return None
+    
+print(asm_token_memory_handler(test))
