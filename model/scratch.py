@@ -1,6 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
+import re
 
 # window_size_queries = 10
 # window_size_keys = 5
@@ -31,4 +32,12 @@ import tensorflow as tf
 # from transformer.encoder import Encoder
 
 
-print(tf.random.shuffle(tf.range(10)))
+# print(tf.random.shuffle(tf.range(10)))
+
+
+c_code = "\n\n\n"
+c_code1 = "a    a \t   a"
+
+
+c_code = re.sub("\n", "", c_code)
+print(len(c_code))
