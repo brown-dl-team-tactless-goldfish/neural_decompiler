@@ -158,6 +158,3 @@ def train(num_epochs, batch_size):
 if __name__ == "__main__":
     train(10, 4)
 
-
-
-    

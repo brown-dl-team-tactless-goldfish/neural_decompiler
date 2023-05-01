@@ -1,4 +1,4 @@
-import os, re
+import os, re, csv
 import numpy as np
 import tensorflow as tf
 from nltk.tokenize import wordpunct_tokenize
@@ -210,10 +210,16 @@ class DataLoader(Translator):
         avg_tokens = 0
         for file_name in sorted(os.listdir(self.c_path)):
 
-            # print(file_name)
+            print(f"\rReading C file: {file_name}\t\t\t", end="")
         
             with open(f"{self.c_path}/{file_name}", "r") as c_file:
                 c_code = c_file.read()
+
+            
+            # c_code = self.clean_c(c_code)
+            # test = re.sub("\n", "", c_code)
+            # if len(test) == 0:
+            #     continue
 
             tokens = self.tokenize_c(c_code)
 
@@ -235,6 +241,7 @@ class DataLoader(Translator):
 
         self.stats['c_vocab_size'] = len(c_vocab_tokens_list)
 
+        print()
         return self.c_vocab
     
     def generate_asm_vocabulary(self):
@@ -252,9 +259,15 @@ class DataLoader(Translator):
         asm_vocab_tokens_set = set()
         avg_tokens = 0
         for file_name in sorted(os.listdir(self.asm_path)):
+
+            print(f"\rReading ASM file: {file_name}\t\t\t", end="")
         
             with open(f"{self.asm_path}/{file_name}", "r") as asm_file:
                 asm_code = asm_file.read()
+
+            # test = re.sub("\n", "", asm_code)
+            # if len(test) == 0:
+            #     continue
 
             tokens = self.tokenize_asm(asm_code)
             avg_tokens += len(tokens)
@@ -275,6 +288,7 @@ class DataLoader(Translator):
 
         self.stats['asm_vocab_size'] = len(asm_vocab_tokens_list)
 
+        print()
         return self.asm_vocab
 
     def load_data(self):
@@ -303,6 +317,12 @@ class DataLoader(Translator):
         for i, c_filename in enumerate(sorted(os.listdir(self.c_path))):
             with open(f"{self.c_path}/{c_filename}", "r") as c_file:
                 c_code = c_file.read()
+                
+            # c_code = self.clean_c(c_code)
+            # test = re.sub("\n", "", c_code)
+            # if len(test) == 0:
+            #     continue
+
             c_tokens = self.tokenize_c(c_code)
 
             c_arr = self.generate_numpy_array_from_vocab(self.c_vocab, c_tokens, 
@@ -312,6 +332,11 @@ class DataLoader(Translator):
         for i, asm_filename in enumerate(sorted(os.listdir(self.asm_path))):
             with open(f"{self.asm_path}/{asm_filename}", "r") as asm_file:
                 asm_code = asm_file.read()
+
+            # test = re.sub("\n", "", asm_code)
+            # if len(test) == 0:
+            #     continue
+
             asm_tokens = self.tokenize_asm(asm_code)
 
             asm_arr = self.generate_numpy_array_from_vocab(self.asm_vocab, 
@@ -320,6 +345,16 @@ class DataLoader(Translator):
             asm_vals[i, :] = asm_arr
     
         return c_vals, asm_vals, self.stats
+    
+    def write_vocab_as_csv(self, vocab, file_path):
+
+        with open(file_path, 'w', newline='') as f:
+            writer = csv.writer(f)
+            writer.writerow(['Key', 'Value'])
+            for key, value in vocab.items():
+                writer.writerow([key, value])
+
+
 
 def partition_into_batches(X, Y, batch_size): 
     '''
