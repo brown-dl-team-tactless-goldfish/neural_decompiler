@@ -110,6 +110,7 @@ class Translator:
         # replace >= 2 spaces with 1 space
         asm_code = re.sub(r'\s{2,}', ' ', asm_code)
         asm_code = re.sub(r'\n', ' ', asm_code)
+        asm_code = asm_code.replace(",", "")
 
         asm_tokens = asm_code.split(" ")
 

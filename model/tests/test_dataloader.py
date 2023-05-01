@@ -29,12 +29,12 @@ def test_c_token_check():
 
 def test_asm_tokenization():
 
-    asm_filedir_relative_path = "../tiny_dataset/ASM"
+    asm_filedir_relative_path = "../../data/leetcode_renamed_data/ASM_COMPILED_FILES"
     asm_filedir_path = f"{current_dir}/{asm_filedir_relative_path}"
 
     dataloader = Translator()
 
-    with open(f"{asm_filedir_path}/ASM_two-sum-1.txt", "r") as f:
+    with open(f"{asm_filedir_path}/ASM_integer-to-english-words-0.txt", "r") as f:
         asm_code = f.read()
 
     tokens = dataloader.tokenize_asm(asm_code)
@@ -81,9 +81,9 @@ def test_load_data():
     print(dataloader.load_data()[0])
 
 if __name__ == "__main__":
-    test_c_tokenization()
+    # test_c_tokenization()
     # test_c_token_check()
-    # test_asm_tokenization()
+    test_asm_tokenization()
     # test_c_vocab()
     # test_asm_vocab()
     # test_load_data()
