@@ -83,9 +83,9 @@ def test_load_data():
 if __name__ == "__main__":
     # test_c_tokenization()
     # test_c_token_check()
-    test_asm_tokenization()
+    # test_asm_tokenization()
     # test_c_vocab()
     # test_asm_vocab()
-    # test_load_data()
+    test_load_data()
 
 

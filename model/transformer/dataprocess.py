@@ -108,11 +108,19 @@ class Translator:
         asm_tokens = []
 
         # replace >= 2 spaces with 1 space
-        asm_code = re.sub(r'\s{2,}', ' ', asm_code)
         asm_code = re.sub(r'\n', ' ', asm_code)
-        asm_code = asm_code.replace(",", "")
-
+        asm_code = re.sub(r'\s{2,}', ' ', asm_code)
+        asm_code = re.sub(r'\t', ' ', asm_code)
         asm_tokens = asm_code.split(" ")
+
+        new_asm_tokens = []
+        for asm_token in asm_tokens:
+            if asm_token == "":
+                continue
+            if asm_token[-1] == ",":
+                asm_token = asm_token[:-1]
+            new_asm_tokens.append(asm_token)
+        asm_tokens = new_asm_tokens
 
         # add start token to beginning
         asm_tokens.insert(0, START_TOKEN)
