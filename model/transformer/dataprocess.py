@@ -151,9 +151,18 @@ class Translator:
         except:
             return False
         
-    def detokenize_c_from_tensor(c_vals):
-        """"""
-        return
+    def detokenize_c_from_tensor(c_vals, c_vocab):
+        """
+        Given a tensor (of ints), string
+        """
+        out = []
+
+        c_vals.numpy()
+
+        for i in range(len(c_vals)):
+            out[i] = c_vocab[c_vals[i]]
+
+        return out.join(" ")
 
     def tokenize_asm(self, asm_code):
         """
@@ -342,7 +351,7 @@ class Translator:
             return None
 
     
-    def generate_tensor_from_vocab(self, vocab, code_tokens, max_length=None):
+    def generate_tensor_from_vocab(self, vocab, code_tokens, max_length=2000):
         """
         Generates a tensor of token sequences in their integer
         representation.
@@ -360,16 +369,15 @@ class Translator:
         out = out * vocab[PAD_TOKEN]
 
         for i, token in enumerate(code_tokens):
-            if max_length:
-                if i >= max_length:
-                    break
+            if i >= max_length:
+                break
 
             if token in vocab:
                 out[i] = vocab[token]
             else:
                 out[i] = vocab[UNK_TOKEN]
 
-        return tf.convert_to_tensor(out)
+        return tf.convert_to_tensor(out, dtype=tf.int64)
     
 
 class DataLoader(Translator):
@@ -387,7 +395,9 @@ class DataLoader(Translator):
         'max_c_code_length': 0,         # in number of tokens
         'max_asm_code_length': 0,       # in number of tokens
         'avg_c_code_length': 0,         # in number of tokens
-        'avg_asm_code_length': 0        # in number of tokens
+        'avg_asm_code_length': 0,        # in number of tokens
+        'c_vocab_size': 0,
+        'asm_vocab_size': 0
     }
 
     def __init__(self, c_path = "", asm_path = ""):
@@ -418,6 +428,8 @@ class DataLoader(Translator):
         self.stats['num_examples'] = c_count
 
         self.generate_vocabulary()
+
+
 
     def generate_c_vocabulary(self):
         """
@@ -632,12 +644,16 @@ class DataLoader(Translator):
             asm_tokens, asm_string_to_token, asm_num_to_token = self.tokenize_asm(asm_code)
             c_tokens = self.tokenize_c(c_code, asm_string_to_token, asm_num_to_token)
 
+            
 
             asm_arr = self.generate_tensor_from_vocab(self.asm_vocab, 
                                                            asm_tokens, 
                                             self.stats['max_asm_code_length'])
             c_arr = self.generate_tensor_from_vocab(self.c_vocab, c_tokens, 
                                                 self.stats['max_c_code_length'])
+        
+
+
             asm_vals[i, :] = asm_arr
             c_vals[i, :] = c_arr
     

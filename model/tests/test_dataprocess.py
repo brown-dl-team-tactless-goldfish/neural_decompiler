@@ -72,8 +72,8 @@ def test_load_data():
 
     dataloader = DataLoader(c_path=c_filedir_path, asm_path=asm_filedir_path)
 
-    c_csv_filedir_relative_path = "vocab/c_vocab.csv"
-    asm_csv_filedir_relative_path = "vocab/asm_vocab.csv"
+    c_csv_filedir_relative_path = "../vocab/c_vocab.csv"
+    asm_csv_filedir_relative_path = "../vocab/asm_vocab.csv"
     
     dataloader.write_vocab_as_csv(dataloader.asm_vocab, f"{current_dir}/{asm_csv_filedir_relative_path}")
     dataloader.write_vocab_as_csv(dataloader.c_vocab, f"{current_dir}/{c_csv_filedir_relative_path}")
