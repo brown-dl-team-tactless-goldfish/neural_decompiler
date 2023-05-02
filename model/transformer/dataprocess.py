@@ -153,6 +153,7 @@ class Translator:
         
     def detokenize_c_from_tensor(c_vals):
         """"""
+        return
 
     def tokenize_asm(self, asm_code):
         """

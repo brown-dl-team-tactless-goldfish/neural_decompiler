@@ -123,7 +123,7 @@ class CGenerator(tf.Module):
 
         output = tf.transpose(output_arr.stack())
 
-        # text = 
+        text = 
 
 
         
