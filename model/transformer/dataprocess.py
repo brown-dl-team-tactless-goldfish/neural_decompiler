@@ -7,6 +7,7 @@ START_TOKEN = "<START>"
 END_TOKEN = "<STOP>"
 PAD_TOKEN = "<PAD>"
 UNK_TOKEN = "<UNK>"
+C_NUM_TOKEN = "<CNUM>"
 
 C_PUNCT = [' ', ':', ';', '=', '~', '+', '-', '*', '/', ',', '.', 
             '<', '>', '&', '|', '%', '?', '{', '}', '^', '!', 
@@ -74,14 +75,6 @@ class Translator:
 
                     c_tokens.insert(i + j, char)
 
-        # filtering things
-        new_tokens = []
-        for token in c_tokens:
-            if token not in ('""'):
-                new_tokens.append(token)
-
-        c_tokens = new_tokens
-
         # removes all newlines at the beginning of the code
         while c_tokens[0] == "\n":
             c_tokens.pop(0)
@@ -89,6 +82,23 @@ class Translator:
         # removes all newlines from the end of the code
         while c_tokens[-1] == "\n":
             c_tokens.pop()
+
+        # filtering things
+        new_tokens = []
+        for token in c_tokens:
+
+            # skips
+            if token in ('""'):
+                continue
+
+            # replacing numerics
+            if self.c_token_is_numeric(token):
+                new_tokens.append(C_NUM_TOKEN)
+                continue
+
+            new_tokens.append(token)
+
+        c_tokens = new_tokens
 
         if asm_string_to_token and asm_num_to_token:
             for i, token in enumerate(c_tokens):
@@ -119,9 +129,27 @@ class Translator:
         Returns true if the token needs to be split further.
         """
         # handles cases such as '++)'
-        if re.match('[^\w\s]+(?=[^\w\s])', token):
+        if re.match(r'[^\w\s]+(?=[^\w\s])', token):
             return True
         return False
+    
+    def c_token_is_numeric(self, token):
+        """
+        Returns true if the token is:
+        - number
+        - hex (e.g. 0xffffffff)
+        - binary (e.g. 0x11)
+        """
+        token = token.lower()
+        if re.match(r'^0b[01]+$', token):
+            return True
+        if re.match(r'^0x[0-9a-f]+$', token):
+            return True
+        try:
+            int(token)
+            return True
+        except:
+            return False
 
     def tokenize_asm(self, asm_code):
         """
@@ -223,14 +251,15 @@ class Translator:
             # TOKENIZING MEMORY
             # mem(%reg) -> <MEMORY_1>(%reg)
 
-            # No need to worry about 1-to-1 for C
+            # No need to worry about preserving 1-to-1 for C
 
                 test_asm_mem_num = self.asm_token_memory_handler(asm_token)
                 if test_asm_mem_num:
 
+                    mem_test_token = asm_token.split('(')[0]
+                    rest = asm_token.split('(')[1]
+
                     if test_asm_mem_num in asm_mem_to_token:
-                        mem_test_token = asm_token.split('(')[0]
-                        rest = asm_token.split('(')[1]
 
                         first = asm_mem_to_token[mem_test_token]
 
@@ -238,7 +267,7 @@ class Translator:
 
                     else:
                         asm_mem_to_token[test_asm_mem_num] = f'<MEMORY_{len(asm_mem_to_token)}>'
-                        asm_token = asm_mem_to_token[test_asm_mem_num]
+                        asm_token = asm_mem_to_token[test_asm_mem_num] + '(' + rest
 
                 
             new_asm_tokens.append(asm_token)
@@ -265,6 +294,7 @@ class Translator:
         """
         return re.match(r'"([^"]*)"', asm_token)
 
+
     def asm_token_num_handler(self, asm_token):
         """
         @params
@@ -277,6 +307,8 @@ class Translator:
         try:
             # case of just num
             test = int(asm_token)
+            if test in VALID_NUMS:
+                return None
             return str(test)
         except:
             if asm_token[0] != '$':
@@ -286,6 +318,8 @@ class Translator:
                 asm_token = asm_token[1:]
                 try:
                     test = int(asm_token)
+                    if test in VALID_NUMS:
+                        return None
                     return str(test)
                 except:
                     return None
@@ -325,97 +359,13 @@ class Translator:
             if i >= max_length:
                 break
 
-            out[i] = vocab[token]
+            if token in vocab:
+                out[i] = vocab[token]
+            else:
+                out[i] = UNK_TOKEN
 
         return out
     
-    #TODO: Implement
-    # def tokenize_c_from_vocab(self, vocab, c_code):
-    #     """
-    #     Tokenization of components of the C file to unique integer values
-        
-    #     @params
-    #     - vocab: dict of token: int val
-    #     - c_code: string of code
-
-    #     @returns
-    #     - c_tokens: list of tokens extracted from c_code
-    #     """
-    #     c_code = self.clean_c(c_code)
-    #     c_code_lines = c_code.splitlines()
-    #     c_tokens = []
-
-    #     # generates tokens
-    #     for line in c_code_lines:
-    #         line_tokens = wordpunct_tokenize(line)
-
-    #         c_tokens.extend(line_tokens + ["\n"])
-
-    #     for i, token in enumerate(c_tokens):
-    #         if self.check_c_token(token) == True:
-
-    #             c_tokens.pop(i)
-
-    #             # print("found exception: ", token)
-
-    #             for j, char in enumerate(token):
-
-    #                 # print(char)
-
-    #                 c_tokens.insert(i + j, char)
-
-    #     # removes all newlines at the beginning of the code
-    #     while c_tokens[0] == "\n":
-    #         c_tokens.pop(0)
-
-    #     # removes all newlines from the end of the code
-    #     while c_tokens[-1] == "\n":
-    #         c_tokens.pop()
-        
-    #     # add a start token to the beginning of the code
-    #     c_tokens.insert(0, START_TOKEN)
-
-    #     # add an end token to the end of the code
-    #     c_tokens.append(END_TOKEN)
-
-    #     return c_tokens
-    
-    # def tokenize_asm_from_vocab(self, vocab, asm_code):
-    #     """
-    #     Tokenization of components of the ASM file to unique integer values
-        
-    #     @params
-    #     - vocab: dict of token: int val
-    #     - asm_code: string of code
-
-    #     @returns
-    #     - asm_tokens: list of tokens extracted from c_code
-    #     """
-        
-    #     asm_tokens = []
-
-    #     # replace >= 2 spaces with 1 space
-    #     asm_code = re.sub(r'\n', ' ', asm_code)
-    #     asm_code = re.sub(r'\s{2,}', ' ', asm_code)
-    #     asm_code = re.sub(r'\t', ' ', asm_code)
-    #     asm_tokens = asm_code.split(" ")
-
-    #     new_asm_tokens = []
-    #     for asm_token in asm_tokens:
-    #         if asm_token == "":
-    #             continue
-    #         if asm_token[-1] == ",":
-    #             asm_token = asm_token[:-1]
-    #         new_asm_tokens.append(asm_token)
-    #     asm_tokens = new_asm_tokens
-
-    #     # add start token to beginning
-    #     asm_tokens.insert(0, START_TOKEN)
-        
-    #     # add end token to end
-    #     asm_tokens.append(END_TOKEN)
-
-    #     return asm_tokens
 
 class DataLoader(Translator):
     """
