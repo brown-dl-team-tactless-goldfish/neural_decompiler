@@ -9,6 +9,15 @@ from transformer.dataprocess import Translator, DataLoader, \
     partition_into_batches
 
 
+
+START_TOKEN = "<START>"
+END_TOKEN = "<STOP>"
+
+
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
+
+
 RANDOM_SEED = 42069
 
 
@@ -65,6 +74,61 @@ class NeuralDecompiler(tf.keras.Model):
         return logits
 
 
+
+class CGenerator(tf.Module):
+    """
+    
+    """
+
+    def __init__(self, n_dcmp, asm_vocab, c_vocab):
+
+        self.asm_vocab = asm_vocab
+        self.c_vocab = c_vocab
+        self.n_dcmp = n_dcmp
+        self.translator = Translator()
+    
+    def __call__(self, asm_code, max_length=2000):
+        """
+        @params
+        - asm_code: a string of assembly code
+        - max_length: maximum possible output length of the generate C code
+        """
+
+        asm_tokens = self.translator.tokenize_asm(asm_code)
+        asm_tensor = self.translator.generate_tensor_from_vocab(self.asm_vocab, asm_tokens)
+        encoder_input = asm_tensor
+
+
+        start_end_tokens = [START_TOKEN, END_TOKEN]
+        start_end = self.translator.generate_tensor_from_vocab(self.c_vocab, start_end_tokens)
+        start = start_end[0][tf.newaxis]
+        end = start_end[1][tf.newaxis]
+
+
+        output_arr = tf.TensorArray(dtype=tf.int64, size=0, dynamic_size=True)
+        output_arr = output_arr.write(0, start)
+
+        for i in tf.range():
+
+            output = tf.transpose(output_arr.stack())
+            pred = self.n_dcmp([encoder_input, output])
+
+            pred = pred[:, -1, :]
+            pred_id = tf.argmax(pred, axis=-1)
+
+            output_arr = output_arr.write(i+1, pred_id[0])
+
+            if pred_id == end:
+                break
+
+        output = tf.transpose(output_arr.stack())
+
+        text = 
+
+
+        
+        
+        
 
 
 
@@ -151,10 +215,16 @@ def train(num_epochs, batch_size):
               f" time elapsed: {toc-tic}", end="\n")
     
     print("training complete . . .")
-    checkpoint_path = "/../model_checkpoints/model-checkpoint"
+    checkpoint_path = f"{current_dir}/../model_checkpoints/model-checkpoint"
     print(f"saving model checkpoint to {checkpoint_path}")
     checkpoint.save(checkpoint_path)
 
+
+
+
+
+
+
 if __name__ == "__main__":
-    train(10, 4)
+    train(1, 4)
 

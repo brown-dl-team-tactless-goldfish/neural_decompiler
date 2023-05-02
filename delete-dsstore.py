@@ -16,3 +16,4 @@ def remove(starting_path, relative_path):
 
 remove(os.path.dirname(os.path.realpath(__file__)), '')
         
+        

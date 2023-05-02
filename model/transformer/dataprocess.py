@@ -338,9 +338,9 @@ class Translator:
             return None
 
     
-    def generate_numpy_array_from_vocab(self, vocab, code_tokens, max_length):
+    def generate_tensor_from_vocab(self, vocab, code_tokens, max_length=None):
         """
-        Generates an np array of token sequences in their integer
+        Generates a tensor of token sequences in their integer
         representation.
 
         @params
@@ -356,15 +356,16 @@ class Translator:
         out = out * vocab[PAD_TOKEN]
 
         for i, token in enumerate(code_tokens):
-            if i >= max_length:
-                break
+            if max_length:
+                if i >= max_length:
+                    break
 
             if token in vocab:
                 out[i] = vocab[token]
             else:
-                out[i] = UNK_TOKEN
+                out[i] = vocab[UNK_TOKEN]
 
-        return out
+        return tf.Tensor(out)
     
 
 class DataLoader(Translator):
@@ -561,6 +562,7 @@ class DataLoader(Translator):
         asm_vocab_tokens_list = sorted(list(asm_vocab_tokens_set))
         asm_vocab_tokens_list.remove(START_TOKEN)
         asm_vocab_tokens_list.remove(END_TOKEN)
+        asm_vocab_tokens_list.insert(0, UNK_TOKEN)
         asm_vocab_tokens_list.insert(0, END_TOKEN)
         asm_vocab_tokens_list.insert(0, START_TOKEN)
         asm_vocab_tokens_list.insert(0, PAD_TOKEN)
@@ -568,6 +570,7 @@ class DataLoader(Translator):
         c_vocab_tokens_list = sorted(list(c_vocab_tokens_set))
         c_vocab_tokens_list.remove(START_TOKEN)
         c_vocab_tokens_list.remove(END_TOKEN)
+        c_vocab_tokens_list.insert(0, UNK_TOKEN)
         c_vocab_tokens_list.insert(0, END_TOKEN)
         c_vocab_tokens_list.insert(0, START_TOKEN)
         c_vocab_tokens_list.insert(0, PAD_TOKEN)
@@ -626,10 +629,10 @@ class DataLoader(Translator):
             c_tokens = self.tokenize_c(c_code, asm_string_to_token, asm_num_to_token)
 
 
-            asm_arr = self.generate_numpy_array_from_vocab(self.asm_vocab, 
+            asm_arr = self.generate_tensor_from_vocab(self.asm_vocab, 
                                                            asm_tokens, 
                                             self.stats['max_asm_code_length'])
-            c_arr = self.generate_numpy_array_from_vocab(self.c_vocab, c_tokens, 
+            c_arr = self.generate_tensor_from_vocab(self.c_vocab, c_tokens, 
                                                 self.stats['max_c_code_length'])
             asm_vals[i, :] = asm_arr
             c_vals[i, :] = c_arr
