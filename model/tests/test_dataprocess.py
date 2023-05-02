@@ -65,9 +65,9 @@ def test_asm_vocab():
 def test_load_data():
     print("Testing load_data")
 
-    c_filedir_relative_path = "../../data/leetcode_data/C_COMPILED_FILES"
+    c_filedir_relative_path = "../../data/leetcode_data_FINAL/C_COMPILED_FILES"
     c_filedir_path = f"{current_dir}/{c_filedir_relative_path}"
-    asm_filedir_relative_path = "../../data/leetcode_data/ASM_COMPILED_FILES"
+    asm_filedir_relative_path = "../../data/leetcode_data_FINAL/ASM_COMPILED_FILES"
     asm_filedir_path = f"{current_dir}/{asm_filedir_relative_path}"
 
     dataloader = DataLoader(c_path=c_filedir_path, asm_path=asm_filedir_path)
