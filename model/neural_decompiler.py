@@ -98,14 +98,14 @@ class CGenerator(tf.Module):
 
         asm_tokens, _, _ = self.translator.tokenize_asm(asm_code)
 
-        asm_tensor = self.translator.generate_tensor_from_vocab(self.asm_vocab, asm_tokens, c_window_size)
+        asm_tensor = self.translator.generate_tensor_from_vocab(self.asm_vocab, asm_tokens, max_length)
         encoder_input = tf.reshape(asm_tensor, shape=(1, asm_tensor.shape[0]))
 
-        print(encoder_input.shape)
+        # print(encoder_input.shape)
 
 
         start_end_tokens = [START_TOKEN, END_TOKEN]
-        start_end = self.translator.generate_tensor_from_vocab(self.c_vocab, start_end_tokens, c_window_size)
+        start_end = self.translator.generate_tensor_from_vocab(self.c_vocab, start_end_tokens, max_length)
         start = start_end[0][tf.newaxis]
         end = start_end[1][tf.newaxis]
 
@@ -116,12 +116,14 @@ class CGenerator(tf.Module):
 
             output = tf.transpose(output_arr.stack())
 
-            print(output)
+            # print(output)
 
             pred = self.n_dcmp([encoder_input, output])
 
             pred = pred[:, -1, :]
             pred_id = tf.argmax(pred, axis=-1)
+
+            assert pred_id < len(self.c_vocab)
 
             output_arr = output_arr.write(i+1, pred_id)
 
@@ -129,8 +131,9 @@ class CGenerator(tf.Module):
                 break
 
         output = tf.transpose(output_arr.stack())
+        print(output)
 
-        text = self.translator.detokenize_c_from_tensor(self.c_vocab)
+        text = self.translator.detokenize_c_from_tensor(output, self.c_vocab)
 
         return text
 
@@ -145,12 +148,13 @@ def train(num_epochs, batch_size):
 
     #### Load data
 
+    print("loading data . . .")
 
-    # c_dir = "../data/leetcode_renamed_data/C_COMPILED_FILES"
-    # asm_dir = "../data/leetcode_renamed_data/ASM_COMPILED_FILES"
-    c_dir = "tiny_dataset/C"
-    asm_dir = "tiny_dataset/ASM"
+    c_dir = "../data/leetcode_data_FINAL/C_COMPILED_FILES"
+    asm_dir = "../data/leetcode_data_FINAL/ASM_COMPILED_FILES"
 
+    # c_dir = "tiny_dataset/C"
+    # asm_dir = "tiny_dataset/ASM"
 
     c_path = f"{current_dir}/{c_dir}"
     asm_path = f"{current_dir}/{asm_dir}"
@@ -158,13 +162,15 @@ def train(num_epochs, batch_size):
     loader = DataLoader(c_path=c_path, asm_path=asm_path)
     asm_vals, c_vals, stats = loader.load_data()
 
+    print(stats)
+
     # print(loader.c_vocab)
 
     c_vocab_size = len(loader.c_vocab)
     asm_vocab_size = len(loader.asm_vocab)
 
-    c_window_size = stats['max_c_code_length']
-    asm_window_size = stats['max_asm_code_length']
+    print("finished loading data . . .")
+
     #### End loading data
 
 
@@ -188,7 +194,7 @@ def train(num_epochs, batch_size):
 
 
     # Set up checkpoint
-    checkpoint = tf.train.Checkpoint(model=model, optimizer=optimizer)
+    # checkpoint = tf.train.Checkpoint(model=model, optimizer=optimizer)
 
 
     # FOR ALL EPOCHS
@@ -232,7 +238,7 @@ def train(num_epochs, batch_size):
     print(f"saving model checkpoint to {checkpoint_path}")
     # checkpoint.save(checkpoint_path)
 
-    return model, loader.asm_vocab, loader.c_vocab, asm_window_size
+    return model, loader.asm_vocab, loader.c_vocab
 
 
 def test(n_dcmp, asm_vocab, c_vocab):
@@ -243,21 +249,12 @@ def test(n_dcmp, asm_vocab, c_vocab):
     with open(f"{current_dir}/{asm_file}", "r") as f:
         asm_code = f.read()
 
-    # asm_tokens, _, _ = translator.tokenize_asm(asm_code)
-
-    # print(asm_tokens)
-    # # print(asm_vocab)
-
-    # asm_tensor = translator.generate_tensor_from_vocab(asm_vocab, asm_tokens)
-
-
     cgen = CGenerator(n_dcmp, asm_vocab, c_vocab)
-
-    print(cgen(asm_code, len(c_vocab)))
+    print(cgen(asm_code, 500))
 
 
 
 if __name__ == "__main__":
-    n_dcmp, asm_vocab, c_vocab, c_window_size = train(10, 4)
+    n_dcmp, asm_vocab, c_vocab = train(100, 7620)
     test(n_dcmp, asm_vocab, c_vocab)
 

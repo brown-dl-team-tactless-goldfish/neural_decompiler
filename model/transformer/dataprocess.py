@@ -83,6 +83,22 @@ class Translator:
         while c_tokens[-1] == "\n":
             c_tokens.pop()
 
+
+        if asm_string_to_token and asm_num_to_token:
+            for i, token in enumerate(c_tokens):
+
+                try:
+                    test_str_token = '"' + token + '"'
+                    # print(test_str_token)
+                    if test_str_token in asm_string_to_token:
+                        c_tokens[i] = asm_string_to_token[test_str_token]
+                        continue
+                except:
+                    pass
+
+                if token in asm_num_to_token:
+                    c_tokens[i] = asm_num_to_token[token]
+
         # filtering things
         new_tokens = []
         for token in c_tokens:
@@ -99,21 +115,6 @@ class Translator:
             new_tokens.append(token)
 
         c_tokens = new_tokens
-
-        if asm_string_to_token and asm_num_to_token:
-            for i, token in enumerate(c_tokens):
-
-                try:
-                    test_str_token = '"' + token + '"'
-                    # print(test_str_token)
-                    if test_str_token in asm_string_to_token:
-                        c_tokens[i] = asm_string_to_token[test_str_token]
-                        continue
-                except:
-                    pass
-
-                if token in asm_num_to_token:
-                    c_tokens[i] = asm_num_to_token[token]
 
         
         # add a start token to the beginning of the code
@@ -151,18 +152,21 @@ class Translator:
         except:
             return False
         
-    def detokenize_c_from_tensor(c_vals, c_vocab):
+    def detokenize_c_from_tensor(self, c_vals, c_vocab):
         """
-        Given a tensor (of ints), string
+        Given a tensor (of ints) and vocab, output string of C code
         """
         out = []
 
-        c_vals.numpy()
+        c_vals = c_vals.numpy()
+        c_vals = c_vals.flatten()
+
+        c_index_to_strtoken  = {v: k for k, v in c_vocab.items()}
 
         for i in range(len(c_vals)):
-            out[i] = c_vocab[c_vals[i]]
+            out.append(c_index_to_strtoken[c_vals[i]])
 
-        return out.join(" ")
+        return " ".join(out)
 
     def tokenize_asm(self, asm_code):
         """
