@@ -368,7 +368,7 @@ class Translator:
             else:
                 out[i] = vocab[UNK_TOKEN]
 
-        return tf.Tensor(out)
+        return tf.convert_to_tensor(out)
     
 
 class DataLoader(Translator):
