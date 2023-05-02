@@ -42,7 +42,7 @@ class Translator:
     
     def tokenize_c(self, c_code, asm_string_to_token=None, asm_num_to_token=None):
         """
-        Tokenization of components of the C file to unique integer values
+        Tokenization of components of the C file to strings
         
         @params
         - c_code: string of code
@@ -150,10 +150,13 @@ class Translator:
             return True
         except:
             return False
+        
+    def detokenize_c_from_tensor(c_vals):
+        """"""
 
     def tokenize_asm(self, asm_code):
         """
-        Tokenization of components of the ASM file to unique integer values
+        Tokenization of components of the ASM file to strings
         
         @params
         - asm_code: string of code
