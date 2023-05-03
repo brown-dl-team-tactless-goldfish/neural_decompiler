@@ -150,8 +150,8 @@ def train(num_epochs, batch_size):
 
     print("loading data . . .")
 
-    c_dir = "../data/leetcode_data_FINAL/C_COMPILED_FILES"
-    asm_dir = "../data/leetcode_data_FINAL/ASM_COMPILED_FILES"
+    c_dir = "../data/extra_data_FINAL/EXTRA_C_COMPILED_FILES"
+    asm_dir = "../data/extra_data_FINAL/EXTRA_ASM_COMPILED_FILES"
 
     # c_dir = "tiny_dataset/C"
     # asm_dir = "tiny_dataset/ASM"
@@ -181,7 +181,7 @@ def train(num_epochs, batch_size):
                              input_vocab_size=asm_vocab_size,
                              output_vocab_size=c_vocab_size,
                              ff_hidden_dim=128,
-                             num_layers=6,
+                             num_layers=1,
                              num_heads=8,
                              dropout=0.05)
     
@@ -211,6 +211,8 @@ def train(num_epochs, batch_size):
         # TRAIN STEP
         for c_batch, asm_batch in zip(c_batches, asm_batches):
 
+            ticc = time.perf_counter()
+
             decoder_input = c_batch[:, :-1]
             decoder_labels = c_batch[:, 1:]
 
@@ -224,6 +226,11 @@ def train(num_epochs, batch_size):
 
             gradients = tape.gradient(loss, model.trainable_weights)
             optimizer.apply_gradients(zip(gradients, model.trainable_weights))
+
+            tocc = time.perf_counter()
+
+            print(f"\repoch: {epoch} | batch loss: {loss} | batch acc: {acc}" + \
+                f" batch time elapsed: {tocc-ticc}", end="")
 
         batch_loss /= batch_size
         batch_acc /= batch_size
@@ -245,16 +252,16 @@ def test(n_dcmp, asm_vocab, c_vocab):
 
     translator = Translator()
 
-    asm_file = "tiny_dataset/ASM/ASM_two-sum-1.txt"
+    asm_file = "../data/extra_data_FINAL/EXTRA_ASM_COMPILED_FILES/ASM_sum.txt"
     with open(f"{current_dir}/{asm_file}", "r") as f:
         asm_code = f.read()
 
     cgen = CGenerator(n_dcmp, asm_vocab, c_vocab)
-    print(cgen(asm_code, 500))
+    print(cgen(asm_code, 100))
 
 
 
 if __name__ == "__main__":
-    n_dcmp, asm_vocab, c_vocab = train(100, 7620)
+    n_dcmp, asm_vocab, c_vocab = train(10, 10)
     test(n_dcmp, asm_vocab, c_vocab)
 

@@ -104,7 +104,7 @@ class Translator:
         for token in c_tokens:
 
             # skips
-            if token in ('""'):
+            if token in ('""', '\n'):
                 continue
 
             # replacing numerics
@@ -555,8 +555,10 @@ class DataLoader(Translator):
         c_avg_tokens = 0
 
         for asm_file_name in sorted(os.listdir(self.asm_path)):
-            c_file_name = asm_file_name.split('_')[1]
-            print(f"\rASM file: {asm_file_name}\t\t\t | C file: {c_file_name}", end="")
+            # c_file_name = "_".join(asm_file_name.split('_')[1:])
+            c_file_name = asm_file_name[4:]
+
+            print(f"\rASM file: {asm_file_name} | C file: {c_file_name} \t\t\t", end="")
 
             with open(f"{self.asm_path}/{asm_file_name}", "r") as asm_file:
                 asm_code = asm_file.read()
@@ -628,16 +630,16 @@ class DataLoader(Translator):
 
         c_vals = np.zeros(shape=(
             self.stats['num_examples'], 
-            self.stats['max_c_code_length']
+            500
         ))
 
         asm_vals = np.zeros(shape=(
             self.stats['num_examples'], 
-            self.stats['max_asm_code_length']
+            500
         ))
 
         for i, asm_file_name in enumerate(sorted(os.listdir(self.asm_path))):
-            c_file_name = asm_file_name.split('_')[1]
+            c_file_name = asm_file_name[4:]
 
             with open(f"{self.asm_path}/{asm_file_name}", "r") as asm_file:
                 asm_code = asm_file.read()
@@ -652,9 +654,9 @@ class DataLoader(Translator):
 
             asm_arr = self.generate_tensor_from_vocab(self.asm_vocab, 
                                                            asm_tokens, 
-                                            self.stats['max_asm_code_length'])
+                                                           500)
             c_arr = self.generate_tensor_from_vocab(self.c_vocab, c_tokens, 
-                                                self.stats['max_c_code_length'])
+                                                500)
         
 
 
