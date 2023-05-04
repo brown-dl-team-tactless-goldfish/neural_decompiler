@@ -81,16 +81,15 @@ def make_alternates(original_dir_path, new_dir_path, num_alternates):
             with open(new_path, "w") as g:
                 g.write('\n'.join(response.split('!!!!!')))
 
-            i += 10
-            if i > 10:
+            i += 1
+            if i > 25:
                 assert False
-
 
 if __name__ == "__main__":
     # current_file_path = os.path.dirname(os.path.realpath(__file__)) # path of this directory
     # original_dir_path = f"{current_file_path}/uncompiled" # path to get code files from
     # new_dir_path = f"{current_file_path}/chatgpt_alternates" # path to write alternates to
-    original_dir_path = 'data/leetcode_renamed_data/C_COMPILED_FILES'
-    new_dir_path = 'chatgpt_alternates'
+    original_dir_path = 'data/leetcode_data_FINAL/C_COMPILED_FILES'
+    new_dir_path = 'data/chatgpt_alternates'
     num_alternates = 3 # number of alternate files for chatgpt to generate
     make_alternates(original_dir_path, new_dir_path, num_alternates)
