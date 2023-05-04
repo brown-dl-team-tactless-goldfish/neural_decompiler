@@ -81,9 +81,9 @@ def make_alternates(original_dir_path, new_dir_path, num_alternates):
             with open(new_path, "w") as g:
                 g.write('\n'.join(response.split('!!!!!')))
 
-            i += 1
-            if i > 25:
-                assert False
+        i += 1
+        if i > 25:
+            assert False
 
 if __name__ == "__main__":
     # current_file_path = os.path.dirname(os.path.realpath(__file__)) # path of this directory
