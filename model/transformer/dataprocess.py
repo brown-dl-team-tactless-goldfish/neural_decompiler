@@ -104,7 +104,7 @@ class Translator:
         for token in c_tokens:
 
             # skips
-            if token in ('""', '\n'):
+            if token in ('""', '"""""', '\n'):
                 continue
 
             # replacing numerics
@@ -629,6 +629,12 @@ class DataLoader(Translator):
         - self.stats: stats dict 
         """
 
+        if not asm_vocab:
+            asm_vocab = self.asm_vocab
+
+        if not c_vocab:
+            c_vocab = self.c_vocab
+
         c_vals = np.zeros(shape=(
             self.stats['num_examples'], 
             max_c_len
@@ -653,10 +659,10 @@ class DataLoader(Translator):
 
             
 
-            asm_arr = self.generate_tensor_from_vocab(self.asm_vocab, 
+            asm_arr = self.generate_tensor_from_vocab(asm_vocab, 
                                                            asm_tokens, 
                                                            max_asm_len)
-            c_arr = self.generate_tensor_from_vocab(self.c_vocab, c_tokens, 
+            c_arr = self.generate_tensor_from_vocab(c_vocab, c_tokens, 
                                                 max_c_len)
         
 
