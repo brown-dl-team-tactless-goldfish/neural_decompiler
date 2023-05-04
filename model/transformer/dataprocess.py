@@ -104,7 +104,7 @@ class Translator:
         for token in c_tokens:
 
             # skips
-            if token in ('""', '"""""', '\n'):
+            if token in ('""', '\n'):
                 continue
 
             # replacing numerics
@@ -629,10 +629,10 @@ class DataLoader(Translator):
         - self.stats: stats dict 
         """
 
-        if not asm_vocab:
+        if asm_vocab is None:
             asm_vocab = self.asm_vocab
 
-        if not c_vocab:
+        if c_vocab is None:
             c_vocab = self.c_vocab
 
         c_vals = np.zeros(shape=(
@@ -673,13 +673,37 @@ class DataLoader(Translator):
         return asm_vals.astype(int), c_vals.astype(int), self.stats
     
     
-    def write_vocab_as_csv(self, vocab, file_path):
+def write_vocab_as_csv(vocab, file_path):
 
-        with open(file_path, 'w', newline='') as f:
-            writer = csv.writer(f)
-            writer.writerow(['Key', 'Value'])
-            for key, value in vocab.items():
-                writer.writerow([key, value])
+    with open(file_path, 'w', newline='') as f:
+        writer = csv.writer(f)
+        writer.writerow(['Key', 'Value'])
+        for key, value in vocab.items():
+            writer.writerow([key, value])
+
+def read_vocab_from_csv(file_path):
+    """
+    Returns a dictionary of vocab
+    """
+
+    with open(file_path, mode='r') as file:
+
+        # Create a CSV reader object
+        reader = csv.reader(file)
+
+        # Create an empty dictionary to store the key-value pairs
+        data = {}
+
+        # Iterate over each row in the CSV file
+        for row in reader:
+
+            if row[0] == "Key" or row[1] == "Value":
+                continue
+            
+            # Add the key-value pair to the dictionary
+            data[row[0]] = row[1]
+    
+    return data
 
 
 def partition_into_batches(X, Y, batch_size): 

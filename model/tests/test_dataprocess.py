@@ -1,6 +1,6 @@
 import os, sys
 sys.path.insert(0, '')
-from model.transformer.dataprocess import DataLoader, Translator
+from model.transformer.dataprocess import DataLoader, Translator, write_vocab_as_csv, read_vocab_from_csv
 
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
@@ -75,12 +75,27 @@ def test_load_data():
     c_csv_filedir_relative_path = "../vocab/c_vocab.csv"
     asm_csv_filedir_relative_path = "../vocab/asm_vocab.csv"
     
-    dataloader.write_vocab_as_csv(dataloader.asm_vocab, f"{current_dir}/{asm_csv_filedir_relative_path}")
-    dataloader.write_vocab_as_csv(dataloader.c_vocab, f"{current_dir}/{c_csv_filedir_relative_path}")
+    write_vocab_as_csv(dataloader.asm_vocab, f"{current_dir}/{asm_csv_filedir_relative_path}")
+    write_vocab_as_csv(dataloader.c_vocab, f"{current_dir}/{c_csv_filedir_relative_path}")
 
     print(dataloader.stats)
     # print(dataloader.asm_vocab)
     print(dataloader.load_data()[0])
+
+
+def test_read_csv():
+    asm_vocab_dir = "../vocab/new_asm_vocab.csv"
+    c_vocab_dir = "../vocab/new_c_vocab.csv"
+
+    asm_vocab_path = f"{current_dir}/{asm_vocab_dir}"
+    c_vocab_path = f"{current_dir}/{c_vocab_dir}"
+
+    ASM_VOCAB = read_vocab_from_csv(asm_vocab_path)
+    C_VOCAB = read_vocab_from_csv(c_vocab_path)
+
+    print(ASM_VOCAB)
+    print(C_VOCAB)
+
 
 if __name__ == "__main__":
     # test_c_tokenization()
@@ -88,6 +103,7 @@ if __name__ == "__main__":
     # test_asm_tokenization()
     # test_c_vocab()
     # test_asm_vocab()
-    test_load_data()
+    # test_load_data()
+    test_read_csv()
 
 

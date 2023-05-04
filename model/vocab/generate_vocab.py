@@ -1,6 +1,6 @@
 import os, sys
 sys.path.insert(0, '')
-from model.transformer.dataprocess import DataLoader
+from model.transformer.dataprocess import DataLoader, write_vocab_as_csv
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
@@ -17,8 +17,8 @@ def generate_load_data():
     c_csv_filedir_relative_path = "c_vocab.csv"
     asm_csv_filedir_relative_path = "asm_vocab.csv"
     
-    dataloader.write_vocab_as_csv(dataloader.asm_vocab, f"{current_dir}/{asm_csv_filedir_relative_path}")
-    dataloader.write_vocab_as_csv(dataloader.c_vocab, f"{current_dir}/{c_csv_filedir_relative_path}")
+    write_vocab_as_csv(dataloader.asm_vocab, f"{current_dir}/{asm_csv_filedir_relative_path}")
+    write_vocab_as_csv(dataloader.c_vocab, f"{current_dir}/{c_csv_filedir_relative_path}")
 
     print(dataloader.stats)
     # print(dataloader.asm_vocab)
