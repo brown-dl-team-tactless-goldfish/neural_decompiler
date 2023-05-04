@@ -6,24 +6,53 @@ from transformer.decoder import Decoder
 from transformer.encoder import Encoder
 from transformer.util import CustomSchedule, masked_loss, masked_accuracy
 from transformer.dataprocess import Translator, DataLoader, \
-    partition_into_batches
-
-
-
-START_TOKEN = "<START>"
-END_TOKEN = "<STOP>"
-
-
+    partition_into_batches, read_vocab_from_csv
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
 
+# TODO: Fill out this section
+using_colab = True
+saved_model_path = f"{current_dir}/../saved_model/neural_decompiler_trained.h5"
+if using_colab:
+    c_dir_path = "/content/leetcode_data_FINAL/C_COMPILED_FILES"
+    asm_dir_path = "/content/leetcode_data_FINAL/ASM_COMPILED_FILES"
+
+    asm_vocab_dir = "vocab/new_asm_vocab.csv"
+    c_vocab_dir = "vocab/new_c_vocab.csv"
+
+    asm_vocab_path = f"{current_dir}/{asm_vocab_dir}"
+    c_vocab_path = f"{current_dir}/{c_vocab_dir}"
+
+    asm_test_file = "/content/leetcode_data_FINAL/ASM_COMPILED_FILES/ASM_add-two-integers-0.txt"
+else:
+    c_dir = "../data/leetcode_data_FINAL/C_COMPILED_FILES"
+    asm_dir = "../data/leetcode_data_FINAL/ASM_COMPILED_FILES"
+
+    asm_vocab_dir = "vocab/new_asm_vocab.csv"
+    c_vocab_dir = "vocab/new_c_vocab.csv"
+
+    c_dir_path = f"{current_dir}/{c_dir}"
+    asm_dir_path = f"{current_dir}/{asm_dir}"
+
+    asm_vocab_path = f"{current_dir}/{asm_vocab_dir}"
+    c_vocab_path = f"{current_dir}/{c_vocab_dir}"
+
+    asm_test_file = f"{asm_dir_path}/ASM_add-two-integers-0.txt"
+
+
+START_TOKEN = "<START>"
+END_TOKEN = "<STOP>"
 RANDOM_SEED = 42069
+
+
+ASM_VOCAB = read_vocab_from_csv(asm_vocab_path)
+C_VOCAB = read_vocab_from_csv(c_vocab_path)
 
 
 class NeuralDecompiler(tf.keras.Model):
     '''
-    Implementation help from the tutorial: 
+    Implementation help from the TensorFlow tutorial: 
     https://www.tensorflow.org/text/tutorials/transformer
     '''
 
@@ -143,17 +172,8 @@ def train(num_epochs, batch_size):
 
     print("loading data . . .")
 
-    c_dir = "../data/extra_data_FINAL/EXTRA_C_COMPILED_FILES"
-    asm_dir = "../data/extra_data_FINAL/EXTRA_ASM_COMPILED_FILES"
-
-    # c_dir = "tiny_dataset/C"
-    # asm_dir = "tiny_dataset/ASM"
-
-    c_path = f"{current_dir}/{c_dir}"
-    asm_path = f"{current_dir}/{asm_dir}"
-
-    loader = DataLoader(c_path=c_path, asm_path=asm_path)
-    asm_vals, c_vals, stats = loader.load_data()
+    loader = DataLoader(c_path=c_dir_path, asm_path=asm_dir_path)
+    asm_vals, c_vals, stats = loader.load_data(asm_vocab=ASM_VOCAB, c_vocab=C_VOCAB)
 
     print(stats)
 
@@ -186,10 +206,6 @@ def train(num_epochs, batch_size):
     ## TUNE HYPERPARAMS
 
 
-    # Set up checkpoint
-    # checkpoint = tf.train.Checkpoint(model=model, optimizer=optimizer)
-
-
     # FOR ALL EPOCHS
     for epoch in range(num_epochs):
 
@@ -202,7 +218,7 @@ def train(num_epochs, batch_size):
         epoch_avg = 0
 
 
-        num_batches = 0
+        num_batches = len(c_batches)
 
         # TRAIN STEP
         for i, b in enumerate(zip(c_batches, asm_batches)):
@@ -221,14 +237,13 @@ def train(num_epochs, batch_size):
             
             epoch_loss += loss
             epoch_avg += acc
-            num_batches += 1
 
             gradients = tape.gradient(loss, model.trainable_weights)
             optimizer.apply_gradients(zip(gradients, model.trainable_weights))
 
             tocc = time.perf_counter()
 
-            print(f"\repoch: {epoch} | batch: {i} | batch loss: {loss} | batch acc: {acc}" + \
+            print(f"\repoch: {epoch} | batch: {i+1}/{num_batches} | batch loss: {loss} | batch acc: {acc}" + \
                 f" | batch time elapsed: {tocc-ticc}", end="")
 
         epoch_loss /= num_batches
@@ -240,27 +255,21 @@ def train(num_epochs, batch_size):
               f" time elapsed: {toc-tic}", end="\n")
     
     print("training complete . . .")
-    checkpoint_path = f"{current_dir}/../model_checkpoints/model-checkpoint"
-    print(f"saving model checkpoint to {checkpoint_path}")
-    # checkpoint.save(checkpoint_path)
+    
+    print(f"saving model to {saved_model_path}")
+    model.save(saved_model_path)
 
     return model, loader.asm_vocab, loader.c_vocab
 
 
 def test(n_dcmp, asm_vocab, c_vocab):
-
-    translator = Translator()
-
-    asm_file = "../data/extra_data_FINAL/EXTRA_ASM_COMPILED_FILES/ASM_sum.txt"
-    with open(f"{current_dir}/{asm_file}", "r") as f:
+    with open(f"{current_dir}/{asm_test_file}", "r") as f:
         asm_code = f.read()
-
     cgen = CGenerator(n_dcmp, asm_vocab, c_vocab)
     print(cgen(asm_code, 100))
 
 
-
 if __name__ == "__main__":
-    n_dcmp, asm_vocab, c_vocab = train(10, 10)
+    n_dcmp, asm_vocab, c_vocab = train(10, 20)
     test(n_dcmp, asm_vocab, c_vocab)
 
