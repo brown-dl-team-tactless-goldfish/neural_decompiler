@@ -131,18 +131,11 @@ class CGenerator(tf.Module):
                 break
 
         output = tf.transpose(output_arr.stack())
-        print(output)
+        # print(output)
 
         text = self.translator.detokenize_c_from_tensor(output, self.c_vocab)
 
         return text
-
-
-        
-        
-        
-
-
 
 def train(num_epochs, batch_size):
 
@@ -181,7 +174,7 @@ def train(num_epochs, batch_size):
                              input_vocab_size=asm_vocab_size,
                              output_vocab_size=c_vocab_size,
                              ff_hidden_dim=128,
-                             num_layers=1,
+                             num_layers=3,
                              num_heads=8,
                              dropout=0.05)
     
@@ -205,11 +198,16 @@ def train(num_epochs, batch_size):
         asm_batches, c_batches = partition_into_batches(asm_vals, c_vals,
                                                         batch_size)
 
-        batch_loss = 0
-        batch_acc = 0
+        epoch_loss = 0
+        epoch_avg = 0
+
+
+        num_batches = 0
 
         # TRAIN STEP
-        for c_batch, asm_batch in zip(c_batches, asm_batches):
+        for i, b in enumerate(zip(c_batches, asm_batches)):
+
+            c_batch, asm_batch = b
 
             ticc = time.perf_counter()
 
@@ -221,23 +219,24 @@ def train(num_epochs, batch_size):
                 loss = masked_loss(decoder_labels, pred)
                 acc = masked_accuracy(decoder_labels, pred)
             
-            batch_loss += loss
-            batch_acc += acc
+            epoch_loss += loss
+            epoch_avg += acc
+            num_batches += 1
 
             gradients = tape.gradient(loss, model.trainable_weights)
             optimizer.apply_gradients(zip(gradients, model.trainable_weights))
 
             tocc = time.perf_counter()
 
-            print(f"\repoch: {epoch} | batch loss: {loss} | batch acc: {acc}" + \
-                f" batch time elapsed: {tocc-ticc}", end="")
+            print(f"\repoch: {epoch} | batch: {i} | batch loss: {loss} | batch acc: {acc}" + \
+                f" | batch time elapsed: {tocc-ticc}", end="")
 
-        batch_loss /= batch_size
-        batch_acc /= batch_size
+        epoch_loss /= num_batches
+        epoch_avg /= num_batches
 
         toc = time.perf_counter()
 
-        print(f"epoch: {epoch} | loss: {batch_loss} | acc: {batch_acc}" + \
+        print(f"\repoch: {epoch} | loss: {epoch_loss} | acc: {epoch_avg}" + \
               f" time elapsed: {toc-tic}", end="\n")
     
     print("training complete . . .")

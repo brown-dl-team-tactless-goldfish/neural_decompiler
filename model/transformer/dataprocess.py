@@ -422,9 +422,9 @@ class DataLoader(Translator):
         self.asm_path = asm_path
 
         c_count, asm_count = (0, 0)
-        for f in os.listdir(c_path):
+        for _ in os.listdir(c_path):
             c_count += 1
-        for f in os.listdir(asm_path):
+        for _ in os.listdir(asm_path):
             asm_count += 1
         if c_count != asm_count:
             raise Exception("The C and Assembly directories do not have " + \
@@ -615,12 +615,13 @@ class DataLoader(Translator):
 
 
 
-    def load_data(self):
+    def load_data(self, asm_vocab=None, c_vocab=None, max_asm_len=500, max_c_len=500):
         """
         Returns all necessary data for the transformer model.
 
         @params:
-        - None
+        - asm_vocab: Assembly vocabulary
+        - c_vocabulary: C vocabulary
 
         @returns:
         - asm_vals: np.array of size (num_examples, max_c_code_length)
@@ -630,12 +631,12 @@ class DataLoader(Translator):
 
         c_vals = np.zeros(shape=(
             self.stats['num_examples'], 
-            500
+            max_c_len
         ))
 
         asm_vals = np.zeros(shape=(
             self.stats['num_examples'], 
-            500
+            max_asm_len
         ))
 
         for i, asm_file_name in enumerate(sorted(os.listdir(self.asm_path))):
@@ -654,9 +655,9 @@ class DataLoader(Translator):
 
             asm_arr = self.generate_tensor_from_vocab(self.asm_vocab, 
                                                            asm_tokens, 
-                                                           500)
+                                                           max_asm_len)
             c_arr = self.generate_tensor_from_vocab(self.c_vocab, c_tokens, 
-                                                500)
+                                                max_c_len)
         
 
 
