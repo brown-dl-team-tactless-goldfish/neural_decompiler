@@ -161,11 +161,11 @@ class Translator:
         c_vals = c_vals.numpy()
         c_vals = c_vals.flatten()
 
-        c_index_to_strtoken  = {v: k for k, v in c_vocab.items()}
+        c_index_to_strtoken  = {int(v): k for k, v in c_vocab.items()}
 
         for i in range(len(c_vals)):
             out.append(c_index_to_strtoken[c_vals[i]])
-
+            
         return " ".join(out)
 
     def tokenize_asm(self, asm_code):

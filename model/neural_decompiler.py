@@ -13,7 +13,7 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 
 
 # TODO: Fill out this section
-using_colab = True
+using_colab = False
 
 log_path = f"{current_dir}/../model_checkpoints/model-checkpoint-metadata.JSON"
 saved_model_path = f"{current_dir}/../model_checkpoints/model-checkpoint"
@@ -27,10 +27,10 @@ if using_colab:
     asm_vocab_path = f"{current_dir}/{asm_vocab_dir}"
     c_vocab_path = f"{current_dir}/{c_vocab_dir}"
 
-    asm_test_file = "/content/leetcode_data_FINAL/ASM_COMPILED_FILES/ASM_add-two-integers-0.txt"
+    asm_test_file = f"{current_dir}/../data/ASM_tests/cs300midterm_q3.txt"
 else:
-    c_dir = "../data/leetcode_data_FINAL/C_COMPILED_FILES"
-    asm_dir = "../data/leetcode_data_FINAL/ASM_COMPILED_FILES"
+    c_dir = "../data/toy_dataset/C"
+    asm_dir = "../data/toy_dataset/ASM"
 
     asm_vocab_dir = "vocab/new_asm_vocab.csv"
     c_vocab_dir = "vocab/new_c_vocab.csv"
@@ -55,6 +55,8 @@ C_VOCAB = read_vocab_from_csv(c_vocab_path)
 
 class NeuralDecompiler(tf.keras.Model):
     '''
+    NEURALDECOMPILER: Transformer model for Assembly to C translation
+    
     Implementation help from the TensorFlow tutorial: 
     https://www.tensorflow.org/text/tutorials/transformer
     '''
@@ -84,7 +86,7 @@ class NeuralDecompiler(tf.keras.Model):
 
         self.linear = tf.keras.layers.Dense(output_vocab_size)
 
-    def call(self, inputs):
+    def call(self, inputs, training=False):
         """
         @params
         - inputs: a tuple (context, target), where context is the input ASM 
@@ -92,10 +94,10 @@ class NeuralDecompiler(tf.keras.Model):
         """
 
         context, target = inputs
-        x = self.encoder(context)
+        x = self.encoder(context, training=training)
 
         # print(target)
-        logits = self.decoder(target, x)
+        logits = self.decoder(target, x, training=training)
 
         logits = self.linear(logits)
 
@@ -111,7 +113,11 @@ class NeuralDecompiler(tf.keras.Model):
 
 class CGenerator(tf.Module):
     """
-    
+    CGENERATOR: Given a model and appropriate vocabulary, generate a C file
+    from an Assembly file
+
+    Implementation help from the TensorFlow tutorial: 
+    https://www.tensorflow.org/text/tutorials/transformer
     """
 
     def __init__(self, n_dcmp, asm_vocab, c_vocab):
@@ -128,7 +134,7 @@ class CGenerator(tf.Module):
         - max_length: maximum possible output length of the generate C code
         """
 
-        asm_tokens, _, _ = self.translator.tokenize_asm(asm_code)
+        asm_tokens, asm_string_to_token, asm_num_to_token = self.translator.tokenize_asm(asm_code)
 
         asm_tensor = self.translator.generate_tensor_from_vocab(self.asm_vocab, asm_tokens, max_length)
         encoder_input = tf.reshape(asm_tensor, shape=(1, asm_tensor.shape[0]))
@@ -163,7 +169,7 @@ class CGenerator(tf.Module):
                 break
 
         output = tf.transpose(output_arr.stack())
-        # print(output)
+        print(output)
 
         text = self.translator.detokenize_c_from_tensor(output, self.c_vocab)
 
@@ -178,12 +184,8 @@ def train(num_epochs, batch_size):
     loader = DataLoader(c_path=c_dir_path, asm_path=asm_dir_path)
     asm_vals, c_vals, stats = loader.load_data(asm_vocab=ASM_VOCAB, c_vocab=C_VOCAB)
 
-    print(stats)
-
-    # print(loader.c_vocab)
-
-    c_vocab_size = len(loader.c_vocab)
-    asm_vocab_size = len(loader.asm_vocab)
+    c_vocab_size = len(C_VOCAB)
+    asm_vocab_size = len(ASM_VOCAB)
 
     print("finished loading data . . .")
 
@@ -249,7 +251,7 @@ def train(num_epochs, batch_size):
             decoder_labels = c_batch[:, 1:]
 
             with tf.GradientTape() as tape:
-                pred = model((asm_batch, decoder_input))
+                pred = model((asm_batch, decoder_input), training=True)
                 loss = masked_loss(decoder_labels, pred)
                 acc = masked_accuracy(decoder_labels, pred)
             
@@ -270,23 +272,23 @@ def train(num_epochs, batch_size):
         toc = time.perf_counter()
 
         print(f"\repoch: {epoch} | loss: {epoch_loss} | acc: {epoch_avg}" + \
-              f" time elapsed: {toc-tic}", end="\n")
+              f" | time elapsed: {toc-tic}", end="\n")
     
     print("training complete . . .")
     print(f"saving model checkpoint to {saved_model_path}")
     checkpoint.save(saved_model_path)
 
-    return model, loader.asm_vocab, loader.c_vocab
+    return model, ASM_VOCAB, C_VOCAB
 
 
 def test(n_dcmp, asm_vocab, c_vocab):
-    with open(f"{current_dir}/{asm_test_file}", "r") as f:
+    with open(asm_test_file, "r") as f:
         asm_code = f.read()
     cgen = CGenerator(n_dcmp, asm_vocab, c_vocab)
     print(cgen(asm_code, 100))
 
 
 if __name__ == "__main__":
-    n_dcmp, asm_vocab, c_vocab = train(1, 20)
+    n_dcmp, asm_vocab, c_vocab = train(1, 4)
     test(n_dcmp, asm_vocab, c_vocab)
 
