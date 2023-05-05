@@ -1,9 +1,9 @@
 import os
 
-def remove(starting_path, relative_path):
-    if 'git' in relative_path:
+def remove(curr_path):
+    if 'git' in curr_path:
         return
-    curr_path = starting_path + relative_path
+    print(curr_path)
     everything = sorted(list(os.listdir(curr_path)))
     subdirs = [x for x in everything if os.path.isdir(curr_path + '/' + x)]
 
@@ -12,8 +12,9 @@ def remove(starting_path, relative_path):
         os.remove(curr_path + '/.DS_Store')
     
     for dir in subdirs:
-        remove(starting_path, relative_path + '/' + dir)
+        remove(curr_path + '/' + dir)
 
-remove(os.path.dirname(os.path.realpath(__file__)), '')
+if __name__ == "__main__":
+    remove('.') # start at dl_final_project!
         
         
