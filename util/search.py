@@ -1,6 +1,6 @@
 import os
 
-def search(folder_path, conditions):
+def search(folder_path, conditions, remove=False):
     '''
     In a given folder of files (ASM or C), find + print all files
     which meet the given conditions
@@ -16,11 +16,14 @@ def search(folder_path, conditions):
             count += 1
             print(count, filename)
 
+            if remove:
+                os.remove(f'{folder_path}/{filename}')
+
 if __name__ == "__main__":
     # example condition to search for in folder of code
     def conditions(FINAL_SRC_CODE):
         a = len(FINAL_SRC_CODE[112:]) < 10 # suspiciously small file!
-        b = True
+        b = 'define' in FINAL_SRC_CODE # we don't want defines!
 
         return a and b
 
