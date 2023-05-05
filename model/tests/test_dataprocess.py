@@ -97,6 +97,28 @@ def test_read_csv():
     print(C_VOCAB)
 
 
+def vocab_generation_from_dataload():
+    c_filedir_relative_path = "../../data/leetcode_data_FINAL/C_COMPILED_FILES"
+    c_filedir_path = f"{current_dir}/{c_filedir_relative_path}"
+    asm_filedir_relative_path = "../../data/leetcode_data_FINAL/ASM_COMPILED_FILES"
+    asm_filedir_path = f"{current_dir}/{asm_filedir_relative_path}"
+    asm_vocab_path = f"{current_dir}/../vocab/new_asm_vocab.csv"
+    c_vocab_path = f"{current_dir}/../vocab/new_c_vocab.csv"
+
+    dataloader = DataLoader(c_path=c_filedir_path, asm_path=asm_filedir_path)
+
+    ASM_VOCAB = read_vocab_from_csv(asm_vocab_path)
+    C_VOCAB = read_vocab_from_csv(c_vocab_path)
+
+    asm_vals, c_vals, stats = dataloader.load_data(ASM_VOCAB, C_VOCAB)
+
+    print(asm_vals)
+    print(c_vals)
+
+
+
+
+
 if __name__ == "__main__":
     # test_c_tokenization()
     # test_c_token_check()
@@ -104,6 +126,7 @@ if __name__ == "__main__":
     # test_c_vocab()
     # test_asm_vocab()
     # test_load_data()
-    test_read_csv()
+    # test_read_csv()
+    vocab_generation_from_dataload()
 
 

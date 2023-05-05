@@ -1,6 +1,7 @@
 import os
 import tensorflow as tf
 import time
+import json
 
 from transformer.decoder import Decoder
 from transformer.encoder import Encoder
@@ -13,7 +14,9 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 
 # TODO: Fill out this section
 using_colab = True
-saved_model_path = f"{current_dir}/../saved_model/neural_decompiler_trained.h5"
+
+log_path = f"{current_dir}/../model_checkpoints/model-checkpoint-metadata.JSON"
+saved_model_path = f"{current_dir}/../model_checkpoints/model-checkpoint"
 if using_colab:
     c_dir_path = "/content/leetcode_data_FINAL/C_COMPILED_FILES"
     asm_dir_path = "/content/leetcode_data_FINAL/ASM_COMPILED_FILES"
@@ -38,7 +41,7 @@ else:
     asm_vocab_path = f"{current_dir}/{asm_vocab_dir}"
     c_vocab_path = f"{current_dir}/{c_vocab_dir}"
 
-    asm_test_file = f"{asm_dir_path}/ASM_add-two-integers-0.txt"
+    asm_test_file = f"{current_dir}/../data/ASM_tests/cs300midterm_q3.txt"
 
 
 START_TOKEN = "<START>"
@@ -198,6 +201,20 @@ def train(num_epochs, batch_size):
                              num_heads=8,
                              dropout=0.05)
     
+    
+    log_dict = {
+        'emb_sz': emb_sz,
+        'input_vocab_size': asm_vocab_size,
+        'output_vocab_size': c_vocab_size,
+        'ff_hidden_dim': 128,
+        'num_layers': 3,
+        'num_heads': 8,
+        'dropout': 0.05
+    }
+    with open(log_path, 'w') as fp:
+        json.dump(log_dict, fp)
+
+    
     lr = CustomSchedule(d_model=emb_sz)
     optimizer = tf.optimizers.Adam(lr, 
                                    beta_1=0.9,
@@ -206,6 +223,7 @@ def train(num_epochs, batch_size):
     ## TUNE HYPERPARAMS
 
 
+    checkpoint = tf.train.Checkpoint(model=model, optimizer=optimizer)
     # FOR ALL EPOCHS
     for epoch in range(num_epochs):
 
@@ -255,9 +273,8 @@ def train(num_epochs, batch_size):
               f" time elapsed: {toc-tic}", end="\n")
     
     print("training complete . . .")
-    
-    print(f"saving model to {saved_model_path}")
-    model.save(saved_model_path)
+    print(f"saving model checkpoint to {saved_model_path}")
+    checkpoint.save(saved_model_path)
 
     return model, loader.asm_vocab, loader.c_vocab
 
@@ -270,6 +287,6 @@ def test(n_dcmp, asm_vocab, c_vocab):
 
 
 if __name__ == "__main__":
-    n_dcmp, asm_vocab, c_vocab = train(10, 20)
+    n_dcmp, asm_vocab, c_vocab = train(1, 20)
     test(n_dcmp, asm_vocab, c_vocab)
 

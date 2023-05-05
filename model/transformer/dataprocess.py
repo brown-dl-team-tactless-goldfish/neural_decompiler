@@ -370,7 +370,7 @@ class Translator:
         """
 
         out = np.ones(max_length)
-        out = out * vocab[PAD_TOKEN]
+        out = out * np.float64(vocab[PAD_TOKEN])
 
         for i, token in enumerate(code_tokens):
             if i >= max_length:
