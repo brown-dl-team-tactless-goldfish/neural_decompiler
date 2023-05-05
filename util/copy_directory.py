@@ -35,8 +35,11 @@ def copy_dir_without_hidden(source_dir, destination_dir):
 
 if __name__ == "__main__":
     # path of current directory (where this script is!) this is the directory that will be copied
-    source_dir = os.path.dirname(os.path.realpath(__file__))
-    destination_dir = source_dir + f"/../../{source_dir.split('/')[-1]}_no_hidden"
+    source_dir = f"{os.path.dirname(os.path.realpath(__file__))}/.."
+
+    destination_dir = source_dir + f"/../dl_final_project_no_hidden"
 
     copy_dir_without_hidden(source_dir, destination_dir)
+
+    print("destination: ", destination_dir)
 
