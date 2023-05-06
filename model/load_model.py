@@ -28,12 +28,12 @@ def setup():
                                 input_vocab_size=asm_vocab_size,
                                 output_vocab_size=c_vocab_size,
                                 ff_hidden_dim=128,
-                                num_layers=6,
+                                num_layers=3,
                                 num_heads=8,
                                 dropout=0)
     
     model.load_weights(f'{saved_model_path}_weights')
-    cgen = CGenerator(model, ASM_VOCAB, C_VOCAB, max_length=100)
+    cgen = CGenerator(model, ASM_VOCAB, C_VOCAB, max_length=500)
 
 def translate_asm(asm_code):
     asm_code = tf.constant(asm_code, dtype=tf.string)
@@ -99,6 +99,9 @@ def beautify_c_code(c_code, indent_size):
 
     return '\n'.join(output_lines)
 
+if __name__ == "__main__":
+    with open('model/tests/load_model_asm_test.txt', 'r') as f:
+        asm_code = f.read()
 
-c_code = "int func_1 ( int * var_1 , int var_2 ) { int var_3 = <CNUM> ; for ( int var_0 = <CNUM> ; var_0 < var_2 ; var_0 + + ) { var_3 + = var_1 [ var_0 ] ; } return var_3 ; }"
-print(beautify_c_code(c_code, 2))
+    setup()
+    print(translate_asm(asm_code))

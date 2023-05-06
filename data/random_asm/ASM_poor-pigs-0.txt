@@ -1,0 +1,23 @@
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        subq    $32, %rsp
+        movl    %edi, -4(%rbp)
+        movl    %esi, -8(%rbp)
+        movl    %edx, -12(%rbp)
+        cvtsi2sd        -4(%rbp), %xmm0
+        call    log
+        movsd   %xmm0, -24(%rbp)
+        movl    -12(%rbp), %eax
+        cltd
+        idivl   -8(%rbp)
+        addl    $1, %eax
+        cvtsi2sd        %eax, %xmm0
+        call    log
+        movsd   -24(%rbp), %xmm1
+        divsd   %xmm0, %xmm1
+        movapd  %xmm1, %xmm0
+        call    ceil
+        cvttsd2si       %xmm0, %eax
+        leave
+        ret

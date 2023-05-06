@@ -4,6 +4,7 @@ import re
 import numpy as np
 import tensorflow as tf
 import sys
+import json
 sys.path.insert(0, '')
 
 from model.transformer.decoder import Decoder
@@ -17,13 +18,13 @@ current_dir = os.path.dirname(os.path.realpath(__file__))
 # TODO: Fill out this section
 using_colab = False
 
-
 try:
     os.mkdir(f"{current_dir}/../model_checkpoints")
 except:
     pass
 
 saved_model_path = f"{current_dir}/../model_checkpoints/model-checkpoint"
+log_path = f"{current_dir}/../model_checkpoints/metadata.json"
 
 if using_colab:
     c_dir_path = "/content/leetcode_data_FINAL/C_COMPILED_FILES"
@@ -438,7 +439,7 @@ def train(num_epochs, batch_size):
     print("loading data . . .")
 
     loader = DataLoader(c_path=c_dir_path, asm_path=asm_dir_path)
-    asm_vals, c_vals, stats = loader.load_data(asm_vocab=ASM_VOCAB, c_vocab=C_VOCAB)
+    asm_vals, c_vals, _ = loader.load_data(asm_vocab=ASM_VOCAB, c_vocab=C_VOCAB)
 
     c_vocab_size = len(C_VOCAB)
     asm_vocab_size = len(ASM_VOCAB)
@@ -462,17 +463,17 @@ def train(num_epochs, batch_size):
                              dropout=0)
     
     
-    # log_dict = {
-    #     'emb_sz': emb_sz,
-    #     'input_vocab_size': asm_vocab_size,
-    #     'output_vocab_size': c_vocab_size,
-    #     'ff_hidden_dim': 128,
-    #     'num_layers': 3,
-    #     'num_heads': 8,
-    #     'dropout': 0.05
-    # }
-    # with open(log_path, 'w') as fp:
-    #     json.dump(log_dict, fp)
+    log_dict = {
+        'emb_sz': emb_sz,
+        'input_vocab_size': asm_vocab_size,
+        'output_vocab_size': c_vocab_size,
+        'ff_hidden_dim': 128,
+        'num_layers': 3,
+        'num_heads': 8,
+        'dropout': 0.05
+    }
+    with open(log_path, 'w') as fp:
+        json.dump(log_dict, fp)
 
     
     lr = CustomSchedule(d_model=emb_sz)
@@ -533,12 +534,6 @@ def train(num_epochs, batch_size):
               f" | time elapsed: {toc-tic}", end="\n")
     
     print("training complete . . .")
-    
-
-    # print(model.summary())
-
-    # checkpoint.save(saved_model_path)
-    # model.save(saved_model_path)
 
     return model, ASM_VOCAB, C_VOCAB
 
