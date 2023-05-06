@@ -7,6 +7,7 @@ window.onload = () => {
 const decompile = () => {
     const asm_code = document.getElementById('asm-input').value;
     const url = window.location.href + 'decompile';
+    console.log(asm_code);
     setup_placeholders();
 
     fetch(url, {
@@ -20,6 +21,7 @@ const decompile = () => {
     .then(data => display_translation(data))
     .catch(error => {
         reset_placeholders();
+        alert(error);
         console.log(error);
     });
 }
@@ -34,6 +36,7 @@ const randomize = () => {
         .then(data => display_randomized(data))
         .catch(error => {
             reset_placeholders();
+            alert(error);
             console.log(error);
     }); 
 }

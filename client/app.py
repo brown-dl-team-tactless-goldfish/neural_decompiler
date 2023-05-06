@@ -29,8 +29,9 @@ def decompile():
 
     try:
         c_output = load_model.translate_asm(asm_code)
-    except:
-        return None # shouldn't happen, but if load_model called before setup() done
+    except Exception as e:
+        print(e)
+        return str(e), 400
 
     # need better cleaning script
     c_output = c_output.replace('<START>', '').replace('<STOP>', '').strip()
@@ -39,7 +40,7 @@ def decompile():
     return jsonify(c_output)
 
 @app.route('/randomize')
-def randomize():   
+def randomize():
     file_name = random.choice(random_asm_files)
 
     with open(f'{random_asm_folder}/{file_name}') as f:
