@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 # relative imports
-from .attention import Attention
+from .attention import AttentionBlock
 from .util import FeedForward, PositionalEmbedding
 
 """
@@ -14,7 +14,7 @@ class EncoderLayer(tf.keras.layers.Layer):
     def __init__(self, emb_sz, ff_hidden_dim, num_heads=8, dropout=0.0):
         super().__init__()
 
-        self.self_attention = Attention(num_heads=num_heads, 
+        self.self_attention = AttentionBlock(num_heads=num_heads, 
                                              key_dim=emb_sz)
         self.feed_forward = FeedForward(dim=emb_sz, 
                                              hidden_dim=ff_hidden_dim,

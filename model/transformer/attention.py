@@ -1,7 +1,7 @@
 import numpy as np
 import tensorflow as tf
 
-class Attention(tf.keras.layers.Layer):
+class AttentionBlock(tf.keras.layers.Layer):
     """
     Perhaps using built-in TensorFlow MHA might be the better option here.
     https://www.tensorflow.org/text/tutorials/transformer

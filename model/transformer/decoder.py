@@ -1,7 +1,7 @@
 import tensorflow as tf
 
 # relative imports
-from .attention import Attention
+from .attention import AttentionBlock
 from .util import FeedForward, PositionalEmbedding
 """
 Implemenation help following TensorFlow's tutorial
@@ -13,7 +13,7 @@ class DecoderLayer(tf.keras.layers.Layer):
     def __init__(self, emb_sz, ff_hidden_dim, num_heads, dropout=0):
         super().__init__()
 
-        self.self_attention = Attention(
+        self.self_attention = AttentionBlock(
             num_heads=num_heads,
             key_dim=emb_sz,
             causal_mask=True            # need to do some masking for this...
@@ -25,7 +25,7 @@ class DecoderLayer(tf.keras.layers.Layer):
             # - https://jalammar.github.io/illustrated-transformer/
         )
 
-        self.cross_attention = Attention(
+        self.cross_attention = AttentionBlock(
             num_heads=num_heads,
             key_dim=emb_sz,
         )

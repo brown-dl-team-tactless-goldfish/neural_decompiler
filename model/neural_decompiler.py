@@ -369,9 +369,12 @@ class CGenerator(tf.Module):
     def __call__(self, asm_code):
         """
         @params
-        - asm_code: a string of assembly code
+        - asm_code: a tf.string of assembly code
         - max_length: maximum possible output length of the generate C code
         """
+
+        # asm_code = asm_code.numpy()
+        # asm_code = str(asm_code.decode())
 
         asm_tokens, asm_string_to_token, asm_num_to_token = self.tokenize_asm(asm_code)
 
@@ -420,7 +423,8 @@ class ExportCGen(tf.Module):
     def __init__(self, cgen):
         self.cgen = cgen
 
-    @tf.function(input_signature=[tf.TensorSpec(shape=[], dtype=tf.string)])
+    # @tf.function(input_signature=[tf.TensorSpec(shape=[], dtype=tf.string)])
+    @tf.function()
     def __call__(self, asm_code):
         text = self.cgen(asm_code)
         return text
@@ -529,10 +533,11 @@ def train(num_epochs, batch_size):
     print("training complete . . .")
     
 
-    print(model.summary())
+    # print(model.summary())
 
     # checkpoint.save(saved_model_path)
-    
+    model.save(saved_model_path)
+
 
     return model, ASM_VOCAB, C_VOCAB
 
@@ -540,13 +545,15 @@ def train(num_epochs, batch_size):
 def test_and_export(n_dcmp, asm_vocab, c_vocab):
     with open(asm_test_file, "r") as f:
         asm_code = f.read()
+    # asm_code = tf.constant(asm_code, dtype=tf.string)
+
     cgen = CGenerator(n_dcmp, asm_vocab, c_vocab, max_length=10)
     print(cgen(asm_code))
 
     print(f"saving model checkpoint to {saved_model_path}")
 
-    exporter = ExportCGen(cgen)
-    tf.saved_model.save(exporter, export_dir=saved_model_path)
+    # exporter = ExportCGen(cgen)
+    # tf.saved_model.save(exporter, export_dir=saved_model_path)
 
 
 if __name__ == "__main__":
