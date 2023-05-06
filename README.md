@@ -15,6 +15,16 @@ The following online resources were utilized in the data generation process.
 This project was inspired by the following papers.
 1. 
 
+## Dependencies
+Model:
+1. NumPy
+2. TensorFlow
+3. NLTK
+
+Demo Site:
+1. Flask
+2. Flask-Cors
+
 ## Contributors
 NeuralDecompiler was built by [Andrew Yang](https://github.com/ajy25), [Tiger Ji](https://github.com/taiga-forestry), [Frank Chiu](https://github.com/frankchiu12), and [Justin Cheng](https://github.com/jqhc) to fulfill the final project requirement of [CSCI 1470/2470 - Deep Learning](https://brown-deep-learning.github.io/dl-website-s23/), which was taught by Professor Ritambhara Singh at Brown University. 
 
