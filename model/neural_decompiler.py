@@ -117,8 +117,7 @@ class NeuralDecompiler(tf.keras.Model):
             pass
 
         return logits
-
-
+    
 
 class CGenerator(tf.Module):
     """
@@ -397,7 +396,6 @@ class CGenerator(tf.Module):
             output = tf.transpose(output_arr.stack())
 
             # print(output)
-
             pred = self.n_dcmp([encoder_input, output])
 
             pred = pred[:, -1, :]
@@ -442,6 +440,8 @@ def train(num_epochs, batch_size):
 
     c_vocab_size = len(C_VOCAB)
     asm_vocab_size = len(ASM_VOCAB)
+    print(c_vocab_size)
+    print(asm_vocab_size)
 
     print("finished loading data . . .")
 
@@ -536,7 +536,7 @@ def train(num_epochs, batch_size):
     # print(model.summary())
 
     # checkpoint.save(saved_model_path)
-    model.save(saved_model_path)
+    # model.save(saved_model_path)
 
 
     return model, ASM_VOCAB, C_VOCAB
@@ -550,8 +550,9 @@ def test_and_export(n_dcmp, asm_vocab, c_vocab):
     cgen = CGenerator(n_dcmp, asm_vocab, c_vocab, max_length=10)
     print(cgen(asm_code))
 
-    print(f"saving model checkpoint to {saved_model_path}")
-
+    print(f"saving model checkpoint weights to {saved_model_path}_weights")
+    n_dcmp.save_weights(f'{saved_model_path}_weights')
+    
     # exporter = ExportCGen(cgen)
     # tf.saved_model.save(exporter, export_dir=saved_model_path)
 
