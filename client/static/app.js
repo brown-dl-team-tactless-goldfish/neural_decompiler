@@ -6,16 +6,22 @@ window.onload = () => {
 // if successful, takes generated C code and displays it 
 const decompile = () => {
     const asm_code = document.getElementById('asm-input').value;
-    const url = window.location.href + 'decompile?asm_code=' + asm_code;
+    const url = window.location.href + 'decompile';
     setup_placeholders();
 
-    fetch(url)
-        .then(response => response.json())
-        .then(data => display_translation(data))
-        .catch(error => {
-            reset_placeholders();
-            console.log(error);
-        });
+    fetch(url, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(asm_code)
+    })
+    .then(response => response.json())
+    .then(data => display_translation(data))
+    .catch(error => {
+        reset_placeholders();
+        console.log(error);
+    });
 }
 
 // calls flask backend, randomly selecting a short ASM snippet from our data folder
@@ -35,6 +41,8 @@ const randomize = () => {
 // display translated asm!
 const display_translation = (c_output) => {
     // c_output is translated asm code as one string
+    console.log(c_output);
+
     reset_placeholders();
     document.getElementById('c-output').value = c_output;
     // can style or print token by token, but for now, just write all

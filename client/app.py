@@ -21,9 +21,11 @@ def index():
 
     return render_template('index.html')
 
-@app.route('/decompile')
+@app.route('/decompile', methods = ['POST'])
 def decompile():
-    asm_code = request.args.get('asm_code')
+    # asm_code = request.args.get('asm_code')
+    asm_code = request.get_json()
+    print('ASM: ', asm_code)
 
     try:
         c_output = load_model.translate_asm(asm_code)
@@ -31,7 +33,8 @@ def decompile():
         return None # shouldn't happen, but if load_model called before setup() done
 
     # need better cleaning script
-    c_output = c_output.replace('; ', ';\n').replace('{ ', '{\n').replace('} ', '}\n').replace('#', '\n#').replace('include<math.h> ', 'include<math.h>\n').strip()
+    c_output = c_output.replace('<START>', '').replace('<STOP>', '').strip()
+    print('C: ', c_output)
 
     return jsonify(c_output)
 
