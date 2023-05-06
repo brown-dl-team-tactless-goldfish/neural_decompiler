@@ -5,13 +5,12 @@ import numpy as np
 import tensorflow as tf
 import sys
 import json
+sys.path.insert(0, '')
 
-# sys.path.insert(0, '')
-
-from transformer.decoder import Decoder
-from transformer.encoder import Encoder
-from transformer.util import CustomSchedule, masked_loss, masked_accuracy
-from transformer.dataprocess import DataLoader, partition_into_batches, read_vocab_from_csv
+from model.transformer.decoder import Decoder
+from model.transformer.encoder import Encoder
+from model.transformer.util import CustomSchedule, masked_loss, masked_accuracy
+from model.transformer.dataprocess import DataLoader, partition_into_batches, read_vocab_from_csv
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 

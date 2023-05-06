@@ -1,4 +1,5 @@
 import os
+import shutil
 
 def search(folder_path, conditions, remove=False):
     '''
@@ -22,10 +23,9 @@ def search(folder_path, conditions, remove=False):
 if __name__ == "__main__":
     # example condition to search for in folder of code
     def conditions(FINAL_SRC_CODE):
-        a = len(FINAL_SRC_CODE[112:]) < 10 # suspiciously small file!
-        b = 'define' in FINAL_SRC_CODE # we don't want defines!
+        a = len(FINAL_SRC_CODE[112:]) < 500 # short asm files!
 
-        return a and b
+        return a
 
-    folder_path = './data/leetcode_data_FINAL/C_COMPILED_FILES'
+    folder_path = './data/leetcode_data_FINAL/ASM_COMPILED_FILES'
     search(folder_path, conditions)

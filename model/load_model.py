@@ -39,31 +39,11 @@ def translate_asm(asm_code):
 
     return cgen(asm_code)
 
-
 if __name__ == "__main__":
-
-    input = '''
-func_1:
-        pushq   %rbp
-        movq    %rsp, %rbp
-        movl    %edi, -20(%rbp)
-        movl    %esi, -24(%rbp)
-        movl    $1, -4(%rbp)
-        jmp     .L2
-.L3:
-        movl    -4(%rbp), %eax
-        imull   -20(%rbp), %eax
-        movl    %eax, -4(%rbp)
-        subl    $1, -24(%rbp)
-.L2:
-        cmpl    $0, -24(%rbp)
-        jg      .L3
-        movl    -4(%rbp), %eax
-        popq    %rbp
-        ret
-    '''
+    with open('model/tests/load_model_asm_test.txt', 'r') as f:
+        asm_code = f.read()
 
     setup()
-    print(translate_asm(input))
+    print(translate_asm(asm_code))
 
 
