@@ -109,7 +109,18 @@ class Translator:
 
             # replacing numerics
             if self.c_token_is_numeric(token):
-                new_tokens.append(C_NUM_TOKEN)
+
+                try:
+                    int_token = int(token)
+                except:
+                    int_token = 69
+
+                if int_token in VALID_NUMS:
+                    new_tokens.append(token)
+
+                else:
+                    new_tokens.append(C_NUM_TOKEN)
+
                 continue
 
             new_tokens.append(token)
