@@ -1,19 +1,18 @@
 import tensorflow as tf
-import os
-
-from transformer.util import masked_loss, CustomSchedule
+import numpy as np
+import os, re
 from transformer.dataprocess import read_vocab_from_csv
 from neural_decompiler import CGenerator
 from neural_decompiler import NeuralDecompiler
 
-
 with open('data/ASM_tests/cs300midterm_q3.txt', 'r') as f:
-    test_data = f.read()
+    asm_code = f.read()
+    
+asm_code = tf.constant(asm_code, dtype=tf.string)
 
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 saved_model_path = f"{current_dir}/../model_checkpoints/model-checkpoint"
-
 asm_vocab_dir = "vocab/new_asm_vocab.csv"
 c_vocab_dir = "vocab/new_c_vocab.csv"
 
@@ -37,7 +36,7 @@ model = NeuralDecompiler(emb_sz=emb_sz,
 
 model.load_weights(f'{saved_model_path}_weights')
 cgen = CGenerator(model, ASM_VOCAB, C_VOCAB, max_length=100)
-print(cgen(test_data))
+print(cgen(asm_code))
 
 
 # out = model.call([test_X, test_Y])
@@ -57,6 +56,7 @@ print(cgen(test_data))
 # new_model.compile(loss=masked_loss, optimizer=optimizer)
 
 
+# random_int_tensor = tf.cast(tf.random.uniform(shape=(1, 500), minval=0, maxval=10), dtype=tf.int32)
 
 
 # cgen = CGenerator(new_model, ASM_VOCAB, C_VOCAB, 500)
