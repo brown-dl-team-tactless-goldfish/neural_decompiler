@@ -24,13 +24,21 @@ def copy_dir_without_hidden(source_dir, destination_dir):
         item_path = f"{source_dir}/{item}" # path of original file
         destination_path = f"{destination_dir}/{item}" # path of copy
 
+        dirnames_to_skip = ["leetcode_data_FINAL", "extra_data_FINAL", "frontend", "model_checkpoints"]
+
         # if the item is a directory, then recurse on the directory!
-        if os.path.isdir(item_path):
+
+        if os.path.isdir(item_path) and item_path.split('/')[-1] not in dirnames_to_skip:
+
             copy_dir_without_hidden(item_path, destination_path)
         # if the item is a file, copy it to destination
-        else:
-            shutil.copy(item_path, destination_path)
-            print("copied " + item_path)
+        else:  
+
+            try:
+                shutil.copy(item_path, destination_path)
+                print("copied " + item_path)
+            except:
+                pass
 
 
 if __name__ == "__main__":

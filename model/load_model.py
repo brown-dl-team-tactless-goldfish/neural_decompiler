@@ -27,14 +27,43 @@ def setup():
                                 input_vocab_size=asm_vocab_size,
                                 output_vocab_size=c_vocab_size,
                                 ff_hidden_dim=128,
-                                num_layers=6,
+                                num_layers=3,
                                 num_heads=8,
                                 dropout=0)
     
     model.load_weights(f'{saved_model_path}_weights')
-    cgen = CGenerator(model, ASM_VOCAB, C_VOCAB, max_length=100)
+    cgen = CGenerator(model, ASM_VOCAB, C_VOCAB, max_length=500)
 
 def translate_asm(asm_code):
     asm_code = tf.constant(asm_code, dtype=tf.string)
 
     return cgen(asm_code)
+
+
+if __name__ == "__main__":
+
+    input = '''
+func_1:
+        pushq   %rbp
+        movq    %rsp, %rbp
+        movl    %edi, -20(%rbp)
+        movl    %esi, -24(%rbp)
+        movl    $1, -4(%rbp)
+        jmp     .L2
+.L3:
+        movl    -4(%rbp), %eax
+        imull   -20(%rbp), %eax
+        movl    %eax, -4(%rbp)
+        subl    $1, -24(%rbp)
+.L2:
+        cmpl    $0, -24(%rbp)
+        jg      .L3
+        movl    -4(%rbp), %eax
+        popq    %rbp
+        ret
+    '''
+
+    setup()
+    print(translate_asm(input))
+
+
