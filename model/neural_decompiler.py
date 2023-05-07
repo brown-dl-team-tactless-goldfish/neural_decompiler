@@ -465,7 +465,7 @@ class ExportCGen(tf.Module):
 
 
 
-def train(num_epochs, batch_size):
+def train(num_epochs, batch_size, c_dir_path, asm_dir_path):
 
     #### Load data
 
@@ -523,7 +523,7 @@ def train(num_epochs, batch_size):
                                                         batch_size)
 
         epoch_loss = 0
-        epoch_avg = 0
+        epoch_acc = 0
 
 
         num_batches = len(c_batches)
@@ -544,7 +544,7 @@ def train(num_epochs, batch_size):
                 acc = masked_accuracy(decoder_labels, pred)
             
             epoch_loss += loss
-            epoch_avg += acc
+            epoch_acc += acc
 
             gradients = tape.gradient(loss, model.trainable_weights)
             optimizer.apply_gradients(zip(gradients, model.trainable_weights))
@@ -555,11 +555,11 @@ def train(num_epochs, batch_size):
                 f" | batch time elapsed: {tocc-ticc}", end="")
 
         epoch_loss /= num_batches
-        epoch_avg /= num_batches
+        epoch_acc /= num_batches
 
         toc = time.perf_counter()
 
-        print(f"\repoch: {epoch} | loss: {epoch_loss} | acc: {epoch_avg}" + \
+        print(f"\repoch: {epoch} | loss: {epoch_loss} | acc: {epoch_acc}" + \
               f" | time elapsed: {toc-tic}", end="\n")
     
     print("training complete . . .")
@@ -567,11 +567,48 @@ def train(num_epochs, batch_size):
     return model, ASM_VOCAB, C_VOCAB
 
 
-def test_and_export(n_dcmp, asm_vocab, c_vocab):
+
+
+def test(model, c_val_data_path, asm_val_data_path):
+    """
+    Returns loss then accuracy
+    """
+
+    loader = DataLoader(c_path=c_val_data_path, asm_path=asm_val_data_path)
+    asm_vals, c_vals, _ = loader.load_data(asm_vocab=ASM_VOCAB, c_vocab=C_VOCAB)
+    asm_batches, c_batches = partition_into_batches(asm_vals, c_vals, 1)
+    
+    loss = 0
+    acc = 0
+    num_batches = len(c_batches)
+
+    for b in zip(c_batches, asm_batches):
+
+        c_batch, asm_batch = b
+
+        decoder_input = c_batch[:, :-1]
+        decoder_labels = c_batch[:, 1:]
+
+        pred = model((asm_batch, decoder_input), training=False)
+        loss = masked_loss(decoder_labels, pred)
+        acc = masked_accuracy(decoder_labels, pred)
+        
+        loss += loss
+        acc += acc
+
+    loss /= num_batches
+    acc /= num_batches
+
+    return loss, acc
+
+
+
+def export(n_dcmp, asm_vocab, c_vocab):
     with open(asm_test_file, "r") as f:
         asm_code = f.read()
     asm_code = tf.constant(asm_code, dtype=tf.string)
 
+    # print one output just as a demo
     cgen = CGenerator(n_dcmp, asm_vocab, c_vocab, max_length=10)
     print(cgen(asm_code))
 
@@ -581,7 +618,7 @@ def test_and_export(n_dcmp, asm_vocab, c_vocab):
 
 
 if __name__ == "__main__":
-    n_dcmp, asm_vocab, c_vocab = train(1, 4)
-    test_and_export(n_dcmp, asm_vocab, c_vocab)
+    n_dcmp, asm_vocab, c_vocab = train(1, 4, c_dir_path, asm_dir_path)
+    export(n_dcmp, asm_vocab, c_vocab)
 
 

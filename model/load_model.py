@@ -4,13 +4,16 @@ import tensorflow as tf
 import os
 from model.transformer.dataprocess import read_vocab_from_csv
 from model.neural_decompiler import CGenerator
-from model.neural_decompiler import NeuralDecompiler
+from model.neural_decompiler import NeuralDecompiler, test
 from model.beautify_code import beautify_c_code
+
+
+current_dir = os.path.dirname(os.path.realpath(__file__))
+
 
 def setup():
     global cgen
-
-    current_dir = os.path.dirname(os.path.realpath(__file__))
+    
     saved_model_path = f"{current_dir}/../model_checkpoints/model-checkpoint"
     asm_vocab_dir = "vocab/new_asm_vocab.csv"
     c_vocab_dir = "vocab/new_c_vocab.csv"
@@ -35,6 +38,7 @@ def setup():
     model.load_weights(f'{saved_model_path}_weights')
     cgen = CGenerator(model, ASM_VOCAB, C_VOCAB, max_length=500)
 
+
 def translate_asm(asm_code):
     asm_code = tf.constant(asm_code, dtype=tf.string)
 
@@ -42,9 +46,36 @@ def translate_asm(asm_code):
 
     return beautify_c_code(c_code, 2)
 
-if __name__ == "__main__":
+
+
+def test_model_on_validation_data():
+
+    print("loading data...")
+
+    asm_val_data_path = f"{current_dir}/../data/chatgpt_data_FINAL/chatgpt_alternates_ASM"
+    c_val_data_path = f"{current_dir}/../data/chatgpt_data_FINAL/chatgpt_alternates_C"
+    
+    loss, acc = test(cgen, c_val_data_path, asm_val_data_path)
+
+    return loss, acc
+
+
+
+
+def test_translate_asm():
     with open('model/tests/load_model_asm_test.txt', 'r') as f:
         asm_code = f.read()
-
-    setup()
     print(translate_asm(asm_code))
+
+
+
+
+if __name__ == "__main__":
+    setup()
+    test_translate_asm()
+
+    # test_model_on_validation_data()
+
+
+
+
