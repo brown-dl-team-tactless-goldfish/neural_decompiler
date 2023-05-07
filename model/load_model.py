@@ -2,7 +2,6 @@ import sys
 sys.path.insert(0, '')
 import tensorflow as tf
 import os
-import re
 from model.transformer.dataprocess import read_vocab_from_csv
 from model.neural_decompiler import CGenerator
 from model.neural_decompiler import NeuralDecompiler

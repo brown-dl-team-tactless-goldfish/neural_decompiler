@@ -44,6 +44,11 @@ def beautify_c_code(c_code, indent_size):
     # for (int var_0 = <CNUM>; var_0 < var_1; var_0++) {
     c_code = re.sub(r'for \(([^\)]*);\s+([^\)]*);\s+([^\)]*)\)', r'for (\1; \2; \3)', c_code)
 
+    # fix operator spacing
+    c_code = c_code.replace('< =', '<=').replace('>= ', '>=').replace('= =', '==').replace('!= ', '!=')
+    c_code = c_code.replace('| |', '||').replace('& &', '&&').replace('+ +', '++').replace('- -', '--')
+    c_code = c_code.replace('< <', '<<').replace('> >', '>>').replace('- >', '->')
+
     # indenting code
     indent_level = 0 # the running number of indents
     output_lines = []
