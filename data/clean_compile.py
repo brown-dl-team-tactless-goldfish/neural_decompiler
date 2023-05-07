@@ -36,7 +36,7 @@ def unique(elements):
     for elt in elements:
         if elt not in seen:
             ans.append(elt)
-            elements.add(elt)
+            seen.add(elt)
 
     return ans
 
@@ -192,12 +192,12 @@ def rename_structs(FINAL_SRC_CODE):
     We need to rename F, E, C, A to maintain maintain consistent variable names (var_i)
     and struct type definitions (e.g. struct_i var_j = ..., not var_i var_j = ...)
     '''
-    A = unique(re.findall(r'struct\s+\w+\s*{[^}]*}\s*;', FINAL_SRC_CODE)) # 1064
-    B = unique(re.findall(r'struct\s*{[^}]*}\s*\w+;', FINAL_SRC_CODE)) # 216
-    C = unique(re.findall(r'struct\s+\w+\s*{[^}]*}\s*\w+;', FINAL_SRC_CODE)) # 121
-    D = unique(re.findall(r'typedef struct\s+\w+\s*{[^}]*}\s*;', FINAL_SRC_CODE)) # 3
-    E = unique(re.findall(r'typedef struct\s*{[^}]*}\s*\w+;', FINAL_SRC_CODE)) # 3
-    F = unique(re.findall(r'typedef struct\s+\w+\s*{[^}]*}\s*\w+;', FINAL_SRC_CODE)) # 3
+    A = set(re.findall(r'struct\s+\w+\s*{[^}]*}\s*;', FINAL_SRC_CODE)) # 1064
+    B = set(re.findall(r'struct\s*{[^}]*}\s*\w+;', FINAL_SRC_CODE)) # 216
+    C = set(re.findall(r'struct\s+\w+\s*{[^}]*}\s*\w+;', FINAL_SRC_CODE)) # 121
+    D = set(re.findall(r'typedef struct\s+\w+\s*{[^}]*}\s*;', FINAL_SRC_CODE)) # 3
+    E = set(re.findall(r'typedef struct\s*{[^}]*}\s*\w+;', FINAL_SRC_CODE)) # 3
+    F = set(re.findall(r'typedef struct\s+\w+\s*{[^}]*}\s*\w+;', FINAL_SRC_CODE)) # 3
 
     # only need to rename these (see above)
     F = {x.split('}')[-1].replace(';', '').strip(): x.split('{')[0].split()[-1].strip() for x in F}
@@ -246,7 +246,7 @@ def rename(original_folder, new_folder):
         
         func_names = [x.split('(')[0] for x in func_declarations.strip().split() if '(' in x]
         func_names = [x.split('*')[-1] for x in func_names]
-        func_names = unique([x for x in func_names if x not in reserved_list and x not in operators and x != ''])
+        func_names = set([x for x in func_names if x not in reserved_list and x not in operators and x != ''])
 
         ### REPLACE FUNC NAMES (not alphanumeric before, must be a parenthentical after)
         for i, func_name in enumerate(func_names):
@@ -257,18 +257,17 @@ def rename(original_folder, new_folder):
                         in param_names if x != '' and x[0] not in operators]
         param_names = '@@@'.join(['@@@'.join(x) for x in param_names]).split('@@@') # fold append workaround
         param_names = [x.split('*')[-1] for x in param_names if x != '']
-        param_names = unique([x for x in param_names if x not in reserved_list and x not in operators])
+        param_names = set([x for x in param_names if x not in reserved_list and x not in operators])
 
         ### GET ALL VAR NAMES AND COMBINE THEM TO GET ALL NAMES TO CONVERT ####
         variable_names = [x for x in re.findall(
             r"[a-zA-Z_][\w]*(?=[ ,;=\[\n\{])", FINAL_SRC_CODE) \
                 if x not in reserved_list and x not in operators]
 
-        variable_names = unique([x.replace('*', '') for x in variable_names])
-
-        all_names = unique([x for x in param_names + variable_names \
+        variable_names = set([x.replace('*', '') for x in variable_names])
+        all_names = set([x for x in param_names.union(variable_names) \
                             if x != '' and not x[0].isdigit() and x[0:5] != 'func_'])
-
+        
         #### CHECK FOR ALL INSTANCES OF THIS VARIABLE NAME AND REPLACE IT
         FINAL_SRC_CODE = rename_vars(FINAL_SRC_CODE, all_names, 'var_')
         FINAL_SRC_CODE = rename_structs(FINAL_SRC_CODE)
@@ -284,4 +283,7 @@ if __name__ == "__main__":
     # rename()      | original -> new
     # clean()       | original -> new
     # compile()     | original -> filtered -> new
-    pass
+
+    # clean_code('data/chatgpt_alternates', 'data/chatgpt_alternates')
+    # compile('data/chatgpt_alternates', 'data/chatgpt_alternates_temp', 'data/chatgpt_alternates_ASM')
+    rename('/Users/taiga.forestry/Downloads/systems/dl_final_project/data/ASM_tests','/Users/taiga.forestry/Downloads/systems/dl_final_project/data/ASM_tests')
