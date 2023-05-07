@@ -24,7 +24,7 @@ def copy_dir_without_hidden(source_dir, destination_dir):
         item_path = f"{source_dir}/{item}" # path of original file
         destination_path = f"{destination_dir}/{item}" # path of copy
 
-        dirnames_to_skip = ["leetcode_data_FINAL", "extra_data_FINAL", "frontend", "model_checkpoints"]
+        dirnames_to_skip = ["leetcode_data_FINAL", "extra_data_FINAL", "frontend", "model_checkpoints", "random_asm"]
 
         # if the item is a directory, then recurse on the directory!
 

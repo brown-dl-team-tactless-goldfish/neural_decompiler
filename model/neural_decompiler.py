@@ -3,20 +3,32 @@ import time
 import re
 import numpy as np
 import tensorflow as tf
-import sys
 import json
-sys.path.insert(0, '')
-
-from model.transformer.decoder import Decoder
-from model.transformer.encoder import Encoder
-from model.transformer.util import CustomSchedule, masked_loss, masked_accuracy
-from model.transformer.dataprocess import DataLoader, partition_into_batches, read_vocab_from_csv
+import sys
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
 
 # TODO: Fill out this section
 using_colab = False
+client_ready = True
+
+
+if client_ready:
+    sys.path.insert(0, '')
+    from model.transformer.decoder import Decoder
+    from model.transformer.encoder import Encoder
+    from model.transformer.util import CustomSchedule, masked_loss, masked_accuracy
+    from model.transformer.dataprocess import DataLoader, partition_into_batches, read_vocab_from_csv
+
+else:
+    from transformer.decoder import Decoder
+    from transformer.encoder import Encoder
+    from transformer.util import CustomSchedule, masked_loss, masked_accuracy
+    from transformer.dataprocess import DataLoader, partition_into_batches, read_vocab_from_csv
+
+
+
 
 try:
     os.mkdir(f"{current_dir}/../model_checkpoints")
@@ -52,6 +64,28 @@ else:
 
     asm_test_file = f"{current_dir}/../data/ASM_tests/cs300midterm_q3.txt"
 saved_model_path = f"{current_dir}/../model_checkpoints/model-checkpoint"
+
+
+
+
+
+
+## TUNE HYPERPARAMS
+emb_sz = 128
+ff_hidden_dim = 128
+num_layers = 3
+num_heads = 8
+dropout = 0.05
+
+
+
+
+
+
+
+
+
+
 
 
 START_TOKEN = "<START>"
@@ -450,27 +484,23 @@ def train(num_epochs, batch_size):
 
     #### End loading data
 
-
-    ## TUNE HYPERPARAMS
-    emb_sz = 128
-
     model = NeuralDecompiler(emb_sz=emb_sz, 
                              input_vocab_size=asm_vocab_size,
                              output_vocab_size=c_vocab_size,
-                             ff_hidden_dim=128,
-                             num_layers=6,
-                             num_heads=8,
-                             dropout=0)
+                             ff_hidden_dim=ff_hidden_dim,
+                             num_layers=num_layers,
+                             num_heads=num_heads,
+                             dropout=dropout)
     
     
     log_dict = {
         'emb_sz': emb_sz,
         'input_vocab_size': asm_vocab_size,
         'output_vocab_size': c_vocab_size,
-        'ff_hidden_dim': 128,
-        'num_layers': 3,
-        'num_heads': 8,
-        'dropout': 0.05
+        'ff_hidden_dim': ff_hidden_dim,
+        'num_layers': num_layers,
+        'num_heads': num_heads,
+        'dropout': dropout
     }
     with open(log_path, 'w') as fp:
         json.dump(log_dict, fp)
