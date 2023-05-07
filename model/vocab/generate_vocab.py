@@ -12,7 +12,7 @@ def generate_load_data():
     asm_filedir_relative_path = "../../data/leetcode_data_FINAL/ASM_COMPILED_FILES"
     asm_filedir_path = f"{current_dir}/{asm_filedir_relative_path}"
 
-    dataloader = DataLoader(c_path=c_filedir_path, asm_path=asm_filedir_path)
+    dataloader = DataLoader(c_path=c_filedir_path, asm_path=asm_filedir_path, make_vocab=True)
 
     c_csv_filedir_relative_path = "c_vocab.csv"
     asm_csv_filedir_relative_path = "asm_vocab.csv"

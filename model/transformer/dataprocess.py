@@ -15,7 +15,7 @@ C_PUNCT = [' ', ':', ';', '=', '~', '+', '-', '*', '/', ',', '.',
 
 VALID_NUMS = [0, 1, 2]
 
-class Translator:
+class Tokenizer:
     """
     TRANSLATOR: Tokenization, etc.
     """
@@ -395,7 +395,7 @@ class Translator:
         return tf.convert_to_tensor(out, dtype=tf.int64)
     
 
-class DataLoader(Translator):
+class DataLoader(Tokenizer):
     """
     DATALOADER: Loads and preprocesses training data.
     """
@@ -410,12 +410,14 @@ class DataLoader(Translator):
         'max_c_code_length': 0,         # in number of tokens
         'max_asm_code_length': 0,       # in number of tokens
         'avg_c_code_length': 0,         # in number of tokens
-        'avg_asm_code_length': 0,        # in number of tokens
+        'avg_asm_code_length': 0,       # in number of tokens
         'c_vocab_size': 0,
-        'asm_vocab_size': 0
+        'asm_vocab_size': 0,    
+        'c_tokenized_lengths': [],      # for visualization
+        'asm_tokenized_lengths': []     # for visualization
     }
 
-    def __init__(self, c_path = "", asm_path = ""):
+    def __init__(self, c_path = "", asm_path = "", make_vocab=False):
         """
         Upon initialization, generates the C and ASM vocabularies (dictionaries
         of mappings from tokens to integer values)
@@ -442,7 +444,8 @@ class DataLoader(Translator):
                 "the same number of files.")
         self.stats['num_examples'] = c_count
 
-        self.generate_vocabulary()
+        if make_vocab:
+            self.generate_vocabulary()
 
 
 
@@ -642,9 +645,13 @@ class DataLoader(Translator):
 
         if asm_vocab is None:
             asm_vocab = self.asm_vocab
+        else:
+            self.stats['asm_vocab_size'] = len(c_vocab)
 
         if c_vocab is None:
             c_vocab = self.c_vocab
+        else:
+            self.stats['c_vocab_size'] = len(c_vocab)
 
         c_vals = np.zeros(shape=(
             self.stats['num_examples'], 
@@ -668,7 +675,10 @@ class DataLoader(Translator):
             asm_tokens, asm_string_to_token, asm_num_to_token = self.tokenize_asm(asm_code)
             c_tokens = self.tokenize_c(c_code, asm_string_to_token, asm_num_to_token)
 
-            
+
+            self.stats['asm_tokenized_lengths'].append(len(asm_tokens))
+            self.stats['c_tokenized_lengths'].append(len(c_tokens))
+
 
             asm_arr = self.generate_tensor_from_vocab(asm_vocab, 
                                                            asm_tokens, 
