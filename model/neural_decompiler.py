@@ -20,7 +20,6 @@ if client_ready:
     from model.transformer.encoder import Encoder
     from model.transformer.util import CustomSchedule, masked_loss, masked_accuracy
     from model.transformer.dataprocess import DataLoader, partition_into_batches, read_vocab_from_csv
-
 else:
     from transformer.decoder import Decoder
     from transformer.encoder import Encoder
@@ -29,7 +28,7 @@ else:
 
 
 
-
+# TODO: Fill out this section
 try:
     os.mkdir(f"{current_dir}/../model_checkpoints")
 except:
@@ -69,14 +68,14 @@ saved_model_path = f"{current_dir}/../model_checkpoints/model-checkpoint"
 
 
 
-
+# TODO: Fill out this section
 ## TUNE HYPERPARAMS
 emb_sz = 128
 ff_hidden_dim = 128
 num_layers = 3
 num_heads = 8
 dropout = 0.05
-
+## END HYPERPARAM TUNING
 
 
 
@@ -576,14 +575,13 @@ def test_and_export(n_dcmp, asm_vocab, c_vocab):
     cgen = CGenerator(n_dcmp, asm_vocab, c_vocab, max_length=10)
     print(cgen(asm_code))
 
+    # save weights
     print(f"saving model checkpoint weights to {saved_model_path}_weights")
     n_dcmp.save_weights(f'{saved_model_path}_weights')
-    
-    # exporter = ExportCGen(cgen)
-    # tf.saved_model.save(exporter, export_dir=saved_model_path)
 
 
 if __name__ == "__main__":
     n_dcmp, asm_vocab, c_vocab = train(1, 4)
     test_and_export(n_dcmp, asm_vocab, c_vocab)
+
 

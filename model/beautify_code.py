@@ -58,3 +58,4 @@ def beautify_c_code(c_code, indent_size):
             output_lines.append(' ' * indent_size * indent_level + line.strip())
 
     return '\n'.join(output_lines)
+
