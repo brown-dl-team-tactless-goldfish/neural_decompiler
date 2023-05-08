@@ -13,7 +13,9 @@ The following online resources were utilized in the data generation process.
 3. ChatGPT: [https://chat.openai.com/](https://chat.openai.com/)
 
 This project was inspired by the following papers.
-1. 
+1. Baptiste Roziere. Unsupervised Translation of Programming Languages. Neural and Evolutionary
+Computing [cs.NE]. Université Paris sciences et lettres, 2022. English. ffNNT : 2022UPSLD015ff. fftel03852612
+2. 
 
 ## Dependencies
 Model:
