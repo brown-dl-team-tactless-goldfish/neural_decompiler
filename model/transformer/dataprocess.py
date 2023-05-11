@@ -84,9 +84,8 @@ class Tokenizer:
             c_tokens.pop()
 
 
-        if asm_string_to_token and asm_num_to_token:
+        if asm_string_to_token is not None and asm_num_to_token is not None:
             for i, token in enumerate(c_tokens):
-
                 try:
                     test_str_token = '"' + token + '"'
                     # print(test_str_token)
@@ -97,7 +96,7 @@ class Tokenizer:
                     pass
 
                 if token in asm_num_to_token:
-                    c_tokens[i] = asm_num_to_token[token]
+                    c_tokens[i] = asm_num_to_token[token]        
 
         # filtering things
         new_tokens = []
