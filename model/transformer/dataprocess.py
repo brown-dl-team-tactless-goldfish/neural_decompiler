@@ -628,7 +628,7 @@ class DataLoader(Tokenizer):
 
 
 
-    def load_data(self, asm_vocab=None, c_vocab=None, max_asm_len=500, max_c_len=500):
+    def load_data(self, asm_vocab=None, c_vocab=None, max_asm_len=1250, max_c_len=1000):
         """
         Returns all necessary data for the transformer model.
 
