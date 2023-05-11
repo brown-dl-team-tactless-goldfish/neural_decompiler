@@ -5,7 +5,10 @@ import tensorflow as tf
 
 class MultiHeadedAttentionWithMask(tf.keras.layers.MultiHeadAttention):
     """
-    Copied from TensorFlow repository 
+    Copied from TensorFlow repository: https://github.com/keras-team/keras/blob/v2.12.0/keras/layers/attention/multi_head_attention.py#L612
+
+    This gets around TensorFlow version control issues when deploying Flask app.
+    Specifically, tf 2.11 introduced automatical causal masking, which we utilized in the model.
     """
 
     def call(

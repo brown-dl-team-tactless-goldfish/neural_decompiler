@@ -5,13 +5,14 @@ import numpy as np
 import tensorflow as tf
 import json
 import sys
+import csv
 
 current_dir = os.path.dirname(os.path.realpath(__file__))
 
 
 # TODO: Fill out this section
 using_colab = False
-client_ready = True
+client_ready = False
 
 
 if client_ready:
@@ -35,7 +36,8 @@ except:
     pass
 
 saved_model_path = f"{current_dir}/../model_checkpoints/model-checkpoint"
-log_path = f"{current_dir}/../model_checkpoints/metadata.json"
+metadata_path = f"{current_dir}/../model_checkpoints/metadata.json"
+metrics_path = f"{current_dir}/../model_checkpoints/metrics.csv"
 
 if using_colab:
     c_dir_path = "/content/leetcode_data_FINAL/C_COMPILED_FILES"
@@ -451,21 +453,64 @@ class CGenerator(tf.Module):
         text = self.detokenize_c_from_tensor(output, self.c_vocab)
 
         return text
-    
 
 
-class ExportCGen(tf.Module):
-    def __init__(self, cgen):
-        self.cgen = cgen
-
-    @tf.function(input_signature=[tf.TensorSpec(shape=[], dtype=tf.string)])
-    def __call__(self, asm_code):
-        text = self.cgen(asm_code)
-        return text
 
 
+
+
+### TRAINING ###
+
+def test_cross_val(model, asm_vals, c_vals, k=1):
+    """
+    k-fold Cross Validation
+    """
+    asm_batches, c_batches = partition_into_batches(asm_vals, c_vals, int(c_vals.shape[0] / k))
+    assert len(asm_batches) == k
+
+    loss = 0
+    acc = 0
+
+    for b in zip(c_batches, asm_batches):
+
+        c_batch, asm_batch = b
+
+        decoder_input = c_batch[:, :-1]
+        decoder_labels = c_batch[:, 1:]
+
+        pred = model((asm_batch, decoder_input), training=False)
+        batch_loss = masked_loss(decoder_labels, pred)
+        batch_acc = masked_accuracy(decoder_labels, pred)
+        
+        loss += batch_loss
+        acc += batch_acc
+
+    loss /= k
+    acc /= k
+
+    return loss, acc
 
 def train(num_epochs, batch_size, c_dir_path, asm_dir_path):
+    """
+    @params
+    - num_epochs: number of epochs to train for
+    - batch_size: size of batch
+    - c_dir_path
+    - asm_dir_path
+
+    @return
+    - model
+    - metrics: dict of stats for plotting
+    """
+
+
+    metrics = {
+        'train_acc' : [],
+        'test_acc' : [],
+        'train_loss' : [],
+        'test_loss' : []
+    }
+
 
     #### Load data
 
@@ -492,7 +537,7 @@ def train(num_epochs, batch_size, c_dir_path, asm_dir_path):
                              dropout=dropout)
     
     
-    log_dict = {
+    metadata_dict = {
         'emb_sz': emb_sz,
         'input_vocab_size': asm_vocab_size,
         'output_vocab_size': c_vocab_size,
@@ -501,8 +546,8 @@ def train(num_epochs, batch_size, c_dir_path, asm_dir_path):
         'num_heads': num_heads,
         'dropout': dropout
     }
-    with open(log_path, 'w') as fp:
-        json.dump(log_dict, fp)
+    with open(metadata_path, 'w') as fp:
+        json.dump(metadata_dict, fp)
 
     
     lr = CustomSchedule(d_model=emb_sz)
@@ -557,24 +602,38 @@ def train(num_epochs, batch_size, c_dir_path, asm_dir_path):
         epoch_loss /= num_batches
         epoch_acc /= num_batches
 
+
+        val_loss, val_acc = test_cross_val(model, asm_vals, c_vals)
+
+        # add stats to metrics dict 
+        metrics['train_acc'].append(epoch_acc.numpy())
+        metrics['test_acc'].append(val_acc.numpy())
+        metrics['train_loss'].append(epoch_loss.numpy())
+        metrics['test_loss'].append(val_loss.numpy())
+
+
         toc = time.perf_counter()
 
         print(f"\repoch: {epoch} | loss: {epoch_loss} | acc: {epoch_acc}" + \
-              f" | time elapsed: {toc-tic}", end="\n")
+              f" | val acc: {val_acc} | time elapsed: {toc-tic}", end="\n")
     
     print("training complete . . .")
 
-    return model, ASM_VOCAB, C_VOCAB
+    # write stats to csv
+    with open(metrics_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerow(metrics.keys())
+        writer.writerows(zip(*metrics.values()))
+
+    return model, metrics
 
 
-
-
-def test(model, c_val_data_path, asm_val_data_path):
+def test(model, c_val_dir_path, asm_val_dir_path):
     """
     Returns loss then accuracy
     """
 
-    loader = DataLoader(c_path=c_val_data_path, asm_path=asm_val_data_path)
+    loader = DataLoader(c_path=c_val_dir_path, asm_path=asm_val_dir_path)
     asm_vals, c_vals, _ = loader.load_data(asm_vocab=ASM_VOCAB, c_vocab=C_VOCAB)
     asm_batches, c_batches = partition_into_batches(asm_vals, c_vals, 1)
     
@@ -590,11 +649,11 @@ def test(model, c_val_data_path, asm_val_data_path):
         decoder_labels = c_batch[:, 1:]
 
         pred = model((asm_batch, decoder_input), training=False)
-        loss = masked_loss(decoder_labels, pred)
-        acc = masked_accuracy(decoder_labels, pred)
+        batch_loss = masked_loss(decoder_labels, pred)
+        batch_acc = masked_accuracy(decoder_labels, pred)
         
-        loss += loss
-        acc += acc
+        loss += batch_loss
+        acc += batch_acc
 
     loss /= num_batches
     acc /= num_batches
@@ -602,23 +661,15 @@ def test(model, c_val_data_path, asm_val_data_path):
     return loss, acc
 
 
-
 def export(n_dcmp, asm_vocab, c_vocab):
-    with open(asm_test_file, "r") as f:
-        asm_code = f.read()
-    asm_code = tf.constant(asm_code, dtype=tf.string)
-
-    # print one output just as a demo
-    cgen = CGenerator(n_dcmp, asm_vocab, c_vocab, max_length=10)
-    print(cgen(asm_code))
-
     # save weights
     print(f"saving model checkpoint weights to {saved_model_path}_weights")
     n_dcmp.save_weights(f'{saved_model_path}_weights')
 
 
 if __name__ == "__main__":
-    n_dcmp, asm_vocab, c_vocab = train(1, 4, c_dir_path, asm_dir_path)
-    export(n_dcmp, asm_vocab, c_vocab)
+    n_dcmp, metrics = train(2, 4, c_dir_path, asm_dir_path)
+    print(metrics)
+    export(n_dcmp, ASM_VOCAB, C_VOCAB)
 
 
