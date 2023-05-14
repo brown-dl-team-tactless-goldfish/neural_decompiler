@@ -5,7 +5,7 @@
 ## Overview
 Reading Assembly is challenging. Students in Professor Malte Schwarzkopf’s [CSCI 0300 computer systems course](http://cs300.systems/) at Brown University, for example, are required to explain the functionality of an Assembly program during exams. Assembly can be produced during the process of compiling a C program into an executable file. Going the opposite direction—converting Assembly instructions to human readable C code—is much harder. This repository represents our attempt to train a neural Assembly to C decompiler based on the transformer architecture.
 
-To read more about our methodology and results, take a look at our [final paper](https://drive.google.com/file/d/18hM73CQAW_FalXjNxsvdcRmG9f5m-7Wb/view?usp=sharing) or our [Google Slides](https://docs.google.com/presentation/d/1KJVWduM-h1BoByQLOI547fGsn7eYeUYhOxV7LDxvTN8/edit?usp=share_link) from our final presentation. To try out the decompiler yourself, our demo website can be found at [neuraldecompiler.pythonanywhere.com](https://neuraldecompiler.pythonanywhere.com/).
+To read more about our methodology and results, take a look at our [final paper](https://drive.google.com/file/d/1L5VY355aqinerxD9sUrVod48FZ-Jg9bF/view?usp=sharing) or our [Google Slides](https://docs.google.com/presentation/d/1KJVWduM-h1BoByQLOI547fGsn7eYeUYhOxV7LDxvTN8/edit?usp=share_link) from our final presentation. To try out the decompiler yourself, our demo website can be found at [neuraldecompiler.pythonanywhere.com](https://neuraldecompiler.pythonanywhere.com/).
 
 ## References
 The following online resources were utilized in the data generation process.
