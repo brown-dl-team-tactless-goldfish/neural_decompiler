@@ -5,7 +5,7 @@
 ## Overview
 Reading Assembly is challenging. Students in Professor Malte Schwarzkopf’s [CSCI 0300 computer systems course](http://cs300.systems/) at Brown University, for example, are required to explain the functionality of an Assembly program during exams. Assembly can be produced during the process of compiling a C program into an executable file. Going the opposite direction—converting Assembly instructions to human readable C code—is much harder. This repository represents our attempt to train a neural Assembly to C decompiler based on the transformer architecture.
 
-To read more about our methodology and results, take a look at our [final paper](https://drive.google.com/file/d/1L5VY355aqinerxD9sUrVod48FZ-Jg9bF/view?usp=sharing) or our [Google Slides](https://docs.google.com/presentation/d/1KJVWduM-h1BoByQLOI547fGsn7eYeUYhOxV7LDxvTN8/edit?usp=share_link) from our final presentation. To try out the decompiler yourself, our demo website can be found at [neuraldecompiler.pythonanywhere.com](https://neuraldecompiler.pythonanywhere.com/).
+To read more about our methodology and results, take a look at our [final paper](https://drive.google.com/file/d/1-UQbkVt7gSNLyKEVeXsxNfCzNe55F_iS/view?usp=sharing) or the [slides](https://docs.google.com/presentation/d/1KJVWduM-h1BoByQLOI547fGsn7eYeUYhOxV7LDxvTN8/edit?usp=share_link) from our final presentation. To try out the decompiler yourself, our demo website can be found at [neuraldecompiler.pythonanywhere.com](https://neuraldecompiler.pythonanywhere.com/).
 
 ## References
 The following online resources were utilized in the data generation process.
@@ -21,7 +21,7 @@ Computing [cs.NE]. Université Paris sciences et lettres, 2022. English. ffNNT :
 ## Dependencies
 Model:
 1. NumPy
-2. TensorFlow
+2. TensorFlow >= 2.8.0
 3. NLTK
 
 Demo Site:
@@ -31,7 +31,7 @@ Demo Site:
 ## Contributors
 NeuralDecompiler was developed by [Andrew Yang](https://github.com/ajy25), [Tiger Ji](https://github.com/taiga-forestry), [Frank Chiu](https://github.com/frankchiu12), and [Justin Cheng](https://github.com/jqhc) to fulfill the final project requirement of [CSCI 1470/2470 - Deep Learning](https://brown-deep-learning.github.io/dl-website-s23/), which was taught by Professor Ritambhara Singh at Brown University. 
 
-Andrew Yang contributed to the preprocessing and tokenization of training data. Andrew also implemented the transformer model.
+Andrew Yang contributed to the preprocessing and tokenization of training data. Andrew also implemented and trained the transformer model.
 
 Tiger Ji contributed to the compiling process of C to Assembly as well as the cleaning of C and Assembly files. Tiger also wrote the script to rename function, struct, and variable names in the C files. Finally, Tiger wrote the client facing code.
 
